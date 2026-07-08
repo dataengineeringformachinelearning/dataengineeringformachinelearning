@@ -137,8 +137,10 @@ const segmentToDataPoint = (
         gap: var(--viking-space-2);
         min-width: 0;
         min-height: var(--viking-touch-target-comfort);
-        padding: var(--viking-space-1-5);
-        border-radius: var(--viking-radius-sm);
+        padding: var(
+          --viking-space-2
+        ); /* Increased internal padding for breathing room */
+        border-radius: var(--viking-radius); /* Larger rounding for structure */
         background: color-mix(
           in srgb,
           var(--viking-surface-alt) 78%,
@@ -160,7 +162,9 @@ const segmentToDataPoint = (
       .viking-explore-card-metric-copy {
         display: flex;
         align-items: center;
-        gap: var(--viking-space-1-5);
+        gap: var(
+          --viking-space-2
+        ); /* Better breathing between icon and labels */
         min-width: 0;
       }
 
@@ -301,7 +305,6 @@ export class ExploreCardMetricItemComponent {
         @if (proVerified()) {
           <viking-badge
             tone="accent"
-            icon="check-circle"
             title="Pro subscriber — verified status page"
             aria-label="Pro verified status page"
           >
@@ -356,7 +359,9 @@ export class ExploreCardMetricItemComponent {
         display: block;
         width: 100%;
         min-width: 0;
-        border-radius: var(--viking-radius-lg);
+        border-radius: var(
+          --viking-radius-xl
+        ); /* Increased for more premium, structured card feel */
         transition: var(--viking-transition-interactive);
       }
 
@@ -375,27 +380,41 @@ export class ExploreCardMetricItemComponent {
 
       .viking-explore-card-badges {
         justify-content: space-between;
-        padding-top: var(--viking-space-2);
-        margin-top: var(--viking-space-1);
+        padding-top: var(--viking-space-3); /* Increased breathing room */
+        margin-top: var(--viking-space-2);
         border-top: 1px solid var(--viking-border-subtle);
       }
 
       .viking-explore-card-metrics {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
-        gap: var(--viking-space-2);
+        gap: var(
+          --viking-space-3
+        ); /* Increased for better on-grid spacing and breathing */
         width: 100%;
         min-width: 0;
+        align-items: start; /* Structured alignment across the 2x2 */
       }
 
       .viking-explore-card-footer {
-        padding-top: var(--viking-space-3);
+        padding-top: var(
+          --viking-space-4
+        ); /* Better separation and breathing from uptime/metrics */
         border-top: 1px solid var(--viking-border-subtle);
       }
 
-      @media (min-width: 640px) {
+      /* Uptime bar section breathing — more space above/below for visual separation */
+      .viking-explore-card-metrics + viking-uptime-history {
+        margin-top: var(--viking-space-2);
+        padding-top: var(--viking-space-2);
+        border-top: 1px solid var(--viking-border-subtle);
+      }
+
+      /* Mobile-first: stacks to 1 column. Scales to clean 2x2 grid on desktop */
+      @media (min-width: 768px) {
         .viking-explore-card-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: var(--viking-space-4); /* Stronger horizontal/vertical rhythm */
         }
       }
     `,

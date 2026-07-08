@@ -231,11 +231,11 @@
 
   /* ── Chart scale — unified responsive min/max (matches 720×240 SVG viewBox) ─ */
   --viking-chart-ratio: 3 / 1;
-  --viking-chart-min-height: clamp(9.5rem, 22vw, 12rem);
-  --viking-chart-max-height: clamp(13rem, 36vw, 17.5rem);
-  --viking-chart-fill-min-height: clamp(18rem, 36vw, 20rem);
+  --viking-chart-min-height: clamp(11rem, 26vw, 14rem); /* more breathing */
+  --viking-chart-max-height: clamp(15rem, 38vw, 19rem);
+  --viking-chart-fill-min-height: clamp(20rem, 38vw, 22rem);
   --viking-chart-fill-max-height: none;
-  --viking-chart-fill-min-height-lg: clamp(20rem, 40vw, 22rem);
+  --viking-chart-fill-min-height-lg: clamp(22rem, 42vw, 24rem);
   --viking-chart-fill-max-height-lg: none;
   --viking-chart-empty-min-height: var(--viking-chart-fill-min-height);
   --viking-chart-empty-min-height-lg: var(--viking-chart-fill-min-height-lg);
@@ -338,7 +338,7 @@
   --viking-z-tooltip: 1200;
 
   /* ── Chart ───────────────────────────────────────────────────────────────── */
-  --viking-chart-axis-size: 12px;
+  --viking-chart-axis-size: 11px; /* slightly smaller, cleaner on dense UIs */
 
   /* ── Icons ─────────────────────────────────────────────────────────────────── */
   --viking-icon-size-sm: 16px;

@@ -297,7 +297,7 @@
   .chart-custom-header,
   viking-chart-card-header {
     border-bottom: 1px solid var(--viking-border-subtle);
-    padding-bottom: var(--viking-space-2);
+    padding-bottom: var(--viking-space-3);
     margin-bottom: 0;
   }
 }
@@ -672,32 +672,31 @@
   font-weight: var(--viking-font-weight-medium, 500);
 }
 
-/* Public status directory + standalone status templates */
+/* Public status directory (Explore page) — truly mobile-first grid foundation */
 .status-directory-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-page-section-gap, var(--viking-space-6));
+  display: grid;
+  grid-template-columns: 1fr; /* Mobile: single column, comfortable touch targets */
+  gap: var(--viking-space-6); /* Consistent vertical rhythm (24px) */
   width: 100%;
   max-width: 60rem;
 }
 
-/* Status pages stay stacked — no side-by-side grid */
-@media (min-width: 880px) {
-  .status-directory-grid {
-    max-width: 68rem;
-  }
+/* Cards and content align to the invisible grid */
+.status-directory-grid > * {
+  min-width: 0;
 }
 
-/* Premium status directory cards — clean container */
+/* Premium status directory cards — clean container with good internal grid alignment */
 .status-directory-card,
 app-status-card.status-directory-card {
   display: block;
   width: 100%;
   min-width: 0;
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-radius-xl); /* Increased rounding for polished containers */
   border: 1px solid var(--viking-border);
   background: var(--viking-surface);
   transition: var(--viking-transition-interactive);
+  /* Note: actual viking-explore-card provides its own padding; these wrappers get consistent treatment */
 }
 
 /* Hover state for the directory card wrapper */
@@ -804,19 +803,30 @@ app-status-card.status-directory-card {
   }
 }
 
-/* Premium responsive grid for explore page */
-@media (min-width: 880px) {
+/* Premium responsive grid for explore page — progressive enhancement */
+/* md: 2 columns */
+@media (min-width: 768px) {
   .status-directory-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     max-width: 68rem;
-    gap: var(--viking-page-section-gap, var(--viking-space-7));
+    gap: var(--viking-space-8); /* 32px — stronger horizontal/vertical rhythm */
   }
 }
 
-@media (min-width: 1160px) {
+/* lg: 3 columns */
+@media (min-width: 1024px) {
   .status-directory-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     max-width: 72rem;
+    gap: var(--viking-space-8);
+  }
+}
+
+/* xl: slightly wider breathing room */
+@media (min-width: 1280px) {
+  .status-directory-grid {
+    max-width: 78rem;
+    gap: var(--viking-space-10); /* ~40px for very large screens */
   }
 }
 

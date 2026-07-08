@@ -55,14 +55,16 @@ export class VikingMetricRow {}
     `
       :host {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         width: 100%;
         min-width: 0;
         min-height: var(--viking-touch-target-comfort);
-        padding: var(--viking-space-2);
-        border-radius: var(--viking-radius);
+        padding: var(
+          --viking-space-3
+        ); /* Increased for breathing room, matching Spartan polish */
+        border-radius: var(--viking-radius-lg); /* More generous rounding */
         background: color-mix(
           in srgb,
           var(--viking-surface-alt) 74%,
@@ -70,6 +72,7 @@ export class VikingMetricRow {}
         );
         color: var(--viking-text);
         box-sizing: border-box;
+        box-shadow: var(--viking-shadow-xs);
       }
 
       .viking-metric-card-icon {
@@ -78,7 +81,9 @@ export class VikingMetricRow {}
 
       .viking-metric-card-copy {
         display: grid;
-        gap: var(--viking-space-half);
+        gap: var(
+          --viking-space-1
+        ); /* Better vertical rhythm between label/value/sublabel */
         min-width: 0;
         flex: 1 1 auto;
       }

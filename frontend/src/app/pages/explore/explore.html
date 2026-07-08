@@ -10,7 +10,9 @@
           to see an example of real-time service health tracking.
         </p>
       </viking-page-header>
-      <div class="status-stack status-directory-grid">
+
+      <!-- Consistent grid + breathing for status cards (Spartan/Flux inspired organization) -->
+      <div class="viking-grid status-directory-grid">
         @for (page of displayPages(); track page) {
         <viking-explore-card
           [title]="page.title"

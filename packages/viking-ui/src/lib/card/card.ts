@@ -43,10 +43,14 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         background: var(--viking-surface);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);
-        padding: var(--viking-card-padding, var(--viking-space-3));
+        padding: var(
+          --viking-card-padding,
+          var(--viking-space-4)
+        ); /* Consistent with THEME.md: space-4 default for polished feel */
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
         min-width: 0;
+        box-shadow: var(--viking-shadow-sm);
       }
       :host(.viking-card-headerless) .viking-card-header,
       :host(.viking-card-headerless) viking-card-header {
@@ -71,9 +75,29 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         pointer-events: none;
       }
       :host(.viking-card-compact) {
-        padding: var(--viking-card-padding-compact, var(--viking-space-2));
+        padding: var(--viking-card-padding-compact, var(--viking-space-3));
         gap: var(--viking-card-content-gap-compact, var(--viking-space-2));
       }
+
+      /* Structured content sections for better Spartan-like polish */
+      :host ::ng-deep .viking-card-header,
+      :host ::ng-deep viking-card-header {
+        padding-bottom: var(--viking-space-2);
+        margin-bottom: var(--viking-space-2);
+        border-bottom: 1px solid var(--viking-border-subtle);
+      }
+
+      :host ::ng-deep .viking-card-content,
+      :host ::ng-deep .viking-card-body {
+        padding: var(--viking-space-1) 0;
+      }
+
+      :host ::ng-deep .viking-card-footer {
+        padding-top: var(--viking-space-2);
+        margin-top: var(--viking-space-2);
+        border-top: 1px solid var(--viking-border-subtle);
+      }
+
       .viking-card-skeleton {
         display: flex;
         flex-direction: column;

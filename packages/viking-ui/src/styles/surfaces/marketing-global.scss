@@ -250,13 +250,15 @@ main.main {
 
 .dashboard-content-area {
   flex: 1;
-  padding: var(--viking-space-3, 24px) 0 var(--viking-space-4, 32px);
+  padding: var(--viking-space-4) 0 var(--viking-space-6); /* Mobile: generous vertical rhythm */
   position: relative;
   z-index: 1;
   box-sizing: border-box;
 
+  /* Progressive: more breathing on larger screens */
   @media (min-width: 768px) {
-    padding-top: var(--viking-space-4, 32px);
+    padding-top: var(--viking-space-6);
+    padding-bottom: var(--viking-space-8);
   }
 }
 

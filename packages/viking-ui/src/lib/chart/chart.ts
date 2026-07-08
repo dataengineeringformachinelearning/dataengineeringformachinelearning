@@ -90,8 +90,8 @@ const BAR_WIDTH_MIN = 12;
 const BAR_WIDTH_MAX = 96;
 const SINGLE_BAR_WIDTH = 72;
 const BAR_MIN_VISIBLE_HEIGHT_DEFAULT = 4;
-const LABEL_MAX_DEFAULT = 10;
-const LABEL_MAX_FILL = 18;
+const LABEL_MAX_DEFAULT = 8; /* fewer for cleaner mobile readability */
+const LABEL_MAX_FILL = 14;
 
 const resolveBarWidth = (
   slotWidth: number,
@@ -146,7 +146,8 @@ const parseGutter = (
     return { top: 0, right: 0, bottom: 0, left: 0 };
   }
   if (value === undefined || value === null) {
-    return { top: 12, right: 20, bottom: 36, left: 48 };
+    // Increased breathing room around charts (modern clean spacing)
+    return { top: 16, right: 24, bottom: 44, left: 52 };
   }
   if (typeof value === "number") {
     return { top: value, right: value, bottom: value, left: value };
@@ -453,6 +454,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         width: 100%;
         max-width: 100%;
         container-type: inline-size;
+        padding: var(--viking-space-1) var(--viking-space-half); /* breathing around chart */
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
         aspect-ratio: var(--viking-chart-ratio, 3 / 1);
@@ -559,44 +561,48 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         );
       }
       .viking-chart-grid {
-        stroke: color-mix(in srgb, var(--viking-border) 55%, transparent);
-        stroke-width: 1;
+        /* Cleaner, more subtle grid lines like Flux */
+        stroke: color-mix(in srgb, var(--viking-border) 35%, transparent);
+        stroke-width: 0.75;
+        stroke-dasharray: 2 3; /* subtle dashed for modern minimal */
       }
       .viking-chart-axis-line,
       .viking-chart-tick {
-        stroke: color-mix(in srgb, var(--viking-border) 85%, transparent);
+        stroke: color-mix(in srgb, var(--viking-border) 70%, transparent);
         stroke-width: 1;
       }
       .viking-chart-axis-y,
       .viking-chart-axis-x {
         fill: var(--viking-text-muted);
-        font-size: max(11px, var(--viking-chart-axis-size, 12px));
+        font-size: max(10px, var(--viking-chart-axis-size, 11px));
         font-family: var(--viking-font-family);
+        font-weight: var(--viking-font-weight-medium);
       }
       .viking-chart-line {
         fill: none;
-        stroke-width: 2;
+        stroke-width: 2.25;
         stroke-linecap: round;
         stroke-linejoin: round;
         vector-effect: non-scaling-stroke;
       }
       .viking-chart-fill .viking-chart-line {
-        stroke-width: 2.5;
+        stroke-width: 2.75;
       }
       .viking-chart-area {
-        opacity: 0.32;
+        opacity: 0.25;
         stroke: none;
       }
       .viking-chart-fill .viking-chart-area {
-        opacity: 0.38;
+        opacity: 0.3;
       }
       .viking-chart-point {
         stroke: var(--viking-surface);
-        stroke-width: 2;
+        stroke-width: 2.5;
         vector-effect: non-scaling-stroke;
       }
       .viking-chart-bar {
         opacity: 1;
+        /* consistent with UI rounding */
       }
       .viking-chart-donut-slice {
         stroke: var(--viking-surface);
@@ -618,24 +624,24 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: var(--viking-space-2) var(--viking-space-3);
-        margin-top: var(--viking-space-2);
-        font-size: calc(var(--viking-font-size) * 0.9);
+        gap: var(--viking-space-2) var(--viking-space-4);
+        margin-top: var(--viking-space-3);
+        font-size: var(--viking-font-size-xs);
         color: var(--viking-text-muted);
       }
       .viking-chart-fill .viking-chart-legend {
-        margin-top: var(--viking-space-3);
+        margin-top: var(--viking-space-4);
       }
       .viking-chart-legend-item {
         display: inline-flex;
         align-items: center;
-        gap: calc(var(--viking-space-1) / 1.5);
+        gap: var(--viking-space-1);
         line-height: 1.2;
       }
       .viking-chart-swatch {
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
+        width: 8px;
+        height: 8px;
+        border-radius: var(--viking-radius-sm);
         display: inline-block;
         flex-shrink: 0;
       }
@@ -668,10 +674,10 @@ export class VikingChart {
   readonly showPoints = input<boolean>(false);
   readonly pointRadius = input<number>(4);
   readonly barWidth = input<number>(85);
-  readonly barRadius = input<number>(6);
+  readonly barRadius = input<number>(4); /* matches UI small radius */
   readonly barMinHeight = input<number>(BAR_MIN_VISIBLE_HEIGHT_DEFAULT);
   readonly gutter = input<number | string | undefined>(undefined);
-  readonly tickCount = input<number>(4);
+  readonly tickCount = input<number>(3); /* cleaner, less crowded on mobile */
   readonly showLegend = input<boolean | undefined>(undefined);
   readonly summary = input<string>("");
   /** Enable wheel zoom + drag pan on line/bar charts (Flux-style interaction). */

@@ -156,7 +156,7 @@
   --viking-space-8: 64px;
 
   /* Chart axis labels */
-  --viking-chart-axis-size: 12px;
+  --viking-chart-axis-size: 11px; /* slightly smaller, cleaner on dense UIs */
 
   /* Page shell */
   --viking-container-max-width: var(--container-max-width, 1260px);

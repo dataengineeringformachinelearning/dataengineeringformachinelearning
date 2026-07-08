@@ -179,8 +179,9 @@ const VIKING_STATUS_CARD_STYLES = `
 
 :host([compact]) .status-card,
 :host .status-card--compact {
-  padding: var(--viking-card-padding-compact);
-  gap: var(--viking-space-2);
+  padding: var(--viking-space-3); /* Slightly increased compact breathing while staying compact */
+  gap: var(--viking-space-3);
+  border-radius: var(--viking-radius-lg);
 }
 
 .status-card {
@@ -188,7 +189,7 @@ const VIKING_STATUS_CARD_STYLES = `
   gap: var(--viking-space-4);
   width: 100%;
   padding: var(--viking-card-padding);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-radius-xl); /* Increased rounding for premium structured feel */
   border: 1px solid var(--viking-border);
   background: var(--viking-surface);
   color: var(--viking-text);
@@ -218,8 +219,8 @@ const VIKING_STATUS_CARD_STYLES = `
   gap: var(--viking-space-3);
   align-items: flex-start;
   min-width: 0;
-  padding-bottom: var(--viking-space-2);
-  margin-bottom: var(--viking-space-2);
+  padding-bottom: var(--viking-space-3); /* Better breathing in header */
+  margin-bottom: var(--viking-space-3);
   border-bottom: 1px solid var(--viking-border);
 }
 
@@ -319,7 +320,7 @@ const VIKING_STATUS_CARD_STYLES = `
 
 .status-card__body {
   display: grid;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-4); /* Improved vertical rhythm inside the card body for breathing */
   min-width: 0;
   width: 100%;
 }

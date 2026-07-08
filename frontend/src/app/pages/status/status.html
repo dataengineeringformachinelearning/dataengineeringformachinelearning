@@ -5,49 +5,55 @@
     <main class="dashboard-main">
       <div class="dashboard-content-area">
         <div class="page-inner-wrapper">
-          <viking-page-header
-            tag="System Telemetry"
-            title="System Status"
-            subtitle="Real-time status updates, historical uptime, and predictive service health."
-          >
-            @if (authService.isAuthenticated()) {
-            <div vikingPageHeaderActions>
-              <viking-button variant="filled" href="/settings" icon="settings">
-                Manage Pages
-              </viking-button>
-            </div>
-            }
-          </viking-page-header>
-
-          @for (page of displayPages(); track page.id) {
-          <viking-status-dashboard
-            [title]="getPageStatus(page.id) + ' — ' + page.title"
-            [description]="statusDescription(page.id)"
-            [status]="statusVariant(getPageStatus(page.id))"
-            [statusLabel]="getPageStatus(page.id)"
-            liveLabel="Live Predictions Active"
-            [metrics]="dashboardMetrics(page)"
-            [services]="dashboardServices(page)"
-            [announcements]="dashboardAnnouncements(page)"
-            [showThemeVersions]="true"
-          />
-          } @if (loadFailed()) {
-          <viking-callout tone="danger" heading="Unable to Connect">
-            <p>We couldn't reach the status service. Verify the backend is running, then retry.</p>
-            <viking-button
-              variant="primary"
-              type="button"
-              icon="refresh"
-              [loading]="isRetrying()"
-              [disabled]="isRetrying()"
-              (pressed)="retryLoad()"
+          <!-- Full page content on consistent grid with vertical rhythm (Spartan + Flux) -->
+          <div class="viking-stack viking-stack--loose">
+            <viking-page-header
+              tag="System Telemetry"
+              title="System Status"
+              subtitle="Real-time status updates, historical uptime, and predictive service health."
             >
-              Retry Connection
-            </viking-button>
-          </viking-callout>
-          } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
-          <app-status-cta></app-status-cta>
-          }
+              @if (authService.isAuthenticated()) {
+              <div vikingPageHeaderActions>
+                <viking-button variant="filled" href="/settings" icon="settings">
+                  Manage Pages
+                </viking-button>
+              </div>
+              }
+            </viking-page-header>
+
+            <!-- Status dashboards -->
+            @for (page of displayPages(); track page.id) {
+            <viking-status-dashboard
+              [title]="getPageStatus(page.id) + ' — ' + page.title"
+              [description]="statusDescription(page.id)"
+              [status]="statusVariant(getPageStatus(page.id))"
+              [statusLabel]="getPageStatus(page.id)"
+              liveLabel="Live Predictions Active"
+              [metrics]="dashboardMetrics(page)"
+              [services]="dashboardServices(page)"
+              [announcements]="dashboardAnnouncements(page)"
+              [showThemeVersions]="true"
+            />
+            } @if (loadFailed()) {
+            <viking-callout tone="danger" heading="Unable to Connect">
+              <p>
+                We couldn't reach the status service. Verify the backend is running, then retry.
+              </p>
+              <viking-button
+                variant="primary"
+                type="button"
+                icon="refresh"
+                [loading]="isRetrying()"
+                [disabled]="isRetrying()"
+                (pressed)="retryLoad()"
+              >
+                Retry Connection
+              </viking-button>
+            </viking-callout>
+            } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
+            <app-status-cta></app-status-cta>
+            }
+          </div>
         </div>
       </div>
     </main>

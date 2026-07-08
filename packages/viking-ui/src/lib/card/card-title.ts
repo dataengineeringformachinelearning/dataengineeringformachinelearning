@@ -23,7 +23,7 @@ import { VikingHeading } from "../typography/heading";
       :host {
         display: flex;
         align-items: center;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-2); /* Better breathing with icon + heading */
         flex: 1 1 auto;
         min-width: 0;
         margin: 0;

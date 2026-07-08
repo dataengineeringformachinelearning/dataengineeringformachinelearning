@@ -60,18 +60,22 @@ const TONE_ICONS: Record<string, VikingIconName> = {
       :host {
         display: flex;
         align-items: flex-start;
-        gap: var(--viking-space-2);
-        padding: var(--viking-space-2);
+        gap: var(--viking-space-3); /* Improved gap for polish */
+        padding: var(
+          --viking-space-3
+        ); /* More consistent, generous padding like Spartan alerts */
         border-radius: var(--viking-radius-lg);
         background: var(--viking-surface);
         color: var(--viking-text);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-sm);
         transition: var(--viking-transition-interactive);
+        box-shadow: var(--viking-shadow-xs);
       }
       .viking-callout-icon {
         margin-top: 2px;
         color: var(--viking-text-muted);
+        flex-shrink: 0;
       }
       :host(.viking-callout-accent) {
         background: var(--viking-accent-soft);
@@ -132,15 +136,22 @@ const TONE_ICONS: Record<string, VikingIconName> = {
       .viking-callout-body {
         flex: 1;
         min-width: 0;
+        display: grid;
+        gap: var(
+          --viking-space-1
+        ); /* Consistent typography spacing per Spartan ref */
       }
       .viking-callout-heading {
-        margin: 0 0 calc(var(--viking-space-1) / 2);
-        font-size: var(--viking-font-size-ui);
-        font-weight: 700;
+        margin: 0;
+        font-size: var(--viking-font-size);
+        font-weight: var(--viking-font-weight-semibold);
+        color: var(--viking-text);
+        line-height: var(--viking-line-height-tight);
       }
       .viking-callout-text {
-        color: var(--viking-text);
-        line-height: 1.55;
+        color: var(--viking-text-muted);
+        line-height: var(--viking-line-height-relaxed);
+        font-size: var(--viking-font-size-sm);
       }
       .viking-callout-close {
         border: none;

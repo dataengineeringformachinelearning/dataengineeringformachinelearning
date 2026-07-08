@@ -9,7 +9,6 @@ import { VikingBadge } from '@dataengineeringformachinelearning/viking-ui';
     @if (show) {
       <viking-badge
         tone="accent"
-        icon="check-circle"
         title="Pro subscriber — verified status page"
         aria-label="Pro verified status page"
       >

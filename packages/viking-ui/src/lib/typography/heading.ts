@@ -22,21 +22,27 @@ import {
       :host {
         display: block;
         font-family: var(--viking-font-family);
-        font-weight: 600;
+        font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-text);
-        letter-spacing: var(--header-letter-spacing, -0.02em);
-        font-size: var(--viking-font-size-ui);
-        line-height: 1.25;
+        letter-spacing: var(--viking-letter-spacing-tight);
+        font-size: var(--viking-font-size);
+        line-height: var(--viking-line-height-tight);
+        margin-bottom: var(--viking-space-1); /* Consistent vertical rhythm */
       }
       :host(.viking-heading-sm) {
         font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-medium);
+        margin-bottom: var(--viking-space-half);
       }
       :host(.viking-heading-lg) {
-        font-size: var(--viking-font-size);
+        font-size: var(--viking-font-size-lg);
+        font-weight: var(--viking-font-weight-semibold);
       }
       :host(.viking-heading-xl) {
-        font-size: var(--viking-font-size-lg);
-        font-weight: 700;
+        font-size: var(--viking-font-size-xl);
+        font-weight: var(--viking-font-weight-bold);
+        letter-spacing: var(--viking-letter-spacing-tight);
+        margin-bottom: var(--viking-space-2);
       }
     `,
   ],

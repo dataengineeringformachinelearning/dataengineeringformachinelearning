@@ -119,8 +119,9 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         min-width: 0;
+        padding-bottom: var(--viking-space-half);
       }
 
       .uptime-history-label {
@@ -132,8 +133,9 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
       }
 
       .uptime-history-value {
-        font-size: var(--viking-font-size-xs);
-        color: var(--viking-text-muted);
+        font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-semibold);
+        color: var(--viking-text);
         font-variant-numeric: tabular-nums;
         text-align: right;
       }
@@ -144,31 +146,33 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         gap: var(--viking-space-px);
         width: 100%;
         min-width: 0;
-        height: var(--viking-uptime-history-height, var(--viking-space-3));
-        padding: var(--viking-space-half);
-        border-radius: var(--viking-radius-full);
+        height: var(--viking-uptime-history-height, var(--viking-space-4));
+        padding: var(--viking-space-1);
+        border-radius: var(--viking-radius-lg); /* more structured rounding */
         background: var(--viking-surface-inset);
         box-sizing: border-box;
+        border: 1px solid var(--viking-border-subtle);
       }
 
       :host(.viking-uptime-history-compact) .uptime-history-bar {
-        height: var(--viking-space-2);
-        padding: var(--viking-space-px);
+        height: var(--viking-space-3);
+        padding: var(--viking-space-half);
+        border-radius: var(--viking-radius);
       }
 
       .uptime-history-bar viking-uptime-bar {
         flex: 1 1 0;
-        min-width: 3px;
-        border-radius: var(--viking-radius-pill);
+        min-width: 4px;
+        border-radius: var(--viking-radius);
       }
 
       .uptime-history-segment {
         position: relative;
         display: flex;
         flex: 1 1 0;
-        min-width: 3px;
+        min-width: 4px;
         height: 100%;
-        border-radius: var(--viking-radius-pill);
+        border-radius: var(--viking-radius);
       }
 
       .uptime-history-segment:focus-visible {
@@ -181,13 +185,13 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         content: attr(data-tooltip);
         position: absolute;
         left: 50%;
-        bottom: calc(100% + var(--viking-space-1));
-        transform: translateX(-50%) translateY(var(--viking-space-half));
+        bottom: calc(100% + var(--viking-space-2));
+        transform: translateX(-50%) translateY(var(--viking-space-1));
         width: max-content;
-        max-width: min(16rem, 80vw);
-        padding: var(--viking-space-half) var(--viking-space-1);
+        max-width: min(18rem, 85vw);
+        padding: var(--viking-space-1) var(--viking-space-2);
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius-sm);
+        border-radius: var(--viking-radius);
         background: var(--viking-surface-raised);
         color: var(--viking-text);
         box-shadow: var(--viking-shadow-md);
@@ -210,9 +214,10 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
       .uptime-history-legend {
         display: flex;
         justify-content: space-between;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         font-size: var(--viking-font-size-2xs);
         color: var(--viking-text-subtle);
+        padding-top: var(--viking-space-half);
       }
     `,
   ],
@@ -220,7 +225,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
 export class UptimeHistoryComponent {
   readonly data = input<UptimeHistoryDataPoint[]>([]);
   readonly segments = input<VikingUptimeSegment[]>([]);
-  readonly height = input<number>(24);
+  readonly height = input<number>(28); /* better visibility and breathing */
   readonly showLabels = input<boolean | undefined>(undefined);
   readonly percentage = input<number | null>(null);
   readonly statusSummary = input<string>("");

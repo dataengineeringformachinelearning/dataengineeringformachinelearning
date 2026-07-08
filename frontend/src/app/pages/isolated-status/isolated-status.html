@@ -37,207 +37,211 @@
         [subtitle]="page.description || 'Monitoring core services and API integrations in real-time.'"
       />
 
-      <viking-status-section
-        [title]="globalPageStatus() + ' — ' + page.title"
-        [description]="statusDescription(globalPageStatus())"
-        [status]="statusVariant(globalPageStatus())"
-        [statusLabel]="globalPageStatus()"
-        liveLabel="Live Predictions Active"
-      >
-        <section class="viking-status-section-block" aria-labelledby="announcements-heading">
-          <h3 class="viking-status-section-heading" id="announcements-heading">
-            Latest System Announcements
-          </h3>
+      <!-- Content in stack for consistent vertical rhythm and grid alignment -->
+      <div class="viking-stack viking-stack--loose">
+        <viking-status-section
+          [title]="globalPageStatus() + ' — ' + page.title"
+          [description]="statusDescription(globalPageStatus())"
+          [status]="statusVariant(globalPageStatus())"
+          [statusLabel]="globalPageStatus()"
+          liveLabel="Live Predictions Active"
+        >
+          <section class="viking-status-section-block" aria-labelledby="announcements-heading">
+            <h3 class="viking-status-section-heading" id="announcements-heading">
+              Latest System Announcements
+            </h3>
 
-          @if (sanityService.error()) {
-          <viking-callout tone="danger" heading="Announcements Unavailable">
-            {{ sanityService.error() }}
-          </viking-callout>
-          } @else if (sanityService.loading()) {
-          <viking-announcement-card
-            tone="info"
-            title="System Status Update"
-            publishedLabel="Syncing latest updates"
-          >
-            Pulling the latest published status updates from the global announcement feed.
-          </viking-announcement-card>
-          } @else if (sanityService.announcements().length > 0) { @for (ann of
-          sanityService.announcements(); track ann._id) {
-          <viking-announcement-card
-            [tone]="announcementTone(ann.severity) === 'warning' ? 'warning' : 'info'"
-            [title]="ann.title"
-            [publishedAt]="ann.publishedAt"
-          >
-            {{ ann.body }}
-          </viking-announcement-card>
-          } } @else {
-          <viking-announcement-card
-            tone="info"
-            title="Sanity.io Integration Active"
-            publishedAt="2026-06-13"
-          >
-            We have successfully integrated Sanity.io as our Headless CMS for real-time status page
-            updates. Announcements are now served globally from edge CDNs for lightning-fast
-            delivery.
-          </viking-announcement-card>
-          }
-        </section>
-
-        <section class="viking-status-section-block" aria-labelledby="metrics-heading">
-          <h3 class="viking-status-section-heading" id="metrics-heading">
-            Analytics & Service Level
-          </h3>
-          <div class="viking-status-section-metrics">
-            <viking-metric-card
-              icon="clock"
-              label="P99 Latency"
-              [value]="(p99LatencyMap()[page.id] ?? 0) + 'ms'"
-              sublabel="Last 24 hours"
+            @if (sanityService.error()) {
+            <viking-callout tone="danger" heading="Announcements Unavailable">
+              {{ sanityService.error() }}
+            </viking-callout>
+            } @else if (sanityService.loading()) {
+            <viking-announcement-card
               tone="info"
-            />
-            <viking-metric-card
-              icon="bar-chart"
-              label="Total Requests"
-              [value]="((totalRequestsMap()[page.id] ?? 0) | number) ?? '0'"
-              sublabel="Last 24 hours"
-            />
-            <viking-metric-card
-              icon="server"
-              label="Cumulative SLA"
-              [value]="(((page.cumulative_sla ?? 0) | number:'1.2-2') ?? '0.00') + '%'"
-              sublabel="Based on real telemetry"
-              tone="success"
-            />
-            <viking-metric-card
-              icon="trending-up"
-              label="Predicted SLA"
-              [value]="(((mlService.latestStats()[page.id] ?? 0) | number:'1.2-2') ?? '0.00') + '%'"
-              sublabel="30-day forecast via ML"
-            />
-          </div>
-
-          <viking-chart
-            kind="line"
-            [series]="availabilitySeries(page)"
-            [showArea]="true"
-            [fill]="true"
-          />
-        </section>
-
-        <section class="viking-status-section-block" aria-labelledby="intelligence-heading">
-          <h3 class="viking-status-section-heading" id="intelligence-heading">
-            Predictive Intelligence
-          </h3>
-          <div class="viking-status-section-metrics">
-            <viking-metric-card
-              icon="bolt"
-              label="Dynamic Temporal Forecasting"
-              [value]="norseSnnLabel(page.id)"
-              sublabel="Temporal inference engine"
+              title="System Status Update"
+              publishedLabel="Syncing latest updates"
+            >
+              Pulling the latest published status updates from the global announcement feed.
+            </viking-announcement-card>
+            } @else if (sanityService.announcements().length > 0) { @for (ann of
+            sanityService.announcements(); track ann._id) {
+            <viking-announcement-card
+              [tone]="announcementTone(ann.severity) === 'warning' ? 'warning' : 'info'"
+              [title]="ann.title"
+              [publishedAt]="ann.publishedAt"
+            >
+              {{ ann.body }}
+            </viking-announcement-card>
+            } } @else {
+            <viking-announcement-card
               tone="info"
-            />
-            <viking-metric-card
-              icon="trending-up"
-              label="Spike Risk"
-              [value]="(((mlService.latestTemporalForecasts()[page.id] ?? 0) | number:'1.1-2') ?? '0')"
-              sublabel="Telemetry sequence score"
-            />
-            <viking-metric-card
-              icon="shield"
-              label="Cumulative TA"
-              [value]="((getThreatReport(page.id)?.suspicious_ratio ?? 0) * 100 | number:'1.1-2') + '%'"
-              sublabel="Based on real telemetry"
-            />
-            <viking-metric-card
-              icon="activity"
-              label="Predicted TA"
-              [value]="((getThreatReport(page.id)?.anomaly_score ?? 0) * 100 | number:'1.1-2') + '%'"
-              sublabel="30-day threat forecast"
-            />
-          </div>
-        </section>
-
-        <section class="viking-status-section-block" aria-labelledby="services-heading">
-          <h3 class="viking-status-section-heading" id="services-heading">
-            Active Monitored Services
-          </h3>
-          @if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
-          <viking-callout tone="muted" heading="No Services">
-            No monitored services configured for this page.
-          </viking-callout>
-          } @else {
-          <div class="viking-status-service-list">
-            @for (service of servicesMap()[page.id]; track service.id) {
-            <article class="viking-status-service">
-              <div class="viking-status-section-row">
-                <div>
-                  <h4 class="viking-status-section-heading">
-                    {{ formatServiceName(service.name) }}
-                  </h4>
-                  <p class="viking-status-section-subtitle">{{ service.url }}</p>
-                </div>
-                <viking-status-badge
-                  [variant]="statusVariant(service.status)"
-                  [label]="service.status || 'Operational'"
-                />
-              </div>
-
-              <div class="viking-status-section-grid">
-                <viking-metric-card
-                  icon="clock"
-                  label="Response Time"
-                  [value]="(p99LatencyMap()[page.id] ?? 0) + 'ms'"
-                  sublabel="Latest observation"
-                  tone="info"
-                />
-                <viking-metric-card
-                  icon="shield-check"
-                  label="Uptime"
-                  [value]="((serviceUptime(page, service) | number:'1.2-2') ?? '100.00') + '%'"
-                  sublabel="30-day SLA"
-                  tone="success"
-                />
-              </div>
-
-              <viking-uptime-history
-                [segments]="page.uptime_history || []"
-                [percentage]="serviceUptime(page, service)"
-                [statusSummary]="((serviceUptime(page, service) | number:'1.2-2') ?? '100.00') + '% SLA'"
-                label="Uptime"
-              />
-            </article>
+              title="Sanity.io Integration Active"
+              publishedAt="2026-06-13"
+            >
+              We have successfully integrated Sanity.io as our Headless CMS for real-time status
+              page updates. Announcements are now served globally from edge CDNs for lightning-fast
+              delivery.
+            </viking-announcement-card>
             }
-          </div>
-          }
-        </section>
+          </section>
 
-        <section class="viking-status-section-block" aria-labelledby="uptime-heading">
-          <h3 class="viking-status-section-heading" id="uptime-heading">Platform Uptime</h3>
-          <viking-uptime-history
-            [segments]="page.uptime_history || []"
-            [percentage]="page.overall_uptime ?? page.cumulative_sla ?? 0"
-            [statusSummary]="globalPageStatus() === 'Operational' ? 'No current issues' : globalPageStatus()"
-            label="30-day uptime"
-          />
-        </section>
+          <section class="viking-status-section-block" aria-labelledby="metrics-heading">
+            <h3 class="viking-status-section-heading" id="metrics-heading">
+              Analytics & Service Level
+            </h3>
+            <div class="viking-status-section-metrics">
+              <viking-metric-card
+                icon="clock"
+                label="P99 Latency"
+                [value]="(p99LatencyMap()[page.id] ?? 0) + 'ms'"
+                sublabel="Last 24 hours"
+                tone="info"
+              />
+              <viking-metric-card
+                icon="bar-chart"
+                label="Total Requests"
+                [value]="((totalRequestsMap()[page.id] ?? 0) | number) ?? '0'"
+                sublabel="Last 24 hours"
+              />
+              <viking-metric-card
+                icon="server"
+                label="Cumulative SLA"
+                [value]="(((page.cumulative_sla ?? 0) | number:'1.2-2') ?? '0.00') + '%'"
+                sublabel="Based on real telemetry"
+                tone="success"
+              />
+              <viking-metric-card
+                icon="trending-up"
+                label="Predicted SLA"
+                [value]="(((mlService.latestStats()[page.id] ?? 0) | number:'1.2-2') ?? '0.00') + '%'"
+                sublabel="30-day forecast via ML"
+              />
+            </div>
 
-        @if (incidentsMap()[page.id]?.length) {
-        <section class="viking-status-section-block" aria-labelledby="incidents-heading">
-          <h3 class="viking-status-section-heading" id="incidents-heading">
-            Recent Incidents & Maintenance
-          </h3>
-          @for (incident of incidentsMap()[page.id]; track incident.id || incident.title) {
-          <viking-announcement-card
-            [tone]="incidentTone(incident.status) === 'warning' ? 'warning' : 'info'"
-            [title]="incident.title"
-            [publishedAt]="incident.updated_at || incident.created_at"
-          >
-            {{ incident.message }}
-          </viking-announcement-card>
+            <viking-chart
+              kind="line"
+              [series]="availabilitySeries(page)"
+              [showArea]="true"
+              [fill]="true"
+            />
+          </section>
+
+          <section class="viking-status-section-block" aria-labelledby="intelligence-heading">
+            <h3 class="viking-status-section-heading" id="intelligence-heading">
+              Predictive Intelligence
+            </h3>
+            <div class="viking-status-section-metrics">
+              <viking-metric-card
+                icon="bolt"
+                label="Dynamic Temporal Forecasting"
+                [value]="norseSnnLabel(page.id)"
+                sublabel="Temporal inference engine"
+                tone="info"
+              />
+              <viking-metric-card
+                icon="trending-up"
+                label="Spike Risk"
+                [value]="(((mlService.latestTemporalForecasts()[page.id] ?? 0) | number:'1.1-2') ?? '0')"
+                sublabel="Telemetry sequence score"
+              />
+              <viking-metric-card
+                icon="shield"
+                label="Cumulative TA"
+                [value]="((getThreatReport(page.id)?.suspicious_ratio ?? 0) * 100 | number:'1.1-2') + '%'"
+                sublabel="Based on real telemetry"
+              />
+              <viking-metric-card
+                icon="activity"
+                label="Predicted TA"
+                [value]="((getThreatReport(page.id)?.anomaly_score ?? 0) * 100 | number:'1.1-2') + '%'"
+                sublabel="30-day threat forecast"
+              />
+            </div>
+          </section>
+
+          <section class="viking-status-section-block" aria-labelledby="services-heading">
+            <h3 class="viking-status-section-heading" id="services-heading">
+              Active Monitored Services
+            </h3>
+            @if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
+            <viking-callout tone="muted" heading="No Services">
+              No monitored services configured for this page.
+            </viking-callout>
+            } @else {
+            <div class="viking-status-service-list">
+              @for (service of servicesMap()[page.id]; track service.id) {
+              <article class="viking-status-service">
+                <div class="viking-status-section-row">
+                  <div>
+                    <h4 class="viking-status-section-heading">
+                      {{ formatServiceName(service.name) }}
+                    </h4>
+                    <p class="viking-status-section-subtitle">{{ service.url }}</p>
+                  </div>
+                  <viking-status-badge
+                    [variant]="statusVariant(service.status)"
+                    [label]="service.status || 'Operational'"
+                  />
+                </div>
+
+                <div class="viking-status-section-grid">
+                  <viking-metric-card
+                    icon="clock"
+                    label="Response Time"
+                    [value]="(p99LatencyMap()[page.id] ?? 0) + 'ms'"
+                    sublabel="Latest observation"
+                    tone="info"
+                  />
+                  <viking-metric-card
+                    icon="shield-check"
+                    label="Uptime"
+                    [value]="((serviceUptime(page, service) | number:'1.2-2') ?? '100.00') + '%'"
+                    sublabel="30-day SLA"
+                    tone="success"
+                  />
+                </div>
+
+                <viking-uptime-history
+                  [segments]="page.uptime_history || []"
+                  [percentage]="serviceUptime(page, service)"
+                  [statusSummary]="((serviceUptime(page, service) | number:'1.2-2') ?? '100.00') + '% SLA'"
+                  label="Uptime"
+                />
+              </article>
+              }
+            </div>
+            }
+          </section>
+
+          <section class="viking-status-section-block" aria-labelledby="uptime-heading">
+            <h3 class="viking-status-section-heading" id="uptime-heading">Platform Uptime</h3>
+            <viking-uptime-history
+              [segments]="page.uptime_history || []"
+              [percentage]="page.overall_uptime ?? page.cumulative_sla ?? 0"
+              [statusSummary]="globalPageStatus() === 'Operational' ? 'No current issues' : globalPageStatus()"
+              label="30-day uptime"
+            />
+          </section>
+
+          @if (incidentsMap()[page.id]?.length) {
+          <section class="viking-status-section-block" aria-labelledby="incidents-heading">
+            <h3 class="viking-status-section-heading" id="incidents-heading">
+              Recent Incidents & Maintenance
+            </h3>
+            @for (incident of incidentsMap()[page.id]; track incident.id || incident.title) {
+            <viking-announcement-card
+              [tone]="incidentTone(incident.status) === 'warning' ? 'warning' : 'info'"
+              [title]="incident.title"
+              [publishedAt]="incident.updated_at || incident.created_at"
+            >
+              {{ incident.message }}
+            </viking-announcement-card>
+            }
+          </section>
           }
-        </section>
-        }
-      </viking-status-section>
+        </viking-status-section>
+      </div>
+      <!-- close viking-stack for rhythm -->
       }
     </div>
   </div>

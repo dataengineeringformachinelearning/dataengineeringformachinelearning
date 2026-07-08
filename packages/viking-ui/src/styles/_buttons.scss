@@ -22,9 +22,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1-5);
+  gap: var(--viking-space-2); /* Improved spacing for icons + label, Spartan-like */
   min-height: var(--viking-control-height);
-  padding: var(--viking-space-half) var(--viking-control-padding-x);
+  padding: var(--viking-space-1) var(--viking-control-padding-x); /* More generous vertical breathing */
   border-radius: var(--viking-button-radius, var(--viking-radius-lg));
   border: 1px solid transparent;
   cursor: pointer;
@@ -398,16 +398,18 @@
 
 @mixin viking-btn-size-sm {
   min-height: var(--viking-control-height-sm);
-  padding: 0 var(--viking-space-2);
-  font-size: var(--viking-font-size-xs);
+  padding: var(--viking-space-half) var(--viking-space-2);
+  font-size: var(--viking-font-size-sm);
   min-width: auto;
+  gap: var(--viking-space-1);
 }
 
 @mixin viking-btn-size-xs {
   min-height: var(--viking-control-height-xs);
-  padding: 0 var(--viking-space-1-5);
+  padding: var(--viking-space-half) var(--viking-space-1-5);
   font-size: var(--viking-font-size-xs);
   min-width: auto;
+  gap: var(--viking-space-half);
 }
 
 @mixin viking-btn-compact {

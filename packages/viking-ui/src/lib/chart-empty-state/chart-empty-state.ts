@@ -43,12 +43,12 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
         text-align: center;
         width: 100%;
         box-sizing: border-box;
-        padding: var(--viking-space-4) var(--viking-space-3);
-        border-radius: var(--viking-radius-lg);
+        padding: var(--viking-space-5) var(--viking-space-4); /* better breathing room */
+        border-radius: var(--viking-radius-xl);
         background: var(--viking-surface-alt);
-        border: 1px dashed var(--viking-border-strong);
+        border: 1px dashed var(--viking-border);
         box-shadow: var(--viking-shadow-inner);
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         animation: viking-fade-in var(--viking-duration)
           var(--viking-ease-default);
       }
@@ -66,8 +66,8 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
       }
 
       .empty-title {
-        margin: 0 0 var(--viking-space-1) 0;
-        font-size: var(--viking-font-size-md);
+        margin: 0 0 var(--viking-space-2) 0;
+        font-size: var(--viking-font-size-sm);
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-caps);
         text-transform: uppercase;
@@ -110,10 +110,10 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
 
       .empty-subtitle {
         margin: 0;
-        font-size: var(--viking-font-size);
+        font-size: var(--viking-font-size-xs);
         color: var(--viking-text-muted);
         line-height: var(--viking-line-height-relaxed);
-        max-width: 28rem;
+        max-width: 26rem;
       }
 
       .viking-chart-empty-actions {

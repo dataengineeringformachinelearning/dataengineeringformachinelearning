@@ -19,8 +19,11 @@ import {
         display: block;
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
-        line-height: 1.65;
+        line-height: var(--viking-line-height-relaxed);
         color: var(--viking-text);
+        margin-bottom: var(
+          --viking-space-half
+        ); /* Improved paragraph spacing */
       }
       :host(.viking-text-inline) {
         display: inline;

@@ -25,7 +25,8 @@ platform-widget {
   width: fit-content;
   gap: var(--viking-space-1);
   padding: var(--viking-space-1-5) var(--viking-space-2);
-  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 52%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 52%, transparent);
   border-radius: var(--viking-radius-pill);
   background: var(--viking-surface-recipe, var(--viking-surface));
   color: var(--viking-text);
@@ -111,7 +112,9 @@ platform-widget {
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background-color: var(--viking-overlay-backdrop);
+  background: var(--viking-overlay-backdrop, rgba(3, 8, 24, 0.78));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,8 +122,9 @@ platform-widget {
 }
 
 .modal-content {
-  background-color: var(--viking-surface-recipe, var(--viking-surface));
-  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 62%, transparent);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  border: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 62%, transparent);
   border-radius: var(--viking-radius-lg);
   width: 90%;
   max-width: 480px;
@@ -158,7 +162,8 @@ platform-widget {
 
 .modal-header {
   justify-content: space-between;
-  border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--viking-border) 32%, transparent);
 }
 
 .modal-header h3 {
@@ -217,11 +222,16 @@ platform-widget {
 .form-field textarea,
 .form-field select {
   padding: var(--viking-space-1-5) var(--viking-space-2);
-  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
   border-radius: var(--viking-radius-md);
   font-size: var(--viking-font-size);
   outline: none;
-  background-color: color-mix(in srgb, var(--viking-surface-alt) 82%, var(--viking-surface));
+  background-color: color-mix(
+    in srgb,
+    var(--viking-surface-alt) 82%,
+    var(--viking-surface)
+  );
   color: var(--viking-text);
   font-family: inherit;
   transition: var(--viking-transition-interactive);
@@ -231,7 +241,8 @@ platform-widget {
 .form-field textarea:focus,
 .form-field select:focus {
   border-color: var(--viking-accent);
-  box-shadow: 0 0 0 var(--viking-ring-width) color-mix(in srgb, var(--viking-accent) 25%, transparent);
+  box-shadow: 0 0 0 var(--viking-ring-width)
+    color-mix(in srgb, var(--viking-accent) 25%, transparent);
 }
 
 .form-row {
@@ -246,7 +257,8 @@ platform-widget {
 .modal-footer {
   justify-content: flex-end;
   gap: var(--viking-space-2);
-  border-top: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
+  border-top: 1px solid
+    color-mix(in srgb, var(--viking-border) 32%, transparent);
   background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
   border-bottom-left-radius: var(--viking-radius-lg);
   border-bottom-right-radius: var(--viking-radius-lg);

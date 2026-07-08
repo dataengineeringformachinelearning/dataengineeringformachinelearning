@@ -75,6 +75,7 @@ a {
     var(--viking-shadow-md),
     inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 24%, transparent);
+  /* Polished: consistent with Spartan structure expectations for spacing/rounding */
 }
 
 .viking-card::before {

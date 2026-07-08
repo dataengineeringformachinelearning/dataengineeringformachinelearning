@@ -172,9 +172,18 @@ import {
 
       .viking-status-section-content ::ng-deep .viking-status-section-block {
         display: grid;
-        gap: var(--viking-space-3);
-        padding: var(--viking-space-4);
+        gap: var(
+          --viking-space-5
+        ); /* Consistent grid rhythm between sub-elements */
+        padding: var(
+          --viking-space-4
+        ); /* Generous horizontal spacing inside containers */
         border-top: 1px solid var(--viking-border-subtle);
+      }
+
+      /* Extra breathing around charts for Flux-like clean aesthetics */
+      .viking-status-section-content ::ng-deep viking-chart {
+        margin: var(--viking-space-2) 0;
       }
 
       .viking-status-section-content
@@ -206,8 +215,13 @@ import {
       .viking-status-section-content ::ng-deep .viking-status-section-grid,
       .viking-status-section-content ::ng-deep .viking-status-section-metrics {
         display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: var(--viking-space-2);
+        grid-template-columns: minmax(
+          0,
+          1fr
+        ); /* Mobile-first: single column, large touch targets */
+        gap: var(
+          --viking-space-4
+        ); /* 32px — better breathing and scannability like Flux cards */
         width: 100%;
       }
 
@@ -223,14 +237,14 @@ import {
 
       .viking-status-section-content ::ng-deep .viking-status-service-list {
         display: grid;
-        gap: var(--viking-space-3);
+        gap: var(--viking-space-4); /* Consistent section rhythm */
         width: 100%;
       }
 
       .viking-status-section-content ::ng-deep .viking-status-service {
         display: grid;
         gap: var(--viking-space-3);
-        padding-block: var(--viking-space-2);
+        padding: var(--viking-space-3) 0; /* Improved horizontal breathing inside service cards */
         border-top: 1px solid var(--viking-border-subtle);
       }
 
@@ -241,22 +255,41 @@ import {
         padding-top: 0;
       }
 
-      @media (min-width: 760px) {
+      /* md breakpoint: 2-col for grids, start 2-col for dense metrics */
+      @media (min-width: 768px) {
         .viking-status-section-content ::ng-deep .viking-status-section-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: var(--viking-space-4);
         }
 
         .viking-status-section-content
           ::ng-deep
           .viking-status-section-metrics {
-          grid-template-columns: repeat(4, minmax(0, 1fr));
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: var(--viking-space-4); /* Consistent breathing */
         }
       }
 
-      @media (max-width: 719px) {
+      /* lg breakpoint: full 4-col metrics on larger screens */
+      @media (min-width: 1024px) {
+        .viking-status-section-content
+          ::ng-deep
+          .viking-status-section-metrics {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: var(
+            --viking-space-5
+          ); /* More generous for desktop scannability */
+        }
+      }
+
+      /* Mobile: comfortable padding + touch targets, still on the grid */
+      @media (max-width: 767px) {
         .viking-status-section-hero,
         .viking-status-section-content ::ng-deep .viking-status-section-block {
-          padding: var(--viking-space-3);
+          padding: var(
+            --viking-space-3
+          ); /* 24px — good breathing without cramping */
+          gap: var(--viking-space-3);
         }
 
         .viking-status-section-title {

@@ -35,18 +35,19 @@ import type { VikingIconName } from "../../core/icons";
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         width: 100%;
         min-width: 0;
         min-height: var(--viking-space-6);
-        padding: var(--viking-space-1-5);
-        border-radius: var(--viking-radius-sm);
+        padding: var(--viking-space-2); /* Consistent padding */
+        border-radius: var(--viking-radius); /* Improved rounding */
         background: color-mix(
           in srgb,
           var(--viking-surface-alt) 82%,
           var(--viking-surface)
         );
         box-sizing: border-box;
+        box-shadow: var(--viking-shadow-xs);
         transition: background var(--viking-duration-fast)
           var(--viking-ease-out);
       }
