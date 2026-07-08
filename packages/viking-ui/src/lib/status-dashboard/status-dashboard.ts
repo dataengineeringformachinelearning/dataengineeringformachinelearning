@@ -156,7 +156,7 @@ const DEMO_ANNOUNCEMENTS: StatusDashboardAnnouncement[] = [
  * @example
  * ```html
  * <viking-status-dashboard
- *   title="Operational — joealongi"
+ *   title="joealongi"
  *   description="All systems are functioning normally."
  *   status="operational"
  *   statusLabel="Operational"
@@ -442,7 +442,7 @@ const DEMO_ANNOUNCEMENTS: StatusDashboardAnnouncement[] = [
   ],
 })
 export class StatusDashboardComponent {
-  readonly title = input<string>("Operational — joealongi");
+  readonly title = input<string>("joealongi");
   readonly description = input<string>("All systems are functioning normally.");
   readonly status = input<StatusBadgeVariant | string>("operational");
   readonly statusLabel = input<string>("Operational");

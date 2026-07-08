@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  CUSTOM_ELEMENTS_SCHEMA,
   computed,
   input,
   output,
@@ -9,9 +8,6 @@ import {
 import { VikingIcon } from "../icon/icon";
 import { VikingIconName } from "../../core/icons";
 import { VikingSize } from "../../core/types";
-import { registerVikingButtonWc } from "../../web/button/viking-button-wc";
-
-registerVikingButtonWc();
 
 export type VikingButtonVariant =
   | "outline"
@@ -23,46 +19,73 @@ export type VikingButtonVariant =
   | "subtle";
 
 /**
- * viking-button — thin Angular wrapper around `viking-button-wc`.
+ * viking-button — single native control (button or anchor). No nested WC button.
+ * Static/marketing surfaces still use `viking-button-wc` where Angular is unavailable.
  * Variants: outline (default), primary, filled, danger, ghost, subtle.
  */
 @Component({
   selector: "viking-button",
   imports: [VikingIcon],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    "[style.pointer-events]": "disabled() ? 'none' : null",
     "[class.viking-full]": "fullWidth()",
     "[class.viking-compact]": "compact()",
+    "[attr.aria-busy]": "loading() ? 'true' : null",
   },
   template: `
-    <viking-button-wc
-      [attr.variant]="variant()"
-      [attr.size]="size() === 'base' ? null : size()"
-      [attr.type]="type()"
-      [attr.disabled]="disabled() || loading() ? '' : null"
-      [attr.loading]="loading() ? '' : null"
-      [attr.aria-busy]="loading() ? 'true' : null"
-      [attr.href]="href()"
-      [attr.target]="target()"
-      [attr.aria-label]="label() || null"
-      [attr.square]="square() ? '' : null"
-      [attr.full-width]="fullWidth() ? '' : null"
-      [attr.compact]="compact() ? '' : null"
-      (viking-press)="onPress($event)"
-    >
-      @if (!loading() && icon()) {
-        <viking-icon [name]="icon()!" [size]="iconSize()" />
-      }
-      <ng-content />
-      @if (!loading() && iconTrailing()) {
-        <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
-      }
-      @if (kbd()) {
-        <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
-      }
-    </viking-button-wc>
+    @if (href()) {
+      <a
+        class="viking-btn"
+        [class]="controlClass()"
+        [attr.href]="isInteractive() ? href() : null"
+        [attr.target]="target()"
+        [attr.rel]="relAttr()"
+        [attr.aria-label]="label() || null"
+        [attr.aria-disabled]="!isInteractive() ? 'true' : null"
+        [attr.tabindex]="!isInteractive() ? -1 : null"
+        (click)="onClick($event)"
+      >
+        @if (loading()) {
+          <span class="viking-btn-spinner" aria-hidden="true"></span>
+        } @else if (icon()) {
+          <viking-icon [name]="icon()!" [size]="iconSize()" />
+        }
+        <span class="viking-btn-label">
+          <ng-content />
+        </span>
+        @if (!loading() && iconTrailing()) {
+          <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
+        }
+        @if (kbd()) {
+          <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
+        }
+      </a>
+    } @else {
+      <button
+        class="viking-btn"
+        [class]="controlClass()"
+        [type]="type()"
+        [disabled]="!isInteractive()"
+        [attr.aria-label]="label() || null"
+        [attr.aria-busy]="loading() ? 'true' : null"
+        (click)="onClick($event)"
+      >
+        @if (loading()) {
+          <span class="viking-btn-spinner" aria-hidden="true"></span>
+        } @else if (icon()) {
+          <viking-icon [name]="icon()!" [size]="iconSize()" />
+        }
+        <span class="viking-btn-label">
+          <ng-content />
+        </span>
+        @if (!loading() && iconTrailing()) {
+          <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
+        }
+        @if (kbd()) {
+          <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
+        }
+      </button>
+    }
   `,
   styleUrl: "./button.scss",
 })
@@ -88,10 +111,31 @@ export class VikingButton {
     this.size() === "base" ? 20 : 18,
   );
 
-  protected onPress = (event: Event): void => {
-    const detail = (event as CustomEvent<MouseEvent>).detail;
-    if (detail) {
-      this.pressed.emit(detail);
+  protected readonly isInteractive = computed(
+    () => !this.disabled() && !this.loading(),
+  );
+
+  protected readonly controlClass = computed(() => {
+    const size = this.size();
+    return {
+      [`viking-btn-${this.variant()}`]: true,
+      [`viking-btn-${size}`]: size !== "base",
+      "viking-btn-square": this.square(),
+      "viking-full": this.fullWidth(),
+      "viking-compact": this.compact(),
+    };
+  });
+
+  protected readonly relAttr = computed(() =>
+    this.target() === "_blank" ? "noopener noreferrer" : null,
+  );
+
+  protected onClick = (event: MouseEvent): void => {
+    if (!this.isInteractive()) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
     }
+    this.pressed.emit(event);
   };
 }

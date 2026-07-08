@@ -1,14 +1,13 @@
-@use 'buttons' as btn;
+@use "buttons" as btn;
 
+/* Host is a transparent layout shell — one native control inside, never a second button. */
 :host {
-  /* Use contents to avoid extra wrapper element in DOM (prevents "button in button" perception
-     when Angular viking-button wraps the viking-button-wc). The wc provides the box. */
   display: contents;
 }
 
 :host(.viking-full) {
-  /* When full width, we need to generate a box; contents would collapse it. */
-  display: flex;
+  display: block;
+  width: 100%;
 
   .viking-btn {
     @include btn.viking-btn-full;
@@ -24,6 +23,70 @@
   line-height: 1;
 }
 
+.viking-btn-primary {
+  @include btn.viking-btn-primary;
+}
+
+.viking-btn-secondary {
+  @include btn.viking-btn-secondary;
+}
+
+.viking-btn-outline {
+  @include btn.viking-btn-outline;
+}
+
+.viking-btn-filled {
+  @include btn.viking-btn-filled;
+}
+
+.viking-btn-danger {
+  @include btn.viking-btn-danger;
+}
+
+.viking-btn-ghost {
+  @include btn.viking-btn-ghost;
+}
+
+.viking-btn-subtle {
+  @include btn.viking-btn-subtle;
+}
+
+.viking-btn-sm {
+  @include btn.viking-btn-size-sm;
+}
+
+.viking-btn-xs {
+  @include btn.viking-btn-size-xs;
+}
+
+.viking-btn-square {
+  width: var(--viking-control-height);
+  min-width: var(--viking-control-height);
+  padding: 0;
+
+  &.viking-btn-sm {
+    width: var(--viking-control-height-sm);
+    min-width: var(--viking-control-height-sm);
+  }
+
+  &.viking-btn-xs {
+    width: var(--viking-control-height-xs);
+    min-width: var(--viking-control-height-xs);
+  }
+
+  .viking-btn-label {
+    display: none;
+  }
+}
+
+.viking-btn.viking-full {
+  @include btn.viking-btn-full;
+}
+
+.viking-btn.viking-compact {
+  @include btn.viking-btn-compact;
+}
+
 .viking-btn viking-icon,
 .viking-btn .viking-icon,
 .viking-btn [data-viking-icon] {
@@ -37,62 +100,6 @@
   pointer-events: none;
 }
 
-.viking-sm {
-  @include btn.viking-btn-size-sm;
-}
-
-.viking-xs {
-  @include btn.viking-btn-size-xs;
-}
-
-.viking-square {
-  width: var(--viking-control-height);
-  min-width: var(--viking-control-height);
-  padding: 0;
-
-  &.viking-sm {
-    width: var(--viking-control-height-sm);
-    min-width: var(--viking-control-height-sm);
-  }
-
-  &.viking-xs {
-    width: var(--viking-control-height-xs);
-    min-width: var(--viking-control-height-xs);
-  }
-
-  .viking-btn-label {
-    display: none;
-  }
-}
-
-.viking-outline {
-  @include btn.viking-btn-outline;
-}
-
-.viking-primary {
-  @include btn.viking-btn-primary;
-}
-
-.viking-secondary {
-  @include btn.viking-btn-secondary;
-}
-
-.viking-filled {
-  @include btn.viking-btn-filled;
-}
-
-.viking-danger {
-  @include btn.viking-btn-danger;
-}
-
-.viking-ghost {
-  @include btn.viking-btn-ghost;
-}
-
-.viking-subtle {
-  @include btn.viking-btn-subtle;
-}
-
 .viking-btn-label {
   display: inline-flex;
   align-items: center;
@@ -104,10 +111,12 @@
   white-space: nowrap;
 }
 
-.viking-btn kbd {
-  margin-top: 0;
+.viking-btn-label:empty {
+  display: none;
+  min-height: 0;
 }
 
+.viking-btn kbd,
 .viking-btn-kbd {
   font-family: var(--viking-font-family-mono);
   font-size: var(--viking-font-size-xs);
@@ -119,4 +128,39 @@
   line-height: 1.4;
   margin-left: var(--viking-space-half);
   font-weight: var(--viking-font-weight-medium);
+}
+
+.viking-btn-spinner {
+  flex: 0 0 auto;
+  width: var(--viking-icon-size-sm, 18px);
+  height: var(--viking-icon-size-sm, 18px);
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--viking-radius-pill);
+  animation: viking-spin 0.8s linear infinite;
+}
+
+.viking-btn[aria-busy="true"],
+.viking-btn:disabled {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+
+@keyframes viking-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-btn-spinner {
+    animation-duration: 0.01ms;
+  }
+
+  .viking-btn {
+    transition-duration: 0.01ms;
+  }
 }

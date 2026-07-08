@@ -93,6 +93,13 @@ export class Explore implements OnInit {
     return `${this.getPageStatus(page)}`;
   }
 
+  /** Uptime header copy — avoid repeating the status badge label. */
+  uptimeSummary(page: StatusPageData): string {
+    const label = this.getPageStatusLabel(page);
+    if (label === 'Operational') return 'No current issues';
+    return label;
+  }
+
   getPageUrl(page: StatusPageData): string {
     return `/status/${page.slug}`;
   }

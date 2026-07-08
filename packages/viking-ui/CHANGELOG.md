@@ -1,5 +1,17 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.4.0
+
+### Minor Changes
+
+- Reform dashboard
+
+## 4.3.1
+
+### Patch Changes
+
+- Cleanup buttons
+
 ## 4.3.0
 
 ### Minor Changes

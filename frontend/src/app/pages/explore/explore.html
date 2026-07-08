@@ -25,7 +25,7 @@
           [metrics]="exploreMetrics(page)"
           [uptimeHistory]="exploreUptimeHistory(page)"
           [uptimePercentage]="overallUptime(page)"
-          [uptimeSummary]="getPageStatusLabel(page)"
+          [uptimeSummary]="uptimeSummary(page)"
         />
         } @if (loadFailed()) {
         <div class="status-error-state status-directory-card" role="alert">
