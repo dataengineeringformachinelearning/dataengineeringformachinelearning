@@ -16,7 +16,11 @@ const SIZES = new Set(["sm", "xs"]);
 
 /**
  * Framework-agnostic Viking button Web Component.
- * Tag: `viking-button-wc` (Angular reserves `viking-button` for its wrapper component)
+ * Tag: `viking-button-wc` — for static HTML / marketing only.
+ * Angular apps must use `viking-button` (native control; never nest this WC).
+ *
+ * Host is a layout shell only; the single interactive control is the inner
+ * `<button>` / `<a>` in shadow DOM. Do not style the host as a button.
  *
  * @example
  * <viking-button-wc variant="primary">Launch</viking-button-wc>
@@ -127,6 +131,12 @@ export class VikingButtonWc extends HTMLElementBase {
     const hrefValue = href ? escapeHtml(href) : "";
     const target = this.getAttribute("target");
     const safeTarget = target ? escapeHtml(target) : "";
+
+    // type stays on the native control only — never leave type="button" on the host,
+    // which reads as a second button to DevTools / a11y scanners.
+    if (this.hasAttribute("type") && !isLink) {
+      this.removeAttribute("type");
+    }
 
     this.shadow.innerHTML = `
       <${tag}

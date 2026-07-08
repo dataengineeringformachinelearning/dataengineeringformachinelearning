@@ -509,28 +509,33 @@ viking-theme-toggle-wc.theme-toggle-btn {
   height: 24px;
 }
 
-.menu-toggle-btn,
+/* Hosts stay transparent; utility chrome is on the single control. */
 viking-button.menu-toggle-btn,
+viking-button.navbar-search-trigger,
+#navbar-search-trigger:is(viking-button) {
+  display: contents !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 viking-button-wc.menu-toggle-btn,
-#navbar-search-trigger {
+viking-button-wc.navbar-search-trigger {
   display: inline-grid !important;
   place-items: center;
-  padding: 0;
-  border: none;
-  background: transparent;
-  box-shadow: none;
-
-  svg,
-  viking-icon {
-    display: block;
-    width: 24px;
-    height: 24px;
-  }
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .navbar-search viking-button-wc::part(control),
 viking-button-wc.menu-toggle-btn::part(control),
 viking-button-wc.navbar-search-trigger::part(control),
+viking-button.menu-toggle-btn .viking-btn,
+viking-button.navbar-search-trigger .viking-btn,
+.navbar-search viking-button .viking-btn,
 .navbar-right viking-theme-toggle-wc::part(control) {
   @include viking-navbar-utility-btn;
   display: inline-grid;
@@ -543,6 +548,15 @@ viking-button-wc.navbar-search-trigger::part(control),
   padding: 0;
   line-height: 1;
   box-sizing: border-box;
+}
+
+.navbar-search viking-button .viking-btn svg,
+.navbar-search viking-button .viking-btn viking-icon,
+viking-button.menu-toggle-btn .viking-btn svg,
+viking-button.menu-toggle-btn .viking-btn viking-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .navbar-right viking-theme-toggle-wc::part(control) {
@@ -605,7 +619,7 @@ viking-button-wc.menu-toggle-btn[aria-expanded="true"]::part(control) {
   height: 16px;
 }
 
-.auth-btn,
+/* Native static CTAs only — not viking-button hosts (those use display:contents). */
 a.auth-btn,
 button.auth-btn {
   display: inline-flex !important;
@@ -623,13 +637,32 @@ button.auth-btn {
   line-height: 1 !important;
 }
 
+/* Angular host collapses; WC host is a transparent layout shell. */
 viking-button.auth-btn,
-viking-button-wc.auth-btn {
+viking-button.auth-signout-btn,
+viking-button.mobile-auth-btn {
+  display: contents !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+viking-button-wc.auth-btn,
+viking-button-wc.auth-signout-btn,
+viking-button-wc.mobile-auth-btn {
   display: inline-flex !important;
   min-width: var(--viking-btn-min-width, 120px) !important;
   height: auto !important;
   min-height: 0 !important;
   padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .auth-btn::part(label),
@@ -643,12 +676,12 @@ viking-button-wc.auth-btn {
   line-height: 1;
 }
 
+/* Chrome only on the single native control — never on viking-button / viking-button-wc hosts. */
 .auth-btn::part(control),
-viking-button.auth-btn::part(control),
-viking-button.auth-btn viking-button-wc::part(control),
-viking-button.auth-btn viking-button-wc,
 viking-button-wc.auth-btn::part(control),
-.auth-btn.viking-full::part(control) {
+viking-button.auth-btn .viking-btn,
+.auth-btn.viking-full::part(control),
+viking-button.auth-btn.viking-full .viking-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -683,10 +716,11 @@ viking-button-wc.auth-btn::part(control),
 .auth-btn[loading]::part(control),
 .auth-signout-btn[aria-busy="true"]::part(control),
 .auth-signout-btn[loading]::part(control),
-viking-button.auth-btn viking-button-wc[aria-busy="true"]::part(control),
-viking-button.auth-btn viking-button-wc[loading]::part(control),
 viking-button-wc.auth-btn[aria-busy="true"]::part(control),
-viking-button-wc.auth-btn[loading]::part(control) {
+viking-button-wc.auth-btn[loading]::part(control),
+viking-button.auth-btn[aria-busy="true"] .viking-btn,
+viking-button.auth-btn .viking-btn[aria-busy="true"],
+viking-button.auth-btn .viking-btn:disabled {
   min-width: var(--viking-btn-min-width, 120px) !important;
 }
 

@@ -16,7 +16,7 @@ import {
  * package-owned utility classes below to avoid nested cards:
  *
  * ```html
- * <viking-status-section title="Operational — joealongi">
+ * <viking-status-section title="joealongi" status="operational" statusLabel="Operational">
  *   <div class="viking-status-section-block">...</div>
  *   <div class="viking-status-section-grid">...</div>
  * </viking-status-section>

@@ -47,16 +47,6 @@ export type ExploreCardData = {
   uptimeSummary?: string;
 };
 
-const normalizeStatusTone = (status: string): VikingTone => {
-  const value = status.trim().toLowerCase().replace(/\s+/g, "_");
-  if (value === "operational" || value === "up") return "success";
-  if (value === "degraded" || value === "partial_outage") return "warning";
-  if (value === "maintenance") return "warning";
-  if (value === "outage" || value === "major_outage" || value === "down")
-    return "danger";
-  return "muted";
-};
-
 const normalizeStatusLabel = (status: string): string => {
   const value = status.trim().toLowerCase().replace(/\s+/g, "_");
   if (value === "operational" || value === "up") return "Operational";
@@ -319,13 +309,11 @@ export class ExploreCardMetricItemComponent {
     <viking-status-card
       [title]="title()"
       [subtitle]="description()"
-      [status]="resolvedStatusLabel()"
-      [statusTone]="statusTone()"
-      [statusDot]="true"
       [compact]="true"
       [interactive]="!!href()"
       [ariaLabel]="ariaLabel()"
     >
+      <!-- Single status surface: badge row only (not also on status-card header). -->
       <div class="viking-explore-card-badges" aria-label="Status badges">
         @if (proVerified()) {
           <viking-badge
@@ -359,7 +347,7 @@ export class ExploreCardMetricItemComponent {
         [height]="16"
         [showLabels]="false"
         [percentage]="uptimePercentage()"
-        [statusSummary]="uptimeSummary() || resolvedStatusLabel()"
+        [statusSummary]="resolvedUptimeSummary()"
         [compact]="true"
         label="Uptime"
       />
@@ -459,9 +447,12 @@ export class ExploreCardComponent {
     () => this.statusLabel() || normalizeStatusLabel(this.status()),
   );
 
-  protected readonly statusTone = computed(() =>
-    normalizeStatusTone(this.status()),
-  );
+  protected readonly resolvedUptimeSummary = computed(() => {
+    const summary = this.uptimeSummary().trim();
+    if (summary) return summary;
+    // Avoid repeating the status badge label (e.g. "Operational") in the uptime header.
+    return "30-day history";
+  });
 
   protected readonly resolvedUptimeHistory = computed(() => {
     const data = this.uptimeHistory();

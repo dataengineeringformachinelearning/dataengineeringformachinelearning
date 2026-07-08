@@ -99,7 +99,7 @@
   box-shadow: var(--viking-btn-depth-shadow);
 }
 
-.auth-btn,
+/* Native static anchors/buttons only — never paint hosts that wrap a control. */
 a.auth-btn,
 button.auth-btn {
   @include viking-drakkar-btn-primary;
@@ -114,14 +114,15 @@ button.auth-btn {
   }
 }
 
+/* Single control: Angular native .viking-btn or WC ::part(control). */
 viking-button-wc.auth-btn::part(control),
-viking-button.auth-btn viking-button-wc::part(control) {
+viking-button.auth-btn .viking-btn {
   @include viking-drakkar-part-primary;
   color: var(--viking-white-pure, var(--viking-white-pure)) !important;
 }
 
 viking-button-wc.auth-btn:hover::part(control),
-viking-button.auth-btn:hover viking-button-wc::part(control) {
+viking-button.auth-btn:hover .viking-btn:hover {
   background:
     linear-gradient(
       180deg,
@@ -141,7 +142,7 @@ viking-button.auth-btn:hover viking-button-wc::part(control) {
 }
 
 viking-button-wc.auth-btn:active::part(control),
-viking-button.auth-btn:active viking-button-wc::part(control) {
+viking-button.auth-btn:active .viking-btn:active {
   transform: translateY(0) scale(var(--viking-state-active-scale));
   border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
   box-shadow: var(--viking-btn-press-shadow);
@@ -149,27 +150,25 @@ viking-button.auth-btn:active viking-button-wc::part(control) {
 
 viking-button-wc.auth-btn:disabled::part(control),
 viking-button-wc.auth-btn[aria-busy="true"]::part(control),
-viking-button.auth-btn:disabled viking-button-wc::part(control),
-viking-button.auth-btn[aria-busy="true"] viking-button-wc::part(control),
-viking-button.auth-btn viking-button-wc:disabled::part(control),
-viking-button.auth-btn viking-button-wc[aria-busy="true"]::part(control) {
+viking-button.auth-btn[aria-busy="true"] .viking-btn,
+viking-button.auth-btn .viking-btn:disabled,
+viking-button.auth-btn .viking-btn[aria-busy="true"] {
   opacity: var(--viking-state-disabled-opacity);
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
 }
 
-.auth-btn.auth-btn-outline,
-a.auth-btn.auth-btn-outline {
+a.auth-btn.auth-btn-outline,
+button.auth-btn.auth-btn-outline {
   @include viking-drakkar-btn-outline;
 }
 
 viking-button-wc.auth-btn.auth-btn-outline::part(control),
-viking-button.auth-btn.auth-btn-outline viking-button-wc::part(control) {
+viking-button.auth-btn.auth-btn-outline .viking-btn {
   @include viking-drakkar-part-outline;
 }
 
-.mobile-auth-btn,
 a.mobile-auth-btn,
 button.mobile-auth-btn {
   @include viking-drakkar-btn-primary;
@@ -193,7 +192,7 @@ button.mobile-auth-btn {
 }
 
 viking-button-wc.mobile-auth-btn::part(control),
-viking-button.mobile-auth-btn viking-button-wc::part(control) {
+viking-button.mobile-auth-btn .viking-btn {
   @include viking-drakkar-part-primary;
   width: 100%;
   min-width: 0;
@@ -213,6 +212,6 @@ a.mobile-auth-btn.auth-btn-outline {
 }
 
 viking-button-wc.mobile-auth-btn.auth-btn-outline::part(control),
-viking-button.mobile-auth-btn.auth-btn-outline viking-button-wc::part(control) {
+viking-button.mobile-auth-btn.auth-btn-outline .viking-btn {
   @include viking-drakkar-part-outline;
 }

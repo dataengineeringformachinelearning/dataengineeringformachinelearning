@@ -151,22 +151,31 @@ a {
     var(--viking-shadow-sm);
 }
 
-// Angular wrapper hosts delegate visuals to viking-button-wc shadow controls.
-viking-button {
-  display: inline-flex;
-  align-items: center;
+// Angular viking-button is a transparent host (display:contents) wrapping one
+// native .viking-btn. Never paint chrome on the host — that creates button-in-button.
+viking-button,
+viking-button-wc {
   border: none;
   background: transparent;
   box-shadow: none;
   padding: 0;
   min-height: 0;
-  overflow: visible;
   cursor: default;
 
   &::before,
   &::after {
     display: none;
   }
+}
+
+viking-button {
+  display: contents;
+}
+
+viking-button-wc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .viking-button,

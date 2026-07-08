@@ -4,9 +4,28 @@
  */
 
 export const VIKING_BUTTON_STYLES = `
+/* Host is a transparent layout shell — never paint button chrome on the host
+   (that creates a visual/semantic "button in a button" with the inner control). */
 :host {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--viking-font-family);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  min-height: 0;
+  min-width: 0;
+  color: inherit;
+  cursor: default;
+}
+
+:host::before,
+:host::after {
+  display: none !important;
+  content: none !important;
 }
 
 :host([full-width]) {

@@ -18,7 +18,7 @@
 
         @for (page of displayPages(); track page.id) {
         <viking-status-dashboard
-          [title]="getPageStatus(page.id) + ' — ' + page.title"
+          [title]="page.title"
           [description]="statusDescription(page.id)"
           [status]="statusVariant(getPageStatus(page.id))"
           [statusLabel]="getPageStatus(page.id)"

@@ -40,7 +40,7 @@
       <!-- Content in stack for consistent vertical rhythm and grid alignment -->
       <div class="viking-stack viking-stack--loose">
         <viking-status-section
-          [title]="globalPageStatus() + ' — ' + page.title"
+          [title]="page.title"
           [description]="statusDescription(globalPageStatus())"
           [status]="statusVariant(globalPageStatus())"
           [statusLabel]="globalPageStatus()"

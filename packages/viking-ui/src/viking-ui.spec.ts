@@ -78,11 +78,12 @@ describe("viking-ui", () => {
     expect(fixture.nativeElement.classList.contains("viking-compact")).toBe(
       true,
     );
-    const wc = fixture.nativeElement.querySelector(
-      "viking-button-wc",
-    ) as HTMLElement;
-    const button = wc?.shadowRoot?.querySelector("button") as HTMLButtonElement;
+    const button = fixture.nativeElement.querySelector(
+      "button.viking-btn",
+    ) as HTMLButtonElement;
+    expect(button).toBeTruthy();
     expect(button.classList.contains("viking-btn-primary")).toBe(true);
+    expect(fixture.nativeElement.querySelector("viking-button-wc")).toBeNull();
   });
 
   it("renders button variants with accessible focus and disabled semantics", async (): Promise<void> => {
@@ -90,19 +91,16 @@ describe("viking-ui", () => {
     fixture.componentRef.setInput("variant", "primary");
     fixture.componentRef.setInput("disabled", true);
     fixture.detectChanges();
-    const wc = fixture.nativeElement.querySelector(
-      "viking-button-wc",
-    ) as HTMLElement;
-    const button = wc?.shadowRoot?.querySelector("button") as HTMLButtonElement;
+    const button = fixture.nativeElement.querySelector(
+      "button.viking-btn",
+    ) as HTMLButtonElement;
     expect(button.classList.contains("viking-btn-primary")).toBe(true);
     expect(button.disabled).toBe(true);
+    expect(fixture.nativeElement.querySelectorAll("button").length).toBe(1);
   });
 
   it("keeps button press events wired after attribute-driven rerenders", async (): Promise<void> => {
     const fixture = await render(ButtonPressHost);
-    const wc = fixture.nativeElement.querySelector(
-      "viking-button-wc",
-    ) as HTMLElement;
 
     fixture.componentInstance.loading.set(true);
     fixture.detectChanges();
@@ -110,7 +108,9 @@ describe("viking-ui", () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    const button = wc.shadowRoot?.querySelector("button") as HTMLButtonElement;
+    const button = fixture.nativeElement.querySelector(
+      "button.viking-btn",
+    ) as HTMLButtonElement;
     button.click();
     fixture.detectChanges();
 
@@ -122,11 +122,11 @@ describe("viking-ui", () => {
     fixture.componentRef.setInput("href", "https://deml.app");
     fixture.componentRef.setInput("target", "_blank");
     fixture.detectChanges();
-    const wc = fixture.nativeElement.querySelector(
-      "viking-button-wc",
-    ) as HTMLElement;
-    const anchor = wc?.shadowRoot?.querySelector("a") as HTMLAnchorElement;
+    const anchor = fixture.nativeElement.querySelector(
+      "a.viking-btn",
+    ) as HTMLAnchorElement;
     expect(anchor.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(fixture.nativeElement.querySelector("button")).toBeNull();
   });
 
   it("applies tone classes on badges", async (): Promise<void> => {
