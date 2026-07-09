@@ -32,14 +32,14 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
       :host {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         font-family: var(--viking-font-family);
       }
       .viking-tabs-list {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--viking-space-half);
-        padding: var(--viking-space-half);
+        gap: var(--viking-space-1-5);
+        padding: var(--viking-space-1-5) var(--viking-space-2);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-xl);
         background: var(

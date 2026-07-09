@@ -41,7 +41,7 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
         justify-content: center;
         min-height: var(--viking-control-height-sm);
         min-width: var(--viking-btn-min-width, 120px);
-        padding: 0 var(--viking-space-2);
+        padding: var(--viking-space-half) var(--viking-space-2-5);
         border: 1px solid transparent;
         border-radius: var(--viking-radius);
         background: transparent;

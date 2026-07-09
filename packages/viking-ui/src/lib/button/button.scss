@@ -62,20 +62,45 @@
 .viking-btn-square {
   width: var(--viking-control-height);
   min-width: var(--viking-control-height);
+  max-width: var(--viking-control-height);
+  height: var(--viking-control-height);
+  min-height: var(--viking-control-height);
+  max-height: var(--viking-control-height);
   padding: 0;
+  gap: 0;
+  justify-content: center;
+  align-items: center;
+  line-height: 0;
 
   &.viking-btn-sm {
     width: var(--viking-control-height-sm);
     min-width: var(--viking-control-height-sm);
+    max-width: var(--viking-control-height-sm);
+    height: var(--viking-control-height-sm);
+    min-height: var(--viking-control-height-sm);
+    max-height: var(--viking-control-height-sm);
   }
 
   &.viking-btn-xs {
     width: var(--viking-control-height-xs);
     min-width: var(--viking-control-height-xs);
+    max-width: var(--viking-control-height-xs);
+    height: var(--viking-control-height-xs);
+    min-height: var(--viking-control-height-xs);
+    max-height: var(--viking-control-height-xs);
   }
 
   .viking-btn-label {
-    display: none;
+    display: none !important;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  viking-icon,
+  .viking-icon,
+  [data-viking-icon] {
+    margin: 0;
   }
 }
 

@@ -40,6 +40,27 @@ body {
   margin-inline: auto;
   padding-block: var(--viking-page-section-gap);
   box-shadow: var(--viking-shadow-sm);
+
+  .viking-heading,
+  .viking-heading-xl {
+    font-family: var(--viking-font-family);
+    font-weight: var(--viking-font-weight-extrabold, 800);
+    letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+    text-transform: uppercase;
+    line-height: var(--viking-line-height-none, 1);
+    font-size: clamp(
+      var(--viking-font-size-2xl, 30px),
+      5vw,
+      var(--viking-font-size-4xl, 48px)
+    );
+  }
+
+  .viking-heading-sm {
+    font-size: var(--viking-font-size-lg);
+    font-weight: var(--viking-font-weight-bold);
+    letter-spacing: var(--viking-letter-spacing-caps, 0.06em);
+    text-transform: uppercase;
+  }
 }
 
 .backend-status-badge {

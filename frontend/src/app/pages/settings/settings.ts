@@ -144,6 +144,18 @@ export class Settings implements OnInit {
   isUpdatingPage = signal<boolean>(false);
   isAddingService = signal<boolean>(false);
   isAddingIncident = signal<boolean>(false);
+  isRefreshingMfa = signal<boolean>(false);
+
+  async refreshMfaSession(): Promise<void> {
+    this.isRefreshingMfa.set(true);
+    try {
+      await this.authService.refreshMfaState(true);
+    } finally {
+      this.isRefreshingMfa.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
   constructor() {
     afterNextRender(() => {
       this.loadIntegrations();
@@ -154,7 +166,8 @@ export class Settings implements OnInit {
         if (!this.authService.isAuthenticated()) {
           this.router.navigate(['/']);
         } else if (this.authService.currentUserId() !== null) {
-          void this.authService.refreshMfaState();
+          // Force token refresh so MFA second-factor claims are re-read after SMS login.
+          void this.authService.refreshMfaState(true);
           this.loadStatusPages();
         }
       }

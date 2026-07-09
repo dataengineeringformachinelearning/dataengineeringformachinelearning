@@ -371,26 +371,53 @@ export class Account implements OnInit {
     }
   }
 
-  initMfaRecaptcha() {
-    if (this.mfaRecaptchaVerifier) return;
-    if (!this.authService.auth) {
-      console.error('Firebase Auth is not initialized');
-      return;
-    }
-    try {
-      let element = document.getElementById('mfa-recaptcha-container');
-      if (!element) {
-        element = document.createElement('div');
-        element.id = 'mfa-recaptcha-container';
-        document.body.appendChild(element);
+  private clearMfaRecaptcha(): void {
+    if (this.mfaRecaptchaVerifier) {
+      try {
+        this.mfaRecaptchaVerifier.clear();
+      } catch (e) {
+        console.error('Error clearing MFA reCAPTCHA verifier', e);
       }
-      this.mfaRecaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
-        size: 'invisible',
-        callback: () => undefined,
-      });
-    } catch (e) {
-      logFirebaseAuthError('MFA reCAPTCHA init', e);
+      this.mfaRecaptchaVerifier = null;
     }
+    // Keep the template slot; only remove dynamic body nodes.
+    const dynamic = document.getElementById('mfa-recaptcha-container-dynamic');
+    dynamic?.remove();
+  }
+
+  private async ensureMfaRecaptcha(): Promise<InstanceType<typeof RecaptchaVerifier>> {
+    if (!this.authService.auth) {
+      throw new Error('Firebase Auth is not initialized');
+    }
+    if (this.mfaRecaptchaVerifier) {
+      return this.mfaRecaptchaVerifier;
+    }
+    let element = document.getElementById('mfa-recaptcha-container');
+    if (!element) {
+      element = document.createElement('div');
+      element.id = 'mfa-recaptcha-container-dynamic';
+      element.setAttribute(
+        'style',
+        'position:fixed;left:-9999px;width:1px;height:1px;overflow:hidden;',
+      );
+      document.body.appendChild(element);
+    }
+    this.mfaRecaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
+      size: 'invisible',
+      callback: () => undefined,
+      'expired-callback': () => {
+        this.clearMfaRecaptcha();
+      },
+      'error-callback': () => {
+        this.clearMfaRecaptcha();
+      },
+    });
+    await this.mfaRecaptchaVerifier.render();
+    return this.mfaRecaptchaVerifier;
+  }
+
+  initMfaRecaptcha() {
+    void this.ensureMfaRecaptcha().catch(e => logFirebaseAuthError('MFA reCAPTCHA init', e));
   }
 
   async checkMfaStatus() {
@@ -420,17 +447,19 @@ export class Account implements OnInit {
       return;
     }
     this.mfaPhoneNumber = normalizePhoneE164(this.mfaPhoneNumber);
-    this.initMfaRecaptcha();
     this.isSendingMfaCode.set(true);
     try {
+      this.clearMfaRecaptcha();
+      const verifier = await this.ensureMfaRecaptcha();
       this.mfaVerificationId = await this.authService.sendMfaEnrollmentCode(
         this.mfaPhoneNumber,
-        this.mfaRecaptchaVerifier,
+        verifier,
       );
       this.mfaSuccess.set('Verification code sent! Check your messages.');
       this.cdr.markForCheck();
     } catch (e: unknown) {
       logFirebaseAuthError('MFA enrollment SMS', e);
+      this.clearMfaRecaptcha();
       const code =
         e && typeof e === 'object' && 'code' in e
           ? String((e as { code?: string }).code)

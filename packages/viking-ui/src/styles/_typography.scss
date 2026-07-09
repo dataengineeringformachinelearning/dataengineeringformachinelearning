@@ -145,9 +145,10 @@ table caption {
 
 .viking-font-display {
   font-family: var(--viking-font-family);
-  font-weight: var(--viking-font-weight-bold, 700);
+  font-weight: var(--viking-font-weight-extrabold, 800);
   letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
   text-transform: uppercase;
+  line-height: var(--viking-line-height-none, 1);
 }
 
 .viking-tabular-nums {

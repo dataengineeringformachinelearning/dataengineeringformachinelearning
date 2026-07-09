@@ -434,9 +434,21 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         mapContainer.replaceChildren();
       }
 
-      this.map = L.map('originMap', {
+      // Ensure the host has a stable pixel size before Leaflet measures it.
+      mapContainer.classList.add('viking-map-ready');
+      const hostHeight =
+        mapContainer.clientHeight ||
+        Math.round(parseFloat(getComputedStyle(mapContainer).minHeight || '0') || 352);
+      if (hostHeight > 0) {
+        mapContainer.style.minHeight = `${hostHeight}px`;
+        mapContainer.style.height = `${hostHeight}px`;
+      }
+
+      this.map = L.map(mapContainer, {
         zoomControl: false,
         attributionControl: false,
+        worldCopyJump: true,
+        preferCanvas: true,
       }).setView([20, 0], 2);
 
       const tileUrl = this.isDarkMode
@@ -445,17 +457,40 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
       L.tileLayer(tileUrl, {
         attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 8,
+        minZoom: 1,
+        noWrap: false,
+        updateWhenIdle: true,
+        keepBuffer: 2,
       }).addTo(this.map);
 
-      this.updateMapMarkers();
+      // Leaflet needs real dimensions after flex/grid layout settles,
+      // then place markers once the tile pane has a stable size.
+      const refreshSize = (): void => {
+        this.map?.invalidateSize({ animate: false });
+      };
+      requestAnimationFrame(refreshSize);
+      setTimeout(refreshSize, 120);
+      setTimeout(() => {
+        refreshSize();
+        this.updateMapMarkers();
+      }, 280);
+      setTimeout(refreshSize, 800);
+    }, 50);
+  }
 
-      setTimeout(() => {
-        this.map?.invalidateSize();
-      }, 100);
-      setTimeout(() => {
-        this.map?.invalidateSize();
-      }, 400);
-    }, 100);
+  /** Resolve a CSS color token for Leaflet (canvas can't use var()). */
+  private resolveMapAccent(): string {
+    if (typeof window === 'undefined') {
+      return '#2176ff';
+    }
+    const styles = getComputedStyle(document.documentElement);
+    return (
+      styles.getPropertyValue('--viking-accent').trim() ||
+      styles.getPropertyValue('--viking-teal-500').trim() ||
+      styles.getPropertyValue('--color-primary').trim() ||
+      '#2176ff'
+    );
   }
 
   private updateMapMarkers(): void {
@@ -467,20 +502,41 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       }
     });
 
+    const accent = this.resolveMapAccent();
+    const points: L.LatLngExpression[] = [];
+
     this.originMapData.forEach(loc => {
-      if (loc.lat && loc.lng) {
-        L.circleMarker([loc.lat, loc.lng], {
-          radius: Math.max(6, Math.min(24, loc.count / 2)),
-          color: 'var(--viking-teal-600)',
-          fillColor: 'var(--viking-teal-600)',
-          fillOpacity: 0.6,
-          weight: 2,
-        })
-          .bindTooltip(`${loc.origin}: ${loc.count} reqs`, {
-            direction: 'top',
-          })
-          .addTo(this.map!);
+      const lat = Number(loc.lat ?? loc.latitude);
+      const lng = Number(loc.lng ?? loc.lon ?? loc.longitude);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return;
       }
+      const count = Number(loc.count ?? 0) || 1;
+      const label = String(loc.origin ?? loc.region ?? loc.country ?? loc.name ?? 'Origin');
+      points.push([lat, lng]);
+      L.circleMarker([lat, lng], {
+        radius: Math.max(7, Math.min(22, 6 + Math.sqrt(count) * 2.5)),
+        color: accent,
+        fillColor: accent,
+        fillOpacity: 0.55,
+        weight: 2,
+        opacity: 0.95,
+      })
+        .bindTooltip(`${label}: ${count.toLocaleString()} reqs`, {
+          direction: 'top',
+          sticky: true,
+        })
+        .addTo(this.map!);
     });
+
+    if (points.length > 1) {
+      try {
+        this.map.fitBounds(L.latLngBounds(points), { padding: [28, 28], maxZoom: 5 });
+      } catch {
+        /* keep default world view */
+      }
+    } else if (points.length === 1) {
+      this.map.setView(points[0], 3);
+    }
   }
 }

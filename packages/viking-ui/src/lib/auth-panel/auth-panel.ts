@@ -179,9 +179,6 @@ import { VikingSeparator } from "../separator/separator";
         gap: var(--viking-space-3);
         width: 100%;
       }
-      :host ::ng-deep [vikingAuthFooter] viking-button .viking-btn {
-        min-width: 0;
-      }
       :host ::ng-deep [vikingAuthLinks].viking-auth-links,
       :host ::ng-deep .viking-auth-links {
         display: flex;
@@ -189,8 +186,35 @@ import { VikingSeparator } from "../separator/separator";
         gap: var(--viking-space-2);
         width: 100%;
       }
-      :host ::ng-deep viking-field {
+      /* Uniform full-width stack: fields, inputs, and every action button. */
+      :host ::ng-deep viking-field,
+      :host ::ng-deep viking-input,
+      :host ::ng-deep viking-verification-code-field,
+      :host ::ng-deep viking-callout,
+      :host ::ng-deep .viking-auth-social,
+      :host ::ng-deep [vikingAuthFooter],
+      :host ::ng-deep [vikingAuthLinks] {
         width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      :host ::ng-deep viking-button {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
+      :host ::ng-deep viking-button .viking-btn {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+      }
+      :host ::ng-deep viking-input .viking-input,
+      :host ::ng-deep viking-input input,
+      :host ::ng-deep .viking-input-control {
+        width: 100%;
+        box-sizing: border-box;
       }
     `,
   ],

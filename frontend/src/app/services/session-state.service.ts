@@ -100,7 +100,7 @@ export class SessionStateService {
       return;
     }
     if (message.type === 'extend' && this.authService.isAuthenticated()) {
-      this.sessionIdle.start();
+      this.sessionIdle.extendSession();
     }
   }
 

@@ -43,6 +43,7 @@
             },
             "styles": [
               "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
+              "leaflet/dist/leaflet.css",
               "prismjs/themes/prism-okaidia.css"
             ],
             "scripts": [

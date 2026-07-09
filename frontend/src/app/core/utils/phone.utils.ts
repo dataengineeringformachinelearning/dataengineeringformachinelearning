@@ -50,8 +50,20 @@ export const mapFirebasePhoneError = (code: string | undefined): string => {
   if (code === 'auth/too-many-requests') {
     return 'Too many attempts. Wait a moment and try again.';
   }
-  if (code === 'auth/captcha-check-failed') {
-    return 'reCAPTCHA verification failed. Refresh and try again.';
+  if (code === 'auth/captcha-check-failed' || code === 'auth/invalid-app-credential') {
+    return 'reCAPTCHA verification failed. Refresh the page and try again.';
+  }
+  if (code === 'auth/missing-client-identifier') {
+    return 'Phone sign-in is not fully configured. Contact support if this continues.';
+  }
+  if (code === 'auth/quota-exceeded') {
+    return 'SMS quota exceeded for this project. Try again later.';
+  }
+  if (code === 'auth/operation-not-allowed') {
+    return 'Phone authentication is not enabled for this project.';
+  }
+  if (code === 'auth/network-request-failed') {
+    return 'Network error while sending the code. Check your connection and try again.';
   }
   return 'Failed to send verification code. Check the number and try again.';
 };

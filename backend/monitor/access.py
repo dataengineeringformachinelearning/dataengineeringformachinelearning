@@ -22,11 +22,38 @@ def check_status_page_access(request, status_page: StatusPage) -> bool:
 
 
 def check_mfa_satisfied(request) -> bool:
+  """True when the Firebase session completed second-factor verification.
+
+  Accepts:
+  - OIDC ``amr`` containing ``mfa`` (array or string)
+  - Firebase Identity Platform ``firebase.sign_in_second_factor`` (e.g. ``phone``)
+  - Explicit custom claims ``mfa`` / ``mfa_verified``
+  - CI sentinel uid ``testuser``
+  """
   if not hasattr(request, "firebase_token") or not request.firebase_token:
     return False
   token = request.firebase_token
+  if token.get("uid") == "testuser":
+    return True
+
   amr = token.get("amr", [])
-  return "mfa" in amr or token.get("uid") == "testuser"
+  if isinstance(amr, str):
+    if "mfa" in amr.lower():
+      return True
+  elif isinstance(amr, list | tuple):
+    if any(str(entry).lower() == "mfa" for entry in amr):
+      return True
+
+  firebase_claim = token.get("firebase") or {}
+  if isinstance(firebase_claim, dict):
+    second_factor = firebase_claim.get("sign_in_second_factor")
+    if isinstance(second_factor, str) and second_factor.strip():
+      return True
+
+  if token.get("mfa") is True or token.get("mfa_verified") is True:
+    return True
+
+  return False
 
 
 def forbid_platform_page(page: StatusPage) -> None:
