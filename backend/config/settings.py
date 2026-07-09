@@ -336,12 +336,18 @@ X_FRAME_OPTIONS = "DENY"
 
 
 # Google OAuth Analytics Integration Settings
+# Redirect must be an Authorized redirect URI on the Google Cloud OAuth client
+# and must match the live API host (BACKEND_URL). Prefer explicit env, else
+# derive from BACKEND_URL so domain renames cannot leave a dead redirect host.
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
-GOOGLE_OAUTH_REDIRECT_URI = os.getenv(
-  "GOOGLE_OAUTH_REDIRECT_URI",
-  "http://localhost:8000/api/v1/system-status/integrations/google/callback",
+_backend_base = (BACKEND_URL or "http://localhost:8000").rstrip("/")
+_default_google_oauth_redirect = (
+  f"{_backend_base}/api/v1/system-status/integrations/google/callback"
 )
+GOOGLE_OAUTH_REDIRECT_URI = (
+  os.getenv("GOOGLE_OAUTH_REDIRECT_URI") or _default_google_oauth_redirect
+).rstrip("/")
 
 # App versioning configuration
 VERSION_PATH = BASE_DIR.parent / "version.txt"
