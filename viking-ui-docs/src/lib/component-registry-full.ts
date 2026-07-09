@@ -93,15 +93,19 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Styled combobox with keyboard navigation — distinct from native-select.",
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="worker-select">Worker</label>
-  <div class="viking-input-shell">
-    <button id="worker-select" type="button" class="viking-input-native viking-demo-text-left-full">telemetry_worker ▾</button>
+  <div class="viking-select-demo">
+    <button id="worker-select" type="button" class="viking-select-trigger-static" aria-haspopup="listbox" aria-expanded="true" aria-controls="worker-select-list">
+      <span>telemetry_worker</span>
+      <span aria-hidden="true">▾</span>
+    </button>
+    <ul id="worker-select-list" class="viking-select-panel-static" role="listbox" aria-label="Worker">
+      <li role="option" aria-selected="true" class="is-selected">telemetry_worker</li>
+      <li role="option">outbox_relay</li>
+      <li role="option">threat_scanner</li>
+    </ul>
   </div>
-  <div class="viking-card viking-card-compact viking-demo-card-md viking-demo-mt-half">
-    <span class="viking-text">telemetry_worker</span>
-    <span class="viking-text-muted">outbox_relay</span>
-    <span class="viking-text-muted">threat_scanner</span>
-  </div>
-</div>`,
+</div>
+<p class="viking-text-muted viking-demo-caption">Single trigger + open listbox — not nested input shells</p>`,
           selector: "viking-select",
           tags: ["angular"],
           related: ["native-select", "select"],
@@ -120,24 +124,26 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           description:
             "Labeled OTP fieldset for MFA and phone verification with error states.",
           preview: `<fieldset class="viking-field">
-  <legend class="viking-field-label">Verification code</legend>
-  <div class="viking-otp-static" role="group" aria-label="Verification code">
-    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1" />
-    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2" />
-    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3" />
-    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4" />
-    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 5" />
-    <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 6" />
+  <legend class="viking-field-label" id="verify-code-legend">Verification Code</legend>
+  <div class="viking-otp-static" role="group" aria-labelledby="verify-code-legend">
+    <input type="text" name="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1 of verification code" />
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 2 of verification code" />
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 3 of verification code" />
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 4 of verification code" />
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 5 of verification code" />
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 6 of verification code" />
   </div>
-  <p class="viking-text-muted">Enter the code sent to your device.</p>
-</fieldset>`,
+  <p class="viking-text-muted">Enter the 6-digit code we sent to your phone.</p>
+</fieldset>
+<p class="viking-text-muted viking-demo-caption">autocomplete=&quot;one-time-code&quot; for SMS autofill</p>`,
           selector: "viking-verification-code-field",
           tags: ["angular", "auth"],
           related: ["otp-input", "auth-panel"],
         },
         snippets(
           `<viking-verification-code-field
-  label="Verification code"
+  label="Verification Code"
+  name="one-time-code"
   [length]="6"
   [(value)]="code"
   [required]="true"

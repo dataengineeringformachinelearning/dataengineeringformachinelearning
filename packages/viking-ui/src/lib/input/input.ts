@@ -28,6 +28,7 @@ registerVikingInputWcElement();
   template: `
     <viking-input-wc
       [attr.type]="type()"
+      [attr.name]="name() || null"
       [attr.placeholder]="placeholder()"
       [attr.value]="value()"
       [attr.disabled]="isDisabled() ? '' : null"
@@ -86,6 +87,8 @@ registerVikingInputWcElement();
 export class VikingInput extends VikingControl<string> {
   readonly value = model<string>("");
   readonly type = input<string>("text");
+  /** Native input name — required for password managers and form autofill. */
+  readonly name = input<string>("");
   readonly placeholder = input<string>("");
   readonly label = input<string>("");
   readonly icon = input<VikingIconName | null>(null);

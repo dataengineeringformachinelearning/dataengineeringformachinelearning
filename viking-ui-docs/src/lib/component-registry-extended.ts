@@ -15,7 +15,8 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         preview: `<nav class="viking-breadcrumbs-static" aria-label="Breadcrumb">
   <ol class="viking-breadcrumbs-list">
     <li><a href="/">Home</a></li>
-    <li aria-current="page">Components</li>
+    <li><a href="/components">Components</a></li>
+    <li aria-current="page">Auth panel</li>
   </ol>
 </nav>`,
         snippets: {

@@ -31,11 +31,16 @@ import { VikingControl, provideVikingCva } from "../core/cva";
           class="viking-otp-cell"
           type="text"
           inputmode="numeric"
+          pattern="[0-9]*"
           autocomplete="one-time-code"
           maxlength="1"
+          [attr.name]="index === 0 ? name() || 'one-time-code' : null"
+          [attr.id]="index === 0 ? inputId() || null : null"
           [value]="value().charAt(index) || ''"
           [disabled]="disabled() || formDisabled()"
-          [attr.aria-label]="'Digit ' + (index + 1)"
+          [attr.aria-label]="
+            'Digit ' + (index + 1) + ' of ' + (label() || 'verification code')
+          "
           (input)="onCellInput($event, index)"
           (keydown)="onKeydown($event, index)"
           (paste)="onPaste($event)"
@@ -93,6 +98,10 @@ export class VikingOtpInput extends VikingControl<string> {
   readonly length = input<number>(6);
   readonly value = model<string>("");
   readonly label = input<string>("");
+  /** HTML name on the first cell for SMS / password-manager OTP autofill. */
+  readonly name = input<string>("one-time-code");
+  /** Optional id on the first cell for label[for] association. */
+  readonly inputId = input<string>("");
   readonly disabled = input<boolean>(false);
   readonly centered = input<boolean>(false);
 

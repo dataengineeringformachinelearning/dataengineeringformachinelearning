@@ -45,12 +45,27 @@ export interface VikingBreadcrumb {
         list-style: none;
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
+        line-height: 1;
       }
       .viking-breadcrumb {
         display: inline-flex;
         align-items: center;
         gap: var(--viking-space-1);
         color: var(--viking-text-muted);
+        line-height: 1;
+        min-height: 1.5rem;
+      }
+      .viking-breadcrumb a,
+      .viking-breadcrumb span {
+        display: inline-flex;
+        align-items: center;
+        line-height: 1;
+      }
+      .viking-breadcrumb viking-icon,
+      .viking-breadcrumb ::ng-deep svg {
+        display: block;
+        flex-shrink: 0;
+        align-self: center;
       }
       .viking-breadcrumb a {
         color: var(--viking-text-muted);

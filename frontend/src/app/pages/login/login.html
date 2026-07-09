@@ -32,16 +32,18 @@
             >
               <viking-input
                 [type]="isRegisterMode() ? 'text' : 'email'"
+                name="username"
                 formControlName="username"
                 [placeholder]="isRegisterMode() ? '' : 'email@example.com'"
                 [icon]="isRegisterMode() ? 'user' : 'mail'"
-                [autocomplete]="isRegisterMode() ? 'username' : 'username email'"
+                [autocomplete]="isRegisterMode() ? 'username' : 'username'"
               />
             </viking-field>
             } @if (isRegisterMode() || isForgotMode()) {
             <viking-field label="Email Address" [required]="isForgotMode()">
               <viking-input
                 type="email"
+                name="email"
                 formControlName="email"
                 placeholder="email@example.com"
                 icon="mail"
@@ -52,6 +54,7 @@
             <viking-field [label]="isResetMode() ? 'New Password' : 'Password'" [required]="true">
               <viking-input
                 type="password"
+                name="password"
                 formControlName="password"
                 icon="lock"
                 [autocomplete]="isResetMode() ? 'new-password' : 'current-password'"
@@ -65,6 +68,7 @@
             >
               <viking-input
                 type="tel"
+                name="phone"
                 formControlName="phone"
                 placeholder="+11234567890"
                 icon="phone"
@@ -76,6 +80,7 @@
               [label]="mfaRequired() ? 'SMS Code' : 'Verification Code'"
               description="Enter the 6-digit code we sent to your phone."
               [required]="true"
+              name="one-time-code"
               formControlName="verificationCode"
             />
             } @if (error()) {

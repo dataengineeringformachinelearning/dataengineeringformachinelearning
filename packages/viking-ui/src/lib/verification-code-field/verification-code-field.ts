@@ -40,6 +40,8 @@ import { VikingOtpInput } from "../otp-input/otp-input";
           (valueChange)="onValueChange($event)"
           [disabled]="disabled() || formDisabled()"
           [label]="label()"
+          [name]="name()"
+          [inputId]="inputId"
           [centered]="true"
           (completed)="completed.emit($event)"
         />
@@ -127,11 +129,14 @@ export class VikingVerificationCodeField extends VikingControl<string> {
   readonly error = input<string>("");
   readonly required = input<boolean>(false);
   readonly disabled = input<boolean>(false);
+  /** Native name for SMS OTP autofill (password managers / OS text message codes). */
+  readonly name = input<string>("one-time-code");
 
   readonly completed = output<string>();
 
   readonly value = model<string>("");
   protected readonly labelId = vikingUid("viking-verification-code-label");
+  protected readonly inputId = vikingUid("viking-verification-code-input");
   protected readonly descriptionId = vikingUid(
     "viking-verification-code-description",
   );

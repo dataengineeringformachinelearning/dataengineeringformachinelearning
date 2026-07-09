@@ -141,6 +141,7 @@ export class VikingInputWc extends HTMLElementBase {
     const rawPlaceholder = this.getAttribute("placeholder") ?? "";
     const placeholder = escapeHtml(rawPlaceholder);
     const value = escapeHtml(this.getAttribute("value") ?? "");
+    const name = escapeHtml(this.getAttribute("name") ?? "");
     const label =
       this.getAttribute("aria-label") ?? (rawPlaceholder || "Text input");
     const autocomplete = escapeHtml(this.getAttribute("autocomplete") ?? "");
@@ -153,7 +154,9 @@ export class VikingInputWc extends HTMLElementBase {
     const readonly = readBoolAttr(this, "readonly");
     const showClear =
       this.clearable && value.length > 0 && !this.loading && !this.bare;
+    // name + autocomplete on the native input enable password managers / SMS OTP autofill.
     const nativeAttrs = `
+      ${name ? `name="${name}"` : ""}
       ${this.disabled || this.loading ? "disabled" : ""}
       ${required ? "required" : ""}
       ${readonly ? "readonly" : ""}

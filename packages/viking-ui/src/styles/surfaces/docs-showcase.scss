@@ -494,13 +494,17 @@
   width: 100%;
 }
 
-.component-showcase-preview .viking-demo-row > *,
-.component-showcase-preview .viking-demo-row viking-button-wc,
-.component-showcase-preview .viking-demo-row .viking-btn,
-.component-showcase-preview .viking-demo-row button {
+/* Cross-axis center only — do not force min-height on every child
+   (stretching spinners into ovals makes rotate look like an orbit). */
+.component-showcase-preview .viking-demo-row > * {
   align-self: center;
-  min-height: var(--viking-control-height-sm, 36px);
   box-sizing: border-box;
+}
+
+.component-showcase-preview .viking-demo-row > viking-button-wc,
+.component-showcase-preview .viking-demo-row > .viking-btn,
+.component-showcase-preview .viking-demo-row > button:not(.viking-input-native) {
+  min-height: var(--viking-control-height-sm, 36px);
 }
 
 .component-showcase-preview .showcase-icon-demo,
@@ -512,22 +516,73 @@
   vertical-align: middle;
 }
 
-.component-showcase-preview .viking-kbd-static {
-  align-self: center;
-  min-height: 1.75rem;
-}
-
-.component-showcase-preview:has(.viking-kbd-static) {
+/* Keyboard hint: ⌘ K + label share one baseline/cross-axis */
+.component-showcase-preview .viking-demo-row:has(> .viking-kbd-static) {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-1-5);
 }
 
-.component-showcase-preview:has(.viking-kbd-static) .viking-text-muted {
+.component-showcase-preview .viking-kbd-static {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   align-self: center;
+  min-height: 1.75rem;
+  min-width: 1.75rem;
+  line-height: 1;
   margin: 0;
+}
+
+.component-showcase-preview .viking-demo-row > .viking-text-muted,
+.component-showcase-preview .viking-demo-row > .viking-heading {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Spinner must stay a perfect circle so rotation spins, not orbits */
+.component-showcase-preview .viking-spinner-static {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  max-width: 1.25rem;
+  max-height: 1.25rem;
+  flex: 0 0 1.25rem;
+  aspect-ratio: 1;
+  align-self: center;
+}
+
+/* Brand mark: icon + wordmark on one cross-axis */
+.component-showcase-preview .viking-demo-row > svg {
+  display: block;
+  flex-shrink: 0;
+  align-self: center;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+/* Breadcrumb trail + separators share one vertical center line */
+.component-showcase-preview .viking-breadcrumbs-static,
+.component-showcase-preview .viking-breadcrumbs-list {
+  display: flex;
+  align-items: center;
+}
+
+.component-showcase-preview .viking-breadcrumbs-list li {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.component-showcase-preview .viking-breadcrumbs-list li:not(:last-child)::after {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  height: 1em;
 }
 
 /* Typography demos stack cleanly */
@@ -1241,7 +1296,41 @@ viking-card-wc.landing-doctrine-card > * {
   background: var(--viking-surface-alt);
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
+  text-align: left;
+  align-items: stretch;
+}
+
+.showcase-auth-panel .viking-auth-tag-demo {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--viking-space-1);
+  font-size: var(--viking-font-size-ui, var(--viking-font-size-xs));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--viking-text-muted);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border-radius: var(--viking-radius-pill);
+  background: var(--viking-accent-soft);
+  line-height: 1;
+}
+
+.showcase-auth-panel .viking-auth-tag-dot {
+  width: var(--viking-space-1);
+  height: var(--viking-space-1);
+  border-radius: 50%;
+  background: var(--viking-accent);
+  flex-shrink: 0;
+}
+
+.showcase-auth-panel .viking-field {
+  width: 100%;
+}
+
+.showcase-auth-panel .viking-btn-full {
+  width: 100%;
 }
 
 .showcase-search-palette {
@@ -1608,7 +1697,7 @@ viking-card-wc.landing-doctrine-card > * {
   justify-content: center;
 }
 
-/* Kbd + caption row */
+/* Kbd as direct preview children (no demo-row wrapper) */
 .component-showcase-preview:has(> .viking-kbd-static) {
   flex-direction: row;
   flex-wrap: wrap;
@@ -1620,8 +1709,9 @@ viking-card-wc.landing-doctrine-card > * {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2rem;
-  min-width: 2rem;
+  min-height: 1.75rem;
+  min-width: 1.75rem;
+  line-height: 1;
 }
 
 .theming-setup-card {

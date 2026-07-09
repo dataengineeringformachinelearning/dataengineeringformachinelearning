@@ -882,40 +882,53 @@ palette.openPalette();
         name: "Auth panel",
         description:
           "Firebase OAuth shell with social providers and email fallback.",
-        preview: `<div class="showcase-auth-panel viking-demo-full">
-  <h3 class="viking-heading viking-heading-sm">Sign in to DEML</h3>
-  <p class="viking-text-muted">Operational intelligence for your ML infrastructure.</p>
-  <div class="viking-demo-full viking-demo-row viking-demo-row-stack">
-    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Continue with Google</button>
-    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Continue with Apple</button>
+        preview: `<div class="showcase-auth-panel viking-demo-full" role="region" aria-labelledby="auth-panel-demo-title">
+  <div class="viking-auth-tag-demo"><span class="viking-auth-tag-dot" aria-hidden="true"></span>Access Portal</div>
+  <h3 id="auth-panel-demo-title" class="viking-heading viking-heading-sm" style="margin:0">Sign In</h3>
+  <p class="viking-text-muted" style="margin:0">Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING).</p>
+  <form class="viking-demo-full viking-demo-row viking-demo-row-stack" autocomplete="on" style="gap:var(--viking-space-3)">
+    <div class="viking-field">
+      <label class="viking-field-label" for="auth-email-demo">Email Address</label>
+      <div class="viking-input-shell">
+        <input id="auth-email-demo" class="viking-input-native" name="username" type="email" autocomplete="username" inputmode="email" placeholder="email@example.com" required />
+      </div>
+    </div>
+    <div class="viking-field">
+      <label class="viking-field-label" for="auth-password-demo">Password</label>
+      <div class="viking-input-shell">
+        <input id="auth-password-demo" class="viking-input-native" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
+      </div>
+    </div>
+  </form>
+  <div class="viking-demo-full viking-demo-row viking-demo-row-stack" style="gap:var(--viking-space-2)">
+    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Don't have an account? Sign Up</button>
+    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Sign In with Phone Number</button>
+    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Forgot password?</button>
   </div>
   <div class="viking-divider"><span>or</span></div>
-  <div class="viking-field">
-    <label class="viking-field-label" for="auth-email-demo">Email</label>
-    <div class="viking-input-shell">
-      <input id="auth-email-demo" class="viking-input-native" name="email" type="email" autocomplete="username email" placeholder="you@company.com" />
-    </div>
+  <div class="viking-demo-full viking-demo-row viking-demo-row-stack" role="group" aria-label="Social sign-in">
+    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Sign In with Google</button>
+    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Sign In with Apple</button>
   </div>
-  <div class="viking-field">
-    <label class="viking-field-label" for="auth-password-demo">Password</label>
-    <div class="viking-input-shell">
-      <input id="auth-password-demo" class="viking-input-native" name="password" type="password" autocomplete="current-password" placeholder="••••••••" />
-    </div>
-  </div>
-  <div class="viking-field">
-    <label class="viking-field-label" for="auth-otp-demo">SMS code</label>
-    <div class="viking-input-shell">
-      <input id="auth-otp-demo" class="viking-input-native" name="one-time-code" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" />
-    </div>
-  </div>
-  <button type="button" class="viking-btn viking-btn-primary viking-btn-full">Continue</button>
+  <button type="button" class="viking-btn viking-btn-primary viking-btn-full">Login</button>
 </div>
-<p class="viking-text-muted viking-demo-caption">Fields use standard autocomplete for password managers and SMS OTP</p>`,
+<p class="viking-text-muted viking-demo-caption">Matches deml.app login — labeled fields with password-manager autocomplete</p>`,
         snippets: {
           angular: `<viking-auth-panel
-  [providers]="['google', 'github']"
-  (socialLogin)="onSocial($event)"
-/>`,
+  tag="Access Portal"
+  title="Sign In"
+  subtitle="Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+  [showSocial]="true"
+  (googleSignIn)="signInWithGoogle()"
+  (appleSignIn)="signInWithApple()"
+>
+  <viking-field label="Email Address" [required]="true">
+    <viking-input type="email" name="username" autocomplete="username" />
+  </viking-field>
+  <viking-field label="Password" [required]="true">
+    <viking-input type="password" name="password" autocomplete="current-password" />
+  </viking-field>
+</viking-auth-panel>`,
           astro: `{/* Auth panel requires Angular runtime — use viking-auth-panel in deml.app */}`,
           django: `{# OAuth handled via Firebase — embed auth widget in Angular shell #}`,
           javascript: `// Auth panel is Angular-only; use Firebase Auth directly in static sites`,

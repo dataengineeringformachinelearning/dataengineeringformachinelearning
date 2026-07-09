@@ -177,9 +177,9 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Spinner",
           description:
             "Indeterminate loading indicator with reduced-motion respect.",
-          preview: `<div class="viking-demo-row">
+          preview: `<div class="viking-demo-row" style="align-items:center">
   <span class="viking-spinner-static" role="status" aria-label="Loading"></span>
-  <span class="viking-text-muted">Relaying Outbox events…</span>
+  <span class="viking-text-muted" style="margin:0;line-height:1.2">Relaying Outbox events…</span>
 </div>`,
           selector: "viking-spinner",
         },
@@ -236,10 +236,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Keyboard hint",
           description:
             "Styled kbd element for shortcuts — pairs with search palette footer.",
-          preview: `<div class="viking-demo-row">
+          preview: `<div class="viking-demo-row" style="align-items:center">
   <span class="viking-kbd-static">⌘</span>
   <span class="viking-kbd-static">K</span>
-  <span class="viking-text-muted">Open command palette</span>
+  <span class="viking-text-muted" style="margin:0;line-height:1">Open command palette</span>
 </div>`,
           selector: "viking-kbd",
         },
@@ -294,9 +294,9 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           id: "brand",
           name: "Brand mark",
           description: "Logo lockup with wordmark for navbars and auth panels.",
-          preview: `<div class="viking-demo-row">
-  <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
-  <strong class="viking-heading viking-heading-sm" style="margin:0;line-height:1.2">DEML</strong>
+          preview: `<div class="viking-demo-row" style="align-items:center;gap:var(--viking-space-2)">
+  <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0;width:28px;height:28px"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
+  <strong class="viking-heading viking-heading-sm" style="margin:0;line-height:1;display:inline-flex;align-items:center">DEML</strong>
 </div>
 <p class="viking-text-muted viking-demo-caption">Icon + wordmark share one cross-axis</p>`,
           selector: "viking-brand",
@@ -467,10 +467,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "OTP input",
           description: "One-time passcode digit boxes with auto-advance focus.",
           preview: `<div class="viking-otp-static" role="group" aria-label="Verification code">
-  <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1" />
-  <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2" />
-  <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3" />
-  <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4" />
+  <input type="text" name="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1 of verification code" />
+  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 2 of verification code" />
+  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 3 of verification code" />
+  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 4 of verification code" />
 </div>`,
           selector: "viking-otp-input",
           tags: ["angular"],

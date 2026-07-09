@@ -436,6 +436,8 @@
 
 // Breadcrumbs
 .viking-breadcrumbs-static {
+  display: flex;
+  align-items: center;
   font-size: var(--viking-font-size-sm);
   line-height: 1;
 }
@@ -454,24 +456,90 @@
 .viking-breadcrumbs-list li {
   display: inline-flex;
   align-items: center;
+  gap: var(--viking-space-1);
   min-height: 1.5rem;
-  line-height: 1.25;
+  line-height: 1;
 }
 
 .viking-breadcrumbs-list li:not(:last-child)::after {
   content: '/';
-  margin-left: var(--viking-space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1em;
   color: var(--viking-text-muted);
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .viking-breadcrumbs-list a {
+  display: inline-flex;
+  align-items: center;
   color: var(--viking-accent);
   text-decoration: none;
+  line-height: 1;
 }
 
 .viking-breadcrumbs-list a:hover {
   text-decoration: underline;
+}
+
+// Custom select static demo (trigger + open listbox — not nested input shells)
+.viking-select-demo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-half);
+  width: 100%;
+  max-width: 16rem;
+}
+
+.viking-select-trigger-static {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--viking-space-1);
+  width: 100%;
+  min-height: var(--viking-control-height, 46px);
+  padding: 0 var(--viking-space-2);
+  font-family: inherit;
+  font-size: var(--viking-font-size);
+  color: var(--viking-text);
+  text-align: left;
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border-strong);
+  border-radius: var(--viking-radius);
+  box-shadow: var(--viking-shadow-sm);
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.viking-select-panel-static {
+  margin: 0;
+  padding: var(--viking-space-half);
+  list-style: none;
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  background: var(--viking-select-panel-bg, var(--viking-surface-raised, var(--viking-surface)));
+  box-shadow: var(--viking-shadow-md);
+}
+
+.viking-select-panel-static li {
+  display: flex;
+  align-items: center;
+  min-height: var(--viking-control-height-sm, 36px);
+  padding: 0 var(--viking-space-2);
+  border-radius: var(--viking-radius-sm);
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-sm);
+  line-height: 1.2;
+}
+
+.viking-select-panel-static li[aria-selected='true'],
+.viking-select-panel-static li.is-selected {
+  color: var(--viking-text);
+  background: var(--viking-accent-soft);
+  font-weight: var(--viking-font-weight-semibold, 600);
 }
 
 // Pagination
@@ -630,15 +698,26 @@
 
 .viking-spinner-static {
   display: inline-block;
+  box-sizing: border-box;
   width: 1.25rem;
   height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  flex: 0 0 1.25rem;
+  aspect-ratio: 1 / 1;
   border: 2px solid var(--viking-border);
   border-top-color: var(--viking-accent);
   border-radius: 50%;
+  /* Spin in place about the element center (not an orbital path). */
+  transform-origin: 50% 50%;
   animation: viking-spinner-spin 0.8s linear infinite;
+  vertical-align: middle;
 }
 
 @keyframes viking-spinner-spin {
+  from {
+    transform: rotate(0deg);
+  }
   to {
     transform: rotate(360deg);
   }
