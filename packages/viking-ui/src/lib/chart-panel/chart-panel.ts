@@ -55,36 +55,48 @@ export type VikingChartPanelBody = "default" | "origin-map";
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
         position: relative;
         overflow: hidden;
         padding: var(--viking-space-3) var(--viking-space-4)
           var(--viking-space-4);
         box-sizing: border-box;
         gap: var(--viking-space-2);
+        min-width: 0;
+      }
+
+      .viking-chart-panel-body > viking-chart,
+      .viking-chart-panel-body > viking-chart-empty-state {
+        flex: 1 1 auto;
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        align-self: stretch;
       }
 
       :host(.viking-chart-panel-large) .viking-chart-panel-body {
         --viking-chart-empty-min-height: var(
           --viking-chart-empty-min-height-lg,
-          clamp(16rem, 32vw, 19rem)
+          clamp(14.5rem, 30vw, 17.5rem)
         );
         --viking-chart-fill-min-height: var(
           --viking-chart-fill-min-height-lg,
-          clamp(16rem, 32vw, 19rem)
+          clamp(14.5rem, 30vw, 17.5rem)
         );
-        min-height: var(--viking-chart-panel-body-min-height-lg, 20rem);
+        min-height: var(--viking-chart-panel-body-min-height-lg, 18rem);
       }
 
       :host(.viking-chart-panel-medium) .viking-chart-panel-body {
         --viking-chart-empty-min-height: var(
           --viking-chart-empty-min-height,
-          clamp(15rem, 30vw, 18rem)
+          clamp(13.5rem, 28vw, 16.5rem)
         );
         --viking-chart-fill-min-height: var(
           --viking-chart-fill-min-height,
-          clamp(15rem, 30vw, 18rem)
+          clamp(13.5rem, 28vw, 16.5rem)
         );
-        min-height: var(--viking-chart-panel-body-min-height-md, 18rem);
+        min-height: var(--viking-chart-panel-body-min-height-md, 16.5rem);
       }
 
       :host(.viking-chart-panel-medium.viking-chart-panel-origin-map)

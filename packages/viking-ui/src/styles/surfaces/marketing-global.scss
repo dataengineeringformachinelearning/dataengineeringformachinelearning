@@ -1139,11 +1139,19 @@ select option:checked {
 .integrations-list {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-3);
-  padding: var(--viking-space-1) 0;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-lg);
+  background: var(
+    --viking-surface-recipe,
+    color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%)
+  );
+  box-sizing: border-box;
 }
 
 .integration-item {
+  display: flex;
   align-items: center;
   gap: var(--viking-space-3);
 }
@@ -1154,10 +1162,11 @@ select option:checked {
   border-radius: var(--viking-radius-md);
   border: 1px solid var(--viking-border);
   background: var(--viking-surface);
+  box-shadow: var(--viking-shadow-xs);
 }
 
 .integration-item-bordered {
-  border: 1px solid var(--viking-accent-strong);
+  border-color: var(--viking-border);
 }
 
 .integration-action {

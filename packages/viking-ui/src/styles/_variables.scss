@@ -253,24 +253,25 @@
   /* ── Refined surface layering for depth (dark-first) ───────────────────── */
   --viking-surface-inset: var(--viking-navy-850);
 
-  /* ── Chart scale — unified responsive min/max (matches 720×240 SVG viewBox) ─ */
-  --viking-chart-ratio: 16 / 9;
-  /* Happy-medium chart scale: readable without dominating the viewport */
-  --viking-chart-min-height: clamp(13rem, 28vw, 16rem);
-  --viking-chart-max-height: clamp(16rem, 34vw, 19rem);
-  --viking-chart-fill-min-height: clamp(15rem, 30vw, 18rem);
-  --viking-chart-fill-max-height: clamp(17rem, 34vw, 20rem);
-  --viking-chart-fill-min-height-lg: clamp(16rem, 32vw, 19rem);
-  --viking-chart-fill-max-height-lg: clamp(18rem, 36vw, 21rem);
+  /* ── Chart scale — wide 3:1 aspect (premium analytics cadence) ─ */
+  --viking-chart-ratio: 3 / 1;
+  /* Balanced plot size: readable ticks, not towering or cramped */
+  --viking-chart-min-height: clamp(12rem, 26vw, 15rem);
+  --viking-chart-max-height: clamp(15rem, 32vw, 18rem);
+  --viking-chart-fill-min-height: clamp(13.5rem, 28vw, 16.5rem);
+  --viking-chart-fill-max-height: clamp(16rem, 32vw, 19rem);
+  --viking-chart-fill-min-height-lg: clamp(14.5rem, 30vw, 17.5rem);
+  --viking-chart-fill-max-height-lg: clamp(17rem, 34vw, 20rem);
   --viking-chart-empty-min-height: var(--viking-chart-fill-min-height);
   --viking-chart-empty-min-height-lg: var(--viking-chart-fill-min-height-lg);
-  /* Responsive grid cards (3-up): taller bodies so plots aren't cramped */
-  --viking-chart-panel-min-height-md: 24rem;
-  --viking-chart-panel-min-height-lg: 26rem;
-  --viking-chart-panel-body-min-height-md: 18rem;
-  --viking-chart-panel-body-min-height-lg: 20rem;
-  --viking-chart-sparkline-height: 2.5rem;
+  /* Panel shells sized to the plot (header + body + breathing) */
+  --viking-chart-panel-min-height-md: 22rem;
+  --viking-chart-panel-min-height-lg: 24rem;
+  --viking-chart-panel-body-min-height-md: 16.5rem;
+  --viking-chart-panel-body-min-height-lg: 18rem;
+  --viking-chart-sparkline-height: 2.75rem;
   --viking-chart-map-min-height: 22rem;
+  --viking-chart-padding: var(--viking-space-2) var(--viking-space-2);
 
   /* ── Breakpoints (mobile-first) ─────────────────────────────────────────── */
   --viking-bp-sm: 600px;

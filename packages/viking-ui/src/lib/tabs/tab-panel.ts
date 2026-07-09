@@ -25,17 +25,24 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
     `
       :host {
         display: block;
-        padding: var(--viking-space-3) var(--viking-space-3)
-          var(--viking-space-4);
+        padding: var(--viking-space-4) var(--viking-space-3)
+          var(--viking-space-5);
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius);
+        border-radius: var(--viking-radius-lg);
         background: var(--viking-surface);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
         color: var(--viking-text);
         line-height: var(--viking-line-height-relaxed);
+        box-sizing: border-box;
         animation: viking-fade-in var(--viking-duration-fast)
           var(--viking-ease-out);
+      }
+      @media (min-width: 768px) {
+        :host {
+          padding: var(--viking-space-5) var(--viking-space-4)
+            var(--viking-space-6);
+        }
       }
       :host(.viking-hidden) {
         display: none;

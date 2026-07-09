@@ -79,9 +79,15 @@
 
             <div class="kpi-grid">
               <div class="viking-card kpi-card" [class.alert]="threatLevel > 50">
-                <viking-app-icon name="security" />
-                <span class="kpi-label">Threat Exposure</span>
-                <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
+                <div class="kpi-card-header">
+                  <span class="kpi-icon-badge" aria-hidden="true">
+                    <viking-app-icon name="security" />
+                  </span>
+                  <div class="kpi-card-meta">
+                    <span class="kpi-label">Threat Exposure</span>
+                    <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
+                  </div>
+                </div>
                 <div class="kpi-sparkline-slot">
                   @if (threatSparkline().length) {
                   <viking-chart
@@ -92,31 +98,54 @@
                     [showArea]="true"
                     class="kpi-sparkline viking-chart-wide"
                   />
+                  } @else {
+                  <span class="kpi-subtitle">Threat exposure trend (24h)</span>
                   }
                 </div>
               </div>
 
-              <!-- Fourth model: Spiking Temporal Forecast (from backend telemetry) -->
               <div class="viking-card kpi-card">
-                <viking-app-icon name="trending-up" />
-                <span class="kpi-label">Spiking Temporal Forecast</span>
-                <span class="kpi-value">{{ (temporalForecast() || 50) | number:'1.0-0' }}%</span>
+                <div class="kpi-card-header">
+                  <span class="kpi-icon-badge" aria-hidden="true">
+                    <viking-app-icon name="trending-up" />
+                  </span>
+                  <div class="kpi-card-meta">
+                    <span class="kpi-label">Spiking Temporal Forecast</span>
+                    <span class="kpi-value"
+                      >{{ (temporalForecast() || 50) | number:'1.0-0' }}%</span
+                    >
+                  </div>
+                </div>
                 <div class="kpi-sparkline-slot">
-                  <small class="kpi-subtitle"
-                    >Dynamic Temporal Forecasting on event sequences</small
-                  >
+                  <span class="kpi-subtitle">Dynamic temporal forecast on event sequences</span>
                 </div>
               </div>
+
               <div class="viking-card kpi-card" [class.alert]="openVulnCount() > 0">
-                <viking-app-icon name="bug_report" />
-                <span class="kpi-label">Open Issues</span>
-                <span class="kpi-value">{{ openVulnCount() }}</span>
-                <div class="kpi-sparkline-slot" aria-hidden="true"></div>
+                <div class="kpi-card-header">
+                  <span class="kpi-icon-badge" aria-hidden="true">
+                    <viking-app-icon name="bug_report" />
+                  </span>
+                  <div class="kpi-card-meta">
+                    <span class="kpi-label">Open Issues</span>
+                    <span class="kpi-value">{{ openVulnCount() }}</span>
+                  </div>
+                </div>
+                <div class="kpi-sparkline-slot">
+                  <span class="kpi-subtitle">Vulnerabilities awaiting triage</span>
+                </div>
               </div>
+
               <div class="viking-card kpi-card">
-                <viking-app-icon name="speed" />
-                <span class="kpi-label">Uptime</span>
-                <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
+                <div class="kpi-card-header">
+                  <span class="kpi-icon-badge" aria-hidden="true">
+                    <viking-app-icon name="speed" />
+                  </span>
+                  <div class="kpi-card-meta">
+                    <span class="kpi-label">Uptime</span>
+                    <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
+                  </div>
+                </div>
                 <div class="kpi-sparkline-slot">
                   @if (uptimeSparkline().length) {
                   <viking-chart
@@ -127,14 +156,25 @@
                     [showArea]="true"
                     class="kpi-sparkline viking-chart-wide"
                   />
+                  } @else {
+                  <span class="kpi-subtitle">Uptime trend (24h)</span>
                   }
                 </div>
               </div>
+
               <div class="viking-card kpi-card" [class.alert]="activeIncidents > 0">
-                <viking-app-icon name="report" />
-                <span class="kpi-label">Active Incidents</span>
-                <span class="kpi-value">{{ activeIncidents }}</span>
-                <div class="kpi-sparkline-slot" aria-hidden="true"></div>
+                <div class="kpi-card-header">
+                  <span class="kpi-icon-badge" aria-hidden="true">
+                    <viking-app-icon name="report" />
+                  </span>
+                  <div class="kpi-card-meta">
+                    <span class="kpi-label">Active Incidents</span>
+                    <span class="kpi-value">{{ activeIncidents }}</span>
+                  </div>
+                </div>
+                <div class="kpi-sparkline-slot">
+                  <span class="kpi-subtitle">Open incident responses</span>
+                </div>
               </div>
             </div>
 

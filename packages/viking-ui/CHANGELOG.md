@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.6.0
+
+### Minor Changes
+
+- Cleanup components
+
 ## 4.5.0
 
 ### Minor Changes

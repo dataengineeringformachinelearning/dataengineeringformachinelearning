@@ -32,6 +32,7 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
+import { StatusCta } from '../../components/status-cta/status-cta';
 
 import { timeout } from 'rxjs';
 
@@ -50,6 +51,7 @@ import { timeout } from 'rxjs';
     VikingStatusSection,
     VikingUptimeHistory,
     RouterModule,
+    StatusCta,
   ],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

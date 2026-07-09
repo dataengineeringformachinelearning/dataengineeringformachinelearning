@@ -358,7 +358,9 @@ export class ExploreCardMetricItemComponent {
             variant="primary"
             [fullWidth]="true"
             [href]="href()"
+            icon="globe"
             iconTrailing="arrow-right"
+            [label]="viewLabel()"
           >
             {{ viewLabel() }}
           </viking-button>

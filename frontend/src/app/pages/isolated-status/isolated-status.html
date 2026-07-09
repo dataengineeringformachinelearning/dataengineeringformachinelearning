@@ -1,6 +1,6 @@
-<div class="dashboard-page-container">
+<div class="dashboard-page-container isolated-status-page">
   <div class="dashboard-content-area">
-    <div class="page-inner-wrapper">
+    <div class="page-inner-wrapper isolated-status-shell">
       @if (loadFailed()) { @if (loadErrorKind() === 'not_found') {
       <viking-callout tone="warning" heading="Status Page Not Found">
         <p>
@@ -240,6 +240,14 @@
           </section>
           }
         </viking-status-section>
+
+        <app-status-cta
+          class="isolated-status-cta"
+          badgeIcon="rocket_launch"
+          badgeText="Start Free"
+          title="Ship status pages that sell reliability"
+          subtitle="Publish a public status surface with SLA forecasts, threat posture, and live telemetry — the same stack that powers this page."
+        ></app-status-cta>
       </div>
       <!-- close viking-stack for rhythm -->
       }

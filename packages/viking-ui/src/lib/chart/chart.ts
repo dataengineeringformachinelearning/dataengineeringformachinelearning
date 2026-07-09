@@ -482,8 +482,8 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
         aspect-ratio: var(--viking-chart-ratio, 3 / 1);
-        min-height: var(--viking-chart-min-height, clamp(9.5rem, 22vw, 12rem));
-        max-height: var(--viking-chart-max-height, clamp(13rem, 36vw, 17.5rem));
+        min-height: var(--viking-chart-min-height, clamp(12rem, 26vw, 15rem));
+        max-height: var(--viking-chart-max-height, clamp(15rem, 32vw, 18rem));
         height: auto;
       }
       .viking-chart-fill {
@@ -494,11 +494,11 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         justify-content: center;
         min-height: var(
           --viking-chart-fill-min-height,
-          clamp(12rem, 28vw, 16rem)
+          clamp(13.5rem, 28vw, 16.5rem)
         );
         max-height: var(
           --viking-chart-fill-max-height,
-          clamp(14rem, 32vw, 18rem)
+          clamp(16rem, 32vw, 19rem)
         );
         height: 100%;
         --viking-chart-axis-size: 13px;
@@ -1031,15 +1031,21 @@ export class VikingChart {
       return { min: dataMin - padding, max: dataMax + padding };
     }
 
-    // Always include 0 baseline for bar/line/area so charts don't look
-    // "zoomed into" a tight band of similar values. Extra headroom keeps
-    // peaks clear of the top edge without making the plot feel tiny.
+    // 0 baseline + modest headroom (~12–15%) so plots read wide and open
+    // instead of glued to the top edge or overly zoomed into a tight band.
     const min = Math.min(0, dataMin);
     let max = Math.max(0, dataMax);
     if (max === min) {
       max = min + 1;
     } else {
-      max = max + Math.max((max - min) * 0.18, Math.abs(max) * 0.06, 1);
+      const span = max - min;
+      max = max + Math.max(span * 0.14, Math.abs(max) * 0.05, 1);
+      // Nice round-ish upper bound for calmer tick labels
+      const magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(max, 1))));
+      const step = magnitude / 2;
+      if (step > 0) {
+        max = Math.ceil(max / step) * step;
+      }
     }
     return { min, max };
   });
