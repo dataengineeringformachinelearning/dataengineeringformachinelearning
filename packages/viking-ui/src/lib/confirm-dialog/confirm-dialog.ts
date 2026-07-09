@@ -57,9 +57,9 @@ import { VikingConfirmDialogData, VikingDialogService } from "./dialog.service";
         </div>
         <div vikingModalActions>
           @if (dialogData.type !== "alert") {
-            <viking-button variant="outline" (pressed)="onCancel()"
-              >Cancel</viking-button
-            >
+            <viking-button variant="outline" (pressed)="onCancel()">
+              {{ dialogData.cancelBtnText || "Cancel" }}
+            </viking-button>
           }
           <viking-button
             [variant]="

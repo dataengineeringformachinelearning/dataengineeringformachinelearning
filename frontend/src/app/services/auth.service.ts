@@ -461,6 +461,34 @@ export class AuthService {
     }
   }
 
+  /**
+   * Detect whether the current ID token was issued after second-factor auth.
+   * Firebase Identity Platform sets `firebase.sign_in_second_factor` (e.g. "phone")
+   * after SMS MFA; some tenants also surface OIDC `amr: ["mfa"]`.
+   */
+  private isMfaVerifiedFromClaims(claims: Record<string, unknown>): boolean {
+    const amr = claims['amr'];
+    if (Array.isArray(amr) && amr.some(entry => String(entry).toLowerCase() === 'mfa')) {
+      return true;
+    }
+    if (typeof amr === 'string' && amr.toLowerCase().includes('mfa')) {
+      return true;
+    }
+    const firebaseClaim = claims['firebase'];
+    if (firebaseClaim && typeof firebaseClaim === 'object') {
+      const secondFactor = (firebaseClaim as { sign_in_second_factor?: unknown })
+        .sign_in_second_factor;
+      if (typeof secondFactor === 'string' && secondFactor.length > 0) {
+        return true;
+      }
+    }
+    // Explicit custom claim some environments mint after MFA.
+    if (claims['mfa'] === true || claims['mfa_verified'] === true) {
+      return true;
+    }
+    return false;
+  }
+
   async refreshMfaState(forceToken = false): Promise<void> {
     const user = this.auth?.currentUser as FirebaseUser | null | undefined;
     if (!user) {
@@ -472,13 +500,26 @@ export class AuthService {
       if (typeof user.reload === 'function') {
         await user.reload();
       }
-      this.mfaEnrolled.set(multiFactor(user).enrolledFactors.length > 0);
+      const enrolled = multiFactor(user).enrolledFactors.length > 0;
+      this.mfaEnrolled.set(enrolled);
+      // Force a fresh token after MFA resolve so second-factor claims land.
+      if (forceToken && typeof user.getIdToken === 'function') {
+        await user.getIdToken(true);
+      }
       const tokenResult = await user.getIdTokenResult(forceToken);
-      const amr = tokenResult.claims['amr'];
-      this.mfaVerifiedInSession.set(Array.isArray(amr) && amr.includes('mfa'));
+      const claims = (tokenResult.claims ?? {}) as Record<string, unknown>;
+      this.mfaVerifiedInSession.set(this.isMfaVerifiedFromClaims(claims));
     } catch (e) {
       console.warn('MFA state refresh skipped:', e);
-      this.mfaEnrolled.set(false);
+      // Do not clobber enrolled state on transient token errors.
+      try {
+        const u = this.auth?.currentUser as FirebaseUser | null | undefined;
+        if (u) {
+          this.mfaEnrolled.set(multiFactor(u).enrolledFactors.length > 0);
+        }
+      } catch {
+        this.mfaEnrolled.set(false);
+      }
       this.mfaVerifiedInSession.set(false);
     }
   }

@@ -6,13 +6,17 @@ import { VikingDialogService } from './viking-dialog.service';
 
 /** Idle session length before forced sign-out (10 minutes). */
 const SESSION_IDLE_MS = 10 * 60 * 1000;
-/** Warn one minute before expiry. */
-const SESSION_WARN_MS = SESSION_IDLE_MS - 60 * 1000;
+/** Show continue prompt this long before forced sign-out. */
+const SESSION_WARN_LEAD_MS = 60 * 1000;
+/** Idle duration after which the warning dialog opens. */
+const SESSION_WARN_MS = SESSION_IDLE_MS - SESSION_WARN_LEAD_MS;
 const SESSION_CHANNEL = 'deml-session';
 
+const ACTIVITY_EVENTS = ['pointerdown', 'keydown', 'scroll', 'touchstart'] as const;
+
 /**
- * Tracks user activity and prompts before idle sign-out.
- * Complements Firebase token refresh with an explicit in-app idle boundary.
+ * Tracks user activity and prompts 60s before idle sign-out so the user can
+ * continue the session. Complements Firebase token refresh with an in-app idle boundary.
  */
 @Injectable({ providedIn: 'root' })
 export class SessionIdleService {
@@ -29,49 +33,88 @@ export class SessionIdleService {
   private warnTimer: ReturnType<typeof setTimeout> | undefined;
   private logoutTimer: ReturnType<typeof setTimeout> | undefined;
   private warningOpen = false;
-  private boundReset: (() => void) | undefined;
+  private expired = false;
+  private boundOnActivity: (() => void) | undefined;
+  /** Absolute timestamp when forced logout will occur (ms since epoch). */
+  private logoutAt = 0;
 
   start(): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
-    this.stop();
-    this.boundReset = () => this.resetTimers();
-    const events = ['pointerdown', 'keydown', 'scroll', 'touchstart'] as const;
-    for (const eventName of events) {
-      window.addEventListener(eventName, this.boundReset, { passive: true });
+    this.stopTimersOnly();
+    this.expired = false;
+    this.warningOpen = false;
+    if (!this.boundOnActivity) {
+      this.boundOnActivity = () => this.onActivity();
+      for (const eventName of ACTIVITY_EVENTS) {
+        window.addEventListener(eventName, this.boundOnActivity, { passive: true });
+      }
     }
-    this.resetTimers();
+    this.armIdleTimers();
   }
 
   stop(): void {
-    if (this.boundReset && isPlatformBrowser(this.platformId)) {
-      const events = ['pointerdown', 'keydown', 'scroll', 'touchstart'] as const;
-      for (const eventName of events) {
-        window.removeEventListener(eventName, this.boundReset);
+    if (this.boundOnActivity && isPlatformBrowser(this.platformId)) {
+      for (const eventName of ACTIVITY_EVENTS) {
+        window.removeEventListener(eventName, this.boundOnActivity);
       }
-      this.boundReset = undefined;
+      this.boundOnActivity = undefined;
     }
+    this.stopTimersOnly();
+    this.warningOpen = false;
+    this.expired = false;
+    this.logoutAt = 0;
+  }
+
+  /** Explicit extension from UI or cross-tab broadcast. */
+  extendSession(): void {
+    if (!this.authService.isAuthenticated() || this.expired) {
+      return;
+    }
+    if (this.warningOpen) {
+      this.dialog.resolveConfirm(true);
+    }
+    this.warningOpen = false;
+    this.armIdleTimers();
+    this.postSessionMessage({ type: 'extend' });
+  }
+
+  private stopTimersOnly(): void {
     clearTimeout(this.warnTimer);
     clearTimeout(this.logoutTimer);
     this.warnTimer = undefined;
     this.logoutTimer = undefined;
   }
 
-  private resetTimers = (): void => {
-    if (!this.authService.isAuthenticated()) {
+  private onActivity(): void {
+    if (!this.authService.isAuthenticated() || this.expired) {
       return;
     }
-    clearTimeout(this.warnTimer);
-    clearTimeout(this.logoutTimer);
+    // While the pre-expiry prompt is open, only "Continue session" extends.
+    // Random pointer/scroll noise must not hide the prompt or silently re-arm.
+    if (this.warningOpen) {
+      return;
+    }
+    this.armIdleTimers();
+  }
+
+  private armIdleTimers(): void {
+    if (!this.authService.isAuthenticated() || this.expired) {
+      return;
+    }
+    this.stopTimersOnly();
     this.touchSessionCache();
+    this.logoutAt = Date.now() + SESSION_IDLE_MS;
+
     this.warnTimer = setTimeout(() => {
       void this.showWarning();
     }, SESSION_WARN_MS);
+
     this.logoutTimer = setTimeout(() => {
       void this.expireSession();
     }, SESSION_IDLE_MS);
-  };
+  }
 
   private touchSessionCache(): void {
     if (typeof window === 'undefined') {
@@ -84,23 +127,43 @@ export class SessionIdleService {
   }
 
   private async showWarning(): Promise<void> {
-    if (this.warningOpen || !this.authService.isAuthenticated()) {
+    if (this.warningOpen || this.expired || !this.authService.isAuthenticated()) {
       return;
     }
     this.warningOpen = true;
+
+    // Guarantee a full 60s grace window from the moment the prompt is shown,
+    // even if timer drift or a late fire reduced the original remaining time.
+    const graceMs = SESSION_WARN_LEAD_MS;
+    this.logoutAt = Date.now() + graceMs;
+    clearTimeout(this.logoutTimer);
+    this.logoutTimer = setTimeout(() => {
+      void this.expireSession();
+    }, graceMs);
+
     const stay = await this.dialog.openConfirm({
-      title: 'Session expiring',
+      title: 'Session expiring soon',
       message:
-        'Your session will expire in one minute due to inactivity. Continue working to stay signed in.',
+        'Your session will expire in 60 seconds due to inactivity. Choose Continue session to stay signed in, or you will be signed out automatically.',
       confirmBtnText: 'Continue session',
+      cancelBtnText: 'Sign out now',
       type: 'confirm',
     });
+
+    // Dialog resolved (user chose an action or dismissed).
     this.warningOpen = false;
+
+    if (this.expired) {
+      // Logout already ran while the dialog was open.
+      return;
+    }
+
     if (stay) {
-      this.resetTimers();
+      this.armIdleTimers();
       this.postSessionMessage({ type: 'extend' });
       return;
     }
+
     await this.expireSession();
   }
 
@@ -112,9 +175,29 @@ export class SessionIdleService {
   }
 
   private async expireSession(): Promise<void> {
-    this.stop();
+    if (this.expired) {
+      return;
+    }
+    this.expired = true;
+    this.stopTimersOnly();
+
+    // Close any open confirm so it does not resolve after navigation.
+    if (this.warningOpen) {
+      this.dialog.resolveConfirm(false);
+      this.warningOpen = false;
+    }
+
     this.postSessionMessage({ type: 'logout', reason: 'timeout' });
-    await this.authService.logout();
-    void this.router.navigate(['/login'], { queryParams: { reason: 'timeout' } });
+    try {
+      await this.authService.logout();
+    } finally {
+      if (this.boundOnActivity && isPlatformBrowser(this.platformId)) {
+        for (const eventName of ACTIVITY_EVENTS) {
+          window.removeEventListener(eventName, this.boundOnActivity);
+        }
+        this.boundOnActivity = undefined;
+      }
+      void this.router.navigate(['/login'], { queryParams: { reason: 'timeout' } });
+    }
   }
 }

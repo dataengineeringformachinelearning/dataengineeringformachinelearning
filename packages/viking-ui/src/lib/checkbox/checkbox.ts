@@ -56,7 +56,7 @@ import { VikingIcon } from "../icon/icon";
       .viking-checkbox {
         display: inline-flex;
         align-items: flex-start;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-1-5);
         cursor: pointer;
       }
       .viking-disabled {
@@ -70,7 +70,8 @@ import { VikingIcon } from "../icon/icon";
         justify-content: center;
         width: var(--viking-space-2);
         height: var(--viking-space-2);
-        margin-top: 2px;
+        /* Optical first-line alignment with label text */
+        margin-top: 0.15em;
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius-xs);
         background: var(--viking-surface);
@@ -108,6 +109,8 @@ import { VikingIcon } from "../icon/icon";
       .viking-checkbox-content {
         display: flex;
         flex-direction: column;
+        min-width: 0;
+        padding-top: 0;
       }
       .viking-checkbox-label {
         font-size: var(--viking-font-size);

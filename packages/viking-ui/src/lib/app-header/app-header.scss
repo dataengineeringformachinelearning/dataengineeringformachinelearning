@@ -16,6 +16,14 @@
   align-items: stretch;
   padding: var(--viking-space-1) var(--viking-space-3);
   box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    padding-inline: var(--viking-space-4);
+  }
+
+  @media (min-width: 1280px) {
+    padding-inline: var(--viking-space-5);
+  }
 }
 
 .viking-app-header-content {
@@ -23,6 +31,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   width: 100%;
+  max-width: none;
   gap: var(--viking-space-3);
 }
 
@@ -59,7 +68,8 @@
 .viking-app-header-desktop-nav {
   display: none;
   align-items: center;
-  gap: var(--viking-space-3);
+  justify-content: center;
+  gap: var(--viking-space-2-5, 20px);
   padding: calc(var(--viking-space-1) / 2) 0;
 }
 
@@ -83,7 +93,7 @@
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--viking-radius) var(--viking-radius) 0 0 !important;
-  padding: 0 var(--viking-space-2) !important;
+  padding: 0 var(--viking-space-2-5, 20px) !important;
   height: 36px !important;
   min-height: 36px !important;
   line-height: 1 !important;

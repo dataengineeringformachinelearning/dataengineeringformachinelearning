@@ -25,7 +25,8 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
     `
       :host {
         display: block;
-        padding: var(--viking-space-2);
+        padding: var(--viking-space-3) var(--viking-space-3)
+          var(--viking-space-4);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius);
         background: var(--viking-surface);

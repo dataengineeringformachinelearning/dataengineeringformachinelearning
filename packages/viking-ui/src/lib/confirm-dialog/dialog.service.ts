@@ -8,6 +8,8 @@ export interface VikingConfirmDialogData {
   type?: "alert" | "confirm" | "prompt";
   confirmText?: string;
   confirmBtnText?: string;
+  /** Secondary action label (confirm dialogs only). Defaults to "Cancel". */
+  cancelBtnText?: string;
   confirmBtnColor?: "primary" | "warn" | "accent";
 }
 

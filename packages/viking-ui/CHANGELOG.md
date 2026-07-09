@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.5.0
+
+### Minor Changes
+
+- Enhance spacing in components
+
 ## 4.4.0
 
 ### Minor Changes

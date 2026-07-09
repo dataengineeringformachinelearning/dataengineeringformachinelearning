@@ -665,11 +665,12 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: var(--viking-chart-panel-body-min-height-md, 19rem);
-  max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+  min-height: var(--viking-chart-panel-body-min-height-md, 18rem);
+  max-height: var(--viking-chart-fill-max-height, clamp(17rem, 34vw, 20rem));
 
   &.short {
-    min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+    min-height: var(--viking-chart-fill-min-height, clamp(15rem, 30vw, 17.5rem));
+    max-height: var(--viking-chart-fill-max-height, clamp(16rem, 32vw, 19rem));
   }
 
   viking-chart {
@@ -683,7 +684,7 @@
     flex: 1 1 auto;
     --viking-chart-empty-min-height: var(
       --viking-chart-fill-min-height,
-      clamp(16rem, 32vw, 17.5rem)
+      clamp(15rem, 30vw, 17.5rem)
     );
   }
 }
@@ -1824,6 +1825,14 @@ viking-card-header {
   width: 100%;
 }
 
+.settings-mfa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-2);
+  margin-top: var(--viking-space-2);
+}
+
 .settings-form-panel {
   display: flex;
   flex-direction: column;
@@ -1845,8 +1854,27 @@ viking-card-header {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: var(--viking-space-2, 16px);
+    gap: var(--viking-space-3, 24px);
     margin-top: var(--viking-space-1, 8px);
+
+    viking-checkbox,
+    .viking-checkbox {
+      width: 100%;
+    }
+
+    .viking-checkbox {
+      align-items: flex-start;
+      gap: var(--viking-space-1-5);
+    }
+
+    .viking-checkbox-box {
+      margin-top: 0.15em;
+      flex-shrink: 0;
+    }
+
+    .viking-checkbox-label {
+      line-height: 1.45;
+    }
   }
 }
 
@@ -1913,9 +1941,23 @@ viking-card-header {
   }
 
   .integrations-list {
-    padding: 0;
+    padding: var(--viking-space-2) var(--viking-space-1);
     background: transparent;
     border: none;
+    gap: var(--viking-space-3);
+
+    .integration-item {
+      padding: var(--viking-space-3) var(--viking-space-2);
+      border-radius: var(--viking-radius-md);
+      border: 1px solid var(--viking-border-subtle);
+      border-bottom: 1px solid var(--viking-border-subtle);
+      background: var(--viking-surface-alt, transparent);
+      margin-bottom: var(--viking-space-2);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 
   .code-block-outlined {
@@ -2144,28 +2186,27 @@ viking-card-header {
 .integrations-list {
   display: flex;
   flex-direction: column;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-1) 0;
 
   .integration-item {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    padding: var(--viking-space-3) 0;
+    align-items: center;
+    gap: var(--viking-space-3);
+    padding: var(--viking-space-3) var(--viking-space-2);
     border-bottom: 1px solid var(--viking-border-subtle);
 
     &:last-child {
       border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    &:first-child {
-      padding-top: 0;
     }
 
     &.clarity-item,
     &.cloudflare-item {
       flex-direction: column;
       align-items: stretch;
-      gap: var(--viking-space-2, 16px);
+      gap: var(--viking-space-3, 24px);
+      padding: var(--viking-space-3) var(--viking-space-2);
     }
   }
 
@@ -2493,8 +2534,31 @@ viking-card-header {
 
 .integration-item-bordered {
   border-bottom: 1px solid var(--viking-border-subtle);
-  padding-bottom: var(--viking-space-2);
-  margin-bottom: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  margin-bottom: 0;
+}
+
+/* Connected accounts / integration tiles inside cards */
+.mfa-settings-card .integrations-list,
+.status-card-outlined .integrations-list.panel-clean {
+  gap: var(--viking-space-3);
+  padding: var(--viking-space-1) 0 var(--viking-space-2);
+}
+
+.mfa-settings-card .integration-item,
+.status-card-outlined .integrations-list .integration-item {
+  padding: var(--viking-space-3);
+  gap: var(--viking-space-3);
+  border-radius: var(--viking-radius-md);
+  border: 1px solid var(--viking-border-subtle);
+  background: var(--viking-surface-alt, var(--viking-surface));
+  margin-bottom: 0;
+}
+
+.mfa-settings-card .integration-item + .integration-item,
+.status-card-outlined .integrations-list .integration-item + .integration-item {
+  margin-top: 0;
+  border-top: 1px solid var(--viking-border-subtle);
 }
 
 /* ── account extras ── */
@@ -2635,17 +2699,18 @@ viking-card-header {
   --viking-page-stack-gap: var(--viking-space-4);
   --viking-page-section-gap: var(--viking-space-5);
   --viking-dashboard-grid-gap: var(--viking-space-3);
-  --viking-chart-min-height: clamp(10rem, 20vw, 13rem);
-  --viking-chart-max-height: clamp(13rem, 26vw, 16rem);
-  --viking-chart-fill-min-height: clamp(13rem, 24vw, 16rem);
-  --viking-chart-fill-max-height: clamp(15rem, 30vw, 19rem);
-  --viking-chart-fill-min-height-lg: clamp(15rem, 28vw, 18rem);
-  --viking-chart-fill-max-height-lg: clamp(17rem, 32vw, 21rem);
-  --viking-chart-panel-min-height-md: 21rem;
-  --viking-chart-panel-min-height-lg: 25rem;
-  --viking-chart-panel-body-min-height-md: 15rem;
-  --viking-chart-panel-body-min-height-lg: 18rem;
-  --viking-chart-map-min-height: 18rem;
+  /* Balanced chart scale: multi-card plots breathe; single strips stay moderate */
+  --viking-chart-min-height: clamp(13rem, 24vw, 16rem);
+  --viking-chart-max-height: clamp(16rem, 30vw, 19rem);
+  --viking-chart-fill-min-height: clamp(15rem, 28vw, 18rem);
+  --viking-chart-fill-max-height: clamp(17rem, 32vw, 20rem);
+  --viking-chart-fill-min-height-lg: clamp(16rem, 30vw, 19rem);
+  --viking-chart-fill-max-height-lg: clamp(18rem, 34vw, 21rem);
+  --viking-chart-panel-min-height-md: 24rem;
+  --viking-chart-panel-min-height-lg: 26rem;
+  --viking-chart-panel-body-min-height-md: 18rem;
+  --viking-chart-panel-body-min-height-lg: 20rem;
+  --viking-chart-map-min-height: 22rem;
   background: var(--viking-bg);
 }
 
@@ -3182,9 +3247,35 @@ viking-card-header {
   max-height: var(--viking-chart-fill-max-height);
 }
 
+/* Performance tab short cards — match Security Anomalies reference size */
+.dashboard-page-container .chart-container.short {
+  min-height: clamp(15rem, 28vw, 17.5rem);
+  max-height: clamp(16rem, 30vw, 19rem);
+}
+
+/* Full-width latency strip — readable, not towering */
 .dashboard-page-container .dashboard-grid-single .chart-container-medium,
-.dashboard-page-container .dashboard-grid-single .chart-container-large {
-  min-height: clamp(14rem, 26vw, 18rem);
+.dashboard-page-container .dashboard-grid-single .chart-container-large,
+.dashboard-page-container .dashboard-grid-single .chart-container {
+  min-height: clamp(15rem, 28vw, 17.5rem);
+  max-height: clamp(16.5rem, 32vw, 19rem);
+}
+
+.dashboard-page-container .dashboard-grid-single viking-chart-panel {
+  --viking-chart-panel-min-height-md: 22rem;
+  --viking-chart-panel-min-height-lg: 22rem;
+  --viking-chart-panel-body-min-height-md: clamp(15rem, 28vw, 17.5rem);
+  --viking-chart-panel-body-min-height-lg: clamp(15rem, 28vw, 17.5rem);
+  --viking-chart-fill-min-height: clamp(14rem, 26vw, 16.5rem);
+  --viking-chart-fill-max-height: clamp(16rem, 30vw, 18.5rem);
+}
+
+/* 2/3-up analytics cards — taller so bars/donuts fit cleanly */
+.dashboard-page-container .dashboard-grid-responsive viking-chart-panel {
+  --viking-chart-panel-min-height-md: 24rem;
+  --viking-chart-panel-body-min-height-md: clamp(16rem, 30vw, 18.5rem);
+  --viking-chart-fill-min-height: clamp(15rem, 28vw, 17.5rem);
+  --viking-chart-fill-max-height: clamp(17rem, 32vw, 20rem);
 }
 
 .dashboard-page-container .viking-chart-panel-origin-map .viking-chart-panel-body,
@@ -3194,4 +3285,11 @@ viking-card-header {
 
 .dashboard-page-container .origin-map-canvas {
   min-height: var(--viking-chart-map-min-height);
+  height: var(--viking-chart-map-min-height);
+}
+
+.dashboard-page-container .origin-map-canvas .leaflet-container {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
 }

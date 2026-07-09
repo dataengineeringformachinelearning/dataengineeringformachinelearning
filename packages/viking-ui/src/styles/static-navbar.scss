@@ -93,7 +93,11 @@
   container-name: viking-navbar;
 
   @media (min-width: 768px) {
-    padding-inline: var(--viking-space-3, 24px);
+    padding-inline: var(--viking-space-4, 32px);
+  }
+
+  @media (min-width: 1280px) {
+    padding-inline: var(--viking-space-5, 40px);
   }
   box-shadow: var(--viking-shadow-xs, 0 1px 2px rgba(0, 0, 0, 0.2));
   isolation: isolate;
@@ -175,8 +179,8 @@
   align-items: center;
   gap: var(--viking-space-3, 24px);
   width: 100%;
-  max-width: var(--viking-container-max-width, 1260px);
-  margin-inline: auto;
+  max-width: none;
+  margin-inline: 0;
   min-width: 0;
   min-height: var(--viking-navbar-height, 64px);
 }
@@ -202,19 +206,16 @@
   flex-shrink: 0;
 }
 
-// Web component hosts — visual chrome lives on ::part(control), not the host.
+// Host wrappers only — never strip chrome from native .theme-toggle-btn / .viking-btn controls.
 viking-button,
 viking-button-wc,
-viking-theme-toggle-wc {
+viking-theme-toggle-wc,
+.viking-theme-toggle-host {
   &.auth-btn,
   &.auth-signout-btn,
   &.mobile-auth-btn,
   &.menu-toggle-btn,
-  &.navbar-search-trigger,
-  &.theme-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  &.navbar-search-trigger {
     background: transparent;
     border: none;
     box-shadow: none;
@@ -233,9 +234,7 @@ viking-theme-toggle-wc {
   &.menu-toggle-btn::before,
   &.menu-toggle-btn::after,
   &.navbar-search-trigger::before,
-  &.navbar-search-trigger::after,
-  &.theme-toggle-btn::before,
-  &.theme-toggle-btn::after {
+  &.navbar-search-trigger::after {
     display: none;
   }
 }
@@ -262,11 +261,12 @@ viking-theme-toggle-wc {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  gap: var(--viking-space-3, 24px);
+  justify-content: center;
+  gap: var(--viking-space-2, 16px);
   padding: var(--viking-space-half, 4px) 0;
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .desktop-auth {
@@ -490,97 +490,131 @@ html[data-theme="light"] {
     0 0 12px color-mix(in srgb, var(--viking-accent) 18%, transparent) !important;
 }
 
-.navbar .theme-toggle-btn,
-viking-theme-toggle-wc.theme-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  background: transparent;
-  box-shadow: none;
-}
-
-.navbar .theme-toggle-btn .material-icons,
-.navbar .theme-toggle-btn svg,
-.theme-toggle-btn .material-icons,
-.theme-toggle-btn svg {
-  width: 24px;
-  height: 24px;
-}
-
-/* Hosts stay transparent; utility chrome is on the single control. */
+/* Host shells stay transparent; chrome lives on the native control / WC part. */
 viking-button.menu-toggle-btn,
 viking-button.navbar-search-trigger,
-#navbar-search-trigger:is(viking-button) {
+#navbar-search-trigger:is(viking-button),
+.viking-theme-toggle-host {
   display: contents !important;
   padding: 0 !important;
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
 }
 
 viking-button-wc.menu-toggle-btn,
-viking-button-wc.navbar-search-trigger {
-  display: inline-grid !important;
-  place-items: center;
+viking-button-wc.navbar-search-trigger,
+viking-theme-toggle-wc {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
   padding: 0 !important;
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 
+/* Square utility controls: search, menu, theme — single bordered control. */
 .navbar-search viking-button-wc::part(control),
 viking-button-wc.menu-toggle-btn::part(control),
 viking-button-wc.navbar-search-trigger::part(control),
 viking-button.menu-toggle-btn .viking-btn,
 viking-button.navbar-search-trigger .viking-btn,
 .navbar-search viking-button .viking-btn,
+.navbar-right viking-button.menu-toggle-btn .viking-btn,
+.navbar .theme-toggle-btn,
+.navbar-right .theme-toggle-btn,
+.viking-theme-toggle-host .theme-toggle-btn,
 .navbar-right viking-theme-toggle-wc::part(control) {
   @include viking-navbar-utility-btn;
-  display: inline-grid;
-  place-items: center;
-  width: var(--viking-control-height, 40px);
-  min-width: var(--viking-control-height, 40px);
-  max-width: var(--viking-control-height, 40px);
-  height: var(--viking-control-height, 40px);
-  min-height: var(--viking-control-height, 40px);
-  padding: 0;
-  line-height: 1;
-  box-sizing: border-box;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  width: var(--viking-control-height, 40px) !important;
+  min-width: var(--viking-control-height, 40px) !important;
+  max-width: var(--viking-control-height, 40px) !important;
+  height: var(--viking-control-height, 40px) !important;
+  min-height: var(--viking-control-height, 40px) !important;
+  max-height: var(--viking-control-height, 40px) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden;
 }
 
-.navbar-search viking-button .viking-btn svg,
+/* Icon-only: hide empty label so flex centering stays true. */
+.navbar-search viking-button .viking-btn .viking-btn-label,
+viking-button.navbar-search-trigger .viking-btn .viking-btn-label,
+viking-button.menu-toggle-btn .viking-btn .viking-btn-label {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .navbar-search viking-button .viking-btn viking-icon,
+.navbar-search viking-button .viking-btn svg,
+viking-button.navbar-search-trigger .viking-btn viking-icon,
+viking-button.navbar-search-trigger .viking-btn svg,
+viking-button.menu-toggle-btn .viking-btn viking-icon,
 viking-button.menu-toggle-btn .viking-btn svg,
-viking-button.menu-toggle-btn .viking-btn viking-icon {
-  display: block;
-  width: 24px;
-  height: 24px;
+.navbar .theme-toggle-btn viking-icon,
+.navbar .theme-toggle-btn svg,
+.viking-theme-toggle-host .theme-toggle-btn viking-icon,
+.viking-theme-toggle-host .theme-toggle-btn svg {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  margin: 0 !important;
+  line-height: 0 !important;
+  flex-shrink: 0;
 }
 
+.navbar .theme-toggle-btn .material-icons,
+.theme-toggle-btn .material-icons {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Theme toggle: accent-tinted border (matches WC chrome). */
+.navbar .theme-toggle-btn,
+.navbar-right .theme-toggle-btn,
+.viking-theme-toggle-host .theme-toggle-btn,
 .navbar-right viking-theme-toggle-wc::part(control) {
-  border-color: color-mix(
-    in srgb,
-    var(--viking-accent, var(--viking-accent)) 32%,
-    var(--viking-border-strong, var(--border))
-  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--viking-accent, var(--viking-accent)) 32%,
+      var(--viking-border-strong, var(--border))
+    ) !important;
   background: color-mix(
     in srgb,
     var(--viking-accent, var(--viking-accent)) 8%,
     var(--viking-surface, var(--card-bg))
-  );
-  color: var(--viking-accent-strong, var(--viking-ring));
+  ) !important;
+  color: var(--viking-accent-strong, var(--viking-ring)) !important;
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm)) !important;
 
   &:hover {
-    border-color: var(--viking-accent-strong, var(--viking-ring));
+    border-color: var(--viking-accent-strong, var(--viking-ring)) !important;
     background: color-mix(
       in srgb,
       var(--viking-accent, var(--viking-accent)) 14%,
       var(--viking-surface-alt, var(--card-bg))
-    );
-    color: var(--viking-accent-strong, var(--viking-ring));
-    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+    ) !important;
+    color: var(--viking-accent-strong, var(--viking-ring)) !important;
+    box-shadow: var(--viking-shadow-md, var(--shadow-md)) !important;
   }
 }
 
@@ -595,14 +629,15 @@ viking-button-wc.menu-toggle-btn [data-viking-icon] {
 }
 
 .menu-toggle-btn[aria-expanded="true"]::part(control),
-viking-button-wc.menu-toggle-btn[aria-expanded="true"]::part(control) {
-  border-color: var(--viking-accent, var(--viking-accent));
-  color: var(--viking-accent-strong, var(--viking-ring));
+viking-button-wc.menu-toggle-btn[aria-expanded="true"]::part(control),
+viking-button.menu-toggle-btn[aria-expanded="true"] .viking-btn {
+  border-color: var(--viking-accent, var(--viking-accent)) !important;
+  color: var(--viking-accent-strong, var(--viking-ring)) !important;
   background: var(
     --viking-accent-soft,
     color-mix(in srgb, var(--viking-accent) 12%, transparent)
-  );
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  ) !important;
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm)) !important;
 }
 
 .divider {
@@ -1561,15 +1596,17 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
     transform: translateX(-50%);
     z-index: 1;
     pointer-events: auto;
-    max-width: min(100% - 22rem, 42rem);
-    overflow: hidden;
+    max-width: min(100% - 24rem, 48rem);
+    overflow: visible;
     justify-content: center;
+    gap: var(--viking-space-3, 24px);
   }
 
   .navbar-left {
     position: relative;
     z-index: 2;
     flex-shrink: 0;
+    justify-self: start;
   }
 
   .navbar-right {
@@ -1577,6 +1614,7 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
     z-index: 2;
     flex-shrink: 0;
     min-width: 12.5rem;
+    justify-self: end;
     pointer-events: none;
 
     > * {
@@ -1617,7 +1655,11 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
   }
 
   .desktop-nav {
-    gap: var(--viking-space-1, 8px);
+    gap: var(--viking-space-2-5, 20px);
+  }
+
+  .desktop-nav .nav-btn {
+    padding: 0 var(--viking-space-2-5, 20px) !important;
   }
 }
 

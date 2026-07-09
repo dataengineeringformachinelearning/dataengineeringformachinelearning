@@ -475,7 +475,10 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         width: 100%;
         max-width: 100%;
         container-type: inline-size;
-        padding: var(--viking-chart-padding, var(--viking-space-2) var(--viking-space-1));
+        padding: var(
+          --viking-chart-padding,
+          var(--viking-space-2) var(--viking-space-1)
+        );
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
         aspect-ratio: var(--viking-chart-ratio, 3 / 1);
@@ -585,19 +588,28 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         );
       }
       .viking-chart-grid {
-        stroke: var(--viking-chart-grid-stroke, color-mix(in srgb, var(--viking-border) 32%, transparent));
+        stroke: var(
+          --viking-chart-grid-stroke,
+          color-mix(in srgb, var(--viking-border) 32%, transparent)
+        );
         stroke-width: var(--viking-chart-grid-width, 0.75);
         stroke-dasharray: var(--viking-chart-grid-dash, 2 3);
       }
       .viking-chart-axis-line,
       .viking-chart-tick {
-        stroke: var(--viking-chart-axis-stroke, color-mix(in srgb, var(--viking-border) 68%, transparent));
+        stroke: var(
+          --viking-chart-axis-stroke,
+          color-mix(in srgb, var(--viking-border) 68%, transparent)
+        );
         stroke-width: var(--viking-chart-axis-width, 1);
       }
       .viking-chart-axis-y,
       .viking-chart-axis-x {
         fill: var(--viking-chart-axis-color, var(--viking-text-subtle));
-        font-size: max(var(--viking-chart-label-size, 10px), var(--viking-chart-axis-size, 11px));
+        font-size: max(
+          var(--viking-chart-label-size, 10px),
+          var(--viking-chart-axis-size, 11px)
+        );
         font-family: var(--viking-font-family);
         font-weight: var(--viking-font-weight-medium);
       }
@@ -648,13 +660,19 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: var(--viking-chart-legend-gap, var(--viking-space-2) var(--viking-space-3));
+        gap: var(
+          --viking-chart-legend-gap,
+          var(--viking-space-2) var(--viking-space-3)
+        );
         margin: var(--viking-chart-legend-margin, var(--viking-space-3) 0 0);
         font-size: var(--viking-chart-legend-size, var(--viking-font-size-xs));
         color: var(--viking-text-muted);
       }
       .viking-chart-fill .viking-chart-legend {
-        margin: var(--viking-chart-legend-margin-fill, var(--viking-space-4) 0 0);
+        margin: var(
+          --viking-chart-legend-margin-fill,
+          var(--viking-space-4) 0 0
+        );
       }
       .viking-chart-legend-item {
         display: inline-flex;
@@ -668,7 +686,8 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         border-radius: var(--viking-radius-sm);
         display: inline-block;
         flex-shrink: 0;
-        border: 1px solid color-mix(in srgb, var(--viking-border) 40%, transparent);
+        border: 1px solid
+          color-mix(in srgb, var(--viking-border) 40%, transparent);
       }
 
       /* Local tooltip fallback (global .viking-chart-tooltip in chart.scss wins for consistency) */
@@ -679,8 +698,12 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         flex-direction: column;
         gap: 1px;
         padding: var(--viking-chart-tooltip-padding, 4px 10px);
-        background: var(--viking-chart-tooltip-bg, var(--viking-surface-raised));
-        border: 1px solid var(--viking-chart-tooltip-border, var(--viking-border-strong));
+        background: var(
+          --viking-chart-tooltip-bg,
+          var(--viking-surface-raised)
+        );
+        border: 1px solid
+          var(--viking-chart-tooltip-border, var(--viking-border-strong));
         border-radius: var(--viking-chart-tooltip-radius, var(--viking-radius));
         box-shadow: var(--viking-shadow-md);
         font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-xs));
@@ -1001,16 +1024,24 @@ export class VikingChart {
 
     if (this.isSparkline()) {
       if (dataMax === dataMin) {
-        const pad = Math.max(Math.abs(dataMax) * 0.12, 0.5);
+        const pad = Math.max(Math.abs(dataMax) * 0.15, 0.5);
         return { min: dataMax - pad, max: dataMax + pad };
       }
-      const padding = Math.max((dataMax - dataMin) * 0.12, 0.5);
+      const padding = Math.max((dataMax - dataMin) * 0.15, 0.5);
       return { min: dataMin - padding, max: dataMax + padding };
     }
 
-    const min = Math.min(0, ...all);
-    const max = Math.max(...all);
-    return { min, max: max === min ? max + 1 : max };
+    // Always include 0 baseline for bar/line/area so charts don't look
+    // "zoomed into" a tight band of similar values. Extra headroom keeps
+    // peaks clear of the top edge without making the plot feel tiny.
+    const min = Math.min(0, dataMin);
+    let max = Math.max(0, dataMax);
+    if (max === min) {
+      max = min + 1;
+    } else {
+      max = max + Math.max((max - min) * 0.18, Math.abs(max) * 0.06, 1);
+    }
+    return { min, max };
   });
 
   protected readonly gridLines = computed(() => {

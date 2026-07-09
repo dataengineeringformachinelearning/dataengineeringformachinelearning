@@ -45,6 +45,22 @@ import {
         letter-spacing: var(--viking-letter-spacing-tight);
         margin-bottom: var(--viking-space-4);
       }
+      /* Marketing / hero display — opt-in via viking-font-display on host or parent */
+      :host(.viking-font-display),
+      :host-context(.viking-font-display) {
+        font-weight: var(--viking-font-weight-extrabold, 800);
+        letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+        text-transform: uppercase;
+        line-height: var(--viking-line-height-none, 1);
+      }
+      :host(.viking-heading-xl.viking-font-display),
+      :host-context(.viking-font-display):host(.viking-heading-xl) {
+        font-size: clamp(
+          var(--viking-font-size-2xl, 30px),
+          4.5vw,
+          var(--viking-font-size-4xl, 48px)
+        );
+      }
     `,
   ],
 })

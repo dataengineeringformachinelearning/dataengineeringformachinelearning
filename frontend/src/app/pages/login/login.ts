@@ -174,15 +174,7 @@ export class Login implements OnInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
-    if (this.recaptchaVerifier) {
-      try {
-        this.recaptchaVerifier.clear();
-      } catch (e) {
-        console.error('Error clearing recaptcha verifier', e);
-      }
-      this.recaptchaVerifier = null;
-    }
-    document.getElementById('recaptcha-container')?.remove();
+    this.clearRecaptcha();
   }
 
   toggleMode(): void {
@@ -295,26 +287,59 @@ export class Login implements OnInit, OnDestroy {
     verificationCode?.updateValueAndValidity();
   };
 
-  initRecaptcha(): void {
-    if (this.recaptchaVerifier) return;
-    if (!this.authService.auth) {
-      console.error('Firebase Auth is not initialized');
-      return;
-    }
-    try {
-      let element = document.getElementById('recaptcha-container');
-      if (!element) {
-        element = document.createElement('div');
-        element.id = 'recaptcha-container';
-        document.body.appendChild(element);
+  /** Tear down verifier so the next SMS send gets a fresh challenge. */
+  private clearRecaptcha(): void {
+    if (this.recaptchaVerifier) {
+      try {
+        this.recaptchaVerifier.clear();
+      } catch (e) {
+        console.error('Error clearing recaptcha verifier', e);
       }
-      this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
-        size: 'invisible',
-        callback: () => undefined,
-      });
-    } catch (e) {
-      logFirebaseAuthError('Login reCAPTCHA init', e);
+      this.recaptchaVerifier = null;
     }
+    document.getElementById('recaptcha-container')?.remove();
+  }
+
+  /**
+   * Build an invisible RecaptchaVerifier for phone / MFA SMS.
+   * Always re-render after use or failure — Firebase invalidates the token once.
+   */
+  private async ensureRecaptcha(): Promise<InstanceType<typeof RecaptchaVerifier>> {
+    if (!this.authService.auth) {
+      throw new Error('Firebase Auth is not initialized');
+    }
+    if (this.recaptchaVerifier) {
+      return this.recaptchaVerifier;
+    }
+    let element = document.getElementById('recaptcha-container');
+    if (!element) {
+      element = document.createElement('div');
+      element.id = 'recaptcha-container';
+      // Keep off-screen but in the layout tree (some browsers ignore size:0 nodes).
+      element.setAttribute(
+        'style',
+        'position:fixed;left:-9999px;width:1px;height:1px;overflow:hidden;',
+      );
+      document.body.appendChild(element);
+    }
+    this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
+      size: 'invisible',
+      callback: () => undefined,
+      'expired-callback': () => {
+        this.clearRecaptcha();
+      },
+      'error-callback': () => {
+        this.clearRecaptcha();
+      },
+    });
+    // Force widget render so Enterprise → v2 fallback completes before verifyPhoneNumber.
+    await this.recaptchaVerifier.render();
+    return this.recaptchaVerifier;
+  }
+
+  /** @deprecated Prefer ensureRecaptcha(); kept for call-site compatibility. */
+  initRecaptcha(): void {
+    void this.ensureRecaptcha().catch(e => logFirebaseAuthError('Login reCAPTCHA init', e));
   }
 
   handleSuccess(): void {
@@ -347,19 +372,22 @@ export class Login implements OnInit, OnDestroy {
     }
     const normalizedPhone = normalizePhoneE164(phoneNum);
     this.loginForm.patchValue({ phone: normalizedPhone });
-    this.initRecaptcha();
     this.isLoading.set(true);
     try {
+      // Fresh verifier every send — used tokens cannot be reused.
+      this.clearRecaptcha();
+      const verifier = await this.ensureRecaptcha();
       this.confirmationResult = await signInWithPhoneNumber(
         this.authService.auth,
         normalizedPhone,
-        this.recaptchaVerifier,
+        verifier,
       );
       this.codeSent.set(true);
       this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
       this.loginForm.get('verificationCode')?.updateValueAndValidity();
     } catch (e: unknown) {
       logFirebaseAuthError('Phone OTP send', e);
+      this.clearRecaptcha();
       const code =
         e && typeof e === 'object' && 'code' in e
           ? String((e as { code?: string }).code)
@@ -394,17 +422,17 @@ export class Login implements OnInit, OnDestroy {
   }
 
   async sendMfaVerificationCode(resolver: any) {
-    this.initRecaptcha();
+    this.isLoading.set(true);
+    this.error.set(null);
     try {
+      this.clearRecaptcha();
+      const verifier = await this.ensureRecaptcha();
       const phoneInfoOptions = {
         multiFactorHint: resolver.hints[0],
         session: resolver.session,
       };
       const phoneAuthProvider = new PhoneAuthProvider(this.authService.auth);
-      const verifyId = await phoneAuthProvider.verifyPhoneNumber(
-        phoneInfoOptions,
-        this.recaptchaVerifier,
-      );
+      const verifyId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, verifier);
       this.verificationId.set(verifyId);
       this.resolver = resolver;
       this.setMfaVerificationValidators();
@@ -412,11 +440,14 @@ export class Login implements OnInit, OnDestroy {
       this.codeSent.set(true);
     } catch (e: unknown) {
       logFirebaseAuthError('MFA SMS send', e);
+      this.clearRecaptcha();
       const code =
         e && typeof e === 'object' && 'code' in e
           ? String((e as { code?: string }).code)
           : undefined;
       this.error.set(mapFirebasePhoneError(code));
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -433,6 +464,11 @@ export class Login implements OnInit, OnDestroy {
       const cred = PhoneAuthProvider.credential(verifyId, code);
       const assertion = PhoneMultiFactorGenerator.assertion(cred);
       await this.resolver.resolveSignIn(assertion);
+      // Force a new ID token so firebase.sign_in_second_factor / amr claims land.
+      const user = this.authService.auth?.currentUser;
+      if (user && typeof user.getIdToken === 'function') {
+        await user.getIdToken(true);
+      }
       await this.authService.refreshMfaState(true);
       this.successMessage.set('Two-factor verification complete. Redirecting…');
       setTimeout(() => this.handleSuccess(), 600);

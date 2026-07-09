@@ -29,10 +29,23 @@
           [heading]="authService.mfaEnrolled() ? 'MFA session required' : 'MFA required to save'"
           icon="shield"
         >
-          @if (authService.mfaEnrolled()) { MFA is enrolled, but this session was not verified with
-          SMS.
-          <strong>Sign out and sign back in</strong> to complete MFA verification before saving
-          sites. } @else { Creating or updating sites requires
+          @if (authService.mfaEnrolled()) { MFA is enrolled, but this browser session is not yet
+          marked as SMS-verified. Site forms stay locked until verification is detected.
+          <div class="settings-mfa-actions">
+            <viking-button
+              variant="outline"
+              type="button"
+              size="sm"
+              icon="refresh"
+              [loading]="isRefreshingMfa()"
+              [disabled]="isRefreshingMfa()"
+              (pressed)="refreshMfaSession()"
+            >
+              Refresh MFA status
+            </viking-button>
+            <a routerLink="/login" class="inline-status-link">Sign out and sign back in with SMS</a>
+          </div>
+          } @else { Creating or updating sites requires
           <strong>multi-factor authentication</strong>. Enroll SMS MFA on your
           <a routerLink="/account" class="inline-status-link">Account</a> page, then sign out and
           sign back in so your session includes MFA verification. }

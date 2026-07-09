@@ -71,10 +71,14 @@
               <h3>Temporal Forecast</h3>
               <viking-app-icon name="timeline" />
             </div>
-            <div class="gauge-wrapper">
-              <div class="gauge-center-text">
-                <span class="value">{{ temporalForecast | number:'1.0-0' }}</span>
+            <div class="gauge-wrapper temporal-gauge">
+              <viking-gauge-arc class="theme-amber" tone="amber" [value]="temporalForecast" />
+              <div class="gauge-center-text temporal-text">
+                <viking-app-icon name="trending-up" hostClass="gauge-inner-icon" />
                 <span class="unit">SPIKE RISK</span>
+                <span class="value"
+                  >{{ temporalForecast | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+                >
               </div>
             </div>
             <div class="gauge-card-footer">
@@ -272,8 +276,8 @@
           />
           <div
             id="originMap"
-            class="origin-map-canvas"
-            [class.viking-map-ready]="originMapData.length > 0"
+            class="origin-map-canvas viking-map-ready"
+            aria-label="Geographic origin map"
           ></div>
           @if (originMapData.length === 0) {
           <viking-chart-empty-state

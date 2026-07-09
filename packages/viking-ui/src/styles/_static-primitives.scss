@@ -7,6 +7,7 @@
 // Typography
 .viking-heading {
   margin: 0 0 var(--viking-space-3) 0;
+  font-family: var(--viking-font-family);
   font-weight: var(--viking-font-weight-bold);
   letter-spacing: var(--viking-letter-spacing-tight);
   line-height: var(--viking-line-height-tight);
@@ -27,6 +28,26 @@
   font-size: var(--viking-font-size-lg);
   font-weight: var(--viking-font-weight-semibold);
   margin-bottom: var(--viking-space-2);
+}
+
+/* Marketing / hero display — opt-in */
+.viking-heading.viking-font-display,
+.viking-heading-xl.viking-font-display,
+.viking-font-display.viking-heading,
+.viking-font-display.viking-heading-xl {
+  font-weight: var(--viking-font-weight-extrabold, 800);
+  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+  text-transform: uppercase;
+  line-height: var(--viking-line-height-none, 1);
+}
+
+.viking-heading-xl.viking-font-display,
+.viking-font-display.viking-heading-xl {
+  font-size: clamp(
+    var(--viking-font-size-2xl, 30px),
+    4.5vw,
+    var(--viking-font-size-4xl, 48px)
+  );
 }
 
 .viking-text {
