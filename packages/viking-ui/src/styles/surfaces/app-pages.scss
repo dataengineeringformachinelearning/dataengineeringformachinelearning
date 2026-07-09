@@ -316,6 +316,24 @@
   width: 100%;
   display: flex;
   align-items: flex-end;
+  overflow: visible;
+}
+
+.kpi-sparkline-slot viking-chart,
+.kpi-sparkline-slot .kpi-sparkline {
+  width: 100%;
+  height: var(--viking-chart-sparkline-height, 2.75rem);
+  overflow: visible;
+}
+
+.kpi-sparkline-slot .viking-chart-line {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kpi-sparkline-slot .viking-chart-area {
+  opacity: 0.14;
 }
 
 .kpi-subtitle {

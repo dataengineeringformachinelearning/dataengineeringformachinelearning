@@ -62,14 +62,25 @@ viking-chart {
   stroke-width: var(--viking-chart-line-width-fill, 2.5);
 }
 
-/* Area fill — restrained opacity */
+/* Area fill — restrained opacity (premium analytics fill) */
 .viking-chart-area {
-  opacity: var(--viking-chart-area-opacity, 0.22);
+  opacity: var(--viking-chart-area-opacity, 0.18);
   stroke: none;
+  fill-opacity: 1;
 }
 
 .viking-chart-fill .viking-chart-area {
-  opacity: 0.28;
+  opacity: 0.22;
+}
+
+.viking-chart-sparkline .viking-chart-area {
+  opacity: 0.14;
+}
+
+.viking-chart-sparkline .viking-chart-line {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* Data points — small, high-contrast, surface stroke */

@@ -88,18 +88,23 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Button",
         description:
           "Primary actions with variant, size, loading, and icon support.",
-        preview: `<div class="viking-demo-row">
-  <viking-button-wc variant="primary">Primary</viking-button-wc>
-  <viking-button-wc variant="secondary">Secondary</viking-button-wc>
-  <viking-button-wc variant="outline">Outline</viking-button-wc>
-  <viking-button-wc variant="danger">Danger</viking-button-wc>
-  <viking-button-wc variant="ghost">Ghost</viking-button-wc>
-  <viking-button-wc variant="subtle">Subtle</viking-button-wc>
+        preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
+  <div class="viking-demo-row">
+    <viking-button-wc variant="primary">Primary</viking-button-wc>
+    <viking-button-wc variant="secondary">Secondary</viking-button-wc>
+    <viking-button-wc variant="outline">Outline</viking-button-wc>
+  </div>
+  <div class="viking-demo-row">
+    <viking-button-wc variant="danger">Danger</viking-button-wc>
+    <viking-button-wc variant="ghost">Ghost</viking-button-wc>
+    <viking-button-wc variant="subtle">Subtle</viking-button-wc>
+  </div>
+  <div class="viking-demo-row">
+    <button type="button" class="viking-btn viking-btn-primary viking-btn-compact">Compact</button>
+    <button type="button" class="viking-btn viking-btn-outline viking-btn-compact">Cancel</button>
+  </div>
 </div>
-<div class="viking-demo-row">
-  <button type="button" class="viking-btn viking-btn-primary viking-btn-compact">Compact</button>
-  <button type="button" class="viking-btn viking-btn-outline viking-btn-compact">Cancel</button>
-</div>`,
+<p class="viking-text-muted viking-demo-caption">Equal-height controls, aligned on a shared baseline</p>`,
         snippets: btnSnippets(),
         tags: ["web-component", "css"],
         selector: "viking-button",
@@ -136,10 +141,12 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Typography",
         description:
           "Heading, text, and label primitives with tokenized rhythm.",
-        preview: `<h2 class="viking-heading">Operational intelligence</h2>
-<p class="viking-text">Precision-engineered telemetry for contested ML infrastructure.</p>
-<p class="viking-text-muted">Sub-50ms ClickHouse rollups · symmetrical tenant isolation</p>
-<span class="viking-label">Section label</span>`,
+        preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
+  <h2 class="viking-heading" style="margin:0">Operational intelligence</h2>
+  <p class="viking-text" style="margin:0">Precision-engineered telemetry for contested ML infrastructure.</p>
+  <p class="viking-text-muted" style="margin:0">Sub-50ms ClickHouse rollups · symmetrical tenant isolation</p>
+  <span class="viking-label">Section label</span>
+</div>`,
         snippets: {
           angular: `<viking-heading size="lg" [level]="2">Operational intelligence</viking-heading>
 <viking-text variant="muted">Sub-50ms ClickHouse rollups</viking-text>
@@ -155,16 +162,19 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         id: "card",
         name: "Card",
         description: "Machined surface panels with inset hairline highlights.",
-        preview: `<viking-card-wc>
-  <div class="viking-card-header">
-    <h3 class="viking-heading viking-heading-sm">Event throughput</h3>
-  </div>
-  <p class="viking-text-muted">8.2K events/sec across symmetrical tenant pipelines.</p>
-</viking-card-wc>
-<viking-card-wc compact>
-  <span class="viking-label">Compact metric</span>
-  <strong class="viking-metric">99.97%</strong>
-</viking-card-wc>`,
+        preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
+  <viking-card-wc class="viking-card">
+    <div class="viking-card-header">
+      <h3 class="viking-heading viking-heading-sm">Event throughput</h3>
+    </div>
+    <p class="viking-text-muted">8.2K events/sec across symmetrical tenant pipelines.</p>
+  </viking-card-wc>
+  <viking-card-wc compact class="viking-card viking-card-compact">
+    <span class="viking-label">Compact metric</span>
+    <strong class="viking-metric">99.97%</strong>
+  </viking-card-wc>
+</div>
+<p class="viking-text-muted viking-demo-caption">Matched card heights for balanced composition</p>`,
         snippets: {
           angular: `<viking-card>
   <viking-card-header>
@@ -195,10 +205,10 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Card title",
         description:
           "Icon badge + heading row for viking-card-header — premium section titles on settings, account, and dashboard cards.",
-        preview: `<div class="viking-card">
+        preview: `<div class="viking-card viking-demo-full">
   <div class="viking-card-header">
     <span class="viking-icon-badge-static" aria-hidden="true">◆</span>
-    <strong class="viking-heading viking-heading-xl">Multi-Factor Authentication</strong>
+    <strong class="viking-heading viking-heading-sm">Multi-Factor Authentication</strong>
   </div>
   <p class="viking-text-muted">Secure your account with SMS verification.</p>
 </div>`,
@@ -230,7 +240,8 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         preview: `<div class="viking-demo-row">
   <span class="showcase-icon-demo" aria-hidden="true">◆</span>
   <span class="viking-label">Use viking-icon in Angular for full registry</span>
-</div>`,
+</div>
+<p class="viking-text-muted viking-demo-caption">Zero-dependency SVG icons from the Viking registry</p>`,
         snippets: {
           angular: `import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
 
@@ -260,10 +271,11 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   <div class="viking-field">
     <label class="viking-field-label" for="email-demo">Email</label>
     <div class="viking-input-shell">
-      <input id="email-demo" class="viking-input-native" type="email" placeholder="you@company.com" />
+      <input id="email-demo" class="viking-input-native" name="email" type="email" autocomplete="email" placeholder="you@company.com" />
     </div>
   </div>
-</div>`,
+</div>
+<p class="viking-text-muted viking-demo-caption">Field labels sit above controls with consistent spacing</p>`,
         snippets: inputSnippets,
         tags: ["web-component", "css"],
         selector: "viking-input",
@@ -793,8 +805,11 @@ palette.openPalette();
         name: "Theme toggle",
         description:
           "Light/dark mode switch respecting prefers-color-scheme and localStorage.",
-        preview: `<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>
-<button type="button" class="theme-toggle-btn" aria-label="Toggle theme (CSS class)"></button>`,
+        preview: `<div class="viking-demo-row">
+  <viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>
+  <button type="button" class="theme-toggle-btn" aria-label="Toggle theme (CSS class)" title="Light / dark"></button>
+</div>
+<p class="viking-text-muted viking-demo-caption">Web component + static CSS utility for light/dark switching</p>`,
         snippets: {
           angular: `<viking-theme-toggle />`,
           astro: `<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>`,
@@ -817,17 +832,35 @@ palette.openPalette();
         name: "Auth panel",
         description:
           "Firebase OAuth shell with social providers and email fallback.",
-        preview: `<div class="showcase-auth-panel">
+        preview: `<div class="showcase-auth-panel viking-demo-full">
   <h3 class="viking-heading viking-heading-sm">Sign in to DEML</h3>
   <p class="viking-text-muted">Operational intelligence for your ML infrastructure.</p>
   <div class="viking-demo-full viking-demo-row viking-demo-row-stack">
     <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Continue with Google</button>
-    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Continue with GitHub</button>
+    <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Continue with Apple</button>
   </div>
   <div class="viking-divider"><span>or</span></div>
-  <viking-input-wc placeholder="Email address" type="email"></viking-input-wc>
+  <div class="viking-field">
+    <label class="viking-field-label" for="auth-email-demo">Email</label>
+    <div class="viking-input-shell">
+      <input id="auth-email-demo" class="viking-input-native" name="email" type="email" autocomplete="username email" placeholder="you@company.com" />
+    </div>
+  </div>
+  <div class="viking-field">
+    <label class="viking-field-label" for="auth-password-demo">Password</label>
+    <div class="viking-input-shell">
+      <input id="auth-password-demo" class="viking-input-native" name="password" type="password" autocomplete="current-password" placeholder="••••••••" />
+    </div>
+  </div>
+  <div class="viking-field">
+    <label class="viking-field-label" for="auth-otp-demo">SMS code</label>
+    <div class="viking-input-shell">
+      <input id="auth-otp-demo" class="viking-input-native" name="one-time-code" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" />
+    </div>
+  </div>
   <button type="button" class="viking-btn viking-btn-primary viking-btn-full">Continue</button>
-</div>`,
+</div>
+<p class="viking-text-muted viking-demo-caption">Fields use standard autocomplete for password managers and SMS OTP</p>`,
         snippets: {
           angular: `<viking-auth-panel
   [providers]="['google', 'github']"

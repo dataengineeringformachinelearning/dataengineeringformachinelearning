@@ -151,7 +151,8 @@ const parseGutter = (
   sparkline: boolean,
 ): Gutter => {
   if (sparkline) {
-    return { top: 0, right: 0, bottom: 0, left: 0 };
+    // Small inset so stroke/area are not clipped at the edge of the slot
+    return { top: 4, right: 2, bottom: 4, left: 2 };
   }
   if (value === undefined || value === null) {
     // Premium well-spaced breathing: generous for clean axes & labels
@@ -506,11 +507,21 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart-sparkline {
         width: 5rem;
         aspect-ratio: 3 / 1;
+        padding: 0;
+        overflow: visible;
       }
       :host(.viking-chart-wide) .viking-chart-sparkline {
         width: 100%;
         aspect-ratio: auto;
-        height: var(--viking-chart-sparkline-height, 2.5rem);
+        height: var(--viking-chart-sparkline-height, 2.75rem);
+      }
+      .viking-chart-sparkline .viking-chart-line {
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .viking-chart-sparkline .viking-chart-area {
+        opacity: 0.16;
       }
       .viking-chart-viewport {
         position: relative;

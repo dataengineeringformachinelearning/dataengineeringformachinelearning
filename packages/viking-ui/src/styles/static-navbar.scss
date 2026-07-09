@@ -296,25 +296,43 @@ viking-theme-toggle-wc,
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--viking-radius, 8px) !important;
-  padding: var(--viking-space-1, 8px) var(--viking-space-2-5, 20px) !important;
+  padding: var(--viking-space-1, 8px) var(--viking-space-3, 24px) !important;
   height: auto !important;
   min-height: var(--viking-control-height, 40px) !important;
   line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: var(--viking-space-1, 8px) !important;
+  gap: var(--viking-space-1-5, 12px) !important;
   text-decoration: none;
   background: transparent;
   border: none;
   cursor: pointer;
-  overflow: hidden;
-  flex-shrink: 1;
-  min-width: 0;
+  overflow: visible;
+  flex-shrink: 0;
+  min-width: max-content;
   white-space: nowrap;
   border-bottom: 1px solid transparent;
   box-shadow: none;
   margin-inline: var(--viking-space-half, 4px);
+}
+
+.nav-btn > span,
+.nav-btn .nav-btn-label {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.nav-btn viking-icon,
+.nav-btn viking-app-icon,
+.nav-btn [data-viking-icon],
+.nav-btn svg {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 .navbar-search::part(control),

@@ -35,6 +35,7 @@
                 formControlName="username"
                 [placeholder]="isRegisterMode() ? '' : 'email@example.com'"
                 [icon]="isRegisterMode() ? 'user' : 'mail'"
+                [autocomplete]="isRegisterMode() ? 'username' : 'username email'"
               />
             </viking-field>
             } @if (isRegisterMode() || isForgotMode()) {
@@ -44,11 +45,17 @@
                 formControlName="email"
                 placeholder="email@example.com"
                 icon="mail"
+                autocomplete="email"
               />
             </viking-field>
             } @if (!isForgotMode() && !isPhoneMode() && !mfaRequired()) {
             <viking-field [label]="isResetMode() ? 'New Password' : 'Password'" [required]="true">
-              <viking-input type="password" formControlName="password" icon="lock" />
+              <viking-input
+                type="password"
+                formControlName="password"
+                icon="lock"
+                [autocomplete]="isResetMode() ? 'new-password' : 'current-password'"
+              />
             </viking-field>
             } @if (isPhoneMode() && !codeSent() && !mfaRequired()) {
             <viking-field
@@ -61,6 +68,7 @@
                 formControlName="phone"
                 placeholder="+11234567890"
                 icon="phone"
+                autocomplete="tel"
               />
             </viking-field>
             } @if (codeSent() || mfaRequired()) {

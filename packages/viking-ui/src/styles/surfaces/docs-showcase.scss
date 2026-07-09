@@ -446,21 +446,21 @@
 }
 
 .component-showcase-preview {
-  /* Premium centered stage — clean recessed surface for demos (excellent light + dark) */
+  /* Premium stage — stack demos + captions vertically (not side-by-side) */
   padding: var(--viking-space-6);
   background: color-mix(in srgb, var(--viking-surface) 82%, var(--viking-bg));
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-xl); /* Softer for showcase cards */
-  min-height: 10rem; /* Generous breathing */
+  border-radius: var(--viking-radius-xl);
+  min-height: 10rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-4);
+  gap: var(--viking-space-3);
   width: 100%;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  /* Machined depth + subtle elevation */
   box-shadow:
     var(--viking-shadow-sm),
     inset 0 1px 0 color-mix(in srgb, var(--viking-border) 40%, transparent),
@@ -471,10 +471,53 @@
   max-width: 100%;
 }
 
+/* Captions always sit under the demo, full width of the stage */
+.component-showcase-preview > .viking-demo-caption,
+.component-showcase-preview > .viking-text-muted.viking-demo-caption,
+.component-showcase-preview .viking-demo-caption {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  margin: var(--viking-space-1) 0 0;
+  text-align: center;
+  order: 99;
+  flex: 0 0 auto;
+}
+
 /* Center rows of buttons / controls inside the preview */
 .component-showcase-preview .viking-demo-row {
+  display: flex;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
+  gap: var(--viking-space-2);
+  width: 100%;
+}
+
+.component-showcase-preview .viking-demo-row > *,
+.component-showcase-preview .viking-demo-row viking-button-wc,
+.component-showcase-preview .viking-demo-row .viking-btn,
+.component-showcase-preview .viking-demo-row button {
+  align-self: center;
+  min-height: var(--viking-control-height-sm, 36px);
+  box-sizing: border-box;
+}
+
+/* Typography demos stack cleanly */
+.component-showcase-preview:has(> .viking-heading),
+.component-showcase-preview:has(> .viking-text) {
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* Card previews: equal min height */
+.component-showcase-preview > viking-card-wc,
+.component-showcase-preview > .viking-card {
+  min-height: 8.5rem;
+  width: min(100%, 22rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Full-bleed demos (tables, wide forms, kanban, etc.) can opt-in */
@@ -1173,7 +1216,8 @@ viking-card-wc.landing-doctrine-card > * {
 }
 
 .showcase-search-palette {
-  max-width: 36rem;
+  width: min(100%, 42rem);
+  max-width: 42rem;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--viking-border-strong);
@@ -1197,8 +1241,9 @@ viking-card-wc.landing-doctrine-card > * {
 .showcase-search-palette-header {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-1);
-  padding: var(--viking-space-2);
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3) var(--viking-space-3);
+  min-height: 3.25rem;
   border-bottom: 1px solid var(--viking-border);
   background: color-mix(
     in srgb,
@@ -1208,16 +1253,25 @@ viking-card-wc.landing-doctrine-card > * {
 }
 
 .showcase-search-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
   color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-lg);
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 .showcase-search-input {
   flex: 1;
+  min-width: 0;
   border: none;
   background: transparent;
   color: var(--viking-text);
   font: inherit;
+  font-size: var(--viking-font-size-base);
   outline: none;
 }
 
@@ -1266,8 +1320,13 @@ viking-card-wc.landing-doctrine-card > * {
 }
 
 .viking-demo-caption {
-  margin-top: var(--viking-space-1);
+  display: block;
+  width: 100%;
+  margin-top: var(--viking-space-2);
   font-size: var(--viking-font-size-xs);
+  line-height: var(--viking-line-height-snug);
+  color: var(--viking-text-muted);
+  text-align: center;
 }
 
 .viking-demo-label-compact {
@@ -1385,29 +1444,155 @@ viking-card-wc.landing-doctrine-card > * {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--viking-space-5);
-  height: var(--viking-space-5);
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
   color: var(--viking-accent);
-  font-size: var(--viking-font-size-lg);
+  font-size: var(--viking-font-size-xl);
+  line-height: 1;
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-accent-soft);
+  box-shadow: var(--viking-shadow-xs);
 }
 
-.theme-toggle-btn {
-  padding: var(--viking-space-2);
-  border: 1px solid var(--viking-accent);
-  border-radius: var(--viking-radius-md);
-  color: var(--viking-accent-content);
-  background: var(--viking-accent);
+/* Showcase-only theme toggle fallback when not using WC host styles */
+.component-showcase-preview > .theme-toggle-btn,
+.component-showcase-preview button.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--viking-control-height, 40px);
+  height: var(--viking-control-height, 40px);
+  min-width: var(--viking-control-height, 40px);
+  min-height: var(--viking-control-height, 40px);
+  padding: 0;
+  border: 1px solid
+    color-mix(in srgb, var(--viking-accent) 32%, var(--viking-border));
+  border-radius: var(--viking-radius);
+  color: var(--viking-accent-strong);
+  background: color-mix(in srgb, var(--viking-accent) 10%, var(--viking-surface));
   cursor: pointer;
   transition: var(--viking-transition-interactive);
   font: inherit;
-  font-size: var(--viking-font-size-sm);
-  min-height: 44px;
+  line-height: 0;
+  box-shadow: var(--viking-shadow-sm);
 }
 
-.theme-toggle-btn:hover,
-.theme-toggle-btn:focus-visible {
-  background: color-mix(in srgb, var(--viking-accent) 86%, var(--viking-bg));
+.component-showcase-preview > .theme-toggle-btn::before,
+.component-showcase-preview button.theme-toggle-btn:empty::before {
+  content: "◐";
+  font-size: 1.15rem;
+  line-height: 1;
+  color: currentColor;
+}
+
+.component-showcase-preview > .theme-toggle-btn:hover,
+.component-showcase-preview button.theme-toggle-btn:hover,
+.component-showcase-preview > .theme-toggle-btn:focus-visible,
+.component-showcase-preview button.theme-toggle-btn:focus-visible {
+  background: color-mix(in srgb, var(--viking-accent) 16%, var(--viking-surface));
   border-color: var(--viking-accent-strong);
+}
+
+/* Gauge demo — analytics-quality arc */
+.component-showcase-preview .viking-gauge-demo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-width: 10rem;
+  padding: var(--viking-space-2) 0;
+}
+
+.component-showcase-preview .viking-gauge-demo svg {
+  width: 9rem;
+  height: auto;
+  overflow: visible;
+}
+
+.component-showcase-preview .viking-gauge-demo .viking-metric {
+  position: absolute;
+  bottom: 0.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--viking-font-size-xl);
+  font-weight: var(--viking-font-weight-extrabold, 800);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--viking-letter-spacing-tight);
+  line-height: 1;
+  color: var(--viking-text);
+}
+
+/* Icon heading stack: icon + title row, description under */
+.component-showcase-preview .viking-icon-heading {
+  width: 100%;
+  max-width: 28rem;
+}
+
+.component-showcase-preview .viking-icon-heading + .viking-text-muted {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0;
+  padding-left: calc(
+    var(--viking-icon-size-lg, 24px) + var(--viking-space-2, 16px)
+  );
+  text-align: left;
+}
+
+/* Accordion demos */
+.component-showcase-preview .viking-accordion-static {
+  width: min(100%, 28rem);
+  text-align: left;
+}
+
+.component-showcase-preview .viking-accordion-static summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  gap: var(--viking-space-1);
+  cursor: pointer;
+}
+
+/* Calendar demo */
+.component-showcase-preview .viking-demo-card-lg {
+  width: min(100%, 20rem);
+  max-width: 20rem;
+  gap: var(--viking-space-2);
+}
+
+.component-showcase-preview .viking-demo-card-lg .viking-demo-row {
+  width: 100%;
+}
+
+.component-showcase-preview .viking-demo-card-lg .viking-demo-row-wrap {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--viking-space-half);
+  justify-items: center;
+}
+
+.component-showcase-preview .viking-demo-card-lg .viking-demo-row-wrap > * {
+  min-width: 2rem;
+  min-height: 2rem;
+  justify-content: center;
+}
+
+/* Kbd + caption row */
+.component-showcase-preview:has(> .viking-kbd-static) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-1-5);
+}
+
+.component-showcase-preview > .viking-kbd-static {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  min-width: 2rem;
 }
 
 .theming-setup-card {

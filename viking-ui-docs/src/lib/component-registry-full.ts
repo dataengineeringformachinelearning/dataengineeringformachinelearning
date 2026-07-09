@@ -20,20 +20,33 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Month-grid date picker with keyboard navigation and ISO value binding.",
           preview: `<div class="viking-card viking-card-compact viking-demo-card-lg">
   <div class="viking-demo-row viking-demo-row-between">
+    <viking-button-wc variant="ghost" size="sm" aria-label="Previous year">«</viking-button-wc>
     <viking-button-wc variant="ghost" size="sm" aria-label="Previous month">‹</viking-button-wc>
     <span class="viking-label">July 2026</span>
     <viking-button-wc variant="ghost" size="sm" aria-label="Next month">›</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="Next year">»</viking-button-wc>
   </div>
-  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs viking-demo-muted-xs">
+  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs viking-demo-muted-xs" aria-hidden="true">
     <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
   </div>
-  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs">
-    <viking-button-wc variant="ghost" size="sm">1</viking-button-wc>
-    <viking-button-wc variant="ghost" size="sm">2</viking-button-wc>
-    <viking-button-wc variant="primary" size="sm">3</viking-button-wc>
-    <viking-button-wc variant="ghost" size="sm">4</viking-button-wc>
+  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs" role="grid" aria-label="Days of month">
+    <viking-button-wc variant="ghost" size="sm" aria-label="June 28">28</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="June 29">29</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="June 30">30</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 1">1</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 2">2</viking-button-wc>
+    <viking-button-wc variant="primary" size="sm" aria-label="July 3 selected" aria-current="date">3</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 4">4</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 5">5</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 6">6</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 7">7</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 8">8</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 9">9</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 10">10</viking-button-wc>
+    <viking-button-wc variant="ghost" size="sm" aria-label="July 11">11</viking-button-wc>
   </div>
-</div>`,
+</div>
+<p class="viking-text-muted viking-demo-caption">Year + month arrows and a denser day grid</p>`,
           selector: "viking-calendar",
           tags: ["angular", "forms"],
           related: ["date-picker"],
@@ -209,11 +222,13 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Icon heading",
           description:
             "Icon + title lockup for settings sections and dashboard panels.",
-          preview: `<div class="viking-icon-heading">
-  <span class="viking-icon-heading__icon" aria-hidden="true">◆</span>
-  <h3 class="viking-icon-heading__title">Threat scoring</h3>
-</div>
-<p class="viking-text-muted">Behavioral biometrics and AbuseIPDB enrichment at ingress.</p>`,
+          preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
+  <div class="viking-icon-heading">
+    <span class="viking-icon-heading__icon" aria-hidden="true">◆</span>
+    <h3 class="viking-icon-heading__title">Threat scoring</h3>
+  </div>
+  <p class="viking-text-muted">Behavioral biometrics and AbuseIPDB enrichment at ingress.</p>
+</div>`,
           selector: "viking-icon-heading",
           related: ["icon", "page-header"],
         },

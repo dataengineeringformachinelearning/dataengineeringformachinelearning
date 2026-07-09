@@ -106,11 +106,12 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Marketing-grade navbar with search, theme toggle, and CTA slots.",
           preview: `<div class="viking-card viking-card-compact">
   <div class="viking-demo-row">
-    <strong class="viking-heading viking-heading-sm">DEML</strong>
+    <strong class="viking-heading viking-heading-sm" style="margin:0;line-height:1.2">DEML</strong>
     <viking-button-wc variant="ghost" size="sm">Docs</viking-button-wc>
     <viking-button-wc variant="primary" size="sm">Launch</viking-button-wc>
   </div>
-</div>`,
+</div>
+<p class="viking-text-muted viking-demo-caption">Real surfaces use viking-site-navbar + footer in DocLayout</p>`,
           selector: "viking-site-navbar",
           tags: ["angular", "marketing"],
         },
@@ -235,8 +236,11 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Keyboard hint",
           description:
             "Styled kbd element for shortcuts — pairs with search palette footer.",
-          preview: `<span class="viking-kbd-static">⌘</span><span class="viking-kbd-static">K</span>
-<span class="viking-text-muted">Open command palette</span>`,
+          preview: `<div class="viking-demo-row">
+  <span class="viking-kbd-static">⌘</span>
+  <span class="viking-kbd-static">K</span>
+  <span class="viking-text-muted">Open command palette</span>
+</div>`,
           selector: "viking-kbd",
         },
         snippets(
@@ -291,9 +295,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Brand mark",
           description: "Logo lockup with wordmark for navbars and auth panels.",
           preview: `<div class="viking-demo-row">
-  <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
-  <strong class="viking-heading viking-heading-sm">DEML</strong>
-</div>`,
+  <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
+  <strong class="viking-heading viking-heading-sm" style="margin:0;line-height:1.2">DEML</strong>
+</div>
+<p class="viking-text-muted viking-demo-caption">Icon + wordmark share one cross-axis</p>`,
           selector: "viking-brand",
         },
         snippets(
@@ -530,12 +535,13 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Gauge arc",
           description: "Semi-circular gauge for SLA and capacity utilization.",
           preview: `<div class="viking-gauge-demo" role="img" aria-label="72% capacity">
-  <svg viewBox="0 0 120 70" width="120" height="70" aria-hidden="true">
-    <path d="M10,60 A50,50 0 0,1 110,60" fill="none" stroke="var(--viking-border)" stroke-width="8"/>
-    <path d="M10,60 A50,50 0 0,1 86,22" fill="none" stroke="var(--viking-accent)" stroke-width="8"/>
+  <svg viewBox="0 0 100 60" width="144" height="86" aria-hidden="true">
+    <path d="M10 50A40 40 0 0 1 90 50" fill="none" stroke="color-mix(in srgb, var(--viking-text-muted) 25%, transparent)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M10 50A40 40 0 0 1 90 50" fill="none" stroke="var(--viking-accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="90 126" pathLength="126"/>
   </svg>
   <strong class="viking-metric">72%</strong>
-</div>`,
+</div>
+<p class="viking-text-muted viking-demo-caption">Capacity utilization arc</p>`,
           selector: "viking-gauge-arc",
         },
         snippets(
@@ -779,14 +785,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           id: "accordion",
           name: "Accordion",
           description: "Expandable sections for FAQ and dense settings pages.",
-          preview: `<details class="viking-accordion-static" open>
-  <summary class="viking-heading viking-heading-sm">Event projections</summary>
-  <p class="viking-text-muted">Commands commit to Outbox before Redpanda publish.</p>
-</details>
-<details class="viking-accordion-static">
-  <summary class="viking-heading viking-heading-sm">Multi-tenancy</summary>
-  <p class="viking-text-muted">Symmetrical pipelines iterate Tenant.objects.all().</p>
-</details>`,
+          preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
+  <details class="viking-accordion-static" open>
+    <summary class="viking-heading viking-heading-sm">Event projections</summary>
+    <p class="viking-text-muted">Commands commit to Outbox before Redpanda publish.</p>
+  </details>
+  <details class="viking-accordion-static">
+    <summary class="viking-heading viking-heading-sm">Multi-tenancy</summary>
+    <p class="viking-text-muted">Symmetrical pipelines iterate Tenant.objects.all().</p>
+  </details>
+</div>`,
           selector: "viking-accordion",
         },
         snippets(

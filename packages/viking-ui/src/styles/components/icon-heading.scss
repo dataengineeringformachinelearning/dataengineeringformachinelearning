@@ -3,6 +3,7 @@
 
 .viking-icon-heading {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: var(--viking-space-2, 16px);
   min-width: 0;
@@ -13,6 +14,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  align-self: center;
   width: var(--viking-icon-size-lg, 24px);
   height: var(--viking-icon-size-lg, 24px);
   line-height: 0;
@@ -33,13 +35,21 @@
 
 .viking-icon-heading__title {
   margin: 0;
+  padding: 0;
+  align-self: center;
   font-family: var(--viking-font-family);
   font-size: var(--viking-font-size-lg, 20px);
   font-weight: var(--viking-font-weight-bold, 700);
   letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
-  line-height: var(--viking-line-height-tight, 1.25);
+  line-height: 1.2;
   color: var(--viking-text, var(--text-color));
   text-transform: uppercase;
+}
+
+/* Description content under the title row (sibling after heading) */
+.viking-icon-heading + p,
+.viking-icon-heading + .viking-text-muted {
+  margin-top: var(--viking-space-1);
 }
 
 .viking-icon-heading--lg .viking-icon-heading__title {

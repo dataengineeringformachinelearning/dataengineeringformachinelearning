@@ -45,7 +45,19 @@
   font-size: max(16px, var(--base-font-size));
   font-weight: 500;
   color: var(--text-color);
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--viking-space-1-5, 12px);
+}
+
+.viking-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1-5, 12px);
+  width: 100%;
+  min-width: 0;
+}
+
+.viking-field > .viking-field-label {
+  margin-bottom: 0;
 }
 
 .viking-field-description {

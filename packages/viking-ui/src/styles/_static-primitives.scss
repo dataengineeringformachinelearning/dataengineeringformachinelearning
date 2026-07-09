@@ -367,13 +367,20 @@
 
 // Kbd
 .viking-kbd-static {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.75rem;
+  min-width: 1.75rem;
   font-family: inherit;
   font-size: calc(var(--viking-font-size) * 0.75);
-  padding: 2px 6px;
+  line-height: 1;
+  padding: 0.25rem 0.45rem;
   border-radius: calc(var(--viking-radius) / 2);
   border: 1px solid var(--viking-border);
   background: var(--viking-surface-alt);
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 
 // Divider
@@ -401,6 +408,10 @@
   gap: var(--viking-space-2);
 }
 
+.viking-demo-row > * {
+  align-self: center;
+}
+
 .viking-demo-row-stack {
   flex-direction: column;
   align-items: stretch;
@@ -409,6 +420,7 @@
 // Breadcrumbs
 .viking-breadcrumbs-static {
   font-size: var(--viking-font-size-sm);
+  line-height: 1;
 }
 
 .viking-breadcrumbs-list {
@@ -419,12 +431,21 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  min-height: var(--viking-control-height-sm, 36px);
+}
+
+.viking-breadcrumbs-list li {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  line-height: 1.25;
 }
 
 .viking-breadcrumbs-list li:not(:last-child)::after {
   content: '/';
   margin-left: var(--viking-space-1);
   color: var(--viking-text-muted);
+  line-height: 1;
 }
 
 .viking-breadcrumbs-list a {
@@ -625,16 +646,43 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: var(--viking-icon-badge-size, var(--viking-space-6));
   height: var(--viking-icon-badge-size, var(--viking-space-6));
   padding: var(--viking-icon-badge-padding, var(--viking-space-half));
   box-sizing: border-box;
-  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+  border-radius: var(--viking-radius-lg);
   border: none;
   background: var(--viking-accent-soft);
   color: var(--viking-accent-strong);
   box-shadow: var(--viking-shadow-sm);
   font-size: var(--viking-font-size-sm);
+  line-height: 1;
+  align-self: center;
+}
+
+/* Card header: icon badge + title share one cross-axis */
+.viking-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-2);
+  min-width: 0;
+}
+
+.viking-card-header > .viking-icon-badge-static,
+.viking-card-header > .viking-heading,
+.viking-card-header > .viking-heading-xl,
+.viking-card-header > strong.viking-heading {
+  margin: 0;
+  align-self: center;
+}
+
+.viking-card-header > .viking-heading,
+.viking-card-header > .viking-heading-xl,
+.viking-card-header > strong.viking-heading {
+  line-height: 1.2;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .viking-textarea-static {
@@ -714,10 +762,23 @@
 
 .viking-gauge-demo,
 .viking-ring-gauge-demo {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--viking-space-1);
+}
+
+.viking-gauge-demo svg {
+  display: block;
+  overflow: visible;
+}
+
+.viking-gauge-demo .viking-metric {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--viking-font-weight-extrabold, 800);
+  letter-spacing: var(--viking-letter-spacing-tight);
 }
 
 .viking-chart-empty-static {

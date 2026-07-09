@@ -48,14 +48,16 @@ import { vikingUid } from "../../core/uid";
       .viking-field-label-wrap {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-1-5);
       }
       .viking-field-label {
+        display: block;
         font-size: var(--viking-font-size-sm);
         font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-text);
         letter-spacing: var(--viking-letter-spacing-wide);
         line-height: var(--viking-line-height-tight);
+        margin: 0 0 var(--viking-space-half);
       }
       .viking-field-required {
         color: var(--viking-danger);

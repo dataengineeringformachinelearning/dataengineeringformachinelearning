@@ -39,6 +39,7 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: var(--viking-space-1-5);
         min-height: var(--viking-control-height-sm);
         min-width: var(--viking-btn-min-width, 120px);
         padding: var(--viking-space-half) var(--viking-space-2-5);
@@ -50,6 +51,15 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
         transition: var(--viking-transition-interactive);
         position: relative;
         -webkit-tap-highlight-color: transparent;
+      }
+      .viking-tab viking-app-icon,
+      .viking-tab viking-icon,
+      .viking-tab [data-viking-icon] {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-inline-end: 0;
       }
       @media (max-width: 767px) {
         .viking-tab {
