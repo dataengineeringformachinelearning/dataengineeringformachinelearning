@@ -228,23 +228,24 @@ main.main {
   }
 }
 
+// Legal/doc shell: fill the page-inner-wrapper (1260px), do not re-cap width.
 .page-content {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: var(--container-max-width);
-  padding: 16px;
-  margin: 0 auto;
+  max-width: none;
+  padding: var(--viking-space-3, 24px);
+  margin: 0;
   box-sizing: border-box;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border, var(--border));
+  border-radius: var(--viking-radius-xl, 16px);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
 @media (min-width: 768px) {
   .page-content {
-    padding: 56px;
+    padding: var(--viking-space-5, 40px) var(--viking-space-6, 48px);
   }
 }
 
@@ -458,7 +459,9 @@ html[data-theme="light"] #global-error-toast {
 
 // Eliminate border-radius on elements that only have single-sided borders (top, bottom, left, or right)
 // to avoid curved corners on straight dividing lines.
-.hud-header,
+// NOTE: .page-content is a card shell — keep its radius (do not force 0).
+// NOTE: .compliance-hero.hud-header is a card hero — keep its radius.
+.hud-header:not(.compliance-hero),
 .panel-header,
 .filter-bar,
 .telemetry-bar,
@@ -466,28 +469,8 @@ html[data-theme="light"] #global-error-toast {
 .sidebar-brand,
 .sidebar-footer,
 .dashboard-sidebar,
-.vuln-profile-header,
-.page-content:not([style*="border"]) {
+.vuln-profile-header {
   border-radius: 0 !important;
-}
-
-// ====================== HUD HEADER STYLING ======================
-.compliance-hero.hud-header {
-  display: grid;
-  gap: var(--viking-space-5);
-  align-items: center;
-  overflow: visible;
-  justify-content: stretch;
-
-  @media (min-width: 960px) {
-    grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 0.95fr);
-  }
-}
-
-.compliance-hero-mockup {
-  min-width: 0;
-  overflow: visible;
-  width: 100%;
 }
 
 .hud-header {

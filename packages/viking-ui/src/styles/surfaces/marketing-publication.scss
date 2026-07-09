@@ -1,11 +1,23 @@
 // Shared publication styles for Book and Whitepaper — single-card, structured prose.
 
 .publication-shell {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
   border-radius: var(--viking-radius-xl, 16px);
   border: 1px solid var(--viking-border, var(--border));
   background: var(--viking-surface, var(--color-surface));
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
   overflow: hidden;
+}
+
+// Book / whitepaper: fill the marketing 1260px shell (same as homepage).
+.book-toc-wrapper,
+.whitepaper-wrapper,
+.book-toc-page .page-inner-wrapper,
+.whitepaper-page .page-inner-wrapper {
+  width: 100%;
+  max-width: min(100%, var(--viking-container-max-width, 1260px));
 }
 
 .publication-hero {

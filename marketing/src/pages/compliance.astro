@@ -92,7 +92,7 @@ const complianceJsonLd = webPageJsonLd(
             </div>
             <div class="score-display">
               <div class="score-bar-bg" aria-hidden="true">
-                <div class="score-bar-fill u-style-199b6f" ></div>
+                <div class="score-bar-fill score-bar-fill--complete"></div>
               </div>
               <div class="score-labels">
                 <span class="percentage">100% Complete</span>
@@ -181,8 +181,8 @@ const complianceJsonLd = webPageJsonLd(
               </div>
 
               <div class="submit-action-box">
-                <button class="submit-report-btn" id="submit-threat-btn">
-                  <VikingIcon name="send" size={20} class="u-style-8f2b4f" />
+                <button class="submit-report-btn" id="submit-threat-btn" type="button">
+                  <VikingIcon name="send" size={20} />
                   <span id="submit-btn-text">Submit Threat Indicator</span>
                 </button>
                 <span class="mode-tag">Currently Active: Sandbox Ingestion Mode</span>
