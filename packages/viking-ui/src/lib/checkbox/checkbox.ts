@@ -57,11 +57,15 @@ import { VikingIcon } from "../icon/icon";
         --viking-checkbox-size: 1.125rem;
         --viking-checkbox-line-height: 1.45;
         display: inline-flex;
-        align-items: flex-start;
+        align-items: center;
         gap: var(--viking-space-1-5, 0.75rem);
         cursor: pointer;
         font-size: var(--viking-font-size);
         line-height: var(--viking-checkbox-line-height);
+      }
+      /* Multi-line description: pin control to first line */
+      .viking-checkbox:has(.viking-checkbox-description) {
+        align-items: flex-start;
       }
       .viking-disabled {
         opacity: var(--viking-state-disabled-opacity);
@@ -75,14 +79,7 @@ import { VikingIcon } from "../icon/icon";
         box-sizing: border-box;
         width: var(--viking-checkbox-size);
         height: var(--viking-checkbox-size);
-        /* Center control against the first line of label text */
-        margin-top: calc(
-          (
-              1em *
-                var(--viking-checkbox-line-height) - var(--viking-checkbox-size)
-            ) /
-            2
-        );
+        margin-top: 0;
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius-xs);
         background: var(--viking-surface);
@@ -91,6 +88,15 @@ import { VikingIcon } from "../icon/icon";
         flex-shrink: 0;
         box-shadow: var(--viking-shadow-xs);
         line-height: 0;
+      }
+      .viking-checkbox:has(.viking-checkbox-description) .viking-checkbox-box {
+        margin-top: calc(
+          (
+              1em *
+                var(--viking-checkbox-line-height) - var(--viking-checkbox-size)
+            ) /
+            2
+        );
       }
       /* The native input fills the visual box so clicks and focus land on it. */
       .viking-checkbox-box input {

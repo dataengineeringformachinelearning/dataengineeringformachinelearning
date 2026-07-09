@@ -1,16 +1,19 @@
 @use "buttons" as btn;
 
-/* Host is a transparent layout shell — one native control inside, never a second button. */
+/* Host wraps a single native control. Avoid display:contents — it drops projected labels in some browsers. */
 :host {
-  display: contents;
+  display: inline-flex;
+  vertical-align: middle;
+  max-width: 100%;
 }
 
 :host(.viking-full) {
-  display: block;
+  display: flex;
   width: 100%;
 
   .viking-btn {
     @include btn.viking-btn-full;
+    width: 100%;
   }
 }
 

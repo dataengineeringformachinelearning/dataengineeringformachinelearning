@@ -1,6 +1,6 @@
 # Viking-UI
 
-Publish target: **`@dataengineeringformachinelearning/viking-ui@4.8.0`**
+Publish target: **`@dataengineeringformachinelearning/viking-ui@4.9.0`**
 Single source of truth: **`packages/viking-ui/`** (framework-agnostic styles, tokens, Web Components, and Angular wrapper entrypoints are consolidated here).
 
 Universal DEML component library for Astro, Angular, and Django.
@@ -408,11 +408,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.8.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.9.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.8.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.9.0/dist/web-components.js"
 ></script>
 ```
 
@@ -496,7 +496,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.8.0/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.9.0/dist/widget.js"
   async
   defer
   data-page-id="platform-status"

@@ -443,7 +443,7 @@ export class ExploreCardComponent {
   readonly segments = input<VikingUptimeSegment[]>([]);
   readonly uptimePercentage = input<number | null>(null);
   readonly uptimeSummary = input<string>("");
-  readonly viewLabel = input<string>("View Dedicated Page");
+  readonly viewLabel = input<string>("View status");
 
   protected readonly resolvedStatusLabel = computed(
     () => this.statusLabel() || normalizeStatusLabel(this.status()),

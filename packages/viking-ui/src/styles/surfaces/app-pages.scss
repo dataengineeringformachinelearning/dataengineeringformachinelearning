@@ -3058,11 +3058,41 @@ viking-card-header {
   gap: var(--viking-space-3);
 }
 
-/* Public status page — narrower, focused column (not full 1260) */
+/* Public status page — room for metrics (≈75% on tablet, full shell on desktop) */
 .isolated-status-page .isolated-status-shell,
 .dashboard-page-container.isolated-status-page .page-inner-wrapper {
-  max-width: min(52rem, 100%);
+  width: 100%;
+  max-width: min(
+    100%,
+    max(48rem, calc(var(--viking-container-max-width, 1260px) * 0.75))
+  );
   margin-inline: auto;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+@media (min-width: 960px) {
+  .isolated-status-page .isolated-status-shell,
+  .dashboard-page-container.isolated-status-page .page-inner-wrapper {
+    max-width: min(100%, var(--viking-container-max-width, 1260px));
+  }
+}
+
+/* Status directory cards: avoid horizontal chop; stack metrics cleanly */
+.dashboard-page-container .status-directory-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 900px) {
+  .dashboard-page-container .status-directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .dashboard-page-container .status-directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .isolated-status-page .viking-stack,
