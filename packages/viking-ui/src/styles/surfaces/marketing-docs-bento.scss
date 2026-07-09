@@ -62,9 +62,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-page-section-gap, var(--viking-space-6));
-  /* Narrower than full 1260px shell — marketing-readable column */
+  /* Match marketing shell: full page-inner-wrapper width (1260px) */
   width: 100%;
-  max-width: min(52rem, 100%);
+  max-width: min(100%, var(--viking-container-max-width, 1260px));
   margin-inline: auto;
 }
 
