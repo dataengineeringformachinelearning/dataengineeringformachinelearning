@@ -72,6 +72,19 @@ export {
   registerVikingThemeToggleWc,
 } from "./theme-toggle/viking-theme-toggle-wc";
 export type { VikingWcTone } from "./core/types";
+export { VikingReactiveElement, type VikingAttrOptions } from "./core/reactive";
+export {
+  parseBoolean,
+  parseJson,
+  parseNumber,
+  parseSelect,
+} from "./core/parsers";
+export {
+  searchAlgoliaPages,
+  ALGOLIA_DEFAULT_INDEXES,
+  type AlgoliaHitItem,
+  type AlgoliaConfig,
+} from "./core/algolia-search";
 
 /** Register all Viking-UI Web Components. Safe to call multiple times. */
 export const registerVikingElements = (): void => {

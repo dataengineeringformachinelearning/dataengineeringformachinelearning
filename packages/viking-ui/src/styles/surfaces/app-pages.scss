@@ -275,13 +275,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: var(--viking-radius-lg);
   background: color-mix(in srgb, var(--viking-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--viking-accent) 28%, transparent);
   color: var(--viking-accent-strong, var(--viking-accent));
   box-shadow: var(--viking-shadow-xs);
-  border: 1px solid color-mix(in srgb, var(--viking-accent) 22%, transparent);
 
   viking-app-icon,
   viking-icon {
@@ -1932,20 +1932,6 @@ viking-card-header {
     .viking-checkbox {
       width: 100%;
     }
-
-    .viking-checkbox {
-      align-items: flex-start;
-      gap: var(--viking-space-1-5);
-    }
-
-    .viking-checkbox-box {
-      margin-top: 0.15em;
-      flex-shrink: 0;
-    }
-
-    .viking-checkbox-label {
-      line-height: 1.45;
-    }
   }
 }
 
@@ -2012,18 +1998,22 @@ viking-card-header {
   }
 
   .integrations-list {
-    padding: var(--viking-space-2) var(--viking-space-1);
-    background: transparent;
-    border: none;
-    gap: var(--viking-space-3);
+    display: flex;
+    flex-direction: column;
+    padding: var(--viking-space-3);
+    background: color-mix(in srgb, var(--viking-surface) 92%, transparent);
+    border: 1px solid var(--viking-border-subtle);
+    border-radius: var(--viking-radius-lg);
+    gap: var(--viking-space-2);
 
     .integration-item {
-      padding: var(--viking-space-3) var(--viking-space-2);
+      padding: var(--viking-space-3);
       border-radius: var(--viking-radius-md);
-      border: 1px solid var(--viking-border-subtle);
-      border-bottom: 1px solid var(--viking-border-subtle);
-      background: var(--viking-surface-alt, transparent);
-      margin-bottom: var(--viking-space-2);
+      border: none;
+      box-shadow: inset 0 0 0 1px
+        color-mix(in srgb, var(--viking-border-subtle) 80%, transparent);
+      background: var(--viking-surface);
+      margin-bottom: 0;
 
       &:last-child {
         margin-bottom: 0;
@@ -2253,20 +2243,28 @@ viking-card-header {
   }
 }
 
-/* Integrations list */
+/* Integrations list — even inset around tiles */
 .integrations-list {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2);
-  padding: var(--viking-space-1) 0;
+  padding: var(--viking-space-3);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-lg);
+  background: color-mix(in srgb, var(--viking-surface) 92%, transparent);
+  box-sizing: border-box;
 
   .integration-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: var(--viking-space-3);
-    padding: var(--viking-space-3) var(--viking-space-2);
-    border-bottom: 1px solid var(--viking-border-subtle);
+    padding: var(--viking-space-3);
+    border: none;
+    border-radius: var(--viking-radius-md);
+    background: var(--viking-surface);
+    box-shadow: inset 0 0 0 1px
+      color-mix(in srgb, var(--viking-border-subtle) 80%, transparent);
 
     &:last-child {
       border-bottom: none;
@@ -2277,7 +2275,7 @@ viking-card-header {
       flex-direction: column;
       align-items: stretch;
       gap: var(--viking-space-3, 24px);
-      padding: var(--viking-space-3) var(--viking-space-2);
+      padding: var(--viking-space-3);
     }
   }
 
@@ -2609,7 +2607,8 @@ viking-card-header {
   margin-bottom: 0;
 }
 
-/* Connected accounts / integration tiles — one outer shell, even inset */
+/* Connected accounts / integration tiles — single outer shell, even inset.
+   Items are surface tiles without a second full border stack. */
 .mfa-settings-card .integrations-list,
 .status-card-outlined .integrations-list.panel-clean,
 .integrations-list.panel-clean {
@@ -2637,16 +2636,17 @@ viking-card-header {
   padding: var(--viking-space-3);
   margin: 0;
   border-radius: var(--viking-radius-md);
-  border: 1px solid var(--viking-border-subtle);
-  background: var(--viking-surface);
-  box-shadow: var(--viking-shadow-xs);
+  border: none;
+  background: color-mix(in srgb, var(--viking-surface) 88%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--viking-border-subtle) 80%, transparent);
 }
 
 .mfa-settings-card .integration-item + .integration-item,
 .status-card-outlined .integrations-list .integration-item + .integration-item,
 .integrations-list.panel-clean .integration-item + .integration-item {
   margin-top: 0;
-  border-top: 1px solid var(--viking-border-subtle);
+  border-top: none;
 }
 
 /* ── account extras ── */
@@ -3048,6 +3048,11 @@ viking-card-header {
 }
 
 /* Explore: tighter header → directory rhythm */
+.dashboard-page-container:has(.status-directory-grid) .viking-page-header,
+.dashboard-page-container:has(.status-directory-grid) viking-page-header {
+  margin-bottom: var(--viking-space-3);
+}
+
 .dashboard-page-container .status-directory-grid {
   margin-top: 0;
   gap: var(--viking-space-3);
@@ -3092,6 +3097,59 @@ app-status-cta.isolated-status-cta {
     var(--viking-surface-recipe, var(--viking-surface));
   box-shadow: var(--viking-shadow-md);
   text-align: center;
+  overflow: visible;
+}
+
+/* Split CTA + product mockup for explore/status/platform pages */
+.empty-state-premium.status-cta-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-5);
+  align-items: center;
+  text-align: left;
+  overflow: visible;
+
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+}
+
+.status-cta-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+  min-width: 0;
+}
+
+.status-cta-mockup {
+  min-width: 0;
+  overflow: visible;
+  padding-inline-end: clamp(0.75rem, 5vw, 2.5rem);
+  margin-inline-end: clamp(-0.75rem, -2vw, -1.5rem);
+}
+
+/* Split CTA: features stay single-column so the mockup can breathe */
+.empty-state-premium.status-cta-layout .features-list {
+  @media (min-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.empty-state-premium.status-cta-layout .status-badge-premium {
+  align-self: flex-start;
+}
+
+.empty-state-premium.status-cta-layout .empty-subtitle {
+  margin-inline: 0;
+}
+
+.empty-state-premium.status-cta-layout .cta-actions {
+  justify-content: flex-start;
+
+  viking-button,
+  .viking-btn {
+    max-width: 20rem;
+  }
 }
 
 .empty-state-premium .status-badge-premium {
@@ -3533,25 +3591,25 @@ app-status-cta.isolated-status-cta {
 .dashboard-page-container .dashboard-grid-single .chart-container-medium,
 .dashboard-page-container .dashboard-grid-single .chart-container-large,
 .dashboard-page-container .dashboard-grid-single .chart-container {
-  min-height: clamp(13.5rem, 26vw, 16.5rem);
+  min-height: clamp(12.5rem, 24vw, 15rem);
   max-height: none;
 }
 
 .dashboard-page-container .dashboard-grid-single viking-chart-panel {
-  --viking-chart-panel-min-height-md: 20rem;
-  --viking-chart-panel-min-height-lg: 20rem;
-  --viking-chart-panel-body-min-height-md: clamp(13.5rem, 26vw, 16.5rem);
-  --viking-chart-panel-body-min-height-lg: clamp(13.5rem, 26vw, 16.5rem);
-  --viking-chart-fill-min-height: clamp(12.5rem, 24vw, 15.5rem);
-  --viking-chart-fill-max-height: clamp(15rem, 28vw, 18rem);
+  --viking-chart-panel-min-height-md: 19rem;
+  --viking-chart-panel-min-height-lg: 19rem;
+  --viking-chart-panel-body-min-height-md: clamp(12.5rem, 24vw, 15rem);
+  --viking-chart-panel-body-min-height-lg: clamp(12.5rem, 24vw, 15rem);
+  --viking-chart-fill-min-height: clamp(11.5rem, 22vw, 14.5rem);
+  --viking-chart-fill-max-height: clamp(14rem, 26vw, 16.5rem);
 }
 
-/* 2/3-up analytics cards */
+/* 2/3-up analytics cards — same medium scale as anomalies card */
 .dashboard-page-container .dashboard-grid-responsive viking-chart-panel {
-  --viking-chart-panel-min-height-md: 22rem;
-  --viking-chart-panel-body-min-height-md: clamp(14.5rem, 28vw, 17rem);
-  --viking-chart-fill-min-height: clamp(13.5rem, 26vw, 16.5rem);
-  --viking-chart-fill-max-height: clamp(16rem, 30vw, 19rem);
+  --viking-chart-panel-min-height-md: 21rem;
+  --viking-chart-panel-body-min-height-md: clamp(13.5rem, 26vw, 16rem);
+  --viking-chart-fill-min-height: clamp(12.5rem, 24vw, 15rem);
+  --viking-chart-fill-max-height: clamp(15rem, 28vw, 17.5rem);
 }
 
 .dashboard-page-container .viking-chart-panel-origin-map .viking-chart-panel-body,
@@ -3562,10 +3620,25 @@ app-status-cta.isolated-status-cta {
 .dashboard-page-container .origin-map-canvas {
   min-height: var(--viking-chart-map-min-height);
   height: var(--viking-chart-map-min-height);
+  width: 100%;
+  border-radius: var(--viking-radius-lg);
+  overflow: hidden;
+  background: var(--viking-bg);
+  position: relative;
 }
 
 .dashboard-page-container .origin-map-canvas .leaflet-container {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
   min-height: inherit;
+  border-radius: inherit;
+  background: var(--viking-bg);
+}
+
+.dashboard-page-container .origin-map-canvas .leaflet-tile-pane {
+  opacity: 1;
+}
+
+.dashboard-page-container .origin-map-canvas .leaflet-tile {
+  max-width: none !important;
 }

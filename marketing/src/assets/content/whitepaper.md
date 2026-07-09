@@ -32,22 +32,25 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ### 2.2 Operational environment
 
-| Plane                 | Technology                               | Role                                                           |
-| --------------------- | ---------------------------------------- | -------------------------------------------------------------- |
-| Compute & persistence | Google Cloud Run (14 services)           | Django API, workers, Postgres, Redpanda, ClickHouse, caches    |
-| Client gateway        | Firebase Cloud Functions (`ingestEvent`) | Authenticated command ingress to Redpanda (Firestore fallback) |
-| Identity              | Firebase Auth                            | JWT perimeter; MFA on mutations                                |
-| Read models           | Firestore (`deml` DB)                    | `users/{uid}/data/stats` projections                           |
-| Marketing             | Firebase Hosting                         | Astro landing and documentation site                           |
-| Security controls     | GCP (KMS, immutable audit logs)          | Envelope encryption, tamper-evident logging                    |
-| Artifacts             | Hugging Face Hub                         | Namespaced PyTorch `state_dict` weights                        |
+| Plane                 | Technology                                                 | Role                                                                       |
+| --------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Compute & persistence | Railway, Cloud Run, or AWS Lightsail/Fargate (same images) | Django API, workers, `deml-daemon`, Postgres, Redpanda, ClickHouse, caches |
+| Client gateway        | Firebase Cloud Functions (`ingestEvent`)                   | Authenticated command ingress to Redpanda (Firestore fallback)             |
+| Identity              | Firebase Auth                                              | JWT perimeter; MFA-verified session on site mutations                      |
+| Read models           | Firestore (`deml` DB)                                      | `users/{uid}/data/stats` projections                                       |
+| Marketing             | Firebase Hosting                                           | Astro landing and documentation site                                       |
+| Security controls     | GCP (KMS, immutable audit logs)                            | Envelope encryption, tamper-evident logging (when GCP plane used)          |
+| Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                          |
+| Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                    |
+
+Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [`docs/glossary.md`](docs/glossary.md).
 
 ### 2.3 Actors & workflows
 
 - **Anonymous visitors** read published status pages and the world-readable `platform-status` sentinel only (ABAC).
-- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA required for writes); the Event Projections loop is monitored automatically by a synthetic probe and shown on the public `platform-status` page.
+- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA-verified session required for writes); may upgrade to **Pro** via Stripe; the Event Projections loop is monitored automatically by a synthetic probe and shown on the public `platform-status` page.
 - **API integrators** stream data through `/api/v1/ingest` using hashed API keys scoped to `account_id`.
-- **Platform operators** manage Cloud Run services, Firebase/GCP deploy workflows, Infisical secrets, and the internal vulnerability Kanban.
+- **Platform operators** manage Railway / Cloud Run / AWS services, Firebase deploy workflows, Infisical secrets, and the internal vulnerability Kanban.
 
 ### 2.4 Operational modes
 
@@ -235,7 +238,7 @@ Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cl
 
 A strict 30-day retention and lifecycle policy governs raw telemetry data. Raw endpoint telemetry, audit logs, and tracking consents are automatically purged after 30 days. Long-term raw metrics and traces route to ClickHouse for OLAP querying. High-value business objects—incident histories, bug reports, threat reports, and user configuration data—persist indefinitely as the system of record. The ML training worker triggers full model retraining and data optimization upon deployment and executes daily thereafter.
 
-The engineering roadmap includes Stripe monetization integrations enabling paid tiers where models and forecasts refresh at high frequency (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.
+**Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([docs/billing.md](docs/billing.md)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 
 ## 11. Team Workflows and Integrated Vulnerability Management
 

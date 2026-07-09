@@ -236,7 +236,8 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
 export class UptimeHistoryComponent {
   readonly data = input<UptimeHistoryDataPoint[]>([]);
   readonly segments = input<VikingUptimeSegment[]>([]);
-  readonly height = input<number>(32); /* Premium visible breathing on timeline */
+  readonly height =
+    input<number>(32); /* Premium visible breathing on timeline */
   readonly showLabels = input<boolean | undefined>(undefined);
   readonly percentage = input<number | null>(null);
   readonly statusSummary = input<string>("");

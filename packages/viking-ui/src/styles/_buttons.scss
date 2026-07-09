@@ -515,11 +515,17 @@ button.viking-btn-subtle {
 
 .viking-btn-spinner {
   flex: 0 0 auto;
+  display: inline-block;
+  box-sizing: border-box;
   width: var(--viking-icon-size-sm, 18px);
   height: var(--viking-icon-size-sm, 18px);
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: var(--viking-radius-pill);
+  min-width: var(--viking-icon-size-sm, 18px);
+  min-height: var(--viking-icon-size-sm, 18px);
+  border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-top-color: currentColor;
+  border-radius: 999px !important;
   animation: viking-spin 0.8s linear infinite;
   margin-inline-end: var(--viking-space-half);
+  background: transparent;
+  box-shadow: none;
 }

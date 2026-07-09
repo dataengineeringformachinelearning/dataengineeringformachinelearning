@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
+import PageMockup from '../components/PageMockup.astro';
 import { siteEnv } from '../lib/site-env';
 import { webPageJsonLd, canonicalHref } from '../lib/seo';
 
@@ -24,7 +25,7 @@ const complianceJsonLd = webPageJsonLd(
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">
       <div class="content-wrapper compliance-container-inner page-inner-wrapper">
-        <header class="hud-header">
+        <header class="hud-header compliance-hero page-mockup-stage">
           <div class="title-group">
             <div class="section-tag-row">
               <span class="badge-dot badge-dot--success" aria-hidden="true"></span>
@@ -36,6 +37,7 @@ const complianceJsonLd = webPageJsonLd(
               end-to-end encryption telemetry for audit-ready operations.
             </p>
           </div>
+          <PageMockup variant="security-ops" class="compliance-hero-mockup" />
         </header>
 
         <div class="compliance-grid">

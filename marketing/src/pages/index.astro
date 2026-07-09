@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
 import WhitepaperCta from '../components/WhitepaperCta.astro';
+import PageMockup from '../components/PageMockup.astro';
 import vikingUiPackage from '@dataengineeringformachinelearning/viking-ui/package.json';
 import { siteEnv } from '../lib/site-env';
 import {
@@ -170,45 +171,7 @@ const integrations = [
         </div>
       </div>
 
-      <div class="hero-mockup" aria-hidden="true">
-        <div class="mockup-window">
-          <div class="mockup-titlebar">
-            <span class="mockup-dot"></span>
-            <span class="mockup-dot"></span>
-            <span class="mockup-dot"></span>
-            <span class="mockup-title">deml.app / security-ops</span>
-          </div>
-          <div class="mockup-body">
-            <div class="mockup-sidebar">
-              <span class="mockup-nav-item active"></span>
-              <span class="mockup-nav-item"></span>
-              <span class="mockup-nav-item"></span>
-            </div>
-            <div class="mockup-main">
-              <div class="mockup-gauges">
-                <div class="mockup-gauge"><span class="gauge-label">Threat</span><span class="gauge-val">12%</span></div>
-                <div class="mockup-gauge primary"><span class="gauge-label">CES</span><span class="gauge-val">94</span></div>
-                <div class="mockup-gauge"><span class="gauge-label">Stability</span><span class="gauge-val">99%</span></div>
-              </div>
-              <div class="mockup-chart">
-                <div class="chart-bar" data-height="45"></div>
-                <div class="chart-bar" data-height="72"></div>
-                <div class="chart-bar" data-height="58"></div>
-                <div class="chart-bar" data-height="85"></div>
-                <div class="chart-bar" data-height="63"></div>
-                <div class="chart-bar" data-height="91"></div>
-                <div class="chart-bar" data-height="78"></div>
-                <div class="chart-bar" data-height="55"></div>
-              </div>
-              <div class="mockup-stats-row">
-                <div class="mockup-stat"><span>P99</span><strong>42ms</strong></div>
-                <div class="mockup-stat"><span>Requests</span><strong>12.4K</strong></div>
-                <div class="mockup-stat"><span>Incidents</span><strong>0</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageMockup variant="security-ops" />
     </section>
 
     <!-- Quick start -->

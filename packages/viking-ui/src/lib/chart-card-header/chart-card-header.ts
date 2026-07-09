@@ -26,7 +26,8 @@ import { ChangeDetectionStrategy, Component, input } from "@angular/core";
         align-items: flex-start;
         gap: var(--viking-space-1);
         /* Integrated with viking-card rhythm — generous but not sparse */
-        padding: var(--viking-space-3) var(--viking-space-4) var(--viking-space-2);
+        padding: var(--viking-space-3) var(--viking-space-4)
+          var(--viking-space-2);
         width: 100%;
         box-sizing: border-box;
         flex-shrink: 0;

@@ -1,0 +1,391 @@
+/* ==========================================================================
+   Page mockup window — angled product chrome for marketing / docs heroes.
+   Overflow is intentional so the 3D transform never clips on the right edge.
+   ========================================================================== */
+
+.viking-page-mockup,
+.hero-mockup {
+  perspective: 1400px;
+  /* Allow angled window to breathe past the layout column on the right */
+  overflow: visible;
+  width: 100%;
+  max-width: none;
+  /* Extra gutter so rotateY never clips the trailing edge */
+  padding-inline-end: clamp(1.25rem, 7vw, 4rem);
+  margin-inline-end: clamp(-1.25rem, -4vw, -2.5rem);
+  position: relative;
+  z-index: 2;
+}
+
+.viking-page-mockup-window,
+.mockup-window {
+  background: var(--viking-charcoal-800, var(--viking-surface));
+  border: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 54%, transparent);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 64px color-mix(in srgb, var(--viking-charcoal-900, #000) 40%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--viking-accent) 15%, transparent);
+  /* Slight positive X so the right edge stays visible when angled */
+  transform: rotateY(-8deg) rotateX(3deg) translateX(7%) scale(1.02);
+  transform-origin: center left;
+  transition: transform 0.4s ease;
+  position: relative;
+  width: 100%;
+  min-width: min(100%, 22rem);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    border: 1px solid
+      color-mix(in srgb, var(--viking-metallic-500, var(--viking-border)) 28%, transparent);
+    box-shadow: inset 0 1px 0
+      color-mix(in srgb, var(--viking-white, #fff) 7%, transparent);
+    opacity: 0.75;
+    background: linear-gradient(
+      135deg,
+      transparent,
+      color-mix(in srgb, var(--viking-accent) 12%, transparent) 50%,
+      transparent
+    );
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 28px;
+    width: 30px;
+    height: 18px;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--viking-accent) 24%, transparent);
+    border-right: 1px solid
+      color-mix(in srgb, var(--viking-accent) 18%, transparent);
+    transform: skewX(-18deg);
+    pointer-events: none;
+    opacity: 0.55;
+    z-index: 2;
+  }
+
+  &:hover {
+    transform: rotateY(-2deg) rotateX(1deg) translateX(4%) scale(1.02);
+  }
+}
+
+.viking-page-mockup-titlebar,
+.mockup-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--viking-charcoal-900, var(--viking-surface-alt));
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 42%, transparent);
+
+  .mockup-dot,
+  .viking-page-mockup-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--viking-text-muted);
+    opacity: 0.5;
+
+    &:first-child {
+      background: var(--viking-crimson-500, var(--viking-danger));
+      opacity: 0.8;
+    }
+    &:nth-child(2) {
+      background: var(--viking-gold-500, var(--viking-warning));
+      opacity: 0.8;
+    }
+    &:nth-child(3) {
+      background: var(--viking-accent-strong, var(--viking-accent));
+      opacity: 0.8;
+    }
+  }
+
+  .mockup-title,
+  .viking-page-mockup-title {
+    margin-left: 8px;
+    font-size: 0.85rem;
+    font-family: var(--viking-font-family-mono, ui-monospace, monospace);
+    color: var(--viking-electric-200, var(--viking-text-muted));
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.viking-page-mockup-body,
+.mockup-body {
+  display: flex;
+  min-height: 280px;
+}
+
+.viking-page-mockup-sidebar,
+.mockup-sidebar {
+  width: 48px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-right: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 36%, transparent);
+  background: var(--viking-charcoal-900, var(--viking-surface-alt));
+  flex-shrink: 0;
+
+  .mockup-nav-item,
+  .viking-page-mockup-nav-item {
+    height: 32px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--viking-text-muted) 20%, transparent);
+
+    &.active {
+      background: color-mix(in srgb, var(--viking-accent) 35%, transparent);
+      box-shadow: inset 0 0 0 1px var(--viking-accent);
+    }
+  }
+}
+
+.viking-page-mockup-main,
+.mockup-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--viking-card-padding, var(--viking-space-3));
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+}
+
+.viking-page-mockup-gauges,
+.mockup-gauges {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-2);
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.viking-page-mockup-gauge,
+.mockup-gauge {
+  background: var(--viking-charcoal-700, var(--viking-surface-alt));
+  border: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 42%, transparent);
+  border-radius: var(--viking-radius-lg);
+  padding: var(--viking-card-padding-compact, var(--viking-space-2));
+  text-align: center;
+
+  &.primary {
+    border-color: var(--viking-accent);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--viking-accent) 25%, transparent);
+  }
+
+  .gauge-label,
+  .viking-page-mockup-gauge-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--viking-metallic-200, var(--viking-text-muted));
+    margin-bottom: 4px;
+  }
+
+  .gauge-val,
+  .viking-page-mockup-gauge-val {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--viking-white, var(--viking-text));
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.viking-page-mockup-chart,
+.mockup-chart {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--viking-space-half);
+  padding: var(--viking-card-padding-compact, var(--viking-space-2));
+  background: var(--viking-charcoal-950, var(--viking-bg));
+  border-radius: var(--viking-radius-lg);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 36%, transparent);
+  min-height: 100px;
+
+  .chart-bar,
+  .viking-page-mockup-bar {
+    flex: 1;
+    background: linear-gradient(
+      180deg,
+      var(--viking-accent),
+      var(--viking-accent-strong, var(--viking-accent))
+    );
+    border-radius: 4px 4px 0 0;
+    opacity: 0.85;
+    animation: viking-mockup-bar-pulse 3s ease-in-out infinite;
+    height: calc(var(--chart-bar-height, 50) * 1%);
+    min-height: 8px;
+
+    @for $i from 1 through 12 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.12}s;
+      }
+    }
+
+    @for $h from 20 through 100 {
+      &[data-height="#{$h}"] {
+        --chart-bar-height: #{$h};
+      }
+    }
+  }
+}
+
+/* Soft area-line mock chart variant */
+.viking-page-mockup-chart.is-line,
+.mockup-chart.is-line {
+  align-items: stretch;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 18% 8% 22% 8%;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-accent) 28%, transparent),
+      transparent 70%
+    );
+    clip-path: polygon(
+      0% 70%,
+      12% 55%,
+      24% 62%,
+      38% 40%,
+      52% 48%,
+      66% 28%,
+      80% 35%,
+      100% 18%,
+      100% 100%,
+      0% 100%
+    );
+    opacity: 0.85;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 18% 8% 22% 8%;
+    border-top: 2px solid var(--viking-accent);
+    clip-path: polygon(
+      0% 70%,
+      12% 55%,
+      24% 62%,
+      38% 40%,
+      52% 48%,
+      66% 28%,
+      80% 35%,
+      100% 18%,
+      100% 20%,
+      80% 37%,
+      66% 30%,
+      52% 50%,
+      38% 42%,
+      24% 64%,
+      12% 57%,
+      0% 72%
+    );
+    opacity: 0.95;
+  }
+
+  .chart-bar,
+  .viking-page-mockup-bar {
+    display: none;
+  }
+}
+
+@keyframes viking-mockup-bar-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.viking-page-mockup-stats,
+.mockup-stats-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-2);
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .mockup-stat,
+  .viking-page-mockup-stat {
+    background: var(--viking-charcoal-700, var(--viking-surface-alt));
+    border: 1px solid
+      color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 42%, transparent);
+    border-radius: var(--viking-radius-lg);
+    padding: var(--viking-card-padding-compact, var(--viking-space-2));
+
+    span {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--viking-text-muted);
+      margin-bottom: 2px;
+    }
+
+    strong {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--viking-text);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+/* Parent columns must not clip the angled window */
+.hero-showcase,
+.landing-hero,
+.landing-showcase,
+.docs-hero,
+.page-mockup-stage,
+.status-cta-mockup,
+.status-cta-layout,
+.empty-state-premium.status-cta-layout {
+  overflow: visible !important;
+}
+
+/* Prefer breathing room on the stage, not hard clip */
+.page-mockup-stage {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  /* Allow ~8% of the mockup to spill past the column */
+  padding-inline-end: clamp(0.5rem, 3vw, 2rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-page-mockup-window,
+  .mockup-window {
+    transition: none;
+    transform: none;
+  }
+
+  .viking-page-mockup-chart .chart-bar,
+  .mockup-chart .chart-bar {
+    animation: none;
+  }
+}

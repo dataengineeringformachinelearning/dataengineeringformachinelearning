@@ -1,60 +1,68 @@
-<div class="empty-state-premium">
-  <div class="status-badge-premium primary">
-    <viking-app-icon [name]="badgeIcon" hostClass="badge-icon" [ariaHidden]="true" />
-    <span>{{ badgeText }}</span>
-  </div>
+<div class="empty-state-premium status-cta-layout">
+  <div class="status-cta-copy">
+    <div class="status-badge-premium primary">
+      <viking-app-icon [name]="badgeIcon" hostClass="badge-icon" [ariaHidden]="true" />
+      <span>{{ badgeText }}</span>
+    </div>
 
-  <h3 class="empty-title">{{ title }}</h3>
-  <p class="empty-subtitle">{{ subtitle }}</p>
+    <h3 class="empty-title">{{ title }}</h3>
+    <p class="empty-subtitle">{{ subtitle }}</p>
 
-  <div class="features-list">
-    <div class="feature-item">
-      <viking-app-icon name="bolt" hostClass="feature-icon" />
-      <div class="feature-text">
-        <strong>High-Throughput Telemetry</strong>
-        <span>Process massive data volumes via Redpanda and Polars.</span>
+    <div class="features-list">
+      <div class="feature-item">
+        <viking-app-icon name="bolt" hostClass="feature-icon" />
+        <div class="feature-text">
+          <strong>High-Throughput Telemetry</strong>
+          <span>Process massive data volumes via Redpanda and Polars.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <viking-app-icon name="security" hostClass="feature-icon" />
+        <div class="feature-text">
+          <strong>Aggregate Threat Modeling</strong>
+          <span>Leverage global data to detect anomalies and evaluate your telemetry.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <viking-app-icon name="online_prediction" hostClass="feature-icon" />
+        <div class="feature-text">
+          <strong>Predictive SLAs</strong>
+          <span>Deep learning models dynamically forecast service level agreements.</span>
+        </div>
       </div>
     </div>
-    <div class="feature-item">
-      <viking-app-icon name="security" hostClass="feature-icon" />
-      <div class="feature-text">
-        <strong>Aggregate Threat Modeling</strong>
-        <span>Leverage global data to detect anomalies and evaluate your telemetry.</span>
-      </div>
-    </div>
-    <div class="feature-item">
-      <viking-app-icon name="online_prediction" hostClass="feature-icon" />
-      <div class="feature-text">
-        <strong>Predictive SLAs</strong>
-        <span>Deep learning models dynamically forecast service level agreements.</span>
-      </div>
+
+    <p class="empty-footer-text">Sign in or register to get started.</p>
+
+    <div class="cta-actions">
+      @if (!authService.isAuthenticated()) {
+      <viking-button
+        variant="primary"
+        type="button"
+        icon="rocket"
+        iconTrailing="arrow-right"
+        label="Get Started"
+        (pressed)="login()"
+      >
+        Get Started
+      </viking-button>
+      } @if (authService.isAuthenticated()) {
+      <viking-button
+        variant="primary"
+        href="/settings"
+        icon="plus"
+        iconTrailing="arrow-right"
+        label="Create Status Page"
+      >
+        Create Status Page
+      </viking-button>
+      }
     </div>
   </div>
 
-  <p class="empty-footer-text">Sign in or register to get started.</p>
-
-  <div class="cta-actions">
-    @if (!authService.isAuthenticated()) {
-    <viking-button
-      variant="primary"
-      type="button"
-      icon="rocket"
-      iconTrailing="arrow-right"
-      label="Get Started"
-      (pressed)="login()"
-    >
-      Get Started
-    </viking-button>
-    } @if (authService.isAuthenticated()) {
-    <viking-button
-      variant="primary"
-      href="/settings"
-      icon="plus"
-      iconTrailing="arrow-right"
-      label="Create Status Page"
-    >
-      Create Status Page
-    </viking-button>
-    }
+  @if (showMockup) {
+  <div class="status-cta-mockup page-mockup-stage">
+    <viking-page-mockup [variant]="mockupVariant" [decorative]="true" />
   </div>
+  }
 </div>

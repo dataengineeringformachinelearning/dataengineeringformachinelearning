@@ -11,20 +11,25 @@ import {
   defineCustomElementAlias,
   escapeHtml,
 } from "../core/dom";
+import { parseNumber, parseSelect } from "../core/parsers";
+import { VikingReactiveElement } from "../core/reactive";
 
-const VALID_CONTEXTS = new Set<SiteDrakkarContext>([
-  "app",
-  "marketing",
-  "backend",
-  "docs",
-]);
+const VALID_CONTEXTS = ["app", "marketing", "backend", "docs"] as const;
 
-const detectContext = (): SiteDrakkarContext => {
+type FooterContext = (typeof VALID_CONTEXTS)[number];
+
+const detectContext = (): FooterContext => {
+  if (typeof document === "undefined") {
+    return "marketing";
+  }
   const explicit = document.documentElement.getAttribute("data-deml-context");
-  if (explicit && VALID_CONTEXTS.has(explicit as SiteDrakkarContext)) {
-    return explicit as SiteDrakkarContext;
+  if (explicit && (VALID_CONTEXTS as readonly string[]).includes(explicit)) {
+    return explicit as FooterContext;
   }
 
+  if (typeof window === "undefined") {
+    return "marketing";
+  }
   const host = window.location.hostname;
   if (host.startsWith("backend.")) {
     return "backend";
@@ -35,68 +40,17 @@ const detectContext = (): SiteDrakkarContext => {
   return "marketing";
 };
 
-const readContext = (el: HTMLElement): SiteDrakkarContext => {
-  const attr = el.getAttribute("context") as SiteDrakkarContext | null;
-  if (attr && VALID_CONTEXTS.has(attr)) {
-    return attr;
-  }
-  return detectContext();
-};
-
-const readUrls = (el: HTMLElement): SiteUrls => {
-  const env =
-    (globalThis as { __DEML?: Partial<SiteUrls> & Record<string, string> })
-      .__DEML ?? {};
-  return {
-    app: el.getAttribute("app-url") ?? env.app ?? DEFAULT_SITE_URLS.app,
-    marketing:
-      el.getAttribute("marketing-url") ??
-      env.marketing ??
-      DEFAULT_SITE_URLS.marketing,
-    backend:
-      el.getAttribute("backend-url") ??
-      env.backend ??
-      DEFAULT_SITE_URLS.backend,
-  };
-};
-
-const readYear = (el: HTMLElement): number => {
-  const raw = el.getAttribute("year");
-  const value = raw ? Number(raw) : new Date().getFullYear();
-  return Number.isFinite(value) ? value : new Date().getFullYear();
-};
-
-const renderFooterLinks = (
-  context: SiteDrakkarContext,
-  urls: SiteUrls,
-): string => {
-  return SITE_FOOTER_COLUMNS.map((column) => {
-    const links = column.links
-      .map((link: SiteFooterLink) => {
-        const href = resolveFooterHref(link, context, urls);
-        return `
-          <li>
-            <a href="${escapeHtml(href)}">${escapeHtml(link.label)}</a>
-          </li>
-        `;
-      })
-      .join("");
-
-    return `
-      <div class="footer-column">
-        <h3 class="footer-column-title">${escapeHtml(column.title)}</h3>
-        <ul class="footer-list">
-          ${links}
-        </ul>
-      </div>
-    `;
-  }).join("");
+type FooterProps = {
+  context: SiteDrakkarContext;
+  urls: SiteUrls;
+  year: number;
 };
 
 /**
  * viking-site-footer-wc — unified static Drakkar footer for non-Angular surfaces.
+ * Extends {@link VikingReactiveElement} so multi-attr updates batch into one paint.
  */
-export class VikingSiteFooterWc extends HTMLElement {
+export class VikingSiteFooterWc extends VikingReactiveElement<FooterProps> {
   static readonly tag = "viking-site-footer";
   static readonly legacyTag = "viking-site-footer-wc";
 
@@ -104,21 +58,65 @@ export class VikingSiteFooterWc extends HTMLElement {
     return ["context", "app-url", "marketing-url", "backend-url", "year"];
   }
 
-  connectedCallback(): void {
-    this.render();
+  private resolveContext(): SiteDrakkarContext {
+    return this.attr("context", {
+      parser: (raw) =>
+        parseSelect(raw, VALID_CONTEXTS, detectContext()) as SiteDrakkarContext,
+      default: detectContext() as SiteDrakkarContext,
+    });
   }
 
-  attributeChangedCallback(): void {
-    if (this.isConnected) {
-      this.render();
-    }
+  private resolveUrls(): SiteUrls {
+    const env =
+      (globalThis as { __DEML?: Partial<SiteUrls> & Record<string, string> })
+        .__DEML ?? {};
+    return {
+      app: this.getAttribute("app-url") ?? env.app ?? DEFAULT_SITE_URLS.app,
+      marketing:
+        this.getAttribute("marketing-url") ??
+        env.marketing ??
+        DEFAULT_SITE_URLS.marketing,
+      backend:
+        this.getAttribute("backend-url") ??
+        env.backend ??
+        DEFAULT_SITE_URLS.backend,
+    };
   }
 
-  private render(): void {
-    const context = readContext(this);
-    const urls = readUrls(this);
-    const year = readYear(this);
-    const links = renderFooterLinks(context, urls);
+  private resolveYear(): number {
+    return this.attr("year", {
+      parser: (raw) => parseNumber(raw, new Date().getFullYear()),
+      default: new Date().getFullYear(),
+    });
+  }
+
+  protected render(): void {
+    // Attributes are source of truth — do not setProp() here (object refs re-queue renders).
+    const context = this.resolveContext();
+    const urls = this.resolveUrls();
+    const year = this.resolveYear();
+
+    const links = SITE_FOOTER_COLUMNS.map((column) => {
+      const items = column.links
+        .map((link: SiteFooterLink) => {
+          const href = resolveFooterHref(link, context, urls);
+          return `
+          <li>
+            <a href="${escapeHtml(href)}">${escapeHtml(link.label)}</a>
+          </li>
+        `;
+        })
+        .join("");
+
+      return `
+      <div class="footer-column">
+        <h3 class="footer-column-title">${escapeHtml(column.title)}</h3>
+        <ul class="footer-list">
+          ${items}
+        </ul>
+      </div>
+    `;
+    }).join("");
 
     this.innerHTML = `
       <footer class="mega-footer">
@@ -175,11 +173,12 @@ export class VikingSiteFooterWc extends HTMLElement {
   };
 
   private bindUsaBadge(): void {
-    const badge = this.querySelector("#usa-badge");
-    if (!badge) return;
+    const badge = this.querySelector<HTMLElement>("#usa-badge");
+    if (!badge) {
+      return;
+    }
     badge.addEventListener("mouseenter", this.emitUsaBadgeHover);
-    badge.addEventListener("focusin", this.emitUsaBadgeHover);
-    badge.addEventListener("click", this.emitUsaBadgeHover);
+    badge.addEventListener("focus", this.emitUsaBadgeHover);
     badge.addEventListener("keydown", this.emitUsaBadgeHover);
   }
 }
@@ -188,3 +187,5 @@ export const registerVikingSiteFooterWc = (): void => {
   defineCustomElement(VikingSiteFooterWc.tag, VikingSiteFooterWc);
   defineCustomElementAlias(VikingSiteFooterWc.legacyTag, VikingSiteFooterWc);
 };
+
+registerVikingSiteFooterWc();

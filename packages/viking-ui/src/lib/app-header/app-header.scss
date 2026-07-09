@@ -69,8 +69,8 @@
   display: none;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-2-5, 20px);
-  padding: calc(var(--viking-space-1) / 2) 0;
+  gap: var(--viking-space-3, 24px);
+  padding: var(--viking-space-1) 0;
 }
 
 .viking-app-header-desktop-auth {
@@ -93,9 +93,10 @@
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--viking-radius) var(--viking-radius) 0 0 !important;
-  padding: 0 var(--viking-space-2-5, 20px) !important;
+  padding: 0 var(--viking-space-3, 24px) !important;
   height: 36px !important;
   min-height: 36px !important;
+  margin: 0 !important;
   line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;

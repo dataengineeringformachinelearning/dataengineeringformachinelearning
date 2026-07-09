@@ -117,7 +117,7 @@ const resolveExtraHref = (
     case "Design tokens":
       return "https://ui.dataengineeringformachinelearning.com/tokens";
     case "API reference":
-      return `${urls.backend.replace(/\/$/, "")}/api/docs`;
+      return `${urls.backend.replace(/\/$/, "")}/api/v1/docs`;
     default:
       return context === "app" ? urls.app : urls.marketing;
   }
@@ -208,25 +208,100 @@ export const buildSuiteSearchItems = (
   if (context === "app") {
     items.push(
       {
+        title: "Dashboard",
+        href: "/dashboard",
+        snippet: "CES overview, KPIs, and performance telemetry",
+        group: "App",
+        keywords: ["dashboard", "ces", "home", "overview", "kpi"],
+      },
+      {
+        title: "Analytics",
+        href: "/analytics",
+        snippet: "Latency, origins, threat charts, and gauges",
+        group: "App",
+        keywords: ["analytics", "charts", "latency", "map", "threat"],
+      },
+      {
+        title: "Explore status pages",
+        href: "/explore",
+        snippet: "Public status directory",
+        group: "App",
+        keywords: ["explore", "status", "directory", "public"],
+      },
+      {
+        title: "Status pages",
+        href: "/status",
+        snippet: "Your published and draft status surfaces",
+        group: "App",
+        keywords: ["status", "pages", "uptime", "incidents"],
+      },
+      {
+        title: "Platform status",
+        href: "/status/platform-status",
+        snippet: "Live public sentinel for the DEML stack",
+        group: "App",
+        keywords: ["platform-status", "tenant0", "health", "sla"],
+      },
+      {
+        title: "Vulnerabilities",
+        href: "/vulnerabilities",
+        snippet: "SOC triage and vulnerability Kanban",
+        group: "App",
+        keywords: ["vulnerabilities", "soc", "semgrep", "trivy", "kanban"],
+      },
+      {
+        title: "Account",
+        href: "/account",
+        snippet: "Profile, MFA enrollment, and linked accounts",
+        group: "App",
+        keywords: ["account", "profile", "mfa", "oauth"],
+      },
+      {
         title: "Settings",
         href: "/settings",
         snippet: "Workspace domains, billing, and security",
-        group: "Platform",
+        group: "App",
         keywords: ["settings", "sites", "workspace", "configuration"],
       },
       {
         title: "Billing & subscription",
         href: "/settings/billing",
         snippet: "Manage plan, invoices, and payment methods",
-        group: "Platform",
+        group: "App",
         keywords: ["billing", "stripe", "subscription", "payment"],
       },
       {
         title: "Security settings",
         href: "/settings/security",
         snippet: "Keys, sessions, and access controls",
-        group: "Platform",
+        group: "App",
         keywords: ["security", "keys", "auth", "rbac"],
+      },
+      {
+        title: "Login",
+        href: "/login",
+        snippet: "Sign in or complete SMS MFA",
+        group: "App",
+        keywords: ["login", "sign in", "auth", "mfa"],
+      },
+    );
+  }
+
+  if (context === "backend") {
+    items.push(
+      {
+        title: "OpenAPI / Swagger",
+        href: `${urls.backend.replace(/\/$/, "")}/api/v1/docs`,
+        snippet: "Interactive public ingest and predict sandbox",
+        group: "Backend",
+        keywords: ["swagger", "openapi", "docs", "api"],
+      },
+      {
+        title: "Backend home",
+        href: urls.backend,
+        snippet: "API landing and service overview",
+        group: "Backend",
+        keywords: ["backend", "api", "home"],
       },
     );
   }

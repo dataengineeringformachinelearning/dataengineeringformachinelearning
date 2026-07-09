@@ -6,6 +6,7 @@ import DocsCtaGroup from '../components/DocsCtaGroup.astro';
 import DocsBentoCard from '../components/DocsBentoCard.astro';
 import DocsBentoGrid from '../components/DocsBentoGrid.astro';
 import IconHeading from '../components/IconHeading.astro';
+import PageMockup from '../components/PageMockup.astro';
 import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
 
@@ -168,24 +169,27 @@ const platformOpsCards = [
     <div class="dashboard-content-area">
       <div class="page-inner-wrapper">
         <div class="docs-page-stack">
-        <header class="docs-hero">
-          <div class="u-style-58adc5">
-            <span class="badge-dot pulse-dot" aria-hidden="true"></span>
-            <span class="u-style-486a44">Developer Portal · Secured</span>
+        <header class="docs-hero docs-hero-with-mockup">
+          <div class="docs-hero-copy">
+            <div class="u-style-58adc5">
+              <span class="badge-dot pulse-dot" aria-hidden="true"></span>
+              <span class="u-style-486a44">Developer Portal · Secured</span>
+            </div>
+            <h1 class="docs-title">Hardened ML Pipeline Integration</h1>
+            <p class="docs-subtitle">
+              One API key. Zero-trust authentication on every call. Stream telemetry, execute inference,
+              and monitor threat posture — through the same gateway your production stack already trusts.
+            </p>
+            <DocsCtaGroup>
+              <DocsCta href={FRONTEND_URL + '/login'} variant="primary" icon="rocket_launch">
+                Create Free Account
+              </DocsCta>
+              <DocsCta href="#quick-start" variant="secondary" icon="play_circle">
+                Quick Start Guide
+              </DocsCta>
+            </DocsCtaGroup>
           </div>
-          <h1 class="docs-title">Hardened ML Pipeline Integration</h1>
-          <p class="docs-subtitle">
-            One API key. Zero-trust authentication on every call. Stream telemetry, execute inference,
-            and monitor threat posture — through the same gateway your production stack already trusts.
-          </p>
-          <DocsCtaGroup>
-            <DocsCta href={FRONTEND_URL + '/login'} variant="primary" icon="rocket_launch">
-              Create Free Account
-            </DocsCta>
-            <DocsCta href="#quick-start" variant="secondary" icon="play_circle">
-              Quick Start Guide
-            </DocsCta>
-          </DocsCtaGroup>
+          <PageMockup variant="analytics" class="docs-hero-mockup" />
         </header>
 
         <nav class="docs-outline no-print" aria-label="Documentation outline">

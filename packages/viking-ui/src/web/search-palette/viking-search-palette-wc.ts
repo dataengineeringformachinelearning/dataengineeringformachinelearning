@@ -343,7 +343,19 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
     }
 
     if (item.href && item.href !== "#") {
-      window.location.assign(item.href);
+      // Absolute cross-origin links and same-origin routes both navigate.
+      try {
+        const target = new URL(item.href, window.location.href);
+        if (target.origin === window.location.origin) {
+          window.location.assign(
+            `${target.pathname}${target.search}${target.hash}`,
+          );
+        } else {
+          window.location.assign(target.href);
+        }
+      } catch {
+        window.location.assign(item.href);
+      }
     }
   }
 
@@ -412,6 +424,17 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
 
     this.resultsEl.querySelectorAll(".viking-search-result").forEach((node) => {
       node.addEventListener("click", (event) => {
+        const mouse = event as MouseEvent;
+        // Allow new-tab / middle-click via native <a href>.
+        if (
+          mouse.metaKey ||
+          mouse.ctrlKey ||
+          mouse.shiftKey ||
+          mouse.button === 1
+        ) {
+          this.closePalette();
+          return;
+        }
         event.preventDefault();
         const index = Number((node as HTMLElement).dataset["index"] ?? 0);
         const item = this.flatResults[index];
@@ -421,8 +444,19 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
       });
       node.addEventListener("mouseenter", () => {
         const index = Number((node as HTMLElement).dataset["index"] ?? 0);
+        if (index === this.activeIndex) {
+          return;
+        }
         this.activeIndex = index;
-        this.renderResults();
+        this.resultsEl
+          ?.querySelectorAll(".viking-search-result")
+          .forEach((row, i) => {
+            const selected = i === index;
+            row.classList.toggle("is-selected", selected);
+            row.setAttribute("aria-selected", selected ? "true" : "false");
+          });
+        const activeId = `${this.resultsId}-result-${index}`;
+        this.inputEl?.setAttribute("aria-activedescendant", activeId);
       });
     });
   }

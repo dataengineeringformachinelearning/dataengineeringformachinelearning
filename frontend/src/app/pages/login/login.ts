@@ -469,6 +469,9 @@ export class Login implements OnInit, OnDestroy {
       if (user && typeof user.getIdToken === 'function') {
         await user.getIdToken(true);
       }
+      // Persist MFA session immediately so settings forms unlock even if claim
+      // shapes differ across Identity Platform tenants.
+      this.authService.markMfaSessionVerified(user?.uid);
       await this.authService.refreshMfaState(true);
       this.successMessage.set('Two-factor verification complete. Redirecting…');
       setTimeout(() => this.handleSuccess(), 600);

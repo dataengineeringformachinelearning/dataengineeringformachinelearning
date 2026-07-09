@@ -255,22 +255,22 @@
 
   /* ── Chart scale — wide 3:1 aspect (premium analytics cadence) ─ */
   --viking-chart-ratio: 3 / 1;
-  /* Balanced plot size: readable ticks, not towering or cramped */
-  --viking-chart-min-height: clamp(12rem, 26vw, 15rem);
-  --viking-chart-max-height: clamp(15rem, 32vw, 18rem);
-  --viking-chart-fill-min-height: clamp(13.5rem, 28vw, 16.5rem);
-  --viking-chart-fill-max-height: clamp(16rem, 32vw, 19rem);
-  --viking-chart-fill-min-height-lg: clamp(14.5rem, 30vw, 17.5rem);
-  --viking-chart-fill-max-height-lg: clamp(17rem, 34vw, 20rem);
+  /* Happy medium: full plot visible, not towering (matches anomalies card) */
+  --viking-chart-min-height: clamp(11.5rem, 24vw, 14rem);
+  --viking-chart-max-height: clamp(14rem, 28vw, 16.5rem);
+  --viking-chart-fill-min-height: clamp(12.5rem, 24vw, 15rem);
+  --viking-chart-fill-max-height: clamp(14.5rem, 28vw, 17rem);
+  --viking-chart-fill-min-height-lg: clamp(13rem, 26vw, 15.5rem);
+  --viking-chart-fill-max-height-lg: clamp(15rem, 30vw, 17.5rem);
   --viking-chart-empty-min-height: var(--viking-chart-fill-min-height);
   --viking-chart-empty-min-height-lg: var(--viking-chart-fill-min-height-lg);
   /* Panel shells sized to the plot (header + body + breathing) */
-  --viking-chart-panel-min-height-md: 22rem;
-  --viking-chart-panel-min-height-lg: 24rem;
-  --viking-chart-panel-body-min-height-md: 16.5rem;
-  --viking-chart-panel-body-min-height-lg: 18rem;
+  --viking-chart-panel-min-height-md: 20rem;
+  --viking-chart-panel-min-height-lg: 22rem;
+  --viking-chart-panel-body-min-height-md: 15rem;
+  --viking-chart-panel-body-min-height-lg: 16.5rem;
   --viking-chart-sparkline-height: 2.75rem;
-  --viking-chart-map-min-height: 22rem;
+  --viking-chart-map-min-height: 24rem;
   --viking-chart-padding: var(--viking-space-2) var(--viking-space-2);
 
   /* ── Breakpoints (mobile-first) ─────────────────────────────────────────── */
@@ -369,30 +369,33 @@
   --viking-z-toast: 1100;
   --viking-z-tooltip: 1200;
 
-  /* ── Chart — unified visual language (clean, modern, well-spaced) ─ */
+  /* ── Chart — clean minimal SVG analytics (3:1, soft grid, cursor) ─ */
   --viking-chart-axis-size: 11px;
   --viking-chart-axis-size-mobile: 12px;
   --viking-chart-label-size: 10px;
   /* Internal breathing (gutters + viewport padding) */
   --viking-chart-gutter-default: 16px 24px 44px 52px; /* top right bottom left — generous for axes */
   --viking-chart-gutter-fill: 8px 12px 28px 36px;
-  --viking-chart-padding: var(--viking-space-2) var(--viking-space-1);
-  --viking-chart-padding-fill: var(--viking-space-3) var(--viking-space-2);
+  --viking-chart-padding: var(--viking-space-1) 0;
+  --viking-chart-padding-fill: var(--viking-space-2) var(--viking-space-1);
   /* Grid & axes */
-  --viking-chart-grid-stroke: color-mix(in srgb, var(--viking-border) 32%, transparent);
-  --viking-chart-grid-width: 0.75;
-  --viking-chart-grid-dash: 2 3;
-  --viking-chart-axis-stroke: color-mix(in srgb, var(--viking-border) 68%, transparent);
+  --viking-chart-grid-stroke: color-mix(in srgb, var(--viking-text-muted) 16%, transparent);
+  --viking-chart-grid-width: 1;
+  --viking-chart-grid-dash: 4 4;
+  --viking-chart-axis-stroke: color-mix(in srgb, var(--viking-text-muted) 28%, transparent);
   --viking-chart-axis-width: 1;
-  --viking-chart-tick-length: 5px;
-  --viking-chart-axis-color: var(--viking-text-subtle);
+  --viking-chart-tick-length: 4px;
+  --viking-chart-axis-color: var(--viking-text-muted);
+  --viking-chart-cursor-stroke: color-mix(in srgb, var(--viking-text) 32%, transparent);
+  --viking-chart-cursor-width: 1;
+  --viking-chart-cursor-dash: 3 3;
   /* Lines, areas, points, bars */
-  --viking-chart-line-width: 2.25;
-  --viking-chart-line-width-fill: 2.5;
-  --viking-chart-area-opacity: 0.22;
-  --viking-chart-point-radius: 3.5;
+  --viking-chart-line-width: 2;
+  --viking-chart-line-width-fill: 2;
+  --viking-chart-area-opacity: 0.2;
+  --viking-chart-point-radius: 3;
   --viking-chart-point-stroke: var(--viking-surface);
-  --viking-chart-bar-radius: 3px;
+  --viking-chart-bar-radius: 4px;
   --viking-chart-bar-min-height: 3px;
   /* Legend */
   --viking-chart-legend-gap: var(--viking-space-2) var(--viking-space-3);
@@ -401,11 +404,11 @@
   --viking-chart-swatch-size: 8px;
   --viking-chart-legend-size: var(--viking-font-size-xs);
   /* Tooltip */
-  --viking-chart-tooltip-bg: var(--viking-surface-raised);
-  --viking-chart-tooltip-border: var(--viking-border-strong);
+  --viking-chart-tooltip-bg: color-mix(in srgb, var(--viking-surface) 94%, transparent);
+  --viking-chart-tooltip-border: color-mix(in srgb, var(--viking-border) 65%, transparent);
   --viking-chart-tooltip-text: var(--viking-text);
   --viking-chart-tooltip-size: var(--viking-font-size-xs);
-  --viking-chart-tooltip-padding: var(--viking-space-half) var(--viking-space-1-5);
+  --viking-chart-tooltip-padding: 6px 10px;
   --viking-chart-tooltip-radius: var(--viking-radius);
   /* Empty / loading */
   --viking-chart-empty-padding: var(--viking-space-5) var(--viking-space-4);

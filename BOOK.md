@@ -28,6 +28,9 @@ For the platform hypothesis, value proposition, architecture diagrams, and algor
 - [Developer Portal & Integrations (README.md)](README.md#official-integrations)
 - [Integration Guides (`docs/integrations/`)](docs/integrations/)
 - [Operator Reference (`docs/conops.md`)](docs/conops.md)
+- [Glossary (`docs/glossary.md`)](docs/glossary.md)
+- [Billing (`docs/billing.md`)](docs/billing.md)
+- [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) — AI-navigable code wiki
 - [Presentation (Gamma)](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg) — slide-deck companion to this book
 - [Acknowledgements & Technologies](#acknowledgements--technologies)
 
@@ -35,7 +38,7 @@ For the platform hypothesis, value proposition, architecture diagrams, and algor
 
 ## Concept of Operations (CONOPS)
 
-This section constitutes the **single operational narrative** for the DEML platform: actors, production behavior, technology responsibilities, and degraded-mode contingencies. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models). The canonical compute target is Google Cloud (Cloud Run services); a cost-optimized alternative deployment topology exists on AWS using Lightsail Container Services, ECR, Fargate (for stateful components), and RDS or Lightsail Databases. Detailed checklists reside in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
+This section constitutes the **single operational narrative** for the DEML platform: actors, production behavior, technology responsibilities, and degraded-mode contingencies. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models). Production compute is **multi-target**: **Railway** (in-repo service IaC), **Google Cloud Run** (fully managed reference topology), and **AWS Lightsail Container Services / Fargate** (cost-optimized alternate). All targets run the same container images and Event Projections contracts. Detailed checklists reside in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), [`infrastructure/railway/README.md`](infrastructure/railway/README.md), and [`docs/conops.md`](docs/conops.md). Terms of art: [`docs/glossary.md`](docs/glossary.md).
 
 ### 1. Purpose & Scope
 
@@ -44,7 +47,7 @@ DEML is a multi-tenant observability, AI intelligence, and cybersecurity SaaS en
 - Normal steady-state operations across all production services
 - User-facing workflows (anonymous visitors, account owners, API integrators)
 - Internal data paths (commands, projections, queries, batch ML)
-- Deployment boundaries (Cloud Run, Firebase, GCP, Hugging Face)
+- Deployment boundaries (Railway / Cloud Run / AWS, Firebase, GCP, Hugging Face)
 - Maintenance cadence, monitoring, and degraded-mode behavior
 
 Out of scope: local developer onboarding (see [Chapter 1](#chapter-1-the-fresh-install--environment-setup) and [Appendix E](#appendix-e-contributing-guidelines--getting-started)), and deep algorithmic derivations (see [Whitepaper](WHITEPAPER.md)).
@@ -58,7 +61,8 @@ Out of scope: local developer onboarding (see [Chapter 1](#chapter-1-the-fresh-i
 | **Account isolation**            | Postgres tenancy by `UserProfile.account_id`; Firestore rules scoped to `request.auth.uid`; symmetrical worker loops per account + `platform` sentinel   |
 | **Predictive intelligence**      | Daily `ml_worker` retraining on anonymized aggregate data; per-account inference without cross-tenant raw leakage                                        |
 | **Transparent public status**    | `platform-status` dogfoods the stack under real load; customer pages gated by `is_published` ABAC                                                        |
-| **Audit-ready security**         | Firebase Auth + MFA on writes; GCP KMS envelope encryption; immutable GCS audit logs; continuous Semgrep/Trivy/Renovate                                  |
+| **Audit-ready security**         | Firebase Auth + **MFA-verified session** on site mutations; GCP KMS envelope encryption; immutable GCS audit logs; continuous Semgrep/Trivy/Renovate     |
+| **Paid tiers**                   | Stripe Checkout → Pro; webhooks + `sync_subscriptions` keep local tier truthful ([docs/billing.md](docs/billing.md))                                     |
 
 ### 3. System Overview
 
@@ -112,17 +116,28 @@ flowchart TB
 
 ### 4. Operational Environment
 
-| Layer                      | Provider                                                                  | Responsibility                                                                                                                 |
-| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Compute & data plane**   | [Cloud Run](https://cloud.google.com/run/)                                | Django API, Angular SSR, Postgres, Redpanda, ClickHouse, Dragonfly, all background workers, scanner, OTEL collector, Tor proxy |
-| **Client command gateway** | [Firebase Cloud Functions](https://firebase.google.com/docs/functions)    | `ingestEvent` callable with native Auth context                                                                                |
-| **Identity**               | [Firebase Authentication](https://firebase.google.com/products/auth)      | Email/OAuth/MFA; JWT verified by Django middleware                                                                             |
-| **Real-time read models**  | [Firestore](https://firebase.google.com/docs/firestore) (named DB `deml`) | Projected stats; security rules enforce per-user isolation                                                                     |
-| **Marketing hosting**      | [Firebase Hosting](https://firebase.google.com/docs/hosting)              | Astro `marketing/dist` at `dataengineeringformachinelearning.com`                                                              |
-| **Cryptography & audit**   | [Google Cloud](https://cloud.google.com/) (Terraform)                     | KMS envelope keys, immutable audit log bucket, service accounts                                                                |
-| **Secrets**                | [Infisical](https://infisical.com/) (recommended)                         | Runtime secret injection; SOC 2 / CMMC alignment                                                                               |
-| **Model artifacts**        | [Hugging Face Hub](https://huggingface.co/)                               | Namespaced `.pt` state dict uploads                                                                                            |
-| **Content**                | [Sanity.io](https://www.sanity.io/)                                       | Incident narratives decoupled from Django                                                                                      |
+| Layer                      | Provider                                                                              | Responsibility                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Compute & data plane**   | **Railway**, [Cloud Run](https://cloud.google.com/run/), or **AWS** Lightsail/Fargate | Same images: Django API, Angular SSR, Postgres, Redpanda, ClickHouse, Dragonfly, `deml-daemon`, workers, scanner, sidecars |
+| **Client command gateway** | [Firebase Cloud Functions](https://firebase.google.com/docs/functions)                | `ingestEvent` callable with native Auth context                                                                            |
+| **Identity**               | [Firebase Authentication](https://firebase.google.com/products/auth)                  | Email/OAuth/MFA; JWT verified by Django middleware; MFA claims gate site mutations                                         |
+| **Real-time read models**  | [Firestore](https://firebase.google.com/docs/firestore) (named DB `deml`)             | Projected stats; security rules enforce per-user isolation                                                                 |
+| **Marketing hosting**      | [Firebase Hosting](https://firebase.google.com/docs/hosting)                          | Astro `marketing/dist` at `dataengineeringformachinelearning.com`                                                          |
+| **Cryptography & audit**   | [Google Cloud](https://cloud.google.com/) (Terraform)                                 | KMS envelope keys, immutable audit log bucket, service accounts (when GCP plane is enabled)                                |
+| **Secrets**                | [Infisical](https://infisical.com/) (recommended)                                     | Runtime secret injection; SOC 2 / CMMC alignment                                                                           |
+| **Billing**                | [Stripe](https://stripe.com/)                                                         | Standard → Pro checkout, webhooks, reconciliation ([docs/billing.md](docs/billing.md))                                     |
+| **Model artifacts**        | [Hugging Face Hub](https://huggingface.co/)                                           | Namespaced `.pt` state dict uploads                                                                                        |
+| **Content**                | [Sanity.io](https://www.sanity.io/)                                                   | Incident narratives decoupled from Django                                                                                  |
+
+#### Multi-runtime matrix
+
+| Runtime                     | When to use                                                    | Documentation                                                                                                                             |
+| --------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Railway**                 | Multi-service private mesh; in-repo `railway.json` per service | [`infrastructure/railway/README.md`](infrastructure/railway/README.md)                                                                    |
+| **Cloud Run**               | Fully managed GCP reference topology                           | [Appendix C](#appendix-c-cloud-run-deployment), [Chapter 22](#chapter-22-production-deployment-on-cloudrun)                               |
+| **AWS Lightsail + Fargate** | Predictable cost, ECR images                                   | [Chapter 23](#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate), [Appendix E](#appendix-e-aws-deployment) |
+
+Invariants: identical Docker images, Event Projections, Outbox reliability, symmetrical multi-account workers, Firebase Auth / `ingestEvent` / Firestore projections. **One outbox relay per environment**—prefer Rust `deml-daemon`; do not also run Python `relay_start.py` / `outbox_relay` against the same Redpanda cluster.
 
 **Cross-site URL trio** (env-driven everywhere): `FRONTEND_URL` (`https://deml.app`), `BACKEND_URL` (`https://backend.deml.app`), `MARKETING_URL` (`https://dataengineeringformachinelearning.com`).
 
@@ -174,28 +189,29 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 ### 8. Deployment Topology & Service Matrix
 
-Production runs on **Google Cloud Run** as the canonical target (see [Chapter 22](#chapter-22-production-deployment-on-cloudrun)). A fully supported, lower-cost, and simpler-to-operate alternative exists using **AWS Lightsail Container Services** (for the application layer) plus targeted Fargate tasks or Lightsail instances (for Redpanda, ClickHouse, and Dragonfly) with ECR for images (see [Chapter 23: Production Deployment on AWS](#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate)). Both topologies preserve identical container images, the Event Projections loop, Outbox reliability, symmetrical multi-tenant workers, and the Firebase command / Firestore projection paths. Core operational paths:
+Production is **multi-target**: **Railway** ([`infrastructure/railway/`](infrastructure/railway/README.md)), **Google Cloud Run** ([Chapter 22](#chapter-22-production-deployment-on-cloudrun), [Appendix C](#appendix-c-cloud-run-deployment)), and **AWS Lightsail / Fargate** ([Chapter 23](#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate)). All topologies preserve identical container images, the Event Projections loop, Outbox reliability, symmetrical multi-tenant workers, and the Firebase command / Firestore projection paths. Core operational roles:
 
-| Service                             | Operational role                                                |
-| ----------------------------------- | --------------------------------------------------------------- |
-| `deml-frontend`                     | Angular app, widgets, public status UI                          |
-| `deml-backend`                      | Django REST, auth middleware, billing, outbox writers           |
-| `deml-postgres`                     | System of record (supports Neon serverless PostgreSQL)          |
-| `deml-queue`                        | Redpanda (`deml-queue.internal:9092` for inter-service traffic) |
-| `deml-telemetry-worker`             | Projection engine + pingers + analytics rollups                 |
-| `deml-relay`                        | Reliable outbox publisher                                       |
-| `deml-workers`                      | Consolidated ML training, threat intel, and cron task consumers |
-| `deml-clickhouse`                   | OLAP analytics and historical telemetry storage                 |
-| `deml-dragonfly`                    | Rate limiting and hot caches                                    |
-| `deml-scanner` + `deml-cpe-guesser` | Vulnerability ledger enrichment                                 |
-| `deml-tor-proxy`                    | OSINT dark-web routing                                          |
+| Service                             | Operational role                                                                          |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- |
+| `deml-frontend`                     | Angular app, widgets, public status UI                                                    |
+| `deml-backend`                      | Django REST, auth middleware, billing, outbox writers                                     |
+| `deml-postgres`                     | System of record (supports Neon serverless PostgreSQL)                                    |
+| `deml-queue`                        | Redpanda (private mesh hostname; e.g. `deml-queue.internal:9092` or Railway internal DNS) |
+| `deml-telemetry-worker`             | Projection engine + analytics rollups                                                     |
+| `deml-daemon`                       | Rust outbox relay, health pinger, cron publisher to `internal-tasks`                      |
+| `deml-relay`                        | Alternate Python outbox publisher (mutually exclusive with daemon relay)                  |
+| `deml-workers`                      | Consolidated ML training, threat intel, and cron task consumers                           |
+| `deml-clickhouse`                   | OLAP analytics and historical telemetry storage                                           |
+| `deml-dragonfly`                    | Rate limiting and hot caches                                                              |
+| `deml-scanner` + `deml-cpe-guesser` | Vulnerability ledger enrichment                                                           |
+| `deml-tor-proxy`                    | OSINT dark-web routing                                                                    |
 
-**Firebase deploy path (separate from Cloud Run):** `.github/workflows/firebase-backend-deploy.yml` ships Cloud Functions + Firestore rules; `firebase-hosting-*.yml` ships marketing. **Never** point Cloud Run services at Public broker URLs for internal traffic—use `*.internal` ([Appendix C](#appendix-c-cloud-run-deployment)).
+**Firebase deploy path (separate from compute host):** `.github/workflows/firebase-backend-deploy.yml` ships Cloud Functions + Firestore rules; `firebase-hosting-*.yml` ships marketing. **Never** point compute services at public broker URLs for internal traffic—use private mesh DNS ([Appendix C](#appendix-c-cloud-run-deployment), Railway README).
 
 ### 9. Security Operations
 
 - **Perimeter:** Firebase App Check + reCAPTCHA; TLS 1.3 everywhere; strict CSP on marketing ([`firebase.json`](firebase.json)).
-- **Authentication:** JWT verification in `FirebaseAuthenticationMiddleware`; MFA enforced on writes via `amr` claim.
+- **Authentication:** JWT verification in `FirebaseAuthenticationMiddleware`; site/settings **mutations** require an **MFA-verified session** (`amr` / `firebase.sign_in_second_factor`—see [`docs/glossary.md`](docs/glossary.md)). Enrolled MFA without a fresh second-factor sign-in leaves Settings forms locked.
 - **Authorization:** RBAC (`Viewer` / `Operator` / `Security Admin`) + ABAC (`is_published`, ownership, `platform-status` immutability).
 - **Data protection:** AES-256-GCM field encryption; DEK rotation every 30 days; GCP KMS envelope ([Chapter 10](#chapter-10-encrypting-the-data--key-management)).
 - **Supply chain:** Pre-commit + GitHub Actions (Semgrep, Trivy, Gitleaks, Renovate); internal Kanban for vulns ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)).
@@ -258,7 +274,7 @@ Microsoft's original **STRIDE** model (Spoofing, Tampering, Repudiation, Informa
 | STRIDE-LM category             | Definition                                                                       | DEML controls & design decisions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ------------------------------ | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **S** — Spoofing               | Pretending to be a user, service, tenant, or event source.                       | Firebase Auth JWT verification in `FirebaseAuthenticationMiddleware`; WebAuthn hardware-key MFA on writes; Firebase App Check + reCAPTCHA Enterprise; integration API keys bound to tenant scope; `ingestEvent` idempotency keys reject duplicate command replay.                                                                                                                                                                                                                                                                                                             |
-| **T** — Tampering              | Modifying data at rest or in the event pipeline.                    | Transactional Outbox (`OutboxEvent` written atomically with domain state); `telemetry_worker` idempotency keys; AES-256-GCM field encryption with GCP KMS envelope rotation; versioned event schemas; `platform-status` immutability via ABAC.                                                                                                                                                                                                                                                                                                                                |
+| **T** — Tampering              | Modifying data at rest or in the event pipeline.                                 | Transactional Outbox (`OutboxEvent` written atomically with domain state); `telemetry_worker` idempotency keys; AES-256-GCM field encryption with GCP KMS envelope rotation; versioned event schemas; `platform-status` immutability via ABAC.                                                                                                                                                                                                                                                                                                                                |
 | **R** — Repudiation            | Denying that an action occurred or obscuring attribution.                        | Immutable Google Cloud Logging SIEM trail; GCS audit log retention; Postgres `OutboxEvent` and `ThreatReport` records with tenant `account_id`; OpenTelemetry traces in ClickHouse correlating ingest → enrichment → projection hops.                                                                                                                                                                                                                                                                                                                                         |
 | **I** — Information Disclosure | Exposing data or metadata to unauthorized parties.                               | UUID primary keys (anti-IDOR); RBAC + ABAC ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)); Firestore security rules scoped to `users/{uid}`; Hugging Face model artifacts namespaced by hashed tenant slug; encrypted integration tokens at rest ([Chapter 10](#chapter-10-encrypting-the-data--key-management)).                                                                                                                                                                                                          |
 | **D** — Denial of Service      | Degrading or blocking availability of services or projections.                   | Dragonfly sliding-window rate limits; `frontend-events-dlq` isolates poison messages from the projection fleet; distroless containers reduce exploit surface; Sanity CDN–backed status communications survive backend outages ([Chapter 14](#chapter-14-scaling-reporting-and-announcements-with-sanity)); synthetic Event Projections probe alerts on pipeline stall.                                                                                                                                                                                                        |
@@ -1358,16 +1374,23 @@ MFA is ABAC on the session token: `check_mfa_satisfied` requires `"mfa"` in the 
 ### Production helpers (not generic samples)
 
 ```python
-# monitor/access.py — ABAC for reads and platform immutability
+# monitor/access.py — MFA session gate (simplified; production accepts amr + firebase.sign_in_second_factor)
 def check_mfa_satisfied(request) -> bool:
- token = request.firebase_token
- amr = token.get("amr", [])
- return "mfa" in amr or token.get("uid") == "testuser"
+  token = request.firebase_token or {}
+  amr = token.get("amr", [])
+  if isinstance(amr, str) and "mfa" in amr.lower():
+    return True
+  if isinstance(amr, (list, tuple)) and any(str(x).lower() == "mfa" for x in amr):
+    return True
+  firebase = token.get("firebase") or {}
+  if isinstance(firebase, dict) and firebase.get("sign_in_second_factor"):
+    return True
+  return token.get("uid") == "testuser"
 
 def require_page_owner(request, page: StatusPage) -> None:
- forbid_platform_page(page)
- if not request.user.is_authenticated or page.user_id != request.user.id:
- raise HttpError(404, "Status page not found")
+  forbid_platform_page(page)
+  if not request.user.is_authenticated or page.user_id != request.user.id:
+    raise HttpError(404, "Status page not found")
 ```
 
 ```typescript
@@ -1396,7 +1419,8 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](../docs/integrations/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
+- **Documentation & code maps**: [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning), [`docs/glossary.md`](docs/glossary.md), [`docs/billing.md`](docs/billing.md)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [OASIS CTI](https://www.oasis-open.org/committees/cyber-threat-intelligence/) (STIX 2.1 / TAXII 2.1), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
@@ -1718,12 +1742,12 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 
 ### 4b. Background Daemon (`deml-daemon`)
 
-The background daemon is a high-performance compiled Rust service that manages the outbox relay, health pinger cycles, and cron scheduler tasks. It connects directly to the PostgreSQL database and Redpanda event queue.
+The background daemon is a high-performance compiled Rust (`tokio`) service that offloads I/O-heavy control loops from Python: **transactional outbox relay** (Postgres → Redpanda via `rdkafka`, `acks=all`), **health pinger** (concurrent HTTP probes against monitored services, batched to Django `POST /api/v1/internal/ingest/ping/` with `X-Internal-Secret`), and **cron publisher** (schedules to the `internal-tasks` Redpanda topic for `deml-workers` to execute whitelisted management commands). Source: `rust/deml-daemon/`. Operator glossary: [`docs/glossary.md`](docs/glossary.md). Railway cron table: [`infrastructure/railway/README.md`](infrastructure/railway/README.md).
 
-- **Root Directory**: `/rust`
-- **Docker File**: `deml-daemon/Dockerfile`
+- **Root Directory**: `/rust` (`rust/deml-daemon/`)
+- **Docker File**: `rust/deml-daemon/Dockerfile` (multi-stage; non-root UID)
 - **Start Command**: Runs the compiled binary natively (configured as ENTRYPOINT)
-- **Private Internal DNS**: `deml-daemon.internal`
+- **Private Internal DNS**: `deml-daemon.internal` (or host mesh equivalent)
 - **Public URL**: None (internal only)
 
 **Variables:**
@@ -1731,8 +1755,10 @@ The background daemon is a high-performance compiled Rust service that manages t
 - `DATABASE_URL` (standard Postgres / Neon connection string)
 - `REDPANDA_BROKERS` (e.g. `deml-queue.internal:9092`)
 - `BACKEND_INTERNAL_URL` (points to the backend container, e.g. `http://deml-backend.internal:8080`)
-- `INTERNAL_SECRET` (matching backend's validation header)
+- `INTERNAL_SECRET` (matching backend internal API validation)
 - `BATCH_SIZE=100`, `POLL_INTERVAL_SECS=5`, `PINGER_INTERVAL_SECS=30`
+
+**Invariant:** Do not run both the Rust daemon outbox relay and the Python `outbox_relay` / `relay_start.py` path against the same Redpanda cluster—pick one relay implementation per environment.
 
 ### 5. Consolidated Background Workers (`deml-workers`)
 

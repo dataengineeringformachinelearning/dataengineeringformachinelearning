@@ -472,6 +472,24 @@ html[data-theme="light"] #global-error-toast {
 }
 
 // ====================== HUD HEADER STYLING ======================
+.compliance-hero.hud-header {
+  display: grid;
+  gap: var(--viking-space-5);
+  align-items: center;
+  overflow: visible;
+  justify-content: stretch;
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 0.95fr);
+  }
+}
+
+.compliance-hero-mockup {
+  min-width: 0;
+  overflow: visible;
+  width: 100%;
+}
+
 .hud-header {
   display: flex;
   justify-content: space-between;

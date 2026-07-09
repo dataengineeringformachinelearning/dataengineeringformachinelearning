@@ -634,7 +634,7 @@ export const VIKING_FIELD_STYLES = `
 .viking-field {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-2);
 }
 
 .viking-field-label-row {
@@ -642,6 +642,7 @@ export const VIKING_FIELD_STYLES = `
   align-items: baseline;
   justify-content: space-between;
   gap: var(--viking-space-2);
+  margin-bottom: var(--viking-space-half);
 }
 
 .viking-field-label {
@@ -653,6 +654,7 @@ export const VIKING_FIELD_STYLES = `
   color: var(--viking-text);
   line-height: var(--viking-line-height-snug);
   cursor: pointer;
+  margin: 0 0 var(--viking-space-1);
 }
 
 .viking-field-required {

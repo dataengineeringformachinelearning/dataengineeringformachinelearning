@@ -124,6 +124,7 @@ export * from "./lib/chart-card-header/chart-card-header";
 export * from "./lib/icon-heading/icon-heading";
 export * from "./lib/chart-empty-state/chart-empty-state";
 export * from "./lib/chart-panel/chart-panel";
+export * from "./lib/page-mockup/page-mockup";
 export * from "./lib/checkbox/checkbox";
 export * from "./lib/color-picker/color-picker";
 export * from "./lib/command/command";

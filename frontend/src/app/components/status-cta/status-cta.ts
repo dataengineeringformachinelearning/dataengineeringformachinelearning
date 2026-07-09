@@ -1,14 +1,18 @@
 import { Component, inject, ChangeDetectionStrategy, Input } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
+import {
+  VikingButton,
+  VikingPageMockup,
+  type VikingPageMockupVariant,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-status-cta',
   standalone: true,
-  imports: [VikingButton, VikingAppIcon],
+  imports: [VikingButton, VikingAppIcon, VikingPageMockup],
   templateUrl: './status-cta.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -21,6 +25,8 @@ export class StatusCta {
     'Create and publish real-time status pages to monitor your APIs. Keep your users informed and track uptime statistics.';
   @Input() badgeIcon = 'verified_user';
   @Input() badgeText = 'API Monitoring Console';
+  @Input() mockupVariant: VikingPageMockupVariant = 'status';
+  @Input() showMockup = true;
 
   login() {
     this.router.navigate(['/login']);

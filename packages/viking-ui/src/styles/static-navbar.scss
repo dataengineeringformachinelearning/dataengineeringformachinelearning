@@ -262,8 +262,8 @@ viking-theme-toggle-wc,
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-2, 16px);
-  padding: var(--viking-space-half, 4px) 0;
+  gap: var(--viking-space-3, 24px);
+  padding: var(--viking-space-1, 8px) 0;
   min-width: 0;
   max-width: 100%;
   overflow: visible;
@@ -1616,10 +1616,10 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
     transform: translateX(-50%);
     z-index: 1;
     pointer-events: auto;
-    max-width: min(100% - 24rem, 48rem);
+    max-width: min(100% - 26rem, 52rem);
     overflow: visible;
     justify-content: center;
-    gap: var(--viking-space-3, 24px);
+    gap: var(--viking-space-4, 32px);
   }
 
   .navbar-left {
@@ -1675,11 +1675,12 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
   }
 
   .desktop-nav {
-    gap: var(--viking-space-2-5, 20px);
+    gap: var(--viking-space-3, 24px);
   }
 
   .desktop-nav .nav-btn {
-    padding: 0 var(--viking-space-2-5, 20px) !important;
+    padding: 0 var(--viking-space-3, 24px) !important;
+    margin: 0;
   }
 }
 

@@ -4,6 +4,7 @@ import {
   type SiteUrls,
 } from "../../lib/site-drakkar/site-drakkar.config";
 import { buildSuiteSearchItems } from "../../lib/site-drakkar/suite-search-items";
+import { searchAlgoliaPages } from "../core/algolia-search";
 import { readBoolAttr } from "../core/base";
 import {
   defineCustomElement,
@@ -104,11 +105,28 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
 
   private paletteEl: VikingSearchPaletteWc | null = null;
   private itemsLoaded = false;
+  private curatedItems: VikingSearchPaletteItem[] = [];
+  private queryTimer: ReturnType<typeof setTimeout> | null = null;
+  private searchAbort: AbortController | null = null;
+  private readonly onPaletteQuery = (event: Event): void => {
+    const detail = (event as CustomEvent<{ query?: string }>).detail;
+    const query = detail?.query ?? "";
+    this.scheduleAlgoliaSearch(query);
+  };
 
   connectedCallback(): void {
     registerVikingSearchPaletteWc();
     this.ensurePalette();
     void this.loadItems();
+  }
+
+  disconnectedCallback(): void {
+    this.paletteEl?.removeEventListener("viking-query", this.onPaletteQuery);
+    if (this.queryTimer) {
+      clearTimeout(this.queryTimer);
+      this.queryTimer = null;
+    }
+    this.searchAbort?.abort();
   }
 
   attributeChangedCallback(name: string): void {
@@ -176,7 +194,64 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
       this.paletteEl.setAttribute("global-shortcut", "");
     }
 
+    this.paletteEl.addEventListener("viking-query", this.onPaletteQuery);
     this.append(this.paletteEl);
+  }
+
+  private scheduleAlgoliaSearch(query: string): void {
+    if (this.queryTimer) {
+      clearTimeout(this.queryTimer);
+    }
+    this.queryTimer = setTimeout(() => {
+      void this.mergeAlgoliaResults(query);
+    }, 180);
+  }
+
+  private async mergeAlgoliaResults(query: string): Promise<void> {
+    if (!this.paletteEl) {
+      return;
+    }
+    if (!this.itemsLoaded) {
+      await this.loadItems();
+    }
+
+    const q = query.trim();
+    if (q.length < 2) {
+      this.paletteEl.setAttribute("items", JSON.stringify(this.curatedItems));
+      return;
+    }
+
+    this.searchAbort?.abort();
+    this.searchAbort = new AbortController();
+
+    const remote = await searchAlgoliaPages(q, {
+      hitsPerPage: 6,
+      signal: this.searchAbort.signal,
+    });
+
+    const curatedMatches = this.curatedItems;
+    const seen = new Set(
+      curatedMatches.map((item) => item.href.replace(/\/$/, "")),
+    );
+    const remoteOnly = remote
+      .filter((item) => {
+        const key = item.href.replace(/\/$/, "");
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      })
+      .map((item) => ({
+        ...item,
+        // Ensure local substring filter keeps Algolia fuzzy hits visible.
+        keywords: [...(item.keywords ?? []), q, item.title, item.href],
+      })) as VikingSearchPaletteItem[];
+
+    this.paletteEl.setAttribute(
+      "items",
+      JSON.stringify([...curatedMatches, ...remoteOnly]),
+    );
   }
 
   private async loadItems(force = false): Promise<void> {
@@ -186,11 +261,15 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
 
     const context = readContext(this);
     const urls = readUrls(this);
+    const docsOrigin =
+      context === "docs"
+        ? window.location.origin
+        : "https://ui.dataengineeringformachinelearning.com";
     let items: VikingSearchPaletteItem[] = buildSuiteSearchItems(
       context,
       urls,
       {
-        docsOrigin: window.location.origin,
+        docsOrigin,
       },
     );
 
@@ -199,20 +278,14 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
         cache: "no-cache",
       });
       if (response.ok) {
-        const drakkar = (await response.json()) as {
-          navLinks?: unknown[];
-          footerColumns?: unknown[];
-        };
-        if (drakkar.navLinks?.length || drakkar.footerColumns?.length) {
-          items = buildSuiteSearchItems(context, urls, {
-            docsOrigin: window.location.origin,
-          });
-        }
+        // Config presence validates CDN path; curated builder remains SSoT.
+        items = buildSuiteSearchItems(context, urls, { docsOrigin });
       }
     } catch {
       // Bundled config is authoritative when JSON is unavailable.
     }
 
+    this.curatedItems = items;
     this.paletteEl.setAttribute("items", JSON.stringify(items));
     this.itemsLoaded = true;
   }

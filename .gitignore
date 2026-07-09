@@ -11,6 +11,9 @@ Thumbs.db
 .idea/
 *.swp
 
+# Poolside / local agent tooling (session secrets, machine-local settings)
+.poolside/
+
 # Environment Variables
 .env
 .env.*

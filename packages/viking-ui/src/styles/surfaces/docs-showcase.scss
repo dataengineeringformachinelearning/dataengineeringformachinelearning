@@ -503,6 +503,33 @@
   box-sizing: border-box;
 }
 
+.component-showcase-preview .showcase-icon-demo,
+.component-showcase-preview .viking-icon-badge-static {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  vertical-align: middle;
+}
+
+.component-showcase-preview .viking-kbd-static {
+  align-self: center;
+  min-height: 1.75rem;
+}
+
+.component-showcase-preview:has(.viking-kbd-static) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-2);
+}
+
+.component-showcase-preview:has(.viking-kbd-static) .viking-text-muted {
+  align-self: center;
+  margin: 0;
+}
+
 /* Typography demos stack cleanly */
 .component-showcase-preview:has(> .viking-heading),
 .component-showcase-preview:has(> .viking-text) {
@@ -776,6 +803,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-page-section-gap, var(--viking-space-6));
+  overflow: visible;
 }
 
 .landing-hero {
@@ -783,6 +811,7 @@
   gap: var(--viking-space-5);
   align-items: center;
   padding: var(--viking-space-6) 0 var(--viking-space-4);
+  overflow: visible;
 }
 
 @media (min-width: 960px) {
@@ -1216,8 +1245,8 @@ viking-card-wc.landing-doctrine-card > * {
 }
 
 .showcase-search-palette {
-  width: min(100%, 42rem);
-  max-width: 42rem;
+  width: min(100%, 48rem);
+  max-width: 48rem;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--viking-border-strong);
@@ -1257,10 +1286,10 @@ viking-card-wc.landing-doctrine-card > * {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
   color: var(--viking-text-muted);
-  font-size: 1.5rem;
+  font-size: 1.85rem;
   line-height: 1;
 }
 

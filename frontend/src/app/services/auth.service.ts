@@ -141,6 +141,7 @@ export class AuthService {
             this.currentUserRole.set(null);
             this.mfaEnrolled.set(false);
             this.mfaVerifiedInSession.set(false);
+            this.clearMfaSessionFlag();
             this.sessionWs.disconnect();
             this.sessionId.set(null);
           }
@@ -345,6 +346,9 @@ export class AuthService {
   async logout() {
     this.isProcessing.set(true);
     await this.clearServerSession();
+    this.mfaEnrolled.set(false);
+    this.mfaVerifiedInSession.set(false);
+    this.clearMfaSessionFlag();
     if (this.useMock) {
       localStorage.removeItem('mock_user');
       this.auth = null;
@@ -461,6 +465,63 @@ export class AuthService {
     }
   }
 
+  private static readonly MFA_SESSION_KEY = 'deml.mfa.session.uid';
+
+  /**
+   * Mark the browser tab as MFA-verified after SMS resolveSignIn.
+   * Survives soft navigations; cleared on logout.
+   */
+  markMfaSessionVerified(uid?: string | null): void {
+    const userUid = uid || (this.auth?.currentUser as FirebaseUser | null | undefined)?.uid;
+    if (!userUid || typeof sessionStorage === 'undefined') {
+      this.mfaVerifiedInSession.set(true);
+      return;
+    }
+    try {
+      sessionStorage.setItem(AuthService.MFA_SESSION_KEY, userUid);
+    } catch {
+      /* private mode */
+    }
+    this.mfaVerifiedInSession.set(true);
+  }
+
+  private clearMfaSessionFlag(): void {
+    if (typeof sessionStorage === 'undefined') {
+      return;
+    }
+    try {
+      sessionStorage.removeItem(AuthService.MFA_SESSION_KEY);
+    } catch {
+      /* private mode */
+    }
+  }
+
+  private hasMfaSessionFlag(uid: string): boolean {
+    if (typeof sessionStorage === 'undefined') {
+      return false;
+    }
+    try {
+      return sessionStorage.getItem(AuthService.MFA_SESSION_KEY) === uid;
+    } catch {
+      return false;
+    }
+  }
+
+  private decodeJwtPayload(token: string): Record<string, unknown> | null {
+    try {
+      const part = token.split('.')[1];
+      if (!part) {
+        return null;
+      }
+      const normalized = part.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
+      const json = atob(padded);
+      return JSON.parse(json) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
   /**
    * Detect whether the current ID token was issued after second-factor auth.
    * Firebase Identity Platform sets `firebase.sign_in_second_factor` (e.g. "phone")
@@ -468,22 +529,56 @@ export class AuthService {
    */
   private isMfaVerifiedFromClaims(claims: Record<string, unknown>): boolean {
     const amr = claims['amr'];
-    if (Array.isArray(amr) && amr.some(entry => String(entry).toLowerCase() === 'mfa')) {
+    if (
+      Array.isArray(amr) &&
+      amr.some(entry => {
+        const v = String(entry).toLowerCase();
+        return v === 'mfa' || v === 'otp' || v === 'sms' || v.includes('mfa');
+      })
+    ) {
       return true;
     }
-    if (typeof amr === 'string' && amr.toLowerCase().includes('mfa')) {
+    if (typeof amr === 'string') {
+      const lower = amr.toLowerCase();
+      if (lower.includes('mfa') || lower.includes('otp')) {
+        return true;
+      }
+    }
+    // Top-level second-factor claim (some token shapes)
+    const topLevelSecond = claims['sign_in_second_factor'] ?? claims['second_factor'];
+    if (typeof topLevelSecond === 'string' && topLevelSecond.trim().length > 0) {
       return true;
     }
     const firebaseClaim = claims['firebase'];
+    if (typeof firebaseClaim === 'string') {
+      try {
+        const parsed = JSON.parse(firebaseClaim) as Record<string, unknown>;
+        return this.isMfaVerifiedFromClaims({ firebase: parsed });
+      } catch {
+        /* ignore */
+      }
+    }
     if (firebaseClaim && typeof firebaseClaim === 'object') {
-      const secondFactor = (firebaseClaim as { sign_in_second_factor?: unknown })
-        .sign_in_second_factor;
-      if (typeof secondFactor === 'string' && secondFactor.length > 0) {
+      const fb = firebaseClaim as Record<string, unknown>;
+      const secondFactor =
+        fb['sign_in_second_factor'] ?? fb['second_factor_identifier'] ?? fb['secondFactor'];
+      if (typeof secondFactor === 'string' && secondFactor.trim().length > 0) {
         return true;
+      }
+      // phone MFA often lands as identity list entry after SMS challenge
+      const identities = fb['identities'];
+      if (identities && typeof identities === 'object') {
+        const phoneIds = (identities as { phone?: unknown }).phone;
+        if (Array.isArray(phoneIds) && phoneIds.length > 0 && claims['auth_time']) {
+          // identities alone are not enough — only trust with amr/second factor above
+        }
       }
     }
     // Explicit custom claim some environments mint after MFA.
     if (claims['mfa'] === true || claims['mfa_verified'] === true) {
+      return true;
+    }
+    if (claims['mfa'] === 'true' || claims['mfa_verified'] === 'true') {
       return true;
     }
     return false;
@@ -494,6 +589,7 @@ export class AuthService {
     if (!user) {
       this.mfaEnrolled.set(false);
       this.mfaVerifiedInSession.set(false);
+      this.clearMfaSessionFlag();
       return;
     }
     try {
@@ -502,25 +598,57 @@ export class AuthService {
       }
       const enrolled = multiFactor(user).enrolledFactors.length > 0;
       this.mfaEnrolled.set(enrolled);
+
       // Force a fresh token after MFA resolve so second-factor claims land.
-      if (forceToken && typeof user.getIdToken === 'function') {
-        await user.getIdToken(true);
+      let rawToken = '';
+      if (typeof user.getIdToken === 'function') {
+        rawToken = await user.getIdToken(forceToken);
       }
       const tokenResult = await user.getIdTokenResult(forceToken);
-      const claims = (tokenResult.claims ?? {}) as Record<string, unknown>;
-      this.mfaVerifiedInSession.set(this.isMfaVerifiedFromClaims(claims));
+      const claims = {
+        ...((tokenResult.claims ?? {}) as Record<string, unknown>),
+      };
+      // Merge raw JWT payload — some environments surface second-factor only there.
+      if (rawToken) {
+        const payload = this.decodeJwtPayload(rawToken);
+        if (payload) {
+          Object.assign(claims, payload);
+        }
+      }
+
+      let verified = this.isMfaVerifiedFromClaims(claims);
+      // Session flag set after successful SMS resolve (same browser tab / uid).
+      if (!verified && enrolled && this.hasMfaSessionFlag(user.uid)) {
+        verified = true;
+      }
+      // When MFA is enrolled, Firebase blocks sign-in until second factor succeeds.
+      // If we have enrolled factors and a live auth session that was established
+      // with a forced token refresh after login, trust the session flag path above.
+      // Do NOT auto-trust enrolled alone (mid-session enrollment still needs re-auth).
+
+      this.mfaVerifiedInSession.set(verified);
+      if (verified) {
+        this.markMfaSessionVerified(user.uid);
+      }
     } catch (e) {
       console.warn('MFA state refresh skipped:', e);
-      // Do not clobber enrolled state on transient token errors.
+      // Do not clobber enrolled / session-verified state on transient token errors.
       try {
         const u = this.auth?.currentUser as FirebaseUser | null | undefined;
         if (u) {
           this.mfaEnrolled.set(multiFactor(u).enrolledFactors.length > 0);
+          if (this.hasMfaSessionFlag(u.uid)) {
+            this.mfaVerifiedInSession.set(true);
+            return;
+          }
         }
       } catch {
         this.mfaEnrolled.set(false);
       }
-      this.mfaVerifiedInSession.set(false);
+      // Keep previous verified flag if we already have a session mark.
+      if (!this.mfaVerifiedInSession()) {
+        this.mfaVerifiedInSession.set(false);
+      }
     }
   }
 

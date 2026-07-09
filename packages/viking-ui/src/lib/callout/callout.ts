@@ -135,9 +135,7 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         flex: 1;
         min-width: 0;
         display: grid;
-        gap: var(
-          --viking-space-1
-        ); /* Consistent typography spacing */
+        gap: var(--viking-space-1); /* Consistent typography spacing */
       }
       .viking-callout-heading {
         margin: 0;

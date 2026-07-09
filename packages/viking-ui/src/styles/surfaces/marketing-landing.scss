@@ -2,7 +2,8 @@
   position: relative;
   min-height: calc(100vh - 64px);
   padding-block: var(--viking-space-6) var(--viking-space-4);
-  overflow: hidden;
+  /* visible so angled hero mockup can overflow the right edge */
+  overflow: visible;
   font-family: var(--viking-font-family);
 
   @media (min-width: 768px) {
@@ -16,6 +17,7 @@
     var(--container-max-width, 1260px)
   );
   margin: 0 auto;
+  overflow: visible;
 }
 
 /* ── Hero Showcase ── */
@@ -27,10 +29,10 @@
   margin-bottom: var(--viking-space-9);
   position: relative;
   z-index: 10;
-  overflow: hidden;
+  overflow: visible;
   @media (min-width: 960px) {
-    grid-template-columns: 1fr 1.1fr;
-    gap: var(--viking-space-8);
+    grid-template-columns: 1fr 1.15fr;
+    gap: var(--viking-space-6);
   }
 
   &::before {
@@ -210,237 +212,16 @@
 
 // Hero/pricing CTAs — see ../styles/cta.scss (shared with docs portal).
 
-/* Mock dashboard in hero */
+/* Mock dashboard chrome lives in components/page-mockup.scss (shared).
+   Landing only needs stage spacing so the angled window can overflow. */
 .hero-mockup {
-  perspective: 1200px;
-}
-
-.mockup-window {
-  background: var(--viking-charcoal-800);
-  border: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400) 54%, transparent);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow:
-    0 24px 64px color-mix(in srgb, var(--viking-charcoal-900) 40%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--viking-accent) 15%, transparent);
-  transform: rotateY(-4deg) rotateX(2deg);
-  transition: transform 0.4s ease;
-  position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    border: 1px solid
-      color-mix(in srgb, var(--viking-metallic-500) 28%, transparent);
-    box-shadow: inset 0 1px 0
-      color-mix(in srgb, var(--viking-white) 7%, transparent);
-    opacity: 0.75;
-    background: linear-gradient(
-      135deg,
-      transparent,
-      color-mix(in srgb, var(--viking-accent) 12%, transparent) 50%,
-      transparent
-    );
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 28px;
-    width: 30px;
-    height: 18px;
-    border-bottom: 1px solid
-      color-mix(in srgb, var(--viking-accent) 24%, transparent);
-    border-right: 1px solid
-      color-mix(in srgb, var(--viking-accent) 18%, transparent);
-    transform: skewX(-18deg);
-    pointer-events: none;
-    opacity: 0.55;
-    z-index: 2;
-  }
-
-  &:hover {
-    transform: rotateY(0deg) rotateX(0deg);
-  }
-}
-
-.mockup-titlebar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: var(--viking-charcoal-900);
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400) 42%, transparent);
-
-  .mockup-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text-muted);
-    opacity: 0.5;
-
-    &:first-child {
-      background: var(--viking-crimson-500);
-      opacity: 0.8;
-    }
-    &:nth-child(2) {
-      background: var(--viking-gold-500);
-      opacity: 0.8;
-    }
-    &:nth-child(3) {
-      background: var(--viking-accent-strong);
-      opacity: 0.8;
-    }
-  }
-
-  .mockup-title {
-    margin-left: 8px;
-    font-size: 0.85rem;
-    font-family: monospace;
-    color: var(--viking-electric-200);
-    letter-spacing: 0.04em;
-  }
-}
-
-.mockup-body {
-  display: flex;
-  min-height: 280px;
-}
-
-.mockup-sidebar {
-  width: 48px;
-  padding: 16px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  border-right: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400) 36%, transparent);
-  background: var(--viking-charcoal-900);
-
-  .mockup-nav-item {
-    height: 32px;
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--text-muted) 20%, transparent);
-
-    &.active {
-      background: color-mix(in srgb, var(--viking-accent) 35%, transparent);
-      box-shadow: inset 0 0 0 1px var(--viking-accent);
-    }
-  }
-}
-
-.mockup-main {
-  flex: 1;
-  padding: var(--viking-card-padding);
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-3);
-}
-
-.mockup-gauges {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--viking-space-2);
-
-  @media (min-width: 480px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.mockup-gauge {
-  background: var(--viking-charcoal-700);
-  border: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400) 42%, transparent);
-  border-radius: var(--viking-radius-lg);
-  padding: var(--viking-card-padding-compact);
-  text-align: center;
-
-  &.primary {
-    border-color: var(--viking-accent);
-    box-shadow: 0 0 16px
-      color-mix(in srgb, var(--viking-accent) 25%, transparent);
-  }
-
-  .gauge-label {
-    display: block;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--viking-metallic-200);
-    margin-bottom: 4px;
-  }
-
-  .gauge-val {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--viking-white);
-  }
-}
-
-.mockup-chart {
-  flex: 1;
-  display: flex;
-  align-items: flex-end;
-  gap: var(--viking-space-half);
-  padding: var(--viking-card-padding-compact);
-  background: var(--viking-charcoal-950);
-  border-radius: var(--viking-radius-lg);
-  border: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400) 36%, transparent);
-  min-height: 100px;
-
-  .chart-bar {
-    flex: 1;
-    background: linear-gradient(
-      180deg,
-      var(--viking-accent),
-      var(--viking-accent-strong)
-    );
-    border-radius: 4px 4px 0 0;
-    opacity: 0.85;
-    animation: barPulse 3s ease-in-out infinite;
-    height: calc(var(--chart-bar-height, 50) * 1%);
-
-    @for $i from 1 through 8 {
-      &:nth-child(#{$i}) {
-        animation-delay: #{$i * 0.15}s;
-      }
-    }
-
-    @for $h from 40 through 95 {
-      &[data-height="#{$h}"] {
-        --chart-bar-height: #{$h};
-      }
-    }
-  }
-}
-
-@keyframes barPulse {
-  0%,
-  100% {
-    opacity: 0.7;
-  }
-  50% {
-    opacity: 1;
-  }
+  justify-self: stretch;
+  min-width: 0;
 }
 
 .mockup-stats-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--viking-space-2);
-
-  @media (min-width: 480px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .mockup-stat {
+    /* fallback if page-mockup not loaded yet */
     background: var(--viking-charcoal-700);
     border: 1px solid
       color-mix(in srgb, var(--viking-metallic-400) 42%, transparent);

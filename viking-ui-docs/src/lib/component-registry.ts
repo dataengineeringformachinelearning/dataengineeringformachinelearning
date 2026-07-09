@@ -517,7 +517,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         id: "chart",
         name: "Chart",
         description:
-          "Zero-dependency native SVG — line, area, bar, donut, sparkline.",
+          "Flux-style zero-dependency SVG — wide 3:1 plots, soft grids, hover cursor, circular legend dots, tabular numerals.",
         preview: `<div class="showcase-chart-demo" aria-label="Sample line chart">
   <svg viewBox="0 0 320 120" role="img" aria-label="Telemetry trend">
     <polyline class="showcase-chart-line" points="0,90 40,70 80,75 120,45 160,50 200,30 240,35 280,20 320,25" />
@@ -532,7 +532,57 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         },
         selector: "viking-chart",
         api: getComponentApi("chart"),
-        related: ["metric-card", "chart-panel"],
+        related: ["metric-card", "chart-panel", "page-mockup"],
+      },
+      {
+        id: "page-mockup",
+        name: "Page Mockup",
+        description:
+          "Angled product-window chrome for heroes and empty states. Overflows slightly so the 3D transform never clips on the trailing edge.",
+        preview: `<div class="viking-page-mockup hero-mockup" aria-hidden="true" style="max-width:18rem;transform:scale(0.72);transform-origin:top left">
+  <div class="viking-page-mockup-window mockup-window">
+    <div class="viking-page-mockup-titlebar mockup-titlebar">
+      <span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span>
+      <span class="mockup-title">deml.app / security-ops</span>
+    </div>
+    <div class="viking-page-mockup-body mockup-body">
+      <div class="viking-page-mockup-sidebar mockup-sidebar">
+        <span class="mockup-nav-item active"></span>
+        <span class="mockup-nav-item"></span>
+        <span class="mockup-nav-item"></span>
+      </div>
+      <div class="viking-page-mockup-main mockup-main">
+        <div class="viking-page-mockup-gauges mockup-gauges">
+          <div class="mockup-gauge"><span class="gauge-label">Threat</span><span class="gauge-val">12%</span></div>
+          <div class="mockup-gauge primary"><span class="gauge-label">CES</span><span class="gauge-val">94</span></div>
+          <div class="mockup-gauge"><span class="gauge-label">Stability</span><span class="gauge-val">99%</span></div>
+        </div>
+        <div class="viking-page-mockup-chart mockup-chart">
+          <div class="chart-bar" data-height="45"></div>
+          <div class="chart-bar" data-height="72"></div>
+          <div class="chart-bar" data-height="58"></div>
+          <div class="chart-bar" data-height="85"></div>
+        </div>
+        <div class="viking-page-mockup-stats mockup-stats-row">
+          <div class="mockup-stat"><span>P99</span><strong>42ms</strong></div>
+          <div class="mockup-stat"><span>Requests</span><strong>12.4K</strong></div>
+          <div class="mockup-stat"><span>Incidents</span><strong>0</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`,
+        snippets: {
+          angular: `<viking-page-mockup variant="security-ops" />
+<viking-page-mockup variant="analytics" />
+<viking-page-mockup variant="status" />`,
+          astro: `<PageMockup variant="security-ops" />
+<!-- or static classes from viking-ui page-mockup.scss -->`,
+          django: `{# Decorative only — render static mockup markup with viking-page-mockup classes #}`,
+          javascript: `// Prefer static HTML + viking-page-mockup classes for non-Angular surfaces`,
+        },
+        selector: "viking-page-mockup",
+        related: ["chart", "metric-card", "status-card"],
       },
       {
         id: "table",

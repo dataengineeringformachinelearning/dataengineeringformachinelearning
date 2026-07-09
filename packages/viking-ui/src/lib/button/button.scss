@@ -158,15 +158,19 @@
 .viking-btn-spinner {
   flex: 0 0 auto;
   box-sizing: border-box;
+  display: inline-block;
   width: 1.125rem;
   height: 1.125rem;
   min-width: 1.125rem;
   min-height: 1.125rem;
   border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
   border-top-color: currentColor;
-  border-radius: 50%;
+  border-right-color: color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: 999px !important;
   animation: viking-spin 0.75s linear infinite;
   transform-origin: center;
+  background: transparent;
+  box-shadow: none;
 }
 
 .viking-btn[aria-busy="true"],

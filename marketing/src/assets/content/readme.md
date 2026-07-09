@@ -12,6 +12,10 @@ license: apache-2.0
 
 # Data Engineering for AI Engineering and Cybersecurity: Developer Platform
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=fff)](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+[![Acknowledgements](https://img.shields.io/badge/Acknowledgements-%26_Technologies-2176ff)](#acknowledgements--technologies)
+
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
 
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering (including predictive machine learning, model serving, and intelligent systems), and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
@@ -28,7 +32,7 @@ In contested operational environments, reactive dashboards are insufficient. DEM
 > [!NOTE]
 > **arXiv Endorsement Request:** We are currently seeking an arXiv endorsement to formally publish the architectural whitepaper to `cs.CR` (Cryptography and Security). If you are a qualified arXiv author and find this work valuable, we would greatly appreciate your endorsement! You can endorse the author [here](https://arxiv.org/auth/endorse?x=ZISEYL) using code **ZISEYL**.
 
-> **[Jump to Acknowledgements & Technologies](#acknowledgements--technologies)**
+> **Resources:** [GitHub repository](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [Glossary](docs/glossary.md) · [Billing](docs/billing.md) · **[Acknowledgements & Technologies](#acknowledgements--technologies)**
 
 > **Recent Architectural Evolution**: The platform has adopted an **Event Projections** model with Firebase Cloud Functions as the client command gateway, Redpanda for reliable event streaming, Django workers for processing, and Firestore (named `deml` database) for real-time queries. See the updated architecture diagram. The end-to-end loop is monitored automatically by a synthetic health probe in the telemetry worker and surfaced as the **"Event Projections"** component on the public `platform-status` page (no manual test button). Firebase Functions and rules are deployed via a dedicated GitHub workflow.
 
@@ -44,7 +48,32 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
 | [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
 
-**Operational summary:** Google Cloud Run hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-relay` runs `outbox_relay` to publish from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
+**Operational summary:** Compute and data plane services (Django, workers, Postgres, Redpanda, ClickHouse, `deml-daemon`) run on a **multi-target container topology**—**Railway** (declarative IaC under [`infrastructure/railway/`](infrastructure/railway/README.md)), **Google Cloud Run** ([BOOK Appendix C](BOOK.md#appendix-c-cloud-run-deployment)), or **AWS Lightsail/Fargate** ([BOOK Appendix E](BOOK.md#appendix-e-aws-deployment)). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging where used. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-daemon` / `outbox_relay` publishes from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
+
+### Supported runtimes
+
+| Runtime                     | Role                                                                                | Entry                                                                                                                   |
+| --------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Railway**                 | Multi-service mesh with private DNS (`*.railway.internal`); service configs in-repo | [`infrastructure/railway/README.md`](infrastructure/railway/README.md)                                                  |
+| **Cloud Run**               | Fully managed GCP services; detailed env matrix in the Book                         | [BOOK.md Appendix C](BOOK.md#appendix-c-cloud-run-deployment)                                                           |
+| **AWS Lightsail + Fargate** | Cost-optimized alternate with ECR images                                            | [BOOK.md Appendix E / Ch. 23](BOOK.md#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate) |
+
+All targets share the same Docker images, Event Projections loop, symmetrical multi-account workers, and Firebase command/projection paths. Pick **one** outbox relay implementation per environment (Rust `deml-daemon` **or** Python `outbox_relay`—not both).
+
+### Product surfaces (`deml.app`)
+
+| Route                 | Purpose                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| `/dashboard`          | CES / KPI overview and performance telemetry                                                |
+| `/analytics`          | Latency, geographic origins, threat charts, gauges                                          |
+| `/status`, `/explore` | Status directory and public pages                                                           |
+| `/status/:slug`       | Isolated public status (e.g. `platform-status`)                                             |
+| `/settings`           | Sites, services, incidents, analytics IDs (**MFA-verified session** required for mutations) |
+| `/account`            | Profile, MFA enrollment, linked accounts                                                    |
+| `/vulnerabilities`    | SOC / vuln Kanban                                                                           |
+| `/success`            | Post–Stripe Checkout re-sync                                                                |
+
+See [docs/features.md](docs/features.md), [docs/glossary.md](docs/glossary.md), and [docs/billing.md](docs/billing.md).
 
 ---
 
@@ -59,6 +88,8 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 - **Hugging Face Integrations**: Namespaced model Hub publishing and Spaces deployment with `state_dict` serialization—no pickle.
 - **SIEM/SOAR Federation**: ML-scored anomalies serialize to STIX 2.1 payloads for TAXII distribution to CISA AIS, MS-ISAC, and IT-ISAC hubs.
 - **Operational Assurance**: Automated testing, static analysis (Ruff, ESLint, Axe), and pre-commit enforcement sustain production-grade reliability under continuous deployment.
+- **Billing (Stripe)**: Live Standard → Pro checkout, webhooks, and `sync_subscriptions` reconciliation ([docs/billing.md](docs/billing.md)).
+- **Embeddable status widgets**: Zero-dependency `widget.js` for public status embeds (Viking-UI package / marketing assets).
 - **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, application, API, and documentation surfaces—composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
 
 ## Design System (Viking-UI)
@@ -453,6 +484,7 @@ We provide dedicated support for our users:
 
 The DEML platform stands on open-source foundations, enterprise design references, and the tooling that authored this architecture. Gratitude is extended to each project, standard, and inspiration cited below.
 
+- **Source & docs**: [GitHub repository](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) (AI-navigable codebase wiki) · [Glossary](docs/glossary.md) · [Billing](docs/billing.md)
 - **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/), [Playwright](https://playwright.dev/) + [Chromatic](https://www.chromatic.com/) (visual regression for backend landing, Swagger, and Viking-UI docs via `npm run test:visual`), [Algolia](https://www.algolia.com/) (DocSearch / Experiences via `DemlWidgets.openSearch()` and `algolia-search.js`), [axe-core](https://github.com/dequelabs/axe-core) (WCAG 2.1 AA enforcement via `scripts/run_axe.js`)
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
 - **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
@@ -477,6 +509,8 @@ The DEML platform stands on open-source foundations, enterprise design reference
 ---
 
 > Full Cloud Run service + environment variable reference: [Appendix C in BOOK.md](BOOK.md#appendix-c-cloud-run-deployment). Always keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` as the source of truth.
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
 

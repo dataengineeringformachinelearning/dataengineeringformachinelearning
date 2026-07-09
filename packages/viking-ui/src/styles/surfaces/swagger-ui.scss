@@ -993,6 +993,206 @@ html[data-theme="light"] .swagger-ui select {
   }
 }
 
+/* ── Final polish: no nested chrome, AA contrast, flat controls ──────────── */
+.swagger-ui .btn,
+.swagger-ui button.btn,
+.swagger-ui .authorization__btn {
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: none !important;
+  text-shadow: none;
+}
+
+/* Kill nested “button inside button” chrome from swagger defaults */
+.swagger-ui .btn .btn,
+.swagger-ui button.btn button,
+.swagger-ui .opblock-summary-control,
+.swagger-ui .expand-operation,
+.swagger-ui .authorization__btn.unlocked,
+.swagger-ui .authorization__btn.locked {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-height: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.swagger-ui .opblock-summary-control {
+  color: var(--viking-text-muted, var(--text-muted));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swagger-ui .opblock-summary-control:hover,
+.swagger-ui .opblock-summary-control:focus-visible {
+  color: var(--viking-accent-strong, var(--viking-teal-400));
+  outline: none;
+}
+
+.swagger-ui .opblock-summary-control svg,
+.swagger-ui .expand-operation svg {
+  fill: currentColor;
+  width: 18px;
+  height: 18px;
+}
+
+/* Try it out — single outline control, not a filled nested pill */
+.swagger-ui .try-out__btn,
+.swagger-ui .btn.try-out__btn {
+  background: transparent !important;
+  border: 1px solid var(--viking-border-strong, var(--border)) !important;
+  color: var(--viking-text, var(--text-color)) !important;
+  border-radius: var(--viking-radius, 8px);
+  min-height: var(--viking-control-height-sm, 36px);
+  padding: 0 var(--viking-space-2, 16px);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+.swagger-ui .try-out__btn:hover,
+.swagger-ui .btn.try-out__btn:hover {
+  border-color: var(--viking-accent, var(--color-primary)) !important;
+  color: var(--viking-accent-strong, var(--viking-teal-400)) !important;
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 10%,
+    transparent
+  ) !important;
+}
+
+/* Authorize — single primary control (no inner icon button frame) */
+.swagger-ui .btn.authorize,
+.swagger-ui .authorization__btn.modal-btn.authorize {
+  background: var(--viking-accent, var(--color-primary)) !important;
+  border: 1px solid
+    color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black)) !important;
+  color: var(--viking-accent-content, #fff) !important;
+  border-radius: var(--viking-radius, 8px);
+  min-height: var(--viking-control-height, 40px);
+  padding: 0 var(--viking-space-3, 24px);
+  gap: var(--viking-space-1, 8px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swagger-ui .btn.authorize svg,
+.swagger-ui .authorization__btn svg {
+  fill: currentColor !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Execute — full-width primary, not nested grey stack */
+.swagger-ui .execute-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--viking-space-2, 16px);
+  align-items: stretch;
+}
+
+.swagger-ui .execute-wrapper .btn.execute {
+  flex: 1 1 12rem;
+  width: auto;
+  max-width: 100%;
+  min-height: var(--viking-control-height, 40px);
+  background: var(--viking-accent, var(--color-primary)) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 80%,
+    var(--viking-black)
+  ) !important;
+  color: var(--viking-accent-content, #fff) !important;
+}
+
+.swagger-ui .btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--viking-space-2, 16px);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0;
+}
+
+.swagger-ui .btn-group .btn {
+  flex: 1 1 auto;
+}
+
+/* Operation body panels — flat, high-contrast text */
+.swagger-ui .opblock-body,
+.swagger-ui .opblock-section,
+.swagger-ui .responses-wrapper,
+.swagger-ui .responses-inner {
+  background: transparent !important;
+  color: var(--viking-text, var(--text-color));
+}
+
+.swagger-ui .opblock-description-wrapper p,
+.swagger-ui .opblock-external-docs-wrapper p,
+.swagger-ui .response-col_description,
+.swagger-ui .parameter__type,
+.swagger-ui .response-col_links {
+  color: var(--viking-text-muted, var(--text-muted)) !important;
+}
+
+.swagger-ui .opblock-summary-description {
+  color: var(--viking-text-muted, var(--text-muted)) !important;
+  font-weight: 500;
+}
+
+.swagger-ui .opblock .opblock-summary:hover {
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 6%,
+    transparent
+  ) !important;
+}
+
+/* Checkboxes / try-out chrome without grey boxes */
+.swagger-ui .opblock-section-header {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+}
+
+.swagger-ui .checkbox,
+.swagger-ui .parameter__empty_value_toggle {
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.swagger-ui .dialog-ux .modal-ux-header h3,
+.swagger-ui .dialog-ux .modal-ux-content h4,
+.swagger-ui .dialog-ux .modal-ux-content label,
+.swagger-ui .dialog-ux .modal-ux-content p {
+  color: var(--viking-text, var(--text-color));
+}
+
+.swagger-ui .dialog-ux .modal-ux-header {
+  border-bottom: 1px solid var(--viking-border, var(--border));
+  background: var(--viking-surface-alt, var(--viking-charcoal-800));
+}
+
+.swagger-ui .dialog-ux .modal-ux-content input[type="text"],
+.swagger-ui .dialog-ux .modal-ux-content input[type="password"] {
+  background: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  color: var(--viking-text, var(--text-color));
+}
+
+.swagger-ui .loading-container .loading::after {
+  border-color: color-mix(in srgb, var(--viking-accent) 30%, transparent);
+  border-top-color: var(--viking-accent, var(--color-primary));
+}
+
 @media (min-width: 641px) {
   .backend-swagger-hero {
     padding: var(--viking-space-3) var(--viking-space-3) var(--viking-space-2);

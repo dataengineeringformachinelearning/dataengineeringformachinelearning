@@ -126,19 +126,29 @@ const jsonLdPayload = jsonLd
 				apiKey: algolia.API_KEY,
 				experienceId: algolia.EXPERIENCE_ID,
 				env: algolia.ENV,
+				// Live multi-index search for suite command palette
+				indexNames: [
+					'dataengineeringformachinelearning_com_zjafyosh2v_pages',
+					'deml_app_pages',
+					'deml_backend_pages',
+					'DEML UI',
+				],
 				domains: [
 					'https://deml.app',
 					'https://dataengineeringformachinelearning.com',
 					'https://backend.deml.app',
+					'https://ui.dataengineeringformachinelearning.com',
 				],
 				sitemaps: [
 					'https://deml.app/sitemap.xml',
 					'https://dataengineeringformachinelearning.com/sitemap-index.xml',
 					'https://backend.deml.app/sitemap.xml',
+					'https://ui.dataengineeringformachinelearning.com/sitemap.xml',
 				],
 			};
 			window.__DEML = window.__DEML || {};
-			window.__DEML.USE_ALGOLIA_SEARCH = true;
+			// Suite command palette owns search (curated routes + live Algolia hits).
+			window.__DEML.USE_ALGOLIA_SEARCH = false;
 			window.__DEML.MARKETING_URL = 'https://dataengineeringformachinelearning.com';
 			window.__DEML.FRONTEND_URL = 'https://deml.app';
 			window.__DEML.BACKEND_URL = 'https://backend.deml.app';

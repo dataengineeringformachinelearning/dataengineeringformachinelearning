@@ -66,6 +66,8 @@ interface TickMark {
 interface ChartTooltip {
   x: number;
   y: number;
+  /** SVG plot X for the hover cursor (data-aligned). */
+  cursorX: number;
   label: string;
   value: string;
   seriesName?: string;
@@ -341,6 +343,15 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
                   [attr.y2]="mark.y2"
                 ></line>
               }
+              @if (activeTooltip(); as tip) {
+                <line
+                  class="viking-chart-cursor"
+                  [attr.x1]="tip.cursorX"
+                  [attr.x2]="tip.cursorX"
+                  [attr.y1]="plotTop()"
+                  [attr.y2]="plotBottom()"
+                />
+              }
             }
             @if (isBarKind()) {
               @for (
@@ -472,14 +483,14 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart {
         margin: 0;
         font-family: var(--viking-font-family);
-        overflow: hidden;
+        overflow: visible;
         width: 100%;
         max-width: 100%;
         container-type: inline-size;
-        padding: var(
-          --viking-chart-padding,
-          var(--viking-space-2) var(--viking-space-1)
-        );
+        padding: var(--viking-chart-padding, var(--viking-space-1) 0);
+        border: none;
+        background: transparent;
+        box-shadow: none;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
         aspect-ratio: var(--viking-chart-ratio, 3 / 1);
@@ -601,55 +612,64 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart-grid {
         stroke: var(
           --viking-chart-grid-stroke,
-          color-mix(in srgb, var(--viking-border) 32%, transparent)
+          color-mix(in srgb, var(--viking-text-muted) 18%, transparent)
         );
-        stroke-width: var(--viking-chart-grid-width, 0.75);
-        stroke-dasharray: var(--viking-chart-grid-dash, 2 3);
+        stroke-width: var(--viking-chart-grid-width, 1);
+        stroke-dasharray: var(--viking-chart-grid-dash, 4 4);
       }
       .viking-chart-axis-line,
       .viking-chart-tick {
         stroke: var(
           --viking-chart-axis-stroke,
-          color-mix(in srgb, var(--viking-border) 68%, transparent)
+          color-mix(in srgb, var(--viking-text-muted) 28%, transparent)
         );
         stroke-width: var(--viking-chart-axis-width, 1);
       }
       .viking-chart-axis-y,
       .viking-chart-axis-x {
-        fill: var(--viking-chart-axis-color, var(--viking-text-subtle));
+        fill: var(--viking-chart-axis-color, var(--viking-text-muted));
         font-size: max(
           var(--viking-chart-label-size, 10px),
           var(--viking-chart-axis-size, 11px)
         );
         font-family: var(--viking-font-family);
         font-weight: var(--viking-font-weight-medium);
+        font-variant-numeric: tabular-nums;
+      }
+      .viking-chart-cursor {
+        stroke: var(
+          --viking-chart-cursor-stroke,
+          color-mix(in srgb, var(--viking-text) 35%, transparent)
+        );
+        stroke-width: var(--viking-chart-cursor-width, 1);
+        stroke-dasharray: var(--viking-chart-cursor-dash, 3 3);
+        pointer-events: none;
       }
       .viking-chart-line {
         fill: none;
-        stroke-width: var(--viking-chart-line-width, 2.25);
+        stroke-width: var(--viking-chart-line-width, 2);
         stroke-linecap: round;
         stroke-linejoin: round;
         vector-effect: non-scaling-stroke;
       }
       .viking-chart-fill .viking-chart-line {
-        stroke-width: var(--viking-chart-line-width-fill, 2.5);
+        stroke-width: var(--viking-chart-line-width-fill, 2);
       }
       .viking-chart-area {
-        opacity: var(--viking-chart-area-opacity, 0.22);
+        opacity: var(--viking-chart-area-opacity, 0.2);
         stroke: none;
       }
       .viking-chart-fill .viking-chart-area {
-        opacity: 0.28;
+        opacity: 0.22;
       }
       .viking-chart-point {
         stroke: var(--viking-chart-point-stroke, var(--viking-surface));
         stroke-width: 2;
         vector-effect: non-scaling-stroke;
-        r: var(--viking-chart-point-radius, 3.5);
+        r: var(--viking-chart-point-radius, 3);
       }
       .viking-chart-bar {
-        opacity: 1;
-        /* consistent with UI rounding */
+        opacity: 0.92;
       }
       .viking-chart-donut-slice {
         stroke: var(--viking-surface);
@@ -663,6 +683,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         font-size: max(12px, min(16px, 3.5cqw));
         font-weight: 700;
         font-family: var(--viking-font-family);
+        font-variant-numeric: tabular-nums;
       }
       .viking-chart-fill .viking-chart-donut-total {
         font-size: max(16px, min(24px, 5cqw));
@@ -694,11 +715,10 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart-swatch {
         width: var(--viking-chart-swatch-size, 8px);
         height: var(--viking-chart-swatch-size, 8px);
-        border-radius: var(--viking-radius-sm);
+        border-radius: 999px;
         display: inline-block;
         flex-shrink: 0;
-        border: 1px solid
-          color-mix(in srgb, var(--viking-border) 40%, transparent);
+        border: none;
       }
 
       /* Local tooltip fallback (global .viking-chart-tooltip in chart.scss wins for consistency) */
@@ -707,16 +727,20 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         pointer-events: none;
         display: none;
         flex-direction: column;
-        gap: 1px;
-        padding: var(--viking-chart-tooltip-padding, 4px 10px);
+        gap: 2px;
+        padding: var(--viking-chart-tooltip-padding, 6px 10px);
         background: var(
           --viking-chart-tooltip-bg,
-          var(--viking-surface-raised)
+          color-mix(in srgb, var(--viking-surface) 94%, transparent)
         );
         border: 1px solid
-          var(--viking-chart-tooltip-border, var(--viking-border-strong));
+          var(
+            --viking-chart-tooltip-border,
+            color-mix(in srgb, var(--viking-border) 70%, transparent)
+          );
         border-radius: var(--viking-chart-tooltip-radius, var(--viking-radius));
-        box-shadow: var(--viking-shadow-md);
+        box-shadow: var(--viking-shadow-sm);
+        backdrop-filter: blur(8px);
         font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-xs));
         color: var(--viking-chart-tooltip-text, var(--viking-text));
         white-space: nowrap;
@@ -916,6 +940,7 @@ export class VikingChart {
     this.activeTooltip.set({
       x: x + 8,
       y: Math.max(12, y - 28),
+      cursorX: x,
       label: xLabel,
       value: formatTick(val),
       seriesName: primary.name,

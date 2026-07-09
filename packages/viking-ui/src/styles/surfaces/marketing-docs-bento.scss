@@ -64,7 +64,7 @@
   gap: var(--viking-page-section-gap, var(--viking-space-6));
   /* Narrower than full 1260px shell — marketing-readable column */
   width: 100%;
-  max-width: min(60rem, 100%);
+  max-width: min(52rem, 100%);
   margin-inline: auto;
 }
 
@@ -79,6 +79,33 @@
   background: var(--viking-surface-recipe, var(--viking-surface));
   box-shadow: var(--viking-shadow-sm);
   text-align: center;
+  overflow: visible;
+}
+
+.docs-hero-with-mockup {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-5);
+  align-items: center;
+  text-align: left;
+  overflow: visible;
+
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+}
+
+.docs-hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--viking-space-3);
+  min-width: 0;
+}
+
+.docs-hero-mockup {
+  min-width: 0;
+  overflow: visible;
 }
 
 .docs-hero .pulse-dot {

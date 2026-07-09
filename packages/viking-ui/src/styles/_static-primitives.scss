@@ -264,6 +264,23 @@
 }
 
 // Forms (static)
+.viking-field-label {
+  display: block;
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-semibold);
+  color: var(--viking-text);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-tight);
+  margin: 0 0 var(--viking-space-1);
+}
+
+.viking-field,
+.viking-field-static {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+}
+
 .viking-checkbox-label {
   display: inline-flex;
   align-items: center;

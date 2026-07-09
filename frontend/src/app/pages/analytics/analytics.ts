@@ -460,22 +460,34 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         maxZoom: 8,
         minZoom: 1,
         noWrap: false,
-        updateWhenIdle: true,
-        keepBuffer: 2,
+        updateWhenIdle: false,
+        keepBuffer: 4,
+        crossOrigin: true,
       }).addTo(this.map);
 
       // Leaflet needs real dimensions after flex/grid layout settles,
       // then place markers once the tile pane has a stable size.
       const refreshSize = (): void => {
-        this.map?.invalidateSize({ animate: false });
+        if (!this.map) {
+          return;
+        }
+        this.map.invalidateSize({ animate: false });
+        // Force tile redraw after size settles (prevents broken/split tiles).
+        this.map.eachLayer((layer: L.Layer) => {
+          const tileLayer = layer as L.TileLayer & { redraw?: () => void };
+          if (typeof tileLayer.redraw === 'function') {
+            tileLayer.redraw();
+          }
+        });
       };
       requestAnimationFrame(refreshSize);
-      setTimeout(refreshSize, 120);
+      setTimeout(refreshSize, 80);
       setTimeout(() => {
         refreshSize();
         this.updateMapMarkers();
-      }, 280);
-      setTimeout(refreshSize, 800);
+      }, 200);
+      setTimeout(refreshSize, 500);
+      setTimeout(refreshSize, 1200);
     }, 50);
   }
 

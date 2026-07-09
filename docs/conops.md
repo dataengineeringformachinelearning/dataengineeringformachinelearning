@@ -1,9 +1,10 @@
 # Concept of Operations (CONOPS)
 
 **Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
-**Last aligned:** June 2026 (Event Projections architecture)
+**Last aligned:** July 2026 (Event Projections; multi-runtime compute)
 **Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
 **Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
+**Glossary:** [glossary.md](glossary.md) · **Billing:** [billing.md](billing.md) · **DeepWiki:** [code wiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
 
 ---
 
@@ -21,20 +22,31 @@ This document tells operators **how DEML runs in production**: vendors, services
 | Analytics & CES        | OpenTelemetry → ClickHouse                               |
 | Tenant isolation       | `account_id` scoping + Firestore security rules          |
 | Public transparency    | `platform-status` dogfoods under real load               |
+| Paid tiers             | Stripe Standard → Pro ([billing.md](billing.md))         |
 
 ## 3. Vendor & deployment map
 
-Canonical production uses Google Cloud (Cloud Run services for the container fleet, Firebase for commands and projections, GCP for KMS/audit). A cost-optimized and manageable alternative deployment exists on AWS using Lightsail Container Services (for the application and worker containers), ECR for images, Fargate or Lightsail instances for Redpanda/ClickHouse, and RDS/Lightsail Database for Postgres. Both topologies use identical container images and preserve the Event Projections architecture.
+Compute is **multi-target** with **identical container images** and Event Projections invariants:
 
-| Component                       | Canonical Host (GCP)      | AWS Alternative Host (Lightsail / Fargate)        | Deploy trigger                  |
-| ------------------------------- | ------------------------- | ------------------------------------------------- | ------------------------------- |
-| Angular app (`deml.app`)        | Cloud Run `deml-frontend` | Lightsail Container Service (frontend)            | Push to `main`                  |
-| Django API                      | Cloud Run `deml-backend`  | Lightsail Container Service (backend)             | Push to `main`                  |
-| Workers, daemon, scanner        | Cloud Run services        | Lightsail Container Service (multiple containers) | Push to `main`                  |
-| Postgres                        | Cloud Run / Cloud SQL     | RDS or Lightsail Database                         | Infrastructure change           |
-| Redpanda, ClickHouse            | Cloud Run (stateful)      | Fargate task or Lightsail instance + EBS          | Infrastructure + image push     |
-| `ingestEvent` + Firestore rules | Firebase / GCP            | Firebase (unchanged)                              | `.github/workflows/firebase...` |
-| Marketing site                  | Firebase Hosting          | Firebase Hosting (unchanged)                      | `firebase-hosting-merge.yml`    |
+| Runtime                     | Notes                                            | Docs                                                                    |
+| --------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| **Railway**                 | Private service mesh; `railway.json` per service | [infrastructure/railway/README.md](../infrastructure/railway/README.md) |
+| **Cloud Run (GCP)**         | Fully managed reference topology                 | BOOK Appendix C                                                         |
+| **AWS Lightsail / Fargate** | Cost-optimized alternate; ECR                    | BOOK Ch. 23 / Appendix E                                                |
+
+Firebase (Auth, `ingestEvent`, Firestore, marketing Hosting) is shared across compute hosts. GCP KMS/audit applies when the GCP control plane is enabled.
+
+| Component                         | Example service names                         | Deploy trigger                  |
+| --------------------------------- | --------------------------------------------- | ------------------------------- |
+| Angular app (`deml.app`)          | `deml-frontend`                               | Push to `main`                  |
+| Django API                        | `deml-backend`                                | Push to `main`                  |
+| Workers, **deml-daemon**, scanner | `deml-workers`, `deml-daemon`, `deml-scanner` | Push to `main`                  |
+| Postgres                          | managed DB / sidecar                          | Infrastructure change           |
+| Redpanda, ClickHouse              | `deml-queue`, `deml-clickhouse`               | Infrastructure + image push     |
+| `ingestEvent` + Firestore rules   | Firebase / GCP                                | `.github/workflows/firebase...` |
+| Marketing site                    | Firebase Hosting                              | `firebase-hosting-merge.yml`    |
+
+**Relay invariant:** Run **either** Rust `deml-daemon` outbox relay **or** Python `outbox_relay`—not both on the same cluster.
 
 **Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
 

@@ -9,6 +9,23 @@ Operational doctrine—how the platform runs in production, who performs which w
 - [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops) — canonical narrative
 - [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops) — executive summary
 - [conops.md](conops.md) — operator quick reference (checklists, service matrix, contingencies)
+- [glossary.md](glossary.md) — patterns, entities, stores
+- [billing.md](billing.md) — Stripe Standard → Pro
+- [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) — code-entity wiki
+
+## Product surfaces (`deml.app`)
+
+| Route                 | Purpose                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| `/dashboard`          | CES / KPI overview and performance telemetry                                                |
+| `/analytics`          | Latency, geographic origins, threat charts, CES gauges                                      |
+| `/status`, `/explore` | Status directory and public discovery                                                       |
+| `/status/:slug`       | Isolated public status page (e.g. `platform-status`)                                        |
+| `/settings`           | Sites, services, incidents, analytics IDs (**MFA-verified session** required for mutations) |
+| `/account`            | Profile, MFA enrollment, linked OAuth accounts, billing entry points                        |
+| `/vulnerabilities`    | SOC / vulnerability Kanban                                                                  |
+| `/success`            | Post–Stripe Checkout re-sync                                                                |
+| `/login`              | Auth + SMS MFA challenge                                                                    |
 
 ## Core Features Outline
 
@@ -60,6 +77,12 @@ Operational doctrine—how the platform runs in production, who performs which w
 
 15. **RBAC & ABAC Access Control**
     - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin` (one role per login). Status page create/update/delete requires `Operator` or `Security Admin` (`@role_required`). Settings UI disables mutations for `Viewer`.
-    - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + MFA (`amr` contains `mfa`). `platform-status` is immutable for customers.
+    - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + an **MFA-verified session** (`amr` / `firebase.sign_in_second_factor`—see [glossary.md](glossary.md)). Enrolled MFA without re-auth after second factor leaves Settings locked. `platform-status` is immutable for customers.
     - **Public stats:** `/status/:slug` and `/explore` expose uptime and service health only when `is_published=True` or `slug=platform-status`.
     - See [WHITEPAPER.md §8](../WHITEPAPER.md#8-role-based--attribute-based-access-control-rbac--abac) for the full access matrix.
+
+16. **Billing (Stripe)**
+    - Live Standard → Pro checkout, webhooks, success-page sync, and scheduled `sync_subscriptions`. Operator detail: [billing.md](billing.md).
+
+17. **Embeddable widgets**
+    - Public status embeds via `widget.js` (Viking-UI package / synced marketing assets) for customer sites without pulling the full Angular app.

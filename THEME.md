@@ -402,16 +402,16 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 
 Softer, more modern premium feel: favor 12–16px for cards and containers for a less harsh, more approachable machined aesthetic while retaining precision. Use smaller for controls.
 
-| Token                  | Value | Use                              |
-| ---------------------- | ----- | -------------------------------- |
-| `--viking-radius-xs`   | 4px   | Kbd, micro chips                 |
-| `--viking-radius-sm`   | 6px   | Inputs (compact)                 |
-| `--viking-radius`      | 8px   | Buttons, swatches                |
-| `--viking-radius-md`   | 10px  | Modals (inner)                   |
-| `--viking-radius-lg`   | 12px  | Smaller cards, dense panels      |
-| `--viking-radius-xl`   | 16px  | Main cards, panels, containers   |
-| `--viking-radius-2xl`  | 24px  | Hero/feature cards (marketing)   |
-| `--viking-radius-pill` | 999px | Badges, pills                    |
+| Token                  | Value | Use                            |
+| ---------------------- | ----- | ------------------------------ |
+| `--viking-radius-xs`   | 4px   | Kbd, micro chips               |
+| `--viking-radius-sm`   | 6px   | Inputs (compact)               |
+| `--viking-radius`      | 8px   | Buttons, swatches              |
+| `--viking-radius-md`   | 10px  | Modals (inner)                 |
+| `--viking-radius-lg`   | 12px  | Smaller cards, dense panels    |
+| `--viking-radius-xl`   | 16px  | Main cards, panels, containers |
+| `--viking-radius-2xl`  | 24px  | Hero/feature cards (marketing) |
+| `--viking-radius-pill` | 999px | Badges, pills                  |
 
 **Recommendation:** Primary cards, panels, and containers use `--viking-radius-xl` (or the --viking-card-radius token) for the softer, more modern feel. This gives generous rounding without losing the machined precision.
 
@@ -613,20 +613,21 @@ Map series tones to semantic tokens — never raw hex in chart code.
 | `danger`  | `var(--viking-danger)`     | Series 5            |
 | `muted`   | `var(--viking-text-muted)` | Baseline            |
 
-| Chart element       | Token / behavior                                                                 |
-| ------------------- | -------------------------------------------------------------------------------- |
-| Grid lines          | `--viking-chart-grid-stroke` (subtle dashed ~32% mix), width 0.75                |
-| Axis + ticks        | `--viking-chart-axis-color` (text-subtle), `--viking-chart-axis-size` (11–12px)  |
-| Lines               | `--viking-chart-line-width` (2.25 base / 2.5 fill), round caps                   |
-| Areas               | `--viking-chart-area-opacity` ~0.22–0.28                                         |
-| Points / bars       | Small radius, surface stroke contrast                                            |
-| Legend              | Centered, `--viking-chart-legend-gap`, small rounded swatches                    |
-| Tooltip             | Surface-raised, token styled, positioned on hover (line/area)                    |
-| Gutter / spacing    | Generous default (clean, well-spaced): 12/20/36/44 or fill variant                 |
-| Empty / loading     | `viking-chart-empty-state` (fill/overlay/inline) + loading skeleton support      |
-| Panel shell         | `viking-chart-panel` + `viking-chart-card-header` for consistent card rhythm     |
+| Chart element    | Token / behavior                                                                |
+| ---------------- | ------------------------------------------------------------------------------- |
+| Grid lines       | `--viking-chart-grid-stroke` (subtle dashed ~32% mix), width 0.75               |
+| Axis + ticks     | `--viking-chart-axis-color` (text-subtle), `--viking-chart-axis-size` (11–12px) |
+| Lines            | `--viking-chart-line-width` (2.25 base / 2.5 fill), round caps                  |
+| Areas            | `--viking-chart-area-opacity` ~0.22–0.28                                        |
+| Points / bars    | Small radius, surface stroke contrast                                           |
+| Legend           | Centered, `--viking-chart-legend-gap`, small rounded swatches                   |
+| Tooltip          | Surface-raised, token styled, positioned on hover (line/area)                   |
+| Gutter / spacing | Generous default (clean, well-spaced): 12/20/36/44 or fill variant              |
+| Empty / loading  | `viking-chart-empty-state` (fill/overlay/inline) + loading skeleton support     |
+| Panel shell      | `viking-chart-panel` + `viking-chart-card-header` for consistent card rhythm    |
 
 **Rules:**
+
 - All values resolve to `--viking-*` tokens.
 - Solid fills/strokes (no gradients).
 - `aria` on figure + accessible labels.

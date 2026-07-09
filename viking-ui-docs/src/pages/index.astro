@@ -1,6 +1,7 @@
 ---
 import DocLayout from '../layouts/DocLayout.astro';
 import CodeBlock from '../components/CodeBlock.astro';
+import PageMockup from '../components/PageMockup.astro';
 import { SITE } from '../lib/site';
 import { COMPONENT_COUNT, SHOWCASE_CATEGORIES } from '../lib/component-registry';
 import { LIBRARY_COMPONENT_COUNT } from '../lib/library-stats';
@@ -64,7 +65,7 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
 
 <DocLayout title="Viking-UI — Precision Design System" hideSubnav={false}>
   <div class="page-inner-wrapper landing-showcase">
-    <section class="landing-hero">
+    <section class="landing-hero page-mockup-stage">
       <div class="landing-hero-copy">
         <div class="landing-hero-badge">
           <span class="landing-hero-badge-dot" aria-hidden="true"></span>
@@ -111,6 +112,7 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
           </div>
         </div>
       </div>
+      <PageMockup variant="dashboard" />
 
       <div class="landing-preview-panel" aria-label="Live component preview">
         <div class="landing-preview-runelock" aria-hidden="true">
@@ -316,8 +318,8 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
 <script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
 
 <!-- Deterministic release -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.3.0/dist/web-components.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.3.0/dist/viking-ui.css" />`}</code></pre>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.8.0/dist/web-components.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.8.0/dist/viking-ui.css" />`}</code></pre>
       </div>
 
       <p class="viking-label">5) Full minimal HTML for external sites</p>

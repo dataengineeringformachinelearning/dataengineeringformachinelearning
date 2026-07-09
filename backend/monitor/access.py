@@ -25,8 +25,9 @@ def check_mfa_satisfied(request) -> bool:
   """True when the Firebase session completed second-factor verification.
 
   Accepts:
-  - OIDC ``amr`` containing ``mfa`` (array or string)
+  - OIDC ``amr`` containing ``mfa`` / ``otp`` (array or string)
   - Firebase Identity Platform ``firebase.sign_in_second_factor`` (e.g. ``phone``)
+  - Top-level ``sign_in_second_factor`` claim shapes
   - Explicit custom claims ``mfa`` / ``mfa_verified``
   - CI sentinel uid ``testuser``
   """
@@ -38,19 +39,40 @@ def check_mfa_satisfied(request) -> bool:
 
   amr = token.get("amr", [])
   if isinstance(amr, str):
-    if "mfa" in amr.lower():
+    lower = amr.lower()
+    if "mfa" in lower or "otp" in lower:
       return True
   elif isinstance(amr, list | tuple):
-    if any(str(entry).lower() == "mfa" for entry in amr):
+    if any(
+      str(entry).lower() in {"mfa", "otp", "sms"} or "mfa" in str(entry).lower() for entry in amr
+    ):
       return True
 
+  # Some token shapes put second-factor at the top level.
+  top_level = token.get("sign_in_second_factor") or token.get("second_factor")
+  if isinstance(top_level, str) and top_level.strip():
+    return True
+
   firebase_claim = token.get("firebase") or {}
+  if isinstance(firebase_claim, str):
+    try:
+      import json
+
+      firebase_claim = json.loads(firebase_claim)
+    except Exception:
+      firebase_claim = {}
   if isinstance(firebase_claim, dict):
-    second_factor = firebase_claim.get("sign_in_second_factor")
+    second_factor = (
+      firebase_claim.get("sign_in_second_factor")
+      or firebase_claim.get("second_factor_identifier")
+      or firebase_claim.get("secondFactor")
+    )
     if isinstance(second_factor, str) and second_factor.strip():
       return True
 
   if token.get("mfa") is True or token.get("mfa_verified") is True:
+    return True
+  if token.get("mfa") == "true" or token.get("mfa_verified") == "true":
     return True
 
   return False

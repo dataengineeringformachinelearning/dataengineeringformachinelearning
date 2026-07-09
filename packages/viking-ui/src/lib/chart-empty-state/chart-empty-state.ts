@@ -24,7 +24,7 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
     "[class.viking-chart-empty-inline]": "layout() === 'inline'",
   },
   template: `
-    @if (tone() === 'loading') {
+    @if (tone() === "loading") {
       <div class="viking-chart-skeleton" aria-hidden="true"></div>
       <h3 class="empty-title">{{ title() }}</h3>
       <p class="empty-subtitle">{{ description() }}</p>
@@ -51,7 +51,10 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
         width: 100%;
         box-sizing: border-box;
         /* Unified clean empty state with modern spacing */
-        padding: var(--viking-chart-empty-padding, var(--viking-space-5) var(--viking-space-4));
+        padding: var(
+          --viking-chart-empty-padding,
+          var(--viking-space-5) var(--viking-space-4)
+        );
         border-radius: var(--viking-radius-xl);
         background: var(--viking-surface-alt);
         border: 1px dashed var(--viking-border);

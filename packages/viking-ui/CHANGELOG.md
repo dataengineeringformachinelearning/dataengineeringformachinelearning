@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.8.0
+
+### Minor Changes
+
+- UI polish: Flux-like charts, page mockups, Algolia suite search, Swagger theme, form/MFA fixes, reactive WC base
+
 ## 4.7.0
 
 ### Minor Changes

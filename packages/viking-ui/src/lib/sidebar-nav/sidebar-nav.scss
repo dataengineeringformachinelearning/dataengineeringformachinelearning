@@ -103,7 +103,7 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  margin: var(--viking-space-half) 0 0;
+  margin: 0;
   padding: 0;
   border-top: 1px solid var(--sidebar-border);
   box-sizing: border-box;
@@ -114,7 +114,7 @@
     flex: 0 0 auto;
     width: 100%;
     max-width: 100%;
-    margin: var(--viking-space-half) 0 0;
+    margin: 0;
     padding: 0;
     border-top: 1px solid var(--sidebar-border);
   }
@@ -125,8 +125,9 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--viking-space-1);
-  padding: var(--viking-space-1) var(--viking-space-2);
+  padding: var(--viking-space-1) var(--viking-space-1);
   margin: 0;
+  width: 100%;
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-bold);
