@@ -21,8 +21,12 @@ use crate::{config::Config, kafka};
 
 #[derive(Debug, Deserialize)]
 struct TelemetryEvent {
-    account_id: String,
-    url: String,
+    /// Tenant/account UUID as string; null/missing on some legacy platform events.
+    #[serde(default)]
+    account_id: Option<String>,
+    /// Endpoint URL; reject only after deserialize when still empty.
+    #[serde(default)]
+    url: Option<String>,
     status_code: i32,
     #[serde(default)]
     response_time: Option<f64>,
@@ -30,13 +34,14 @@ struct TelemetryEvent {
     response_time_ms: Option<f64>,
     #[serde(default)]
     ip_address: Option<String>,
+    #[serde(default)]
     is_active: bool,
     #[serde(default)]
-    user_agent: String,
+    user_agent: Option<String>,
     #[serde(default)]
     telemetry_context: Map<String, Value>,
     #[serde(default)]
-    idempotency_key: String,
+    idempotency_key: Option<String>,
 }
 
 struct UserAgentSummary {
@@ -120,9 +125,21 @@ async fn persist_event(
     offset: i64,
     event: &TelemetryEvent,
 ) -> Result<()> {
+    let account_raw = event
+        .account_id
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .context("telemetry account_id is required")?;
     let account_id =
-        Uuid::parse_str(&event.account_id).context("telemetry account_id must be a native UUID")?;
-    let parsed_url = Url::parse(&event.url).context("invalid telemetry URL")?;
+        Uuid::parse_str(account_raw).context("telemetry account_id must be a native UUID")?;
+    let url = event
+        .url
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .context("telemetry url is required")?;
+    let parsed_url = Url::parse(url).context("invalid telemetry URL")?;
     if !matches!(parsed_url.scheme(), "http" | "https") || parsed_url.host_str().is_none() {
         bail!("telemetry URL must use http or https and contain a host");
     }
@@ -145,11 +162,13 @@ async fn persist_event(
     .await?
     .context("telemetry account_id is not registered")?;
 
-    let event_id = if event.idempotency_key.is_empty() {
-        format!("{topic}:{partition}:{offset}")
-    } else {
-        event.idempotency_key.clone()
-    };
+    let event_id = event
+        .idempotency_key
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(str::to_owned)
+        .unwrap_or_else(|| format!("{topic}:{partition}:{offset}"));
     let mut transaction = pool.begin().await?;
     let receipt = sqlx::query_scalar::<_, Uuid>(
         r#"
@@ -173,7 +192,8 @@ async fn persist_event(
         return Ok(());
     }
 
-    let ua = summarize_user_agent(&event.user_agent);
+    let user_agent = event.user_agent.as_deref().unwrap_or_default();
+    let ua = summarize_user_agent(user_agent);
     let anonymized_ip = event.ip_address.as_deref().and_then(anonymize_ip);
     let context = Value::Object(event.telemetry_context.clone());
     sqlx::query(
@@ -189,7 +209,7 @@ async fn persist_event(
     )
     .bind(Uuid::new_v4())
     .bind(user_id)
-    .bind(&event.url)
+    .bind(url)
     .bind(event.status_code)
     .bind(response_time_ms)
     .bind(anonymized_ip)
