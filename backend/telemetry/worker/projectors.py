@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from datetime import timedelta
+from typing import Any, Final
 
 import polars as pl
 from account.context import resolve_scope_from_account_id
@@ -16,18 +17,32 @@ from utils.enrichment import get_ip_enrichment_batch, parse_user_agent
 from utils.kafka import get_kafka_producer
 from utils.request import anonymize_ip
 from utils.service_urls import get_normalized_service_info
+from utils.structured_log import log_event
+
+from telemetry.event_contract import (
+  IdempotencyConflictError,
+  projection_payload_hash,
+  validate_idempotency_key,
+)
 
 logger = logging.getLogger(__name__)
+MAX_PROJECTION_ATTEMPTS: Final[int] = 5
+
+
+def _write(stream: Any, message: str) -> None:
+  """Write to a Django command stream when one is available."""
+  if stream is not None:
+    stream.write(message)
 
 
 def _project_frontend_event(
-  stdout,
-  stderr,
+  stdout: Any,
+  stderr: Any,
   uid: str,
   action: str,
-  event_payload: dict,
+  event_payload: dict[str, Any],
   idempotency_key: str | None = None,
-):
+) -> bool:
   """Synchronous core projector. Callable directly from sync contexts (e.g. the
   Firestore inbox poller) and via the `process_frontend_event` async wrapper from the
   Kafka consume loop."""
@@ -35,22 +50,25 @@ def _project_frontend_event(
 
   db = firestore.client(database_id="deml")
 
+  validated_key = validate_idempotency_key(idempotency_key)
+  payload_hash = projection_payload_hash(action, event_payload)
+  dedup_doc_id = f"dedup_{validated_key}"
+  dedup_ref = (
+    db.collection("users").document(uid).collection("processed_events").document(dedup_doc_id)
+  )
+  existing = dedup_ref.get()
+  if existing.exists:
+    existing_data = existing.to_dict() or {}
+    existing_hash = existing_data.get("payload_hash")
+    if existing_hash and existing_hash != payload_hash:
+      raise IdempotencyConflictError(
+        f"idempotency_key {validated_key} was already used for a different payload"
+      )
+    _write(stderr, f"Skipping duplicate frontend-event {validated_key} for {uid}")
+    return False
+
   try:
     from telemetry.worker.synthetic import SYNTHETIC_HEALTH_UID
-
-    dedup_doc_id = f"dedup_{idempotency_key}" if idempotency_key else None
-    # The synthetic health probe must re-project on every run, so never dedup it
-    # (also avoids accumulating dedup docs under the reserved health uid).
-    if uid == SYNTHETIC_HEALTH_UID:
-      dedup_doc_id = None
-
-    if dedup_doc_id:
-      dedup_ref = (
-        db.collection("users").document(uid).collection("processed_events").document(dedup_doc_id)
-      )
-      if dedup_ref.get().exists:
-        stderr.write(f"Skipping duplicate frontend-event {idempotency_key} for {uid}")
-        return
 
     result_data = {
       "last_updated": firestore.SERVER_TIMESTAMP,
@@ -76,15 +94,29 @@ def _project_frontend_event(
     doc_ref = db.collection("users").document(uid).collection("data").document("stats")
     doc_ref.set(result_data, merge=True)
 
-    if dedup_doc_id:
-      dedup_ref.set(
-        {"processed_at": firestore.SERVER_TIMESTAMP, "idempotency_key": idempotency_key},
-        merge=True,
-      )
+    dedup_ref.set(
+      {
+        "processed_at": firestore.SERVER_TIMESTAMP,
+        "idempotency_key": validated_key,
+        "payload_hash": payload_hash,
+      },
+      merge=True,
+    )
 
-    stdout.write(f"Successfully processed {action} for user {uid} (key={idempotency_key})")
-  except Exception as e:
-    stderr.write(f"Error processing frontend event for user {uid}: {e}")
+    _write(stdout, f"Successfully processed {action} for user {uid} (key={validated_key})")
+    return True
+  except Exception as exc:
+    _write(stderr, f"Error processing frontend event for user {uid}: {exc}")
+    log_event(
+      logger,
+      logging.ERROR,
+      "frontend_projection_failed",
+      uid=uid,
+      action=action,
+      idempotency_key=validated_key,
+      error=str(exc)[:500],
+    )
+    raise
 
 
 # Async wrapper used by the Kafka consume loop (which is async and awaits it).
@@ -92,9 +124,10 @@ process_frontend_event = sync_to_async(_project_frontend_event)
 
 
 @sync_to_async
-def process_pending_frontend_commands(stdout, stderr, style):
+def process_pending_frontend_commands(stdout: Any, stderr: Any, style: Any) -> None:
   """Poll the frontend_command_inbox (written by ingestEvent fallback) and project via same path.
-  Relies on idempotency dedup inside process_frontend_event. Cleans up inbox entries after attempt.
+  Successful commands are deleted. Failures remain retryable and move to a dedicated
+  Firestore DLQ after ``MAX_PROJECTION_ATTEMPTS`` acknowledged failures.
   """
 
   from firebase_admin import firestore as admin_firestore
@@ -107,9 +140,11 @@ def process_pending_frontend_commands(stdout, stderr, style):
     docs = list(inbox.limit(100).stream())
     count = 0
     for d in docs:
+      data: dict[str, Any] = {}
       try:
         data = d.to_dict() or {}
         uid = data.get("uid")
+        event_version = data.get("version")
         outer_payload = data.get("payload") or data
         action = (
           outer_payload.get("action") if isinstance(outer_payload, dict) else data.get("action")
@@ -117,22 +152,50 @@ def process_pending_frontend_commands(stdout, stderr, style):
         idem = data.get("idempotency_key") or (
           outer_payload.get("idempotency_key") if isinstance(outer_payload, dict) else None
         )
-        if uid and action:
+        if event_version != "1.0":
+          raise ValueError(f"unsupported fallback event version {event_version!r}")
+        if isinstance(uid, str) and uid and isinstance(action, str) and action:
           # Call the SYNC core directly. This poller already runs in a sync context
           # (@sync_to_async), so it must NOT call the async `process_frontend_event`
           # wrapper — doing so returned an un-awaited coroutine and the projection
           # silently never ran (inbox docs were deleted without writing stats).
           _project_frontend_event(stdout, stderr, uid, action, outer_payload, idem)
           count += 1
-        # Remove regardless to keep collection small (idempotency guards correctness)
+        else:
+          raise ValueError("fallback command requires uid and payload.action")
         d.reference.delete()
       except Exception as inner:
-        stderr.write(f"Error handling inbox doc {d.id}: {inner}")
-        # best effort delete to avoid poison
+        _write(stderr, f"Error handling inbox doc {d.id}: {inner}")
+        attempts = int(data.get("projection_attempts", 0)) + 1
+        failure = {
+          "projection_attempts": attempts,
+          "last_projection_error": str(inner)[:500],
+          "last_projection_attempt_at": admin_firestore.SERVER_TIMESTAMP,
+        }
         try:
-          d.reference.delete()
-        except Exception:
-          pass
+          if attempts >= MAX_PROJECTION_ATTEMPTS:
+            dlq_ref = db.collection("frontend_command_dlq").document(d.id)
+            dlq_ref.set(
+              {
+                **data,
+                **failure,
+                "failed_at": admin_firestore.SERVER_TIMESTAMP,
+              },
+              merge=True,
+            )
+            d.reference.delete()
+            log_event(
+              logger,
+              logging.ERROR,
+              "frontend_fallback_dlq_published",
+              document_id=d.id,
+              attempts=attempts,
+              error=str(inner)[:500],
+            )
+          else:
+            d.reference.set(failure, merge=True)
+        except Exception as dlq_error:
+          _write(stderr, f"Failed to retain or DLQ inbox doc {d.id}: {dlq_error}")
     if count:
       stdout.write(style.SUCCESS(f"Projected {count} frontend command(s) from Firestore inbox"))
   except Exception as e:
@@ -375,33 +438,89 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
       stdout.write(style.SUCCESS("Processed and committed user-issues batch"))
 
     elif tp.topic == "frontend-events":
+      projected = 0
+      duplicates = 0
+      dlq_published = 0
+      batch_safe_to_commit = True
       for msg in messages:
         try:
           payload = json.loads(msg.value.decode("utf-8"))
+          if not isinstance(payload, dict):
+            raise ValueError("frontend event must be a JSON object")
           uid = payload.get("uid")
-          event_version = payload.get("version", "1.0")
+          event_version = payload.get("version")
           if event_version != "1.0":
-            stderr.write(style.WARNING(f"Unknown event version {event_version}"))
+            raise ValueError(f"unsupported frontend event version {event_version!r}")
           event_payload = payload.get("payload", {})
+          if not isinstance(event_payload, dict):
+            raise ValueError("frontend event payload must be a JSON object")
           action = event_payload.get("action")
-          # Prefer the event's idempotency_key (e.g. from client verify- or generated unique) for dedup.
-          # Fall back to kafka key only if absent. Using uid as before caused permanent skips after first event per user.
-          idem_key = (
-            payload.get("idempotency_key")
-            or (event_payload.get("idempotency_key") if isinstance(event_payload, dict) else None)
-            or (msg.key.decode() if msg.key else f"{uid}:{payload.get('timestamp', '')}:{action}")
+          if not isinstance(uid, str) or not uid:
+            raise ValueError("frontend event requires uid")
+          if not isinstance(action, str) or not action:
+            raise ValueError("frontend event requires payload.action")
+          idem_key = validate_idempotency_key(
+            payload.get("idempotency_key") or event_payload.get("idempotency_key")
           )
-          if uid and action:
-            await process_frontend_event(stdout, stderr, uid, action, event_payload, idem_key)
-        except Exception as e:
-          stderr.write(style.ERROR(f"Failed to parse frontend-event msg: {e}"))
+          did_project = await process_frontend_event(
+            stdout, stderr, uid, action, event_payload, idem_key
+          )
+          if did_project:
+            projected += 1
+          else:
+            duplicates += 1
+        except Exception as exc:
+          _write(stderr, style.ERROR(f"Failed to project frontend-event msg: {exc}"))
           try:
             dlq_producer = await get_kafka_producer()
-            await dlq_producer.send("frontend-events-dlq", msg.value, key=msg.key)
+            await dlq_producer.send_and_wait(
+              "frontend-events-dlq",
+              msg.value,
+              key=msg.key,
+              headers=[
+                ("x-deml-error", str(exc)[:500].encode("utf-8")),
+                ("x-deml-source-topic", b"frontend-events"),
+              ],
+            )
+            dlq_published += 1
+            log_event(
+              logger,
+              logging.ERROR,
+              "frontend_projection_dlq_published",
+              error=str(exc)[:500],
+              partition=getattr(msg, "partition", None),
+              offset=getattr(msg, "offset", None),
+            )
           except Exception as dlq_e:
-            stderr.write(style.ERROR(f"Failed to DLQ: {dlq_e}"))
+            batch_safe_to_commit = False
+            _write(stderr, style.ERROR(f"Failed to publish projection DLQ record: {dlq_e}"))
+            log_event(
+              logger,
+              logging.CRITICAL,
+              "frontend_projection_dlq_publish_failed",
+              projection_error=str(exc)[:500],
+              dlq_error=str(dlq_e)[:500],
+              partition=getattr(msg, "partition", None),
+              offset=getattr(msg, "offset", None),
+            )
+      if not batch_safe_to_commit:
+        return False
       await consumer.commit()
-      stdout.write(style.SUCCESS("Processed and committed frontend-events batch"))
+      log_event(
+        logger,
+        logging.INFO,
+        "frontend_projection_batch_complete",
+        total=len(messages),
+        projected=projected,
+        duplicates=duplicates,
+        dlq_published=dlq_published,
+      )
+      stdout.write(
+        style.SUCCESS(
+          "Processed and committed frontend-events batch "
+          f"(projected={projected}, duplicates={duplicates}, dlq={dlq_published})"
+        )
+      )
 
   return True
 

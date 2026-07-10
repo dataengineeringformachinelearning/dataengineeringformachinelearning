@@ -175,7 +175,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
   "corsheaders.middleware.CorsMiddleware",
-  "config.middleware.InternalMeshMiddleware",
   "django.middleware.security.SecurityMiddleware",
   "config.csp_middleware.ContentSecurityPolicyMiddleware",
   "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -308,10 +307,6 @@ from utils.env import cpe_guesser_url, scanner_service_url, tor_proxy_url
 SCANNER_SERVICE_URL = scanner_service_url()
 CPE_GUESSER_URL = cpe_guesser_url()
 TOR_PROXY_URL = tor_proxy_url()
-
-# Shared secret for deml-daemon → Django internal API calls.
-# Set the same value on both backend and deml-daemon in Railway secrets.
-INTERNAL_SECRET: str = os.getenv("INTERNAL_SECRET", "dev-internal-secret")
 
 # Stripe Settings
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")

@@ -48,6 +48,8 @@ RUN groupadd --gid 10001 deml \
 
 COPY --from=builder /build/target/release/deml-daemon /usr/local/bin/deml-daemon
 
+EXPOSE 8080
+
 USER deml
 
 ENTRYPOINT ["/usr/local/bin/deml-daemon"]

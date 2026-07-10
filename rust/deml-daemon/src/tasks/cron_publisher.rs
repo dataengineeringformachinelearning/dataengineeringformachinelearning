@@ -1,123 +1,246 @@
-//! Cron Publisher
+//! Durable, replica-safe scheduler.
 //!
-//! Publishes scheduled task triggers to the Redpanda `internal-tasks` topic.
-//! The `deml-workers` Python container consumes this topic and calls the
-//! corresponding Django management command.
-//!
-//! This decouples scheduling (Rust, zero-drift tokio clock) from execution
-//! (Python, Django ORM + KMS + Stripe SDK).
-//!
-//! Current schedule:
-//! | Task                  | Interval  | Why Python                              |
-//! |-----------------------|-----------|-----------------------------------------|
-//! | aggregate_analytics   | 1 hour    | Django ORM Avg/Count + ClickHouse write |
-//! | sync_subscriptions    | 6 hours   | Stripe subscription reconciliation      |
-//! | reconcile_accounts    | 6 hours   | Auth/sites/Stripe/deletion reconciliation |
-//! | db_cleanup            | 24 hours  | Postgres retention + orphan pruning       |
-//! | train_all_models      | 7 days    | PyTorch SLA/threat model retraining       |
-//! | rotate_keys           | 90 days   | GCP KMS SDK (also in security_worker)     |
+//! Each cadence maps to an absolute UTC bucket. A unique Postgres constraint prevents
+//! restarts or multiple replicas from creating duplicate logical runs. Publishing is
+//! leased separately so a broker outage is retried without creating a new run.
 
 use std::time::Duration;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
+use chrono::{DateTime, Utc};
 use rdkafka::producer::FutureProducer;
 use serde::Serialize;
-use tracing::{error, info};
+use sqlx::PgPool;
+use tracing::{error, info, warn};
+use uuid::Uuid;
 
 use crate::kafka;
 
-// ── Schedule definitions ──────────────────────────────────────────────────────
-
 struct CronTask {
-    /// Matches the Django management command name.
     name: &'static str,
-    interval: Duration,
+    interval_seconds: i64,
+    offset_seconds: i64,
 }
+
+const HOUR: i64 = 3_600;
+const DAY: i64 = 86_400;
 
 const CRON_TASKS: &[CronTask] = &[
     CronTask {
         name: "aggregate_analytics",
-        interval: Duration::from_secs(3600), // 1h
+        interval_seconds: HOUR,
+        offset_seconds: 300,
     },
     CronTask {
-        name: "sync_subscriptions",
-        interval: Duration::from_secs(21600), // 6h
+        name: "fetch_threat_intel",
+        interval_seconds: HOUR,
+        offset_seconds: 600,
     },
     CronTask {
-        name: "reconcile_accounts",
-        interval: Duration::from_secs(21600), // 6h
+        name: "ingest_taxii",
+        interval_seconds: HOUR,
+        offset_seconds: 750,
     },
     CronTask {
-        name: "db_cleanup",
-        interval: Duration::from_secs(86400), // 24h
+        name: "run_lighthouse_scans",
+        interval_seconds: 6 * HOUR,
+        offset_seconds: 900,
+    },
+    CronTask {
+        name: "rotate_keys_if_due",
+        interval_seconds: DAY,
+        offset_seconds: 1_200,
     },
     CronTask {
         name: "train_all_models",
-        interval: Duration::from_secs(604800), // 7d
+        interval_seconds: DAY,
+        offset_seconds: 3_600,
     },
-    // rotate_keys: 90-day interval is managed by security_worker asyncio scheduler.
+    CronTask {
+        name: "scan_dark_web",
+        interval_seconds: DAY,
+        offset_seconds: 4_500,
+    },
+    CronTask {
+        name: "sync_subscriptions",
+        interval_seconds: DAY,
+        offset_seconds: 7_200,
+    },
+    CronTask {
+        name: "reconcile_accounts",
+        interval_seconds: DAY,
+        offset_seconds: 7_500,
+    },
+    CronTask {
+        name: "db_cleanup",
+        interval_seconds: DAY,
+        offset_seconds: 10_800,
+    },
+    CronTask {
+        name: "optimize_database",
+        interval_seconds: DAY,
+        offset_seconds: 14_400,
+    },
 ];
 
-// ── Payload shape ─────────────────────────────────────────────────────────────
+#[derive(Debug, sqlx::FromRow)]
+struct ScheduledRun {
+    id: Uuid,
+    task_name: String,
+    scheduled_for: DateTime<Utc>,
+}
 
 #[derive(Debug, Serialize)]
 struct TaskTrigger<'a> {
+    run_id: Uuid,
     task: &'a str,
-    /// ISO-8601 timestamp of this trigger.
+    scheduled_for: String,
     triggered_at: String,
     source: &'static str,
 }
 
-// ── Main task ─────────────────────────────────────────────────────────────────
+pub async fn run(pool: PgPool, producer: FutureProducer) -> Result<()> {
+    let owner = Uuid::new_v4();
+    info!(%owner, tasks = CRON_TASKS.len(), "scheduler: started");
 
-pub async fn run(producer: FutureProducer) {
-    info!("cron_publisher: started — managing {} scheduled tasks", CRON_TASKS.len());
-
-    // Spawn one tokio task per cron entry so intervals are independent.
-    let mut handles = Vec::new();
-    for task in CRON_TASKS {
-        let producer_clone = producer.clone();
-        let name = task.name;
-        let interval = task.interval;
-
-        handles.push(tokio::spawn(async move {
-            // Initial delay: stagger task execution at startup.
-            tokio::time::sleep(Duration::from_secs(30)).await;
-
-            loop {
-                if let Err(e) = publish_trigger(&producer_clone, name).await {
-                    error!(task = name, error = %e, "cron_publisher: failed to publish trigger");
-                }
-                tokio::time::sleep(interval).await;
-            }
-        }));
-    }
-
-    // Wait for any handle to exit (they're infinite loops, so this never returns
-    // unless a panic occurs — consistent with outbox_relay behaviour).
-    for handle in handles {
-        if let Err(e) = handle.await {
-            error!(error = ?e, "cron_publisher: task panicked");
+    loop {
+        if let Err(error) = ensure_current_buckets(&pool).await {
+            error!(%error, "scheduler: failed to materialize time buckets");
         }
+        match claim_runs(&pool, owner, 20).await {
+            Ok(runs) => {
+                for run in runs {
+                    publish_run(&pool, &producer, owner, run).await;
+                }
+            }
+            Err(error) => error!(%error, "scheduler: failed to claim runs"),
+        }
+        tokio::time::sleep(Duration::from_secs(15)).await;
     }
 }
 
-// ── Publish helper ────────────────────────────────────────────────────────────
-
-async fn publish_trigger(producer: &FutureProducer, task_name: &str) -> Result<()> {
-    let trigger = TaskTrigger {
-        task: task_name,
-        triggered_at: chrono::Utc::now().to_rfc3339(),
-        source: "deml-daemon:cron_publisher",
-    };
-
-    let payload = serde_json::to_vec(&trigger)?;
-    let headers = serde_json::json!({
-        "X-Task-Name": task_name,
-        "X-Source": "deml-daemon"
-    });
-
-    kafka::publish(producer, "internal-tasks", Some(task_name), &payload, &headers).await?;
-    info!(task = task_name, "cron_publisher: trigger published");
+async fn ensure_current_buckets(pool: &PgPool) -> Result<()> {
+    let now = Utc::now().timestamp();
+    for task in CRON_TASKS {
+        let bucket = (now - task.offset_seconds).div_euclid(task.interval_seconds)
+            * task.interval_seconds
+            + task.offset_seconds;
+        let scheduled_for = DateTime::<Utc>::from_timestamp(bucket, 0)
+            .context("scheduler produced an invalid UTC bucket")?;
+        sqlx::query(
+            r#"
+            INSERT INTO scheduled_task_runs
+                (id, task_name, scheduled_for, state, attempts, last_error, created_at, updated_at)
+            VALUES ($1, $2, $3, 'pending', 0, '', NOW(), NOW())
+            ON CONFLICT (task_name, scheduled_for) DO NOTHING
+            "#,
+        )
+        .bind(Uuid::new_v4())
+        .bind(task.name)
+        .bind(scheduled_for)
+        .execute(pool)
+        .await?;
+    }
     Ok(())
+}
+
+async fn claim_runs(pool: &PgPool, owner: Uuid, limit: i64) -> Result<Vec<ScheduledRun>> {
+    Ok(sqlx::query_as::<_, ScheduledRun>(
+        r#"
+        WITH candidates AS (
+            SELECT id
+            FROM scheduled_task_runs
+            WHERE (state IN ('pending', 'failed')
+                   OR (state = 'running' AND lease_expires_at < NOW()))
+              AND attempts < 5
+              AND scheduled_for <= NOW()
+              AND (lease_expires_at IS NULL OR lease_expires_at < NOW())
+            ORDER BY scheduled_for, task_name
+            FOR UPDATE SKIP LOCKED
+            LIMIT $2
+        )
+        UPDATE scheduled_task_runs AS run
+        SET claimed_by = $1,
+            lease_expires_at = NOW() + INTERVAL '60 seconds',
+            updated_at = NOW()
+        FROM candidates
+        WHERE run.id = candidates.id
+        RETURNING run.id, run.task_name, run.scheduled_for
+        "#,
+    )
+    .bind(owner)
+    .bind(limit)
+    .fetch_all(pool)
+    .await?)
+}
+
+#[tracing::instrument(
+    name = "publish_scheduled_run",
+    skip_all,
+    fields(run_id = %run.id, task = %run.task_name)
+)]
+async fn publish_run(pool: &PgPool, producer: &FutureProducer, owner: Uuid, run: ScheduledRun) {
+    let trigger = TaskTrigger {
+        run_id: run.id,
+        task: &run.task_name,
+        scheduled_for: run.scheduled_for.to_rfc3339(),
+        triggered_at: Utc::now().to_rfc3339(),
+        source: "deml-daemon:scheduler",
+    };
+    let result = async {
+        let payload = serde_json::to_vec(&trigger)?;
+        let headers = serde_json::json!({
+            "x-deml-task": run.task_name,
+            "x-deml-run-id": run.id.to_string(),
+        });
+        kafka::publish(
+            producer,
+            "internal-tasks",
+            Some(&run.task_name),
+            &payload,
+            &headers,
+        )
+        .await
+    }
+    .await;
+
+    match result {
+        Ok(()) => {
+            if let Err(error) = sqlx::query(
+                r#"
+                UPDATE scheduled_task_runs
+                SET state = 'published', attempts = attempts + 1,
+                    claimed_by = NULL, lease_expires_at = NULL, updated_at = NOW()
+                WHERE id = $1 AND claimed_by = $2
+                "#,
+            )
+            .bind(run.id)
+            .bind(owner)
+            .execute(pool)
+            .await
+            {
+                error!(run_id = %run.id, %error, "scheduler: completion update failed");
+            } else {
+                info!(run_id = %run.id, task = %run.task_name, "scheduler: trigger published");
+            }
+        }
+        Err(error) => {
+            warn!(run_id = %run.id, task = %run.task_name, %error, "scheduler: publish failed");
+            let _ = sqlx::query(
+                r#"
+                UPDATE scheduled_task_runs
+                SET state = 'failed', attempts = attempts + 1, last_error = $3,
+                    claimed_by = NULL,
+                    lease_expires_at = NOW() + INTERVAL '30 seconds',
+                    updated_at = NOW()
+                WHERE id = $1 AND claimed_by = $2
+                "#,
+            )
+            .bind(run.id)
+            .bind(owner)
+            .bind(error.to_string())
+            .execute(pool)
+            .await;
+        }
+    }
 }

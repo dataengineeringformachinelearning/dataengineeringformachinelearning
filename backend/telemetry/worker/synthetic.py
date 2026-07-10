@@ -21,8 +21,8 @@ from asgiref.sync import sync_to_async
 from django.db import close_old_connections
 from utils.kafka import get_kafka_producer
 
-# Reserved, non-real user id used only by the synthetic probe. The projector skips
-# idempotency dedup for this uid so every probe re-projects (see projectors.py).
+# Reserved, non-real user id used only by the synthetic probe. Every run uses its
+# unique probe nonce as the idempotency key, exercising the production contract.
 SYNTHETIC_HEALTH_UID = "deml_projection_healthcheck"
 
 # Name of the component shown on the platform status page.
@@ -77,6 +77,7 @@ async def _run_probe() -> tuple[str, int | None, str]:
   event = {
     "uid": SYNTHETIC_HEALTH_UID,
     "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "idempotency_key": probe_nonce,
     "version": "1.0",
     "payload": {"action": "get_stats", "source": "synthetic_monitor", "probe_nonce": probe_nonce},
   }
@@ -99,7 +100,7 @@ async def _run_probe() -> tuple[str, int | None, str]:
         SYNTHETIC_HEALTH_UID,
         "get_stats",
         event["payload"],
-        None,
+        probe_nonce,
       )
       _, current_nonce = await _read_stats_probe_marker()
       if current_nonce and current_nonce == probe_nonce:
@@ -136,7 +137,7 @@ async def _run_probe() -> tuple[str, int | None, str]:
           SYNTHETIC_HEALTH_UID,
           "get_stats",
           event["payload"],
-          None,
+          probe_nonce,
         )
         direct_fallback_used = True
       except Exception:

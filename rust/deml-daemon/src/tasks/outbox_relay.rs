@@ -1,127 +1,119 @@
-//! Transactional Outbox Relay
-//!
-//! Polls `monitor_outboxevent` in Postgres for unpublished events and
-//! delivers them to Redpanda, then marks each row as published.
-//!
-//! This is a direct, dependency-free replacement for the Python
-//! `manage.py outbox_relay` command. The relay:
-//!
-//! - Polls at `POLL_INTERVAL_SECS` (default 5s)
-//! - Processes up to `BATCH_SIZE` events per cycle (default 100)
-//! - Retries up to `MAX_ATTEMPTS` times before logging `dlq_candidate`
-//! - Emits structured `tracing` spans for every batch and failure
-//! - Is safe to run as a single instance (no distributed locking needed)
-//!   since outbox idempotency is enforced at the Redpanda consumer level
+//! Horizontally scalable transactional-outbox relay.
 
 use std::time::Duration;
 
+use futures::{stream, StreamExt};
 use rdkafka::producer::FutureProducer;
-use sqlx::PgPool;
+use serde_json::{Map, Value};
+use sqlx::{postgres::PgListener, PgPool};
 use tracing::{error, info, warn};
+use uuid::Uuid;
 
 use crate::{config::Config, db, kafka};
 
-/// Entry point — runs forever, returning only on an irrecoverable startup error.
-pub async fn run(pool: PgPool, producer: FutureProducer, cfg: Config) {
-    info!(
-        batch_size  = cfg.batch_size,
-        interval_s  = cfg.poll_interval_secs,
-        max_attempts = cfg.max_attempts,
-        "outbox_relay: started"
-    );
+pub async fn run(pool: PgPool, producer: FutureProducer, cfg: Config) -> anyhow::Result<()> {
+    let owner = Uuid::new_v4();
+    let mut listener = match PgListener::connect(&cfg.database_url).await {
+        Ok(mut listener) => {
+            listener.listen("deml_outbox").await?;
+            Some(listener)
+        }
+        Err(error) => {
+            warn!(%error, "outbox_relay: LISTEN unavailable; using bounded polling");
+            None
+        }
+    };
+    info!(%owner, "outbox_relay: started with leased delivery");
 
     loop {
-        match tick(&pool, &producer, &cfg).await {
-            Ok(0) => {
-                // Nothing to do — sleep quietly without logging.
-            }
-            Ok(n) => {
-                info!(published = n, "outbox_relay: batch published");
-            }
-            Err(e) => {
-                // Transient error (DB unreachable, serialisation failure, etc.).
-                // Log and sleep — do not crash the daemon.
-                error!(error = %e, "outbox_relay: tick error");
-            }
+        match tick(&pool, &producer, &cfg, owner).await {
+            Ok(0) => {}
+            Ok(n) => info!(published = n, "outbox_relay: batch published"),
+            Err(error) => error!(%error, "outbox_relay: tick failed"),
         }
-
-        tokio::time::sleep(Duration::from_secs(cfg.poll_interval_secs)).await;
+        let poll_interval = Duration::from_secs(cfg.poll_interval_secs);
+        let mut disable_listener = false;
+        if let Some(active_listener) = listener.as_mut() {
+            match tokio::time::timeout(poll_interval, active_listener.recv()).await {
+                Ok(Ok(_)) | Err(_) => {}
+                Ok(Err(error)) => {
+                    warn!(%error, "outbox_relay: LISTEN failed; reverting to polling");
+                    disable_listener = true;
+                }
+            }
+        } else {
+            tokio::time::sleep(poll_interval).await;
+        }
+        if disable_listener {
+            listener = None;
+        }
     }
 }
 
-/// One poll cycle: fetch → publish → mark. Returns number of successfully published events.
-async fn tick(pool: &PgPool, producer: &FutureProducer, cfg: &Config) -> anyhow::Result<usize> {
-    let events = db::fetch_pending(pool, cfg.batch_size, cfg.max_attempts).await?;
+#[tracing::instrument(name = "outbox_relay_tick", skip_all, fields(owner = %owner))]
+async fn tick(
+    pool: &PgPool,
+    producer: &FutureProducer,
+    cfg: &Config,
+    owner: Uuid,
+) -> anyhow::Result<usize> {
+    let events = db::claim_pending(pool, owner, cfg.batch_size, cfg.max_attempts).await?;
+    let max_attempts = cfg.max_attempts;
 
-    if events.is_empty() {
-        return Ok(0);
-    }
-
-    let mut published: usize = 0;
-
-    for event in events {
-        // Serialise the JSONB payload back to bytes for the Kafka message body.
-        let payload_bytes = match serde_json::to_vec(&event.payload) {
-            Ok(b) => b,
-            Err(e) => {
-                // Malformed payload — record the failure without crashing.
-                let msg = format!("payload serialisation error: {e}");
-                warn!(id = %event.id, topic = %event.topic, error = %msg, "outbox_relay: skipping malformed event");
-                if let Err(db_err) = db::record_failure(pool, event.id, &msg).await {
-                    error!(error = %db_err, "outbox_relay: failed to record serialisation failure");
-                }
-                continue;
-            }
-        };
-
-        match kafka::publish(
-            producer,
-            &event.topic,
-            event.key.as_deref(),
-            &payload_bytes,
-            &event.headers,
-        )
-        .await
-        {
-            Ok(()) => {
-                if let Err(e) = db::mark_published(pool, event.id).await {
-                    // The message was delivered but the DB update failed.
-                    // The consumer will receive the event (idempotent at consumer level).
-                    // Log and continue — do not double-publish.
-                    error!(id = %event.id, error = %e, "outbox_relay: mark_published failed after successful delivery");
-                }
-                published += 1;
-            }
-
-            Err(e) => {
-                let err_str = e.to_string();
-                warn!(
-                    id      = %event.id,
-                    topic   = %event.topic,
-                    error   = %err_str,
-                    attempt = event.attempts + 1,
-                    "outbox_relay: publish failed"
+    let results = stream::iter(events.into_iter().map(|event| {
+        let pool = pool.clone();
+        let producer = producer.clone();
+        async move {
+            let event_id = event.id;
+            let topic = event.topic.clone();
+            let mut header_map = event.headers.as_object().cloned().unwrap_or_else(Map::new);
+            header_map.insert(
+                "x-deml-event-id".to_string(),
+                Value::String(event_id.to_string()),
+            );
+            if let Some(idempotency_key) = &event.idempotency_key {
+                header_map.insert(
+                    "x-deml-idempotency-key".to_string(),
+                    Value::String(idempotency_key.clone()),
                 );
+            }
+            let headers = Value::Object(header_map);
 
-                if let Err(db_err) = db::record_failure(pool, event.id, &err_str).await {
-                    error!(error = %db_err, "outbox_relay: failed to record publish failure");
-                }
+            let outcome = async {
+                let payload = serde_json::to_vec(&event.payload)?;
+                kafka::publish(&producer, &topic, event.key.as_deref(), &payload, &headers).await?;
+                anyhow::Ok(())
+            }
+            .await;
 
-                // Surface as a structured log so observability tooling can alert.
-                if event.attempts + 1 >= cfg.max_attempts {
-                    error!(
-                        id          = %event.id,
-                        topic       = %event.topic,
-                        max_attempts = cfg.max_attempts,
-                        // Sentinel field — grep for this in ClickHouse / log queries
-                        // to identify events that need manual DLQ inspection.
-                        dlq_candidate = true,
-                        "outbox_relay: event exhausted retries"
-                    );
+            match outcome {
+                Ok(()) => match db::mark_published(&pool, owner, event_id).await {
+                    Ok(true) => true,
+                    Ok(false) => {
+                        warn!(%event_id, "outbox_relay: lease expired before completion update");
+                        false
+                    }
+                    Err(error) => {
+                        error!(%event_id, %error, "outbox_relay: completion update failed");
+                        false
+                    }
+                },
+                Err(error) => {
+                    let message = error.to_string();
+                    warn!(%event_id, %topic, %message, "outbox_relay: publish failed");
+                    if let Err(db_error) =
+                        db::record_failure(&pool, owner, event_id, &message, max_attempts).await
+                    {
+                        error!(%event_id, %db_error, "outbox_relay: failure update failed");
+                    }
+                    false
                 }
             }
         }
-    }
+    }))
+    .buffer_unordered(cfg.max_concurrency)
+    .collect::<Vec<bool>>()
+    .await;
 
-    Ok(published)
+    Ok(results.into_iter().filter(|published| *published).count())
 }

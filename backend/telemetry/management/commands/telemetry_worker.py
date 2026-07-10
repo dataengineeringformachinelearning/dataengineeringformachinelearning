@@ -9,7 +9,7 @@ from aiokafka import AIOKafkaConsumer
 from django.core.management.base import BaseCommand
 from utils.kafka import get_kafka_brokers
 
-from telemetry.worker import pingers, projectors, schedulers, synthetic
+from telemetry.worker import pingers, projectors, reliability, schedulers, synthetic
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 import django
@@ -29,11 +29,18 @@ class Command(BaseCommand):
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
-    coros = [
-      schedulers.periodic_scheduler(self.stdout, self.stderr, self.style),
-      pingers.active_pinger_scheduler(self.stdout, self.stderr, self.style),
-      schedulers.quality_scanner_scheduler(self.stdout, self.stderr, self.style),
-    ]
+    coros = []
+
+    # Rollback-only switch. Production ownership belongs to the Rust scheduler and
+    # probe roles; enabling this while those roles run would duplicate work.
+    if os.environ.get("PYTHON_EMBEDDED_SCHEDULERS_ENABLED", "0") == "1":
+      coros.extend(
+        [
+          schedulers.periodic_scheduler(self.stdout, self.stderr, self.style),
+          pingers.active_pinger_scheduler(self.stdout, self.stderr, self.style),
+          schedulers.quality_scanner_scheduler(self.stdout, self.stderr, self.style),
+        ]
+      )
 
     # Firestore inbox poller is the resilient fallback for client commands
     # (e.g. when Cloud Functions cannot reach Redpanda). With a public SASL-authenticated
@@ -50,34 +57,40 @@ class Command(BaseCommand):
         synthetic.event_projections_monitor_scheduler(self.stdout, self.stderr, self.style)
       )
 
-    for coro in coros:
-      task = asyncio.create_task(coro)
-      self.background_tasks.add(task)
-      task.add_done_callback(self.background_tasks.discard)
+    if os.environ.get("EVENT_PROJECTIONS_DLQ_MONITOR_ENABLED", "1") != "0":
+      coros.append(
+        reliability.projection_dlq_monitor_scheduler(self.stdout, self.stderr, self.style)
+      )
 
     brokers = get_kafka_brokers()
+    coros.extend(
+      [
+        self.consume_topic(brokers, "frontend-events", "frontend-projection-group-v2"),
+        self.consume_topic(brokers, "user-issues", "user-issues-group-v1"),
+        self.consume_topic(brokers, "app-events", "app-control-group-v1"),
+      ]
+    )
+    # Any uncaught loop failure is fatal so the orchestrator restarts the service;
+    # no background task is allowed to disappear silently.
+    await asyncio.gather(*coros)
+
+  async def consume_topic(self, brokers: str, topic: str, group_id: str) -> None:
     consumer = AIOKafkaConsumer(
-      "app-events",
-      "user-issues",
-      "frontend-events",
+      topic,
       bootstrap_servers=brokers,
-      group_id="telemetry-group",
+      group_id=group_id,
       auto_offset_reset="earliest",
       enable_auto_commit=False,
       max_poll_records=100,
     )
-
     while True:
       try:
         await consumer.start()
-        self.stdout.write(self.style.SUCCESS(f"Connected to Redpanda at {brokers}"))
+        self.stdout.write(self.style.SUCCESS(f"Connected {group_id} to {topic} at {brokers}"))
         break
       except Exception as e:
-        self.stderr.write(
-          self.style.ERROR(f"Failed to start Kafka consumer: {e}. Retrying in 5s...")
-        )
+        self.stderr.write(self.style.ERROR(f"Failed to start {group_id}: {e}; retrying in 5s"))
         await asyncio.sleep(5)
-
     try:
       while True:
         ok = await projectors.consume_kafka_batch(consumer, self.stdout, self.stderr, self.style)
@@ -85,7 +98,6 @@ class Command(BaseCommand):
           await asyncio.sleep(5)
     finally:
       await consumer.stop()
-      self.stdout.write(self.style.WARNING("Worker stopped."))
 
   # Delegates kept for tests and backward compatibility
   save_to_db = staticmethod(projectors.save_to_db)

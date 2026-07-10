@@ -75,7 +75,6 @@ services:
       - BACKEND_URL=http://localhost:8000
       - MARKETING_URL=http://localhost:4321
       - TOR_PROXY_URL=socks5h://tor-proxy:9050
-      - INTERNAL_SECRET=${INTERNAL_SECRET:-dev-internal-secret}
       - STRUCTURED_LOGS=true
     depends_on:
       postgres:
@@ -101,17 +100,17 @@ services:
       - DRAGONFLY_HOST=dragonfly
       - TOR_PROXY_URL=socks5h://tor-proxy:9050
       - STRUCTURED_LOGS=true
+      - PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0
     depends_on:
       backend:
         condition: service_started
     command: >
       sh -c "python manage.py telemetry_worker"
 
-  # ── deml-workers: merged ML + Security + cron-task consumer ─────────────────
-  # Replaces: ml_worker, security_worker (Phase 3 consolidation).
+  # ── deml-workers: ML, lifecycle, and durable task execution ──────────────────
   # Runs deml_workers_start.py which asyncio.gather()'s:
-  #   - security_worker management command (thread)
   #   - ml_worker management command (thread)
+  #   - lifecycle_worker management command (thread)
   #   - internal-tasks Redpanda consumer (async, cron triggers from deml-daemon)
   deml-workers:
     build:
@@ -129,8 +128,9 @@ services:
       - DRAGONFLY_HOST=dragonfly
       - TOR_PROXY_URL=socks5h://tor-proxy:9050
       - SCANNER_SERVICE_URL=http://scanner:8000
-      - CPE_GUESSER_URL=http://cpe-guesser:1323/unique
+      - CPE_GUESSER_URL=http://cpe-guesser:8080/unique
       - STRUCTURED_LOGS=true
+      - PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0
     depends_on:
       backend:
         condition: service_started
@@ -138,35 +138,100 @@ services:
       sh -c "python deml_workers_start.py"
     restart: unless-stopped
 
-  # ── deml-daemon: Rust multi-task background daemon ────────────────────────
-  # Phase 1: outbox relay (Postgres → Redpanda).
-  # Phase 2+: telemetry consumer, health pinger, cron publisher.
-  # Build context is repo root (Dockerfile COPY paths use rust/…).
-  deml-daemon:
+  # ── Rust data plane: one image, independently scalable roles ──────────────
+  deml-relay:
     build:
       context: .
       dockerfile: rust/deml-daemon/Dockerfile
     environment:
+      - DEML_ROLE=relay
       - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
       - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
-      # Leave SASL vars unset for local dev (plain TCP). Set in Railway for production.
       - REDPANDA_SASL_USERNAME=${REDPANDA_SASL_USERNAME:-}
       - REDPANDA_SASL_PASSWORD=${REDPANDA_SASL_PASSWORD:-}
       - REDPANDA_SSL=${REDPANDA_SSL:-false}
       - BATCH_SIZE=100
-      - POLL_INTERVAL_SECS=5
+      - POLL_INTERVAL_SECS=1
       - MAX_ATTEMPTS=5
+      - MAX_CONCURRENCY=64
       - STRUCTURED_LOGS=true
-      - BACKEND_INTERNAL_URL=http://backend:8000
-      - INTERNAL_SECRET=${INTERNAL_SECRET:-dev-internal-secret}
-      - PINGER_INTERVAL_SECS=30
     depends_on:
       postgres:
         condition: service_healthy
       redpanda:
         condition: service_healthy
-      backend:
-        condition: service_started  # health_pinger POSTs to backend — wait for it to start
+    restart: unless-stopped
+
+  deml-scheduler:
+    build:
+      context: .
+      dockerfile: rust/deml-daemon/Dockerfile
+    environment:
+      - DEML_ROLE=scheduler
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
+      - REDPANDA_SASL_USERNAME=${REDPANDA_SASL_USERNAME:-}
+      - REDPANDA_SASL_PASSWORD=${REDPANDA_SASL_PASSWORD:-}
+      - REDPANDA_SSL=${REDPANDA_SSL:-false}
+      - STRUCTURED_LOGS=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+    restart: unless-stopped
+
+  deml-probe:
+    build:
+      context: .
+      dockerfile: rust/deml-daemon/Dockerfile
+    environment:
+      - DEML_ROLE=probe
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - PINGER_INTERVAL_SECS=30
+      - MAX_CONCURRENCY=64
+      - STRUCTURED_LOGS=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  deml-normalizer:
+    build:
+      context: .
+      dockerfile: rust/deml-daemon/Dockerfile
+    environment:
+      - DEML_ROLE=normalizer
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
+      - REDPANDA_SASL_USERNAME=${REDPANDA_SASL_USERNAME:-}
+      - REDPANDA_SASL_PASSWORD=${REDPANDA_SASL_PASSWORD:-}
+      - REDPANDA_SSL=${REDPANDA_SSL:-false}
+      - STRUCTURED_LOGS=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+    restart: unless-stopped
+
+  deml-ingest:
+    build:
+      context: .
+      dockerfile: rust/deml-daemon/Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - DEML_ROLE=ingest
+      - PORT=8080
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDIS_URL=redis://dragonfly:6379
+      - STRUCTURED_LOGS=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      dragonfly:
+        condition: service_started
     restart: unless-stopped
 
   clickhouse:
@@ -193,22 +258,46 @@ services:
       - /tmp
     restart: unless-stopped
 
-  # otel-collector removed — the Django backend was never instrumented with the
-  # opentelemetry-sdk (no OTEL_EXPORTER_OTLP_ENDPOINT set, no otel imports in Python
-  # code) and the Angular frontend was not sending to it either. The container was
-  # running idle. When OpenTelemetry tracing is added to Django, deploy a fresh
-  # otel-collector (or use the Grafana Alloy / Uptrace sidecar) and point
-  # OTEL_EXPORTER_OTLP_ENDPOINT at it. ClickHouse does NOT natively receive OTLP.
+  # Set OTEL_EXPORTER_OTLP_ENDPOINT on Rust roles when an OTLP collector or managed
+  # endpoint is deployed. ClickHouse does not natively receive OTLP.
+
+  cpe-indexer:
+    build:
+      context: .
+      dockerfile: infrastructure/cpe-guesser/Dockerfile
+    environment:
+      - CPE_REDIS_HOST=dragonfly
+      - CPE_REDIS_PORT=6379
+      - CPE_REDIS_DB=8
+    volumes:
+      - cpe-data:/app/data
+    depends_on:
+      dragonfly:
+        condition: service_started
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
 
   cpe-guesser:
     build:
-      context: ./infrastructure/cpe-guesser
+      context: .
+      dockerfile: rust/deml-daemon/Dockerfile
     container_name: cpe-guesser
     ports:
-      - "1323:1323"
+      - "1323:8080"
+    environment:
+      - DEML_ROLE=cpe
+      - PORT=8080
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - CPE_REDIS_URL=redis://dragonfly:6379/8
+      - STRUCTURED_LOGS=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      cpe-indexer:
+        condition: service_completed_successfully
     security_opt:
       - no-new-privileges:true
-    read_only: true
     restart: unless-stopped
 
   # dependency-track-apiserver removed — the API was never called from application
@@ -233,6 +322,8 @@ services:
     container_name: scanner
     ports:
       - "8001:8000"
+    environment:
+      - CPE_GUESSER_URL=http://cpe-guesser:8080/unique
     security_opt:
       - no-new-privileges:true
     read_only: true
@@ -242,3 +333,4 @@ services:
 
 volumes:
   clickhouse-data:
+  cpe-data:

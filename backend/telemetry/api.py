@@ -47,7 +47,7 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
   # A relay will publish to Redpanda reliably.
   try:
     await sync_to_async(OutboxEvent.objects.create)(
-      topic="app-events",
+      topic="telemetry-raw",
       key=str(data.get("account_id") or data.get("url", "unknown"))[:255],
       payload=data,
       headers={"source": "django-api", "ip": data.get("ip_address")},

@@ -27,10 +27,12 @@ async def test_ingest_endpoint_telemetry(async_client: AsyncClient) -> None:
   assert response.status_code == 202
 
   # Verify OutboxEvent was successfully created in the database
-  events = await sync_to_async(list)(OutboxEvent.objects.all())
+  events = await sync_to_async(list)(
+    OutboxEvent.objects.filter(topic="telemetry-raw", key="http://telemetry-test.com")
+  )
   assert len(events) == 1
   event = events[0]
-  assert event.topic == "app-events"
+  assert event.topic == "telemetry-raw"
   assert event.payload["url"] == "http://telemetry-test.com"
 
 

@@ -5,6 +5,11 @@ import { config as functionsConfig } from "firebase-functions";
 import { logger } from "firebase-functions";
 import { Kafka } from "kafkajs";
 
+import {
+  generateIdempotencyKey,
+  validateIdempotencyKey,
+} from "./event_contract";
+
 admin.initializeApp();
 
 const fcfg = functionsConfig();
@@ -97,14 +102,23 @@ export const ingestEvent = onCall(
 
     // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const providedIdemp =
+    const rawIdempotencyKey =
       (data &&
         (data.idempotency_key ||
           (data.payload && data.payload.idempotency_key))) ||
       null;
+    let providedIdemp: string | null;
+    try {
+      providedIdemp = validateIdempotencyKey(rawIdempotencyKey);
+    } catch (error) {
+      throw new HttpsError(
+        "invalid-argument",
+        error instanceof Error ? error.message : "Invalid idempotency_key",
+      );
+    }
     const idempotencyKey =
       providedIdemp ||
-      `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+      generateIdempotencyKey(uid, timestamp, eventPayload.action || "unknown");
     const message = {
       key: String(uid), // Partition by user ID for ordered processing (stable per-tenant ordering)
       value: JSON.stringify({

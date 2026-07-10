@@ -48,6 +48,13 @@ backend/.chromatic-test.sqlite3
 .ruff_cache/
 .pytest_cache/
 
+# Rust — build artifacts and local tooling (source + Cargo.lock are committed)
+**/target/
+**/*.rs.bk
+**/*.pdb
+.cargo-cache/
+# Keep rust/.env.example; never commit real secrets (covered by .env / .env.* above)
+
 # Firebase emulator / CLI debug output
 firebase-debug.log
 **/firebase-debug.log

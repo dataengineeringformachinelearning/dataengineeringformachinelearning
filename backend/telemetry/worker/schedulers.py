@@ -43,8 +43,7 @@ async def periodic_scheduler(stdout, stderr, style):
     await asyncio.sleep(3600)
 
 
-@sync_to_async
-def run_lighthouse_scans(stdout, style):
+def run_lighthouse_scans_sync(stdout, style):
   from django.utils import timezone
 
   from telemetry.tasks.lighthouse_scanner import LighthouseScanner
@@ -92,6 +91,9 @@ def run_lighthouse_scans(stdout, style):
       stdout.write(style.SUCCESS(f"[{label}] Lighthouse Scores: {scores}"))
   finally:
     close_old_connections()
+
+
+run_lighthouse_scans = sync_to_async(run_lighthouse_scans_sync)
 
 
 async def quality_scanner_scheduler(stdout, stderr, style):

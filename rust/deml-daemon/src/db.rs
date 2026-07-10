@@ -3,83 +3,102 @@ use serde_json::Value;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-/// Mirror of Django's `OutboxEvent` model.
-///
-/// Table: `monitor_outboxevent` (Django default: `{app}_{model}`).
-/// Only the columns needed by the relay are included — schema is owned by Django migrations.
+/// Leased mirror of Django's `OutboxEvent` model.
 #[derive(Debug, sqlx::FromRow)]
 pub struct OutboxEvent {
     pub id: Uuid,
     pub topic: String,
-    /// Optional partition key (e.g. user UID).
     pub key: Option<String>,
-    /// Event payload — matches Django's `JSONField` (Postgres JSONB).
     pub payload: Value,
-    /// Kafka message headers — matches Django's `JSONField` (Postgres JSONB).
     pub headers: Value,
-    /// Number of failed publish attempts so far.
-    pub attempts: i32,
+    pub idempotency_key: Option<String>,
 }
 
-/// Fetch a batch of unpublished events ordered by creation time (FIFO).
-///
-/// Events with `attempts >= max_attempts` are skipped — they are logged as
-/// `dlq_candidate` by the relay and left for manual inspection.
-pub async fn fetch_pending(
+/// Atomically claim a FIFO batch. `SKIP LOCKED` lets multiple relay replicas work
+/// without selecting the same rows; an expired lease makes crash recovery automatic.
+pub async fn claim_pending(
     pool: &PgPool,
+    owner: Uuid,
     batch_size: i64,
     max_attempts: i32,
 ) -> Result<Vec<OutboxEvent>> {
     let rows = sqlx::query_as::<_, OutboxEvent>(
         r#"
-        SELECT id, topic, key, payload, headers, attempts
-        FROM   monitor_outboxevent
-        WHERE  is_published = false
-          AND  attempts < $1
-        ORDER  BY created_at ASC
-        LIMIT  $2
+        WITH candidates AS (
+            SELECT id
+            FROM monitor_outboxevent
+            WHERE is_published = false
+              AND dlq_at IS NULL
+              AND attempts < $1
+              AND available_at <= NOW()
+              AND (lease_expires_at IS NULL OR lease_expires_at < NOW())
+            ORDER BY created_at ASC
+            FOR UPDATE SKIP LOCKED
+            LIMIT $2
+        )
+        UPDATE monitor_outboxevent AS event
+        SET lease_owner = $3,
+            lease_expires_at = NOW() + INTERVAL '60 seconds'
+        FROM candidates
+        WHERE event.id = candidates.id
+        RETURNING event.id, event.topic, event.key, event.payload, event.headers,
+                  event.idempotency_key
         "#,
     )
     .bind(max_attempts)
     .bind(batch_size)
+    .bind(owner)
     .fetch_all(pool)
     .await?;
 
     Ok(rows)
 }
 
-/// Mark an event as successfully published.
-pub async fn mark_published(pool: &PgPool, id: Uuid) -> Result<()> {
-    sqlx::query(
+pub async fn mark_published(pool: &PgPool, owner: Uuid, id: Uuid) -> Result<bool> {
+    let result = sqlx::query(
         r#"
         UPDATE monitor_outboxevent
-        SET    is_published = true,
-               published_at = NOW(),
-               last_error   = NULL
-        WHERE  id = $1
+        SET is_published = true,
+            published_at = NOW(),
+            last_error = NULL,
+            lease_owner = NULL,
+            lease_expires_at = NULL
+        WHERE id = $1 AND lease_owner = $2
         "#,
     )
     .bind(id)
+    .bind(owner)
     .execute(pool)
     .await?;
-
-    Ok(())
+    Ok(result.rows_affected() == 1)
 }
 
-/// Record a publish failure and increment the attempt counter.
-pub async fn record_failure(pool: &PgPool, id: Uuid, error: &str) -> Result<()> {
+pub async fn record_failure(
+    pool: &PgPool,
+    owner: Uuid,
+    id: Uuid,
+    error: &str,
+    max_attempts: i32,
+) -> Result<()> {
     sqlx::query(
         r#"
         UPDATE monitor_outboxevent
-        SET    attempts   = attempts + 1,
-               last_error = $2
-        WHERE  id = $1
+        SET attempts = attempts + 1,
+            last_error = $3,
+            available_at = NOW() + (
+                LEAST(300, POWER(2, LEAST(attempts + 1, 8))::integer)::text || ' seconds'
+            )::interval,
+            dlq_at = CASE WHEN attempts + 1 >= $4 THEN NOW() ELSE dlq_at END,
+            lease_owner = NULL,
+            lease_expires_at = NULL
+        WHERE id = $1 AND lease_owner = $2
         "#,
     )
     .bind(id)
+    .bind(owner)
     .bind(error)
+    .bind(max_attempts)
     .execute(pool)
     .await?;
-
     Ok(())
 }

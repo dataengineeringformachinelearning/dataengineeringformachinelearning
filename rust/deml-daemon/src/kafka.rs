@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use rdkafka::{
     config::ClientConfig,
+    consumer::StreamConsumer,
     message::{Header, OwnedHeaders},
     producer::{FutureProducer, FutureRecord},
 };
@@ -22,6 +23,8 @@ pub fn build_producer(cfg: &Config) -> Result<FutureProducer> {
         .set("bootstrap.servers", &cfg.redpanda_brokers)
         // Wait for all in-sync replicas to acknowledge before considering a send successful.
         .set("acks", "all")
+        .set("enable.idempotence", "true")
+        .set("max.in.flight.requests.per.connection", "5")
         // Per-message delivery timeout (30s). Matches the Python aiokafka `send_and_wait`.
         .set("message.timeout.ms", "30000")
         // Retries with backoff before giving up.
@@ -29,6 +32,7 @@ pub fn build_producer(cfg: &Config) -> Result<FutureProducer> {
         .set("retry.backoff.ms", "500")
         // Reduce latency for the relay — we're not batching for throughput.
         .set("linger.ms", "5")
+        .set("compression.type", "zstd")
         // Force IPv4 address resolution to avoid connection failures when connecting to IPv6 aliases
         // of containers that are only listening on IPv4 (0.0.0.0).
         .set("broker.address.family", "v4");
@@ -49,6 +53,38 @@ pub fn build_producer(cfg: &Config) -> Result<FutureProducer> {
     client_cfg
         .create::<FutureProducer>()
         .context("failed to create Kafka producer")
+}
+
+pub fn build_consumer(cfg: &Config, group_id: &str) -> Result<StreamConsumer> {
+    let mut client_cfg = ClientConfig::new();
+    client_cfg
+        .set("bootstrap.servers", &cfg.redpanda_brokers)
+        .set("group.id", group_id)
+        .set("enable.auto.commit", "false")
+        .set("enable.auto.offset.store", "false")
+        .set("auto.offset.reset", "earliest")
+        .set("session.timeout.ms", "30000")
+        .set("max.poll.interval.ms", "300000")
+        .set("broker.address.family", "v4");
+    apply_security(&mut client_cfg, cfg);
+    client_cfg
+        .create::<StreamConsumer>()
+        .context("failed to create Kafka consumer")
+}
+
+fn apply_security(client_cfg: &mut ClientConfig, cfg: &Config) {
+    if let (Some(user), Some(pass)) = (&cfg.sasl_username, &cfg.sasl_password) {
+        let protocol = if cfg.sasl_ssl {
+            "SASL_SSL"
+        } else {
+            "SASL_PLAINTEXT"
+        };
+        client_cfg
+            .set("security.protocol", protocol)
+            .set("sasl.mechanism", "SCRAM-SHA-256")
+            .set("sasl.username", user.as_str())
+            .set("sasl.password", pass.as_str());
+    }
 }
 
 /// Publish a single message to a Redpanda topic, waiting for delivery confirmation.

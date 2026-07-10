@@ -1,16 +1,15 @@
 """
 deml-workers: Merged Python background worker container.
 
-Runs in a single process — four coroutines in parallel via asyncio.gather():
+Runs in a single process — three coroutines in parallel via asyncio.gather():
 
-  1. security_worker   — threat intel, TAXII, key rotation, dark web, VACUUM ANALYZE
-  2. ml_worker         — PyTorch SLA/threat model training, Kafka ml-training-events consumer
-  3. lifecycle_worker  — continuous account deletion queue + auth/Stripe/sites reconciliation retries
-  4. task_consumer     — consumes Redpanda `internal-tasks` topic published by deml-daemon
-                         cron_publisher and dispatches to Django management commands.
+  1. ml_worker         — Kafka ml-training-events consumer (periodic scheduling disabled)
+  2. lifecycle_worker  — continuous account deletion queue + auth/Stripe/sites reconciliation retries
+  3. task_consumer     — consumes durable Redpanda task runs published by the Rust
+                         scheduler and dispatches Django management commands.
 
-Replaces three separate Docker containers (ml_worker, security_worker, and the
-deml-daemon cron trigger consumer) with one container sharing a Django process.
+Replaces the former ML/security interval schedulers with one execution service.
+Rust owns schedule publication; this process owns only command execution.
 
 Usage (set as `command:` in docker-compose / Railway startCommand):
     python deml_workers_start.py
@@ -19,6 +18,7 @@ Usage (set as `command:` in docker-compose / Railway startCommand):
 from __future__ import annotations
 
 import asyncio
+import datetime
 import json
 import logging
 import os
@@ -32,9 +32,10 @@ import django
 django.setup()
 
 from aiokafka import AIOKafkaConsumer
+from aiokafka.structs import TopicPartition
 from asgiref.sync import sync_to_async
 from django.core.management import call_command
-from utils.kafka import get_kafka_brokers
+from utils.kafka import get_kafka_brokers, get_kafka_producer
 
 logger = logging.getLogger("deml_workers")
 
@@ -48,39 +49,17 @@ ALLOWED_TASKS: frozenset[str] = frozenset(
     "reconcile_accounts",
     "train_all_models",
     "db_cleanup",
+    "fetch_threat_intel",
+    "ingest_taxii",
+    "run_lighthouse_scans",
+    "rotate_keys_if_due",
+    "scan_dark_web",
+    "optimize_database",
   }
 )
 
 
 # ── Worker coroutines ─────────────────────────────────────────────────────────
-
-
-async def run_security_worker() -> None:
-  """Delegate to the existing security_worker management command.
-
-  The security_worker command runs its own asyncio event loop internally via
-  `asyncio.run()` — we bridge into it by calling it in an executor thread so it
-  doesn't block the shared event loop.
-  """
-  import threading
-
-  logger.info("deml_workers: starting security_worker thread")
-
-  def _run() -> None:
-    try:
-      # call_command runs synchronously inside its own asyncio.run() call.
-      call_command("security_worker")
-    except Exception as exc:
-      logger.exception("security_worker thread exited with error: %s", exc)
-
-  thread = threading.Thread(target=_run, name="security_worker", daemon=True)
-  thread.start()
-
-  # Keep this coroutine alive — the thread is daemon so it will die with the process.
-  while thread.is_alive():
-    await asyncio.sleep(10)
-
-  logger.error("deml_workers: security_worker thread exited — container will restart")
 
 
 async def run_ml_worker() -> None:
@@ -101,7 +80,7 @@ async def run_ml_worker() -> None:
   while thread.is_alive():
     await asyncio.sleep(10)
 
-  logger.error("deml_workers: ml_worker thread exited — container will restart")
+  raise RuntimeError("ml_worker thread exited")
 
 
 async def run_lifecycle_worker() -> None:
@@ -122,7 +101,7 @@ async def run_lifecycle_worker() -> None:
   while thread.is_alive():
     await asyncio.sleep(10)
 
-  logger.error("deml_workers: lifecycle_worker thread exited — container will restart")
+  raise RuntimeError("lifecycle_worker thread exited")
 
 
 async def run_task_consumer() -> None:
@@ -132,7 +111,8 @@ async def run_task_consumer() -> None:
       { "task": "<management_command_name>", "triggered_at": "<ISO-8601>", "source": "..." }
 
   On receipt the command is dispatched via Django's `call_command`. Only tasks in
-  ALLOWED_TASKS are executed — all others are logged and discarded.
+  ALLOWED_TASKS are executed. Invalid records are committed only after the task
+  DLQ acknowledges them.
   """
   brokers = get_kafka_brokers()
   logger.info("deml_workers: task_consumer connecting to %s", brokers)
@@ -142,7 +122,9 @@ async def run_task_consumer() -> None:
     bootstrap_servers=brokers,
     group_id="deml-workers-task-consumer",
     auto_offset_reset="latest",
-    enable_auto_commit=True,
+    enable_auto_commit=False,
+    max_poll_records=1,
+    max_poll_interval_ms=86_400_000,
   )
 
   # Retry connection until Redpanda is healthy (mirrors existing worker pattern).
@@ -156,23 +138,75 @@ async def run_task_consumer() -> None:
       await asyncio.sleep(5)
 
   @sync_to_async
-  def dispatch(task_name: str, triggered_at: str) -> None:
+  def claim_run(run_id: str) -> str:
+    from django.db import close_old_connections, transaction
+    from django.utils import timezone
+    from monitor.models import ScheduledTaskRun
+
+    close_old_connections()
+    try:
+      with transaction.atomic():
+        try:
+          run = ScheduledTaskRun.objects.select_for_update().get(id=run_id)
+        except ScheduledTaskRun.DoesNotExist:
+          return "missing"
+        if run.state == ScheduledTaskRun.State.COMPLETED:
+          return "completed"
+        if run.state != ScheduledTaskRun.State.PUBLISHED:
+          return "busy"
+        run.state = ScheduledTaskRun.State.RUNNING
+        run.started_at = timezone.now()
+        run.lease_expires_at = timezone.now() + datetime.timedelta(hours=24)
+        run.save(update_fields=["state", "started_at", "lease_expires_at", "updated_at"])
+        return "claimed"
+    finally:
+      close_old_connections()
+
+  async def dead_letter(msg: object, reason: str) -> None:
+    producer = await get_kafka_producer()
+    raw_value = getattr(msg, "value", b"")
+    source_topic = str(getattr(msg, "topic", "internal-tasks"))
+    await producer.send_and_wait(
+      "internal-tasks-dlq",
+      value=raw_value,
+      headers=[
+        ("x-deml-error", reason[:500].encode("utf-8", errors="replace")),
+        ("x-deml-source-topic", source_topic.encode("utf-8")),
+      ],
+    )
+
+  @sync_to_async
+  def dispatch(run_id: str, task_name: str, triggered_at: str) -> None:
     from django.db import close_old_connections
+    from django.utils import timezone
+    from monitor.models import ScheduledTaskRun
 
     close_old_connections()
     try:
       logger.info("task_consumer: executing %s (triggered_at=%s)", task_name, triggered_at)
       call_command(task_name)
+      ScheduledTaskRun.objects.filter(id=run_id).update(
+        state=ScheduledTaskRun.State.COMPLETED,
+        completed_at=timezone.now(),
+        lease_expires_at=None,
+        last_error="",
+      )
       logger.info("task_consumer: %s completed", task_name)
     except Exception as exc:
-      logger.error("task_consumer: %s failed — %s", task_name, exc)
+      ScheduledTaskRun.objects.filter(id=run_id).update(
+        state=ScheduledTaskRun.State.FAILED,
+        lease_expires_at=timezone.now() + datetime.timedelta(seconds=30),
+        last_error=str(exc)[:1000],
+      )
+      logger.exception("task_consumer: %s failed", task_name)
+      raise
     finally:
       close_old_connections()
 
   try:
     while True:
       try:
-        result = await consumer.getmany(timeout_ms=2000, max_records=10)
+        result = await consumer.getmany(timeout_ms=2000, max_records=1)
       except Exception as exc:
         logger.warning("task_consumer: poll error — %s — retrying in 5s", exc)
         await asyncio.sleep(5)
@@ -186,23 +220,51 @@ async def run_task_consumer() -> None:
           try:
             payload = json.loads(msg.value.decode("utf-8"))
             task_name: str | None = payload.get("task")
+            run_id: str | None = payload.get("run_id")
             triggered_at: str = payload.get("triggered_at", "unknown")
 
-            if not task_name:
-              logger.warning("task_consumer: message missing 'task' field — skipping")
+            if not task_name or not run_id:
+              logger.warning("task_consumer: message missing task or run_id — dead-lettering")
+              await dead_letter(msg, "message missing task or run_id")
+              await consumer.commit()
               continue
 
             if task_name not in ALLOWED_TASKS:
               logger.warning(
-                "task_consumer: task '%s' not in ALLOWED_TASKS — skipping",
+                "task_consumer: task '%s' not in ALLOWED_TASKS — dead-lettering",
                 task_name,
               )
+              await dead_letter(msg, f"task {task_name!r} is not allowed")
+              await consumer.commit()
               continue
 
-            await dispatch(task_name, triggered_at)
+            claim_state = await claim_run(run_id)
+            if claim_state == "completed":
+              logger.info("task_consumer: run %s already completed", run_id)
+              await consumer.commit()
+              continue
+            if claim_state == "missing":
+              logger.warning("task_consumer: run %s does not exist — dead-lettering", run_id)
+              await dead_letter(msg, f"scheduled run {run_id!r} does not exist")
+              await consumer.commit()
+              continue
+            if claim_state != "claimed":
+              logger.warning("task_consumer: run %s is currently owned elsewhere", run_id)
+              consumer.seek(TopicPartition(msg.topic, msg.partition), msg.offset)
+              await asyncio.sleep(5)
+              continue
+
+            try:
+              await dispatch(run_id, task_name, triggered_at)
+            finally:
+              # Success is durable before acknowledgement. Failure is also durable;
+              # the Rust scheduler will republish the same run after its retry lease.
+              await consumer.commit()
 
           except json.JSONDecodeError as exc:
             logger.error("task_consumer: failed to decode message — %s", exc)
+            await dead_letter(msg, f"invalid JSON: {exc}")
+            await consumer.commit()
           except Exception as exc:
             logger.error("task_consumer: unhandled error processing message — %s", exc)
   finally:
@@ -216,11 +278,9 @@ async def run_task_consumer() -> None:
 async def main() -> None:
   logger.info("deml_workers: starting all workers")
   await asyncio.gather(
-    run_security_worker(),
     run_ml_worker(),
     run_lifecycle_worker(),
     run_task_consumer(),
-    return_exceptions=True,  # Log errors from each worker independently
   )
   # If gather() returns it means all workers have exited — that's fatal.
   logger.error(

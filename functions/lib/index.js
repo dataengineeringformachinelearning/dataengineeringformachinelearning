@@ -51,6 +51,7 @@ const https_1 = require("firebase-functions/v2/https");
 const firebase_functions_1 = require("firebase-functions");
 const firebase_functions_2 = require("firebase-functions");
 const kafkajs_1 = require("kafkajs");
+const event_contract_1 = require("./event_contract");
 admin.initializeApp();
 const fcfg = (0, firebase_functions_1.config)();
 // Initialize Kafka/Redpanda client
@@ -136,14 +137,29 @@ exports.ingestEvent = (0, https_1.onCall)(
     const eventPayload = data;
     // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const providedIdemp =
+    const rawIdempotencyKey =
       (data &&
         (data.idempotency_key ||
           (data.payload && data.payload.idempotency_key))) ||
       null;
+    let providedIdemp;
+    try {
+      providedIdemp = (0, event_contract_1.validateIdempotencyKey)(
+        rawIdempotencyKey,
+      );
+    } catch (error) {
+      throw new https_1.HttpsError(
+        "invalid-argument",
+        error instanceof Error ? error.message : "Invalid idempotency_key",
+      );
+    }
     const idempotencyKey =
       providedIdemp ||
-      `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+      (0, event_contract_1.generateIdempotencyKey)(
+        uid,
+        timestamp,
+        eventPayload.action || "unknown",
+      );
     const message = {
       key: String(uid),
       value: JSON.stringify({

@@ -23,9 +23,12 @@ class Command(BaseCommand):
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
-    task = asyncio.create_task(self.periodic_scheduler())
-    self.background_tasks.add(task)
-    task.add_done_callback(self.background_tasks.discard)
+    import os
+
+    if os.environ.get("PYTHON_EMBEDDED_SCHEDULERS_ENABLED", "0") == "1":
+      task = asyncio.create_task(self.periodic_scheduler())
+      self.background_tasks.add(task)
+      task.add_done_callback(self.background_tasks.discard)
 
     brokers = get_kafka_brokers()
     consumer = AIOKafkaConsumer(
@@ -33,7 +36,9 @@ class Command(BaseCommand):
       bootstrap_servers=brokers,
       group_id="ml-training-group",
       auto_offset_reset="latest",
-      enable_auto_commit=True,
+      enable_auto_commit=False,
+      max_poll_records=1,
+      max_poll_interval_ms=86_400_000,
     )
 
     while True:
@@ -73,8 +78,11 @@ class Command(BaseCommand):
                   account_id = payload.get("account_id") or payload.get("tenant_id")
                   if account_id:
                     await self.train_single(account_id)
+                await consumer.commit()
               except Exception as e:
                 self.stderr.write(self.style.ERROR(f"Error processing message: {e}"))
+                consumer.seek(_tp, msg.offset)
+                await asyncio.sleep(5)
         except Exception as loop_e:
           self.stderr.write(self.style.ERROR(f"Unhandled exception in ml_worker loop: {loop_e}"))
           await asyncio.sleep(5)

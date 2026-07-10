@@ -143,8 +143,8 @@ def scanner_service_url() -> str:
 
 
 def cpe_guesser_url() -> str:
-  """CPE guesser internal service URL."""
-  return get_str("CPE_GUESSER_URL", "http://deml-cpe-guesser.railway.internal:1323/unique")
+  """Rust CPE lookup service URL."""
+  return get_str("CPE_GUESSER_URL", "http://deml-cpe.railway.internal:8080/unique")
 
 
 def clickhouse_uri() -> str:

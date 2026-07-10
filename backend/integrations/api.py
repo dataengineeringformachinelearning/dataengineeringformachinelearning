@@ -1,8 +1,22 @@
+from typing import Any
+
+from asgiref.sync import sync_to_async
+from monitor.models import OutboxEvent
 from ninja import Router, Schema
 
 router = Router()
 public_router = Router()
-background_tasks = set()
+
+
+@sync_to_async
+def _enqueue_outbox_event(topic: str, key: str, payload: dict[str, Any]) -> None:
+  """Durably enqueue an integration event before acknowledging the request."""
+  OutboxEvent.objects.create(
+    topic=topic,
+    key=key,
+    payload=payload,
+    headers={"version": "1.0", "event_type": payload.get("event_type", "integration")},
+  )
 
 
 class IntegrationStatus(Schema):
@@ -79,8 +93,6 @@ def redshift_status(request):
   }
 
 
-from typing import Any
-
 from .auth import IntegrationAPIKeyAuth
 
 
@@ -112,17 +124,16 @@ from utils.rate_limit import rate_limit
   summary="High-Throughput Data Ingestion",
 )
 @rate_limit()
-async def ingest_data(request, payload: IngestPayload):
+async def ingest_data(request: Any, payload: IngestPayload) -> dict[str, Any]:
   import hashlib
   import json
-  import logging
 
   from account.context import account_id_for_user
-  from utils.kafka import get_kafka_producer
 
   user = request.auth
   data = payload.dict()
-  data["account_id"] = account_id_for_user(user)
+  account_id = account_id_for_user(user)
+  data["account_id"] = account_id
   data["event_type"] = "ingestion"
 
   # Cyber Forensics: Chain of Custody Hashing
@@ -130,19 +141,7 @@ async def ingest_data(request, payload: IngestPayload):
   chain_of_custody_hash = hashlib.sha256(raw_payload_str.encode("utf-8")).hexdigest()
   data["chain_of_custody_hash"] = chain_of_custody_hash
 
-  async def _send_to_kafka():
-    try:
-      producer = await get_kafka_producer()
-      value = json.dumps(data).encode("utf-8")
-      await producer.send("app-events", value)
-    except Exception as e:
-      logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
-
-  import asyncio
-
-  task = asyncio.create_task(_send_to_kafka())
-  background_tasks.add(task)
-  task.add_done_callback(background_tasks.discard)
+  await _enqueue_outbox_event("app-events", str(account_id), data)
 
   return {
     "status": "success",
@@ -174,14 +173,9 @@ class SecurityAlertResponse(Schema):
   summary="EDR / SIEM Alert Ingestion",
 )
 @rate_limit()
-async def ingest_security_alert(request, payload: SecurityAlertPayload):
+async def ingest_security_alert(request: Any, payload: SecurityAlertPayload) -> dict[str, Any]:
   """Normalize CrowdStrike/SentinelOne-style alerts into the SOC pipeline."""
-  import json
-  import logging
-
   from account.context import account_id_for_user
-  from asgiref.sync import sync_to_async
-  from utils.kafka import get_kafka_producer
 
   user = request.auth
   account_id = account_id_for_user(user)
@@ -200,18 +194,7 @@ async def ingest_security_alert(request, payload: SecurityAlertPayload):
     "severity": payload.severity,
   }
 
-  async def _send_to_kafka() -> None:
-    try:
-      producer = await get_kafka_producer()
-      await producer.send("app-events", json.dumps(event_payload).encode("utf-8"))
-    except Exception as exc:
-      logging.getLogger(__name__).error("EDR alert Kafka publish failed: %s", exc)
-
-  import asyncio
-
-  task = asyncio.create_task(_send_to_kafka())
-  background_tasks.add(task)
-  task.add_done_callback(background_tasks.discard)
+  await _enqueue_outbox_event("app-events", str(account_id), event_payload)
 
   @sync_to_async
   def _process_soc() -> str | None:
@@ -254,12 +237,8 @@ class PredictResponse(Schema):
   summary="Real-time Model Inference",
 )
 @rate_limit()
-async def predict(request, payload: PredictPayload):
-  import json
-  import logging
-
+async def predict(request: Any, payload: PredictPayload) -> dict[str, Any]:
   from ninja.errors import HttpError
-  from utils.kafka import get_kafka_producer
 
   # AI Threat Detection: Data Poisoning / Out of Distribution check
   for val in payload.inputs:
@@ -272,26 +251,15 @@ async def predict(request, payload: PredictPayload):
 
   user = request.auth
   data = payload.dict()
-  data["account_id"] = account_id_for_user(user)
+  account_id = account_id_for_user(user)
+  data["account_id"] = account_id
   data["event_type"] = "prediction"
 
   # Mock inference latency
   latency_ms = 12.4
   data["latency_ms"] = latency_ms
 
-  async def _send_to_kafka():
-    try:
-      producer = await get_kafka_producer()
-      value = json.dumps(data).encode("utf-8")
-      await producer.send("app-events", value)
-    except Exception as e:
-      logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
-
-  import asyncio
-
-  task = asyncio.create_task(_send_to_kafka())
-  background_tasks.add(task)
-  task.add_done_callback(background_tasks.discard)
+  await _enqueue_outbox_event("app-events", str(account_id), data)
 
   return {
     "status": "success",
@@ -319,14 +287,11 @@ class LLMPredictResponse(Schema):
   summary="LLM Inference with Prompt Injection Detection",
 )
 @rate_limit()
-async def predict_llm(request, payload: LLMPredictPayload):
-  import json
-  import logging
+async def predict_llm(request: Any, payload: LLMPredictPayload) -> dict[str, Any]:
   import re
 
   from account.context import account_id_for_user
   from ninja.errors import HttpError
-  from utils.kafka import get_kafka_producer
 
   user = request.auth
   prompt = payload.prompt.lower()
@@ -341,25 +306,14 @@ async def predict_llm(request, payload: LLMPredictPayload):
     )
 
   data = payload.dict()
-  data["account_id"] = account_id_for_user(user)
+  account_id = account_id_for_user(user)
+  data["account_id"] = account_id
   data["event_type"] = "llm_prediction"
 
   latency_ms = 450.2
   data["latency_ms"] = latency_ms
 
-  async def _send_to_kafka():
-    try:
-      producer = await get_kafka_producer()
-      value = json.dumps(data).encode("utf-8")
-      await producer.send("app-events", value)
-    except Exception as e:
-      logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
-
-  import asyncio
-
-  task = asyncio.create_task(_send_to_kafka())
-  background_tasks.add(task)
-  task.add_done_callback(background_tasks.discard)
+  await _enqueue_outbox_event("app-events", str(account_id), data)
 
   return {
     "status": "success",

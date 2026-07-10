@@ -28,9 +28,11 @@ class StatusPage(models.Model):
     db_table = "status_pages"
     indexes = [
       models.Index(
-        fields=["is_platform", "is_published"]
+        fields=["is_platform", "is_published"], name="status_page_is_plat_ff9f2d_idx"
       ),  # common public/private + platform filter
-      models.Index(fields=["user", "is_platform"]),  # tenant scoping queries
+      models.Index(
+        fields=["user", "is_platform"], name="status_page_user_id_12c0fc_idx"
+      ),  # tenant scoping queries
     ]
 
   def __str__(self):
@@ -497,21 +499,117 @@ class OutboxEvent(models.Model):
   key = models.CharField(max_length=255, blank=True, null=True)  # for partitioning, e.g. uid
   payload = models.JSONField()
   headers = models.JSONField(default=dict, blank=True)
+  idempotency_key = models.CharField(max_length=255, blank=True, null=True, unique=True)
   created_at = models.DateTimeField(auto_now_add=True)
+  available_at = models.DateTimeField(auto_now_add=True)
   published_at = models.DateTimeField(null=True, blank=True)
   attempts = models.IntegerField(default=0)
   last_error = models.TextField(blank=True, null=True)
   is_published = models.BooleanField(default=False)
+  lease_owner = models.UUIDField(blank=True, null=True)
+  lease_expires_at = models.DateTimeField(blank=True, null=True)
+  dlq_at = models.DateTimeField(blank=True, null=True)
 
   class Meta:
     indexes = [
       models.Index(fields=["is_published", "created_at"]),
+      models.Index(
+        fields=["is_published", "available_at", "lease_expires_at"],
+        name="monitor_out_delivery_idx",
+      ),
       models.Index(fields=["topic"]),
     ]
     ordering = ["created_at"]
 
   def __str__(self):
     return f"Outbox {self.topic} @ {self.created_at}"
+
+
+class ScheduledTaskRun(models.Model):
+  """Durable, idempotent execution record for a UTC scheduler time bucket."""
+
+  class State(models.TextChoices):
+    PENDING = "pending", "Pending"
+    PUBLISHED = "published", "Published"
+    RUNNING = "running", "Running"
+    COMPLETED = "completed", "Completed"
+    FAILED = "failed", "Failed"
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  task_name = models.CharField(max_length=100)
+  scheduled_for = models.DateTimeField()
+  state = models.CharField(max_length=20, choices=State.choices, default=State.PENDING)
+  attempts = models.IntegerField(default=0)
+  last_error = models.TextField(blank=True, default="")
+  claimed_by = models.UUIDField(blank=True, null=True)
+  lease_expires_at = models.DateTimeField(blank=True, null=True)
+  started_at = models.DateTimeField(blank=True, null=True)
+  completed_at = models.DateTimeField(blank=True, null=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "scheduled_task_runs"
+    constraints = [
+      models.UniqueConstraint(
+        fields=["task_name", "scheduled_for"], name="unique_scheduled_task_bucket"
+      )
+    ]
+    indexes = [models.Index(fields=["state", "scheduled_for"], name="scheduled_t_state_1b67dc_idx")]
+
+
+class HealthProbeObservation(models.Model):
+  """Immutable raw result emitted by the Rust probe data plane."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  observation_key = models.CharField(max_length=255, unique=True)
+  monitored_service = models.ForeignKey(
+    MonitoredService, on_delete=models.CASCADE, related_name="probe_observations"
+  )
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="probe_observations", null=True, blank=True
+  )
+  account_id = models.UUIDField(blank=True, null=True, db_index=True)
+  is_platform = models.BooleanField(default=False, db_index=True)
+  url = models.URLField()
+  status_code = models.IntegerField()
+  response_time_ms = models.PositiveBigIntegerField()
+  is_active = models.BooleanField(default=False)
+  error = models.TextField(blank=True, default="")
+  observed_at = models.DateTimeField()
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "health_probe_observations"
+    indexes = [
+      models.Index(
+        fields=["monitored_service", "observed_at"], name="health_prob_monitor_538bc5_idx"
+      ),
+      models.Index(
+        fields=["user", "is_platform", "observed_at"], name="health_prob_user_id_672f2a_idx"
+      ),
+    ]
+
+
+class TelemetryIngestReceipt(models.Model):
+  """Kafka position receipt used to make Rust normalization idempotent."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  topic = models.CharField(max_length=100)
+  partition = models.IntegerField()
+  offset = models.BigIntegerField()
+  account_id = models.UUIDField(blank=True, null=True, db_index=True)
+  event_id = models.CharField(max_length=255, blank=True, default="")
+  processed_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "telemetry_ingest_receipts"
+    constraints = [
+      models.UniqueConstraint(
+        fields=["topic", "partition", "offset"], name="unique_telemetry_kafka_position"
+      )
+    ]
+    indexes = [models.Index(fields=["topic", "processed_at"], name="telemetry_i_topic_590d13_idx")]
 
 
 class UserLifecycleJob(models.Model):
@@ -545,8 +643,10 @@ class UserLifecycleJob(models.Model):
   class Meta:
     db_table = "user_lifecycle_jobs"
     indexes = [
-      models.Index(fields=["job_type", "state", "created_at"]),
-      models.Index(fields=["account_id"]),
+      models.Index(
+        fields=["job_type", "state", "created_at"], name="user_lifecy_job_typ_0a8f2d_idx"
+      ),
+      models.Index(fields=["account_id"], name="user_lifecy_account_6e2b41_idx"),
     ]
 
   def __str__(self):

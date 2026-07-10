@@ -2,19 +2,6 @@ import logging
 
 from django.contrib.auth.models import AnonymousUser
 from django.utils.deprecation import MiddlewareMixin
-
-INTERNAL_API_PREFIX = "/api/v1/internal/"
-
-
-class InternalMeshMiddleware(MiddlewareMixin):
-  """Allow plain-HTTP internal mesh calls without SECURE_SSL_REDIRECT."""
-
-  def process_request(self, request):
-    if request.path.startswith(INTERNAL_API_PREFIX):
-      request.META["HTTP_X_FORWARDED_PROTO"] = "https"
-    return None
-
-
 from firebase_admin import auth
 from integrations.constants import SWAGGER_DEMO_API_KEY
 
