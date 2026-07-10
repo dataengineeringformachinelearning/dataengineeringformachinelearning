@@ -52,11 +52,11 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 
 ### Supported runtimes
 
-| Runtime                     | Role                                                                                | Entry                                                                                                                   |
-| --------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| **Railway**                 | Multi-service mesh with private DNS (`*.railway.internal`); service configs in-repo | [`infrastructure/railway/README.md`](infrastructure/railway/README.md)                                                  |
-| **Cloud Run**               | Fully managed GCP services; detailed env matrix in the Book                         | [BOOK.md Appendix C](BOOK.md#appendix-c-cloud-run-deployment)                                                           |
-| **AWS Lightsail + Fargate** | Cost-optimized alternate with ECR images                                            | [BOOK.md Appendix E / Ch. 23](BOOK.md#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate) |
+| Runtime                     | Role                                                                                | Entry                                                                                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Railway**                 | Multi-service mesh with private DNS (`*.railway.internal`); catalog + audit in-repo | [`services.json`](infrastructure/railway/services.json) · [playbook](infrastructure/railway/README.md) · `python scripts/railway_audit.py` |
+| **Cloud Run**               | Fully managed GCP services; detailed env matrix in the Book                         | [BOOK.md Appendix C](BOOK.md#appendix-c-cloud-run-deployment)                                                                              |
+| **AWS Lightsail + Fargate** | Cost-optimized alternate with ECR images                                            | [BOOK.md Appendix E / Ch. 23](BOOK.md#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate)                    |
 
 All targets share the same Docker images, Event Projections loop, symmetrical multi-account workers, and Firebase command/projection paths. Every background responsibility has one production owner. Python relay, pinger, and interval schedulers are rollback-only when the corresponding Rust role is deployed.
 

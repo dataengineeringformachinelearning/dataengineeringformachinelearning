@@ -87,7 +87,8 @@ This document captures the core coding principles, philosophies, and "how we bui
   - Real-time projections in Firestore.
   - Synthetic monitoring for Event Projections loop.
 - **Deployment & Ops**:
-  - Cloud Run for services (with private networking).
+  - Primary production mesh: **Railway** multi-service topology (`infrastructure/railway/services.json` + per-service `railway.json`). Optional targets: Cloud Run / AWS Lightsail.
+  - Rust data plane: one image, one `DEML_ROLE` per service (`docs/rust-data-plane.md`). Django remains control plane.
   - Zero-downtime rolling deploys, CI/CD webhooks.
   - Symmetrical: Tenant0 dogfooding.
   - Git flow automation + SemVer.
@@ -133,6 +134,7 @@ This document captures the core coding principles, philosophies, and "how we bui
 - `scripts/dump_openapi.py`: Regenerate `frontend/openapi.json` from Django Ninja schema.
 - `.cursorrules`: Cursor agent UI/component rules (Viking-UI + THEME.md enforcement).
 - `scripts/deml-cleanup.sh`: Maintenance.
+- **Railway (production mesh):** [`infrastructure/railway/services.json`](infrastructure/railway/services.json) is the canonical service catalog (names, Dockerfiles, roles, required/forbidden env, retired services). Audit/align live vars with `python scripts/railway_audit.py` (dry-run) or `--apply` (safe defaults + strip forbidden). Playbook: [`infrastructure/railway/README.md`](infrastructure/railway/README.md). Env pollution hygiene: `scripts/railway_env_cleanup.py --dry-run`. Never re-create `deml-daemon` or `deml-cpe-guesser`.
 - Pre-commit config, ruff, eslint, prettier.
 - uv, tsx, Docker (unprivileged).
 

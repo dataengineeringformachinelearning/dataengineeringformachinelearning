@@ -24,7 +24,7 @@ The DEML Rust workspace owns high-volume and timing-sensitive work while Django 
 6. Populate CPE Dragonfly DB 8 via the pinned Python importer, then start `deml-cpe`.
 7. Deploy `deml-ingest` behind the `/api/v1/ingest` route only after API-key, quota, duplicate-batch, and payload-size canaries pass. `/api/v1/predict` and `/api/v1/ingest/security-alert` remain on Django.
 
-Railway service configs live under `infrastructure/railway/{relay,scheduler,probe,normalizer,ingest,cpe}/` and bake `DEML_ROLE` into each `startCommand`. See [infrastructure/railway/README.md](../infrastructure/railway/README.md) for variables and health checks.
+Railway service configs live under `infrastructure/railway/{relay,scheduler,probe,normalizer,ingest,cpe}/` and bake `DEML_ROLE` into each `startCommand`. The full production topology (all services, required/forbidden env, retired names) is catalogued in [`infrastructure/railway/services.json`](../infrastructure/railway/services.json); agents should audit with `python scripts/railway_audit.py` and follow [infrastructure/railway/README.md](../infrastructure/railway/README.md).
 
 Do not change all owners at once in an existing production environment. Observe one complete cadence and backlog recovery before advancing to the next role.
 

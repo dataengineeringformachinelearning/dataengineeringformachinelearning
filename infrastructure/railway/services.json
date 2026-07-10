@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Canonical Railway production topology for DEML. Agents: treat this as source of truth for service names, Dockerfiles, roles, and required env. Live apply via scripts/railway_audit.py.",
+  "project": "deml",
+  "environment": "production",
+  "githubRepo": "dataengineeringformachinelearning/dataengineeringformachinelearning",
+  "branch": "main",
+  "retired": ["deml-daemon", "deml-cpe-guesser"],
+  "services": {
+    "deml-backend": {
+      "class": "django-api",
+      "configDir": "infrastructure/railway/backend",
+      "dockerfile": "backend/Dockerfile",
+      "startCommand": "python start.py",
+      "healthcheckPath": "/api/v1/system-status/health",
+      "requiredEnv": [
+        "DATABASE_URL",
+        "SECRET_KEY",
+        "REDPANDA_BROKERS",
+        "CPE_GUESSER_URL",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET", "BACKEND_INTERNAL_URL"],
+      "notes": "Control plane. Run migrations here first."
+    },
+    "deml-frontend": {
+      "class": "frontend",
+      "configDir": "infrastructure/railway/frontend",
+      "dockerfile": "frontend/Dockerfile",
+      "requiredEnv": ["BACKEND_URL", "FRONTEND_URL"],
+      "forbiddenEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "SECRET_KEY",
+        "INTERNAL_SECRET"
+      ],
+      "notes": "Public SSR only — no Django secrets."
+    },
+    "deml-workers": {
+      "class": "django-worker",
+      "configDir": "infrastructure/railway/workers",
+      "dockerfile": "backend/Dockerfile",
+      "startCommand": "sh -c 'export PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0; exec python deml_workers_start.py'",
+      "requiredEnv": [
+        "DATABASE_URL",
+        "SECRET_KEY",
+        "REDPANDA_BROKERS",
+        "PYTHON_EMBEDDED_SCHEDULERS_ENABLED",
+        "CPE_GUESSER_URL",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET"],
+      "envDefaults": { "PYTHON_EMBEDDED_SCHEDULERS_ENABLED": "0" }
+    },
+    "deml-telemetry-worker": {
+      "class": "django-worker",
+      "configDir": "infrastructure/railway/telemetry-worker",
+      "dockerfile": "backend/Dockerfile",
+      "startCommand": "sh -c 'export PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0; exec python manage.py telemetry_worker'",
+      "requiredEnv": [
+        "DATABASE_URL",
+        "SECRET_KEY",
+        "REDPANDA_BROKERS",
+        "PYTHON_EMBEDDED_SCHEDULERS_ENABLED",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET"],
+      "envDefaults": { "PYTHON_EMBEDDED_SCHEDULERS_ENABLED": "0" }
+    },
+    "deml-relay": {
+      "class": "rust-data-plane",
+      "configDir": "infrastructure/railway/relay",
+      "dockerfile": "rust/deml-daemon/Dockerfile",
+      "role": "relay",
+      "startCommand": "sh -c 'export DEML_ROLE=relay PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
+      "healthcheckPath": "/ready",
+      "requiredEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "REDPANDA_BROKERS",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": [
+        "SECRET_KEY",
+        "INTERNAL_SECRET",
+        "FIREBASE_SERVICE_ACCOUNT_JSON"
+      ],
+      "envDefaults": { "DEML_ROLE": "relay", "STRUCTURED_LOGS": "true" }
+    },
+    "deml-scheduler": {
+      "class": "rust-data-plane",
+      "configDir": "infrastructure/railway/scheduler",
+      "dockerfile": "rust/deml-daemon/Dockerfile",
+      "role": "scheduler",
+      "startCommand": "sh -c 'export DEML_ROLE=scheduler PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
+      "healthcheckPath": "/ready",
+      "requiredEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "REDPANDA_BROKERS",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
+      "envDefaults": { "DEML_ROLE": "scheduler", "STRUCTURED_LOGS": "true" }
+    },
+    "deml-probe": {
+      "class": "rust-data-plane",
+      "configDir": "infrastructure/railway/probe",
+      "dockerfile": "rust/deml-daemon/Dockerfile",
+      "role": "probe",
+      "startCommand": "sh -c 'export DEML_ROLE=probe PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
+      "healthcheckPath": "/ready",
+      "requiredEnv": ["DEML_ROLE", "DATABASE_URL", "STRUCTURED_LOGS"],
+      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
+      "envDefaults": { "DEML_ROLE": "probe", "STRUCTURED_LOGS": "true" }
+    },
+    "deml-normalizer": {
+      "class": "rust-data-plane",
+      "configDir": "infrastructure/railway/normalizer",
+      "dockerfile": "rust/deml-daemon/Dockerfile",
+      "role": "normalizer",
+      "startCommand": "sh -c 'export DEML_ROLE=normalizer PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
+      "healthcheckPath": "/ready",
+      "requiredEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "REDPANDA_BROKERS",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
+      "envDefaults": {
+        "DEML_ROLE": "normalizer",
+        "STRUCTURED_LOGS": "true",
+        "NORMALIZER_GROUP_ID": "deml-rust-telemetry-normalizer-v1"
+      }
+    },
+    "deml-ingest": {
+      "class": "rust-data-plane",
+      "configDir": "infrastructure/railway/ingest",
+      "dockerfile": "rust/deml-daemon/Dockerfile",
+      "role": "ingest",
+      "startCommand": "sh -c 'export DEML_ROLE=ingest PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
+      "healthcheckPath": "/ready",
+      "requiredEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
+      "envDefaults": { "DEML_ROLE": "ingest", "STRUCTURED_LOGS": "true" }
+    },
+    "deml-cpe": {
+      "class": "rust-data-plane",
+      "configDir": "infrastructure/railway/cpe",
+      "dockerfile": "rust/deml-daemon/Dockerfile",
+      "role": "cpe",
+      "startCommand": "sh -c 'export DEML_ROLE=cpe PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
+      "healthcheckPath": "/ready",
+      "requiredEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "CPE_REDIS_URL",
+        "STRUCTURED_LOGS"
+      ],
+      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
+      "envDefaults": { "DEML_ROLE": "cpe", "STRUCTURED_LOGS": "true" }
+    },
+    "deml-scanner": {
+      "class": "infra-app",
+      "configDir": "infrastructure/railway/scanner",
+      "dockerfile": "infrastructure/scanner/Dockerfile",
+      "healthcheckPath": "/health",
+      "requiredEnv": ["CPE_GUESSER_URL"],
+      "forbiddenEnv": ["DEML_ROLE", "SECRET_KEY", "INTERNAL_SECRET"],
+      "envDefaults": {
+        "CPE_GUESSER_URL": "http://deml-cpe.railway.internal:8080/unique"
+      }
+    },
+    "deml-queue": {
+      "class": "infra",
+      "configDir": "infrastructure/railway/queue",
+      "dockerfile": "infrastructure/queue/Dockerfile",
+      "requiredEnv": [],
+      "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"],
+      "notes": "Redpanda. Prefer minimal env; public host/port for external clients only."
+    },
+    "deml-dragonfly": {
+      "class": "infra",
+      "configDir": "infrastructure/railway/dragonfly",
+      "dockerfile": "infrastructure/dragonfly/Dockerfile",
+      "requiredEnv": [],
+      "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"]
+    },
+    "deml-clickhouse": {
+      "class": "infra",
+      "configDir": "infrastructure/railway/clickhouse",
+      "dockerfile": "infrastructure/clickhouse/Dockerfile",
+      "requiredEnv": [],
+      "forbiddenEnv": ["DEML_ROLE", "SECRET_KEY"]
+    },
+    "deml-tor-proxy": {
+      "class": "infra",
+      "configDir": "infrastructure/railway/tor-proxy",
+      "dockerfile": "infrastructure/tor-proxy/Dockerfile",
+      "requiredEnv": [],
+      "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"]
+    }
+  },
+  "crossServiceDefaults": {
+    "CPE_GUESSER_URL": "http://deml-cpe.railway.internal:8080/unique",
+    "STRUCTURED_LOGS": "true"
+  },
+  "agentCommands": {
+    "list": "railway service list",
+    "status": "railway service status --service <name>",
+    "logs": "railway logs --service <name>",
+    "audit": "python scripts/railway_audit.py",
+    "auditApply": "python scripts/railway_audit.py --apply",
+    "deployRust": "railway up --service deml-<role> --detach --ci",
+    "migrate": "cd backend && railway run --service deml-backend -- .venv/bin/python manage.py migrate"
+  }
+}

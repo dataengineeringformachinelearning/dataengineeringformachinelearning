@@ -90,3 +90,6 @@ _override.tf.json
 
 # Deprecated local design-system package (merged into frontend/projects/viking-ui)
 packages/deml-design-system/
+
+# Local Railway CLI config pull dumps (never commit)
+.railway-config-pull-*/

@@ -4,6 +4,14 @@
 Keeps the full backend bundle on Django API + workers only. Infrastructure services
 (dragonfly, postgres, queue, etc.) get a minimal whitelist. Frontend gets build/runtime
 vars only — never Django secrets or service-account JSON.
+
+For role/required/forbidden alignment against the canonical catalog, prefer:
+
+  python scripts/railway_audit.py
+  python scripts/railway_audit.py --apply
+
+See infrastructure/railway/services.json (source of truth) and
+infrastructure/railway/README.md (agent playbook). Retired: deml-daemon, deml-cpe-guesser.
 """
 
 from __future__ import annotations
@@ -118,7 +126,7 @@ OTEL_KEEP: Final[frozenset[str]] = frozenset(
   }
 )
 
-INFRA_EMPTY: Final[frozenset[str]] = frozenset()  # dragonfly, tor-proxy, cpe-guesser
+INFRA_EMPTY: Final[frozenset[str]] = frozenset()  # dragonfly, tor-proxy
 
 SERVICE_KEEP: Final[dict[str, frozenset[str]]] = {
   "deml-frontend": FRONTEND_KEEP,
@@ -129,8 +137,15 @@ SERVICE_KEEP: Final[dict[str, frozenset[str]]] = {
   "deml-otel-collector": OTEL_KEEP,
   "deml-dragonfly": INFRA_EMPTY,
   "deml-tor-proxy": INFRA_EMPTY,
-  "deml-cpe-guesser": INFRA_EMPTY,
 }
+
+# Retired services (do not re-create; see infrastructure/railway/services.json).
+RETIRED_SERVICES: Final[frozenset[str]] = frozenset(
+  {
+    "deml-daemon",
+    "deml-cpe-guesser",
+  }
+)
 
 
 def _railway_vars(service: str) -> dict[str, str]:
