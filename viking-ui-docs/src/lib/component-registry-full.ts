@@ -228,7 +228,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Icon heading",
           description:
             "Icon + title lockup for settings sections and dashboard panels.",
-          preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
+          preview: `<div class="viking-demo-full viking-icon-heading-stack">
   <div class="viking-icon-heading">
     <span class="viking-icon-heading__icon" aria-hidden="true">◆</span>
     <h3 class="viking-icon-heading__title">Threat scoring</h3>

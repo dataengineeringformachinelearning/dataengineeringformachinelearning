@@ -190,7 +190,7 @@ export class MonitorService {
   }
 
   getGoogleAuthUrl() {
-    return this.http.get<{ url: string }>(
+    return this.http.get<{ url: string; redirect_uri?: string }>(
       `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES.replace('status_pages', 'integrations/google/auth-url')}`,
       { withCredentials: true },
     );

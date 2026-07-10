@@ -70,12 +70,6 @@
           "appHref": "/account",
           "marketingHref": "/account",
           "platform": true
-        },
-        {
-          "label": "Platform Status",
-          "appHref": "/status/platform-status",
-          "marketingHref": "/status/platform-status",
-          "platform": true
         }
       ]
     },

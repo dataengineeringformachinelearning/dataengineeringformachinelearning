@@ -1,23 +1,14 @@
 ---
 import { SITE } from '../lib/site';
+
 const year = new Date().getFullYear();
 ---
 
-<footer class="docs-footer">
-  <div class="docs-footer-inner page-inner-wrapper">
-    <div class="docs-footer-grid">
-      <div class="docs-footer-brand">
-        <strong>Viking-UI</strong>
-        <p class="viking-text-muted">Precision-engineered design system for DEML. Apache-2.0.</p>
-      </div>
-      <nav class="docs-footer-nav" aria-label="Footer">
-        <a href="/components">Components</a>
-        <a href="/tokens">Tokens</a>
-        <a href="/frameworks">Frameworks</a>
-        <a href="/contributing">Contribute</a>
-        <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>
-      </nav>
-    </div>
-    <p class="docs-footer-copy">© {year} Data Engineering for AI Engineering and Cybersecurity</p>
-  </div>
-</footer>
+{/* Canonical DEML theme footer (viking-site-footer WC) — same as marketing/app. */}
+<viking-site-footer
+  context="docs"
+  app-url={SITE.app}
+  marketing-url={SITE.marketing}
+  backend-url="https://backend.deml.app"
+  year={year}
+/>

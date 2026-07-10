@@ -45,6 +45,18 @@ def list_integrations(request):
   ]
 
 
+def _google_oauth_redirect_uri() -> str:
+  """Canonical GA OAuth callback. Must match Google Cloud Console exactly."""
+  from django.conf import settings
+
+  configured = getattr(settings, "GOOGLE_OAUTH_REDIRECT_URI", "") or ""
+  configured = configured.strip().rstrip("/")
+  if configured:
+    return configured
+  backend = (getattr(settings, "BACKEND_URL", "") or "http://localhost:8000").rstrip("/")
+  return f"{backend}/api/v1/system-status/integrations/google/callback"
+
+
 @router.get("/google/auth-url")
 def google_auth_url(request):
   user = require_auth(request)
@@ -56,11 +68,7 @@ def google_auth_url(request):
   from monitor.services.oauth_state import sign_oauth_user_id
 
   client_id = getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
-  redirect_uri = getattr(
-    settings,
-    "GOOGLE_OAUTH_REDIRECT_URI",
-    "http://localhost:8000/api/v1/system-status/integrations/google/callback",
-  )
+  redirect_uri = _google_oauth_redirect_uri()
 
   scope = "https://www.googleapis.com/auth/analytics.readonly"
   params = {
@@ -74,7 +82,9 @@ def google_auth_url(request):
   }
 
   url = "https://accounts.google.com/o/oauth2/v2/auth?" + urllib.parse.urlencode(params)
-  return {"url": url}
+  # redirect_uri is returned so operators can copy it into Google Cloud Console
+  # Authorized redirect URIs when diagnosing Error 400: redirect_uri_mismatch.
+  return {"url": url, "redirect_uri": redirect_uri}
 
 
 @router.get("/google/callback")
@@ -95,11 +105,7 @@ def google_callback(request, code: str, state: str):
 
   client_id = getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
   client_secret = getattr(settings, "GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
-  redirect_uri = getattr(
-    settings,
-    "GOOGLE_OAUTH_REDIRECT_URI",
-    "http://localhost:8000/api/v1/system-status/integrations/google/callback",
-  )
+  redirect_uri = _google_oauth_redirect_uri()
 
   token_url = "https://oauth2.googleapis.com/token"
   data = {

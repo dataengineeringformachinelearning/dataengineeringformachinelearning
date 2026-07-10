@@ -228,7 +228,9 @@ main.main {
   }
 }
 
-// Legal/doc shell: fill the page-inner-wrapper (1260px), do not re-cap width.
+// Legal/doc shell: fill the page-inner-wrapper (1260px), same as marketing.
+// Never re-cap with readable-prose width — Privacy/Terms/SOC2/GDPR must match
+// the homepage page-inner-wrapper content column.
 .page-content {
   position: relative;
   z-index: 10;
@@ -241,6 +243,14 @@ main.main {
   border: 1px solid var(--viking-border, var(--border));
   border-radius: var(--viking-radius-xl, 16px);
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+}
+
+/* Legal pages share the same outer shell as documentation / whitepaper */
+.dashboard-page-container > .dashboard-content-area > .page-inner-wrapper {
+  width: 100%;
+  max-width: var(--viking-container-max-width, 1260px);
+  margin-inline: auto;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {

@@ -4,7 +4,8 @@ export const SITE = {
   description:
     "Framework-agnostic design system for DEML — composable primitives, token-driven styling, WCAG 2.1 AA by construction. Angular, Astro, Django, and Web Components.",
   url: "https://ui.dataengineeringformachinelearning.com",
-  github: "https://github.com/dataengineeringformachinelearning/deml",
+  github:
+    "https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning",
   npm: "@dataengineeringformachinelearning/viking-ui",
   marketing: "https://dataengineeringformachinelearning.com",
   app: "https://deml.app",

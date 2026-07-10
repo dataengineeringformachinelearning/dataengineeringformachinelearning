@@ -115,12 +115,6 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         marketingHref: "/account",
         platform: true,
       },
-      {
-        label: "Platform Status",
-        appHref: "/status/platform-status",
-        marketingHref: "/status/platform-status",
-        platform: true,
-      },
     ],
   },
   {

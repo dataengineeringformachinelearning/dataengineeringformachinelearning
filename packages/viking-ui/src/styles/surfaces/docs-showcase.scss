@@ -1643,20 +1643,42 @@ viking-card-wc.landing-doctrine-card > * {
   color: var(--viking-text);
 }
 
-/* Icon heading stack: icon + title row, description under */
+/* Icon heading: icon vertically centered with title; muted under title */
+.component-showcase-preview .viking-icon-heading-stack {
+  width: min(100%, 28rem);
+  max-width: 28rem;
+  margin-inline: auto;
+}
+
 .component-showcase-preview .viking-icon-heading {
   width: 100%;
   max-width: 28rem;
+  align-items: center;
 }
 
+.component-showcase-preview .viking-icon-heading-stack > .viking-text-muted,
 .component-showcase-preview .viking-icon-heading + .viking-text-muted {
   width: 100%;
-  max-width: 28rem;
+  max-width: none;
   margin: 0;
   padding-left: calc(
     var(--viking-icon-size-lg, 24px) + var(--viking-space-2, 16px)
   );
   text-align: left;
+}
+
+/* Column stack demos must not be forced into a horizontal row */
+.component-showcase-preview .viking-demo-row.viking-demo-row-stack {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.component-showcase-preview
+  .viking-demo-row.viking-demo-row-stack
+  > .viking-icon-heading-stack {
+  align-self: center;
 }
 
 /* Accordion demos */

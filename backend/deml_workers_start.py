@@ -32,7 +32,6 @@ import django
 django.setup()
 
 from aiokafka import AIOKafkaConsumer
-from aiokafka.structs import TopicPartition
 from asgiref.sync import sync_to_async
 from django.core.management import call_command
 from utils.kafka import get_kafka_brokers, get_kafka_producer
@@ -152,11 +151,21 @@ async def run_task_consumer() -> None:
           return "missing"
         if run.state == ScheduledTaskRun.State.COMPLETED:
           return "completed"
-        if run.state != ScheduledTaskRun.State.PUBLISHED:
+        now = timezone.now()
+        # Reclaim RUNNING only after lease expiry (worker crash / deploy mid-task).
+        # Before expiry another worker still owns the run — do not spin forever.
+        if run.state == ScheduledTaskRun.State.RUNNING:
+          if run.lease_expires_at and run.lease_expires_at > now:
+            return "busy"
+          # Lease expired: allow reclaim
+        elif run.state not in {
+          ScheduledTaskRun.State.PUBLISHED,
+          ScheduledTaskRun.State.FAILED,
+        }:
           return "busy"
         run.state = ScheduledTaskRun.State.RUNNING
-        run.started_at = timezone.now()
-        run.lease_expires_at = timezone.now() + datetime.timedelta(hours=24)
+        run.started_at = now
+        run.lease_expires_at = now + datetime.timedelta(hours=24)
         run.save(update_fields=["state", "started_at", "lease_expires_at", "updated_at"])
         return "claimed"
     finally:
@@ -249,9 +258,13 @@ async def run_task_consumer() -> None:
               await consumer.commit()
               continue
             if claim_state != "claimed":
-              logger.warning("task_consumer: run %s is currently owned elsewhere", run_id)
-              consumer.seek(TopicPartition(msg.topic, msg.partition), msg.offset)
-              await asyncio.sleep(5)
+              # Busy lease: skip this offset so later tasks on the partition can run.
+              # Scheduler republishes after lease expiry; claim_run reclaims then.
+              logger.warning(
+                "task_consumer: run %s is currently owned elsewhere — committing past offset",
+                run_id,
+              )
+              await consumer.commit()
               continue
 
             try:
