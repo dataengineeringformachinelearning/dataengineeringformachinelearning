@@ -153,16 +153,21 @@ const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);
         shape-rendering: geometricPrecision;
       }
 
+      /* Match static navbar.js brand mark (stroke-width="1.8") — was 1.5 and
+         looked thinner on deml.app than marketing/backend. */
       :host(.viking-icon-outline.viking-icon-brand-drakkar) .viking-icon-svg {
-        --viking-icon-stroke-width: 1.5;
+        --viking-icon-stroke-width: var(--viking-icon-stroke-width-brand, 1.8);
+        stroke-width: var(--viking-icon-stroke-width);
       }
 
       :host(.viking-icon-sm) .viking-icon-svg {
         --viking-icon-stroke-width: 1.5;
+        stroke-width: var(--viking-icon-stroke-width);
       }
 
       :host(.viking-icon-lg) .viking-icon-svg {
         --viking-icon-stroke-width: 1.75;
+        stroke-width: var(--viking-icon-stroke-width);
       }
 
       :host(.viking-icon-filled) .viking-icon-svg {

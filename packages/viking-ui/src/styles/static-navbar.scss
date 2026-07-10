@@ -158,6 +158,13 @@
   color: var(--color-primary, var(--viking-accent)) !important;
 }
 
+/* Brand mark stroke parity: Angular viking-icon + static navbar.js */
+.navbar-brand viking-icon.navbar-logo .viking-icon-svg,
+.navbar-brand .brand-icon svg,
+.navbar-brand [data-viking-icon] svg {
+  stroke-width: var(--viking-icon-stroke-width-brand, 1.8);
+}
+
 // Angular mat-icon defaults to overflow:hidden — clips ligature glyphs at tight sizes.
 .navbar-brand .navbar-logo.mat-icon,
 .navbar-brand mat-icon.navbar-logo {
