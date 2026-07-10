@@ -16,12 +16,18 @@ from typing import Final
 RAILWAY_BIN: Final = "railway"
 
 # Services that run Django/Rust workers and need the full backend env bundle.
+# Rust data plane uses one service per DEML_ROLE (see docs/rust-data-plane.md).
 BACKEND_SERVICES: Final[frozenset[str]] = frozenset(
   {
     "deml-backend",
     "deml-workers",
     "deml-telemetry-worker",
-    "deml-daemon",
+    "deml-relay",
+    "deml-scheduler",
+    "deml-probe",
+    "deml-normalizer",
+    "deml-ingest",
+    "deml-cpe",
   }
 )
 

@@ -6,7 +6,7 @@
     "watchPatterns": ["backend/**"]
   },
   "deploy": {
-    "startCommand": "python manage.py telemetry_worker",
+    "startCommand": "sh -c 'export PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0; exec python manage.py telemetry_worker'",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }

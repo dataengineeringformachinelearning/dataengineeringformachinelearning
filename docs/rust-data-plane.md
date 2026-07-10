@@ -15,12 +15,16 @@ The DEML Rust workspace owns high-volume and timing-sensitive work while Django 
 
 ## Required rollout order
 
-1. Deploy the Django migration and verify `python manage.py migrate` completes.
+1. Deploy the Django migration and verify `python manage.py migrate` completes
+   (`monitor.0041_rust_data_plane`, `monitor.0042_alter_outboxevent_available_at`).
 2. Start `deml-relay`; stop `relay_start.py` and any Python `outbox_relay` process.
 3. Start `deml-normalizer`, then confirm new endpoint telemetry is published to `telemetry-raw` and the `telemetry-raw-dlq` depth remains zero.
 4. Start `deml-probe`; keep `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` on the telemetry worker.
 5. Start `deml-scheduler`; keep the same Python flag disabled on `deml-workers` and the ML worker.
-6. Deploy `deml-ingest` behind the `/api/v1/ingest` route only after API-key, quota, duplicate-batch, and payload-size canaries pass. `/api/v1/predict` and `/api/v1/ingest/security-alert` remain on Django.
+6. Populate CPE Dragonfly DB 8 via the pinned Python importer, then start `deml-cpe`.
+7. Deploy `deml-ingest` behind the `/api/v1/ingest` route only after API-key, quota, duplicate-batch, and payload-size canaries pass. `/api/v1/predict` and `/api/v1/ingest/security-alert` remain on Django.
+
+Railway service configs live under `infrastructure/railway/{relay,scheduler,probe,normalizer,ingest,cpe}/` and bake `DEML_ROLE` into each `startCommand`. See [infrastructure/railway/README.md](../infrastructure/railway/README.md) for variables and health checks.
 
 Do not change all owners at once in an existing production environment. Observe one complete cadence and backlog recovery before advancing to the next role.
 

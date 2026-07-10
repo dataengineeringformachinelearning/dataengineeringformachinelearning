@@ -6,7 +6,9 @@
     "watchPatterns": ["rust/**"]
   },
   "deploy": {
+    "startCommand": "sh -c 'export DEML_ROLE=ingest PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
     "healthcheckPath": "/ready",
+    "healthcheckTimeout": 60,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
