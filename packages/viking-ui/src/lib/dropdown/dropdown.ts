@@ -58,7 +58,7 @@ import { VikingIconName } from "../../core/icons";
         z-index: var(--viking-z-overlay);
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: var(--viking-space-0-5);
       }
       .viking-dropdown-end {
         left: auto;

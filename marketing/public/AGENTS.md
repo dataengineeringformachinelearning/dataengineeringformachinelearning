@@ -32,7 +32,7 @@ This document captures the core coding principles, philosophies, and "how we bui
   - Prettier + ESLint (via Angular schematics).
   - Use `tsx` for standalone TypeScript scripts outside Angular.
   - Accessibility: `@axe-core/cli` via `scripts/run_axe.js` — enforced in pre-commit. Target WCAG 2.1 AA. Reject commits with violations.
-  - Mobile-first: Strict `.page-inner-wrapper` (1260px max), 4px grid (`--viking-grid-unit`). No CLS.
+  - Mobile-first: Strict `.page-inner-wrapper` (1260px max), 8px primary spacing grid (`--viking-space-unit` / `--viking-space-*`; 4px only via `--viking-space-0-5`). No CLS.
   - Zero-dependency UI: Native SVG for telemetry graphs (high-frequency data without bloat).
   - Distroless containers: `gcr.io/distroless/nodejs22-debian12` for Angular SSR frontend; `gcr.io/distroless/python3-debian12` for Django API.
   - Premium aesthetic: Viking-UI design system ([THEME.md](THEME.md)) — composable primitives, charcoal/teal/crimson tokens, `viking-skeleton` loaders, `.viking-font-display` (Inter caps) on CES/marketing display only. Cursor agents must follow [.cursorrules](.cursorrules).
@@ -164,6 +164,8 @@ These are additional invariants and rules specific to this project's development
 - The OpenTelemetry Collector (`infrastructure/otel-collector`) is the only exception; it is configured to accept all origins (`*`) dynamically, and invalid telemetry is filtered downstream.
 
 ### Core Architectural Invariants
+
+- **Rust Data-Plane Ownership:** Deploy `rust/deml-daemon` with exactly one production role per service (`relay`, `scheduler`, `probe`, `normalizer`, or optional `ingest`). Django remains the control plane. Never run the Python relay, pinger, or embedded interval schedulers beside the equivalent Rust role. New data-plane work must use durable Postgres leases/idempotency, explicit Kafka acknowledgements, bounded concurrency, native tenant UUIDs, `/health` + `/ready`, and OpenTelemetry spans.
 
 - **Tenant0 UUID Normalization:** Never use string literals like `"platform"` as foreign keys in background workers or telemetry payloads. The `NetworkTelemetryMiddleware` explicitly intercepts legacy `"platform"` requests and dynamically maps them to the native UUID of Tenant0 (`is_platform_tenant=True`). This guarantees that Redpanda/Kafka streams and Polars aggregations operate on a homogenous stream of valid UUIDs end-to-end, preventing database foreign key constraint errors downstream.
 - **Symmetrical Multi-Tenant Pipelines:** When authoring background workers, cron workers, or OSINT scanners, NEVER hardcode execution exclusively for the platform. You must ALWAYS structure the pipeline to iterate dynamically over `Tenant.objects.all()`. Because the platform itself is cleanly bootstrapped as Tenant0, this guarantees that both the core infrastructure and individual customer environments are processed symmetrically within the exact same loop, eliminating architectural debt and hardcoded exceptions.

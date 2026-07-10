@@ -22,9 +22,9 @@ import { VikingIconName } from "../../core/icons";
       .viking-navbar {
         display: flex;
         align-items: center;
-        gap: var(--viking-space-half);
+        gap: var(--viking-space-0-5);
         flex-wrap: wrap;
-        padding: var(--viking-space-half);
+        padding: var(--viking-space-0-5);
         background: color-mix(in srgb, var(--viking-surface) 96%, transparent);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);
@@ -84,7 +84,7 @@ export class VikingNavbar {
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-sm);
         font-weight: var(--viking-font-weight-medium);
-        padding: var(--viking-space-1) var(--viking-space-1-5);
+        padding: var(--viking-space-1) var(--viking-space-2);
         border-radius: var(--viking-radius);
         text-decoration: none;
         cursor: pointer;

@@ -78,7 +78,7 @@ registerVikingInputWcElement();
         background: var(--viking-surface-alt);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-xs);
-        padding: 0 var(--viking-space-half);
+        padding: 0 var(--viking-space-0-5);
         line-height: 1.4;
       }
     `,

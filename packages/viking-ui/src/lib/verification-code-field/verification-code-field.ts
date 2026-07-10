@@ -94,7 +94,7 @@ import { VikingOtpInput } from "../otp-input/otp-input";
 
       .viking-verification-code-required {
         color: var(--viking-danger);
-        margin-left: 2px;
+        margin-left: var(--viking-space-0-5);
       }
 
       .viking-verification-code-control {

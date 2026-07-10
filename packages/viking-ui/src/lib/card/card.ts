@@ -40,6 +40,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       :host {
         display: grid;
         gap: var(--viking-card-content-gap, var(--viking-space-5));
+        width: 100%;
         background: var(--viking-surface-recipe);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-card-radius, var(--viking-radius-xl));
@@ -47,6 +48,8 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
         min-width: 0;
+        align-self: stretch;
+        box-sizing: border-box;
         box-shadow: var(--viking-shadow-sm);
       }
 
@@ -170,7 +173,7 @@ export class VikingCardHeader {}
         align-items: center;
         justify-content: flex-end;
         gap: var(--viking-space-2);
-        padding-top: var(--viking-space-2-5);
+        padding-top: var(--viking-space-2);
         margin-top: 0;
         border-top: 1px solid var(--viking-border-subtle);
       }

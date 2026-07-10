@@ -133,7 +133,7 @@ export class VikingTimeline {}
         font-variant-numeric: tabular-nums;
       }
       .viking-timeline-body {
-        margin-top: 3px;
+        margin-top: var(--viking-space-0-5);
         font-size: var(--viking-font-size);
         color: var(--viking-text-muted);
         line-height: 1.55;

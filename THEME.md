@@ -52,7 +52,7 @@ High-quality references for primitive clarity, data density, and precision engin
 - **Dark-first command surfaces** — deep navy/charcoal backgrounds, machined metallic edges, no decorative noise.
 - **Tactile surface depth** — crisp borders, directional elevation, and subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`) on cards, panels, and buttons.
 - **Refined accent discipline** — restrained electric-teal (`#2176ff`) for command/confirmation, rich crimson for escalation, secondary emphasis, and danger; no neon gradients or ambient glow orbs on base surfaces.
-- **Dense, breathable telemetry** — spacing is compact enough for operational dashboards and charts, but never cramped; every gap resolves to the 4px grid and `--viking-space-*`.
+- **Dense, breathable telemetry** — spacing is compact enough for operational dashboards and charts, but never cramped; every gap resolves to the **8px primary grid** (`--viking-space-unit`) via `--viking-space-*` (4px only for tight micro cases).
 - **Primitive clarity** — component language follows clean, composable primitive style: small accessible primitives, predictable APIs, and layout visible through structure rather than bespoke styling.
 - **Geometric severity, not fantasy** — austere geometry, cold materiality, and sparse restraint appear as severe silhouettes and structural accents, never themed illustration, faux-medieval ornament, or decorative storytelling.
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
@@ -340,61 +340,81 @@ Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics
 
 ---
 
-## 3. Spacing (4px base grid)
+## 3. Spacing (8px primary grid)
 
-All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim for **instrument-panel precision**: consistent rhythm, no arbitrary 13px or 27px gaps, no “close enough” padding.
+All layout, padding, and gaps use the **8px primary unit** (`--viking-space-unit: 8px`). Integer steps are preferred. The only micro exception is `--viking-space-0-5: 4px` for tight icon/chip gaps. Hairlines use `--viking-space-px` (1px) — never for layout.
 
 **Rules:**
 
-- Outer page gutters: `--viking-space-2` (mobile) -> `--viking-space-3` (tablet+).
-- Card interior padding: `--viking-card-padding` (space-5/40px default); `--viking-card-padding-compact` (space-4) for dense tiles. Use generous padding for comfortable, modern feel.
-- Form field vertical stack: `--viking-space-3` between sections, `--viking-space-1` between label and control.
-- Button groups / inline chips: `--viking-space-2` gap for better breathing.
-- Section breaks (page shell): `--viking-page-section-gap` preferred, `--viking-space-6` or larger for rhythm.
-- Dense but breathable: Use viking-stack / viking-grid utilities with --loose variants for consistent vertical/horizontal rhythm. Cards and sections should have clear separation without sparseness.
+- Prefer `var(--viking-space-1)` … `var(--viking-space-12)` (and larger documented steps). Never invent `13px` / `18px` / `27px`.
+- Outer page gutters: `--viking-page-gutter` (`space-2` → `space-4` clamp).
+- Card interior: `--viking-card-padding` (`space-5` / 40px); compact tiles use `--viking-card-padding-compact` (`space-4`).
+- Form field stack: `--viking-space-3` between sections; `--viking-space-1` between label and control.
+- Button groups / chips: `--viking-space-2` gap.
+- Section breaks: `--viking-page-section-gap` (`space-12` / 96px) or `--viking-space-6+`.
+- Deprecated half-steps (`--viking-space-1-5`, `--viking-space-2-5`, `--viking-space-half`) **alias** onto on-grid tokens — do not introduce new half-step usages.
+- Dense but breathable: use `.viking-stack` / `.viking-grid` utilities for rhythm. Cards and sections should separate clearly without sparseness.
 
-| Token                 | Value | Multiples |
-| --------------------- | ----- | --------- |
-| `--viking-space-0`    | 0     | —         |
-| `--viking-space-px`   | 1px   | hairline  |
-| `--viking-space-half` | 4px   | 1×        |
-| `--viking-space-1`    | 8px   | 2×        |
-| `--viking-space-1-5`  | 12px  | 3×        |
-| `--viking-space-2`    | 16px  | 4×        |
-| `--viking-space-3`    | 24px  | 6×        |
-| `--viking-space-4`    | 32px  | 8×        |
-| `--viking-space-5`    | 40px  | 10×       |
-| `--viking-space-6`    | 48px  | 12×       |
-| `--viking-space-7`    | 56px  | 14×       |
-| `--viking-space-8`    | 64px  | 16×       |
-| `--viking-space-9`    | 80px  | 20×       |
-| `--viking-space-10`   | 96px  | 24×       |
+| Token                | Value | Role                            |
+| -------------------- | ----- | ------------------------------- |
+| `--viking-space-0`   | 0     | Reset                           |
+| `--viking-space-px`  | 1px   | Hairline only                   |
+| `--viking-space-0-5` | 4px   | Tight-only exception            |
+| `--viking-space-1`   | 8px   | Inline gaps, label → control    |
+| `--viking-space-2`   | 16px  | Control groups, default stack   |
+| `--viking-space-3`   | 24px  | Form sections                   |
+| `--viking-space-4`   | 32px  | Compact card padding            |
+| `--viking-space-5`   | 40px  | Default card / panel padding    |
+| `--viking-space-6`   | 48px  | Page stack gap                  |
+| `--viking-space-7`   | 56px  | Large gutter                    |
+| `--viking-space-8`   | 64px  | Section padding / navbar height |
+| `--viking-space-9`   | 80px  | Shell / marketing tier          |
+| `--viking-space-10`  | 96px  | Large section break             |
+| `--viking-space-11`  | 112px | XL shell                        |
+| `--viking-space-12`  | 128px | 2× sidebar unit                 |
+| `--viking-space-14`  | 160px | XXL                             |
+| `--viking-space-16`  | 192px | Hero / wide shell               |
+| `--viking-space-20`  | 256px | Sidebar width scale             |
+| `--viking-space-24`  | 320px | Max shell                       |
+
+Steps through `8` are consecutive **+8px**. Larger steps remain **multiples of 8** as named tiers (not every intermediate 8px slot is named).
+
+**Deprecated aliases (do not use in new code):**
+
+| Alias                 | Resolves to          |
+| --------------------- | -------------------- |
+| `--viking-space-half` | `--viking-space-0-5` |
+| `--viking-space-1-5`  | `--viking-space-2`   |
+| `--viking-space-2-5`  | `--viking-space-2`   |
+| `--viking-space-8-5`  | 72px (prefer 8 or 9) |
 
 **Layout constants:**
 
-| Token                                 | Value                          |
-| ------------------------------------- | ------------------------------ |
-| `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`) |
-| `--viking-page-gutter`                | `--viking-space-2` (mobile)    |
-| `--viking-page-gutter-lg`             | `--viking-space-3` (tablet+)   |
-| `--viking-page-stack-gap`             | `--viking-space-6`             |
-| `--viking-page-section-gap`           | `--viking-space-10`            |
-| `--viking-card-padding`               | `--viking-space-5` (default)   |
-| `--viking-card-padding-compact`       | `--viking-space-4` (metrics)   |
-| `--viking-panel-padding`              | `--viking-space-5`             |
-| `--viking-form-max-width`             | 42rem                          |
-| `--viking-form-narrow-max-width`      | 28rem                          |
-| `--viking-content-readable-max-width` | 48rem                          |
-| `--viking-navbar-height`              | 64px                           |
-| `--viking-sidebar-width`              | 256px                          |
+| Token                                 | Value                               |
+| ------------------------------------- | ----------------------------------- |
+| `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`)      |
+| `--viking-page-gutter`                | clamp(`space-2`, 5vw, `space-4`)    |
+| `--viking-page-gutter-lg`             | `--viking-space-5`                  |
+| `--viking-page-stack-gap`             | `--viking-space-6`                  |
+| `--viking-page-section-gap`           | `--viking-space-10` (96px)          |
+| `--viking-card-padding`               | `--viking-space-5` (default)        |
+| `--viking-card-padding-compact`       | `--viking-space-4` (metrics)        |
+| `--viking-card-content-gap`           | `--viking-space-4`                  |
+| `--viking-panel-padding`              | `--viking-space-5`                  |
+| `--viking-form-max-width`             | 42rem                               |
+| `--viking-form-narrow-max-width`      | 28rem                               |
+| `--viking-content-readable-max-width` | 48rem                               |
+| `--viking-navbar-height`              | `--viking-space-8` (64px)           |
+| `--viking-sidebar-width`              | 256px (32 × 8px)                    |
+| `--viking-control-height`             | 40px desktop / ≥44px mobile (touch) |
+| `--viking-control-height-sm`          | 32px                                |
+| `--viking-control-height-xs`          | 24px                                |
+| `--viking-control-padding-x`          | `--viking-space-2`                  |
+| `--viking-btn-min-width`              | 120px                               |
 
 **Site navbar (`static-navbar.scss`):** `.navbar-content` is capped at `--viking-container-max-width` (1260px) and centered. The bar uses `container-name: viking-navbar` for responsive nav-label compaction. Desktop nav (`.desktop-nav`) must render `display: flex` from `768px+`; search trigger and utility buttons stay vertically centered at `--viking-control-height`.
-| `--viking-control-height` | 40px (44px on mobile) |
-| `--viking-control-height-sm` | 32px |
-| `--viking-control-height-xs` | 24px |
-| `--viking-btn-min-width` | 120px |
 
-**Mobile-first + Grid foundation:** All layouts start as single-column grid (`grid-template-columns: 1fr`). Use `.viking-grid`, `.viking-grid--2` / `--3` / `--4`, and `.viking-stack` for predictable vertical/horizontal rhythm on the 4px grid. Scale columns at 768px (tablet) and 1024px (desktop). Avoid deep flex nesting in favor of CSS Grid for alignment.
+**Mobile-first + Grid foundation:** All layouts start as single-column grid (`grid-template-columns: 1fr`). Use `.viking-grid`, `.viking-grid--2` / `--3` / `--4`, and `.viking-stack` for predictable rhythm on the **8px** primary grid. Scale columns at 768px (tablet) and 1024px (desktop). Avoid deep flex nesting in favor of CSS Grid for alignment.
 
 ---
 
@@ -767,7 +787,7 @@ Utility examples: `bg-viking-surface`, `text-viking-text-muted`, `rounded-viking
 - Use `--viking-*` tokens everywhere; compile from `_variables.scss` when changing the palette.
 - Implement every visual decision inside `packages/viking-ui/`, then consume it through the package, synced artifacts, or CDN delivery.
 - Keep the final aesthetic anchored in premium precision-engineered command surfaces: austere geometry, clean primitives, dense operational data.
-- Keep layouts on the 4px grid; max content width 1260px.
+- Keep layouts on the 8px primary spacing grid; max content width 1260px.
 - Use negative letter-spacing on headings for a precision instrument feel.
 - Prefer `viking-chart` native SVG for all data visualization.
 - Use `viking-icon-heading` / `IconHeading.astro` for icon + title rows in bento cards and integration tiles — never hand-roll `.bento-header` flex rows.

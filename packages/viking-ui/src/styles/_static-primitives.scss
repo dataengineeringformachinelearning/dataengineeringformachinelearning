@@ -70,7 +70,7 @@
   letter-spacing: var(--viking-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--viking-text-muted);
-  margin-bottom: var(--viking-space-half);
+  margin-bottom: var(--viking-space-0-5);
 }
 
 .viking-metric {
@@ -86,8 +86,8 @@
 .viking-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half) var(--viking-space-1);
+  gap: var(--viking-space-0-5);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-semibold);
   letter-spacing: var(--viking-letter-spacing-wide);
@@ -138,7 +138,7 @@
 
 .viking-callout-static strong {
   display: block;
-  margin-bottom: var(--viking-space-half);
+  margin-bottom: var(--viking-space-0-5);
 }
 
 .viking-callout-static p {
@@ -340,8 +340,8 @@
 // Tabs
 .viking-tabs {
   display: inline-flex;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
+  padding: var(--viking-space-0-5);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
   background: var(--viking-surface-alt);
@@ -489,7 +489,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   width: 100%;
   max-width: 16rem;
 }
@@ -516,7 +516,7 @@
 
 .viking-select-panel-static {
   margin: 0;
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   list-style: none;
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
@@ -601,11 +601,11 @@
 
 .viking-uptime-segments {
   display: flex;
-  gap: 2px;
+  gap: calc(var(--viking-space-0-5) / 2);
   width: 100%;
   min-width: 0;
   height: var(--viking-space-3);
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius-full);
   background: var(--viking-surface-inset);
   box-sizing: border-box;
@@ -745,7 +745,7 @@
   flex-shrink: 0;
   width: var(--viking-icon-badge-size, var(--viking-space-6));
   height: var(--viking-icon-badge-size, var(--viking-space-6));
-  padding: var(--viking-icon-badge-padding, var(--viking-space-half));
+  padding: var(--viking-icon-badge-padding, var(--viking-space-0-5));
   box-sizing: border-box;
   border-radius: var(--viking-radius-lg);
   border: none;
@@ -899,7 +899,7 @@
 .viking-bar-static {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   max-width: 16rem;
 }
 
@@ -922,7 +922,7 @@
 .viking-sidebar-nav-static {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   max-width: 14rem;
 }
 
@@ -945,8 +945,8 @@
 
 .viking-menubar-static {
   display: inline-flex;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
+  padding: var(--viking-space-0-5);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
   background: var(--viking-surface-alt);
@@ -986,8 +986,8 @@
 
 .viking-toggle-group-static {
   display: inline-flex;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
+  padding: var(--viking-space-0-5);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
   background: var(--viking-surface-alt);
@@ -1023,7 +1023,7 @@
 .viking-button-group-static {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
 }
 
 .viking-icon-color-accent {
@@ -1044,7 +1044,7 @@
 .viking-search-result-static {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   width: 100%;
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius);

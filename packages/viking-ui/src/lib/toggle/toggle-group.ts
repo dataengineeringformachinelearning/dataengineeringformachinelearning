@@ -35,7 +35,7 @@ export const VIKING_TOGGLE_GROUP = new InjectionToken<VikingToggleGroup>(
       }
       :host ::ng-deep viking-toggle:not(:first-child) .viking-toggle {
         border-left: none;
-        margin-left: -1px;
+        margin-left: calc(var(--viking-space-px) * -1);
         border-radius: 0;
       }
       :host ::ng-deep viking-toggle:first-child .viking-toggle {

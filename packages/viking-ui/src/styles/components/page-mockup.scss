@@ -80,8 +80,8 @@
 .mockup-titlebar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-2) var(--viking-space-2);
   background: var(--viking-charcoal-900, var(--viking-surface-alt));
   border-bottom: 1px solid
     color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 42%, transparent);
@@ -110,7 +110,7 @@
 
   .mockup-title,
   .viking-page-mockup-title {
-    margin-left: 8px;
+    margin-left: var(--viking-space-1);
     font-size: 0.85rem;
     font-family: var(--viking-font-family-mono, ui-monospace, monospace);
     color: var(--viking-electric-200, var(--viking-text-muted));
@@ -130,10 +130,10 @@
 .viking-page-mockup-sidebar,
 .mockup-sidebar {
   width: 48px;
-  padding: 16px 8px;
+  padding: var(--viking-space-2) var(--viking-space-1);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--viking-space-2);
   border-right: 1px solid
     color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 36%, transparent);
   background: var(--viking-charcoal-900, var(--viking-surface-alt));
@@ -194,7 +194,7 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--viking-metallic-200, var(--viking-text-muted));
-    margin-bottom: 4px;
+    margin-bottom: var(--viking-space-0-5);
   }
 
   .gauge-val,
@@ -211,7 +211,7 @@
   flex: 1;
   display: flex;
   align-items: flex-end;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   padding: var(--viking-card-padding-compact, var(--viking-space-2));
   background: var(--viking-charcoal-950, var(--viking-bg));
   border-radius: var(--viking-radius-lg);
@@ -344,7 +344,7 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--viking-text-muted);
-      margin-bottom: 2px;
+      margin-bottom: var(--viking-space-0-5);
     }
 
     strong {

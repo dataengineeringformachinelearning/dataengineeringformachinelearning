@@ -71,7 +71,7 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         box-shadow: var(--viking-shadow-xs);
       }
       .viking-callout-icon {
-        margin-top: 2px;
+        margin-top: var(--viking-space-0-5);
         color: var(--viking-text-muted);
         flex-shrink: 0;
       }
@@ -154,7 +154,7 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: var(--viking-space-half);
+        padding: var(--viking-space-0-5);
         border-radius: var(--viking-radius);
         display: inline-flex;
         transition: var(--viking-transition-interactive);

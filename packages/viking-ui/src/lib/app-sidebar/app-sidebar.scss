@@ -82,7 +82,7 @@ html[data-theme='light'] .viking-app-sidebar-host {
 }
 
 .sidebar-brand {
-  padding: var(--viking-space-1-5) var(--viking-space-2);
+  padding: var(--viking-space-2) var(--viking-space-2);
   display: flex;
   align-items: center;
   gap: var(--viking-space-1);
@@ -194,7 +194,7 @@ html[data-theme='light'] .viking-app-sidebar-host {
 .system-health {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--viking-space-1);
   font-size: 1rem;
   color: var(--text-muted);
   font-weight: 600;
@@ -324,7 +324,7 @@ html[data-theme='light'] .viking-app-sidebar-host {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
-    margin-bottom: 8px;
+    margin-bottom: var(--viking-space-1);
   }
 
   .search-result-item {
@@ -375,7 +375,7 @@ html[data-theme='light'] .viking-app-sidebar-host {
     .result-snippet {
       font-size: 1rem;
       color: var(--text-muted);
-      margin-top: 0px;
+      margin-top: 0;
       line-height: 1.3;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -389,7 +389,7 @@ html[data-theme='light'] .viking-app-sidebar-host {
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-top: 8px;
+      margin-top: var(--viking-space-1);
     }
 
     mark.search-highlight {
@@ -397,7 +397,7 @@ html[data-theme='light'] .viking-app-sidebar-host {
       color: var(--viking-accent);
       font-weight: 700;
       border-radius: 0px;
-      padding: 0 0px;
+      padding: 0;
 
       :host-context(html[data-theme='light']) & {
         background: color-mix(in srgb, var(--viking-accent) 15%, transparent);
@@ -410,6 +410,6 @@ html[data-theme='light'] .viking-app-sidebar-host {
     font-size: 1rem;
     color: var(--text-muted);
     text-align: center;
-    padding: 16px 0;
+    padding: var(--viking-space-2) 0;
   }
 }

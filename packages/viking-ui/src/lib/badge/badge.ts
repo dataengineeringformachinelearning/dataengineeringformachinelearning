@@ -39,13 +39,13 @@ import { VikingSize, VikingTone } from "../../core/types";
       :host {
         display: inline-flex;
         align-items: center;
-        gap: var(--viking-space-half);
+        gap: var(--viking-space-0-5);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-xs);
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-wide);
         line-height: var(--viking-line-height-snug);
-        padding: var(--viking-space-half) var(--viking-space-1);
+        padding: var(--viking-space-0-5) var(--viking-space-1);
         border-radius: var(--viking-radius-pill);
         border: 1px solid var(--viking-border);
         background: var(--viking-surface-alt);
@@ -140,10 +140,10 @@ import { VikingSize, VikingTone } from "../../core/types";
         background: transparent;
         color: currentColor;
         cursor: pointer;
-        padding: var(--viking-space-half);
+        padding: var(--viking-space-0-5);
         border-radius: var(--viking-radius-pill);
         transition: var(--viking-transition-interactive);
-        margin-left: calc(var(--viking-space-half) * -1);
+        margin-left: calc(var(--viking-space-0-5) * -1);
         position: relative;
       }
       .viking-badge-remove::before {

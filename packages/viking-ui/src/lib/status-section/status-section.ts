@@ -102,7 +102,7 @@ import {
 
       .viking-status-section-hero-copy {
         display: grid;
-        gap: var(--viking-space-1-5);
+        gap: var(--viking-space-2);
         min-width: min(100%, var(--viking-content-readable-max-width));
         flex: 1 1 min(100%, var(--viking-content-readable-max-width));
       }
@@ -157,7 +157,7 @@ import {
         height: var(--viking-space-1);
         border-radius: var(--viking-radius-full);
         background: var(--viking-accent);
-        box-shadow: 0 0 0 var(--viking-space-half)
+        box-shadow: 0 0 0 var(--viking-space-0-5)
           color-mix(in srgb, var(--viking-accent) 14%, transparent);
       }
 

@@ -100,3 +100,35 @@ export const LoadingState: Story = {
     footerLabel: "Open artifact",
   },
 };
+
+export const EqualHeightGrid: Story = {
+  args: Default.args,
+  render: () => `
+    <div class="viking-grid viking-grid--2 viking-grid--equal-rows">
+      <viking-card title="Compact signal">
+        <div class="viking-card-header">
+          <h3>Compact signal</h3>
+          <viking-badge tone="success">Stable</viking-badge>
+        </div>
+        <p>A concise status summary.</p>
+        <div class="viking-card-footer">
+          <viking-button size="sm" variant="ghost">Open signal</viking-button>
+        </div>
+      </viking-card>
+      <viking-card title="Detailed signal">
+        <div class="viking-card-header">
+          <h3>Detailed signal</h3>
+          <viking-badge tone="accent">Live</viking-badge>
+        </div>
+        <p class="viking-text-muted">8.4K sustained events per second.</p>
+        <p>
+          This intentionally longer card verifies that cards with different
+          content lengths fill the same grid track without fixed heights.
+        </p>
+        <div class="viking-card-footer">
+          <viking-button size="sm" variant="ghost">Open telemetry</viking-button>
+        </div>
+      </viking-card>
+    </div>
+  `,
+};

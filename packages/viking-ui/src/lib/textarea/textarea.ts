@@ -39,7 +39,7 @@ import { VikingControl, provideVikingCva } from "../core/cva";
       .viking-textarea-shell {
         display: flex;
         width: 100%;
-        padding: var(--viking-space-1-5) var(--viking-space-2);
+        padding: var(--viking-space-2) var(--viking-space-2);
         background: var(--viking-surface);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius);

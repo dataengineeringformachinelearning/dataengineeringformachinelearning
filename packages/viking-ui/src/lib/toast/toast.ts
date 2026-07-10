@@ -135,7 +135,7 @@ export class VikingToastService {
         }
       }
       .viking-toast-icon {
-        margin-top: 2px;
+        margin-top: var(--viking-space-0-5);
       }
       .viking-toast-accent .viking-toast-icon {
         color: var(--viking-accent);
@@ -171,7 +171,7 @@ export class VikingToastService {
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: var(--viking-space-half);
+        padding: var(--viking-space-0-5);
         border-radius: var(--viking-radius-pill);
         transition: var(--viking-transition-interactive);
       }

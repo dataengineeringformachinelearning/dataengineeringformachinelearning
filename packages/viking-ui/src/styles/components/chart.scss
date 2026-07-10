@@ -27,7 +27,10 @@ viking-chart {
 }
 
 .viking-chart-fill .viking-chart-viewport {
-  padding: var(--viking-chart-padding-fill, var(--viking-space-2) var(--viking-space-1));
+  padding: var(
+    --viking-chart-padding-fill,
+    var(--viking-space-2) var(--viking-space-1)
+  );
 }
 
 /* Subtle dashed horizontal grid */
@@ -53,7 +56,7 @@ viking-chart {
 .viking-chart-axis-y,
 .viking-chart-axis-x {
   fill: var(--viking-chart-axis-color, var(--viking-text-muted));
-  font-size: max(var(--viking-chart-label-size, 10px), var(--viking-chart-axis-size, 11px));
+  font-size: var(--viking-chart-axis-size-mobile, 12px);
   font-family: var(--viking-font-family);
   font-weight: var(--viking-font-weight-medium);
   letter-spacing: 0.01em;
@@ -146,9 +149,9 @@ viking-chart {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--viking-chart-legend-gap, var(--viking-space-2) var(--viking-space-3));
+  gap: var(--viking-space-1) var(--viking-space-2);
   margin: var(--viking-chart-legend-margin, var(--viking-space-3) 0 0);
-  font-size: var(--viking-chart-legend-size, var(--viking-font-size-xs));
+  font-size: 10px;
   color: var(--viking-text-muted);
   padding-inline: var(--viking-space-1);
 }
@@ -180,9 +183,9 @@ viking-chart {
   pointer-events: none;
   display: none;
   flex-direction: column;
-  gap: 2px;
-  min-width: 88px;
-  padding: var(--viking-chart-tooltip-padding, 6px 10px);
+  gap: var(--viking-space-0-5);
+  min-width: 80px;
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   background: var(
     --viking-chart-tooltip-bg,
     color-mix(in srgb, var(--viking-surface) 94%, transparent)
@@ -195,7 +198,7 @@ viking-chart {
   border-radius: var(--viking-chart-tooltip-radius, var(--viking-radius));
   box-shadow: var(--viking-shadow-sm);
   backdrop-filter: blur(8px);
-  font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-xs));
+  font-size: 11px;
   color: var(--viking-chart-tooltip-text, var(--viking-text));
   white-space: nowrap;
 }
@@ -221,10 +224,10 @@ viking-chart {
 /* Zoom reset — restrained */
 .viking-chart-zoom-reset {
   position: absolute;
-  top: var(--viking-space-half);
-  right: var(--viking-space-half);
+  top: var(--viking-space-0-5);
+  right: var(--viking-space-0-5);
   z-index: 2;
-  padding: var(--viking-space-half) var(--viking-space-1);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   font-size: var(--viking-font-size-sm);
   font-family: var(--viking-font-family);
   color: var(--viking-text-muted);
@@ -245,21 +248,30 @@ viking-chart {
   outline-offset: 2px;
 }
 
-@media (max-width: 640px) {
+@media (min-width: 641px) {
   .viking-chart-axis-y,
   .viking-chart-axis-x {
-    font-size: var(--viking-chart-axis-size-mobile, 12px);
+    font-size: max(
+      var(--viking-chart-label-size, 10px),
+      var(--viking-chart-axis-size, 11px)
+    );
   }
 
   .viking-chart-legend {
-    font-size: 10px;
-    gap: var(--viking-space-1) var(--viking-space-2);
+    gap: var(
+      --viking-chart-legend-gap,
+      var(--viking-space-2) var(--viking-space-3)
+    );
+    font-size: var(--viking-chart-legend-size, var(--viking-font-size-xs));
   }
 
   .viking-chart-tooltip {
-    font-size: 11px;
-    min-width: 80px;
-    padding: 4px 8px;
+    min-width: 88px;
+    padding: var(
+      --viking-chart-tooltip-padding,
+      var(--viking-space-1) var(--viking-space-1)
+    );
+    font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-xs));
   }
 }
 
@@ -295,7 +307,10 @@ viking-chart-panel {
 
 /* Empty / loading */
 .viking-chart-empty-state {
-  padding: var(--viking-chart-empty-padding, var(--viking-space-5) var(--viking-space-4));
+  padding: var(
+    --viking-chart-empty-padding,
+    var(--viking-space-5) var(--viking-space-4)
+  );
   gap: var(--viking-chart-empty-gap, var(--viking-space-3));
 }
 

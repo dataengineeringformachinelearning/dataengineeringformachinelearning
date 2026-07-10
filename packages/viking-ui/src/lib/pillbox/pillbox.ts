@@ -76,7 +76,7 @@ import { VikingIcon } from "../icon/icon";
       .viking-pill {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: var(--viking-space-0-5);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
         font-weight: 500;
@@ -84,7 +84,7 @@ import { VikingIcon } from "../icon/icon";
         background: var(--viking-accent-soft);
         border: 1px solid var(--viking-accent-strong);
         border-radius: var(--viking-radius-pill);
-        padding: 2px var(--viking-space-1);
+        padding: var(--viking-space-0-5) var(--viking-space-1);
         line-height: 1.35;
       }
       .viking-pill-remove {
@@ -93,7 +93,7 @@ import { VikingIcon } from "../icon/icon";
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 2px;
+        padding: var(--viking-space-0-5);
         border-radius: var(--viking-radius-pill);
       }
       .viking-pill-remove:hover {

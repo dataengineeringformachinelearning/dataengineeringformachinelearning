@@ -225,21 +225,18 @@
   "spacing": {
     "gridUnit": "4px",
     "spaceUnit": "8px",
+    "description": "8px primary grid. Use integer steps. 0.5 (4px) is the only micro exception. Deprecated half-steps alias onto on-grid values.",
     "0": "0",
     "px": "1px",
-    "half": "4px",
     "0.5": "4px",
     "1": "8px",
-    "1.5": "12px",
     "2": "16px",
-    "2.5": "20px",
     "3": "24px",
     "4": "32px",
     "5": "40px",
     "6": "48px",
     "7": "56px",
     "8": "64px",
-    "8.5": "72px",
     "9": "80px",
     "10": "96px",
     "11": "112px",
@@ -247,7 +244,13 @@
     "14": "160px",
     "16": "192px",
     "20": "256px",
-    "24": "320px"
+    "24": "320px",
+    "deprecated": {
+      "half": "{spacing.0.5}",
+      "1.5": "{spacing.2}",
+      "2.5": "{spacing.2}",
+      "8.5": "72px"
+    }
   },
   "radius": {
     "xs": "4px",

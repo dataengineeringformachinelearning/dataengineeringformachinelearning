@@ -132,7 +132,7 @@ export type VikingSelectWidth = "full" | "half";
       }
       .viking-select-panel {
         position: absolute;
-        top: calc(100% + var(--viking-space-half));
+        top: calc(100% + var(--viking-space-0-5));
         left: 0;
         width: 100%;
         min-width: 100%;
@@ -140,7 +140,7 @@ export type VikingSelectWidth = "full" | "half";
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: var(--viking-space-0-5);
         margin: 0;
         padding: var(--viking-space-1);
         background-color: var(
@@ -162,7 +162,7 @@ export type VikingSelectWidth = "full" | "half";
         align-items: center;
         justify-content: space-between;
         gap: var(--viking-space-1);
-        padding: var(--viking-space-1) var(--viking-space-1-5);
+        padding: var(--viking-space-1) var(--viking-space-2);
         border: none;
         background: transparent;
         text-align: left;

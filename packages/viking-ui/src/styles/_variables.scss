@@ -107,24 +107,29 @@
   --viking-white-pure: #ffffff;
   --viking-black: #000000;
 
-  /* ── Spacing — 8px scale with 4px micro-grid aliases preserved ─────────── */
-  --viking-grid-unit: 4px;
-  --viking-space-unit: 8px;
+  /* ── Spacing — 8px primary grid (THEME.md §3) ───────────────────────────
+     Primary unit: --viking-space-unit (8px). Layout, padding, and gaps use
+     integer steps only. --viking-space-0-5 (4px) is the sole micro exception
+     for icon gaps, chip guts, and hairline offset.
+
+     Deprecated half-steps (1-5, 2-5, 8-5) alias onto the nearest on-grid step
+     so legacy call sites keep working while source migrates to integers. */
+  --viking-grid-unit: 4px; /* micro only — not the primary layout grid */
+  --viking-space-unit: 8px; /* primary layout rhythm */
   --viking-space-0: 0;
-  --viking-space-px: 1px;
-  --viking-space-half: 4px;
-  --viking-space-0-5: 4px;
+  --viking-space-px: 1px; /* hairline borders only — not layout spacing */
+  --viking-space-0-5: 4px; /* tight-only exception (0.5 × unit) */
+  --viking-space-half: var(--viking-space-0-5); /* deprecated alias → 0-5 */
   --viking-space-1: 8px;
-  --viking-space-1-5: 12px;
   --viking-space-2: 16px;
-  --viking-space-2-5: 20px;
   --viking-space-3: 24px;
   --viking-space-4: 32px;
   --viking-space-5: 40px;
   --viking-space-6: 48px;
   --viking-space-7: 56px;
   --viking-space-8: 64px;
-  --viking-space-8-5: 72px;
+  /* Larger steps stay multiples of 8 (named tiers for section / shell rhythm).
+     Values skip some intermediate 8px slots so marketing/page shells keep stable scale. */
   --viking-space-9: 80px;
   --viking-space-10: 96px;
   --viking-space-11: 112px;
@@ -133,6 +138,10 @@
   --viking-space-16: 192px;
   --viking-space-20: 256px;
   --viking-space-24: 320px;
+  /* Deprecated half-steps — resolve to on-grid tokens (do not reintroduce px). */
+  --viking-space-1-5: var(--viking-space-2); /* was 12px → 16px */
+  --viking-space-2-5: var(--viking-space-2); /* was 20px → 16px */
+  --viking-space-8-5: 72px; /* rare mid-tier; prefer space-8 or space-9 in new code */
 
   /* ── Typography (Inter self-hosted — see _fonts.scss) ───────────────────── */
   --viking-font-family:
@@ -320,40 +329,38 @@
   --viking-state-active-scale: 0.985;
   --viking-state-disabled-opacity: 0.48;
 
-  /* ── Controls ──────────────────────────────────────────────────────────── */
-  --viking-control-height: 46px;
-  --viking-control-height-sm: 36px;
-  --viking-control-height-xs: 30px;
+  /* ── Controls (heights on 8px grid; touch target remains WCAG 44px) ────── */
+  --viking-control-height: 40px;
+  --viking-control-height-sm: 32px;
+  --viking-control-height-xs: 24px;
   --viking-touch-target-min: 44px;
-  --viking-control-padding-x: var(--viking-space-2-5);
+  --viking-control-padding-x: var(--viking-space-2); /* 16px — on-grid */
   --viking-btn-min-width: 120px;
   --viking-select-panel-bg: var(--viking-surface-raised);
   --viking-select-half-max-width: min(100%, 24rem);
 
   /* ── Layout ────────────────────────────────────────────────────────────── */
   --viking-container-max-width: 1260px;
-  --viking-navbar-height: 64px;
-  --viking-sidebar-width: 256px;
+  --viking-navbar-height: var(--viking-space-8); /* 64px */
+  --viking-sidebar-width: 256px; /* 32 × 8px — on-grid layout constant */
 
   /* ── Layout rhythm — premium spacing enforcement (THEME.md §3) ───────────
-     Locked to Viking-UI components for app pages (/dashboard /analytics /settings etc.):
-     - App contexts use stack-gap + moderate paddings (see _layout-enforcement) to avoid "too big" post-component-lib.
-     - dashboard-grid-gap, card paddings align with viking-card / full-width changes.
-     - References: previous full-width stacked cards, navbar scrunch fixes, dark theme surfaces. */
+     All gaps/padding resolve to --viking-space-* integer steps (or 0-5 tight).
+     App pages share the same stack/card tokens via viking-ui.css. */
   --viking-page-gutter: clamp(var(--viking-space-2), 5vw, var(--viking-space-4));
   --viking-page-gutter-lg: var(--viking-space-5);
   --viking-page-gutter-xl: var(--viking-space-7);
   --viking-page-stack-gap: var(--viking-space-6);
-  --viking-page-section-gap: var(--viking-space-10);
-  --viking-dashboard-grid-gap: var(--viking-space-4); /* slightly tighter for dense app data pages */
+  --viking-page-section-gap: var(--viking-space-10); /* 96px — large section break */
+  --viking-dashboard-grid-gap: var(--viking-space-4);
   --viking-section-padding-y: var(--viking-space-8);
   --viking-section-padding-y-compact: var(--viking-space-6);
-  --viking-card-padding: var(--viking-space-5); /* 40px - more generous breathing */
+  --viking-card-padding: var(--viking-space-5); /* 40px */
   --viking-card-padding-compact: var(--viking-space-4);
-  --viking-card-content-gap: var(--viking-space-5);
+  --viking-card-content-gap: var(--viking-space-4); /* was space-5 — tighter internal stack on 8px */
   --viking-card-content-gap-compact: var(--viking-space-3);
   --viking-panel-padding: var(--viking-space-5);
-  --viking-panel-header-padding: var(--viking-space-4) var(--viking-space-5);
+  --viking-panel-header-padding: var(--viking-space-3) var(--viking-space-5);
   --viking-form-max-width: 42rem;
   --viking-form-narrow-max-width: 28rem;
   --viking-content-readable-max-width: 48rem;
@@ -374,8 +381,8 @@
   --viking-chart-axis-size-mobile: 12px;
   --viking-chart-label-size: 10px;
   /* Internal breathing (gutters + viewport padding) */
-  --viking-chart-gutter-default: 16px 24px 44px 52px; /* top right bottom left — generous for axes */
-  --viking-chart-gutter-fill: 8px 12px 28px 36px;
+  --viking-chart-gutter-default: 16px 24px 48px 48px; /* top right bottom left — 8px grid */
+  --viking-chart-gutter-fill: 8px 16px 32px 32px;
   --viking-chart-padding: var(--viking-space-1) 0;
   --viking-chart-padding-fill: var(--viking-space-2) var(--viking-space-1);
   /* Grid & axes */

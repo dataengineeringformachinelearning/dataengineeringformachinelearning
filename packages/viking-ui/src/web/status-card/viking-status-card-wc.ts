@@ -261,7 +261,8 @@ const VIKING_STATUS_CARD_STYLES = `
   align-items: center;
   gap: var(--viking-space-1);
   max-width: fit-content;
-  padding: calc(var(--viking-space-half) - 1px) var(--viking-space-1);
+  padding: calc(var(--viking-space-0-5) - var(--viking-space-px))
+    var(--viking-space-1);
   border-radius: var(--viking-radius-pill);
   border: 1px solid var(--viking-border-subtle);
   background: color-mix(in srgb, var(--viking-surface) 92%, transparent);

@@ -58,7 +58,7 @@ import { VikingIcon } from "../icon/icon";
         --viking-checkbox-line-height: 1.45;
         display: inline-flex;
         align-items: center;
-        gap: var(--viking-space-1-5, 0.75rem);
+        gap: var(--viking-space-2);
         cursor: pointer;
         font-size: var(--viking-font-size);
         line-height: var(--viking-checkbox-line-height);

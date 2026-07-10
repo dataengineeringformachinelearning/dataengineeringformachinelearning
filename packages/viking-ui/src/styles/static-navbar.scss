@@ -303,7 +303,7 @@ viking-theme-toggle-wc,
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: var(--viking-space-1-5, 12px) !important;
+  gap: var(--viking-space-2) !important;
   text-decoration: none;
   background: transparent;
   border: none;
@@ -314,7 +314,7 @@ viking-theme-toggle-wc,
   white-space: nowrap;
   border-bottom: 1px solid transparent;
   box-shadow: none;
-  margin-inline: var(--viking-space-half, 4px);
+  margin-inline: var(--viking-space-0-5);
 }
 
 .nav-btn > span,
@@ -910,7 +910,7 @@ viking-button.auth-btn .viking-btn:disabled {
   );
   box-sizing: border-box;
   z-index: 49;
-  gap: var(--viking-space-half, 4px);
+  gap: var(--viking-space-0-5);
 
   viking-button,
   viking-button-wc,
@@ -995,7 +995,7 @@ viking-button.auth-btn .viking-btn:disabled {
 }
 
 .mobile-menu .mobile-auth-btn {
-  margin-top: var(--viking-space-half, 4px);
+  margin-top: var(--viking-space-0-5);
 }
 
 .mobile-menu a.mobile-auth-btn:not(.auth-signout-btn),
@@ -1087,7 +1087,7 @@ viking-button.auth-btn .viking-btn:disabled {
   --aa-font-family: var(--viking-font-family, inherit);
   --aa-font-size: var(--viking-font-size-sm, 14px);
   --aa-spacing: var(--viking-space-1, 8px);
-  --aa-spacing-half: var(--viking-space-half, 4px);
+  --aa-spacing-half: var(--viking-space-0-5);
   --aa-panel-max-height: 288px;
   --aa-panel-shadow: var(--viking-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.25));
   --aa-icon-size: 20px;
@@ -1379,7 +1379,7 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .ais-AutocompleteIndexList {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--viking-space-0-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1422,9 +1422,9 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .ais-ItemTemplate {
   display: flex;
   align-items: flex-start;
-  gap: var(--viking-space-1-5, 12px);
+  gap: var(--viking-space-2);
   min-height: var(--viking-control-height-sm, 36px);
-  padding: var(--viking-space-1-5, 12px);
+  padding: var(--viking-space-2);
   border-radius: calc(var(--viking-radius, 8px) / 1.5);
   color: var(--viking-text, var(--text-color));
   text-decoration: none;
@@ -1474,7 +1474,7 @@ viking-button.auth-btn .viking-btn:disabled {
   flex-shrink: 0;
   width: var(--viking-space-5, 40px);
   height: var(--viking-space-5, 40px);
-  margin-top: 2px;
+  margin-top: var(--viking-space-0-5);
   border-radius: var(--viking-radius, 8px);
   background: var(--viking-surface-alt, var(--viking-charcoal-700)) !important;
   box-shadow: none !important;
@@ -1708,7 +1708,7 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
 @container viking-navbar (min-width: 1121px) {
   .nav-btn {
     padding: 0 var(--viking-space-2, 16px) !important;
-    gap: 8px !important;
+    gap: var(--viking-space-1) !important;
     font-size: var(--viking-font-size, 16px) !important;
     letter-spacing: 0.08em !important;
   }

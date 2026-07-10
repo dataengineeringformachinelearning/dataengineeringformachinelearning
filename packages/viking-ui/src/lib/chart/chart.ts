@@ -555,10 +555,10 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       .viking-chart-zoom-reset {
         position: absolute;
-        top: var(--viking-space-half);
-        right: var(--viking-space-half);
+        top: var(--viking-space-0-5);
+        right: var(--viking-space-0-5);
         z-index: 2;
-        padding: var(--viking-space-half) var(--viking-space-1);
+        padding: var(--viking-space-0-5) var(--viking-space-1);
         font-size: var(--viking-font-size-sm);
         font-family: var(--viking-font-family);
         color: var(--viking-text-muted);
@@ -727,8 +727,11 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         pointer-events: none;
         display: none;
         flex-direction: column;
-        gap: 2px;
-        padding: var(--viking-chart-tooltip-padding, 6px 10px);
+        gap: var(--viking-space-0-5);
+        padding: var(
+          --viking-chart-tooltip-padding,
+          var(--viking-space-1) var(--viking-space-1)
+        );
         background: var(
           --viking-chart-tooltip-bg,
           color-mix(in srgb, var(--viking-surface) 94%, transparent)
@@ -754,7 +757,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         width: 1px !important;
         height: 1px !important;
         padding: 0 !important;
-        margin: -1px !important;
+        margin: calc(var(--viking-space-px) * -1) !important;
         overflow: hidden !important;
         clip: rect(0, 0, 0, 0) !important;
         white-space: nowrap !important;

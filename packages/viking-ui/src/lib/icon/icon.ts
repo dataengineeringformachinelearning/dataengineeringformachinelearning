@@ -174,7 +174,7 @@ const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);
       }
 
       :host(.viking-icon-backdrop) {
-        padding: var(--viking-icon-backdrop-padding, var(--viking-space-half));
+        padding: var(--viking-icon-backdrop-padding, var(--viking-space-0-5));
         border-radius: var(--viking-radius-lg);
         background: var(--viking-accent-soft);
         color: var(--viking-accent-strong);

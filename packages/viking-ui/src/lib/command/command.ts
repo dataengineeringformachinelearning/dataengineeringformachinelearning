@@ -138,7 +138,8 @@ import { VikingCommandItem } from "../../core/types";
         padding: var(--viking-space-1);
       }
       .viking-command-group {
-        margin: var(--viking-space-1) var(--viking-space-1) 3px;
+        margin: var(--viking-space-1) var(--viking-space-1)
+          var(--viking-space-0-5);
         font-size: var(--viking-font-size);
         font-weight: 600;
         text-transform: uppercase;
@@ -156,7 +157,7 @@ import { VikingCommandItem } from "../../core/types";
         color: var(--viking-text);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
-        padding: var(--viking-space-1) var(--viking-space-1-5);
+        padding: var(--viking-space-1) var(--viking-space-2);
         border-radius: var(--viking-radius-sm);
         cursor: pointer;
         text-align: left;

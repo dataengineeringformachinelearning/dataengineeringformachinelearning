@@ -156,7 +156,7 @@
   viking-app-icon.icon-success {
     color: var(--viking-success, var(--color-success));
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: var(--viking-space-0-5);
   }
 
   .item-details {
@@ -166,7 +166,7 @@
       display: block;
       font-size: var(--viking-font-size-base, 1rem);
       color: var(--viking-text, var(--text-color));
-      margin-bottom: var(--viking-space-half, 4px);
+      margin-bottom: var(--viking-space-0-5);
     }
 
     p {
@@ -253,7 +253,7 @@
   .criteria-badge {
     font-size: var(--viking-font-size-xs, 0.75rem);
     font-weight: var(--viking-font-weight-bold, 700);
-    padding: var(--viking-space-half, 4px) var(--viking-space-1-5, 12px);
+    padding: var(--viking-space-0-5) var(--viking-space-2);
     border-radius: var(--viking-radius-pill, 999px);
     text-transform: uppercase;
     letter-spacing: var(--viking-letter-spacing-wider, 0.05em);
@@ -353,7 +353,7 @@
       display: block;
       font-size: var(--viking-font-size-base, 1rem);
       color: var(--viking-text, var(--text-color));
-      margin-bottom: var(--viking-space-half, 4px);
+      margin-bottom: var(--viking-space-0-5);
     }
 
     p {
@@ -369,7 +369,7 @@
     border: none;
     cursor: pointer;
     color: var(--viking-text-muted, var(--text-muted));
-    padding: var(--viking-space-half, 4px);
+    padding: var(--viking-space-0-5);
     border-radius: var(--viking-radius, 8px);
     flex-shrink: 0;
 
@@ -505,7 +505,7 @@
   color: var(--viking-success, var(--color-success));
   background: color-mix(in srgb, var(--viking-success, var(--color-success)) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--viking-success, var(--color-success)) 32%, transparent);
-  padding: var(--viking-space-half, 4px) var(--viking-space-1-5, 12px);
+  padding: var(--viking-space-0-5) var(--viking-space-2);
   border-radius: var(--viking-radius-pill, 999px);
 }
 

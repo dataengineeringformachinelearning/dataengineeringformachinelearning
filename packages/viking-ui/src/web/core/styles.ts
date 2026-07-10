@@ -65,9 +65,9 @@ export const VIKING_BUTTON_STYLES = `
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1-5);
+  gap: var(--viking-space-2);
   min-height: var(--viking-control-height);
-  padding: var(--viking-space-half) var(--viking-control-padding-x);
+  padding: var(--viking-space-0-5) var(--viking-control-padding-x);
   border-radius: var(--viking-button-radius, var(--viking-radius-lg));
   border: 1px solid transparent;
   cursor: pointer;
@@ -166,7 +166,7 @@ export const VIKING_BUTTON_STYLES = `
 
 .viking-btn-xs {
   min-height: var(--viking-control-height-xs);
-  padding: 0 var(--viking-space-1-5);
+  padding: 0 var(--viking-space-2);
   font-size: var(--viking-font-size-xs);
   min-width: auto;
 }
@@ -233,7 +233,7 @@ export const VIKING_BUTTON_STYLES = `
   flex-shrink: 0;
   pointer-events: none;
   flex: 0 0 auto;
-  margin-block: calc(var(--viking-space-half) * -1);
+  margin-block: calc(var(--viking-space-0-5) * -1);
   align-self: center;
 }
 
@@ -468,7 +468,7 @@ export const VIKING_BUTTON_STYLES = `
   border-right-color: transparent;
   border-radius: var(--viking-radius-pill);
   animation: viking-spin 0.8s linear infinite;
-  margin-inline-end: var(--viking-space-half);
+  margin-inline-end: var(--viking-space-0-5);
 }
 
 @keyframes viking-spin {
@@ -578,7 +578,7 @@ input:disabled {
   background: transparent;
   color: var(--viking-text-muted);
   cursor: pointer;
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius-pill);
   transition: var(--viking-transition-interactive);
   flex-shrink: 0;
@@ -642,13 +642,13 @@ export const VIKING_FIELD_STYLES = `
   align-items: baseline;
   justify-content: space-between;
   gap: var(--viking-space-2);
-  margin-bottom: var(--viking-space-half);
+  margin-bottom: var(--viking-space-0-5);
 }
 
 .viking-field-label {
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   font-size: var(--viking-font-size-ui);
   font-weight: var(--viking-font-weight-bold);
   color: var(--viking-text);
@@ -685,8 +685,8 @@ export const VIKING_BADGE_STYLES = `
 :host {
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half) var(--viking-space-1);
+  gap: var(--viking-space-0-5);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   font-family: var(--viking-font-family);
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-semibold);
@@ -764,10 +764,10 @@ export const VIKING_BADGE_STYLES = `
   background: transparent;
   color: currentColor;
   cursor: pointer;
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius-pill);
   transition: var(--viking-transition-interactive);
-  margin-left: calc(var(--viking-space-half) * -1);
+  margin-left: calc(var(--viking-space-0-5) * -1);
 }
 
 .viking-badge-remove:hover {
@@ -806,7 +806,7 @@ export const VIKING_CALLOUT_STYLES = `
 
 .viking-callout-icon {
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: var(--viking-space-0-5);
   color: var(--viking-text-muted);
 }
 
@@ -816,7 +816,7 @@ export const VIKING_CALLOUT_STYLES = `
 }
 
 .viking-callout-heading {
-  margin: 0 0 var(--viking-space-half);
+  margin: 0 0 var(--viking-space-0-5);
   font-size: var(--viking-font-size-ui);
   font-weight: var(--viking-font-weight-bold);
   color: var(--viking-text);
@@ -838,7 +838,7 @@ export const VIKING_CALLOUT_STYLES = `
   background: transparent;
   color: var(--viking-text-muted);
   cursor: pointer;
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius);
   transition: var(--viking-transition-interactive);
   flex-shrink: 0;
@@ -1242,7 +1242,7 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   background: transparent;
   color: var(--viking-text-muted);
   cursor: pointer;
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius);
   transition: var(--viking-transition-interactive);
   flex-shrink: 0;
@@ -1280,7 +1280,7 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   align-items: center;
   justify-content: center;
   min-width: 1.5rem;
-  padding: 2px 6px;
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   font-family: inherit;
   font-size: calc(var(--viking-font-size) * 0.75);
   border-radius: calc(var(--viking-radius) / 2);
@@ -1295,7 +1295,7 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
 }
 
 .viking-search-group-label {
-  margin: var(--viking-space-1) 0 var(--viking-space-half);
+  margin: var(--viking-space-1) 0 var(--viking-space-0-5);
   padding: 0 var(--viking-space-1);
   font-size: var(--viking-font-size-2xs);
   font-weight: var(--viking-font-weight-semibold);

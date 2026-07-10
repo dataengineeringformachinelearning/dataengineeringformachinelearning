@@ -8,7 +8,7 @@ The platform addresses a structural gap in modern infrastructure. Observability 
 
 For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
-**Architectural posture (2026):** The system emphasizes **Event Projections** with production reliability guarantees. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for event streaming and Firestore (named `deml` database with dedicated security rules) for materialized read models. Django employs a **Transactional Outbox** (`OutboxEvent` + `outbox_relay` command) for reliable publishing. The `telemetry_worker` performs idempotent projections with dead-letter-queue support. Firebase Functions and rules deploy via dedicated GitHub workflow. The end-to-end loop is health-checked automatically by a synthetic probe in the telemetry worker and surfaced as the "Event Projections" component on the `platform-status` sentinel.
+**Architectural posture (2026):** The system emphasizes **Event Projections** with production reliability guarantees. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for event streaming and Firestore (named `deml` database with dedicated security rules) for materialized read models. Django writes a **Transactional Outbox** (`OutboxEvent`) and the Rust `deml-relay` leases and publishes those rows. The `telemetry_worker` performs idempotent projections with dead-letter-queue support; Rust separately owns durable schedules, active probes, raw endpoint normalization, optional high-volume ingress, and request-time CPE lookup. Firebase Functions and rules deploy via a dedicated GitHub workflow. The end-to-end loop is health-checked automatically by a synthetic projection monitor and surfaced on the `platform-status` sentinel.
 
 ## Quick Links
 
@@ -27,7 +27,7 @@ For the platform hypothesis, value proposition, architecture diagrams, and algor
 
 ## Concept of Operations (CONOPS)
 
-This section constitutes the **single operational narrative** for the DEML platform: actors, production behavior, technology responsibilities, and degraded-mode contingencies. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models). Production compute is **multi-target**: **Railway** (in-repo service IaC), **Google Cloud Run** (fully managed reference topology), and **AWS Lightsail Container Services / Fargate** (cost-optimized alternate). All targets run the same container images and Event Projections contracts. Detailed checklists reside in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), [`infrastructure/railway/README.md`](infrastructure/railway/README.md), and [`docs/conops.md`](docs/conops.md). Terms of art: [`docs/glossary.md`](docs/glossary.md).
+This section constitutes the **single operational narrative** for the DEML platform: actors, production behavior, technology responsibilities, and degraded-mode contingencies. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Rust data-plane workers, Django control-plane projectors, Firestore read models). Production compute is **multi-target**: **Railway** (in-repo service IaC), **Google Cloud Run** (fully managed reference topology), and **AWS Lightsail Container Services / Fargate** (cost-optimized alternate). All targets run the same container images and Event Projections contracts. Detailed checklists reside in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), [`infrastructure/railway/README.md`](infrastructure/railway/README.md), and [`docs/conops.md`](docs/conops.md). Terms of art: [`docs/glossary.md`](docs/glossary.md).
 
 ### 1. Purpose & Scope
 
@@ -72,7 +72,7 @@ flowchart TB
 
  subgraph Bus
  RP[Redpanda frontend-events / DLQ]
- OR[outbox_relay 5s cadence]
+ OR[Rust leased outbox relay]
  end
 
  subgraph Projections
@@ -94,7 +94,9 @@ flowchart TB
  DJ -->|Atomic write| PG
  OR -->|Publish| RP
  DJ -.->|Outbox rows| PG
- RP --> TW
+ RP --> RN[Rust telemetry normalizer]
+ RN --> TW
+ RN --> PG
  TW --> FS
  TW --> PG
  A -.->|onSnapshot| FS
@@ -126,7 +128,7 @@ flowchart TB
 | **Cloud Run**               | Fully managed GCP reference topology                           | [Appendix C](#appendix-c-cloud-run-deployment), [Chapter 22](#chapter-22-production-deployment-on-cloudrun)                               |
 | **AWS Lightsail + Fargate** | Predictable cost, ECR images                                   | [Chapter 23](#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate), [Appendix E](#appendix-e-aws-deployment) |
 
-Invariants: identical Docker images, Event Projections, Outbox reliability, symmetrical multi-account workers, Firebase Auth / `ingestEvent` / Firestore projections. **One outbox relay per environment**—prefer Rust `deml-daemon`; do not also run Python `relay_start.py` / `outbox_relay` against the same Redpanda cluster.
+Invariants: identical Docker images, Event Projections, Outbox reliability, symmetrical multi-account workers, Firebase Auth / `ingestEvent` / Firestore projections. The Rust workspace is deployed by role (`relay`, `scheduler`, `probe`, `normalizer`, or optional `ingest`) so every responsibility has one owner and an independent failure/scaling boundary. Relay replicas use Postgres leases and `FOR UPDATE SKIP LOCKED`; scheduler replicas claim durable time buckets; consumers acknowledge only their own completed partitions. Python fallback roles are disabled in normal production and may be enabled only during an explicit rollback.
 
 **Cross-site URL trio** (env-driven everywhere): `FRONTEND_URL` (`https://deml.app`), `BACKEND_URL` (`https://backend.deml.app`), `MARKETING_URL` (`https://dataengineeringformachinelearning.com`).
 
@@ -155,7 +157,7 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 **Typical owner session:** Marketing site → auth handoff → Angular dashboard → client events fire `ingestEvent` → stats appear via Firestore subscription → REST calls for configuration and ML endpoints.
 
-**Typical integration session:** External pipeline POSTs batched telemetry to `/api/v1/ingest` → Django writes business state + `OutboxEvent` atomically → `outbox_relay` publishes → worker projects enriched aggregates.
+**Typical integration session:** External pipeline POSTs batched telemetry to `/api/v1/ingest` → Django or the optional Rust ingress writes an `OutboxEvent` atomically → the Rust relay publishes → workers project enriched aggregates.
 
 ### 7. Command, Control & Data Flows
 
@@ -172,7 +174,7 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 1. Authenticated REST handler mutates Postgres inside a transaction.
 2. `OutboxEvent` row inserted in the same transaction.
-3. `outbox_relay` (every 5s) publishes to Redpanda; same worker pipeline applies.
+3. `deml-relay` wakes via Postgres notification, leases the row, and publishes to Redpanda; bounded polling provides a recovery fallback.
 
 **Query path:** Clients never poll Postgres for live stats; they subscribe to Firestore projections. Historical analytics and CES use ClickHouse via backend APIs.
 
@@ -180,20 +182,23 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 Production is **multi-target**: **Railway** ([`infrastructure/railway/`](infrastructure/railway/README.md)), **Google Cloud Run** ([Chapter 22](#chapter-22-production-deployment-on-cloudrun), [Appendix C](#appendix-c-cloud-run-deployment)), and **AWS Lightsail / Fargate** ([Chapter 23](#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate)). All topologies preserve identical container images, the Event Projections loop, Outbox reliability, symmetrical multi-tenant workers, and the Firebase command / Firestore projection paths. Core operational roles:
 
-| Service                             | Operational role                                                                          |
-| ----------------------------------- | ----------------------------------------------------------------------------------------- |
-| `deml-frontend`                     | Angular app, widgets, public status UI                                                    |
-| `deml-backend`                      | Django REST, auth middleware, billing, outbox writers                                     |
-| `deml-postgres`                     | System of record (supports Neon serverless PostgreSQL)                                    |
-| `deml-queue`                        | Redpanda (private mesh hostname; e.g. `deml-queue.internal:9092` or Railway internal DNS) |
-| `deml-telemetry-worker`             | Projection engine + analytics rollups                                                     |
-| `deml-daemon`                       | Rust outbox relay, health pinger, cron publisher to `internal-tasks`                      |
-| `deml-relay`                        | Alternate Python outbox publisher (mutually exclusive with daemon relay)                  |
-| `deml-workers`                      | Consolidated ML training, threat intel, and cron task consumers                           |
-| `deml-clickhouse`                   | OLAP analytics and historical telemetry storage                                           |
-| `deml-dragonfly`                    | Rate limiting and hot caches                                                              |
-| `deml-scanner` + `deml-cpe-guesser` | Vulnerability ledger enrichment                                                           |
-| `deml-tor-proxy`                    | OSINT dark-web routing                                                                    |
+| Service                     | Operational role                                                                          |
+| --------------------------- | ----------------------------------------------------------------------------------------- |
+| `deml-frontend`             | Angular app, widgets, public status UI                                                    |
+| `deml-backend`              | Django REST, auth middleware, billing, outbox writers                                     |
+| `deml-postgres`             | System of record (supports Neon serverless PostgreSQL)                                    |
+| `deml-queue`                | Redpanda (private mesh hostname; e.g. `deml-queue.internal:9092` or Railway internal DNS) |
+| `deml-telemetry-worker`     | Django Firestore and business projection engine; no pinger or periodic maintenance loops  |
+| `deml-relay`                | Rust leased outbox relay; horizontally scalable with at-least-once delivery               |
+| `deml-scheduler`            | Rust durable schedule claimer and `internal-tasks` publisher                              |
+| `deml-probe`                | Rust bounded-concurrency health probes persisted without a Django dependency              |
+| `deml-normalizer`           | Rust `telemetry-raw` validator and idempotent Postgres loader                             |
+| `deml-ingest`               | Optional Rust high-volume integration ingress; Django remains the control plane           |
+| `deml-workers`              | Consolidated ML training, threat intel, and cron task consumers                           |
+| `deml-clickhouse`           | OLAP analytics and historical telemetry storage                                           |
+| `deml-dragonfly`            | Rate limiting and hot caches                                                              |
+| `deml-scanner` + `deml-cpe` | Vulnerability enrichment; Python imports the index offline, Rust serves CPE lookups       |
+| `deml-tor-proxy`            | OSINT dark-web routing                                                                    |
 
 **Firebase deploy path (separate from compute host):** `.github/workflows/firebase-backend-deploy.yml` ships Cloud Functions + Firestore rules; `firebase-hosting-*.yml` ships marketing. **Never** point compute services at public broker URLs for internal traffic—use private mesh DNS ([Appendix C](#appendix-c-cloud-run-deployment), Railway README).
 
@@ -224,13 +229,13 @@ Modern data and ML platforms are not passive repositories—they are **detection
 
 Visibility means the platform exposes enough trustworthy signal—across commands, projections, queries, and batch ML—to detect misuse, misconfiguration, and attack progression without guessing. DEML achieves this through layered telemetry rather than a single dashboard.
 
-The **Event Projections** loop is the primary visibility spine: client commands (`ingestEvent`, Django Outbox → `outbox_relay`) land on Redpanda; `telemetry_worker` enriches from Postgres and materializes Firestore read models while emitting OpenTelemetry traces to ClickHouse. Operators do not infer pipeline health from user complaints—the **Event Projections** synthetic probe on `platform-status` continuously validates end-to-end flow. Network traffic enrichment ([Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry)) adds ASN, GeoIP, UA parsing, and behavioral context at the edge. Threat feeds ingested hourly by `security_worker` ([Chapter 13](#chapter-13-enhancing-data-with-threat-intelligence)) fuse external IoCs with internal telemetry before the `ThreatModel` scores access risk. The **CES dashboard** ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) distills Threat Level, SLA Level, and Stableness into a single operational gauge. Sentry, GCP Logging, and immutable GCS audit logs complete the picture for release regressions and compliance evidence. Visibility is incomplete if it is tenant-blind: symmetrical worker loops and strict `account_id` / Firestore rule scoping ensure every signal is attributable.
+The **Event Projections** loop is the primary visibility spine: client commands (`ingestEvent`, Django Outbox → `deml-relay`) land on Redpanda; `telemetry_worker` enriches from Postgres and materializes Firestore read models while emitting OpenTelemetry traces to ClickHouse. Operators do not infer pipeline health from user complaints—the **Event Projections** synthetic monitor on `platform-status` continuously validates end-to-end flow. Network traffic enrichment ([Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry)) adds ASN, GeoIP, UA parsing, and behavioral context at the edge. Threat-feed commands are claimed by `deml-scheduler` and executed by `deml-workers`, fusing external IoCs with internal telemetry before the `ThreatModel` scores access risk. The **CES dashboard** ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) distills Threat Level, SLA Level, and Stableness into a single operational gauge. Sentry, GCP Logging, and immutable GCS audit logs complete the picture for release regressions and compliance evidence. Visibility is incomplete if it is tenant-blind: symmetrical worker loops and strict `account_id` / Firestore rule scoping ensure every signal is attributable.
 
 #### Manageability
 
 Manageability means operators can change posture, deploy fixes, rotate secrets, and tune models **without architectural surgery**—controls are centralized, automated, and repeatable across tenants including Tenant0 dogfood.
 
-Automation is the manageability engine. **`outbox_relay`** (5s cadence) and **`telemetry_worker`** run continuously; **`ml_worker`** and **`security_worker`** consume Kafka tasks on schedule—retraining SLA/threat models daily and refreshing AbuseIPDB / OTX feeds hourly ([Chapter 24](#chapter-24-automation-and-maintenance-schedules)). Pre-commit hooks, Semgrep, Trivy, Renovate, and the internal vulnerability Kanban ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)) turn supply-chain findings into tracked remediation without manual triage drift. RBAC + ABAC ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)) and GCP KMS envelope rotation ([Chapter 10](#chapter-10-encrypting-the-data--key-management)) are managed through documented APIs and workers—not ad hoc SQL. CI/CD splits Cloud Run and Firebase deploy paths so Functions, rules, and backend services ship independently ([§14](#14-cicd--release-operations)). Integration health endpoints (`/api/v1/integrations/{platform}`) and the service matrix in [§8](#8-deployment-topology--service-matrix) give operators a single map of what to restart, scale, or roll back. Manageability fails when tenants are exceptions; DEML's symmetrical pipelines guarantee that a control applied to one account applies to all.
+Automation is the manageability engine. **`deml-relay`**, **`deml-scheduler`**, and **`telemetry_worker`** run continuously; **`deml-workers`** executes durable Kafka task runs—retraining SLA/threat models daily and refreshing AbuseIPDB / OTX feeds hourly ([Chapter 24](#chapter-24-automation-and-maintenance-schedules)). Pre-commit hooks, Semgrep, Trivy, Renovate, and the internal vulnerability Kanban ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)) turn supply-chain findings into tracked remediation without manual triage drift. RBAC + ABAC ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)) and GCP KMS envelope rotation ([Chapter 10](#chapter-10-encrypting-the-data--key-management)) are managed through documented APIs and workers—not ad hoc SQL. CI/CD splits Cloud Run and Firebase deploy paths so Functions, rules, and backend services ship independently ([§14](#14-cicd--release-operations)). Integration health endpoints (`/api/v1/integrations/{platform}`) and the service matrix in [§8](#8-deployment-topology--service-matrix) give operators a single map of what to restart, scale, or roll back. Manageability fails when tenants are exceptions; DEML's symmetrical pipelines guarantee that a control applied to one account applies to all.
 
 #### Survivability
 
@@ -316,9 +321,9 @@ These principles are operational scaffolding, not abstract theory. [Chapter 7](#
 
 All schedules are canonical in [Appendix D](#appendix-d-maintenance--automation-schedule). Summary:
 
-- **Every 5s:** `outbox_relay` publishes pending events.
-- **Continuous:** `telemetry_worker`, `ml_worker` Kafka consumers.
-- **Hourly:** Threat intel fetch (`security_worker`).
+- **Commit-driven with bounded polling:** `deml-relay` leases and publishes pending Outbox rows.
+- **Continuous:** `telemetry_worker`, `deml-normalizer`, and `deml-workers` Kafka consumers.
+- **Hourly:** `deml-scheduler` creates durable threat-intelligence and aggregation task buckets.
 - **Daily:** ML retraining, `db_cleanup` (30-day raw retention), Stripe `sync_subscriptions`, DEK rotation checks.
 - **Weekly / Monthly / Quarterly:** Renovate, Semgrep, deep audits via GitHub Actions.
 
@@ -870,12 +875,12 @@ producer = AIOKafkaProducer(bootstrap_servers="localhost:9092")
 @router.post("/telemetry/endpoints")
 async def post_telemetry(request, payload: dict):
  await producer.start()
- await producer.send("app-events", json.dumps(payload).encode("utf-8"))
+ await producer.send("telemetry-raw", json.dumps(payload).encode("utf-8"))
  await producer.stop()
  return {"status": "accepted"}
 ```
 
-Downstream, an isolated background worker actively subscribes to the `app-events` topic. This worker consumes the raw messages and utilizes the Polars library to batch-process and transform the data at lightning speed before ultimately persisting the aggregated metrics. Furthermore, to provide comprehensive, zero-compromise visibility into code-level failures, I integrate Sentry for full-stack error tracking, instantly capturing stack traces across both the TypeScript and Python environments. I augment this with Semgrep, enforcing continuous, automated vulnerability scanning within my CI/CD pipelines to ensure my ingestion code remains secure.
+Downstream, the isolated Rust normalizer subscribes only to `telemetry-raw`, validates the tenant UUID and event contract, records the Kafka position idempotently, and persists normalized endpoint telemetry before acknowledging the source record. Business events remain on `app-events` for Django-owned projections. Poison raw records reach `telemetry-raw-dlq` before their source offset is committed. Sentry captures full-stack failures, OpenTelemetry covers Rust role spans, and Semgrep enforces continuous vulnerability scanning across the application code.
 
 ### OpenTelemetry and ClickHouse Integration
 
@@ -1146,10 +1151,10 @@ The recommended replica limits for a production-grade deployment are:
 | **deml-telemetry-worker**     | 4 vCPU    | 4 GB      | High-speed Polars batch processing.             |
 | **deml-workers**              | 4 vCPU    | 4 GB      | PyTorch ML training + OSINT intel gathering.    |
 | **deml-scanner**              | 4 vCPU    | 4 GB      | Heavy vulnerability database parsing.           |
-| **deml-cpe-guesser**          | 4 vCPU    | 4 GB      | CPU-intensive NLP heuristics at scale.          |
+| **deml-cpe**                  | 1 vCPU    | 1 GB      | Rust lookup service over the shared CPE index.  |
 | **deml-tor-proxy**            | 4 vCPU    | 4 GB      | High-bandwidth, encrypted network routing.      |
 
-This complete 11-service architecture peaks at a combined maximum footprint of **44 vCPU and 44 GB RAM**.
+Role-specific limits are provisioned independently; the Rust lookup and relay roles remain small while ML, scanning, Redpanda, and ClickHouse retain workload-specific capacity.
 
 ### Estimated Monthly Infrastructure Costs
 
@@ -1178,7 +1183,7 @@ In addition to standard compute, this architecture provisions persistent disk vo
 
 The decision to evaluate alternative hosting providers is never taken lightly in a zero-compromise engineering culture. After operating the platform on Railway with its convenient multi-service container model at approximately fifty dollars per month, it became clear that predictable costs and operational simplicity could be achieved on AWS without sacrificing the architectural invariants that define DEML: identical Docker images across environments, the Event Projections pipeline (Firebase ingestEvent and Django Outbox to Redpanda, idempotent telemetry_worker projections to Firestore), symmetrical processing loops over every Tenant including the platform Tenant0, distroless containers, and unprivileged execution. AWS offers a pragmatic middle path between the high-level PaaS experience of Railway and the full control of raw ECS or EKS. The recommended configuration uses Amazon Lightsail Container Services for the majority of the application and worker fleet, ECR as the image registry, and a minimal number of dedicated compute resources or Fargate tasks for the stateful data plane components that require persistent volumes and stable networking.
 
-Lightsail Container Services deliver the closest operational experience to the existing Railway deployment. A single Container Service can host up to ten containers within one deployment, with automatic internal service discovery and load balancing across nodes. This allows the Angular SSR frontend, the Django backend API, the consolidated deml-workers (ML + security + internal tasks), the Rust deml-daemon (outbox relay, health pinger, cron publisher), the telemetry worker paths, the vulnerability scanner, and lighter sidecars such as the CPE guesser and Tor proxy to coexist inside the same managed service boundary. Networking between these containers uses simple container names and ports, exactly as docker-compose provides locally and as Railway internal hostnames provide in production. Fixed monthly pricing (Nano at seven dollars, Micro at ten dollars, Small at fifteen dollars per node) eliminates surprise bills while still supporting horizontal scaling by increasing node count. Build and deploy can reference images stored in Amazon ECR, keeping the multi-stage Dockerfiles (distroless Node for the frontend server.mjs, Python slim with liboqs for the backend, and minimal Debian for the Rust daemon) completely unchanged.
+Lightsail Container Services deliver the closest operational experience to the existing Railway deployment. A single Container Service can host up to ten containers within one deployment, with automatic internal service discovery and load balancing across nodes. This allows the Angular SSR frontend, Django control plane, consolidated execution workers, and independently selected Rust relay, scheduler, probe, normalizer, and ingest roles to coexist inside the same managed boundary while retaining separate failure ownership. Networking between these containers uses simple container names, exactly as Docker Compose provides locally and Railway private hostnames provide in production. Fixed monthly pricing eliminates surprise bills while still supporting horizontal scaling by role. Build and deploy reuse the same multi-stage images across targets.
 
 Stateful infrastructure receives special but minimal treatment. Redpanda continues to serve as the high-throughput, exactly-once event bus for frontend-events and internal-tasks topics; a single-broker deployment (matching the local compose configuration with --smp 1 and SASL) runs reliably on either a small Lightsail Linux instance or a tightly right-sized ECS Fargate task backed by EBS gp3 storage. ClickHouse for OLAP analytics and long-term telemetry follows the same pattern. Dragonfly can often run as an additional container inside one of the Lightsail services or as a tiny companion task. Because these components are the primary cost and operational differentiators, Fargate Spot pricing (up to seventy percent discount) can be applied where brief interruptions are tolerable and quick recovery via Redpanda's and ClickHouse's durability features is acceptable. Postgres transactional storage uses either Amazon RDS (db.t4g.micro or Serverless v2) or the Lightsail managed database offering for the simplest possible integration. All application containers continue to receive the same DATABASE*URL, REDPANDA_BROKERS, CLICKHOUSE*\*, and DRAGONFLY_HOST environment variables; only the concrete hostnames change.
 
@@ -1266,11 +1271,11 @@ Operating a globally distributed, AI-native platform involves managing an immens
 
 Deep within my Django backend architecture, I deploy a fleet of long-lived, asynchronous background workers. These specialized processes operate independently of the primary web request lifecycle, autonomously managing the system's health, security posture, and machine learning intelligence natively:
 
-- **Hourly:** The threat landscape changes by the minute. My `security_worker` awakens every hour to continuously fetch, parse, and integrate the latest global Indicators of Compromise (IoCs) and threat intelligence feeds. This ensures my API gateways are always armed with the most recent definitions required to block emerging zero-day botnets and malicious scrapers.
-- **Daily:** Telemetry data is only valuable if the models trained upon it are accurate. The `ml_worker` executes daily, automatically securely aggregating the previous 24 hours of global operational data across all tenants. It uses this anonymized, platform-wide data to retrain my predictive SLA forecasting algorithms and a single, unified global PyTorch threat model (`platform_threat_model.pt`). This continuous recalibration creates a "herd immunity" effect, ensuring the intelligence layer never stagnates while strictly preserving tenant privacy.
-- **Daily (30-Day Retention):** To enforce strict compliance and data minimization policies, the `security_worker` runs `db_cleanup` every 24 hours. This idempotent pass purges raw `Endpoints`, `AuditLog`, and `CookieConsent` records older than **30 days**, removes legacy duplicate `ThreatIntelligence` rows, and archives published `OutboxEvent` rows. High-value business objects (`BugReport`, `ThreatReport`, `TrainingRun`, tenant configuration) are retained indefinitely. Long-term OLAP telemetry is routed to ClickHouse (30-day TTL via the OTEL collector).
-- **Daily (Billing & Accounts):** The same `security_worker` runs `sync_subscriptions` to reconcile Stripe subscription state—downgrading lapsed Pro users and upgrading active subscribers. Account deletion is **on-demand** via `DELETE /api/v1/auth/delete-account` (Django `CASCADE`); there is no scheduled dormant-account purge.
-- **Daily (DEK Compliance):** The `security_worker` checks whether the active Data Encryption Key (DEK) exceeds its 30-day lifecycle. When rotation is required, it triggers `rotate_keys` to re-envelope encrypted third-party integration credentials (GA4, Microsoft Clarity, etc.).
+- **Hourly:** `deml-scheduler` materializes unique threat-intelligence task buckets; `deml-workers` fetches, parses, and integrates the newest Indicators of Compromise without relying on an in-memory timer.
+- **Daily:** The same durable schedule path executes `train_all_models`, securely aggregating anonymized operational data across all tenants to retrain SLA forecasts and the global PyTorch threat model (`platform_threat_model.pt`).
+- **Daily (30-Day Retention):** A durable `db_cleanup` run purges expired raw `Endpoints`, `AuditLog`, and `CookieConsent` rows, removes legacy duplicate intelligence, and archives published Outbox rows. Long-term OLAP telemetry remains in ClickHouse under its TTL policy.
+- **Daily (Billing & Accounts):** A durable `sync_subscriptions` run reconciles Stripe state. Account deletion remains on-demand through the lifecycle queue; there is no dormant-account purge.
+- **Daily (DEK Compliance):** `rotate_keys_if_due` checks the active Data Encryption Key lifecycle and invokes the existing re-enveloping workflow only when rotation is required.
 
 ### GitHub Actions Workflows
 
@@ -1722,16 +1727,16 @@ passes.
 
 ### 4. Telemetry Worker (`deml-telemetry-worker`)
 
-Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), projects to Postgres + Firestore `deml` DB, runs health pings and analytics rollups.
+Consumes only control-plane topics (`frontend-events`, `user-issues`, and business `app-events`) with independent consumer groups and explicit partition offsets. It projects business state and Firestore `deml` read models. Health probes, raw `telemetry-raw` normalization, and periodic maintenance are owned by dedicated Rust roles so a poison telemetry batch cannot stall Firestore projections.
 
 - **Root Directory**: `/backend`
 - **Start Command**: `python manage.py telemetry_worker`
 - **Private Internal DNS**: `deml-telemetry-worker.internal`
 - **Public URL**: None (internal only)
 
-### 4b. Background Daemon (`deml-daemon`)
+### 4b. Rust Data Plane (`deml-daemon` image, role-selected)
 
-The background daemon is a high-performance compiled Rust (`tokio`) service that offloads I/O-heavy control loops from Python: **transactional outbox relay** (Postgres → Redpanda via `rdkafka`, `acks=all`), **health pinger** (concurrent HTTP probes against monitored services, batched to Django `POST /api/v1/internal/ingest/ping/` with `X-Internal-Secret`), and **cron publisher** (schedules to the `internal-tasks` Redpanda topic for `deml-workers` to execute whitelisted management commands). Source: `rust/deml-daemon/`. Operator glossary: [`docs/glossary.md`](docs/glossary.md). Railway cron table: [`infrastructure/railway/README.md`](infrastructure/railway/README.md).
+The compiled Rust (`tokio`) image is started with `DEML_ROLE=relay|scheduler|probe|normalizer|ingest|cpe`. The relay leases Outbox rows and publishes with `acks=all`; the scheduler claims durable UTC time buckets before publishing idempotent task triggers; the probe role applies bounded concurrency and persists observations directly to Postgres; the normalizer validates tenant UUIDs and event contracts before persisting endpoint observations; the optional Axum ingress accepts high-volume integration telemetry without placing burst pressure on Django; and the CPE role serves low-latency Lua-ranked lookups from a separately imported Dragonfly index. Source: `rust/deml-daemon/`. Django remains authoritative for authentication lifecycle, billing, KMS, ML, and Firestore business projections.
 
 - **Root Directory**: `/rust` (`rust/deml-daemon/`)
 - **Docker File**: `rust/deml-daemon/Dockerfile` (multi-stage; non-root UID)
@@ -1743,15 +1748,15 @@ The background daemon is a high-performance compiled Rust (`tokio`) service that
 
 - `DATABASE_URL` (standard Postgres / Neon connection string)
 - `REDPANDA_BROKERS` (e.g. `deml-queue.internal:9092`)
-- `BACKEND_INTERNAL_URL` (points to the backend container, e.g. `http://deml-backend.internal:8080`)
-- `INTERNAL_SECRET` (matching backend internal API validation)
-- `BATCH_SIZE=100`, `POLL_INTERVAL_SECS=5`, `PINGER_INTERVAL_SECS=30`
+- `DEML_ROLE` (exactly one of `relay`, `scheduler`, `probe`, `normalizer`, `ingest`, `cpe`, or `all` for local development)
+- `BATCH_SIZE=100`, `POLL_INTERVAL_SECS=1`, `PINGER_INTERVAL_SECS=30`, `MAX_CONCURRENCY=64`
+- `PORT=8080` for the optional ingress and role health endpoint
 
-**Invariant:** Do not run both the Rust daemon outbox relay and the Python `outbox_relay` / `relay_start.py` path against the same Redpanda cluster—pick one relay implementation per environment.
+**Invariant:** Each production deployment has one owner per role. Multiple Rust replicas of the same role are safe because claims are leased and idempotent; Python relay, pinger, and interval schedulers remain rollback-only and must not run alongside their Rust owner.
 
 ### 5. Consolidated Background Workers (`deml-workers`)
 
-Consolidates the machine learning and security execution logic into a single Python container. It spawns the ML thread, the security execution thread, and the internal-tasks Redpanda consumer concurrently.
+Consolidates machine-learning execution, account lifecycle retries, and the `internal-tasks` consumer into one Python container. Rust publishes durable schedule buckets; this service executes only whitelisted Django commands and dead-letters invalid triggers.
 
 - **Root Directory**: `/backend`
 - **Start Command**: `python deml_workers_start.py`
@@ -1770,7 +1775,7 @@ All background tasks (`deml-telemetry-worker`, `deml-workers`) inherit environme
 
 **Event flow (for operators):**
 
-1. API writes → `OutboxEvent` (Postgres) → **outbox_relay** → Redpanda
+1. API writes → `OutboxEvent` (Postgres) → **deml-relay** → Redpanda
 2. Angular/Firebase → `frontend-events` topic → **telemetry_worker** → Postgres + Firestore
 3. Idempotency keys + DLQ handled inside `telemetry_worker` projectors
 
@@ -1844,27 +1849,27 @@ This microservice provides an offline, isolated environment for executing `osv-s
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
 - **OSV_DB_PATH**: `/data/osv` (The mounted volume path)
-- **CPE_GUESSER_URL**: `http://deml-cpe-guesser.internal:1323/unique`
+- **CPE_GUESSER_URL**: `http://deml-cpe.internal:8080/unique`
 - **NVD_API_KEY**: Your National Vulnerability Database API Key (optional but highly recommended to bypass rate limits)
 
 **Consumers** (`deml-backend`, workers) set `SCANNER_SERVICE_URL=http://deml-scanner.internal:8000`.
 
-### 10. CPE Guesser Service
+### 10. CPE Indexer and Rust Lookup Service
 
-This service converts raw technology strings into CPE 2.3 identifiers. It is required for the Vulnerability Scanner Engine to properly normalize infrastructure data.
+The CPE plane converts raw technology strings into CPE 2.3 identifiers. A pinned Python package runs only as an offline importer, downloading the NVD dictionary and materializing its word/rank index into Dragonfly database 8. The request-time `deml-cpe` service is the Rust `cpe` role; it executes one atomic Lua ranking operation per lookup and returns the scanner-compatible `{ "cpe_2_3": ... }` contract.
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/infrastructure/cpe-guesser`
-- **Builder**: Dockerfile (Builds from source using Python 3.11 with an internal Valkey/Redis cache)
-- **Start Command**: `/app/start.sh` (Default in Dockerfile)
-- **Target Port**: `1323`
-- **Private Internal DNS**: `deml-cpe-guesser.internal`
+- **Importer**: `infrastructure/cpe-guesser/Dockerfile` (pinned commit, one-shot job)
+- **Runtime image**: `rust/deml-daemon/Dockerfile` with `DEML_ROLE=cpe`
+- **Target Port**: `8080`
+- **Private Internal DNS**: `deml-cpe.internal`
 - **Public URL**: None (Strictly an internal service)
 - **Compute Limits**: 1 vCPU / 1 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**: None required by default.
+- **Environment Variables**: `CPE_REDIS_URL=redis://deml-dragonfly.internal:6379/8`
 
-_(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vulnerability Scanner Engine** points to this internal DNS, e.g., `http://deml-cpe-guesser.internal:1323/unique`)_
+The importer must complete successfully before the Rust service becomes ready. Dictionary refreshes do not restart or block request-serving replicas.
 
 ### 11. Tor Proxy (Dark Web Scanner)
 
@@ -1910,12 +1915,12 @@ All inter-service traffic uses Cloud Run private DNS (`*.internal`). **Never** r
 | Dragonfly   | `deml-dragonfly.internal:6379`                                 |
 | ClickHouse  | `deml-clickhouse.internal:8123`                                |
 | Scanner     | `deml-scanner.internal:8000`                                   |
-| CPE Guesser | `deml-cpe-guesser.internal:1323`                               |
+| CPE lookup  | `deml-cpe.internal:8080`                                       |
 | Tor proxy   | `deml-tor-proxy.internal:9050`                                 |
 
 ## Local Development (`docker-compose.yml`)
 
-Local parity includes: `backend`, `telemetry_worker`, `ml_worker`, `security_worker`, `outbox_relay`, Postgres, Redpanda, Dragonfly, ClickHouse, Tor proxy, and supporting infra. Copy `backend/.env.example` to `backend/.env` and use localhost overrides:
+Local parity includes the Django control plane, telemetry and execution workers, role-selected Rust data plane, Postgres, Redpanda, Dragonfly, ClickHouse, Rust CPE lookup with a one-shot indexer, Tor proxy, and supporting infrastructure. Copy the environment examples and use localhost overrides:
 
 ```
 REDPANDA_BROKERS=redpanda:9092
@@ -2057,10 +2062,10 @@ Update the containers JSON (or use the Lightsail console) to reference the new i
 - Internal port typically 8000 or 8080.
 - Full env bundle: `DATABASE_URL`, `REDPANDA_BROKERS`, `CLICKHOUSE_*`, `DRAGONFLY_HOST`, Firebase service account, threat intel keys, etc.
 
-**Workers & Daemon**
+**Workers & Rust Data Plane**
 
-- `deml-workers`: Consolidated ML + security + cron consumer (`deml_workers_start.py`).
-- `deml-daemon`: Rust binary (outbox relay primary path, pinger, cron publisher). Built from `rust/deml-daemon/Dockerfile`.
+- `deml-workers`: ML-event, lifecycle, and durable scheduled-command consumers (`deml_workers_start.py`).
+- `deml-relay`, `deml-scheduler`, `deml-probe`, `deml-normalizer`, and `deml-cpe`: independently scaled roles from `rust/deml-daemon/Dockerfile`; `deml-ingest` is the optional high-volume API edge.
 - Telemetry worker logic can run inside the workers container or as a separate container definition in the same Lightsail deployment.
 - Pass `SCANNER_SERVICE_URL`, `CPE_GUESSER_URL`, `TOR_PROXY_URL` using the internal container hostnames.
 
@@ -2131,19 +2136,19 @@ This appendix is the **single source of truth** for all scheduled maintenance: b
 
 ### Continuous Background Workers
 
-| Service          | Command                               | Cadence                   | Responsibility                                                        |
-| ---------------- | ------------------------------------- | ------------------------- | --------------------------------------------------------------------- |
-| Outbox Relay     | `/opt/venv/bin/python relay_start.py` | Every **5s**              | Publishes `OutboxEvent` rows to Redpanda                              |
-| Telemetry Worker | `python manage.py telemetry_worker`   | Continuous                | Kafka stream consumption                                              |
-| Telemetry Worker | ↑                                     | Every **30s**             | Active service pinger (`pingers.py`)                                  |
-| Telemetry Worker | ↑                                     | Every **1h**              | `aggregate_analytics` rollups                                         |
-| Telemetry Worker | ↑                                     | Every **6h**              | Lighthouse quality scans                                              |
-| ML Worker        | `python manage.py ml_worker`          | Continuous                | Kafka `ml-training-events` consumer                                   |
-| ML Worker        | ↑                                     | Every **24h**             | `train_all_models` (SLA, Threat, CES models)                          |
-| Security Worker  | `python manage.py security_worker`    | Every **1h**              | `fetch_threat_intel`                                                  |
-| Security Worker  | ↑                                     | Every **24h** (staggered) | `db_cleanup`, `scan_dark_web`, `sync_subscriptions`, `VACUUM ANALYZE` |
+| Service          | Command                             | Cadence                   | Responsibility                                                        |
+| ---------------- | ----------------------------------- | ------------------------- | --------------------------------------------------------------------- |
+| Rust Relay       | `DEML_ROLE=relay deml-daemon`       | Continuous / event wake   | Leased `OutboxEvent` delivery to Redpanda                             |
+| Rust Normalizer  | `DEML_ROLE=normalizer deml-daemon`  | Continuous                | Validates and persists `telemetry-raw` endpoint events                |
+| Rust Probe       | `DEML_ROLE=probe deml-daemon`       | Every **30s**             | Bounded service probes and durable observations                       |
+| Rust Scheduler   | `DEML_ROLE=scheduler deml-daemon`   | Continuous                | Claims durable task buckets and publishes `internal-tasks`            |
+| Telemetry Worker | `python manage.py telemetry_worker` | Continuous                | Independent Firestore and user-issue projection consumers             |
+| ML Worker        | `python manage.py ml_worker`        | Continuous                | Kafka `ml-training-events` consumer                                   |
+| ML Worker        | ↑                                   | Every **24h**             | `train_all_models` (SLA, Threat, CES models)                          |
+| Security Worker  | `python manage.py security_worker`  | Every **1h**              | `fetch_threat_intel`                                                  |
+| Security Worker  | ↑                                   | Every **24h** (staggered) | `db_cleanup`, `scan_dark_web`, `sync_subscriptions`, `VACUUM ANALYZE` |
 
-Daily security jobs are **staggered** (compliance at T+0h, dark-web at T+1h, billing at T+2h, vacuum at T+3h) to avoid thundering-herd load on Postgres and Stripe.
+Daily security jobs are **staggered** in the durable schedule registry to avoid thundering-herd load on Postgres and Stripe. Python workers execute claimed commands but do not independently schedule them.
 
 ### Data Retention (`db_cleanup`)
 
@@ -2423,7 +2428,7 @@ However, exposing these endpoints introduced severe security implications. The G
 
 I implemented a comprehensive API Key management system exclusively available through the platform's Settings UI. By design, the API keys cannot be managed programmatically via the keys themselves—they must be generated, viewed, and revoked through the secure, human-facing Firebase identity context. Authenticated users can securely generate programmatic access tokens, and for security, the raw key is displayed only once. These keys are immediately hashed using SHA-256 before being stored in the database—ensuring that even in the event of a total database compromise, the raw keys cannot be recovered. When a request arrives at the integration gateway, a custom Django Ninja middleware (`APIKeyAuth`) intercepts the payload, extracts the bearer token from the `Authorization` header, computes its hash, and securely matches it against active keys in constant time.
 
-Crucially, the architecture unifies machine data and user telemetry. When the `/ingest` or `/predict` endpoints authenticate a request, they extract the exact tenant ID from the matched API key and inject the incoming payload directly into the platform's central Kafka `app-events` topic. This guarantees that all external data gracefully feeds into the exact same Aggregated Analytics pipeline powering the user's dashboard widgets, preserving strict multi-tenancy.
+Crucially, the architecture unifies machine data and user telemetry without bypassing durability. When `/ingest` authenticates a request, Django—or the optional Rust high-volume edge—extracts the tenant UUID and atomically writes an `app-events` Outbox record. `deml-relay` publishes it with a stable event identifier. `/predict` remains Django-owned because model authorization and inference lifecycle are control-plane concerns. Raw endpoint observations use the separate `telemetry-raw` topic and Rust normalizer, preserving strict multi-tenancy while isolating throughput and failure domains.
 
 This architecture successfully decoupled the human-facing application from the machine-facing gateway. By standardizing the ingestion schema, centralizing data flow into the widget streams, and enforcing strict cryptographic access controls via the UI, the platform was now ready to securely handle automated, enterprise-scale data streams from the industry's most demanding tools.
 
@@ -2455,7 +2460,7 @@ Furthermore, critical business logic—such as billing, telemetry, and backgroun
 
 ## Chapter 31: Viking-UI — The Zero-Dependency UI Kit
 
-The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles, framework-neutral Web Components, shared utility exports, and Angular wrapper components. The historical split that placed library ownership under frontend-specific paths has been retired; apps now consume the package the way they would consume Angular Material or another external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 4px grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
+The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles, framework-neutral Web Components, shared utility exports, and Angular wrapper components. The historical split that placed library ownership under frontend-specific paths has been retired; apps now consume the package the way they would consume Angular Material or another external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
 
 ### Design philosophy (THEME.md)
 
@@ -2627,7 +2632,7 @@ Production services deploy on Railway using per-service manifests under `infrast
 
 ### Database ingestion, retention, and scheduler efficiency
 
-Telemetry enters through `/api/v1/ingest`, Firebase `ingestEvent`, and OpenTelemetry collectors. Commands land in Postgres via transactional Outbox; `outbox_relay` publishes every five seconds. `telemetry_worker` projects idempotently into Firestore and enrichment tables. Retention constants live in `backend/utils/retention.py`: raw telemetry and audit logs purge at **30 days**; published outbox rows at 30 days; DLQ candidates at 7 days; DEK rotation triggers at 30 days. `security_worker` runs hourly threat-intel fetch, daily `db_cleanup`, Stripe `sync_subscriptions`, and OSINT passes. `ml_worker` retrains SLA and threat models daily on anonymized aggregates. Email dispatches route through Resend with queued outbox semantics — no fire-and-forget sends from request threads.
+Telemetry enters through `/api/v1/ingest`, Firebase `ingestEvent`, and OpenTelemetry collectors. Commands land in Postgres via transactional Outbox; `deml-relay` wakes on commit and uses bounded polling as a fallback. `telemetry_worker` projects idempotently into Firestore and enrichment tables. Retention constants live in `backend/utils/retention.py`: raw telemetry and audit logs purge at **30 days**; published outbox rows at 30 days; DLQ candidates at 7 days; DEK rotation triggers at 30 days. `deml-scheduler` creates durable, unique UTC task buckets for threat intelligence, cleanup, subscriptions, OSINT, and daily ML training; `deml-workers` executes those whitelisted commands. Email dispatches route through Resend with queued outbox semantics — no fire-and-forget sends from request threads.
 
 ### Multi-tenant security and regulatory alignment
 
@@ -2647,10 +2652,9 @@ The DEML Platform orchestrates several asynchronous background workers. These wo
 
 ### 1. Telemetry Worker (`telemetry_worker.py`)
 
-- **Stream Processing (Continuous)**: Consumes Redpanda topics (`app-events`, `user-issues`) and projects events into Postgres + Firestore.
-- **Data Aggregation (1 Hour)**: Triggers `aggregate_analytics` every 3,600 seconds to roll up raw OTLP traces into historical charts.
-- **Active Pinger (30 Seconds)**: Pings all monitored services every 30 seconds for real-time uptime metrics.
-- **Quality Scanner (6 Hours)**: Runs Google PageSpeed (Lighthouse) audits on tenant target URLs every 21,600 seconds.
+- **Stream Processing (Continuous)**: Consumes `frontend-events` and `user-issues` through independent consumers and projects into Firestore or Django-owned business records.
+- **Projection Reliability (Continuous)**: Validates versioned idempotency keys, rejects key reuse with changed payloads, and commits failed `frontend-events` records only after Redpanda acknowledges the `frontend-events-dlq` write. Replay-group lag is materialized as the Tenant0 `Event Projections DLQ` synthetic component every 60 seconds. Operators inspect a bounded batch with `python manage.py replay_projection_dlq --dry-run` and replay repaired/transient failures with `python manage.py replay_projection_dlq --max-records 100`; stable keys keep reprocessing idempotent.
+- **No embedded scheduling**: aggregation, probes, and Lighthouse triggers originate from the durable Rust scheduler/probe roles.
 
 ### 2. Consolidated Background Workers (`deml_workers_start.py`)
 
@@ -2666,9 +2670,9 @@ To minimize deployment footprint, operational complexity, and resource overhead,
 - Sweeps active Stripe subscriptions daily (`sync_subscriptions`) to enforce pricing tiers.
 - Optimizes PostgreSQL storage nightly via `VACUUM ANALYZE`.
 
-### 4. Outbox Relay (`outbox_relay.py`)
+### 4. Rust Outbox Relay (`DEML_ROLE=relay`)
 
-- **Event Publishing (5 Seconds)**: Polls unpublished `OutboxEvent` rows and publishes to Redpanda. Published rows are purged by `db_cleanup` after 30 days; exhausted retries (≥5 attempts) are purged after 7 days.
+- **Event Publishing**: Atomically leases unpublished `OutboxEvent` rows with `FOR UPDATE SKIP LOCKED`, publishes concurrently with stable event IDs, and releases or completes each lease. Published rows are purged by `db_cleanup` after 30 days; exhausted retries are retained as explicit DLQ candidates for seven days.
 
 ## Appendix I: API Rate Limiting, Tiered Pricing, and Usage Analytics
 

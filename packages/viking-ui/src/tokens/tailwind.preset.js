@@ -138,11 +138,11 @@ module.exports = {
         ],
       },
       spacing: {
+        /* 8px primary grid — prefer integer steps; 0.5 is tight-only */
         "viking-0": "var(--viking-space-0)",
         "viking-px": "var(--viking-space-px)",
-        "viking-half": "var(--viking-space-half)",
+        "viking-0.5": "var(--viking-space-0-5)",
         "viking-1": "var(--viking-space-1)",
-        "viking-1.5": "var(--viking-space-1-5)",
         "viking-2": "var(--viking-space-2)",
         "viking-3": "var(--viking-space-3)",
         "viking-4": "var(--viking-space-4)",
@@ -152,6 +152,12 @@ module.exports = {
         "viking-8": "var(--viking-space-8)",
         "viking-9": "var(--viking-space-9)",
         "viking-10": "var(--viking-space-10)",
+        "viking-11": "var(--viking-space-11)",
+        "viking-12": "var(--viking-space-12)",
+        /* deprecated aliases — map to on-grid */
+        "viking-half": "var(--viking-space-0-5)",
+        "viking-1.5": "var(--viking-space-2)",
+        "viking-2.5": "var(--viking-space-2)",
       },
       borderRadius: {
         "viking-xs": "var(--viking-radius-xs)",

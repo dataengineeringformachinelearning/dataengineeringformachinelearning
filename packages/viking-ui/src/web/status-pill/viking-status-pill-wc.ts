@@ -169,8 +169,8 @@ const VIKING_STATUS_PILL_STYLES = `
 
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half) var(--viking-space-2);
+  gap: var(--viking-space-0-5);
+  padding: var(--viking-space-0-5) var(--viking-space-2);
   border-radius: var(--viking-radius-pill);
   border: 1px solid var(--viking-status-pill-border);
   background: var(--viking-status-pill-bg);
@@ -190,7 +190,7 @@ const VIKING_STATUS_PILL_STYLES = `
 }
 
 .status-pill--compact {
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   font-size: var(--viking-font-size-2xs);
 }
 
@@ -225,7 +225,7 @@ const VIKING_STATUS_PILL_STYLES = `
   border-radius: var(--viking-radius-full);
   width: var(--viking-touch-target-min);
   height: var(--viking-touch-target-min);
-  margin-right: calc(var(--viking-space-half) * -1);
+  margin-right: calc(var(--viking-space-0-5) * -1);
   padding: 0;
   cursor: pointer;
 }

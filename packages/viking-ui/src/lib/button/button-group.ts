@@ -16,7 +16,7 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
         border-radius: var(--viking-radius-lg); /* More polished rounding */
         box-shadow: var(--viking-shadow-sm);
         overflow: hidden;
-        gap: 1px; /* Subtle separation for modern grouped buttons */
+        gap: var(--viking-space-px); /* Subtle seam between grouped buttons */
         background: var(--viking-border-subtle);
       }
       :host ::ng-deep viking-button .viking-btn {

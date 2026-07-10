@@ -49,7 +49,7 @@
 .docs-nav {
   display: none;
   align-items: center;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   margin-inline: auto;
 }
 
@@ -60,7 +60,7 @@
 }
 
 .docs-nav-link {
-  padding: var(--viking-space-half) var(--viking-space-1);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   border-radius: var(--viking-radius);
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-sm);
@@ -84,8 +84,8 @@
 .docs-github-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half) var(--viking-space-1);
+  gap: var(--viking-space-0-5);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
   color: var(--viking-text-muted);
@@ -289,14 +289,14 @@ html[data-theme="light"] .theme-icon-moon {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   padding: var(--viking-space-1);
   border-bottom: 1px solid var(--viking-border);
   background: var(--viking-surface);
 }
 
 .code-block-tab {
-  padding: var(--viking-space-half) var(--viking-space-1);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   border: none;
   border-radius: var(--viking-radius-sm);
   background: transparent;
@@ -320,9 +320,9 @@ html[data-theme="light"] .theme-icon-moon {
 .code-block-copy {
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   margin-left: auto;
-  padding: var(--viking-space-half) var(--viking-space-1);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-sm);
   background: transparent;
@@ -386,7 +386,7 @@ html[data-theme="light"] .theme-icon-moon {
 }
 
 .token-copy-btn {
-  padding: var(--viking-space-half) var(--viking-space-1);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-sm);
   background: transparent;

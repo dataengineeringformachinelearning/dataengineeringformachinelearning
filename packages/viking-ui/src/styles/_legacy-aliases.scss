@@ -29,15 +29,15 @@
   --ui-font-size: var(--viking-font-size-sm);
   --header-letter-spacing: var(--viking-letter-spacing-tight);
 
-  /* Spacing — legacy --space-N (4px grid) */
+  /* Spacing — legacy --space-N (aliases onto 8px primary viking scale) */
   --grid-unit: var(--viking-grid-unit);
   --space-0: var(--viking-space-0);
-  --space-half: var(--viking-space-half);
+  --space-half: var(--viking-space-0-5);
   --space-0-5: var(--viking-space-0-5);
   --space-1: var(--viking-space-1);
-  --space-1-5: var(--viking-space-1-5);
+  --space-1-5: var(--viking-space-2);
   --space-2: var(--viking-space-2);
-  --space-2-5: var(--viking-space-2-5);
+  --space-2-5: var(--viking-space-2);
   --space-3: var(--viking-space-3);
   --space-4: var(--viking-space-4);
   --space-5: var(--viking-space-5);

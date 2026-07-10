@@ -40,7 +40,7 @@ import { VikingTone } from "../../core/types";
       :host {
         display: inline-flex;
         align-items: flex-start;
-        gap: var(--viking-space-1-5, 12px);
+        gap: var(--viking-space-2);
         min-width: 0;
         flex: 1;
         font-family: var(--viking-font-family);
@@ -53,7 +53,7 @@ import { VikingTone } from "../../core/types";
         flex-shrink: 0;
         width: 24px;
         height: 24px;
-        margin-top: 1px;
+        margin-top: var(--viking-space-px);
         border-radius: var(--viking-radius-sm);
         background: var(--viking-accent-soft);
         color: var(--viking-text-muted);
@@ -87,9 +87,9 @@ import { VikingTone } from "../../core/types";
       .viking-icon-text-body {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-half, 4px);
+        gap: var(--viking-space-0-5);
         min-width: 0;
-        padding-top: 1px;
+        padding-top: var(--viking-space-px);
       }
 
       .viking-icon-text-title {

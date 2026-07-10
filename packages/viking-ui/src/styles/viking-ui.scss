@@ -142,58 +142,51 @@
   --viking-letter-spacing-wider: 0.05em;
   --viking-letter-spacing-caps: 0.08em;
 
-  /* Controls */
-  --viking-control-height: max(var(--viking-touch-target-min, 44px), 46px);
-  --viking-control-height-sm: 36px;
-  --viking-control-height-xs: 30px;
-  --viking-control-padding-x: var(--viking-space-2-5, 20px);
+  /* Controls — mobile-first: meet 44px touch; desktop snaps to 8px grid (40).
+     Heights live in _variables.scss; only mobile bump here. */
+  --viking-control-height: max(
+    var(--viking-touch-target-min, 44px),
+    var(--viking-space-5)
+  ); /* ≥44, prefers 40 when touch min allows */
+  --viking-control-height-sm: var(--viking-space-4); /* 32px */
+  --viking-control-height-xs: var(--viking-space-3); /* 24px */
+  --viking-control-padding-x: var(--viking-space-2);
   --viking-btn-min-width: var(--btn-min-width, 120px);
 
-  /* Spacing — canonical 4px grid. Legacy --space-* aliases map to these values. */
-  --viking-grid-unit: 4px;
-  --viking-space-0: 0;
-  --viking-space-half: 4px;
-  --viking-space-1: 8px;
-  --viking-space-1-5: 12px;
-  --viking-space-2: 16px;
-  --viking-space-3: 24px;
-  --viking-space-4: 32px;
-  --viking-space-5: 40px;
-  --viking-space-6: 48px;
-  --viking-space-7: 56px;
-  --viking-space-8: 64px;
+  /* Spacing is canonical in _variables.scss (8px primary + 0-5 micro).
+     Do not re-hardcode the scale here — that forks the theme. */
 
-  /* Chart — unified visual language (clean, modern, well-spaced) */
-  --viking-chart-axis-size: 11px;
+  /* Chart gutters use on-grid multiples of 8 (and 4 only where needed). */
+  --viking-chart-axis-size: 12px;
   --viking-chart-axis-size-mobile: 12px;
-  --viking-chart-gutter-default: 16px 24px 44px 52px;
-  --viking-chart-gutter-fill: 8px 12px 28px 36px;
+  --viking-chart-gutter-default: 16px 24px 48px 48px;
+  --viking-chart-gutter-fill: 8px 16px 32px 32px;
   --viking-chart-padding: var(--viking-space-2) var(--viking-space-1);
   --viking-chart-padding-fill: var(--viking-space-3) var(--viking-space-2);
   --viking-chart-grid-stroke: color-mix(in srgb, var(--viking-border) 32%, transparent);
-  --viking-chart-grid-width: 0.75;
-  --viking-chart-grid-dash: 2 3;
+  --viking-chart-grid-width: 1;
+  --viking-chart-grid-dash: 4 4;
   --viking-chart-axis-stroke: color-mix(in srgb, var(--viking-border) 68%, transparent);
   --viking-chart-axis-width: 1;
-  --viking-chart-tick-length: 5px;
+  --viking-chart-tick-length: 4px;
   --viking-chart-axis-color: var(--viking-text-subtle);
-  --viking-chart-line-width: 2.25;
-  --viking-chart-line-width-fill: 2.5;
+  --viking-chart-line-width: 2;
+  --viking-chart-line-width-fill: 2;
   --viking-chart-area-opacity: 0.22;
-  --viking-chart-point-radius: 3.5;
+  --viking-chart-point-radius: 3;
   --viking-chart-point-stroke: var(--viking-surface);
-  --viking-chart-bar-radius: 3px;
-  --viking-chart-bar-min-height: 3px;
+  --viking-chart-bar-radius: 4px;
+  --viking-chart-bar-min-height: 4px;
   --viking-chart-legend-gap: var(--viking-space-2) var(--viking-space-3);
   --viking-chart-legend-margin: var(--viking-space-3) 0 0;
   --viking-chart-legend-margin-fill: var(--viking-space-4) 0 0;
-  --viking-chart-swatch-size: 8px;
+  --viking-chart-swatch-size: var(--viking-space-1);
   --viking-chart-legend-size: var(--viking-font-size-xs);
   --viking-chart-tooltip-bg: var(--viking-surface-raised);
   --viking-chart-tooltip-border: var(--viking-border-strong);
   --viking-chart-tooltip-text: var(--viking-text);
   --viking-chart-tooltip-size: var(--viking-font-size-xs);
-  --viking-chart-tooltip-padding: var(--viking-space-half) var(--viking-space-1-5);
+  --viking-chart-tooltip-padding: var(--viking-space-0-5) var(--viking-space-2);
   --viking-chart-tooltip-radius: var(--viking-radius);
   --viking-chart-empty-padding: var(--viking-space-5) var(--viking-space-4);
   --viking-chart-empty-gap: var(--viking-space-3);
@@ -272,11 +265,12 @@ body,
   transition: var(--viking-transition-colors);
 }
 
-/* Mobile-first control sizing — compact controls from tablet/desktop up */
+/* Tablet+ : pure 8px control heights (THEME.md). Mobile keeps ≥44 touch. */
 @media (min-width: 768px) {
   :root {
-    --viking-control-height: 44px;
-    --viking-control-height-sm: 36px;
+    --viking-control-height: 40px;
+    --viking-control-height-sm: 32px;
+    --viking-control-height-xs: 24px;
   }
 }
 
@@ -288,7 +282,7 @@ body,
   align-items: center;
   gap: var(--viking-space-1);
   max-width: min(20rem, calc(100vw - var(--viking-space-4)));
-  padding: var(--viking-space-half) var(--viking-space-1);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   font-family: var(--viking-font-family);
   font-size: var(--viking-font-size-ui);
   line-height: var(--viking-line-height-snug);
@@ -323,7 +317,7 @@ html[data-theme='light'] .viking-tooltip {
 .viking-tooltip-kbd {
   font-family: var(--viking-font-family-mono);
   font-size: var(--viking-font-size-xs);
-  padding: 0 var(--viking-space-half);
+  padding: 0 var(--viking-space-0-5);
   border: 1px solid color-mix(in srgb, var(--viking-text-inverted) 35%, transparent);
   border-radius: var(--viking-radius-xs);
   line-height: 1.4;

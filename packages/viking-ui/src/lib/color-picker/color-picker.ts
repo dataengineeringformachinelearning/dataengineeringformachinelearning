@@ -117,7 +117,7 @@ import {
         background: var(--viking-surface-alt);
         border: 1px solid var(--viking-border-subtle);
         border-radius: var(--viking-radius-xs);
-        padding: var(--viking-space-half) var(--viking-space-1);
+        padding: var(--viking-space-0-5) var(--viking-space-1);
         font-variant-numeric: tabular-nums;
         letter-spacing: 0.02em;
         text-transform: uppercase;

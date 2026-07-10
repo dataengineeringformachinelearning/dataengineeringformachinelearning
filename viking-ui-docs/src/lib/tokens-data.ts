@@ -34,15 +34,42 @@ const flattenColors = (): TokenGroup => {
   return { id: "color", label: "Color palette", tokens: entries };
 };
 
-const flattenSpacing = (): TokenGroup => ({
-  id: "spacing",
-  label: "Spacing",
-  tokens: Object.entries(tokensJson.spacing).map(([key, value]) => ({
-    name: key === "gridUnit" ? "--viking-grid-unit" : `--viking-space-${key}`,
-    value,
-    category: "spacing",
-  })),
-});
+const flattenSpacing = (): TokenGroup => {
+  const spacing = tokensJson.spacing as Record<string, unknown>;
+  const tokens: TokenGroup["tokens"] = [];
+
+  for (const [key, value] of Object.entries(spacing)) {
+    if (key === "description" || key === "deprecated") {
+      continue;
+    }
+    if (typeof value !== "string") {
+      continue;
+    }
+    if (key === "gridUnit") {
+      tokens.push({
+        name: "--viking-grid-unit",
+        value,
+        category: "spacing",
+      });
+      continue;
+    }
+    if (key === "spaceUnit") {
+      tokens.push({
+        name: "--viking-space-unit",
+        value,
+        category: "spacing",
+      });
+      continue;
+    }
+    tokens.push({
+      name: `--viking-space-${key.replace(".", "-")}`,
+      value,
+      category: "spacing",
+    });
+  }
+
+  return { id: "spacing", label: "Spacing (8px primary grid)", tokens };
+};
 
 const flattenTypography = (): TokenGroup => {
   const { fontSize, fontWeight, lineHeight, letterSpacing } =

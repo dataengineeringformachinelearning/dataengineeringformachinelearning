@@ -101,7 +101,7 @@ import {
 ### Always use tokens
 
 - **Colors:** `--viking-*` semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`, `--viking-text-muted`, …)
-- **Spacing:** `--viking-space-*` on the 4px grid (`--viking-grid-unit`)
+- **Spacing:** `--viking-space-*` on the **8px primary grid** (`--viking-space-unit`). Use integer steps only; `--viking-space-0-5` (4px) is the sole tight exception. Never invent raw px gaps.
 - **Typography:** `--viking-font-family`, `--viking-font-size-*`, `--viking-font-weight-*`, `--viking-letter-spacing-*`
 - **Radius:** `--viking-radius-*` (max 16px except pills)
 - **Shadows:** `--viking-shadow-*` with machined top-edge highlights

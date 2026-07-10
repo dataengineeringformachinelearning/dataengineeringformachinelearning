@@ -46,7 +46,7 @@ export type VikingIconBadgeTone =
         flex-shrink: 0;
         width: var(--viking-icon-badge-size, var(--viking-space-6));
         height: var(--viking-icon-badge-size, var(--viking-space-6));
-        padding: var(--viking-icon-badge-padding, var(--viking-space-half));
+        padding: var(--viking-icon-badge-padding, var(--viking-space-0-5));
         box-sizing: border-box;
         border-radius: var(--viking-radius-lg);
         background: var(--viking-accent-soft);

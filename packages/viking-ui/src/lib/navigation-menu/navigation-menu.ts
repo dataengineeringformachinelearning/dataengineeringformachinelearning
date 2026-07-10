@@ -55,9 +55,9 @@ export interface VikingNavItem {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--viking-space-half);
+        gap: var(--viking-space-0-5);
         margin: 0;
-        padding: var(--viking-space-half);
+        padding: var(--viking-space-0-5);
         list-style: none;
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);

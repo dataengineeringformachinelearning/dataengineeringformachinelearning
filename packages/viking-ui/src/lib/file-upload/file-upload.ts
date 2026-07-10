@@ -141,7 +141,7 @@ import { VikingIcon } from "../icon/icon";
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 3px;
+        padding: var(--viking-space-0-5);
         border-radius: var(--viking-radius-pill);
       }
       .viking-upload-remove:hover {

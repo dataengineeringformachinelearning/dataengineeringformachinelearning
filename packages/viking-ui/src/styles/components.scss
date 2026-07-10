@@ -22,7 +22,7 @@ body {
 a {
   color: var(--viking-accent-strong);
   text-decoration-thickness: var(--viking-space-px);
-  text-underline-offset: var(--viking-space-half);
+  text-underline-offset: var(--viking-space-0-5);
 }
 
 :focus-visible {
@@ -52,6 +52,7 @@ a {
 .viking-stack {
   display: grid;
   gap: var(--viking-page-stack-gap);
+  align-items: stretch;
 }
 
 .viking-section {
@@ -61,6 +62,8 @@ a {
 .viking-card {
   display: grid;
   gap: var(--viking-card-content-gap, var(--viking-space-5));
+  align-self: stretch;
+  box-sizing: border-box;
   position: relative;
   overflow: hidden;
   background-clip: padding-box;
@@ -194,8 +197,8 @@ viking-button-wc {
   min-height: var(--viking-control-height);
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1-5);
-  padding: var(--viking-space-half) var(--viking-control-padding-x);
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-0-5) var(--viking-control-padding-x);
   border: 1px solid var(--viking-border-strong);
   border-radius: var(--viking-button-radius, var(--viking-radius-lg));
   background: var(--viking-surface-recipe, var(--viking-surface));
@@ -291,7 +294,7 @@ viking-button-wc {
   line-height: 1;
   pointer-events: none;
   flex: 0 0 auto;
-  margin-block: calc(var(--viking-space-half) * -1);
+  margin-block: calc(var(--viking-space-0-5) * -1);
   align-self: center;
 }
 
@@ -315,7 +318,7 @@ viking-button-wc {
   border-right-color: transparent;
   border-radius: var(--viking-radius-pill);
   animation: viking-spin 0.8s linear infinite;
-  margin-inline-end: var(--viking-space-half);
+  margin-inline-end: var(--viking-space-0-5);
 }
 
 .viking-button:hover:not(:disabled):not([aria-busy="true"]),

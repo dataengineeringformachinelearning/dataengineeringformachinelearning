@@ -87,7 +87,7 @@ const ACTIONS: EditorAction[] = [
       }
       .viking-editor-toolbar {
         display: flex;
-        gap: 2px;
+        gap: var(--viking-space-0-5);
         padding: var(--viking-space-1);
         border-bottom: 1px solid var(--viking-border);
       }

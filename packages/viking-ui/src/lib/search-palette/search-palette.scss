@@ -86,7 +86,7 @@
   background: transparent;
   color: var(--viking-text-muted);
   cursor: pointer;
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius);
   transition: var(--viking-transition-interactive);
   -webkit-tap-highlight-color: transparent;
@@ -131,7 +131,7 @@
 ::ng-deep .viking-search-palette-shortcut kbd {
   font-family: inherit;
   font-size: calc(var(--viking-font-size) * 0.75);
-  padding: 2px 6px;
+  padding: var(--viking-space-0-5) var(--viking-space-1);
   border-radius: calc(var(--viking-radius) / 2);
   border: 1px solid var(--viking-border);
   background: var(--viking-surface-alt);
@@ -241,7 +241,7 @@
 
 ::ng-deep .viking-search-group-label,
 ::ng-deep .viking-search-suggestions-heading {
-  margin: var(--viking-space-1) 0 var(--viking-space-half);
+  margin: var(--viking-space-1) 0 var(--viking-space-0-5);
   padding: 0 var(--viking-space-1);
   font-size: var(--viking-font-size-2xs, var(--viking-font-size-xs));
   font-weight: var(--viking-font-weight-semibold, 600);

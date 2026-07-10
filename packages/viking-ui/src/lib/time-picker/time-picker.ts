@@ -112,7 +112,7 @@ import { VikingIcon } from "../icon/icon";
         right: 0;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: var(--viking-space-0-5);
         margin: 0;
         padding: var(--viking-space-1);
         background: var(--viking-surface);

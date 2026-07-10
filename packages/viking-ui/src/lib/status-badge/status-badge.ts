@@ -69,7 +69,7 @@ const normalizeStatusVariant = (value: string): StatusBadgeVariant => {
         gap: var(--viking-space-1);
         width: fit-content;
         max-width: 100%;
-        padding: var(--viking-space-half) var(--viking-space-1-5);
+        padding: var(--viking-space-0-5) var(--viking-space-2);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-pill);
         background: var(--viking-surface-alt);
@@ -88,7 +88,7 @@ const normalizeStatusVariant = (value: string): StatusBadgeVariant => {
         height: var(--viking-space-1);
         border-radius: var(--viking-radius-full);
         background: currentColor;
-        box-shadow: 0 0 0 var(--viking-space-half)
+        box-shadow: 0 0 0 var(--viking-space-0-5)
           color-mix(in srgb, currentColor 12%, transparent);
         flex: 0 0 auto;
       }

@@ -24,7 +24,7 @@ platform-widget {
   align-items: center;
   width: fit-content;
   gap: var(--viking-space-1);
-  padding: var(--viking-space-1-5) var(--viking-space-2);
+  padding: var(--viking-space-2) var(--viking-space-2);
   border: 1px solid
     color-mix(in srgb, var(--viking-border-strong) 52%, transparent);
   border-radius: var(--viking-radius-pill);
@@ -62,7 +62,7 @@ platform-widget {
 .widget-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-0-5);
   text-decoration: none;
   color: var(--viking-text);
 }
@@ -94,7 +94,7 @@ platform-widget {
 
 .report-trigger {
   color: var(--viking-danger);
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius-pill);
 }
 
@@ -156,7 +156,7 @@ platform-widget {
 .modal-footer {
   display: flex;
   align-items: center;
-  padding: var(--viking-space-2-5) var(--viking-space-3);
+  padding: var(--viking-space-2) var(--viking-space-3);
   border-color: var(--viking-border);
 }
 
@@ -221,7 +221,7 @@ platform-widget {
 .form-field input,
 .form-field textarea,
 .form-field select {
-  padding: var(--viking-space-1-5) var(--viking-space-2);
+  padding: var(--viking-space-2) var(--viking-space-2);
   border: 1px solid
     color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
   border-radius: var(--viking-radius-md);
@@ -265,7 +265,7 @@ platform-widget {
 }
 
 .btn {
-  padding: var(--viking-space-1-5) var(--viking-space-2-5);
+  padding: var(--viking-space-2) var(--viking-space-2);
   font-size: var(--viking-font-size-sm);
   font-weight: var(--viking-font-weight-semibold);
   border-radius: var(--viking-radius-pill);

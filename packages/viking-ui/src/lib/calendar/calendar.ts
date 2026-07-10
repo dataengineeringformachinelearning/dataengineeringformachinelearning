@@ -126,7 +126,7 @@ const toIso = (date: Date): string =>
         background: transparent;
         color: var(--viking-text-muted);
         border-radius: var(--viking-radius-sm);
-        padding: var(--viking-space-half);
+        padding: var(--viking-space-0-5);
         cursor: pointer;
         transition: var(--viking-transition-interactive);
         -webkit-tap-highlight-color: transparent;
@@ -146,7 +146,7 @@ const toIso = (date: Date): string =>
       .viking-calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: var(--viking-space-half);
+        gap: var(--viking-space-0-5);
       }
       .viking-calendar-weekday {
         text-align: center;

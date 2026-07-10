@@ -21,7 +21,7 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
         background: var(--viking-surface-alt);
         border: 1px solid var(--viking-border);
         border-radius: calc(var(--viking-radius) / 2);
-        padding: 2px var(--viking-space-1);
+        padding: var(--viking-space-0-5) var(--viking-space-1);
         min-width: 1.5rem;
         box-shadow: inset 0 -1px 0
           color-mix(in srgb, var(--viking-border) 65%, transparent);

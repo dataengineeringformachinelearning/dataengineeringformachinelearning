@@ -144,7 +144,7 @@ import {
         color: var(--viking-text-muted);
       }
       .viking-kanban-card-text {
-        margin: 3px 0 0;
+        margin: var(--viking-space-0-5) 0 0;
         font-size: var(--viking-font-size);
         color: var(--viking-text-muted);
         line-height: 1.45;

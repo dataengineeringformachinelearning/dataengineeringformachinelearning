@@ -67,7 +67,7 @@ export type AnnouncementCardTone = "info" | "warning";
     `
       :host {
         display: grid;
-        gap: var(--viking-space-1-5);
+        gap: var(--viking-space-2);
         width: 100%;
         min-width: 0;
         padding: var(--viking-space-2) 0;

@@ -23,7 +23,7 @@
 .metric-card {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1-5);
+  gap: var(--viking-space-2);
   background: var(--viking-surface-recipe);
   border: 1px solid var(--viking-border-subtle);
   padding: var(--viking-card-padding-compact, var(--viking-space-4));
@@ -333,7 +333,7 @@
   padding: var(--viking-space-6) var(--viking-space-4);
   text-align: center;
   color: var(--viking-text-muted);
-  gap: var(--viking-space-1-5);
+  gap: var(--viking-space-2);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 }
 
@@ -505,7 +505,7 @@
   margin-top: var(--viking-space-4);
   background: var(--viking-surface-alt);
   border-radius: var(--viking-radius-lg);
-  gap: var(--viking-space-1-5);
+  gap: var(--viking-space-2);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
   @media (min-width: 601px) {
@@ -1100,7 +1100,7 @@ app-status-card.status-directory-card:hover {
   gap: var(--viking-space-2);
   width: 100%;
   min-width: 0;
-  padding: var(--viking-space-1-5);
+  padding: var(--viking-space-2);
 }
 
 .status-summary-grid > * {
@@ -1119,7 +1119,7 @@ app-status-card.status-directory-card:hover {
 
 /* Section separator for metric grids — hairline only */
 .status-summary-grid:not(:last-of-type) {
-  margin-bottom: var(--viking-space-2-5);
+  margin-bottom: var(--viking-space-2);
 }
 
 /* Section heading for metric grids */
@@ -1191,11 +1191,11 @@ viking-card.uptime-history-card {
 
 .uptime-bar-visual {
   display: flex;
-  gap: 2px;
+  gap: calc(var(--viking-space-0-5) / 2);
   width: 100%;
   min-width: 0;
   height: var(--viking-space-3);
-  padding: var(--viking-space-half);
+  padding: var(--viking-space-0-5);
   border-radius: var(--viking-radius-full);
   overflow: hidden;
   background: var(--viking-surface-inset);

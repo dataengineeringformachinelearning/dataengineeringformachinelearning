@@ -71,7 +71,7 @@
   }
 
   &--compact {
-    padding: 8px 12px;
+    padding: var(--viking-space-1) var(--viking-space-2);
     font-size: var(--ui-font-size, 14px);
   }
 

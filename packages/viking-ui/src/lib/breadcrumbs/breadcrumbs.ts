@@ -71,7 +71,7 @@ export interface VikingBreadcrumb {
         color: var(--viking-text-muted);
         text-decoration: none;
         border-bottom: 1px solid transparent;
-        padding: var(--viking-space-half) 0;
+        padding: var(--viking-space-0-5) 0;
         transition: var(--viking-transition-interactive);
       }
       .viking-breadcrumb a:hover {

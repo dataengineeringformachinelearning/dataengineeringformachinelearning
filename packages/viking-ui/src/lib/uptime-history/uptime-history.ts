@@ -122,7 +122,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         justify-content: space-between;
         gap: var(--viking-space-3);
         min-width: 0;
-        padding-bottom: var(--viking-space-half);
+        padding-bottom: var(--viking-space-0-5);
       }
 
       .uptime-history-label {
@@ -157,14 +157,14 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
 
       :host(.viking-uptime-history-compact) .uptime-history-bar {
         height: var(--viking-space-3);
-        padding: var(--viking-space-half);
+        padding: var(--viking-space-0-5);
         border-radius: var(--viking-radius);
       }
 
       /* Mobile: ensure minimum segment width for readability */
       @media (max-width: 480px) {
         .uptime-history-bar {
-          gap: 1px;
+          gap: var(--viking-space-px);
         }
         .uptime-history-segment {
           min-width: 2.5px;
@@ -228,7 +228,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         gap: var(--viking-space-3);
         font-size: var(--viking-font-size-2xs);
         color: var(--viking-text-subtle);
-        padding-top: var(--viking-space-half);
+        padding-top: var(--viking-space-0-5);
       }
     `,
   ],

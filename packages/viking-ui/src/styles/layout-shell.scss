@@ -52,7 +52,7 @@
   width: 100%;
   padding-block: var(
     --viking-section-padding-y,
-    var(--viking-space-10, 80px)
+    var(--viking-space-10)
   ); /* More generous premium rhythm to match component showcase */
 }
 
@@ -85,7 +85,7 @@
     var(--viking-space-6, var(--space-6, 48px));
 
   @media (min-width: 768px) {
-    padding-block: var(--viking-space-10, 96px) var(--viking-space-8, 64px);
+    padding-block: var(--viking-space-10) var(--viking-space-8, 64px);
   }
 }
 

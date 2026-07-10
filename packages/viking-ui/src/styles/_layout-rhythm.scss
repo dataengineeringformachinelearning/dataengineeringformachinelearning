@@ -1,12 +1,16 @@
 // ============================================================================
 // Viking-UI Layout Rhythm — composable spacing primitives
-// All gaps resolve to the 4px grid via --viking-space-* tokens.
+// Layout uses the 8px primary rhythm. The 4px token is reserved for tight
+// inline composition and optical adjustments.
 // ============================================================================
 
 .viking-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-stack-gap, var(--viking-space-6)); /* More generous default for component-like breathing */
+  gap: var(
+    --viking-stack-gap,
+    var(--viking-space-6)
+  ); /* More generous default for component-like breathing */
   align-items: var(--viking-stack-align, stretch);
 }
 
@@ -43,13 +47,13 @@
 }
 
 .viking-cluster--tight {
-  --viking-cluster-gap: var(--viking-space-half);
+  --viking-cluster-gap: var(--viking-space-0-5);
 }
 
 .viking-inline {
   display: inline-flex;
   align-items: center;
-  gap: var(--viking-inline-gap, var(--viking-space-half));
+  gap: var(--viking-inline-gap, var(--viking-space-0-5));
 }
 
 .viking-inline--wide {
@@ -58,8 +62,45 @@
 
 .viking-grid {
   display: grid;
-  gap: var(--viking-grid-gap, var(--viking-space-6)); /* Premium spacing parity with components */
+  gap: var(
+    --viking-grid-gap,
+    var(--viking-space-6)
+  ); /* Premium spacing parity with components */
   width: 100%;
+  align-items: stretch;
+}
+
+/* Equal-height content is opt-in so content-led grids retain natural rows. */
+.viking-grid--equal-rows,
+.viking-main-grid--equal-rows {
+  grid-auto-rows: 1fr;
+}
+
+.viking-grid > *,
+.viking-main-grid > * {
+  min-width: 0;
+}
+
+.viking-grid--equal-rows
+  > :where(
+    viking-card,
+    .viking-card,
+    viking-metric-card,
+    .viking-metric-card,
+    .viking-panel-card,
+    .viking-hud-panel
+  ),
+.viking-main-grid--equal-rows
+  > :where(
+    viking-card,
+    .viking-card,
+    viking-metric-card,
+    .viking-metric-card,
+    .viking-panel-card,
+    .viking-hud-panel
+  ) {
+  align-self: stretch;
+  height: 100%;
 }
 
 .viking-grid--tight {
@@ -121,6 +162,7 @@
   grid-template-columns: 1fr;
   gap: var(--viking-grid-gap, var(--viking-space-4));
   width: 100%;
+  align-items: stretch;
 }
 
 @media (min-width: 768px) {
@@ -146,14 +188,18 @@
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -176,7 +222,7 @@
 
 .viking-status-dot--pulse::after,
 .telemetry-pulse::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;

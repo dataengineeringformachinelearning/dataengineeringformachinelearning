@@ -84,7 +84,7 @@ export class VikingFormPanel {}
       .viking-form-section-header {
         display: flex;
         align-items: center;
-        gap: var(--viking-space-1-5);
+        gap: var(--viking-space-2);
         min-width: 0;
       }
 
@@ -131,7 +131,7 @@ export class VikingFormPanel {}
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: var(--viking-space-2-5);
+        gap: var(--viking-space-2);
         flex-shrink: 0;
       }
 
@@ -175,13 +175,13 @@ export class VikingFormPanel {}
       :host(.viking-form-section-status) .viking-form-section-fields {
         flex-direction: row;
         align-items: flex-start;
-        gap: var(--viking-space-1, 8px);
+        gap: var(--viking-space-1);
       }
 
       :host(.viking-form-section-status) .viking-form-section-actions {
         @media (min-width: 601px) {
           align-items: flex-start;
-          padding-top: 1px;
+          padding-top: var(--viking-space-px);
           margin-left: auto;
         }
       }

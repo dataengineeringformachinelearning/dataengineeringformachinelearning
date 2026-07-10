@@ -69,7 +69,7 @@
   display: none;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-3, 24px);
+  gap: var(--viking-space-3);
   padding: var(--viking-space-1) 0;
 }
 
@@ -93,7 +93,7 @@
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--viking-radius) var(--viking-radius) 0 0 !important;
-  padding: 0 var(--viking-space-3, 24px) !important;
+  padding: 0 var(--viking-space-3) !important;
   height: 36px !important;
   min-height: 36px !important;
   margin: 0 !important;

@@ -61,6 +61,7 @@ export class VikingMetricRow {}
         gap: var(--viking-space-3);
         width: 100%;
         min-width: 0;
+        align-self: stretch;
         min-height: var(--viking-touch-target-comfort);
         padding: var(--viking-card-padding-compact, var(--viking-space-3));
         border: 1px solid var(--viking-border-subtle);
@@ -144,7 +145,7 @@ export class VikingMetricRow {}
         letter-spacing: var(--viking-letter-spacing-caps);
         line-height: var(--viking-line-height-snug);
         text-transform: uppercase;
-        margin-bottom: var(--viking-space-half);
+        margin-bottom: var(--viking-space-0-5);
       }
 
       .viking-metric-value {
@@ -162,7 +163,7 @@ export class VikingMetricRow {}
         color: var(--viking-text-subtle);
         font-size: var(--viking-font-size-xs);
         line-height: var(--viking-line-height-snug);
-        margin-top: var(--viking-space-half);
+        margin-top: var(--viking-space-0-5);
       }
 
       :host(.viking-metric-card-success) .viking-metric-card-icon,

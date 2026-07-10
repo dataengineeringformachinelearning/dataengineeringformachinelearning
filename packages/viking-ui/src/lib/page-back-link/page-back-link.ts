@@ -45,7 +45,7 @@ import { VikingIcon } from "../icon/icon";
         display: inline-flex;
         align-items: center;
         gap: var(--viking-space-1);
-        padding: var(--viking-space-half) 0;
+        padding: var(--viking-space-0-5) 0;
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-sm);
         font-weight: var(--viking-font-weight-semibold);

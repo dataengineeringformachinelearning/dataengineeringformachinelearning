@@ -61,7 +61,7 @@ import { vikingUid } from "../../core/uid";
       }
       .viking-field-required {
         color: var(--viking-danger);
-        margin-left: 2px;
+        margin-left: var(--viking-space-0-5);
       }
       .viking-field-description,
       .viking-field-error {
@@ -77,7 +77,7 @@ import { vikingUid } from "../../core/uid";
         font-weight: var(--viking-font-weight-semibold);
         display: flex;
         align-items: center;
-        gap: var(--viking-space-half);
+        gap: var(--viking-space-0-5);
       }
       .viking-field-error::before {
         content: "";
