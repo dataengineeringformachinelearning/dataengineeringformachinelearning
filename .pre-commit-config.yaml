@@ -118,6 +118,7 @@ repos:
           0033_user_centric_squash
           0034_drop_tenant_tables
           0006_user_centric_squash
+          0007_trainingrun_model_type
           0041_rust_data_plane'
         language: system
         files: ^backend/.*/migrations/
