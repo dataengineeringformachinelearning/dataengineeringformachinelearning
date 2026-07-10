@@ -48,7 +48,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
 | [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
 
-**Operational summary:** Compute and data plane services (Django, workers, Postgres, Redpanda, ClickHouse, `deml-daemon`) run on a **multi-target container topology**—**Railway** (declarative IaC under [`infrastructure/railway/`](infrastructure/railway/README.md)), **Google Cloud Run** ([BOOK Appendix C](BOOK.md#appendix-c-cloud-run-deployment)), or **AWS Lightsail/Fargate** ([BOOK Appendix E](BOOK.md#appendix-e-aws-deployment)). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging where used. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-daemon` / `outbox_relay` publishes from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
+**Operational summary:** Compute runs on a **multi-target container topology**—**Railway**, **Google Cloud Run**, or **AWS Lightsail/Fargate**—with Django as the control plane and a role-selected Rust data plane. The same compiled image runs independently as `deml-relay`, `deml-scheduler`, `deml-probe`, `deml-normalizer`, `deml-cpe`, or optional `deml-ingest`; Postgres leases and idempotency constraints make replicas safe. Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. Client commands flow **Angular → Firebase Functions → Redpanda → Django projector → Firestore**; raw endpoint telemetry flows through `telemetry-raw` to the Rust normalizer; API integrators use a transactional Outbox published by the Rust relay.
 
 ### Supported runtimes
 
@@ -58,7 +58,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | **Cloud Run**               | Fully managed GCP services; detailed env matrix in the Book                         | [BOOK.md Appendix C](BOOK.md#appendix-c-cloud-run-deployment)                                                           |
 | **AWS Lightsail + Fargate** | Cost-optimized alternate with ECR images                                            | [BOOK.md Appendix E / Ch. 23](BOOK.md#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate) |
 
-All targets share the same Docker images, Event Projections loop, symmetrical multi-account workers, and Firebase command/projection paths. Pick **one** outbox relay implementation per environment (Rust `deml-daemon` **or** Python `outbox_relay`—not both).
+All targets share the same Docker images, Event Projections loop, symmetrical multi-account workers, and Firebase command/projection paths. Every background responsibility has one production owner. Python relay, pinger, and interval schedulers are rollback-only when the corresponding Rust role is deployed.
 
 ### Product surfaces (`deml.app`)
 
@@ -113,7 +113,7 @@ The platform implements an **Event Projections** architecture for client-driven 
 - **Commands** (writes): Angular Client → Firebase Cloud Functions (`ingestEvent`) → Redpanda (topic: `frontend-events`) with Firestore fallback. Django API paths use a **Transactional Outbox** pattern (events written atomically to Postgres `OutboxEvent` table before returning).
 - **Projections**: Django `telemetry_worker` consumes from Redpanda, enriches data (e.g. active endpoint counts from Postgres), and writes to Firestore (named `deml` DB). Projections are **idempotent** (using stable message keys) and support a dead-letter queue (`frontend-events-dlq`) for failed messages.
 - **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/uid/data/stats`).
-- Events include a `version` field for schema governance. The `deml-relay` Cloud Run service runs the `outbox_relay` management command to publish reliably from the Outbox.
+- Events include a `version` field for schema governance. The Rust `deml-relay` service leases Outbox rows with `SKIP LOCKED`, publishes with stable event IDs and `acks=all`, and supports multiple replicas.
 
 ```mermaid
 flowchart TB
@@ -173,7 +173,7 @@ flowchart TB
 
 **Key Recent Architectural Additions (Reliability & Event Projections):**
 
-- **Transactional Outbox Pattern**: Events are durably recorded in Postgres `OutboxEvent` model (written atomically with business state changes) and published reliably via the new `outbox_relay` management command (avoids lost events on crashes/restarts).
+- **Transactional Outbox Pattern**: Events are durably recorded in Postgres `OutboxEvent` and published by the leased Rust relay with exponential retry, explicit DLQ state, and event-driven wakeups.
 - **Idempotent Projections + DLQ**: The `telemetry_worker` now uses stable message keys (`idempotency_key`) for deduplication of projections into Firestore; failed messages are routed to a `frontend-events-dlq` topic.
 - Firebase Cloud Functions (`ingestEvent`) as the primary client command gateway (includes `version` and `idempotency_key` for governance).
 - Event Projections using Firestore (named "deml" database) for low-latency materialized read models, with the worker as the authoritative projection layer.
@@ -491,6 +491,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
+- **Rust data plane**: [Rust](https://www.rust-lang.org/), [Tokio](https://tokio.rs/), [Axum](https://github.com/tokio-rs/axum), [SQLx](https://github.com/launchbadge/sqlx), and [rust-rdkafka](https://github.com/fede1024/rust-rdkafka)
 - **Official Integrations** (customer-facing): [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](docs/integrations/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Norse (Spiking Neural Networks for temporal data)](https://github.com/norse/norse), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration for predictive systems), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
@@ -567,17 +568,17 @@ Compute is **multi-target** with **identical container images** and Event Projec
 
 Firebase (Auth, `ingestEvent`, Firestore, marketing Hosting) is shared across compute hosts. GCP KMS/audit applies when the GCP control plane is enabled.
 
-| Component                         | Example service names                         | Deploy trigger                  |
-| --------------------------------- | --------------------------------------------- | ------------------------------- |
-| Angular app (`deml.app`)          | `deml-frontend`                               | Push to `main`                  |
-| Django API                        | `deml-backend`                                | Push to `main`                  |
-| Workers, **deml-daemon**, scanner | `deml-workers`, `deml-daemon`, `deml-scanner` | Push to `main`                  |
-| Postgres                          | managed DB / sidecar                          | Infrastructure change           |
-| Redpanda, ClickHouse              | `deml-queue`, `deml-clickhouse`               | Infrastructure + image push     |
-| `ingestEvent` + Firestore rules   | Firebase / GCP                                | `.github/workflows/firebase...` |
-| Marketing site                    | Firebase Hosting                              | `firebase-hosting-merge.yml`    |
+| Component                             | Example service names                                                                                                               | Deploy trigger                  |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Angular app (`deml.app`)              | `deml-frontend`                                                                                                                     | Push to `main`                  |
+| Django API                            | `deml-backend`                                                                                                                      | Push to `main`                  |
+| Workers, **Rust data plane**, scanner | `deml-workers`, `deml-relay`, `deml-scheduler`, `deml-probe`, `deml-normalizer`, `deml-cpe`, optional `deml-ingest`, `deml-scanner` | Push to `main`                  |
+| Postgres                              | managed DB / sidecar                                                                                                                | Infrastructure change           |
+| Redpanda, ClickHouse                  | `deml-queue`, `deml-clickhouse`                                                                                                     | Infrastructure + image push     |
+| `ingestEvent` + Firestore rules       | Firebase / GCP                                                                                                                      | `.github/workflows/firebase...` |
+| Marketing site                        | Firebase Hosting                                                                                                                    | `firebase-hosting-merge.yml`    |
 
-**Relay invariant:** Run **either** Rust `deml-daemon` outbox relay **or** Python `outbox_relay`—not both on the same cluster.
+**Ownership invariant:** Rust roles own relay, schedules, probes, and raw telemetry normalization. Python equivalents are rollback-only and must not run concurrently.
 
 **Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
 
@@ -592,14 +593,15 @@ Redpanda → telemetry_worker → Firestore users/{uid}/data/stats
 Angular ← onSnapshot ← Firestore
 ```
 
-- Events carry `version: "1.0"` and `idempotency_key`.
+- Events carry `version: "1.0"` and a validated, path-safe `idempotency_key` (16–128 characters).
 - Worker is the **only** authoritative writer of stats projections.
+- Projection failures are committed only after an acknowledged write to `frontend-events-dlq`; a failed DLQ publish leaves the source batch uncommitted for retry.
 
 ### 4.2 API / integration commands
 
 ```
-Client → Django REST (API key or JWT) → Postgres txn + OutboxEvent
-outbox_relay (5s) → Redpanda → telemetry_worker → Firestore
+Client → Rust ingest (API key, high volume) or Django REST → Postgres txn + OutboxEvent
+deml-relay (leased) → Redpanda → role-specific consumer → Firestore/Postgres
 ```
 
 ### 4.3 Queries
@@ -636,30 +638,35 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 
 The logical services are identical across deployment targets. On the canonical Cloud Run path they map 1:1 to Cloud Run services. On the AWS alternative they are grouped: most application containers (frontend, backend, workers, daemon, scanner, sidecars) run inside a single Lightsail Container Service; Redpanda and ClickHouse run as dedicated Fargate tasks or Lightsail instances.
 
-| Logical Service                                      | Role                                                    | AWS Grouping                                       |
-| ---------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
-| `deml-frontend`                                      | Angular UI (SSR)                                        | Lightsail Container Service                        |
-| `deml-backend`                                       | Django API                                              | Lightsail Container Service                        |
-| `deml-postgres`                                      | OLTP database                                           | RDS or Lightsail DB                                |
-| `deml-queue`                                         | Redpanda broker                                         | Dedicated Fargate / Lightsail instance             |
-| `deml-telemetry-worker`                              | Projections, pingers, rollups                           | Lightsail Container Service (or workers container) |
-| `deml-daemon`                                        | Outbox relay, pinger, cron publisher                    | Lightsail Container Service                        |
-| `deml-workers`                                       | Consolidated ML training, threat intel, and task runner | Lightsail Container Service                        |
-| `deml-clickhouse`                                    | OLAP                                                    | Dedicated Fargate / Lightsail instance             |
-| `deml-dragonfly`                                     | Cache / rate limits                                     | Sidecar or small task                              |
-| `deml-scanner`, `deml-cpe-guesser`, `deml-tor-proxy` | Vulnerability ledger & OSINT                            | Lightsail Container Service (sidecars)             |
+| Logical Service                              | Role                                                    | AWS Grouping                                       |
+| -------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
+| `deml-frontend`                              | Angular UI (SSR)                                        | Lightsail Container Service                        |
+| `deml-backend`                               | Django API                                              | Lightsail Container Service                        |
+| `deml-postgres`                              | OLTP database                                           | RDS or Lightsail DB                                |
+| `deml-queue`                                 | Redpanda broker                                         | Dedicated Fargate / Lightsail instance             |
+| `deml-telemetry-worker`                      | Firestore and business projections only                 | Lightsail Container Service (or workers container) |
+| `deml-relay`                                 | Rust leased outbox delivery                             | Lightsail Container Service                        |
+| `deml-scheduler`                             | Rust durable schedule claims                            | Lightsail Container Service                        |
+| `deml-probe`                                 | Rust bounded probes and durable observations            | Lightsail Container Service                        |
+| `deml-normalizer`                            | Rust `telemetry-raw` validation and persistence         | Lightsail Container Service                        |
+| `deml-ingest`                                | Optional Rust high-volume integration ingress           | Lightsail Container Service                        |
+| `deml-workers`                               | Consolidated ML training, threat intel, and task runner | Lightsail Container Service                        |
+| `deml-clickhouse`                            | OLAP                                                    | Dedicated Fargate / Lightsail instance             |
+| `deml-dragonfly`                             | Cache / rate limits                                     | Sidecar or small task                              |
+| `deml-scanner`, `deml-cpe`, `deml-tor-proxy` | Vulnerability ledger & OSINT; Rust serves CPE lookups   | Lightsail Container Service (sidecars)             |
 
 Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
 
 ## 8. Maintenance schedule
 
-| Cadence    | Job                                    | Owner                                          |
-| ---------- | -------------------------------------- | ---------------------------------------------- |
-| 5s         | `outbox_relay`                         | `deml-relay`                                   |
-| Continuous | Kafka consumers                        | `telemetry_worker`, `deml-workers` (ML thread) |
-| 30s        | Service pingers                        | `telemetry_worker`                             |
-| 1h         | Threat intel                           | `deml-workers` (Security thread)               |
-| 24h        | ML training, `db_cleanup`, Stripe sync | `deml-workers`                                 |
+| Cadence    | Job                                    | Owner                                 |
+| ---------- | -------------------------------------- | ------------------------------------- |
+| Continuous | Leased `outbox_relay`                  | `deml-relay`                          |
+| Continuous | Kafka consumers                        | `deml-normalizer`, `telemetry_worker` |
+| 30s        | Service pingers                        | `deml-probe`                          |
+| Continuous | Durable schedule claims                | `deml-scheduler`                      |
+| 1h         | Threat intel                           | `deml-workers` (Security thread)      |
+| 24h        | ML training, `db_cleanup`, Stripe sync | `deml-workers`                        |
 
 | Weekly | Renovate PRs | GitHub Actions |
 | Monthly / Quarterly | Semgrep, audits | GitHub Actions |
@@ -681,30 +688,32 @@ Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-
 - [ ] Sentry error rate baseline
 - [ ] Cloud Run CPU/memory on `deml-backend`, `deml-telemetry-worker`
 - [ ] DLQ topic depth (`frontend-events-dlq`)
+- [ ] `platform-status` → **Event Projections DLQ** is Operational (replay-group lag is zero)
 - [ ] Outbox unpublished row count (Postgres)
 - [ ] CES gauges responding (ClickHouse path)
 
 ## 11. Contingency quick reference
 
-| Failure                     | First response                                                          |
-| --------------------------- | ----------------------------------------------------------------------- |
-| Stale realtime stats        | Restart telemetry worker + outbox relay                                 |
-| Function publish errors     | Check Redpanda public endpoint; confirm fallback events in Firestore    |
-| DLQ growth                  | Inspect worker logs; fix enrichment error; replay with idempotency keys |
-| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Cloud Run backend      |
-| Firestore permission denied | Redeploy `firestore.rules` via Firebase workflow                        |
+| Failure                     | First response                                                                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Stale realtime stats        | Restart telemetry worker + outbox relay                                                                                                    |
+| Function publish errors     | Check Redpanda public endpoint; confirm fallback events in Firestore                                                                       |
+| DLQ growth                  | Run `python manage.py replay_projection_dlq --dry-run`; fix the transient/code cause, then replay a bounded batch with `--max-records 100` |
+| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Cloud Run backend                                                                         |
+| Firestore permission denied | Redeploy `firestore.rules` via Firebase workflow                                                                                           |
 
 ## 12. Related documents
 
-| Document                                                             | Use                               |
-| -------------------------------------------------------------------- | --------------------------------- |
-| [BOOK.md](../BOOK.md)                                                | Full CONOPS narrative + chapters  |
-| [WHITEPAPER.md](../WHITEPAPER.md)                                    | Executive architecture            |
-| [README.md](../README.md)                                            | API integration gateway           |
-| [features.md](features.md)                                           | Feature catalog                   |
-| [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles |
-| [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                  |
-| [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                         |
+| Document                                                             | Use                                       |
+| -------------------------------------------------------------------- | ----------------------------------------- |
+| [BOOK.md](../BOOK.md)                                                | Full CONOPS narrative + chapters          |
+| [WHITEPAPER.md](../WHITEPAPER.md)                                    | Executive architecture                    |
+| [README.md](../README.md)                                            | API integration gateway                   |
+| [features.md](features.md)                                           | Feature catalog                           |
+| [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles         |
+| [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                          |
+| [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                                 |
+| [Rust data plane](rust-data-plane.md)                                | Role rollout, failure semantics, rollback |
 
 
 # Kubernetes Integration
@@ -4287,16 +4296,16 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ### 2.2 Operational environment
 
-| Plane                 | Technology                                                 | Role                                                                       |
-| --------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Compute & persistence | Railway, Cloud Run, or AWS Lightsail/Fargate (same images) | Django API, workers, `deml-daemon`, Postgres, Redpanda, ClickHouse, caches |
-| Client gateway        | Firebase Cloud Functions (`ingestEvent`)                   | Authenticated command ingress to Redpanda (Firestore fallback)             |
-| Identity              | Firebase Auth                                              | JWT perimeter; MFA-verified session on site mutations                      |
-| Read models           | Firestore (`deml` DB)                                      | `users/{uid}/data/stats` projections                                       |
-| Marketing             | Firebase Hosting                                           | Astro landing and documentation site                                       |
-| Security controls     | GCP (KMS, immutable audit logs)                            | Envelope encryption, tamper-evident logging (when GCP plane used)          |
-| Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                          |
-| Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                    |
+| Plane                 | Technology                                                 | Role                                                                                        |
+| --------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Compute & persistence | Railway, Cloud Run, or AWS Lightsail/Fargate (same images) | Django control plane, role-selected Rust data plane, Postgres, Redpanda, ClickHouse, caches |
+| Client gateway        | Firebase Cloud Functions (`ingestEvent`)                   | Authenticated command ingress to Redpanda (Firestore fallback)                              |
+| Identity              | Firebase Auth                                              | JWT perimeter; MFA-verified session on site mutations                                       |
+| Read models           | Firestore (`deml` DB)                                      | `users/{uid}/data/stats` projections                                                        |
+| Marketing             | Firebase Hosting                                           | Astro landing and documentation site                                                        |
+| Security controls     | GCP (KMS, immutable audit logs)                            | Envelope encryption, tamper-evident logging (when GCP plane used)                           |
+| Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                                           |
+| Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                                     |
 
 Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [`docs/glossary.md`](docs/glossary.md).
 
@@ -4309,16 +4318,16 @@ Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Proje
 
 ### 2.4 Operational modes
 
-| Mode              | Trigger                         | Behavior                                                                        |
-| ----------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| Normal            | All services healthy            | Commands → Redpanda → worker → Firestore; outbox relay every 5s                 |
-| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers       |
-| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts |
-| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions           |
+| Mode              | Trigger                         | Behavior                                                                            |
+| ----------------- | ------------------------------- | ----------------------------------------------------------------------------------- |
+| Normal            | All services healthy            | Commands → Redpanda → role-specific consumers; leased relay wakes on Outbox inserts |
+| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers           |
+| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts     |
+| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions               |
 
 ### 2.5 Maintenance cadence (summary)
 
-`outbox_relay` (5s), continuous Kafka consumers, hourly threat-intel fetch, daily ML retraining and 30-day raw telemetry purge, weekly Renovate, monthly/quarterly security audits. See [BOOK.md Appendix D](BOOK.md#appendix-d-maintenance--automation-schedule).
+Continuous leased relay and Kafka consumers, durable hourly threat-intel runs, daily ML retraining and 30-day raw telemetry purge, weekly Renovate, and monthly/quarterly security audits. See [BOOK.md Appendix D](BOOK.md#appendix-d-maintenance--automation-schedule).
 
 ## 3. Defendable Architecture Principles
 
@@ -4331,7 +4340,7 @@ _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strate
 
 **Visibility** enables defenders to observe activity across network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
 
-**Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and the documented maintenance cadence—`outbox_relay` every 5s, daily model retraining, weekly dependency updates—provides a repeatable rhythm for threat-informed control evolution.
+**Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and durable Postgres-backed schedule buckets provide a repeatable rhythm for model retraining, key-policy checks, retention, and dependency maintenance without restart-driven duplicates.
 
 **Survivability** allows essential services to persist during attack, compromise, and recovery. The Event Projections architecture decouples command ingress from transactional persistence via a transactional Outbox and idempotent consumers; failed messages route to `frontend-events-dlq`, and the Firebase Functions gateway falls back to Firestore when Redpanda is unreachable. UUID-scoped multi-tenancy, distroless least-privilege containers, and zero-downtime Cloud Run rolling deploys constrain lateral movement and support graceful degradation. Explicit degraded operational modes (broker, worker, maintenance) defined in Section 2.4 enable operators to sustain read-path availability through Firestore subscriptions while isolating and restoring backend components.
 
@@ -4340,7 +4349,8 @@ _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strate
 The platform implements an **Event Projections** architecture for client telemetry with production-grade reliability:
 
 - **Commands** (event ingestion): Client events flow through a Firebase Cloud Functions gateway (`ingestEvent` callable). The function attempts to publish to Redpanda (`frontend-events` topic, with `version` and `idempotency_key`) and falls back to Firestore. Django ingestion paths use a **Transactional Outbox** (events written atomically to a Postgres `OutboxEvent` table).
-- **Projections**: A dedicated `outbox_relay` command publishes from the Outbox. The Django `telemetry_worker` consumes from Redpanda (idempotent processing using stable keys, with DLQ to `frontend-events-dlq`), performs enrichment, and persists results to Firestore (named `deml` DB).
+- **Data plane**: Role-selected Rust services lease and relay Outbox rows, claim durable schedules, execute bounded service probes, and normalize high-volume `app-events` into Postgres. Independent failure domains prevent telemetry or probe pressure from stalling user-facing projections.
+- **Projections**: The Django `telemetry_worker` consumes control-plane topics independently (idempotent processing using stable keys, with DLQ to `frontend-events-dlq`) and persists business read models to Firestore (named `deml` DB).
 - **Queries** (real-time views): The Angular frontend subscribes directly (via `onSnapshot`) to the projected state in Firestore for materialized, query-optimized views such as `users/{uid}/data/stats`.
 
 ```mermaid
@@ -4399,7 +4409,7 @@ flowchart TB
  J -->|Stores| I
 ```
 
-This hybrid approach (Outbox + idempotent projections + DLQ) provides strong reliability and "at-least-once + deduplication" semantics while preserving low-latency client feedback via Firestore and the high-throughput Redpanda + Polars pipeline. Dedicated GitHub Actions handle deployment of Firebase Functions, Firestore rules, and related components. A separate `outbox_relay` ensures reliable event delivery from Django.
+This hybrid approach (leased Outbox + idempotent role-specific consumers + DLQ) provides "at-least-once + deduplication" semantics while preserving low-latency client feedback via Firestore. Dedicated GitHub Actions handle Firebase deployment, while the Rust relay, normalizer, probe, scheduler, and optional ingress roles scale independently.
 
 Redpanda—a lightweight, C++ Kafka-compatible broker—achieves sub-millisecond dispatch latencies without JVM resource overhead.
 

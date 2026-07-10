@@ -20,9 +20,7 @@ async def health_check():
 
 # If cpe-guesser is running as a separate container/service, we point to it here.
 # For a fully unified scanner, we might call its internal API, but we'll assume it's available.
-CPE_GUESSER_URL = os.getenv(
-  "CPE_GUESSER_URL", "http://deml-cpe-guesser.railway.internal:1323/unique"
-)
+CPE_GUESSER_URL = os.getenv("CPE_GUESSER_URL", "http://deml-cpe.railway.internal:8080/unique")
 
 
 class AppDependencyPayload(BaseModel):

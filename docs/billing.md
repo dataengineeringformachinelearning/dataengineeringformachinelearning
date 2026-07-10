@@ -8,7 +8,7 @@ Stripe powers **Standard → Pro** upgrades for DEML accounts. This is a live pa
 2. Stripe Checkout completes; webhook `checkout.session.completed` upgrades the profile to **Pro** and stores `stripe_customer_id` / `stripe_subscription_id`.
 3. `customer.subscription.updated` / `deleted` keep `subscription_active` and `subscription_current_period_end` in sync (canceled / unpaid / past_due → Standard).
 4. Frontend `/success` calls **sync** so the UI reflects Pro even if the webhook races.
-5. Scheduled **`sync_subscriptions`** (via `deml-daemon` cron → `deml-workers`) heals missed webhooks.
+5. Durable **`sync_subscriptions`** runs (`deml-scheduler` → `deml-workers`) heal missed webhooks without restart-driven duplicates.
 
 ## API surface
 

@@ -32,16 +32,16 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ### 2.2 Operational environment
 
-| Plane                 | Technology                                                 | Role                                                                       |
-| --------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Compute & persistence | Railway, Cloud Run, or AWS Lightsail/Fargate (same images) | Django API, workers, `deml-daemon`, Postgres, Redpanda, ClickHouse, caches |
-| Client gateway        | Firebase Cloud Functions (`ingestEvent`)                   | Authenticated command ingress to Redpanda (Firestore fallback)             |
-| Identity              | Firebase Auth                                              | JWT perimeter; MFA-verified session on site mutations                      |
-| Read models           | Firestore (`deml` DB)                                      | `users/{uid}/data/stats` projections                                       |
-| Marketing             | Firebase Hosting                                           | Astro landing and documentation site                                       |
-| Security controls     | GCP (KMS, immutable audit logs)                            | Envelope encryption, tamper-evident logging (when GCP plane used)          |
-| Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                          |
-| Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                    |
+| Plane                 | Technology                                                 | Role                                                                                        |
+| --------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Compute & persistence | Railway, Cloud Run, or AWS Lightsail/Fargate (same images) | Django control plane, role-selected Rust data plane, Postgres, Redpanda, ClickHouse, caches |
+| Client gateway        | Firebase Cloud Functions (`ingestEvent`)                   | Authenticated command ingress to Redpanda (Firestore fallback)                              |
+| Identity              | Firebase Auth                                              | JWT perimeter; MFA-verified session on site mutations                                       |
+| Read models           | Firestore (`deml` DB)                                      | `users/{uid}/data/stats` projections                                                        |
+| Marketing             | Firebase Hosting                                           | Astro landing and documentation site                                                        |
+| Security controls     | GCP (KMS, immutable audit logs)                            | Envelope encryption, tamper-evident logging (when GCP plane used)                           |
+| Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                                           |
+| Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                                     |
 
 Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [`docs/glossary.md`](docs/glossary.md).
 
@@ -54,16 +54,16 @@ Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Proje
 
 ### 2.4 Operational modes
 
-| Mode              | Trigger                         | Behavior                                                                        |
-| ----------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| Normal            | All services healthy            | Commands → Redpanda → worker → Firestore; outbox relay every 5s                 |
-| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers       |
-| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts |
-| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions           |
+| Mode              | Trigger                         | Behavior                                                                            |
+| ----------------- | ------------------------------- | ----------------------------------------------------------------------------------- |
+| Normal            | All services healthy            | Commands → Redpanda → role-specific consumers; leased relay wakes on Outbox inserts |
+| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers           |
+| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts     |
+| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions               |
 
 ### 2.5 Maintenance cadence (summary)
 
-`outbox_relay` (5s), continuous Kafka consumers, hourly threat-intel fetch, daily ML retraining and 30-day raw telemetry purge, weekly Renovate, monthly/quarterly security audits. See [BOOK.md Appendix D](BOOK.md#appendix-d-maintenance--automation-schedule).
+Continuous leased relay and Kafka consumers, durable hourly threat-intel runs, daily ML retraining and 30-day raw telemetry purge, weekly Renovate, and monthly/quarterly security audits. See [BOOK.md Appendix D](BOOK.md#appendix-d-maintenance--automation-schedule).
 
 ## 3. Defendable Architecture Principles
 
@@ -76,7 +76,7 @@ _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strate
 
 **Visibility** enables defenders to observe activity across network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
 
-**Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and the documented maintenance cadence—`outbox_relay` every 5s, daily model retraining, weekly dependency updates—provides a repeatable rhythm for threat-informed control evolution.
+**Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and durable Postgres-backed schedule buckets provide a repeatable rhythm for model retraining, key-policy checks, retention, and dependency maintenance without restart-driven duplicates.
 
 **Survivability** allows essential services to persist during attack, compromise, and recovery. The Event Projections architecture decouples command ingress from transactional persistence via a transactional Outbox and idempotent consumers; failed messages route to `frontend-events-dlq`, and the Firebase Functions gateway falls back to Firestore when Redpanda is unreachable. UUID-scoped multi-tenancy, distroless least-privilege containers, and zero-downtime Cloud Run rolling deploys constrain lateral movement and support graceful degradation. Explicit degraded operational modes (broker, worker, maintenance) defined in Section 2.4 enable operators to sustain read-path availability through Firestore subscriptions while isolating and restoring backend components.
 
@@ -85,7 +85,8 @@ _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strate
 The platform implements an **Event Projections** architecture for client telemetry with production-grade reliability:
 
 - **Commands** (event ingestion): Client events flow through a Firebase Cloud Functions gateway (`ingestEvent` callable). The function attempts to publish to Redpanda (`frontend-events` topic, with `version` and `idempotency_key`) and falls back to Firestore. Django ingestion paths use a **Transactional Outbox** (events written atomically to a Postgres `OutboxEvent` table).
-- **Projections**: A dedicated `outbox_relay` command publishes from the Outbox. The Django `telemetry_worker` consumes from Redpanda (idempotent processing using stable keys, with DLQ to `frontend-events-dlq`), performs enrichment, and persists results to Firestore (named `deml` DB).
+- **Data plane**: Role-selected Rust services lease and relay Outbox rows, claim durable schedules, execute bounded service probes, and normalize high-volume `app-events` into Postgres. Independent failure domains prevent telemetry or probe pressure from stalling user-facing projections.
+- **Projections**: The Django `telemetry_worker` consumes control-plane topics independently (idempotent processing using stable keys, with DLQ to `frontend-events-dlq`) and persists business read models to Firestore (named `deml` DB).
 - **Queries** (real-time views): The Angular frontend subscribes directly (via `onSnapshot`) to the projected state in Firestore for materialized, query-optimized views such as `users/{uid}/data/stats`.
 
 ```mermaid
@@ -144,7 +145,7 @@ flowchart TB
  J -->|Stores| I
 ```
 
-This hybrid approach (Outbox + idempotent projections + DLQ) provides strong reliability and "at-least-once + deduplication" semantics while preserving low-latency client feedback via Firestore and the high-throughput Redpanda + Polars pipeline. Dedicated GitHub Actions handle deployment of Firebase Functions, Firestore rules, and related components. A separate `outbox_relay` ensures reliable event delivery from Django.
+This hybrid approach (leased Outbox + idempotent role-specific consumers + DLQ) provides "at-least-once + deduplication" semantics while preserving low-latency client feedback via Firestore. Dedicated GitHub Actions handle Firebase deployment, while the Rust relay, normalizer, probe, scheduler, and optional ingress roles scale independently.
 
 Redpanda—a lightweight, C++ Kafka-compatible broker—achieves sub-millisecond dispatch latencies without JVM resource overhead.
 

@@ -4,12 +4,12 @@ Short definitions for architectural patterns, domain concepts, and production co
 
 ## Architectural patterns
 
-| Term                                    | Definition                                                                                                                                                                                                                                                                  |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Event Projections**                   | Core data-flow pattern: **commands** (intent) are decoupled from **projections** (materialized read models). Commands ingress via Firebase `ingestEvent` or the Django API; Redpanda carries the bus; `telemetry_worker` projects into Firestore and relational truth.      |
-| **Transactional Outbox**                | Django writes an `OutboxEvent` in the same Postgres transaction as business state, then a relay publishes to Redpanda—avoiding dual-write loss. Relayed by **`deml-daemon`** (Rust) or the Python `outbox_relay` path. **Do not run both relays against the same cluster.** |
-| **Symmetrical pipelines**               | Every account (and the platform sentinel) traverses the same worker loops—no hardcoded “platform-only” branches in production code.                                                                                                                                         |
-| **Command / projection / query planes** | Writes never block dashboards: commands → bus → workers; queries read Firestore projections or ClickHouse OLAP, not raw transactional joins for live UI.                                                                                                                    |
+| Term                                    | Definition                                                                                                                                                                                                                                                             |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Event Projections**                   | Core data-flow pattern: **commands** (intent) are decoupled from **projections** (materialized read models). Commands ingress via Firebase `ingestEvent` or the Django API; Redpanda carries the bus; `telemetry_worker` projects into Firestore and relational truth. |
+| **Transactional Outbox**                | Django or the Rust ingest edge writes an `OutboxEvent` transactionally; `deml-relay` leases rows with `SKIP LOCKED` and publishes at least once to Redpanda. Stable event IDs make consumer deduplication deterministic.                                               |
+| **Symmetrical pipelines**               | Every account (and the platform sentinel) traverses the same worker loops—no hardcoded “platform-only” branches in production code.                                                                                                                                    |
+| **Command / projection / query planes** | Writes never block dashboards: commands → bus → workers; queries read Firestore projections or ClickHouse OLAP, not raw transactional joins for live UI.                                                                                                               |
 
 ## Domain concepts
 
@@ -23,16 +23,15 @@ Short definitions for architectural patterns, domain concepts, and production co
 
 ## System components
 
-| Term                              | Definition                                                             | Pointer                                                          |
-| --------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **`telemetry_worker`**            | Consumes Redpanda, Polars micro-batches, idempotent projections + DLQ  | `backend/telemetry/management/commands/telemetry_worker.py`      |
-| **`ml_worker`**                   | Daily training / inference (SLA, threat, temporal models)              | `backend/ml/management/commands/ml_worker.py`                    |
-| **`deml-daemon`**                 | Rust service: outbox relay, health pinger, cron → `internal-tasks`     | `rust/deml-daemon/`                                              |
-| **`deml-relay` / `outbox_relay`** | Outbox publisher role (Rust daemon preferred in multi-service meshes)  | BOOK App. C; `infrastructure/railway/README.md`                  |
-| **`deml-workers`**                | Consolidated consumers for ML, security, and whitelisted cron commands | `backend/deml_workers_start.py`                                  |
-| **Viking-UI**                     | Design system SSoT: tokens, CSS, Angular + Web Components              | `packages/viking-ui/`, [THEME.md](../THEME.md)                   |
-| **InternalMesh**                  | Service-to-service trust via shared secret headers on internal APIs    | `backend/config/middleware.py`, `backend/config/internal_api.py` |
-| **Kyber / liboqs**                | Post-quantum KEM primitives available on hybrid key-exchange paths     | BOOK App. A / Ch. 27                                             |
+| Term                              | Definition                                                                                                                         | Pointer                                                     |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **`telemetry_worker`**            | Independent Firestore and business projection consumers with DLQ                                                                   | `backend/telemetry/management/commands/telemetry_worker.py` |
+| **`ml_worker`**                   | ML-event consumer; daily runs originate in the durable Rust scheduler                                                              | `backend/ml/management/commands/ml_worker.py`               |
+| **Rust data plane**               | One compiled image deployed by role: leased relay, durable scheduler, bounded probe, telemetry normalizer, or optional ingest edge | `rust/deml-daemon/`                                         |
+| **`deml-relay` / `outbox_relay`** | Outbox publisher role (Rust daemon preferred in multi-service meshes)                                                              | BOOK App. C; `infrastructure/railway/README.md`             |
+| **`deml-workers`**                | ML, lifecycle, and durable whitelisted task execution consumers                                                                    | `backend/deml_workers_start.py`                             |
+| **Viking-UI**                     | Design system SSoT: tokens, CSS, Angular + Web Components                                                                          | `packages/viking-ui/`, [THEME.md](../THEME.md)              |
+| **Kyber / liboqs**                | Post-quantum KEM primitives available on hybrid key-exchange paths                                                                 | BOOK App. A / Ch. 27                                        |
 
 ## Data stores & mesh
 

@@ -48,7 +48,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
 | [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
 
-**Operational summary:** Compute and data plane services (Django, workers, Postgres, Redpanda, ClickHouse, `deml-daemon`) run on a **multi-target container topology**—**Railway** (declarative IaC under [`infrastructure/railway/`](infrastructure/railway/README.md)), **Google Cloud Run** ([BOOK Appendix C](BOOK.md#appendix-c-cloud-run-deployment)), or **AWS Lightsail/Fargate** ([BOOK Appendix E](BOOK.md#appendix-e-aws-deployment)). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging where used. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-daemon` / `outbox_relay` publishes from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
+**Operational summary:** Compute runs on a **multi-target container topology**—**Railway**, **Google Cloud Run**, or **AWS Lightsail/Fargate**—with Django as the control plane and a role-selected Rust data plane. The same compiled image runs independently as `deml-relay`, `deml-scheduler`, `deml-probe`, `deml-normalizer`, `deml-cpe`, or optional `deml-ingest`; Postgres leases and idempotency constraints make replicas safe. Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. Client commands flow **Angular → Firebase Functions → Redpanda → Django projector → Firestore**; raw endpoint telemetry flows through `telemetry-raw` to the Rust normalizer; API integrators use a transactional Outbox published by the Rust relay.
 
 ### Supported runtimes
 
@@ -58,7 +58,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | **Cloud Run**               | Fully managed GCP services; detailed env matrix in the Book                         | [BOOK.md Appendix C](BOOK.md#appendix-c-cloud-run-deployment)                                                           |
 | **AWS Lightsail + Fargate** | Cost-optimized alternate with ECR images                                            | [BOOK.md Appendix E / Ch. 23](BOOK.md#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate) |
 
-All targets share the same Docker images, Event Projections loop, symmetrical multi-account workers, and Firebase command/projection paths. Pick **one** outbox relay implementation per environment (Rust `deml-daemon` **or** Python `outbox_relay`—not both).
+All targets share the same Docker images, Event Projections loop, symmetrical multi-account workers, and Firebase command/projection paths. Every background responsibility has one production owner. Python relay, pinger, and interval schedulers are rollback-only when the corresponding Rust role is deployed.
 
 ### Product surfaces (`deml.app`)
 
@@ -113,7 +113,7 @@ The platform implements an **Event Projections** architecture for client-driven 
 - **Commands** (writes): Angular Client → Firebase Cloud Functions (`ingestEvent`) → Redpanda (topic: `frontend-events`) with Firestore fallback. Django API paths use a **Transactional Outbox** pattern (events written atomically to Postgres `OutboxEvent` table before returning).
 - **Projections**: Django `telemetry_worker` consumes from Redpanda, enriches data (e.g. active endpoint counts from Postgres), and writes to Firestore (named `deml` DB). Projections are **idempotent** (using stable message keys) and support a dead-letter queue (`frontend-events-dlq`) for failed messages.
 - **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/uid/data/stats`).
-- Events include a `version` field for schema governance. The `deml-relay` Cloud Run service runs the `outbox_relay` management command to publish reliably from the Outbox.
+- Events include a `version` field for schema governance. The Rust `deml-relay` service leases Outbox rows with `SKIP LOCKED`, publishes with stable event IDs and `acks=all`, and supports multiple replicas.
 
 ```mermaid
 flowchart TB
@@ -173,7 +173,7 @@ flowchart TB
 
 **Key Recent Architectural Additions (Reliability & Event Projections):**
 
-- **Transactional Outbox Pattern**: Events are durably recorded in Postgres `OutboxEvent` model (written atomically with business state changes) and published reliably via the new `outbox_relay` management command (avoids lost events on crashes/restarts).
+- **Transactional Outbox Pattern**: Events are durably recorded in Postgres `OutboxEvent` and published by the leased Rust relay with exponential retry, explicit DLQ state, and event-driven wakeups.
 - **Idempotent Projections + DLQ**: The `telemetry_worker` now uses stable message keys (`idempotency_key`) for deduplication of projections into Firestore; failed messages are routed to a `frontend-events-dlq` topic.
 - Firebase Cloud Functions (`ingestEvent`) as the primary client command gateway (includes `version` and `idempotency_key` for governance).
 - Event Projections using Firestore (named "deml" database) for low-latency materialized read models, with the worker as the authoritative projection layer.
@@ -491,6 +491,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
+- **Rust data plane**: [Rust](https://www.rust-lang.org/), [Tokio](https://tokio.rs/), [Axum](https://github.com/tokio-rs/axum), [SQLx](https://github.com/launchbadge/sqlx), and [rust-rdkafka](https://github.com/fede1024/rust-rdkafka)
 - **Official Integrations** (customer-facing): [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](docs/integrations/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Norse (Spiking Neural Networks for temporal data)](https://github.com/norse/norse), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration for predictive systems), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
