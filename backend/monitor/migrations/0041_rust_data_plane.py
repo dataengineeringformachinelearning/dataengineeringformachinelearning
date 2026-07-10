@@ -6,7 +6,8 @@ from django.conf import settings
 from django.db import migrations, models
 
 
-def create_outbox_notify_trigger(_apps: Any, schema_editor: Any) -> None:
+def create_outbox_notify_trigger(apps: Any, schema_editor: Any) -> None:
+  del apps  # required signature for migration linter / RunPython
   if schema_editor.connection.vendor != "postgresql":
     return
   with schema_editor.connection.cursor() as cursor:
@@ -26,7 +27,8 @@ def create_outbox_notify_trigger(_apps: Any, schema_editor: Any) -> None:
     )
 
 
-def drop_outbox_notify_trigger(_apps: Any, schema_editor: Any) -> None:
+def drop_outbox_notify_trigger(apps: Any, schema_editor: Any) -> None:
+  del apps  # required signature for migration linter / RunPython
   if schema_editor.connection.vendor != "postgresql":
     return
   with schema_editor.connection.cursor() as cursor:
@@ -55,6 +57,8 @@ class Migration(migrations.Migration):
       model_name="statuspage",
       index=models.Index(fields=["user", "is_platform"], name="status_page_user_id_12c0fc_idx"),
     ),
+    # Nullable on add so existing outbox rows do not get a NOT NULL DDL change.
+    # Backfill from created_at; model uses auto_now_add for new inserts.
     migrations.AddField(
       model_name="outboxevent",
       name="available_at",
@@ -63,11 +67,6 @@ class Migration(migrations.Migration):
     migrations.RunSQL(
       sql="UPDATE monitor_outboxevent SET available_at = created_at WHERE available_at IS NULL",
       reverse_sql=migrations.RunSQL.noop,
-    ),
-    migrations.AlterField(
-      model_name="outboxevent",
-      name="available_at",
-      field=models.DateTimeField(auto_now_add=True),
     ),
     migrations.AddField(
       model_name="outboxevent",

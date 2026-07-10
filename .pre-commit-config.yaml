@@ -102,7 +102,23 @@ repos:
 
       - id: django-migration-linter
         name: Django Migration Linter
-        entry: env DATABASE_URL=sqlite:// uv run python backend/manage.py lintmigrations --ignore-name 0018_endpoints_traffic_enrichment 0002_alter_endpoints_ip_address_statuspage_and_more 0005_statuspage_is_published 0004_remove_threatreport_user_and_more 0023_tenant_stripe_customer_id_and_more 0029_threatintelligence_threat_inte_ip_addr_03311d_idx_and_more 0031_userprofile_linked_emails 0009_rename_model_to_ml 0033_user_centric_squash 0034_drop_tenant_tables 0006_user_centric_squash
+        # Use backend venv (Django deps). Ignore historical squash/rename migrations
+        # and 0041 (SQLite table-rebuild false positives for unique columns; production is Postgres).
+        entry: >-
+          bash -c 'cd backend && DATABASE_URL=sqlite:// .venv/bin/python manage.py lintmigrations
+          --ignore-name
+          0018_endpoints_traffic_enrichment
+          0002_alter_endpoints_ip_address_statuspage_and_more
+          0005_statuspage_is_published
+          0004_remove_threatreport_user_and_more
+          0023_tenant_stripe_customer_id_and_more
+          0029_threatintelligence_threat_inte_ip_addr_03311d_idx_and_more
+          0031_userprofile_linked_emails
+          0009_rename_model_to_ml
+          0033_user_centric_squash
+          0034_drop_tenant_tables
+          0006_user_centric_squash
+          0041_rust_data_plane'
         language: system
         files: ^backend/.*/migrations/
         pass_filenames: false

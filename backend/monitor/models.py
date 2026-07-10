@@ -501,7 +501,7 @@ class OutboxEvent(models.Model):
   headers = models.JSONField(default=dict, blank=True)
   idempotency_key = models.CharField(max_length=255, blank=True, null=True, unique=True)
   created_at = models.DateTimeField(auto_now_add=True)
-  available_at = models.DateTimeField(auto_now_add=True)
+  available_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
   published_at = models.DateTimeField(null=True, blank=True)
   attempts = models.IntegerField(default=0)
   last_error = models.TextField(blank=True, null=True)
