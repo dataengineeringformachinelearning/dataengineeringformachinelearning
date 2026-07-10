@@ -1,5 +1,6 @@
 import datetime
 import logging
+import urllib.parse
 
 from django.shortcuts import get_object_or_404
 from ninja import Router, Schema
@@ -57,11 +58,19 @@ def _google_oauth_redirect_uri() -> str:
   return f"{backend}/api/v1/system-status/integrations/google/callback"
 
 
+def _frontend_settings_redirect(*, status: str, reason: str = "") -> str:
+  from django.conf import settings
+
+  frontend_url = (getattr(settings, "FRONTEND_URL", "") or "").rstrip("/")
+  params = {"integration": "google", "status": status}
+  if reason:
+    params["reason"] = reason[:120]
+  return f"{frontend_url}/settings?{urllib.parse.urlencode(params)}"
+
+
 @router.get("/google/auth-url")
 def google_auth_url(request):
   user = require_auth(request)
-
-  import urllib.parse
 
   from django.conf import settings
 
@@ -78,6 +87,7 @@ def google_auth_url(request):
     "scope": scope,
     "access_type": "offline",
     "prompt": "consent",
+    "include_granted_scopes": "true",
     "state": sign_oauth_user_id(user.id),
   }
 
@@ -88,7 +98,13 @@ def google_auth_url(request):
 
 
 @router.get("/google/callback")
-def google_callback(request, code: str, state: str):
+def google_callback(
+  request,
+  code: str | None = None,
+  state: str | None = None,
+  error: str | None = None,
+  error_description: str | None = None,
+):
   import requests
   from django.conf import settings
   from django.contrib.auth.models import User
@@ -97,11 +113,23 @@ def google_callback(request, code: str, state: str):
 
   from monitor.services.oauth_state import unsign_oauth_state
 
+  if error:
+    logger.warning(
+      "Google OAuth denied or failed at consent: error=%s description=%s",
+      error,
+      (error_description or "")[:300],
+    )
+    return redirect(_frontend_settings_redirect(status="failed", reason=error or "consent_denied"))
+
+  if not code or not state:
+    logger.warning("Google OAuth callback missing code or state")
+    return redirect(_frontend_settings_redirect(status="failed", reason="missing_code"))
+
   try:
     user = get_object_or_404(User, id=unsign_oauth_state(state))
   except (signing.BadSignature, signing.SignatureExpired, ValueError, TypeError):
-    frontend_url = getattr(settings, "FRONTEND_URL", "") or ""
-    return redirect(f"{frontend_url}/settings?integration=google&status=failed")
+    logger.warning("Google OAuth callback invalid or expired state")
+    return redirect(_frontend_settings_redirect(status="failed", reason="invalid_state"))
 
   client_id = getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
   client_secret = getattr(settings, "GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
@@ -116,11 +144,9 @@ def google_callback(request, code: str, state: str):
     "grant_type": "authorization_code",
   }
 
-  frontend_url = getattr(settings, "FRONTEND_URL", "") or ""
-
   try:
     response = requests.post(token_url, data=data, timeout=10)
-    token_data = response.json()
+    token_data = response.json() if response.content else {}
 
     if "access_token" in token_data:
       AnalyticsIntegration.objects.update_or_create(
@@ -131,15 +157,26 @@ def google_callback(request, code: str, state: str):
             "access_token": token_data.get("access_token"),
             "refresh_token": token_data.get("refresh_token"),
             "expires_in": token_data.get("expires_in"),
+            "token_type": token_data.get("token_type"),
+            "scope": token_data.get("scope"),
           },
           "active": True,
         },
       )
-      return redirect(f"{frontend_url}/settings?integration=google&status=success")
-  except Exception as e:
-    logger.error("OAuth exchange failed: %s", e)
+      logger.info("Google Analytics OAuth connected for user_id=%s", user.id)
+      return redirect(_frontend_settings_redirect(status="success"))
 
-  return redirect(f"{frontend_url}/settings?integration=google&status=failed")
+    # Codes only — avoid logging response bodies (may contain secrets).
+    err_code = str(token_data.get("error") or f"http_{response.status_code}")
+    logger.error(
+      "GA analytics connect exchange rejected status=%s code=%s",
+      response.status_code,
+      err_code,
+    )
+    return redirect(_frontend_settings_redirect(status="failed", reason=err_code))
+  except Exception:
+    logger.exception("GA analytics connect exchange failed")
+    return redirect(_frontend_settings_redirect(status="failed", reason="exchange_error"))
 
 
 @router.post("/clarity", response=IntegrationOut)

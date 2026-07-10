@@ -33,7 +33,7 @@ import {
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { VikingDialogService } from '../../services/viking-dialog.service';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
@@ -73,6 +73,7 @@ export class Settings implements OnInit {
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private vikingDialog = inject(VikingDialogService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
@@ -159,6 +160,7 @@ export class Settings implements OnInit {
   constructor() {
     afterNextRender(() => {
       this.loadIntegrations();
+      void this.handleIntegrationOAuthReturn();
     });
 
     effect(() => {
@@ -559,6 +561,43 @@ export class Settings implements OnInit {
         console.error('Error fetching auth URL:', err);
         this.isConnectingGoogle.set(false);
       },
+    });
+  }
+
+  /** Surface Google Analytics OAuth redirect result (?integration=google&status=…). */
+  private async handleIntegrationOAuthReturn(): Promise<void> {
+    const params = this.route.snapshot.queryParamMap;
+    if (params.get('integration') !== 'google') {
+      return;
+    }
+    const status = params.get('status') ?? '';
+    const reason = params.get('reason') ?? '';
+    this.loadIntegrations();
+    if (status === 'success') {
+      await this.vikingDialog.openConfirm({
+        title: 'Google Analytics connected',
+        message: 'GA4 OAuth completed. deml.app can read Analytics data for this account.',
+        type: 'alert',
+        confirmBtnText: 'OK',
+      });
+    } else if (status === 'failed') {
+      const detail = reason ? ` Google reported: ${reason.replaceAll('_', ' ')}.` : '';
+      await this.vikingDialog.openConfirm({
+        title: 'Google Analytics connection failed',
+        message:
+          'OAuth consent may have succeeded, but the token exchange with Google failed.' +
+          detail +
+          ' Confirm the OAuth client secret and redirect URI match Google Cloud Console, then try again.',
+        type: 'alert',
+        confirmBtnText: 'OK',
+        confirmBtnColor: 'warn',
+      });
+    }
+    // Clear query params so refresh does not re-show the dialog.
+    await this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      replaceUrl: true,
     });
   }
 
