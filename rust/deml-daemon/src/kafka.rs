@@ -32,7 +32,8 @@ pub fn build_producer(cfg: &Config) -> Result<FutureProducer> {
         .set("retry.backoff.ms", "500")
         // Reduce latency for the relay — we're not batching for throughput.
         .set("linger.ms", "5")
-        .set("compression.type", "zstd")
+        // snappy is built into librdkafka; zstd requires libzstd at build time (missing in slim image).
+        .set("compression.type", "snappy")
         // Force IPv4 address resolution to avoid connection failures when connecting to IPv6 aliases
         // of containers that are only listening on IPv4 (0.0.0.0).
         .set("broker.address.family", "v4");
