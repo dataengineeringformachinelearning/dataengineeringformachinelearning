@@ -19,13 +19,11 @@ window.ALGOLIA_CONFIG = window.ALGOLIA_CONFIG || {
     'https://deml.app',
     'https://dataengineeringformachinelearning.com',
     'https://backend.deml.app',
-    'https://ui.dataengineeringformachinelearning.com',
   ],
   sitemaps: [
     'https://deml.app/sitemap.xml',
     'https://deml.app/sitemap-index.xml',
     'https://dataengineeringformachinelearning.com/sitemap-index.xml',
     'https://backend.deml.app/sitemap.xml',
-    'https://ui.dataengineeringformachinelearning.com/sitemap.xml',
   ],
 };
