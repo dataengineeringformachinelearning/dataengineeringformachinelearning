@@ -3,9 +3,15 @@
 # and re-testing presigned GET/PUT + bucket lifecycle against export jobs.
 FROM rustfs/rustfs:1.0.0-beta.8
 
-# Official image runs as non-root rustfs (UID/GID 10001).
-# Data path: mount a durable volume at /data (SNSD / single-node).
-# S3 API: 9000  |  Console: 9001  |  Health: GET /health
+# Root only long enough to chown Railway volume mounts, then entrypoint drops to UID 10001.
+# nosemgrep: dockerfile.security.last-user-is-root.last-user-is-root
+USER root
+COPY entrypoint.sh /deml-rustfs-entrypoint.sh
+RUN chmod 755 /deml-rustfs-entrypoint.sh
+
+# Start as root so Railway volumes can be chowned, then drop to UID 10001 when possible.
+ENTRYPOINT ["/deml-rustfs-entrypoint.sh"]
+CMD ["/data"]
 
 LABEL org.opencontainers.image.title="deml-rustfs"
 LABEL org.opencontainers.image.description="DEML report object store (RustFS S3-compatible)"
