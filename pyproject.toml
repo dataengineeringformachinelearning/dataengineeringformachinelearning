@@ -1,3 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "deml-monorepo"
+version = "0.1.0"
+description = "DEML Platform mono-repository - see individual packages for installable components"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+
+# UV Workspace configuration for Python packages
+[tool.uv.workspace]
+members = [
+    "packages/deml-crypto",
+    "packages/deml-event-client",
+    "packages/deml-rate-limit",
+    "packages/deml-storage",
+]
+
+# Ruff configuration (inherited by all packages)
 [tool.ruff]
 # Target Python version.
 target-version = "py310"
