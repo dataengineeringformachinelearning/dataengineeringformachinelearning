@@ -68,10 +68,11 @@ async fn main() -> Result<()> {
     if cfg.role.runs(Role::Scheduler) {
         let producer = kafka::build_producer(&cfg)?;
         let pool = pool.clone();
+        let clickhouse_url = cfg.clickhouse_url.clone();
         tasks.spawn(async move {
             (
                 "scheduler",
-                tasks::cron_publisher::run(pool, producer).await,
+                tasks::cron_publisher::run(pool, producer, clickhouse_url).await,
             )
         });
     }

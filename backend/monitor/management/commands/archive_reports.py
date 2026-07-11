@@ -2,6 +2,10 @@
 
 Supports REPORT_ARCHIVE_RETENTION_DAYS (90) queryable days in Neon.
 Beyond that period, analytics are available via ClickHouse for long-term storage.
+
+NOTE: This command is Rust-native. The deml-daemon:scheduler executes
+run_archive_reports directly. This file remains as fallback AND for the
+--backfill-days feature which provides user-by-user archival.
 """
 
 import logging

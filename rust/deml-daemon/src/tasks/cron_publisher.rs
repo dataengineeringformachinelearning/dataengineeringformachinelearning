@@ -3,6 +3,10 @@
 //! Each cadence maps to an absolute UTC bucket. A unique Postgres constraint prevents
 //! restarts or multiple replicas from creating duplicate logical runs. Publishing is
 //! leased separately so a broker outage is retried without creating a new run.
+//!
+//! Tasks are classified into:
+//! - Rust-native: db_cleanup, optimize_database, archive_reports (executed directly)
+//! - Python-only: ML, threat intel, Stripe sync (published to internal-tasks Kafka)
 
 use std::time::Duration;
 
@@ -15,6 +19,15 @@ use tracing::{error, info, warn};
 use uuid::Uuid;
 
 use crate::kafka;
+use crate::tasks::maintenance;
+
+// Tasks that Rust executes natively (no Kafka publish needed)
+const RUST_NATIVE_TASKS: &[&str] = &[
+    "db_cleanup",
+    "optimize_database",
+    "archive_reports",
+    "cleanup_clickhouse",
+];
 
 struct CronTask {
     name: &'static str,
@@ -110,7 +123,7 @@ struct TaskTrigger<'a> {
     source: &'static str,
 }
 
-pub async fn run(pool: PgPool, producer: FutureProducer) -> Result<()> {
+pub async fn run(pool: PgPool, producer: FutureProducer, clickhouse_url: Option<String>) -> Result<()> {
     let owner = Uuid::new_v4();
     info!(%owner, tasks = CRON_TASKS.len(), "scheduler: started");
 
@@ -121,7 +134,7 @@ pub async fn run(pool: PgPool, producer: FutureProducer) -> Result<()> {
         match claim_runs(&pool, owner, 20).await {
             Ok(runs) => {
                 for run in runs {
-                    publish_run(&pool, &producer, owner, run).await;
+                    execute_run(&pool, &producer, &clickhouse_url, owner, run).await;
                 }
             }
             Err(error) => error!(%error, "scheduler: failed to claim runs"),
@@ -186,11 +199,32 @@ async fn claim_runs(pool: &PgPool, owner: Uuid, limit: i64) -> Result<Vec<Schedu
 }
 
 #[tracing::instrument(
-    name = "publish_scheduled_run",
+    name = "execute_or_publish_scheduled_run",
     skip_all,
     fields(run_id = %run.id, task = %run.task_name)
 )]
-async fn publish_run(pool: &PgPool, producer: &FutureProducer, owner: Uuid, run: ScheduledRun) {
+async fn execute_run(pool: &PgPool, producer: &FutureProducer, clickhouse_url: &Option<String>, owner: Uuid, run: ScheduledRun) {
+    // Rust-native tasks execute directly without Kafka
+    if RUST_NATIVE_TASKS.contains(&run.task_name.as_str()) {
+        execute_native_task(pool, clickhouse_url.as_deref(), &run.task_name, run.id).await;
+        // Update state to completed (native execution)
+        let _ = sqlx::query(
+            r#"
+            UPDATE scheduled_task_runs
+            SET state = 'completed', attempts = attempts + 1,
+                completed_at = NOW(),
+                claimed_by = NULL, lease_expires_at = NULL, updated_at = NOW()
+            WHERE id = $1 AND claimed_by = $2
+            "#,
+        )
+        .bind(run.id)
+        .bind(owner)
+        .execute(pool)
+        .await;
+        return;
+    }
+
+    // Python-only tasks publish to internal-tasks
     let trigger = TaskTrigger {
         run_id: run.id,
         task: &run.task_name,
@@ -253,5 +287,36 @@ async fn publish_run(pool: &PgPool, producer: &FutureProducer, owner: Uuid, run:
             .execute(pool)
             .await;
         }
+    }
+}
+
+/// Execute Rust-native tasks directly (db_cleanup, optimize_database, archive_reports)
+async fn execute_native_task(pool: &PgPool, clickhouse_url: Option<&str>, task_name: &str, run_id: Uuid) {
+    match task_name {
+        "db_cleanup" => {
+            if let Err(e) = maintenance::run_db_cleanup(pool).await {
+                error!(run_id = %run_id, error = %e, "native db_cleanup failed");
+            }
+        }
+        "optimize_database" => {
+            if let Err(e) = maintenance::run_optimize_database(pool).await {
+                error!(run_id = %run_id, error = %e, "native optimize_database failed");
+            }
+        }
+        "archive_reports" => {
+            if let Err(e) = maintenance::run_archive_reports(pool).await {
+                error!(run_id = %run_id, error = %e, "native archive_reports failed");
+            }
+        }
+        "cleanup_clickhouse" => {
+            if let Some(url) = clickhouse_url {
+                if let Err(e) = maintenance::run_cleanup_clickhouse(url).await {
+                    error!(run_id = %run_id, error = %e, "native cleanup_clickhouse failed");
+                }
+            } else {
+                warn!(run_id = %run_id, "cleanup_clickhouse: CLICKHOUSE_URL not configured");
+            }
+        }
+        _ => warn!(task = task_name, "unknown native task"),
     }
 }

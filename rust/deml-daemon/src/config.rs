@@ -88,6 +88,9 @@ pub struct Config {
     /// Health/ingestion HTTP bind address.
     pub bind_address: String,
 
+    /// ClickHouse connection URL for archival cleanup.
+    pub clickhouse_url: Option<String>,
+
     /// Dragonfly/Redis URL. Required by the ingress role outside local development.
     pub redis_url: Option<String>,
 
@@ -178,6 +181,7 @@ impl Config {
                 "0.0.0.0:{}",
                 env::var("PORT").unwrap_or_else(|_| "8080".to_string())
             ),
+            clickhouse_url: env::var("CLICKHOUSE_URL").ok().filter(|v| !v.is_empty()),
             redis_url: env::var("REDIS_URL").ok().filter(|v| !v.is_empty()),
             cpe_redis_url: env::var("CPE_REDIS_URL").ok().filter(|v| !v.is_empty()),
             redis_ssl_ca_pem: decode_bytes_env("REDIS_SSL_CA_B64")?,

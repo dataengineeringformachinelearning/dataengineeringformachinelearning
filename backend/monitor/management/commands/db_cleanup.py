@@ -7,8 +7,14 @@ Retention strategy:
 - CookieConsent: 30 days (compliance)
 - ReportArchive: 90 days (queryable reports; older in ClickHouse)
 - ThreatIntelligence: 90 days (security data)
+
+NOTE: This command is now Rust-native. The deml-daemon:scheduler executes
+run_db_cleanup directly. This file remains as fallback for PYTHON_EMBEDDED_SCHEDULERS_ENABLED=1.
 """
 
+from __future__ import annotations
+
+import os
 from datetime import timedelta
 from typing import Any
 
@@ -36,14 +42,29 @@ from monitor.models import (
 class Command(BaseCommand):
   help = (
     f"Cleans up Neon raw telemetry older than {RAW_TELEMETRY_RETENTION_DAYS} days; "
-    f"purges stale outbox events and old analytics rollups."
+    f"purges stale outbox events and old analytics rollups. "
+    "(Rust-native fallback)"
   )
 
   def handle(self, *args: Any, **options: Any) -> None:
-    cutoff = timezone.now() - timedelta(days=RAW_TELEMETRY_RETENTION_DAYS)
-    outbox_published_cutoff = timezone.now() - timedelta(days=OUTBOX_PUBLISHED_RETENTION_DAYS)
-    outbox_dlq_cutoff = timezone.now() - timedelta(days=OUTBOX_DLQ_RETENTION_DAYS)
-    threat_cutoff = timezone.now() - timedelta(days=THREAT_INTELLIGENCE_RETENTION_DAYS)
+    # Check if embedded schedulers are disabled (production mode)
+    embedded = os.environ.get("PYTHON_EMBEDDED_SCHEDULERS_ENABLED", "0") == "1"
+    if not embedded:
+      self.stdout.write(
+        "Embedded schedulers disabled (PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0); "
+        "this command is not used in production. Rust scheduler handles db_cleanup."
+      )
+      return
+
+    # Fallback: run the actual cleanup
+    self._run_cleanup()
+
+  def _run_cleanup(self) -> None:
+    now = timezone.now()
+    cutoff = now - timedelta(days=RAW_TELEMETRY_RETENTION_DAYS)
+    outbox_published_cutoff = now - timedelta(days=OUTBOX_PUBLISHED_RETENTION_DAYS)
+    outbox_dlq_cutoff = now - timedelta(days=OUTBOX_DLQ_RETENTION_DAYS)
+    threat_cutoff = now - timedelta(days=THREAT_INTELLIGENCE_RETENTION_DAYS)
 
     self._purge_legacy_threat_intel_dupes()
 
@@ -69,7 +90,7 @@ class Command(BaseCommand):
       bucket_size="1h", timestamp__lt=cutoff
     ).delete()
 
-    # Purge old ThreatIntelligence (90 day retention)
+    # Purge old threat intelligence
     threat_deleted, _ = ThreatIntelligence.objects.filter(timestamp__lt=threat_cutoff).delete()
 
     self.stdout.write(

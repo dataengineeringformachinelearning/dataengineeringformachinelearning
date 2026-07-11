@@ -5,6 +5,9 @@ ClickHouse retention schedule (from utils/retention.py):
 - security_events: CH_SECURITY_EVENTS_RETENTION_DAYS (365) retention
 - asset_vulnerability_ledger: 730 days (2 years)
 - otel_traces/metrics: TTL managed by ClickHouse MergeTree (730+ days)
+
+NOTE: This command is now Rust-native. The deml-daemon:scheduler executes
+run_cleanup_clickhouse directly. This file remains as fallback for PYTHON_EMBEDDED_SCHEDULERS_ENABLED=1.
 """
 
 from __future__ import annotations

@@ -47,22 +47,22 @@ logger = logging.getLogger("deml_workers")
 # ── Allowed task names from internal-tasks topic ──────────────────────────────
 # Only whitelisted commands can be triggered via the Redpanda task trigger.
 # This prevents arbitrary command injection if the Redpanda topic is compromised.
+#
+# Rust-native tasks (db_cleanup, optimize_database, archive_reports, cleanup_clickhouse)
+# are executed directly by deml-daemon:scheduler and NOT published to Kafka.
+# They are listed here for documentation but should not be dispatched by workers.
 ALLOWED_TASKS: frozenset[str] = frozenset(
   {
     "aggregate_analytics",
-    "archive_reports",
     "sync_subscriptions",
     "reconcile_accounts",
     "train_all_models",
-    "db_cleanup",
-    "cleanup_clickhouse",
     "fetch_threat_intel",
     "generate_export",
     "ingest_taxii",
     "run_lighthouse_scans",
     "rotate_keys_if_due",
     "scan_dark_web",
-    "optimize_database",
   }
 )
 
