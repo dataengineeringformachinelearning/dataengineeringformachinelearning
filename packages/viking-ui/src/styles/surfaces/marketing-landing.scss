@@ -1368,7 +1368,7 @@
   grid-template-columns: repeat(
     auto-fit,
     minmax(
-      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      min(100%, calc(var(--viking-space-16) + var(--viking-space-4))),
       1fr
     )
   );
@@ -1445,7 +1445,10 @@
 
 .integration-logos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--viking-metric-card-min-width)), 1fr)
+  );
   gap: var(--viking-space-2);
 }
 
@@ -1489,7 +1492,7 @@
   grid-template-columns: repeat(
     auto-fit,
     minmax(
-      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      min(100%, calc(var(--viking-space-16) + var(--viking-space-4))),
       1fr
     )
   );

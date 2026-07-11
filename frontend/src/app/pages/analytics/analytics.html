@@ -200,6 +200,54 @@
             </div>
           </div>
 
+          <!-- Honeypot Detection (5th indicator) -->
+          <div class="viking-card gauge-card col-span-4 col-span-md-4">
+            <div class="gauge-card-header">
+              <h3>Honeypot Activity</h3>
+              <viking-app-icon name="bug-report" />
+            </div>
+            <div class="gauge-wrapper honeypot-gauge">
+              <viking-gauge-arc class="theme-crimson" tone="crimson" [value]="honeypotScore" />
+              <div class="gauge-center-text honeypot-text">
+                <viking-app-icon name="security" hostClass="gauge-inner-icon" />
+                <span class="unit">CAPTURES</span>
+                <span class="value"
+                  >{{ honeypotScore | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+                >
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <viking-app-icon name="info" />
+              <span>Threat actor detection rate</span>
+            </div>
+          </div>
+
+          <!-- Benchmark Indicator -->
+          <div class="viking-card gauge-card col-span-4 col-span-md-4">
+            <div class="gauge-card-header">
+              <h3>Model Benchmark</h3>
+              <viking-app-icon name="science" />
+            </div>
+            <div class="gauge-wrapper benchmark-gauge">
+              <viking-gauge-arc
+                class="theme-teal"
+                tone="teal"
+                [value]="latestBenchmarkScore !== null ? latestBenchmarkScore : 75"
+              />
+              <div class="gauge-center-text benchmark-text">
+                <viking-app-icon name="speed" hostClass="gauge-inner-icon" />
+                <span class="unit">SCORE</span>
+                <span class="value"
+                  >{{ latestBenchmarkScore !== null ? (latestBenchmarkScore | number:'1.0-0') : '—' }}</span
+                >
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <viking-app-icon name="info" />
+              <span>Latest ML performance benchmark</span>
+            </div>
+          </div>
+
           <!-- STABLENESS GAUGE -->
           <div class="viking-card gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">

@@ -120,6 +120,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public slaLevel = 0;
   public stabilityLevel = 0;
   public temporalForecast = 50;
+  public honeypotScore = 0;
+  public latestBenchmarkScore: number | null = null;
 
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
   frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
@@ -275,6 +277,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.stabilityLevel = ces?.stability || 0;
           this.temporalForecast =
             response.data?.spiking_temporal_forecast || ces?.spiking_temporal_forecast || 50;
+          this.honeypotScore = response.data?.honeypot_score || 0;
+          this.latestBenchmarkScore = response.data?.latest_benchmark_score || null;
 
           this.p99Latency = user_metrics?.p99_latency_ms || 0;
           this.uptimePercent = user_metrics?.uptime_percent || 0;
