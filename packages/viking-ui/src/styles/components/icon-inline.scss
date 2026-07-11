@@ -68,6 +68,39 @@ viking-icon,
   min-width: 0;
 }
 
+/* Fallback for static HTML hosts and engines that do not apply :has() to
+   layout selectors. These are Viking-UI's explicit icon/text primitives. */
+:where(
+  .viking-button,
+  .viking-btn,
+  .cta-button,
+  .viking-icon-text,
+  .blue-notes-kicker,
+  .hero-stat-pill,
+  .integration-logo-item,
+  .blue-note-read-link
+) {
+  align-items: center;
+  gap: var(--viking-space-1);
+}
+
+:where(
+  .viking-button,
+  .viking-btn,
+  .cta-button,
+  .viking-icon-text,
+  .blue-notes-kicker,
+  .hero-stat-pill,
+  .integration-logo-item,
+  .blue-note-read-link
+) > .viking-icon-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  vertical-align: middle;
+}
+
 .nav-btn,
 .mobile-nav-btn,
 .auth-btn,

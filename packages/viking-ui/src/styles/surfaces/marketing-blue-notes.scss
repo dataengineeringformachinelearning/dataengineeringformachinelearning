@@ -61,6 +61,13 @@
   margin-top: var(--viking-space-2);
 }
 
+.blue-notes-hero-actions .viking-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+}
+
 .blue-notes-featured,
 .blue-notes-archive {
   display: grid;
