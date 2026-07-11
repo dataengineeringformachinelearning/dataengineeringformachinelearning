@@ -122,6 +122,37 @@ Role-specific:
 
 `DEML_ROLE` is set by each Rust service’s `startCommand` in `railway.json` — do not run a bare `deml-daemon` image without a role.
 
+### Hugging Face Model Publishing
+
+ML workers publish trained models to Hugging Face when both `HF_TOKEN` and `HF_REPO_ID` are set. Required repository secrets:
+
+| Secret             | Description                              |
+| ------------------ | ---------------------------------------- |
+| `HF_TOKEN`         | Hugging Face API token with write access   |
+| `HF_REPO_ID`       | Repository ID (e.g., `organization/model`) |
+| `HF_SPACE_REPO`    | Space repo for whitepaper hosting (deploy) |
+
+Models are published via `huggingface_hub.HfApi` using PyTorch `state_dict` only (no pickle for security). Tenant models are namespaced with hashed tenant slugs.
+
+### GitHub Deploy Secrets (required)
+
+| Secret                             | Workflow                                                  |
+| ---------------------------------- | ------------------------------------------------------- |
+| `NPM_TOKEN`                        | `publish-viking-ui.yml` (npm package publishing)        |
+| `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM` | Backend, marketing hosting, and hosting merge workflows   |
+| `FIREBASE_SERVICE_ACCOUNT_DEML_UI`   | `publish-viking-ui.yml` (Viking-UI showcase hosting)    |
+| `CHROMATIC_PROJECT_TOKEN`            | `publish-viking-ui.yml` (Storybook)                     |
+| `REDPANDA_PUBLIC_BROKERS`          | `firebase-backend-deploy.yml` (direct publish path)      |
+| `REDPANDA_PUBLIC_SASL_USERNAME`    | Same (SASL credentials)                                  |
+| `REDPANDA_PUBLIC_SASL_PASSWORD`    | Same                                                     |
+| `REDPANDA_PUBLIC_TLS_CA_B64`     | Same (TLS CA for broker cert)                              |
+| `DEML_INTERNODE_KEYS`              | Same (internode encryption keyring)                        |
+| `DEML_INTERNODE_ACTIVE_KID`        | Same (active key ID)                                       |
+| `CLOUDFLARE_TOKEN`               | All Cloudflare cache purge workflows                      |
+| `CLOUDFLARE_ZONE_ID_DEML_MARKETING` | Same                                                    |
+| `CLOUDFLARE_ZONE_ID_DEML_APP`        | Same                                                    |
+
+
 ## Deployment order (production)
 
 1. **Migrate control plane** on `deml-backend` (`0041_rust_data_plane`, `0042_alter_outboxevent_available_at`).
