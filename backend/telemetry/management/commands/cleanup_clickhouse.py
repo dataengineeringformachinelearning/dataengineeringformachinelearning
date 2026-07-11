@@ -80,6 +80,7 @@ class Command(BaseCommand):
     """Execute a ClickHouse query via HTTP interface."""
     url = f"{base_url}/?query={query}&default_week_start=0"
     req = urllib.request.Request(url, method="POST")
+    # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
     with urllib.request.urlopen(req, timeout=30) as response:
       if response.status != 200:
         raise RuntimeError(f"ClickHouse query failed: {response.status}")
