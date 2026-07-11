@@ -1,4 +1,9 @@
-"""Materialize nightly report archives from hourly rollups."""
+"""Materialize nightly report archives from hourly rollups.
+
+Supports 180-day report queries via ReportArchive. The worker processes
+yesterday's data into daily rollups, keeping materialized data for fast reads.
+Beyond 180 days, analytics are available via ClickHouse for long-term storage.
+"""
 
 import logging
 from datetime import timedelta
@@ -15,8 +20,20 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+# Number of days to process in backfill mode
+MAX_BACKFILL_DAYS = 180
+
+
 class Command(BaseCommand):
   help = "Create nightly report archives from hourly AggregatedAnalytics rollups"
+
+  def add_arguments(self, parser):
+    parser.add_argument(
+      "--backfill-days",
+      type=int,
+      default=0,
+      help="Backfill archives for the last N days (max 180). Useful for initial migration.",
+    )
 
   def _archive_scope(self, *, user=None, is_platform: bool, report_date) -> None:
     """Aggregate hourly data into daily archive for a user/platform scope."""
@@ -95,23 +112,38 @@ class Command(BaseCommand):
     return round(weighted_sum / total_weight, 2)
 
   def handle(self, *args, **options):
-    self.stdout.write("Starting nightly report archive...")
+    backfill_days = int(options.get("backfill_days", 0))
+    backfill_days = max(0, min(backfill_days, MAX_BACKFILL_DAYS))
+
+    self.stdout.write(
+      f"Starting nightly report archive (backfill: {backfill_days} days)..."
+    )
     self.stdout.write("Using symmetrical multi-tenant processing (includes platform scope).")
 
-    report_date = timezone.now().date() - timedelta(days=1)
     processed_count = 0
 
-    # Platform scope first (Tenant0 dogfooding)
-    self._archive_scope(user=None, is_platform=True, report_date=report_date)
-    processed_count += 1
+    # Determine date range to process
+    if backfill_days > 0:
+      date_range = [
+        timezone.now().date() - timedelta(days=i) for i in range(1, backfill_days + 1)
+      ]
+    else:
+      date_range = [timezone.now().date() - timedelta(days=1)]
 
-    # Now process all tenants symmetrically
-    for user in User.objects.filter(profile__isnull=False).select_related("profile"):
-      self._archive_scope(user=user, is_platform=False, report_date=report_date)
+    for report_date in date_range:
+      # Platform scope first (Tenant0 dogfooding)
+      self._archive_scope(user=None, is_platform=True, report_date=report_date)
+
+      # Now process all tenants symmetrically
+      for user in User.objects.filter(profile__isnull=False).select_related("profile"):
+        self._archive_scope(user=user, is_platform=False, report_date=report_date)
+        processed_count += 1
+
+      # +1 for platform scope
       processed_count += 1
 
     self.stdout.write(
       self.style.SUCCESS(
-        f"Successfully archived {processed_count} reports for {report_date}."
+        f"Successfully archived {processed_count} reports across {len(date_range)} days."
       )
     )

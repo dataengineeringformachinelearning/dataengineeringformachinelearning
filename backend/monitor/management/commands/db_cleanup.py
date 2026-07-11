@@ -8,9 +8,10 @@ from utils.retention import (
   OUTBOX_DLQ_RETENTION_DAYS,
   OUTBOX_PUBLISHED_RETENTION_DAYS,
   RAW_TELEMETRY_RETENTION_DAYS,
+  REPORT_ARCHIVE_RETENTION_DAYS,
 )
 
-from monitor.models import AuditLog, CookieConsent, Endpoints, OutboxEvent
+from monitor.models import AuditLog, CookieConsent, Endpoints, OutboxEvent, ReportArchive
 
 
 class Command(BaseCommand):
@@ -23,6 +24,7 @@ class Command(BaseCommand):
     cutoff = timezone.now() - timedelta(days=RAW_TELEMETRY_RETENTION_DAYS)
     outbox_published_cutoff = timezone.now() - timedelta(days=OUTBOX_PUBLISHED_RETENTION_DAYS)
     outbox_dlq_cutoff = timezone.now() - timedelta(days=OUTBOX_DLQ_RETENTION_DAYS)
+    archive_cutoff = timezone.now().date() - timedelta(days=REPORT_ARCHIVE_RETENTION_DAYS)
 
     threat_dupes_deleted = self._purge_legacy_threat_intel_dupes()
 
@@ -43,6 +45,9 @@ class Command(BaseCommand):
       is_published=False, attempts__gte=5, created_at__lt=outbox_dlq_cutoff
     ).delete()
 
+    # Purge expired report archives (older than 180 days)
+    archive_deleted, _ = ReportArchive.objects.filter(report_date__lt=archive_cutoff).delete()
+
     self.stdout.write(
       self.style.SUCCESS(
         f"Cleanup completed: {endpoints_deleted} Endpoints, "
@@ -51,7 +56,9 @@ class Command(BaseCommand):
         f"{RAW_TELEMETRY_RETENTION_DAYS} days deleted; "
         f"{threat_dupes_deleted} legacy ThreatIntelligence duplicates removed; "
         f"{outbox_published_deleted} published outbox events and "
-        f"{outbox_dlq_deleted} DLQ outbox events purged."
+        f"{outbox_dlq_deleted} DLQ outbox events purged; "
+        f"{archive_deleted} ReportArchive records older than "
+        f"{REPORT_ARCHIVE_RETENTION_DAYS} days archived to ClickHouse."
       )
     )
 
