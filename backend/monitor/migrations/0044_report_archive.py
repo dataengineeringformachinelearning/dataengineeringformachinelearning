@@ -68,10 +68,12 @@ class Migration(migrations.Migration):
     ),
     migrations.AddIndex(
       model_name="reportarchive",
-      index=models.Index(fields=["user", "report_date"]),
+      index=models.Index(fields=["user", "report_date"], name="report_archives_user_date_idx"),
     ),
     migrations.AddIndex(
       model_name="reportarchive",
-      index=models.Index(fields=["is_platform", "report_date"]),
+      index=models.Index(
+        fields=["is_platform", "report_date"], name="report_archives_platform_date_idx"
+      ),
     ),
   ]
