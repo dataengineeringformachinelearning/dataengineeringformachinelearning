@@ -1,5 +1,14 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 6.0.0
+
+### Major Changes
+
+- Interlocked suite navigation now shares authenticated state across Angular,
+  Astro, Django, and framework-neutral Web Component surfaces.
+- Navigation, footer, command palette, and call-to-action contracts now update
+  together after sign-in, sign-out, and one-time session handoff events.
+
 ## 5.2.0
 
 ### Minor Changes

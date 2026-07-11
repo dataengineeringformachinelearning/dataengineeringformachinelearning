@@ -46,6 +46,12 @@ repos:
         language: system
         files: ^packages/viking-ui/src/lib/site-drakkar/|^frontend/scripts/build_site_drakkar\.mjs$|^frontend/src/assets/widgets/navbar\.js$
         pass_filenames: false
+      - id: check-viking-ui-version
+        name: Viking-UI version contract
+        entry: npm run check:viking-ui:version
+        language: system
+        files: ^(package(?:-lock)?\.json|BOOK\.md|WHITEPAPER\.md|docs/viking-ui-release\.md|scripts/sync_viking_ui_version\.mjs|packages/viking-ui/(?:package(?:-lock)?\.json|README\.md|MIGRATION_PLAN\.md)|(?:frontend|marketing|viking-ui-docs)/(?:package(?:-lock)?\.json|README\.md|src/))
+        pass_filenames: false
       - id: semgrep-css
         name: Semgrep CSS/SCSS Scan
         entry: uvx semgrep scan --error

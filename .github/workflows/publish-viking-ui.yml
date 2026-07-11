@@ -50,6 +50,9 @@ jobs:
           cache-dependency-path: package-lock.json
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Verify Viking-UI version contract
+        run: npm run check:viking-ui:version
+
       - name: Install workspace dependencies
         run: npm ci --legacy-peer-deps
 
@@ -103,7 +106,9 @@ jobs:
           fi
 
           if npm view "@dataengineeringformachinelearning/viking-ui@${LOCAL_VERSION}" version >/dev/null 2>&1; then
-            echo "::error ::No changesets were published and version ${LOCAL_VERSION} already exists on npm. Add a new changeset, bump version, or re-run with force_publish=true."
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "Viking-UI ${LOCAL_VERSION} is already published; continuing idempotent asset sync and showcase deployment."
+            exit 0
           else
             echo "::error ::No changesets were published. Add a changeset in .changeset/ or re-run with force_publish=true."
           fi
@@ -129,7 +134,7 @@ jobs:
 
       - name: Build Viking-UI showcase
         if: steps.ensure-release.outputs.published == 'true'
-        run: npm run build-viking-ui-docs
+        run: npm run build:viking-ui-docs
 
       - name: Authenticate to Firebase
         if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
