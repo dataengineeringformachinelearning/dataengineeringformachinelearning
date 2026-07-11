@@ -22,6 +22,7 @@ import { environment } from '../../../environments/environment';
       (logout)="logout()"
       (searchOpen)="searchService.open()"
       (themeToggle)="themeService.toggleTheme()"
+      (marketingNavigate)="navigateToMarketing($event)"
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,5 +48,9 @@ export class Navbar {
     await this.authService.logout();
     this.sessionState.broadcastLogout();
     void this.router.navigate(['/login']);
+  }
+
+  navigateToMarketing(targetUrl: string): void {
+    void this.authService.navigateToMarketingSite(targetUrl);
   }
 }

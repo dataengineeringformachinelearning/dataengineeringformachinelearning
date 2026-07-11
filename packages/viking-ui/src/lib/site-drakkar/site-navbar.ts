@@ -89,7 +89,11 @@ import {
                 <span>{{ link.label }}</span>
               </a>
             } @else {
-              <a [href]="resolveHref(link)" class="nav-btn">
+              <a
+                [href]="resolveHref(link)"
+                class="nav-btn"
+                (click)="onExternalClick($event, link)"
+              >
                 <viking-icon [name]="link.icon" [size]="16" />
                 <span>{{ link.label }}</span>
               </a>
@@ -183,7 +187,7 @@ import {
             <a
               [href]="resolveHref(link)"
               class="mobile-nav-btn"
-              (click)="closeMobileMenu()"
+              (click)="onExternalClick($event, link); closeMobileMenu()"
             >
               <viking-icon [name]="link.icon" [size]="16" />
               <span>{{ link.label }}</span>
@@ -233,6 +237,7 @@ export class VikingSiteNavbar {
   readonly logout = output<void>();
   readonly themeToggle = output<void>();
   readonly searchOpen = output<void>();
+  readonly marketingNavigate = output<string>();
 
   protected readonly mobileMenuOpen = signal(false);
 
@@ -252,8 +257,32 @@ export class VikingSiteNavbar {
   protected isAppRouterPath = isAppRouterPath;
 
   protected onBrandClick(event: MouseEvent): void {
+    if (this.context() !== "app") {
+      return;
+    }
     event.preventDefault();
-    window.location.href = this.brandHref();
+    this.marketingNavigate.emit(this.brandHref());
+  }
+
+  protected onExternalClick(
+    event: MouseEvent,
+    link: (typeof SITE_NAV_LINKS)[number],
+  ): void {
+    if (this.context() !== "app") {
+      return;
+    }
+    const href = this.resolveHref(link);
+    try {
+      const targetOrigin = new URL(href, window.location.origin).origin;
+      const marketingOrigin = new URL(this.urls().marketing).origin;
+      if (targetOrigin !== marketingOrigin) {
+        return;
+      }
+    } catch {
+      return;
+    }
+    event.preventDefault();
+    this.marketingNavigate.emit(href);
   }
 
   protected toggleMobileMenu(): void {

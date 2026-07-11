@@ -1,0 +1,127 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import VikingIcon from '../../components/VikingIcon.astro';
+import {
+  blueNoteHref,
+  formatBlueNoteDate,
+  getBlueNotes,
+  type BlueNote,
+} from '../../lib/blue-notes';
+import { blogPostingJsonLd, canonicalHref } from '../../lib/seo';
+import { siteEnv } from '../../lib/site-env';
+
+export const getStaticPaths = async () => {
+  const notes = await getBlueNotes();
+
+  return notes.map(note => ({
+    params: { slug: note.id },
+    props: { note },
+  }));
+};
+
+interface Props {
+  note: BlueNote;
+}
+
+const { note } = Astro.props;
+const notes = await getBlueNotes();
+const noteIndex = notes.findIndex(candidate => candidate.id === note.id);
+const newerNote = noteIndex > 0 ? notes[noteIndex - 1] : undefined;
+const olderNote = noteIndex >= 0 ? notes[noteIndex + 1] : undefined;
+const { Content, headings } = await render(note);
+const { MARKETING_URL } = siteEnv();
+const noteUrl = canonicalHref(blueNoteHref(note), MARKETING_URL);
+const pageTitle = `${note.data.title} — DEML Blue Notes`;
+const jsonLd = blogPostingJsonLd(
+  note.data.title,
+  note.data.summary,
+  noteUrl,
+  note.data.publishedAt,
+  note.data.updatedAt,
+);
+---
+
+<Layout
+  title={pageTitle}
+  description={note.data.summary}
+  keywords={[...note.data.categories, 'DEML Blue Notes', 'platform changelog'].join(', ')}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <div class="dashboard-page-container blue-note-detail-page">
+    <div class="page-inner-wrapper blue-note-detail-wrapper">
+      <nav class="blue-note-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/blog/">Blue Notes</a>
+        <VikingIcon name="chevron_right" size={16} />
+        <span aria-current="page">{note.data.note}</span>
+      </nav>
+
+      <article class="publication-shell blue-note-publication">
+        <header class="publication-hero blue-note-article-hero">
+          <div class="blue-note-card-meta">
+            <span class="viking-badge viking-badge-accent">{note.data.note}</span>
+            <time datetime={note.data.publishedAt.toISOString()}>
+              {formatBlueNoteDate(note.data.publishedAt)}
+            </time>
+          </div>
+          <h1 class="hero-title">{note.data.title}</h1>
+          <p class="hero-subtitle">{note.data.summary}</p>
+          <ul class="blue-note-categories" aria-label="Categories">
+            {note.data.categories.map(category => <li>{category}</li>)}
+          </ul>
+        </header>
+
+        <div class="blue-note-article-layout">
+          {headings.length > 0 && (
+            <aside class="blue-note-outline no-print">
+              <span class="blue-note-outline-label">In this note</span>
+              <nav aria-label="On this page">
+                {headings.filter(heading => heading.depth === 2).map(heading => (
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                ))}
+              </nav>
+            </aside>
+          )}
+
+          <div class="publication-body blue-note-prose">
+            <Content />
+          </div>
+        </div>
+
+        <footer class="blue-note-article-footer">
+          <div>
+            <span class="blue-note-outline-label">Living release record</span>
+            <p>
+              Blue Notes summarize shipped outcomes. The public repository remains the detailed engineering record.
+            </p>
+          </div>
+          <a
+            class="viking-button"
+            data-variant="outline"
+            href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View source <VikingIcon name="arrow-up-right" size={18} />
+          </a>
+        </footer>
+      </article>
+
+      <nav class="blue-note-pagination" aria-label="Blue Note navigation">
+        {olderNote ? (
+          <a href={blueNoteHref(olderNote)} rel="prev">
+            <span>Earlier note</span>
+            <strong>{olderNote.data.title}</strong>
+          </a>
+        ) : <span></span>}
+        {newerNote && (
+          <a href={blueNoteHref(newerNote)} rel="next">
+            <span>Newer note</span>
+            <strong>{newerNote.data.title}</strong>
+          </a>
+        )}
+      </nav>
+    </div>
+  </div>
+</Layout>

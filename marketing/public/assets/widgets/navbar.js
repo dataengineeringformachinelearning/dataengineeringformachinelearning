@@ -3,7 +3,13 @@
  * Requires window.__DEML = { FRONTEND_URL, BACKEND_URL, MARKETING_URL } and viking-ui.css.
  */
 (() => {
-  const AUTH_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+  if (window.__DEML_AUTH_BRIDGE_READY__ === true) {
+    return;
+  }
+  window.__DEML_AUTH_BRIDGE_READY__ = true;
+
+  const AUTH_CACHE_TTL_MS = 60 * 60 * 1000;
+  const AUTH_BRIDGE_ID = 'deml-auth-status-bridge';
 
   const iconPaths = () => window.__VIKING_ICON_PATHS ?? {};
   const filledIconPaths = () => window.__VIKING_ICON_FILLED_PATHS ?? {};
@@ -237,6 +243,9 @@
     const BACKEND_URL = config.BACKEND_URL ?? config.API_BASE ?? '';
     const FRONTEND_URL = config.FRONTEND_URL ?? config.MAIN_APP ?? 'https://deml.app';
     const parentOrigin = window.location.origin;
+    let bridgeIframe = null;
+    let iframeObservedAuthenticated = false;
+    let currentAuthStatus = { isAuthenticated: false };
 
     const readSessionActive = () => {
       const raw = localStorage.getItem('deml_session_active');
@@ -355,6 +364,61 @@
       if (iconTarget) setIcon(iconTarget, iconName, 16);
     };
 
+    const setAuthAwareVisibility = (selector, visible) => {
+      document.querySelectorAll(selector).forEach(el => {
+        el.hidden = !visible;
+        if (visible) {
+          el.style.removeProperty('display');
+        } else {
+          el.style.setProperty('display', 'none', 'important');
+        }
+      });
+    };
+
+    const setAuthAwareHref = (el, href) => {
+      if (!href) return;
+      if (el.tagName.toLowerCase() === 'viking-button-wc') {
+        el.setAttribute('href', href);
+        return;
+      }
+      el.setAttribute('href', href);
+    };
+
+    const updateAuthAwareControls = status => {
+      const isLoggedIn = status?.isAuthenticated === true;
+      document.documentElement.dataset.authenticated = isLoggedIn ? 'true' : 'false';
+      setAuthAwareVisibility('[data-authenticated-only]', isLoggedIn);
+      setAuthAwareVisibility('[data-anonymous-only]', !isLoggedIn);
+
+      document.querySelectorAll('[data-authenticated-href]').forEach(el => {
+        if (!el.dataset.anonymousHref) {
+          el.dataset.anonymousHref = el.getAttribute('href') ?? '';
+        }
+        const href = isLoggedIn ? el.dataset.authenticatedHref : el.dataset.anonymousHref;
+        setAuthAwareHref(el, href);
+
+        const labelTarget =
+          el.querySelector('[data-auth-label]') ?? (el.matches('[data-auth-label]') ? el : null);
+        if (!labelTarget) return;
+        if (!labelTarget.dataset.anonymousLabel) {
+          labelTarget.dataset.anonymousLabel = labelTarget.textContent?.trim() ?? '';
+        }
+        const label = isLoggedIn
+          ? el.dataset.authenticatedLabel
+          : labelTarget.dataset.anonymousLabel;
+        if (label) {
+          labelTarget.textContent = label;
+        }
+      });
+
+      currentAuthStatus = { ...status, isAuthenticated: isLoggedIn };
+      window.dispatchEvent(
+        new CustomEvent('deml:auth-state', {
+          detail: currentAuthStatus,
+        }),
+      );
+    };
+
     const updateAuthUIFromStatus = status => {
       const isLoggedIn = status?.isAuthenticated === true;
 
@@ -377,6 +441,7 @@
         setAuthButtonLabel('auth-text-desktop', 'auth-icon-desktop', 'Sign In', 'arrow-right');
         setAuthButtonLabel('auth-text-mobile', 'auth-icon-mobile', 'Sign In', 'arrow-right');
       }
+      updateAuthAwareControls(status);
     };
 
     const signOut = () => {
@@ -386,7 +451,10 @@
       updateAuthUIFromStatus({ isAuthenticated: false });
 
       const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
+      iframe.hidden = true;
+      iframe.setAttribute('aria-hidden', 'true');
+      iframe.tabIndex = -1;
+      iframe.title = 'DEML sign-out bridge';
       iframe.src = `${FRONTEND_URL}/auth-status?action=signout&parent_origin=${encodeURIComponent(parentOrigin)}`;
       document.body.appendChild(iframe);
       window.setTimeout(() => iframe.remove(), 5000);
@@ -411,11 +479,21 @@
 
     const applyTrustedAuthStatus = (status, source) => {
       if (status?.isAuthenticated) {
+        if (source === 'iframe') {
+          iframeObservedAuthenticated = true;
+        }
         persistAuthCache(status);
         updateAuthUIFromStatus(status);
         return;
       }
-      if (source === 'iframe' && (readSessionActive() || readAuthCache())) {
+      if (
+        source === 'iframe' &&
+        !iframeObservedAuthenticated &&
+        (readSessionActive() || readAuthCache())
+      ) {
+        // Storage-partitioned browsers can make the embedded deml.app frame appear
+        // anonymous even after a verified one-time handoff. Keep the short-lived
+        // handoff cache unless this frame previously observed the signed-in session.
         return;
       }
       updateAuthUIFromStatus(status);
@@ -447,8 +525,9 @@
         console.error('Failed to verify handoff token', e);
       }
 
-      const cleanUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-      window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('session_handoff');
+      window.history.replaceState({ path: cleanUrl.href }, '', cleanUrl.href);
     };
 
     const checkAuthViaIframe = () => {
@@ -460,23 +539,37 @@
         applyTrustedAuthStatus(cached, 'cache');
       }
 
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = `${FRONTEND_URL}/auth-status?parent_origin=${encodeURIComponent(parentOrigin)}`;
-      document.body.appendChild(iframe);
+      const existingBridge = document.getElementById(AUTH_BRIDGE_ID);
+      const iframe =
+        existingBridge instanceof HTMLIFrameElement
+          ? existingBridge
+          : document.createElement('iframe');
+      iframe.id = AUTH_BRIDGE_ID;
+      iframe.hidden = true;
+      iframe.setAttribute('aria-hidden', 'true');
+      iframe.tabIndex = -1;
+      iframe.title = 'DEML authentication status bridge';
+      if (!existingBridge) {
+        iframe.src = `${FRONTEND_URL}/auth-status?parent_origin=${encodeURIComponent(parentOrigin)}`;
+        document.body.appendChild(iframe);
+      }
+      bridgeIframe = iframe;
+
+      const mainOrigin = (() => {
+        try {
+          return new URL(FRONTEND_URL).origin;
+        } catch {
+          return '';
+        }
+      })();
 
       const listener = event => {
-        try {
-          const mainOrigin = new URL(FRONTEND_URL).origin;
-          if (
-            event.origin !== mainOrigin &&
-            !event.origin.includes('localhost') &&
-            !event.origin.includes('127.0.0.1')
-          ) {
-            return;
-          }
-        } catch {
-          if (!event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
+        if (
+          !mainOrigin ||
+          event.origin !== mainOrigin ||
+          event.source !== bridgeIframe?.contentWindow
+        ) {
+          return;
         }
         if (event.data?.type === 'AUTH_STATUS') {
           applyTrustedAuthStatus(event.data, 'iframe');
@@ -484,16 +577,27 @@
       };
 
       window.addEventListener('message', listener);
-      window.setTimeout(() => {
-        iframe.remove();
-        window.removeEventListener('message', listener);
-      }, 15000);
+
+      const requestStatus = () => {
+        bridgeIframe?.contentWindow?.postMessage({ type: 'AUTH_STATUS_REQUEST' }, mainOrigin);
+      };
+      iframe.addEventListener('load', requestStatus);
+      window.addEventListener('focus', requestStatus);
+      window.addEventListener('pageshow', requestStatus);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          requestStatus();
+        }
+      });
+      window.DemlWidgets = window.DemlWidgets ?? {};
+      window.DemlWidgets.refreshAuth = requestStatus;
     };
 
     bindSignOutButtons();
     setAuthNavLinksVisible(false);
     setAuthButtonVisible(true);
     setSignOutVisible(false);
+    updateAuthAwareControls({ isAuthenticated: false });
     void checkAuthHandoff();
     checkAuthViaIframe();
 
@@ -510,6 +614,9 @@
       }
       updateAuthUIFromStatus({ isAuthenticated: false });
     });
+
+    window.DemlWidgets = window.DemlWidgets ?? {};
+    window.DemlWidgets.getAuthStatus = () => ({ ...currentAuthStatus });
   };
 
   const loadIconPaths = async (force = false) => {

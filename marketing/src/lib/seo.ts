@@ -96,3 +96,24 @@ export function techArticleJsonLd(
     publisher: { "@type": "Organization", name: SITE_NAME },
   };
 }
+
+export function blogPostingJsonLd(
+  title: string,
+  description: string,
+  url: string,
+  publishedAt: Date,
+  updatedAt?: Date,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description,
+    url,
+    mainEntityOfPage: url,
+    datePublished: publishedAt.toISOString(),
+    dateModified: (updatedAt ?? publishedAt).toISOString(),
+    author: { "@type": "Person", name: AUTHOR_NAME },
+    publisher: { "@type": "Organization", name: SITE_NAME },
+  };
+}

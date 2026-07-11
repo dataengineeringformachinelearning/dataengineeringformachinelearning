@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   output,
 } from "@angular/core";
@@ -31,7 +32,7 @@ import {
         class="viking-footer-directory footer-directory"
         aria-label="Footer Directory"
       >
-        @for (column of columns; track column.title) {
+        @for (column of columns(); track column.title) {
           <div class="footer-column">
             <h3 class="footer-column-title">{{ column.title }}</h3>
             <ul class="footer-list">
@@ -43,7 +44,13 @@ import {
                         link.label
                       }}</a>
                     } @else {
-                      <a [href]="cookieSettingsUrl()">{{ link.label }}</a>
+                      <a
+                        [href]="cookieSettingsUrl()"
+                        (click)="
+                          onMarketingHrefClick($event, cookieSettingsUrl())
+                        "
+                        >{{ link.label }}</a
+                      >
                     }
                   } @else if (link.action === "bug-report") {
                     @if (context() === "app") {
@@ -56,7 +63,11 @@ import {
                   } @else if (context() === "app" && isAppRoute(link)) {
                     <a [routerLink]="link.appHref">{{ link.label }}</a>
                   } @else {
-                    <a [href]="resolveHref(link)">{{ link.label }}</a>
+                    <a
+                      [href]="resolveHref(link)"
+                      (click)="onExternalClick($event, link)"
+                      >{{ link.label }}</a
+                    >
                   }
                 </li>
               }
@@ -110,12 +121,21 @@ export class VikingSiteFooter {
   readonly context = input<SiteDrakkarContext>("app");
   readonly urls = input<SiteUrls>(DEFAULT_SITE_URLS);
   readonly year = input<number>(new Date().getFullYear());
+  readonly isAuthenticated = input<boolean>(false);
 
   readonly cookieSettings = output<Event>();
   readonly bugReport = output<Event>();
   readonly usaBadgeHover = output<Event>();
+  readonly marketingNavigate = output<string>();
 
-  protected readonly columns = SITE_FOOTER_COLUMNS;
+  protected readonly columns = computed(() =>
+    SITE_FOOTER_COLUMNS.map((column) => ({
+      ...column,
+      links: column.links.filter(
+        (link) => !link.requireAuth || this.isAuthenticated(),
+      ),
+    })),
+  );
 
   protected readonly cookieSettingsUrl = () => cookieSettingsHref(this.urls());
 
@@ -133,6 +153,27 @@ export class VikingSiteFooter {
   protected onBugReport(event: Event): void {
     event.preventDefault();
     this.bugReport.emit(event);
+  }
+
+  protected onExternalClick(event: Event, link: SiteFooterLink): void {
+    this.onMarketingHrefClick(event, this.resolveHref(link));
+  }
+
+  protected onMarketingHrefClick(event: Event, href: string): void {
+    if (this.context() !== "app") {
+      return;
+    }
+    try {
+      const targetOrigin = new URL(href, window.location.origin).origin;
+      const marketingOrigin = new URL(this.urls().marketing).origin;
+      if (targetOrigin !== marketingOrigin) {
+        return;
+      }
+    } catch {
+      return;
+    }
+    event.preventDefault();
+    this.marketingNavigate.emit(href);
   }
 
   protected onUsaBadgeKeydown(event: Event): void {

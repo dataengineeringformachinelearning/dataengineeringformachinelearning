@@ -34,6 +34,7 @@ export interface SiteFooterLink {
   action?: "cookie-settings" | "bug-report";
   /** Routes served by deml.app — resolved to absolute app URLs off-app. */
   platform?: boolean;
+  requireAuth?: boolean;
 }
 
 export interface SiteFooterColumn {
@@ -57,6 +58,13 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
     icon: "file",
     appHref: "https://dataengineeringformachinelearning.com/documentation/",
     marketingHref: "/documentation",
+  },
+  {
+    id: "blue-notes",
+    label: "Blue Notes",
+    icon: "file",
+    appHref: "https://dataengineeringformachinelearning.com/blog/",
+    marketingHref: "/blog/",
   },
   {
     id: "dashboard",
@@ -102,18 +110,21 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         appHref: "/dashboard",
         marketingHref: "/dashboard",
         platform: true,
+        requireAuth: true,
       },
       {
         label: "Sites",
         appHref: "/settings",
         marketingHref: "/settings",
         platform: true,
+        requireAuth: true,
       },
       {
         label: "Account",
         appHref: "/account",
         marketingHref: "/account",
         platform: true,
+        requireAuth: true,
       },
     ],
   },
@@ -134,6 +145,11 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         label: "Book",
         appHref: "https://dataengineeringformachinelearning.com/book/",
         marketingHref: "/book",
+      },
+      {
+        label: "Blue Notes",
+        appHref: "https://dataengineeringformachinelearning.com/blog/",
+        marketingHref: "/blog/",
       },
     ],
   },

@@ -231,6 +231,39 @@ describe("Viking Web Components v2", () => {
     expect(titles).toContain("Documentation");
     expect(titles).toContain("Privacy Policy");
     expect(titles).toContain("Whitepaper");
+    expect(titles).toContain("Blue Notes");
+  });
+
+  it("refreshes suite search and footer links from shared auth state", async () => {
+    document.documentElement.setAttribute("data-deml-context", "marketing");
+    document.documentElement.dataset["authenticated"] = "false";
+    const suite = document.createElement("viking-suite-command-palette");
+    const footer = document.createElement("viking-site-footer");
+    document.body.append(suite, footer);
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const palette = suite.querySelector("viking-command-palette");
+    const anonymousItems = JSON.parse(
+      palette?.getAttribute("items") ?? "[]",
+    ) as { title: string }[];
+    expect(anonymousItems.map((item) => item.title)).not.toContain("Dashboard");
+    expect(footer.textContent).not.toContain("Dashboard");
+
+    window.dispatchEvent(
+      new CustomEvent("deml:auth-state", {
+        detail: { isAuthenticated: true },
+      }),
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const authenticatedItems = JSON.parse(
+      palette?.getAttribute("items") ?? "[]",
+    ) as { title: string }[];
+    expect(authenticatedItems.map((item) => item.title)).toContain("Dashboard");
+    expect(footer.textContent).toContain("Dashboard");
   });
 
   it("renders the suite header with shared navigation and opens search", async () => {

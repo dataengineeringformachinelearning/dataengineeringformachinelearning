@@ -12,10 +12,6 @@ license: apache-2.0
 
 # Data Engineering for AI Engineering and Cybersecurity: Developer Platform
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=fff)](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
-[![Acknowledgements](https://img.shields.io/badge/Acknowledgements-%26_Technologies-2176ff)](#acknowledgements--technologies)
-
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
 
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering (including predictive machine learning, model serving, and intelligent systems), and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
@@ -502,7 +498,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
   - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (SpaceXAI)
   - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (SpaceXAI)
   - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Gemini 3.5 (High)](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
-  - [OpenAI Codex](https://openai.com/codex/) — Codex: GPT-5.5, GPT-5.3-Codex-Spark
+  - [OpenAI Codex](https://openai.com/codex/) — Codex: GPT-5.5, GPT-5.3-Codex-Spark, GPT-5.6-Sol
   - [Grok Build Beta](https://x.ai/news/grok-build-cli)
   - [Cursor](https://cursor.com/) — [Grok 4.3](https://docs.spacex.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
   - [Pool](https://pool.ps/) — Pool: Laguna M.1
@@ -511,11 +507,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 
 > Full Cloud Run service + environment variable reference: [Appendix C in BOOK.md](BOOK.md#appendix-c-cloud-run-deployment). Always keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` as the source of truth.
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
-
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20778532.svg)](https://doi.org/10.5281/zenodo.20778532)
 
 [![Semgrep SAST Scan](https://img.shields.io/badge/Semgrep_SAST_Scan-4C4A73?logo=semgrep&logoColor=fff)](https://semgrep.dev)
 
@@ -528,3 +520,11 @@ The DEML platform stands on open-source foundations, enterprise design reference
 ![GitHub issues](https://img.shields.io/github/issues/dataengineeringformachinelearning/dataengineeringformachinelearning)
 
 ![GitHub license](https://img.shields.io/github/license/dataengineeringformachinelearning/dataengineeringformachinelearning)
+
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=fff)](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+
+[![Acknowledgements](https://img.shields.io/badge/Acknowledgements-%26_Technologies-2176ff)](#acknowledgements--technologies)
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20778532.svg)](https://doi.org/10.5281/zenodo.20778532)
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)

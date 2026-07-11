@@ -101,24 +101,28 @@ const quickStartSteps = [
     title: 'Create an account',
     description: 'Sign up free — no credit card required for the Standard tier.',
     href: FRONTEND_URL + '/login',
+    authenticatedHref: FRONTEND_URL + '/dashboard',
   },
   {
     icon: 'vpn_key',
     title: 'Generate an API key',
     description: 'One key in Settings unlocks ingest, predict, and health endpoints.',
     href: FRONTEND_URL + '/login',
+    authenticatedHref: FRONTEND_URL + '/settings',
   },
   {
     icon: 'send',
     title: 'Send your first event',
     description: 'Copy a cURL snippet below and watch telemetry appear in seconds.',
     href: '#data-ingestion',
+    authenticatedHref: undefined,
   },
   {
     icon: 'insights',
     title: 'Monitor & improve',
     description: 'Watch live projections and tune models from production signals.',
     href: FRONTEND_URL + '/dashboard',
+    authenticatedHref: FRONTEND_URL + '/dashboard',
   },
 ];
 
@@ -181,7 +185,13 @@ const platformOpsCards = [
               and monitor threat posture — through the same gateway your production stack already trusts.
             </p>
             <DocsCtaGroup>
-              <DocsCta href={FRONTEND_URL + '/login'} variant="primary" icon="rocket_launch">
+              <DocsCta
+                href={FRONTEND_URL + '/login'}
+                authenticatedHref={FRONTEND_URL + '/dashboard'}
+                authenticatedLabel="Open Dashboard"
+                variant="primary"
+                icon="rocket_launch"
+              >
                 Create Free Account
               </DocsCta>
               <DocsCta href="#quick-start" variant="secondary" icon="play_circle">
@@ -225,7 +235,11 @@ const platformOpsCards = [
           <ol class="docs-quick-start-steps">
             {quickStartSteps.map((step, idx) => (
               <li>
-                <a href={step.href} class="viking-card docs-quick-start-card">
+                <a
+                  href={step.href}
+                  class="viking-card docs-quick-start-card"
+                  data-authenticated-href={step.authenticatedHref}
+                >
                   <span class="step-index" aria-hidden="true">{String(idx + 1).padStart(2, '0')}</span>
                   <VikingIcon name={step.icon} size={20} />
                   <h3>{step.title}</h3>

@@ -855,8 +855,9 @@ export class AuthService {
         ),
       );
       if (res.status === 'success' && res.token) {
-        const separator = targetUrl.includes('?') ? '&' : '?';
-        window.location.href = `${targetUrl}${separator}session_handoff=${res.token}`;
+        const handoffUrl = new URL(targetUrl, window.location.origin);
+        handoffUrl.searchParams.set('session_handoff', res.token);
+        window.location.href = handoffUrl.href;
       } else {
         window.location.href = targetUrl;
       }

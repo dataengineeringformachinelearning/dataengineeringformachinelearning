@@ -188,16 +188,19 @@ const resolveDocsHref = (href: string, docsOrigin: string): string =>
 export const buildSuiteSearchItems = (
   context: SiteDrakkarContext,
   urls: SiteUrls,
-  options?: { docsOrigin?: string },
+  options?: { docsOrigin?: string; authenticated?: boolean },
 ): SuiteSearchItem[] => {
   const paletteContext = context === "docs" ? "marketing" : context;
+  const authenticated = options?.authenticated ?? context === "app";
 
   const items: SuiteSearchItem[] = [
-    ...SITE_NAV_LINKS.map((link) => navItem(link, paletteContext, urls)),
+    ...SITE_NAV_LINKS.filter((link) => !link.requireAuth || authenticated).map(
+      (link) => navItem(link, paletteContext, urls),
+    ),
     ...SITE_FOOTER_COLUMNS.flatMap((column) =>
-      column.links.map((link) =>
-        footerItem(link, column.title, paletteContext, urls),
-      ),
+      column.links
+        .filter((link) => !link.requireAuth || authenticated)
+        .map((link) => footerItem(link, column.title, paletteContext, urls)),
     ),
     ...SUITE_SEARCH_EXTRAS.map((extra) => ({
       ...extra,

@@ -66,6 +66,10 @@ const readContext = (el: HTMLElement): SiteDrakkarContext => {
   return detectContext();
 };
 
+const readAuthenticated = (el: HTMLElement): boolean =>
+  el.hasAttribute("authenticated") ||
+  document.documentElement.dataset["authenticated"] === "true";
+
 /**
  * Unified cross-suite command palette Web Component.
  * Tag: `viking-suite-command-palette`
@@ -80,6 +84,7 @@ const readContext = (el: HTMLElement): SiteDrakkarContext => {
  * @attr backend-url - Override backend origin
  * @attr global-shortcut - Bind ⌘K / Ctrl+K (default: on)
  * @attr placeholder - Search input placeholder
+ * @attr authenticated - Include account-only navigation entries
  *
  * @method openPalette() - Programmatically open
  * @method closePalette() - Programmatically close
@@ -100,6 +105,7 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
       "backend-url",
       "placeholder",
       "global-shortcut",
+      "authenticated",
     ];
   }
 
@@ -108,6 +114,10 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
   private curatedItems: VikingSearchPaletteItem[] = [];
   private queryTimer: ReturnType<typeof setTimeout> | null = null;
   private searchAbort: AbortController | null = null;
+  private readonly onAuthState = (event: Event): void => {
+    const detail = (event as CustomEvent<{ isAuthenticated?: boolean }>).detail;
+    this.toggleAttribute("authenticated", detail?.isAuthenticated === true);
+  };
   private readonly onPaletteQuery = (event: Event): void => {
     const detail = (event as CustomEvent<{ query?: string }>).detail;
     const query = detail?.query ?? "";
@@ -116,11 +126,13 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
 
   connectedCallback(): void {
     registerVikingSearchPaletteWc();
+    window.addEventListener("deml:auth-state", this.onAuthState);
     this.ensurePalette();
     void this.loadItems();
   }
 
   disconnectedCallback(): void {
+    window.removeEventListener("deml:auth-state", this.onAuthState);
     this.paletteEl?.removeEventListener("viking-query", this.onPaletteQuery);
     if (this.queryTimer) {
       clearTimeout(this.queryTimer);
@@ -155,7 +167,8 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
       name === "context" ||
       name === "app-url" ||
       name === "marketing-url" ||
-      name === "backend-url"
+      name === "backend-url" ||
+      name === "authenticated"
     ) {
       void this.loadItems(true);
     }
@@ -270,6 +283,7 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
       urls,
       {
         docsOrigin,
+        authenticated: readAuthenticated(this),
       },
     );
 
@@ -279,7 +293,10 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
       });
       if (response.ok) {
         // Config presence validates CDN path; curated builder remains SSoT.
-        items = buildSuiteSearchItems(context, urls, { docsOrigin });
+        items = buildSuiteSearchItems(context, urls, {
+          docsOrigin,
+          authenticated: readAuthenticated(this),
+        });
       }
     } catch {
       // Bundled config is authoritative when JSON is unavailable.

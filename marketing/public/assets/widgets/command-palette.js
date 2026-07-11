@@ -65,6 +65,10 @@
       palette.setAttribute('app-url', getFrontendUrl());
       palette.setAttribute('marketing-url', getMarketingUrl());
       palette.setAttribute('backend-url', getBackendUrl());
+      palette.toggleAttribute(
+        'authenticated',
+        document.documentElement.dataset.authenticated === 'true',
+      );
       document.body.append(palette);
     }
 
@@ -138,6 +142,11 @@
   window.DemlWidgets.openBugReport = openBugReport;
   window.DemlWidgets.openBugReporter = openBugReport;
   window.DemlWidgets.openCookieSettings = openCookieSettings;
+
+  window.addEventListener('deml:auth-state', event => {
+    const palette = document.getElementById(PALETTE_ID);
+    palette?.toggleAttribute('authenticated', event.detail?.isAuthenticated === true);
+  });
 
   document.addEventListener('keydown', event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {

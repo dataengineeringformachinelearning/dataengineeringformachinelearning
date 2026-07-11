@@ -11,7 +11,6 @@ from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from django.db.models import Q
 from django.utils import timezone
 
 from monitor.models import AggregatedAnalytics, ReportArchive
@@ -63,9 +62,7 @@ class Command(BaseCommand):
     unique_visitors = max((a.unique_visitors for a in hourly_qs), default=0)
 
     # Error rate from weighted average
-    total_errors = sum(
-      int((a.error_rate_percent / 100.0) * a.total_requests) for a in hourly_qs
-    )
+    total_errors = sum(int((a.error_rate_percent / 100.0) * a.total_requests) for a in hourly_qs)
     error_rate_percent = (
       round((total_errors / total_requests) * 100, 2) if total_requests > 0 else 0.0
     )
@@ -101,9 +98,7 @@ class Command(BaseCommand):
       threat_count,
     )
 
-  def _weighted_avg(
-    self, qs: Any, field: str, weight_field: str, default: float = 0.0
-  ) -> float:
+  def _weighted_avg(self, qs: Any, field: str, weight_field: str, default: float = 0.0) -> float:
     """Calculate weighted average from queryset."""
     total_weight = sum(getattr(a, weight_field, 0) for a in qs)
     if total_weight == 0:
@@ -115,18 +110,14 @@ class Command(BaseCommand):
     backfill_days = int(options.get("backfill_days", 0))
     backfill_days = max(0, min(backfill_days, MAX_BACKFILL_DAYS))
 
-    self.stdout.write(
-      f"Starting nightly report archive (backfill: {backfill_days} days)..."
-    )
+    self.stdout.write(f"Starting nightly report archive (backfill: {backfill_days} days)...")
     self.stdout.write("Using symmetrical multi-tenant processing (includes platform scope).")
 
     processed_count = 0
 
     # Determine date range to process
     if backfill_days > 0:
-      date_range = [
-        timezone.now().date() - timedelta(days=i) for i in range(1, backfill_days + 1)
-      ]
+      date_range = [timezone.now().date() - timedelta(days=i) for i in range(1, backfill_days + 1)]
     else:
       date_range = [timezone.now().date() - timedelta(days=1)]
 

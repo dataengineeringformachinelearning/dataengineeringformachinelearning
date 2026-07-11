@@ -16,6 +16,13 @@
       "marketingHref": "/documentation"
     },
     {
+      "id": "blue-notes",
+      "label": "Blue Notes",
+      "icon": "file",
+      "appHref": "https://dataengineeringformachinelearning.com/blog/",
+      "marketingHref": "/blog/"
+    },
+    {
       "id": "dashboard",
       "label": "Dashboard",
       "icon": "home",
@@ -57,19 +64,22 @@
           "label": "Dashboard",
           "appHref": "/dashboard",
           "marketingHref": "/dashboard",
-          "platform": true
+          "platform": true,
+          "requireAuth": true
         },
         {
           "label": "Sites",
           "appHref": "/settings",
           "marketingHref": "/settings",
-          "platform": true
+          "platform": true,
+          "requireAuth": true
         },
         {
           "label": "Account",
           "appHref": "/account",
           "marketingHref": "/account",
-          "platform": true
+          "platform": true,
+          "requireAuth": true
         }
       ]
     },
@@ -90,6 +100,11 @@
           "label": "Book",
           "appHref": "https://dataengineeringformachinelearning.com/book/",
           "marketingHref": "/book"
+        },
+        {
+          "label": "Blue Notes",
+          "appHref": "https://dataengineeringformachinelearning.com/blog/",
+          "marketingHref": "/blog/"
         }
       ]
     },

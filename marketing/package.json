@@ -9,6 +9,7 @@
     "prebuild": "npm run build:viking-ui:package --prefix ..",
     "dev": "astro dev",
     "build": "astro build && node scripts/postbuild.mjs",
+    "test": "node --test --experimental-strip-types src/lib/*.spec.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
