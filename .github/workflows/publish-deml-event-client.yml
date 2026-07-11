@@ -1,0 +1,43 @@
+# Publish deml-event-client to PyPI
+# Uses PyPI Trusted Publishing (OpenID Connect) - no token required
+name: Publish deml-event-client to PyPI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/deml-event-client/**'
+      - 'packages/deml-event-client/pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Build and publish deml-event-client to PyPI
+    runs-on: ubuntu-latest
+    environment: pypi
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Build package
+        run: |
+          cd "packages/deml-event-client"
+          python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: "packages/deml-event-client/dist"
