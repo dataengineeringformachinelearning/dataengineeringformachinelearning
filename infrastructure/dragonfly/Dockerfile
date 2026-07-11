@@ -30,7 +30,7 @@ COPY --from=downloader /usr/local/bin/dragonfly /usr/local/bin/dragonfly
 #   "error while loading shared libraries: libz.so.1: cannot open shared object file".
 # Copy zlib from the Debian build stage so the binary can start.
 COPY --from=downloader /usr/lib/x86_64-linux-gnu/libz.so.1* /usr/lib/x86_64-linux-gnu/
-COPY infrastructure/dragonfly/entrypoint.sh /usr/local/bin/dragonfly-entrypoint
+COPY entrypoint.sh /usr/local/bin/dragonfly-entrypoint
 
 RUN groupadd --gid 10001 dragonfly \
     && useradd --uid 10001 --gid dragonfly --no-create-home --shell /usr/sbin/nologin dragonfly \
