@@ -919,7 +919,7 @@ class HoneypotEndpoint(models.Model):
     GITLAB = "gitlab", "GitLab CI File"
     DOCKER_COMPOSE = "docker_compose", "Docker Compose File"
     DATABASE_CONFIG = "database_config", "Database Config File"
-    API_SECRET = "api_secret", "Fake API Secret"
+    API_SECRET = "api_secret", "Fake API Secret"  # pragma: allowlist secret
     GENERIC = "generic", "Generic Decoy"
 
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -927,9 +927,7 @@ class HoneypotEndpoint(models.Model):
     User, on_delete=models.CASCADE, related_name="honeypots", null=True, blank=True
   )
   is_platform = models.BooleanField(default=False)
-  trap_type = models.CharField(
-    max_length=32, choices=TrapType.choices, default=TrapType.GENERIC
-  )
+  trap_type = models.CharField(max_length=32, choices=TrapType.choices, default=TrapType.GENERIC)
   path = models.CharField(max_length=255, help_text="Relative path e.g., /.env or /admin")
   created_at = models.DateTimeField(auto_now_add=True)
   is_active = models.BooleanField(default=True)
