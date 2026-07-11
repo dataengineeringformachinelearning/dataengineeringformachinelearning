@@ -469,6 +469,8 @@ const isBrandMulticolorSvg = (filePath) =>
 
 /** Google / ORCID brand colors allowed in multicolor marks. */
 const BRAND_PALETTE_HEX = new Set([
+  "#070c20",
+  "#0078ff",
   "#ea4335",
   "#4285f4",
   "#fbbc05",

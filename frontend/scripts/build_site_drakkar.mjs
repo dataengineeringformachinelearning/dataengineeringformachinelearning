@@ -650,6 +650,7 @@ const faviconOutputs = [
   path.join(frontendDir, 'public', 'favicon.svg'),
   path.join(rootDir, 'marketing', 'public', 'favicon.svg'),
   path.join(rootDir, 'backend', 'static', 'favicon.svg'),
+  path.join(rootDir, 'viking-ui-docs', 'public', 'favicon.svg'),
 ];
 const navbarSource = path.join(frontendDir, 'src', 'assets', 'widgets', 'navbar.js');
 const navbarOutputs = [

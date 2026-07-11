@@ -10,6 +10,12 @@
 :root {
   color-scheme: dark light;
 
+  /* ── Immutable DEML brand artwork colors ────────────────────────────────
+     These are reserved for logos, favicons, app icons, and social previews.
+     Product UI continues to use the semantic navy/electric token scales. */
+  --viking-brand-navy: #070c20;
+  --viking-brand-blue: #0078ff;
+
   /* ── Deep navy surfaces (precision-engineered industrial luxury) ────
      Stepped elevation for visual depth and hierarchy. Darker steps recede,
      mid steps provide rich card surfaces, lighter steps for raised controls.
@@ -228,30 +234,24 @@
      inset line. Use token stepping for surfaces; shadows provide tactile lift.
      Never stack many layers — prefer stepped navy + one good shadow. */
   --viking-shadow-xs:
-    0 1px 1px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    0 1px 1px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.025);
   --viking-shadow-sm:
-    0 2px 4px rgba(0, 0, 0, 0.26),
-    0 1px 2px rgba(0, 0, 0, 0.20),
+    0 2px 4px rgba(0, 0, 0, 0.26), 0 1px 2px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.045);
   --viking-shadow-md:
-    0 8px 18px rgba(0, 0, 0, 0.28),
-    0 2px 6px rgba(0, 0, 0, 0.20),
+    0 8px 18px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.055);
   --viking-shadow-lg:
-    0 16px 32px rgba(0, 0, 0, 0.32),
-    0 4px 12px rgba(0, 0, 0, 0.22),
+    0 16px 32px rgba(0, 0, 0, 0.32), 0 4px 12px rgba(0, 0, 0, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.065);
   --viking-shadow-xl:
-    0 24px 48px rgba(0, 0, 0, 0.36),
-    0 8px 18px rgba(0, 0, 0, 0.24),
+    0 24px 48px rgba(0, 0, 0, 0.36), 0 8px 18px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
   --viking-shadow-inner:
     inset 0 1px 2px rgba(0, 0, 0, 0.32),
     inset 0 -1px 0 rgba(255, 255, 255, 0.015);
   --viking-shadow-hover:
-    0 14px 28px rgba(0, 0, 0, 0.30),
-    0 4px 10px rgba(0, 0, 0, 0.20),
+    0 14px 28px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.075);
   --viking-shadow-focus:
     0 0 0 var(--viking-ring-offset) var(--viking-bg),
@@ -351,17 +351,25 @@
   /* ── Layout rhythm — premium spacing enforcement (THEME.md §3) ───────────
      All gaps/padding resolve to --viking-space-* integer steps (or 0-5 tight).
      App pages share the same stack/card tokens via viking-ui.css. */
-  --viking-page-gutter: clamp(var(--viking-space-2), 5vw, var(--viking-space-4));
+  --viking-page-gutter: clamp(
+    var(--viking-space-2),
+    5vw,
+    var(--viking-space-4)
+  );
   --viking-page-gutter-lg: var(--viking-space-5);
   --viking-page-gutter-xl: var(--viking-space-7);
   --viking-page-stack-gap: var(--viking-space-6);
-  --viking-page-section-gap: var(--viking-space-10); /* 96px — large section break */
+  --viking-page-section-gap: var(
+    --viking-space-10
+  ); /* 96px — large section break */
   --viking-dashboard-grid-gap: var(--viking-space-4);
   --viking-section-padding-y: var(--viking-space-8);
   --viking-section-padding-y-compact: var(--viking-space-6);
   --viking-card-padding: var(--viking-space-5); /* 40px */
   --viking-card-padding-compact: var(--viking-space-4);
-  --viking-card-content-gap: var(--viking-space-4); /* was space-5 — tighter internal stack on 8px */
+  --viking-card-content-gap: var(
+    --viking-space-4
+  ); /* was space-5 — tighter internal stack on 8px */
   --viking-card-content-gap-compact: var(--viking-space-3);
   --viking-panel-padding: var(--viking-space-5);
   --viking-panel-header-padding: var(--viking-space-3) var(--viking-space-5);
@@ -390,14 +398,26 @@
   --viking-chart-padding: var(--viking-space-1) 0;
   --viking-chart-padding-fill: var(--viking-space-2) var(--viking-space-1);
   /* Grid & axes */
-  --viking-chart-grid-stroke: color-mix(in srgb, var(--viking-text-muted) 16%, transparent);
+  --viking-chart-grid-stroke: color-mix(
+    in srgb,
+    var(--viking-text-muted) 16%,
+    transparent
+  );
   --viking-chart-grid-width: 1;
   --viking-chart-grid-dash: 4 4;
-  --viking-chart-axis-stroke: color-mix(in srgb, var(--viking-text-muted) 28%, transparent);
+  --viking-chart-axis-stroke: color-mix(
+    in srgb,
+    var(--viking-text-muted) 28%,
+    transparent
+  );
   --viking-chart-axis-width: 1;
   --viking-chart-tick-length: 4px;
   --viking-chart-axis-color: var(--viking-text-muted);
-  --viking-chart-cursor-stroke: color-mix(in srgb, var(--viking-text) 32%, transparent);
+  --viking-chart-cursor-stroke: color-mix(
+    in srgb,
+    var(--viking-text) 32%,
+    transparent
+  );
   --viking-chart-cursor-width: 1;
   --viking-chart-cursor-dash: 3 3;
   /* Lines, areas, points, bars */
@@ -415,8 +435,16 @@
   --viking-chart-swatch-size: 8px;
   --viking-chart-legend-size: var(--viking-font-size-xs);
   /* Tooltip */
-  --viking-chart-tooltip-bg: color-mix(in srgb, var(--viking-surface) 94%, transparent);
-  --viking-chart-tooltip-border: color-mix(in srgb, var(--viking-border) 65%, transparent);
+  --viking-chart-tooltip-bg: color-mix(
+    in srgb,
+    var(--viking-surface) 94%,
+    transparent
+  );
+  --viking-chart-tooltip-border: color-mix(
+    in srgb,
+    var(--viking-border) 65%,
+    transparent
+  );
   --viking-chart-tooltip-text: var(--viking-text);
   --viking-chart-tooltip-size: var(--viking-font-size-xs);
   --viking-chart-tooltip-padding: 6px 10px;
@@ -568,20 +596,16 @@ html[data-theme="dark"] {
   );
 
   --viking-shadow-sm:
-    0 3px 8px rgba(0, 0, 0, 0.34),
-    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 3px 8px rgba(0, 0, 0, 0.34), 0 1px 2px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --viking-shadow-md:
-    0 14px 30px rgba(0, 0, 0, 0.3),
-    0 5px 12px rgba(0, 0, 0, 0.22),
+    0 14px 30px rgba(0, 0, 0, 0.3), 0 5px 12px rgba(0, 0, 0, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --viking-shadow-lg:
-    0 28px 54px rgba(0, 0, 0, 0.36),
-    0 10px 24px rgba(0, 0, 0, 0.28),
+    0 28px 54px rgba(0, 0, 0, 0.36), 0 10px 24px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
   --viking-shadow-hover:
-    0 22px 42px rgba(0, 0, 0, 0.34),
-    0 8px 18px rgba(0, 0, 0, 0.26),
+    0 22px 42px rgba(0, 0, 0, 0.34), 0 8px 18px rgba(0, 0, 0, 0.26),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
@@ -711,17 +735,13 @@ html[data-theme="light"] {
   );
 
   --viking-shadow-sm:
-    0 3px 8px rgba(17, 24, 39, 0.08),
-    0 1px 2px rgba(17, 24, 39, 0.08);
+    0 3px 8px rgba(17, 24, 39, 0.08), 0 1px 2px rgba(17, 24, 39, 0.08);
   --viking-shadow-md:
-    0 14px 28px rgba(17, 24, 39, 0.1),
-    0 4px 10px rgba(17, 24, 39, 0.08);
+    0 14px 28px rgba(17, 24, 39, 0.1), 0 4px 10px rgba(17, 24, 39, 0.08);
   --viking-shadow-lg:
-    0 24px 48px rgba(17, 24, 39, 0.13),
-    0 8px 18px rgba(17, 24, 39, 0.1);
+    0 24px 48px rgba(17, 24, 39, 0.13), 0 8px 18px rgba(17, 24, 39, 0.1);
   --viking-shadow-hover:
-    0 20px 36px rgba(17, 24, 39, 0.14),
-    0 8px 16px rgba(17, 24, 39, 0.1);
+    0 20px 36px rgba(17, 24, 39, 0.14), 0 8px 16px rgba(17, 24, 39, 0.1);
 }
 
 /* Respect system preference when no explicit theme is set */

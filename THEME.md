@@ -89,6 +89,15 @@ Directional references are [Material Design 3](https://m3.material.io/) for adap
 
 ## 1. Color palette
 
+### DEML brand identity colors
+
+The immutable DEML mark uses a dedicated navy and blue pair. These literals are permitted only in portable brand artwork such as logos, favicons, application icons, and social-preview images; product UI must continue to consume semantic `--viking-*` tokens.
+
+| Token                 | HEX       | RGB                | Role                                  |
+| --------------------- | --------- | ------------------ | ------------------------------------- |
+| `--viking-brand-navy` | `#070C20` | `rgb(7, 12, 32)`   | Brand-mark background                 |
+| `--viking-brand-blue` | `#0078FF` | `rgb(0, 120, 255)` | Brand-mark foreground and recognition |
+
 ### 1.1 Deep navy / charcoal surfaces
 
 Deep navy-black surfaces anchor every surface. The `--viking-charcoal-*` names remain as compatibility aliases over the navy scale; use stepped elevation, not arbitrary shades.

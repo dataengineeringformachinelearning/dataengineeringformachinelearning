@@ -8,6 +8,10 @@
     "documentation": "../../../THEME.md"
   },
   "color": {
+    "brand": {
+      "navy": "#070c20",
+      "blue": "#0078ff"
+    },
     "navy": {
       "1000": "#01030a",
       "950": "#030818",

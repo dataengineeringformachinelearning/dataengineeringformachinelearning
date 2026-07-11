@@ -45,6 +45,8 @@ Viking-UI must read as **Lockheed Martin × The Northman precision digital battl
 
 Translate the aesthetic into concrete UI: machined borders, dark steel surfaces, electric-teal command accents, crimson escalation, compact telemetry panels, native SVG charts, readable tables/forms, and strategic geometric dividers. Data dominates ornament.
 
+DEML brand artwork is the narrow static-asset exception: logos, favicons, application icons, and social previews use `--viking-brand-navy` (`#070C20`) and `--viking-brand-blue` (`#0078FF`). Do not use those literals as app-local product styling; product UI continues through semantic Viking-UI tokens.
+
 ---
 
 ## Composable primitive quality (structure, not palette)

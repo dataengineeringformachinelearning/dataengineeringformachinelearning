@@ -49,6 +49,7 @@ license: apache-2.0
 - **Predictive SLAs**: Machine learning forecasts service-level breach trajectories
 - **SIEM/SOAR Federation**: STIX 2.1 threat intelligence export
 - **WCAG 2.1 AA Design**: Premium Viking-UI theme across all surfaces ([THEME.md](THEME.md))
+- **Canonical Brand Assets**: DEML artwork uses brand navy `#070C20` and brand blue `#0078FF`, governed and synchronized through Viking-UI
 
 ---
 
@@ -3586,6 +3587,8 @@ DEML unifies UI through a layered rule stack so agents, contributors, and surfac
 | Narrative    | This chapter                 | Consumption patterns, build, publish, accessibility contracts                |
 
 **Composable structure, Viking palette:** Viking-UI adopts composable primitive ergonomics — `viking-field` wrapping controls, variant-driven `viking-button`, dark-first `viking-card` surfaces — with **deep charcoals, machined metallic borders, and restrained teal/crimson**. The result is **premium restrained luxury**: every pixel earns its place, metrics dominate ornament, and tactile surfaces use subtle top-edge highlights instead of glass blur or neon glow.
+
+**Brand artwork contract:** the DEML mark has two immutable portable-asset colors: brand navy `#070C20` (`--viking-brand-navy`) and brand blue `#0078FF` (`--viking-brand-blue`). Logos, favicons, application icons, and social-preview images may embed those exact values so they render correctly without a stylesheet; application components must still use semantic Viking-UI variables rather than copying the literals.
 
 **Component law for all Angular work:** import components from `@dataengineeringformachinelearning/viking-ui` or the compatibility `@dataengineeringformachinelearning/viking-ui/angular` entrypoint only. Do not add Material, Bootstrap, or parallel button/input/chart implementations. When a primitive is missing, extend `packages/viking-ui/` first, export it from `src/public-api.ts`, then consume it from deml.app. Non-Angular pages use the single synced `viking-ui.css` bundle with semantic `var(--viking-*)` aliases, Web Components from `web-components.js`, and framework-neutral utility subpaths such as `@dataengineeringformachinelearning/viking-ui/icons` — never inline hex palettes or reach into package source paths.
 
