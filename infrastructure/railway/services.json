@@ -313,6 +313,7 @@
     }
   },
   "crossServiceDefaults": {
+    "CPE_GUESSER_URL": "https://deml-cpe-production.up.railway.app/unique",
     "STRUCTURED_LOGS": "true"
   },
   "agentCommands": {

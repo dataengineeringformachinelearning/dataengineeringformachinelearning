@@ -61,7 +61,13 @@ def _delete_var(service: str, key: str) -> None:
   )
 
 
-def audit_service(name: str, spec: dict[str, Any], *, apply: bool) -> dict[str, Any]:
+def audit_service(
+  name: str,
+  spec: dict[str, Any],
+  *,
+  apply: bool,
+  cross_defaults: dict[str, Any],
+) -> dict[str, Any]:
   result: dict[str, Any] = {
     "service": name,
     "class": spec.get("class"),
@@ -118,8 +124,8 @@ def audit_service(name: str, spec: dict[str, Any], *, apply: bool) -> dict[str, 
     "deml-telemetry-worker",
     "deml-scanner",
   }:
-    expected = "http://deml-cpe.railway.internal:8080/unique"
-    if live.get("CPE_GUESSER_URL") != expected:
+    expected = str(cross_defaults.get("CPE_GUESSER_URL", "")).strip()
+    if expected and live.get("CPE_GUESSER_URL") != expected:
       result["defaults_to_set"]["CPE_GUESSER_URL"] = expected
       result["actions"].append("set CPE_GUESSER_URL → deml-cpe")
 
@@ -158,6 +164,7 @@ def main() -> int:
 
   catalog = json.loads(CATALOG.read_text())
   services: dict[str, Any] = catalog["services"]
+  cross_defaults: dict[str, Any] = catalog.get("crossServiceDefaults") or {}
   if args.service:
     unknown = [n for n in args.service if n not in services]
     if unknown:
@@ -174,7 +181,7 @@ def main() -> int:
   }
 
   for name, spec in sorted(services.items()):
-    item = audit_service(name, spec, apply=args.apply)
+    item = audit_service(name, spec, apply=args.apply, cross_defaults=cross_defaults)
     report["services"].append(item)
     if item.get("error"):
       report["summary"]["errors"] += 1
