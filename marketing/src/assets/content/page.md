@@ -1655,7 +1655,7 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Target Port**: `9092` (Kafka API)
 - **Private Internal DNS**: `deml-queue.internal:9092`
 - **Public URL**: None (Strictly internal for security)
-- **Compute Limits**: 24 vCPU / 24 GB Memory
+- **Compute Limits**: 4 vCPU / 4 GB Memory
 - **Persistent Storage**: You **MUST** attach a Cloud Run Persistent Volume mounted to
   `/var/lib/redpanda/data`. Without it, Redpanda runs on the container's ephemeral disk
   and **loses all topics, messages, and consumer offsets on every restart/redeploy**.
@@ -1806,7 +1806,7 @@ ClickHouse is used to securely store all high-volume OpenTelemetry data from the
 - **Target Port**: `8123` (HTTP) and `9000` (Native)
 - **Private Internal DNS**: `deml-clickhouse.internal`
 - **Public URL**: None (Strictly an internal database)
-- **Compute Limits**: 24 vCPU / 24 GB Memory
+- **Compute Limits**: 4 vCPU / 4 GB Memory
 - **Persistent Storage**: You MUST attach a Cloud Run Persistent Volume to `/var/lib/clickhouse`.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
@@ -1828,7 +1828,7 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 - **Target Port**: `4318` (OTLP HTTP)
 - **Private Internal DNS**: `deml-telemetry-collector.internal`
 - **Public URL**: `https://telemetry.deml.app`
-- **Compute Limits**: 24 vCPU / 24 GB Memory
+- **Compute Limits**: 4 vCPU / 4 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
 - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g. `deml-clickhouse.internal`).
@@ -1846,7 +1846,7 @@ This microservice provides an offline, isolated environment for executing `osv-s
 - **Target Port**: `8000` (FastAPI)
 - **Private Internal DNS**: `deml-scanner.internal:8000`
 - **Public URL**: None (Strictly an internal service)
-- **Compute Limits**: 24 vCPU / 24 GB Memory
+- **Compute Limits**: 4 vCPU / 4 GB Memory
 - **Persistent Storage**: You MUST attach a Cloud Run Persistent Volume to `/data/osv` so the OSV database dump does not have to be repeatedly downloaded.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
