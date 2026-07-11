@@ -310,6 +310,25 @@
       "dockerfile": "infrastructure/tor-proxy/Dockerfile",
       "requiredEnv": [],
       "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"]
+    },
+    "deml-rustfs": {
+      "class": "infra",
+      "configDir": "infrastructure/railway/rustfs",
+      "dockerfile": "infrastructure/rustfs/Dockerfile",
+      "healthcheckPath": "/health",
+      "requiredEnv": ["RUSTFS_ACCESS_KEY", "RUSTFS_SECRET_KEY"],
+      "forbiddenEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "SECRET_KEY",
+        "INTERNAL_SECRET"
+      ],
+      "envDefaults": {
+        "RUSTFS_CONSOLE_ENABLE": "false",
+        "RUSTFS_ADDRESS": "0.0.0.0:9000",
+        "RUSTFS_CONSOLE_ADDRESS": "0.0.0.0:9001"
+      },
+      "notes": "S3-compatible report object store (RustFS). Mount durable volume at /data. Backend/workers use RUSTFS_ENDPOINT over private DNS."
     }
   },
   "crossServiceDefaults": {

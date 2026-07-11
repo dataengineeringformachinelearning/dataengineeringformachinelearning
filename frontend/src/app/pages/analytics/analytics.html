@@ -11,6 +11,134 @@
         backNavLabel="Return to dashboard performance view"
       />
 
+      <!-- EXPORTS -->
+      <section
+        class="viking-card"
+        style="margin-bottom: var(--viking-space-6); padding: var(--viking-space-4)"
+      >
+        <div class="metrics-overview-header" style="margin-bottom: var(--viking-space-3)">
+          <h2 class="section-title-premium">
+            <viking-app-icon name="download" />
+            Analytics exports
+          </h2>
+          <p class="section-description-premium">
+            Generate CSV, JSON, Parquet, or PDF reports stored in RustFS. Downloads use short-lived
+            signed URLs.
+          </p>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--viking-space-3); align-items: end">
+          <label style="display: flex; flex-direction: column; gap: var(--viking-space-1)">
+            <span class="section-description-premium">Kind</span>
+            <select
+              class="viking-select"
+              [value]="exportKind"
+              (change)="exportKind = $any($event.target).value"
+              aria-label="Export kind"
+            >
+              <option value="analytics">Analytics</option>
+              <option value="threat">Threat intel</option>
+              <option value="lighthouse">Lighthouse</option>
+              <option value="vulnerabilities">Vulnerabilities</option>
+            </select>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: var(--viking-space-1)">
+            <span class="section-description-premium">Format</span>
+            <select
+              class="viking-select"
+              [value]="exportFormat"
+              (change)="exportFormat = $any($event.target).value"
+              aria-label="Export format"
+            >
+              <option value="csv">CSV</option>
+              <option value="json">JSON</option>
+              <option value="parquet">Parquet</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: var(--viking-space-1)">
+            <span class="section-description-premium">Days</span>
+            <input
+              class="viking-input"
+              type="number"
+              min="1"
+              max="90"
+              [value]="exportDays"
+              (change)="exportDays = +$any($event.target).value || 7"
+              aria-label="Export day range"
+              style="width: 5rem"
+            />
+          </label>
+          <button
+            type="button"
+            class="viking-btn viking-btn-primary"
+            (click)="requestExport()"
+            [disabled]="exportBusy"
+            [attr.aria-busy]="exportBusy"
+          >
+            {{ exportBusy ? 'Working…' : 'Generate export' }}
+          </button>
+          <button type="button" class="viking-btn" (click)="loadExports()" [disabled]="exportBusy">
+            Refresh list
+          </button>
+        </div>
+        @if (exportMessage) {
+        <p
+          class="section-description-premium"
+          style="margin-top: var(--viking-space-2)"
+          role="status"
+        >
+          {{ exportMessage }}
+        </p>
+        } @if (exportsList.length) {
+        <div style="margin-top: var(--viking-space-4); overflow-x: auto">
+          <table class="viking-table" style="width: 100%; border-collapse: collapse">
+            <thead>
+              <tr>
+                <th scope="col" style="text-align: left; padding: var(--viking-space-2)">Kind</th>
+                <th scope="col" style="text-align: left; padding: var(--viking-space-2)">Format</th>
+                <th scope="col" style="text-align: left; padding: var(--viking-space-2)">Status</th>
+                <th scope="col" style="text-align: left; padding: var(--viking-space-2)">Size</th>
+                <th scope="col" style="text-align: left; padding: var(--viking-space-2)">
+                  Created
+                </th>
+                <th scope="col" style="text-align: left; padding: var(--viking-space-2)">
+                  Download
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (job of exportsList; track job.id) {
+              <tr>
+                <td style="padding: var(--viking-space-2)">{{ job.kind }}</td>
+                <td style="padding: var(--viking-space-2)">{{ job.format }}</td>
+                <td style="padding: var(--viking-space-2)">
+                  <viking-badge>{{ job.status }}</viking-badge>
+                </td>
+                <td style="padding: var(--viking-space-2)">
+                  {{ job.byte_size ? (job.byte_size + ' B') : '—' }}
+                </td>
+                <td style="padding: var(--viking-space-2)">{{ job.created_at | date: 'short' }}</td>
+                <td style="padding: var(--viking-space-2)">
+                  @if (job.download_ready) {
+                  <button
+                    type="button"
+                    class="viking-btn viking-btn-sm"
+                    (click)="downloadExport(job.id)"
+                  >
+                    Download
+                  </button>
+                  } @else {
+                  <span class="section-description-premium">{{ job.error || 'Pending' }}</span>
+                  }
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </section>
+
       <!-- GLOBAL METRICS SECTION -->
       <div class="metrics-overview-header">
         <h2 class="section-title-premium">

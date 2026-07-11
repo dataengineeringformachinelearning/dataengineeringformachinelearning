@@ -98,6 +98,10 @@ from telemetry.analytics_views import router as analytics_router
 
 add_router_if_not_exists("/analytics/", analytics_router)
 
+from monitor.routers.exports import router as exports_router
+
+add_router_if_not_exists("/exports/", exports_router)
+
 # We can also add auth endpoints directly here or via a router
 from .api_auth import router as auth_router
 

@@ -350,6 +350,16 @@ GOOGLE_OAUTH_REDIRECT_URI = (
   os.getenv("GOOGLE_OAUTH_REDIRECT_URI") or _default_google_oauth_redirect
 ).rstrip("/")
 
+# RustFS — S3-compatible object store for analytics export artifacts (not BI facts).
+# See docs/exports-rustfs.md and infrastructure/rustfs/README.md.
+RUSTFS_ENDPOINT = os.getenv("RUSTFS_ENDPOINT", "").strip()
+RUSTFS_ACCESS_KEY = os.getenv("RUSTFS_ACCESS_KEY", "").strip()
+RUSTFS_SECRET_KEY = os.getenv("RUSTFS_SECRET_KEY", "").strip()
+RUSTFS_BUCKET = os.getenv("RUSTFS_BUCKET", "deml-exports").strip() or "deml-exports"
+RUSTFS_REGION = os.getenv("RUSTFS_REGION", "us-east-1").strip() or "us-east-1"
+RUSTFS_USE_SSL = os.getenv("RUSTFS_USE_SSL", "false").lower() in ("1", "true", "yes")
+RUSTFS_ADDRESSING_STYLE = os.getenv("RUSTFS_ADDRESSING_STYLE", "path").strip() or "path"
+
 # App versioning configuration
 VERSION_PATH = BASE_DIR.parent / "version.txt"
 LOCAL_VERSION_PATH = BASE_DIR / "version.txt"

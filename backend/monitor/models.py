@@ -792,3 +792,57 @@ class SyntheticMonitor(models.Model):
 
   def __str__(self):
     return f"{self.name} ({self.status})"
+
+
+class ExportJob(models.Model):
+  """Account-scoped analytics export artifact stored in RustFS (S3-compatible)."""
+
+  class Kind(models.TextChoices):
+    ANALYTICS = "analytics", "Analytics"
+    THREAT = "threat", "Threat intelligence"
+    LIGHTHOUSE = "lighthouse", "Lighthouse"
+    VULNERABILITIES = "vulnerabilities", "Vulnerabilities"
+    CUSTOM = "custom", "Custom"
+
+  class Format(models.TextChoices):
+    CSV = "csv", "CSV"
+    JSON = "json", "JSON"
+    PARQUET = "parquet", "Parquet"
+    PDF = "pdf", "PDF"
+
+  class Status(models.TextChoices):
+    QUEUED = "queued", "Queued"
+    RUNNING = "running", "Running"
+    READY = "ready", "Ready"
+    FAILED = "failed", "Failed"
+    EXPIRED = "expired", "Expired"
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="export_jobs")
+  account_id = models.UUIDField(db_index=True)
+  kind = models.CharField(max_length=32, choices=Kind.choices, default=Kind.ANALYTICS)
+  format = models.CharField(max_length=16, choices=Format.choices, default=Format.CSV)
+  params = models.JSONField(default=dict, blank=True)
+  status = models.CharField(max_length=16, choices=Status.choices, default=Status.QUEUED)
+  storage_uri = models.CharField(max_length=1024, blank=True, default="")
+  object_key = models.CharField(max_length=1024, blank=True, default="")
+  content_type = models.CharField(max_length=128, blank=True, default="")
+  byte_size = models.BigIntegerField(default=0)
+  checksum_sha256 = models.CharField(max_length=64, blank=True, default="")
+  error = models.TextField(blank=True, default="")
+  created_at = models.DateTimeField(auto_now_add=True)
+  started_at = models.DateTimeField(null=True, blank=True)
+  completed_at = models.DateTimeField(null=True, blank=True)
+  expires_at = models.DateTimeField(null=True, blank=True)
+
+  class Meta:
+    db_table = "export_jobs"
+    ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["user", "status", "-created_at"], name="export_jobs_user_status_idx"),
+      models.Index(fields=["account_id", "-created_at"], name="export_jobs_account_idx"),
+      models.Index(fields=["status", "expires_at"], name="export_jobs_expiry_idx"),
+    ]
+
+  def __str__(self) -> str:
+    return f"ExportJob {self.kind}/{self.format} ({self.status})"

@@ -24,4 +24,10 @@ export const API_ENDPOINTS = {
     INCIDENTS: `${environment.backendUrl}/api/v1/analytics/incidents`,
     PLAYBOOKS: `${environment.backendUrl}/api/v1/analytics/playbooks`,
   },
+  EXPORTS: {
+    LIST: `${environment.backendUrl}/api/v1/exports`,
+    CREATE: `${environment.backendUrl}/api/v1/exports`,
+    DETAIL: (id: string) => `${environment.backendUrl}/api/v1/exports/${id}`,
+    DOWNLOAD: (id: string) => `${environment.backendUrl}/api/v1/exports/${id}/download`,
+  },
 };

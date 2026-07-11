@@ -35,23 +35,24 @@ Auth: Railway CLI token under `~/.railway` (already linked for this workspace). 
 
 ## Service map
 
-| Service                 | Class           | Config dir          | Image / Dockerfile                     | Notes                                             |
-| ----------------------- | --------------- | ------------------- | -------------------------------------- | ------------------------------------------------- |
-| `deml-backend`          | django-api      | `backend/`          | `backend/Dockerfile`                   | Control plane; run migrations first               |
-| `deml-frontend`         | frontend        | `frontend/`         | `frontend/Dockerfile`                  | Public SSR only — no Django secrets               |
-| `deml-workers`          | django-worker   | `workers/`          | `backend/Dockerfile`                   | Claims `scheduled_task_runs`; schedulers **off**  |
-| `deml-telemetry-worker` | django-worker   | `telemetry-worker/` | `backend/Dockerfile`                   | Projections consumer; schedulers **off**          |
-| `deml-relay`            | rust-data-plane | `relay/`            | `rust/deml-daemon/Dockerfile`          | `DEML_ROLE=relay`                                 |
-| `deml-scheduler`        | rust-data-plane | `scheduler/`        | same                                   | `DEML_ROLE=scheduler`                             |
-| `deml-probe`            | rust-data-plane | `probe/`            | same                                   | `DEML_ROLE=probe`                                 |
-| `deml-normalizer`       | rust-data-plane | `normalizer/`       | same                                   | `DEML_ROLE=normalizer`                            |
-| `deml-ingest`           | rust-data-plane | `ingest/`           | same                                   | `DEML_ROLE=ingest` (public ingress when cut over) |
-| `deml-cpe`              | rust-data-plane | `cpe/`              | same                                   | `DEML_ROLE=cpe`; CPE `/unique` lookup             |
-| `deml-scanner`          | infra-app       | `scanner/`          | `infrastructure/scanner/Dockerfile`    | OSINT scanner; points at `deml-cpe`               |
-| `deml-queue`            | infra           | `queue/`            | `infrastructure/queue/Dockerfile`      | Redpanda                                          |
-| `deml-dragonfly`        | infra           | `dragonfly/`        | `infrastructure/dragonfly/Dockerfile`  | Redis-compatible cache                            |
-| `deml-clickhouse`       | infra           | `clickhouse/`       | `infrastructure/clickhouse/Dockerfile` | OLAP / OTEL sink                                  |
-| `deml-tor-proxy`        | infra           | `tor-proxy/`        | `infrastructure/tor-proxy/Dockerfile`  | Tor egress for scanners                           |
+| Service                 | Class           | Config dir          | Image / Dockerfile                     | Notes                                                |
+| ----------------------- | --------------- | ------------------- | -------------------------------------- | ---------------------------------------------------- |
+| `deml-backend`          | django-api      | `backend/`          | `backend/Dockerfile`                   | Control plane; run migrations first                  |
+| `deml-frontend`         | frontend        | `frontend/`         | `frontend/Dockerfile`                  | Public SSR only — no Django secrets                  |
+| `deml-workers`          | django-worker   | `workers/`          | `backend/Dockerfile`                   | Claims `scheduled_task_runs`; schedulers **off**     |
+| `deml-telemetry-worker` | django-worker   | `telemetry-worker/` | `backend/Dockerfile`                   | Projections consumer; schedulers **off**             |
+| `deml-relay`            | rust-data-plane | `relay/`            | `rust/deml-daemon/Dockerfile`          | `DEML_ROLE=relay`                                    |
+| `deml-scheduler`        | rust-data-plane | `scheduler/`        | same                                   | `DEML_ROLE=scheduler`                                |
+| `deml-probe`            | rust-data-plane | `probe/`            | same                                   | `DEML_ROLE=probe`                                    |
+| `deml-normalizer`       | rust-data-plane | `normalizer/`       | same                                   | `DEML_ROLE=normalizer`                               |
+| `deml-ingest`           | rust-data-plane | `ingest/`           | same                                   | `DEML_ROLE=ingest` (public ingress when cut over)    |
+| `deml-cpe`              | rust-data-plane | `cpe/`              | same                                   | `DEML_ROLE=cpe`; CPE `/unique` lookup                |
+| `deml-scanner`          | infra-app       | `scanner/`          | `infrastructure/scanner/Dockerfile`    | OSINT scanner; points at `deml-cpe`                  |
+| `deml-queue`            | infra           | `queue/`            | `infrastructure/queue/Dockerfile`      | Redpanda                                             |
+| `deml-dragonfly`        | infra           | `dragonfly/`        | `infrastructure/dragonfly/Dockerfile`  | Redis-compatible cache                               |
+| `deml-clickhouse`       | infra           | `clickhouse/`       | `infrastructure/clickhouse/Dockerfile` | OLAP / OTEL sink                                     |
+| `deml-tor-proxy`        | infra           | `tor-proxy/`        | `infrastructure/tor-proxy/Dockerfile`  | Tor egress for scanners                              |
+| `deml-rustfs`           | infra           | `rustfs/`           | `infrastructure/rustfs/Dockerfile`     | S3 report blobs (PDF/CSV/Parquet); volume at `/data` |
 
 ### Retired (do not recreate)
 

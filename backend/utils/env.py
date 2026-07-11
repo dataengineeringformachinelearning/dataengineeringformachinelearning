@@ -196,3 +196,9 @@ def clickhouse_uri() -> str:
     "CLICKHOUSE_URI",
     "clickhouse://default:@clickhouse:8123/default",
   )
+
+
+def rustfs_endpoint() -> str:
+  """S3 API endpoint for the RustFS report object store."""
+  default = "" if is_production() else "http://localhost:9100"
+  return get_str("RUSTFS_ENDPOINT", default)

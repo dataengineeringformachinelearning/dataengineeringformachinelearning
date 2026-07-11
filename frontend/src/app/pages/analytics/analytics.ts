@@ -38,7 +38,22 @@ import {
   toVikingStackedStatusSeries,
 } from '../../core/chart-data.util';
 import { environment } from '../../../environments/environment';
+import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import * as L from 'leaflet';
+
+export type ExportJobRow = {
+  id: string;
+  kind: string;
+  format: string;
+  status: string;
+  byte_size: number;
+  content_type: string;
+  error: string;
+  created_at: string;
+  completed_at?: string | null;
+  expires_at?: string | null;
+  download_ready: boolean;
+};
 
 @Component({
   selector: 'app-analytics',
@@ -144,8 +159,16 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public originMapData: any[] = [];
   public map: L.Map | undefined;
   private intervalId: ReturnType<typeof setInterval> | undefined;
+  private exportPollId: ReturnType<typeof setInterval> | undefined;
 
   public tenantOptions: SelectOption[] = [];
+
+  public exportKind = 'analytics';
+  public exportFormat = 'csv';
+  public exportDays = 7;
+  public exportBusy = false;
+  public exportMessage = '';
+  public exportsList: ExportJobRow[] = [];
 
   get isDarkMode(): boolean {
     return this.themeService.theme() === 'dark';
@@ -385,6 +408,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.isBrowser) {
       this.loadTenants();
+      this.loadExports();
 
       this.intervalId = setInterval(() => {
         this.loadAnalyticsData();
@@ -396,10 +420,75 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+    if (this.exportPollId) {
+      clearInterval(this.exportPollId);
+    }
     if (this.map) {
       this.map.remove();
       this.map = undefined;
     }
+  }
+
+  public loadExports(): void {
+    this.http.get<ExportJobRow[]>(API_ENDPOINTS.EXPORTS.LIST).subscribe({
+      next: rows => {
+        this.exportsList = Array.isArray(rows) ? rows : [];
+        this.cdr.markForCheck();
+        const pending = this.exportsList.some(j => j.status === 'queued' || j.status === 'running');
+        if (pending && !this.exportPollId) {
+          this.exportPollId = setInterval(() => this.loadExports(), 4000);
+        }
+        if (!pending && this.exportPollId) {
+          clearInterval(this.exportPollId);
+          this.exportPollId = undefined;
+        }
+      },
+      error: () => {
+        // Storage may be offline in some envs; keep page usable.
+        this.exportsList = [];
+      },
+    });
+  }
+
+  public requestExport(): void {
+    this.exportBusy = true;
+    this.exportMessage = '';
+    this.http
+      .post<ExportJobRow>(API_ENDPOINTS.EXPORTS.CREATE, {
+        kind: this.exportKind,
+        format: this.exportFormat,
+        days: this.exportDays,
+        site_url: this.selectedSite && this.selectedSite !== 'All' ? this.selectedSite : null,
+      })
+      .subscribe({
+        next: job => {
+          this.exportBusy = false;
+          this.exportMessage = `Export ${job.id.slice(0, 8)}… ${job.status}`;
+          this.loadExports();
+        },
+        error: err => {
+          this.exportBusy = false;
+          const detail =
+            err?.error?.detail || err?.error?.message || err?.message || 'Export failed';
+          this.exportMessage = String(detail);
+        },
+      });
+  }
+
+  public downloadExport(jobId: string): void {
+    this.http
+      .get<{ url: string; filename_hint?: string }>(API_ENDPOINTS.EXPORTS.DOWNLOAD(jobId))
+      .subscribe({
+        next: body => {
+          if (body?.url && this.isBrowser) {
+            window.open(body.url, '_blank', 'noopener,noreferrer');
+          }
+        },
+        error: err => {
+          const detail = err?.error?.detail || err?.error?.message || 'Download unavailable';
+          this.exportMessage = String(detail);
+        },
+      });
   }
 
   public onTenantChange(tenantId: string): void {

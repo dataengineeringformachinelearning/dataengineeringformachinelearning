@@ -46,3 +46,5 @@ redis>=5.0.0
 norse>=1.1.0
 wappalyzer==2.0.1
 pysocks
+# S3-compatible client for RustFS report object store (exports PDF/CSV/Parquet)
+boto3>=1.35.0

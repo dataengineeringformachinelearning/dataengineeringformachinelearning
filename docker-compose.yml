@@ -76,6 +76,12 @@ services:
       - MARKETING_URL=http://localhost:4321
       - TOR_PROXY_URL=socks5h://tor-proxy:9050
       - STRUCTURED_LOGS=true
+      - RUSTFS_ENDPOINT=${RUSTFS_ENDPOINT:-http://rustfs:9000}
+      - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY:-deml-rustfs-dev}
+      - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY:-deml-rustfs-dev-secret-change-me}
+      - RUSTFS_BUCKET=${RUSTFS_BUCKET:-deml-exports}
+      - RUSTFS_REGION=${RUSTFS_REGION:-us-east-1}
+      - RUSTFS_USE_SSL=${RUSTFS_USE_SSL:-false}
     depends_on:
       postgres:
         condition: service_healthy
@@ -131,6 +137,12 @@ services:
       - CPE_GUESSER_URL=http://cpe-guesser:8080/unique
       - STRUCTURED_LOGS=true
       - PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0
+      - RUSTFS_ENDPOINT=${RUSTFS_ENDPOINT:-http://rustfs:9000}
+      - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY:-deml-rustfs-dev}
+      - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY:-deml-rustfs-dev-secret-change-me}
+      - RUSTFS_BUCKET=${RUSTFS_BUCKET:-deml-exports}
+      - RUSTFS_REGION=${RUSTFS_REGION:-us-east-1}
+      - RUSTFS_USE_SSL=${RUSTFS_USE_SSL:-false}
     depends_on:
       backend:
         condition: service_started
@@ -331,6 +343,54 @@ services:
       - /tmp
     restart: unless-stopped
 
+  # S3-compatible object store for analytics export artifacts (PDF/CSV/Parquet).
+  # Host ports 9100/9101 avoid clash with ClickHouse container port 9000.
+  # Runtime user is 10001:10001 — permission helper chowns named volumes once.
+  rustfs-perms:
+    image: alpine:3.21
+    user: root
+    volumes:
+      - rustfs-data:/data
+      - rustfs-logs:/logs
+    command: >
+      sh -c "chown -R 10001:10001 /data /logs && echo rustfs volume permissions ok"
+    restart: "no"
+
+  rustfs:
+    build:
+      context: ./infrastructure/rustfs
+    container_name: rustfs
+    depends_on:
+      rustfs-perms:
+        condition: service_completed_successfully
+    ports:
+      - "9100:9000"
+      - "9101:9001"
+    environment:
+      - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY:-deml-rustfs-dev}
+      - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY:-deml-rustfs-dev-secret-change-me}
+      - RUSTFS_CONSOLE_ENABLE=${RUSTFS_CONSOLE_ENABLE:-true}
+      - RUSTFS_ADDRESS=0.0.0.0:9000
+      - RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001
+      - RUSTFS_OBS_LOGGER_LEVEL=info
+      # SNSD local: single volume path (see infrastructure/rustfs/README.md)
+      - RUSTFS_VOLUMES=/data
+    volumes:
+      - rustfs-data:/data
+      - rustfs-logs:/logs
+    command: ["/data"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
 volumes:
   clickhouse-data:
   cpe-data:
+  rustfs-data:
+  rustfs-logs:

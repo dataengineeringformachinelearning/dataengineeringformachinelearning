@@ -11,6 +11,7 @@ Operational doctrine—how the platform runs in production, who performs which w
 - [conops.md](conops.md) — operator quick reference (checklists, service matrix, contingencies)
 - [glossary.md](glossary.md) — patterns, entities, stores
 - [billing.md](billing.md) — Stripe Standard → Pro
+- [exports-rustfs.md](exports-rustfs.md) — analytics export object store (RustFS) + download design
 - [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) — code-entity wiki
 
 ## Product surfaces (`deml.app`)
