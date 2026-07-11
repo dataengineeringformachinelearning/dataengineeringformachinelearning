@@ -35,7 +35,7 @@ COPY entrypoint.sh /usr/local/bin/dragonfly-entrypoint
 RUN groupadd --gid 10001 dragonfly \
     && useradd --uid 10001 --gid dragonfly --no-create-home --shell /usr/sbin/nologin dragonfly \
     && mkdir -p /run/dragonfly-tls \
-    && chown dragonfly:dragonfly /run/dragonfly-tls \
+    && chown dragonfly:dragonfly /run/dragonfly-tls /usr/local/bin/dragonfly-entrypoint \
     && chmod 750 /run/dragonfly-tls /usr/local/bin/dragonfly-entrypoint
 
 # Expose default Dragonfly/Redis port
