@@ -252,7 +252,9 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       >
         <svg
           [attr.viewBox]="'0 0 ' + width + ' ' + height()"
-          preserveAspectRatio="xMidYMid meet"
+          [attr.preserveAspectRatio]="
+            kind() === 'donut' ? 'xMidYMid meet' : 'none'
+          "
           shape-rendering="geometricPrecision"
           role="img"
           [attr.aria-label]="label() || 'Chart'"
@@ -508,10 +510,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
           --viking-chart-fill-min-height,
           clamp(13.5rem, 28vw, 16.5rem)
         );
-        max-height: var(
-          --viking-chart-fill-max-height,
-          clamp(16rem, 32vw, 19rem)
-        );
+        max-height: none;
         height: 100%;
         --viking-chart-axis-size: 13px;
       }
@@ -588,16 +587,13 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       .viking-chart-fill svg {
         width: 100%;
-        height: auto;
+        height: 100%;
         min-height: 0;
-        max-height: min(
-          100%,
-          var(--viking-chart-fill-max-height, clamp(14rem, 32vw, 18rem))
-        );
-        aspect-ratio: 720 / 400;
+        max-height: none;
+        aspect-ratio: auto;
       }
       .viking-chart-fill:not(.viking-chart-has-legend) svg {
-        aspect-ratio: 720 / 240;
+        aspect-ratio: auto;
       }
       .viking-chart-sparkline svg {
         min-height: 0;

@@ -61,6 +61,16 @@ export type ExportJobRow = {
   download_ready: boolean;
 };
 
+type BenchmarkSummary = {
+  model_type: string;
+  mae: number;
+  rmse: number;
+  accuracy_percent: number | null;
+  dataset_size: number;
+  evaluation_status: 'measured' | 'insufficient_data';
+  created_at: string;
+};
+
 @Component({
   selector: 'app-analytics',
   standalone: true,
@@ -124,6 +134,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public temporalForecast = 50;
   public honeypotScore = 0;
   public latestBenchmarkScore: number | null = null;
+  public latestBenchmark: BenchmarkSummary | null = null;
 
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
   frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
@@ -281,6 +292,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             response.data?.spiking_temporal_forecast || ces?.spiking_temporal_forecast || 50;
           this.honeypotScore = response.data?.honeypot_score || 0;
           this.latestBenchmarkScore = ces?.latest_benchmark_score ?? null;
+          this.latestBenchmark = ces?.latest_benchmark ?? null;
 
           this.p99Latency = user_metrics?.p99_latency_ms || 0;
           this.uptimePercent = user_metrics?.uptime_percent || 0;

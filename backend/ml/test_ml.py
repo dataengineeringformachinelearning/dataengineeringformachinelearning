@@ -1,12 +1,14 @@
 import datetime
+import math
 
 import pytest
 from account.platform import ensure_platform_status_page
 from django.contrib.auth.models import User
 from django.test import Client
-from monitor.models import Endpoints, MonitoredService, StatusPage
+from monitor.models import BenchmarkRun, Endpoints, MonitoredService, StatusPage
 
-from ml.models import TrainingRun
+from ml.ml_services import _benchmark_sla_model, _benchmark_threat_model
+from ml.models import ThreatReport, TrainingRun
 
 
 @pytest.mark.django_db
@@ -137,3 +139,91 @@ def test_latest_training_ignores_spiking_runs(client: Client) -> None:
   response = client.get("/api/v1/ml/latest")
   assert response.status_code == 200
   assert response.json()["average_sla"] == 98.5
+
+
+@pytest.mark.django_db
+def test_sla_benchmark_compares_forecast_with_observed_availability() -> None:
+  TrainingRun.objects.create(
+    average_sla=80.0,
+    loss=0.01,
+    is_platform=True,
+    user=None,
+    model_type=TrainingRun.MODEL_TYPE_SLA,
+  )
+  Endpoints.objects.create(
+    url="https://healthy.example",
+    status_code=200,
+    response_time=datetime.timedelta(milliseconds=100),
+    is_active=True,
+    is_platform=True,
+    user=None,
+  )
+  Endpoints.objects.create(
+    url="https://failed.example",
+    status_code=503,
+    response_time=datetime.timedelta(milliseconds=900),
+    is_active=False,
+    is_platform=True,
+    user=None,
+  )
+
+  mae, rmse, accuracy, dataset_size = _benchmark_sla_model(is_platform=True)
+
+  assert mae == pytest.approx(0.5)
+  assert rmse == pytest.approx(math.sqrt(0.34))
+  assert accuracy == pytest.approx(0.5)
+  assert dataset_size == 2
+
+
+@pytest.mark.django_db
+def test_threat_benchmark_uses_observed_suspicious_ratio() -> None:
+  ThreatReport.objects.create(
+    is_platform=True,
+    anomaly_score=0.8,
+    suspicious_ratio=0.6,
+  )
+  ThreatReport.objects.create(
+    is_platform=True,
+    anomaly_score=0.2,
+    suspicious_ratio=0.4,
+  )
+
+  mae, rmse, accuracy, dataset_size = _benchmark_threat_model(is_platform=True)
+
+  assert mae == pytest.approx(0.2)
+  assert rmse == pytest.approx(0.2)
+  assert accuracy == pytest.approx(1.0)
+  assert dataset_size == 2
+
+
+@pytest.mark.django_db
+def test_public_benchmark_feed_exposes_platform_scope_only(client: Client) -> None:
+  user = User.objects.create_user(username="private-benchmark", password="password")
+  BenchmarkRun.objects.create(
+    is_platform=True,
+    model_type="sla",
+    mae=0.1,
+    rmse=0.2,
+    accuracy=0.9,
+    training_duration_seconds=1.0,
+    dataset_size=10,
+    benchmark_score=0.8,
+  )
+  BenchmarkRun.objects.create(
+    user=user,
+    is_platform=False,
+    model_type="threat",
+    mae=0.9,
+    rmse=0.9,
+    accuracy=0.1,
+    training_duration_seconds=1.0,
+    dataset_size=2,
+    benchmark_score=0.1,
+  )
+
+  response = client.get("/api/v1/system-status/benchmarks")
+
+  assert response.status_code == 200
+  payload = response.json()
+  assert len(payload) == 1
+  assert payload[0]["model_type"] == "sla"

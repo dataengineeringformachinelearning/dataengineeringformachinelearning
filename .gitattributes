@@ -2,10 +2,27 @@
 # Self-hosted web fonts stay in Git so deployment archives contain real font bytes,
 # not Git LFS pointer files served as .woff2.
 # Small preview images are stored as regular git blobs for proper CDN serving in README.
-# Exclude preview images from LFS (they're small enough for direct git storage)
-/frontend/public/data-engineering-for-machine-learning-preview.png filter=
-/marketing/public/data-engineering-for-machine-learning-preview.png filter=
 *.png filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# Deployable static assets must remain ordinary Git blobs. Hosting providers often
+# build from source archives without the Git LFS smudge step; a pointer file served
+# as an image is therefore a production outage, even when the LFS object exists.
+/backend/static/**/*.png -filter -diff -merge -text
+/backend/static/**/*.jpg -filter -diff -merge -text
+/backend/static/**/*.jpeg -filter -diff -merge -text
+/backend/static/**/*.mp4 -filter -diff -merge -text
+/frontend/public/**/*.png -filter -diff -merge -text
+/frontend/public/**/*.jpg -filter -diff -merge -text
+/frontend/public/**/*.jpeg -filter -diff -merge -text
+/frontend/public/**/*.mp4 -filter -diff -merge -text
+/marketing/public/**/*.png -filter -diff -merge -text
+/marketing/public/**/*.jpg -filter -diff -merge -text
+/marketing/public/**/*.jpeg -filter -diff -merge -text
+/marketing/public/**/*.mp4 -filter -diff -merge -text
+/viking-ui-docs/public/**/*.png -filter -diff -merge -text
+/viking-ui-docs/public/**/*.jpg -filter -diff -merge -text
+/viking-ui-docs/public/**/*.jpeg -filter -diff -merge -text
+/viking-ui-docs/public/**/*.mp4 -filter -diff -merge -text

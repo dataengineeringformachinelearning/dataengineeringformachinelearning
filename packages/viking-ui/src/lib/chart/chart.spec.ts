@@ -28,11 +28,11 @@ describe("viking-chart responsive canvas", () => {
     return fixture;
   };
 
-  it("uses a wide fill canvas so populated bar charts fit their panel", async () => {
+  it("stretches a populated bar chart across its full panel without clipping", async () => {
     const fixture = await render();
     const svg = fixture.nativeElement.querySelector("svg") as SVGElement;
 
     expect(svg.getAttribute("viewBox")).toBe("0 0 720 280");
-    expect(svg.getAttribute("preserveAspectRatio")).toBe("xMidYMid meet");
+    expect(svg.getAttribute("preserveAspectRatio")).toBe("none");
   });
 });

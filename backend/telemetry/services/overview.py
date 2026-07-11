@@ -268,7 +268,7 @@ class OverviewService:
     from monitor.models import BenchmarkRun
 
     latest_benchmark = BenchmarkRun.objects.filter(is_platform=True).order_by("-created_at").first()
-    latest_benchmark_score = latest_benchmark.benchmark_score if latest_benchmark else None
+    latest_benchmark_score = latest_benchmark.benchmark_score * 100.0 if latest_benchmark else None
 
     return {
       "level": round(ces_level, 2),
@@ -279,6 +279,25 @@ class OverviewService:
       "honeypot_score": round(honeypot_score, 2),
       "latest_benchmark_score": (
         round(latest_benchmark_score, 2) if latest_benchmark_score is not None else None
+      ),
+      "latest_benchmark": (
+        {
+          "model_type": latest_benchmark.model_type,
+          "mae": round(latest_benchmark.mae, 4),
+          "rmse": round(latest_benchmark.rmse, 4),
+          "accuracy_percent": (
+            round(latest_benchmark.accuracy * 100.0, 2)
+            if latest_benchmark.accuracy is not None
+            else None
+          ),
+          "dataset_size": latest_benchmark.dataset_size,
+          "evaluation_status": (
+            "measured" if latest_benchmark.dataset_size > 0 else "insufficient_data"
+          ),
+          "created_at": latest_benchmark.created_at.isoformat(),
+        }
+        if latest_benchmark
+        else None
       ),
     }
 

@@ -552,11 +552,10 @@ def list_benchmarks(request, model_type: str = "all"):
         else BenchmarkRun.objects.filter(user=request.user)
       )
   else:
-    benchmarks = (
-      BenchmarkRun.objects.filter(is_platform=True)
-      if model_type != "all"
-      else BenchmarkRun.objects.all()
-    )
+    benchmarks = BenchmarkRun.objects.filter(is_platform=True)
+
+  if model_type != "all":
+    benchmarks = benchmarks.filter(model_type=model_type)
 
   benchmarks = benchmarks.order_by("-created_at")[:50]
 

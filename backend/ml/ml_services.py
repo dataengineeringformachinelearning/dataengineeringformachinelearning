@@ -1179,10 +1179,11 @@ def run_benchmark_suite(
   from monitor.models import BenchmarkRun
 
   results = {}
-  start_time = time.time()
 
   if model_type in ("all", "sla"):
+    evaluation_started = time.monotonic()
     mae, rmse, accuracy, dataset_size = _benchmark_sla_model(is_platform, user)
+    benchmark_score = max(0.0, min(1.0, 1.0 - rmse)) if dataset_size > 0 else 0.0
     benchmark = BenchmarkRun.objects.create(
       user=None if is_platform else user,
       is_platform=is_platform,
@@ -1190,19 +1191,23 @@ def run_benchmark_suite(
       mae=mae,
       rmse=rmse,
       accuracy=accuracy,
-      training_duration_seconds=time.time() - start_time,
+      training_duration_seconds=time.monotonic() - evaluation_started,
       dataset_size=dataset_size,
-      benchmark_score=1.0 - mae,  # Higher is better
+      benchmark_score=benchmark_score,
     )
     results["sla"] = {
       "mae": mae,
       "rmse": rmse,
       "accuracy": accuracy,
+      "benchmark_score": benchmark_score,
+      "evaluation_status": "measured" if dataset_size > 0 else "insufficient_data",
       "benchmark_id": benchmark.id,
     }
 
   if model_type in ("all", "threat"):
+    evaluation_started = time.monotonic()
     mae, rmse, accuracy, dataset_size = _benchmark_threat_model(is_platform, user)
+    benchmark_score = max(0.0, min(1.0, 1.0 - rmse)) if dataset_size > 0 else 0.0
     benchmark = BenchmarkRun.objects.create(
       user=None if is_platform else user,
       is_platform=is_platform,
@@ -1210,14 +1215,16 @@ def run_benchmark_suite(
       mae=mae,
       rmse=rmse,
       accuracy=accuracy,
-      training_duration_seconds=time.time() - start_time,
+      training_duration_seconds=time.monotonic() - evaluation_started,
       dataset_size=dataset_size,
-      benchmark_score=1.0 - mae,
+      benchmark_score=benchmark_score,
     )
     results["threat"] = {
       "mae": mae,
       "rmse": rmse,
       "accuracy": accuracy,
+      "benchmark_score": benchmark_score,
+      "evaluation_status": "measured" if dataset_size > 0 else "insufficient_data",
       "benchmark_id": benchmark.id,
     }
 
@@ -1229,10 +1236,12 @@ def run_benchmark_suite(
 
 def _benchmark_sla_model(
   is_platform: bool = False, user: Any = None
-) -> tuple[float, float, float, int]:
-  """Run benchmark on SLA model with historical data."""
+) -> tuple[float, float, float | None, int]:
+  """Evaluate the latest SLA forecast against observed endpoint availability."""
   import numpy as np
   from monitor.models import Endpoints
+
+  from ml.models import TrainingRun
 
   if is_platform:
     endpoints = Endpoints.objects.filter(is_platform=True, user__isnull=True)
@@ -1241,33 +1250,32 @@ def _benchmark_sla_model(
       Endpoints.objects.filter(user=user, is_platform=False) if user else Endpoints.objects.none()
     )
 
-  if not endpoints.exists():
-    return 0.1, 0.15, 0.85, 0
+  run_filter = {"is_platform": is_platform, "model_type": MODEL_TYPE_SLA}
+  if not is_platform:
+    run_filter["user"] = user
+  latest_run = TrainingRun.objects.filter(**run_filter).order_by("-created_at").first()
+  if not endpoints.exists() or latest_run is None:
+    return 0.0, 0.0, None, 0
 
-  # Simulate benchmark with available data
-  predictions = []
-  actuals = []
-  for ep in endpoints[:100]:
-    pred = 1.0 if ep.is_active and ep.status_code < 500 else 0.0
-    actual = 1.0 if ep.is_active and ep.status_code < 500 else 0.0
-    predictions.append(pred)
-    actuals.append(actual)
+  actuals = [1.0 if ep.is_active and ep.status_code < 500 else 0.0 for ep in endpoints[:100]]
+  predictions = [max(0.0, min(1.0, latest_run.average_sla / 100.0))] * len(actuals)
 
   preds = np.array(predictions)
   actuals = np.array(actuals)
   mae = float(np.mean(np.abs(preds - actuals)))
   rmse = float(np.sqrt(np.mean((preds - actuals) ** 2)))
-  accuracy = float(np.mean(preds == actuals))
+  accuracy = float(np.mean((preds >= 0.5) == (actuals >= 0.5)))
 
   return mae, rmse, accuracy, len(predictions)
 
 
 def _benchmark_threat_model(
   is_platform: bool = False, user: Any = None
-) -> tuple[float, float, float, int]:
-  """Run benchmark on threat model with historical data."""
+) -> tuple[float, float, float | None, int]:
+  """Evaluate anomaly forecasts against the observed suspicious-traffic ratio."""
   import numpy as np
-  from monitor.models import ThreatReport
+
+  from ml.models import ThreatReport
 
   if is_platform:
     reports = ThreatReport.objects.filter(is_platform=True)
@@ -1279,15 +1287,16 @@ def _benchmark_threat_model(
     )
 
   if not reports.exists():
-    return 0.15, 0.2, 0.75, 0
+    return 0.0, 0.0, None, 0
 
-  scores = [r.anomaly_score for r in reports[:100]]
-  # Simulate benchmark metrics
-  mae = float(np.std(scores)) * 0.1  # Lower variance = lower mae
-  rmse = float(np.std(scores)) * 0.15
-  accuracy = float(1.0 - min(scores)) if scores else 0.8
+  report_rows = list(reports[:100])
+  predictions = np.array([max(0.0, min(1.0, row.anomaly_score)) for row in report_rows])
+  actuals = np.array([max(0.0, min(1.0, row.suspicious_ratio)) for row in report_rows])
+  mae = float(np.mean(np.abs(predictions - actuals)))
+  rmse = float(np.sqrt(np.mean((predictions - actuals) ** 2)))
+  accuracy = float(np.mean((predictions >= 0.5) == (actuals >= 0.5)))
 
-  return mae, rmse, accuracy, len(scores)
+  return mae, rmse, accuracy, len(report_rows)
 
 
 def _publish_benchmark_to_ui(results: dict) -> None:
