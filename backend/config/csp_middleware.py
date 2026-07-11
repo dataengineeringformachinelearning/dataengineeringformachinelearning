@@ -12,7 +12,8 @@ _CSP_SCRIPT_SRC = (
   "https://www.googletagmanager.com https://*.googletagmanager.com "
   "https://www.clarity.ms https://*.clarity.ms "
   "https://static.cloudflareinsights.com "
-  "https://experiences.cdn.algolia.com"
+  "https://experiences.cdn.algolia.com "
+  "https://ui.dataengineeringformachinelearning.com https://*.ui.dataengineeringformachinelearning.com"
 )
 _CSP_CONNECT_SRC = (
   "'self' "
@@ -24,8 +25,13 @@ _CSP_CONNECT_SRC = (
   "https://experiences.resolver.algolia.com https://experiences.cdn.algolia.com "
   "https://experiences.algolia.com "
   "https://deml.app https://*.deml.app "
+  "wss://deml.app wss://*.deml.app "
   "https://backend.deml.app https://*.backend.deml.app "
+  "wss://backend.deml.app wss://*.backend.deml.app "
   "https://dataengineeringformachinelearning.com https://*.dataengineeringformachinelearning.com "
+  "wss://ui.dataengineeringformachinelearning.com "
+  "https://*.ui.dataengineeringformachinelearning.com "
+  "wss://*.ui.dataengineeringformachinelearning.com "
   "https://*.google-analytics.com https://*.googletagmanager.com "
   "https://*.clarity.ms https://*.bing.com"
 )
@@ -86,7 +92,8 @@ class ContentSecurityPolicyMiddleware:
         "worker-src 'self' blob:; "
         f"script-src {_CSP_SCRIPT_SRC}; "
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.jsdelivr.net "
-        "https://fonts.googleapis.com https://deml.app https://*.deml.app; "
+        "https://fonts.googleapis.com https://deml.app https://*.deml.app "
+        "https://ui.dataengineeringformachinelearning.com https://*.ui.dataengineeringformachinelearning.com; "
         "font-src 'self' data: https://fonts.gstatic.com; "
         f"connect-src {_CSP_CONNECT_SRC} {extra_connect}; "
         f"img-src {_CSP_IMG_SRC} {extra_img}; "
