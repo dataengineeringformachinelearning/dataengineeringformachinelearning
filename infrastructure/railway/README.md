@@ -89,18 +89,18 @@ For broader Infisical-style pollution (stale Postgres plugin vars, secrets on in
 
 Shared on Rust data-plane roles + Django API/workers:
 
-| Variable                     | Who needs it                                                 |
-| ---------------------------- | ------------------------------------------------------------ |
-| `DATABASE_URL`               | All Rust roles + Django; `sslmode=verify-full`               |
-| `REDPANDA_BROKERS`           | relay, scheduler, normalizer (+ Django)                      |
-| `REDPANDA_SECURITY_PROTOCOL` | Kafka clients; production value is `SASL_SSL`                |
-| `REDPANDA_SSL_*_B64`         | Kafka CA/client certificate/private key as base64 PEM        |
-| `DEML_INTERNODE_*`           | Kafka publishers/consumers; active key plus rotation keyring |
-| `DEML_TRANSPORT_SECURITY`    | Production value is `required`                               |
-| `REDIS_SSL_CA_B64`           | Private CA for verified Dragonfly TLS                        |
-| `REDPANDA_SASL_*`            | Production Kafka username/password                           |
-| `STRUCTURED_LOGS`            | Recommended `true`                                           |
-| `PORT`                       | Optional; Rust defaults health to `8080`                     |
+| Variable                     | Who needs it                                                       |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `DATABASE_URL`               | All Rust roles + Django; `sslmode=verify-full`                     |
+| `REDPANDA_BROKERS`           | relay, scheduler, normalizer (+ Django)                            |
+| `REDPANDA_SECURITY_PROTOCOL` | Internal mTLS clients use `SSL`; external Firebase uses `SASL_SSL` |
+| `REDPANDA_SSL_*_B64`         | Kafka CA/client certificate/private key as base64 PEM              |
+| `DEML_INTERNODE_*`           | Kafka publishers/consumers; active key plus rotation keyring       |
+| `DEML_TRANSPORT_SECURITY`    | Production value is `required`                                     |
+| `REDIS_SSL_CA_B64`           | Private CA for verified Dragonfly TLS                              |
+| `REDPANDA_SASL_*`            | External Firebase listener username/password                       |
+| `STRUCTURED_LOGS`            | Recommended `true`                                                 |
+| `PORT`                       | Optional; Rust defaults health to `8080`                           |
 
 The `deml-queue` service also requires `REDPANDA_TLS_CERT_B64`,
 `REDPANDA_TLS_KEY_B64`, and `REDPANDA_TLS_CA_B64`. The server certificate must

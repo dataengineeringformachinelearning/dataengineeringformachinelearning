@@ -132,7 +132,7 @@
         "DEML_ROLE": "relay",
         "DEML_TRANSPORT_SECURITY": "required",
         "DEML_INTERNODE_ENCRYPTION": "required",
-        "REDPANDA_SECURITY_PROTOCOL": "SASL_SSL",
+        "REDPANDA_SECURITY_PROTOCOL": "SSL",
         "STRUCTURED_LOGS": "true"
       }
     },
@@ -163,7 +163,7 @@
         "DEML_ROLE": "scheduler",
         "DEML_TRANSPORT_SECURITY": "required",
         "DEML_INTERNODE_ENCRYPTION": "required",
-        "REDPANDA_SECURITY_PROTOCOL": "SASL_SSL",
+        "REDPANDA_SECURITY_PROTOCOL": "SSL",
         "STRUCTURED_LOGS": "true"
       }
     },
@@ -214,7 +214,7 @@
         "DEML_ROLE": "normalizer",
         "DEML_TRANSPORT_SECURITY": "required",
         "DEML_INTERNODE_ENCRYPTION": "required",
-        "REDPANDA_SECURITY_PROTOCOL": "SASL_SSL",
+        "REDPANDA_SECURITY_PROTOCOL": "SSL",
         "STRUCTURED_LOGS": "true",
         "NORMALIZER_GROUP_ID": "deml-rust-telemetry-normalizer-v1"
       }
