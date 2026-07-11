@@ -21,4 +21,4 @@ exec /usr/local/bin/dragonfly \
   --tls_cert_file=/run/dragonfly-tls/server.crt \
   --tls_key_file=/run/dragonfly-tls/server.key \
   --requirepass="$DRAGONFLY_PASSWORD" \
-  --nohttp_admin_console
+  --primary_port_http_enabled=false
