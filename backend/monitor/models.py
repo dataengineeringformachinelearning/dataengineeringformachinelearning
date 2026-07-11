@@ -468,6 +468,63 @@ class AggregatedAnalytics(models.Model):
     return f"Analytics {self.bucket_size} @ {self.timestamp} ({scope})"
 
 
+class ReportArchive(models.Model):
+  """Materialized daily rollups for fast report generation (Neon-optimized).
+
+  Stores pre-computed daily summaries to accelerate report generation.
+  Uses time-based partitioning for efficient querying in Neon serverless.
+  Retains 2 years of history as per archival policy.
+  """
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="report_archives", null=True, blank=True
+  )
+  is_platform = models.BooleanField(default=False, db_index=True)
+  report_date = models.DateField(db_index=True)  # Daily partition key
+  period_start = models.DateTimeField()
+  period_end = models.DateTimeField()
+
+  # Pre-computed aggregates (denormalized for fast reads)
+  total_requests = models.BigIntegerField(default=0)
+  avg_latency_ms = models.FloatField(default=0.0)
+  p99_latency_ms = models.FloatField(default=0.0)
+  error_rate_percent = models.FloatField(default=0.0)
+  threats_detected = models.IntegerField(default=0)
+  active_incidents = models.IntegerField(default=0)
+  unique_visitors = models.IntegerField(default=0)
+  total_vulnerabilities = models.IntegerField(default=0)
+
+  # Flexible schema for extensions, notes, trends
+  summary_json = models.JSONField(default=dict, blank=True)
+
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "report_archives"
+    ordering = ["-report_date"]
+    indexes = [
+      models.Index(fields=["user", "report_date"]),
+      models.Index(fields=["is_platform", "report_date"]),
+    ]
+    constraints = [
+      models.UniqueConstraint(
+        fields=["user", "report_date"],
+        condition=models.Q(is_platform=False),
+        name="unique_user_daily_report",
+      ),
+      models.UniqueConstraint(
+        fields=["report_date"],
+        condition=models.Q(is_platform=True),
+        name="unique_platform_daily_report",
+      ),
+    ]
+
+  def __str__(self):
+    scope = "platform" if self.is_platform else (self.user_id or "unknown")
+    return f"Report {self.report_date} ({scope})"
+
+
 class APIKey(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="api_keys")

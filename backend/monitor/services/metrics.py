@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from utils.service_urls import endpoint_storage_url
 
-from monitor.models import AggregatedAnalytics, Endpoints
+from monitor.models import AggregatedAnalytics, Endpoints, ReportArchive
 
 User = get_user_model()
 
@@ -161,3 +161,57 @@ class MetricsService:
         raw_p99 = ms_list[idx]
 
     return round(max(agg_p99, raw_p99), 2), total_requests
+
+  @staticmethod
+  def _archive_metrics_30d(
+    *,
+    user: User | None,
+    is_platform: bool,
+  ) -> tuple[list[UptimeDay], float, int, float]:
+    """Query ReportArchive for 30-day history (ClickHouse offloading candidate).
+
+    Returns (uptime_history, overall_uptime, total_requests, avg_p99).
+    Uses materialized daily rollups when available for faster queries.
+    """
+    today = timezone.now().date()
+    since_date = today - dt.timedelta(days=30)
+
+    if is_platform:
+      archive_filter = {"is_platform": True}
+    elif user:
+      archive_filter = {"user": user, "is_platform": False}
+    else:
+      return [], 100.0, 0, 0.0
+
+    archives = list(
+      ReportArchive.objects.filter(
+        **archive_filter, report_date__gte=since_date
+      ).order_by("report_date")
+    )
+
+    days_list = [today - dt.timedelta(days=i) for i in range(30)]
+    days_list.reverse()
+
+    archive_by_date = {a.report_date: a for a in archives}
+
+    history: list[UptimeDay] = []
+    total_up = 0
+    total_count = 0
+
+    for day in days_list:
+      archive = archive_by_date.get(day)
+      if archive and archive.total_requests > 0:
+        # Convert error rate to uptime percentage
+        uptime = 100.0 - archive.error_rate_percent
+        status = "operational" if uptime >= 99.9 else "partial_outage" if uptime >= 95 else "major_outage"
+        history.append(UptimeDay(status, round(uptime, 2)))
+        total_up += archive.total_requests * (uptime / 100.0)
+        total_count += archive.total_requests
+      else:
+        history.append(UptimeDay("no_data", 100.0))
+
+    overall = round((total_up / total_count) * 100.0, 2) if total_count > 0 else 100.0
+    total_requests = sum(a.total_requests for a in archives)
+    avg_p99 = max((a.p99_latency_ms for a in archives), default=0.0)
+
+    return history, overall, total_requests, avg_p99

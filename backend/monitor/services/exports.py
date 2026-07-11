@@ -23,6 +23,7 @@ from utils.object_storage import (
 from monitor.models import (
   AggregatedAnalytics,
   ExportJob,
+  ReportArchive,
   ThreatIntelligence,
   Vulnerability,
 )
@@ -96,7 +97,31 @@ def _rows_for_job(job: ExportJob) -> list[dict[str, Any]]:
       )
     return rows
 
-  # analytics (default)
+  # analytics (default) - prefer ReportArchive for daily rollups (faster)
+  days = int(job.params.get("days", 7)) if isinstance(job.params, dict) else 7
+  days = max(1, min(days, 90))
+  since = timezone.now() - timedelta(days=days)
+
+  # Use ReportArchive for daily rollups when requesting 7+ days
+  if job.user and days >= 7:
+    archive_qs = ReportArchive.objects.filter(
+      user=job.user, report_date__gte=since.date()
+    ).order_by("-report_date")[:days]
+    if archive_qs.exists():
+      return [
+        {
+          "report_date": row.report_date.isoformat(),
+          "total_requests": row.total_requests,
+          "avg_latency_ms": row.avg_latency_ms,
+          "p99_latency_ms": row.p99_latency_ms,
+          "error_rate_percent": row.error_rate_percent,
+          "threats_detected": row.threats_detected,
+          "active_incidents": row.active_incidents,
+          "unique_visitors": row.unique_visitors,
+        }
+        for row in archive_qs
+      ]
+
   qs = AggregatedAnalytics.objects.filter(user=job.user, timestamp__gte=since).order_by(
     "-timestamp"
   )[:5000]
