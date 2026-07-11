@@ -939,6 +939,39 @@
   width: 100%;
 }
 
+/* Docs landing/showcase alignment contract: one visual centerline and the
+   uppercase display language used across Viking-UI operational surfaces. */
+.landing-showcase :is(h1, h2, h3),
+.showcase-page :is(h1, h2, h3) {
+  text-transform: uppercase;
+}
+
+.landing-hero > *,
+.showcase-hero > * {
+  margin-inline: auto;
+}
+
+.landing-hero .hero-mockup,
+.landing-hero .viking-page-mockup {
+  width: min(100%, var(--viking-content-readable-max-width));
+  margin-inline: auto;
+  padding-inline-end: 0;
+  perspective: none;
+}
+
+.landing-hero .viking-page-mockup-window,
+.landing-hero .mockup-window,
+.landing-hero .viking-page-mockup-window:hover,
+.landing-hero .mockup-window:hover {
+  transform: none;
+  transform-origin: center;
+}
+
+.landing-preview-panel {
+  width: min(100%, var(--viking-content-readable-max-width));
+  margin-inline: auto;
+}
+
 .landing-stat {
   padding: var(--viking-card-padding-compact);
   border: 1px solid var(--viking-border);

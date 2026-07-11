@@ -207,7 +207,7 @@
               <viking-app-icon name="bug-report" />
             </div>
             <div class="gauge-wrapper honeypot-gauge">
-              <viking-gauge-arc class="theme-crimson" tone="crimson" [value]="honeypotScore" />
+              <viking-gauge-arc class="theme-crimson" tone="danger" [value]="honeypotScore" />
               <div class="gauge-center-text honeypot-text">
                 <viking-app-icon name="security" hostClass="gauge-inner-icon" />
                 <span class="unit">CAPTURES</span>
@@ -231,7 +231,7 @@
             <div class="gauge-wrapper benchmark-gauge">
               <viking-gauge-arc
                 class="theme-teal"
-                tone="teal"
+                tone="primary"
                 [value]="latestBenchmarkScore !== null ? latestBenchmarkScore : 75"
               />
               <div class="gauge-center-text benchmark-text">

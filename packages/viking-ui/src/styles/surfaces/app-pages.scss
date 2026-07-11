@@ -3768,3 +3768,143 @@ app-status-cta.isolated-status-cta {
 .dashboard-page-container .origin-map-canvas .leaflet-tile {
   max-width: none !important;
 }
+
+/* ── Content-aware app layouts ─────────────────────────────────────────────
+   The sidebar changes usable width independently of the viewport. Query the
+   real page column so cards stack before labels, values, or controls scrunch. */
+.dashboard-content .page-inner-wrapper,
+.dashboard-page-container .page-inner-wrapper {
+  max-width: var(
+    --viking-container-max-width-wide,
+    var(--viking-container-max-width)
+  );
+  container-name: viking-app-page;
+  container-type: inline-size;
+}
+
+.dashboard-page-container .overview-grid {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "setup"
+    "health"
+    "kpis"
+    "threats"
+    "metrics";
+}
+
+.dashboard-page-container .kpi-grid,
+.dashboard-page-container .snapshot-stats {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@container viking-app-page (min-width: 40rem) {
+  .dashboard-page-container .kpi-grid,
+  .dashboard-page-container .snapshot-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container viking-app-page (min-width: 64rem) {
+  .dashboard-page-container .overview-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    grid-template-areas:
+      "setup setup"
+      "health kpis"
+      "threats metrics";
+  }
+}
+
+/* Threat triage: the queue needs a real working width. It stays above the
+   detail panel until the app column can provide a 448px queue plus detail. */
+.dashboard-page-container .triage-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dashboard-page-container .triage-grid > .queue-panel,
+.dashboard-page-container .triage-grid > .detail-panel {
+  grid-column: 1 / -1;
+}
+
+.dashboard-page-container .queue-panel {
+  container-name: viking-triage-queue;
+  container-type: inline-size;
+}
+
+.dashboard-page-container .queue-panel .filter-bar {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@container viking-triage-queue (min-width: 36rem) {
+  .dashboard-page-container .queue-panel .filter-bar {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+@container viking-app-page (min-width: 72rem) {
+  .dashboard-page-container .triage-grid {
+    grid-template-columns:
+      minmax(
+        calc(var(--viking-space-24) + var(--viking-space-12)),
+        0.9fr
+      )
+      minmax(0, 2fr);
+  }
+
+  .dashboard-page-container .triage-grid > .queue-panel {
+    grid-column: 1;
+  }
+
+  .dashboard-page-container .triage-grid > .detail-panel {
+    grid-column: 2;
+  }
+}
+
+/* Explore cards are information-dense. Keep one generous card per row; each
+   card chooses its own internal metric columns with component containers. */
+.dashboard-page-container .status-directory-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-space-4);
+}
+
+/* Analytics indicators need a minimum working width for gauge labels/values. */
+.dashboard-page-container .ces-gauge-cluster {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-2))),
+      1fr
+    )
+  );
+}
+
+/* Sites and Account: fluid controls inside their intentionally full-width
+   stacked cards. Never switch a row merely because the viewport is wide. */
+.dashboard-page-container .platform-integrations-grid {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--viking-metric-card-min-width)), 1fr)
+  );
+}
+
+.dashboard-page-container .settings-form-panel .form-row,
+.dashboard-page-container .mfa-phone-row,
+.dashboard-page-container .service-inputs-row {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-2))),
+      1fr
+    )
+  );
+  align-items: end;
+}
+
+.dashboard-page-container .settings-form-panel .form-row > *,
+.dashboard-page-container .mfa-phone-row > *,
+.dashboard-page-container .service-inputs-row > * {
+  min-width: 0;
+  width: 100%;
+}

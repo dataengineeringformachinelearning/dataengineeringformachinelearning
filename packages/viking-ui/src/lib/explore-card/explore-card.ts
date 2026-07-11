@@ -371,6 +371,8 @@ export class ExploreCardMetricItemComponent {
   styles: [
     `
       :host {
+        container-name: viking-explore-card;
+        container-type: inline-size;
         display: block;
         width: 100%;
         min-width: 0;
@@ -421,11 +423,17 @@ export class ExploreCardMetricItemComponent {
         border-top: 1px solid var(--viking-border-subtle);
       }
 
-      /* Mobile-first: stacks to 1 column. Scales to clean 2x2 grid on desktop */
-      @media (min-width: 768px) {
+      /* The card responds to its own width, not the browser viewport. */
+      @container viking-explore-card (min-width: 42rem) {
         .viking-explore-card-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: var(--viking-space-3);
+        }
+      }
+
+      @container viking-explore-card (min-width: 70rem) {
+        .viking-explore-card-metrics {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
         }
       }
     `,
