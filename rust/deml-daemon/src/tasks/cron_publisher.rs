@@ -10,7 +10,7 @@
 
 use std::time::Duration;
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use chrono::{DateTime, Utc};
 use rdkafka::producer::FutureProducer;
 use serde::Serialize;
@@ -123,7 +123,11 @@ struct TaskTrigger<'a> {
     source: &'static str,
 }
 
-pub async fn run(pool: PgPool, producer: FutureProducer, clickhouse_url: Option<String>) -> Result<()> {
+pub async fn run(
+    pool: PgPool,
+    producer: FutureProducer,
+    clickhouse_url: Option<String>,
+) -> Result<()> {
     let owner = Uuid::new_v4();
     info!(%owner, tasks = CRON_TASKS.len(), "scheduler: started");
 
@@ -203,24 +207,53 @@ async fn claim_runs(pool: &PgPool, owner: Uuid, limit: i64) -> Result<Vec<Schedu
     skip_all,
     fields(run_id = %run.id, task = %run.task_name)
 )]
-async fn execute_run(pool: &PgPool, producer: &FutureProducer, clickhouse_url: &Option<String>, owner: Uuid, run: ScheduledRun) {
+async fn execute_run(
+    pool: &PgPool,
+    producer: &FutureProducer,
+    clickhouse_url: &Option<String>,
+    owner: Uuid,
+    run: ScheduledRun,
+) {
     // Rust-native tasks execute directly without Kafka
     if RUST_NATIVE_TASKS.contains(&run.task_name.as_str()) {
-        execute_native_task(pool, clickhouse_url.as_deref(), &run.task_name, run.id).await;
-        // Update state to completed (native execution)
-        let _ = sqlx::query(
-            r#"
-            UPDATE scheduled_task_runs
-            SET state = 'completed', attempts = attempts + 1,
-                completed_at = NOW(),
-                claimed_by = NULL, lease_expires_at = NULL, updated_at = NOW()
-            WHERE id = $1 AND claimed_by = $2
-            "#,
-        )
-        .bind(run.id)
-        .bind(owner)
-        .execute(pool)
-        .await;
+        match execute_native_task(pool, clickhouse_url.as_deref(), &run.task_name).await {
+            Ok(()) => {
+                if let Err(error) = sqlx::query(
+                    r#"
+                    UPDATE scheduled_task_runs
+                    SET state = 'completed', attempts = attempts + 1,
+                        last_error = '', completed_at = NOW(),
+                        claimed_by = NULL, lease_expires_at = NULL, updated_at = NOW()
+                    WHERE id = $1 AND claimed_by = $2
+                    "#,
+                )
+                .bind(run.id)
+                .bind(owner)
+                .execute(pool)
+                .await
+                {
+                    error!(run_id = %run.id, %error, "scheduler: native completion update failed");
+                }
+            }
+            Err(error) => {
+                warn!(run_id = %run.id, task = %run.task_name, %error, "scheduler: native task failed");
+                let _ = sqlx::query(
+                    r#"
+                    UPDATE scheduled_task_runs
+                    SET state = 'failed', attempts = attempts + 1, last_error = $3,
+                        claimed_by = NULL,
+                        lease_expires_at = NOW() + INTERVAL '30 seconds',
+                        updated_at = NOW()
+                    WHERE id = $1 AND claimed_by = $2
+                    "#,
+                )
+                .bind(run.id)
+                .bind(owner)
+                .bind(error.to_string())
+                .execute(pool)
+                .await;
+            }
+        }
         return;
     }
 
@@ -291,32 +324,19 @@ async fn execute_run(pool: &PgPool, producer: &FutureProducer, clickhouse_url: &
 }
 
 /// Execute Rust-native tasks directly (db_cleanup, optimize_database, archive_reports)
-async fn execute_native_task(pool: &PgPool, clickhouse_url: Option<&str>, task_name: &str, run_id: Uuid) {
+async fn execute_native_task(
+    pool: &PgPool,
+    clickhouse_url: Option<&str>,
+    task_name: &str,
+) -> Result<()> {
     match task_name {
-        "db_cleanup" => {
-            if let Err(e) = maintenance::run_db_cleanup(pool).await {
-                error!(run_id = %run_id, error = %e, "native db_cleanup failed");
-            }
-        }
-        "optimize_database" => {
-            if let Err(e) = maintenance::run_optimize_database(pool).await {
-                error!(run_id = %run_id, error = %e, "native optimize_database failed");
-            }
-        }
-        "archive_reports" => {
-            if let Err(e) = maintenance::run_archive_reports(pool).await {
-                error!(run_id = %run_id, error = %e, "native archive_reports failed");
-            }
-        }
+        "db_cleanup" => maintenance::run_db_cleanup(pool).await,
+        "optimize_database" => maintenance::run_optimize_database(pool).await,
+        "archive_reports" => maintenance::run_archive_reports(pool).await,
         "cleanup_clickhouse" => {
-            if let Some(url) = clickhouse_url {
-                if let Err(e) = maintenance::run_cleanup_clickhouse(url).await {
-                    error!(run_id = %run_id, error = %e, "native cleanup_clickhouse failed");
-                }
-            } else {
-                warn!(run_id = %run_id, "cleanup_clickhouse: CLICKHOUSE_URL not configured");
-            }
+            let url = clickhouse_url.context("cleanup_clickhouse requires CLICKHOUSE_URL")?;
+            maintenance::run_cleanup_clickhouse(url).await
         }
-        _ => warn!(task = task_name, "unknown native task"),
+        _ => bail!("unknown native task: {task_name}"),
     }
 }

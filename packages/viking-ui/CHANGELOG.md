@@ -1,5 +1,14 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## Unreleased
+
+### Minor Changes
+
+- Add reusable Angular page shell, section, stack, responsive grid, and cluster
+  layout primitives backed by the canonical Viking-UI layout classes.
+- Promote the precision display-heading treatment across the Viking-UI showcase
+  and render release identity from package metadata instead of stale page copy.
+
 ## 6.1.0
 
 ### Minor Changes

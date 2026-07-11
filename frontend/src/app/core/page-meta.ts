@@ -78,7 +78,7 @@ export const ROUTE_PAGE_META: Record<string, PageMeta> = {
   analytics: {
     title: 'Analytics - DEML APP',
     description:
-      'ClickHouse-backed analytics, geo maps, and trend visualizations for your telemetry data.',
+      'Explore performance trends, geographic activity, reliability signals, and operational risk across your monitored services.',
     robots: NOINDEX,
     ogType: 'website',
   },

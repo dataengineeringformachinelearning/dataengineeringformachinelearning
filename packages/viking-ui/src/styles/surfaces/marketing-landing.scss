@@ -1360,14 +1360,14 @@
     auto-fit,
     minmax(min(100%, var(--viking-metric-card-min-width)), 1fr)
   );
-  width: min(100%, var(--viking-content-readable-max-width));
+  width: 100%;
 }
 
 .hero-copy .cta-group {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   justify-content: center;
-  width: min(100%, var(--viking-content-readable-max-width));
+  width: 100%;
   margin-inline: auto;
 }
 
@@ -1375,6 +1375,12 @@
   justify-content: center;
   width: 100%;
   min-width: 0;
+}
+
+.hero-stat-pill,
+.hero-copy .cta-button {
+  width: 100%;
+  justify-content: center;
 }
 
 .hero-mockup {
@@ -1539,19 +1545,17 @@
   background: var(--viking-surface);
 }
 
-@media (max-width: 37.5rem) {
+@media (min-width: 37.5rem) {
   .hero-stats,
   .hero-copy .cta-group {
-    width: 100%;
+    width: min(100%, var(--viking-content-readable-max-width));
   }
 
-  .hero-stat-pill,
-  .hero-copy .cta-button {
-    width: 100%;
-    justify-content: center;
+  .hero-stat-pill {
+    width: auto;
   }
 
   .hero-copy .cta-group {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

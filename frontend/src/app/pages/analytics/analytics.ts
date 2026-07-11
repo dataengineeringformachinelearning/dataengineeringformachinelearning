@@ -23,6 +23,7 @@ import {
   VikingGaugeArc,
   VikingInput,
   VikingPageHeader,
+  VikingPageShell,
   VikingChartPanel,
   VikingChartCardHeader,
   VikingChartEmptyState,
@@ -76,6 +77,7 @@ export type ExportJobRow = {
     VikingGaugeArc,
     VikingAppIcon,
     VikingPageHeader,
+    VikingPageShell,
     VikingChartPanel,
     VikingChartCardHeader,
     VikingChartEmptyState,
@@ -278,7 +280,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.temporalForecast =
             response.data?.spiking_temporal_forecast || ces?.spiking_temporal_forecast || 50;
           this.honeypotScore = response.data?.honeypot_score || 0;
-          this.latestBenchmarkScore = response.data?.latest_benchmark_score || null;
+          this.latestBenchmarkScore = ces?.latest_benchmark_score ?? null;
 
           this.p99Latency = user_metrics?.p99_latency_ms || 0;
           this.uptimePercent = user_metrics?.uptime_percent || 0;

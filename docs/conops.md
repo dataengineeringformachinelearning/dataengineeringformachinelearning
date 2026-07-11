@@ -46,7 +46,12 @@ Firebase (Auth, `ingestEvent`, Firestore, marketing Hosting) is shared across co
 | `ingestEvent` + Firestore rules       | Firebase / GCP                                                                                                                      | `.github/workflows/firebase...` |
 | Marketing site                        | Firebase Hosting                                                                                                                    | `firebase-hosting-merge.yml`    |
 
-**Ownership invariant:** Rust roles own relay, schedules, probes, and raw telemetry normalization. Python equivalents are rollback-only and must not run concurrently.
+**Ownership invariant:** Rust roles own relay, durable schedule creation, pure
+database maintenance, probes, raw telemetry normalization, request-time CPE
+lookup, and optional high-volume ingest. Python equivalents are rollback-only
+and must not run concurrently. Django workers retain business projections, ML,
+billing, KMS, and external API integrations. See the
+[Python-to-Rust ownership ledger](rust-data-plane.md#python-to-rust-ownership-ledger).
 
 **Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
 
@@ -105,7 +110,7 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 | **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; internal broker unaffected   |
 | **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-relay`; inspect `frontend-events-dlq` |
 | **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                         |
-| **Maintenance**                 | Deploy in progress                       | Cloud Run rolling deploy; expect brief projection lag                        |
+| **Maintenance**                 | Deploy in progress                       | Rolling deploy; expect brief projection lag and verify Rust task leases      |
 
 ## 7. Service matrix
 

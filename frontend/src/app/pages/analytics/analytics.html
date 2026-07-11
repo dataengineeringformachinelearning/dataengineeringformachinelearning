@@ -1,10 +1,10 @@
 <div class="dashboard-page-container">
   <div class="dashboard-content-area">
-    <div class="page-inner-wrapper">
+    <viking-page-shell>
       <viking-page-header
         tag="Platform Analytics"
         title="System Analytics"
-        subtitle="Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse."
+        subtitle="Live performance, reliability, and risk signals for every monitored service."
         backTo="/dashboard"
         [backQueryParams]="{ tab: 'performance' }"
         backLabel="Back to Dashboard"
@@ -232,13 +232,16 @@
               <viking-gauge-arc
                 class="theme-teal"
                 tone="primary"
-                [value]="latestBenchmarkScore !== null ? latestBenchmarkScore : 75"
+                [value]="latestBenchmarkScore ?? 0"
               />
               <div class="gauge-center-text benchmark-text">
                 <viking-app-icon name="speed" hostClass="gauge-inner-icon" />
                 <span class="unit">SCORE</span>
                 <span class="value"
-                  >{{ latestBenchmarkScore !== null ? (latestBenchmarkScore | number:'1.0-0') : '—' }}</span
+                  >{{ latestBenchmarkScore !== null ? (latestBenchmarkScore | number:'1.0-0') : '—'
+                  }}<span class="unit-symbol"
+                    >{{ latestBenchmarkScore !== null ? '%' : '' }}</span
+                  ></span
                 >
               </div>
             </div>
@@ -641,6 +644,6 @@
           }
         </viking-chart-panel>
       </div>
-    </div>
+    </viking-page-shell>
   </div>
 </div>

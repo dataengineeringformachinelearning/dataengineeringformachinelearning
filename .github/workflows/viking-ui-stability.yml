@@ -52,6 +52,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Fetch visual baselines only
+        run: git lfs pull --include='viking-ui-docs/tests/__screenshots__/**' --exclude=''
+
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

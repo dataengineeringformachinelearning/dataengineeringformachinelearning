@@ -35,24 +35,24 @@ Auth: Railway CLI token under `~/.railway` (already linked for this workspace). 
 
 ## Service map
 
-| Service                 | Class           | Config dir          | Image / Dockerfile                     | Notes                                                |
-| ----------------------- | --------------- | ------------------- | -------------------------------------- | ---------------------------------------------------- |
-| `deml-backend`          | django-api      | `backend/`          | `backend/Dockerfile`                   | Control plane; run migrations first                  |
-| `deml-frontend`         | frontend        | `frontend/`         | `frontend/Dockerfile`                  | Public SSR only — no Django secrets                  |
-| `deml-workers`          | django-worker   | `workers/`          | `backend/Dockerfile`                   | Claims `scheduled_task_runs`; schedulers **off**     |
-| `deml-telemetry-worker` | django-worker   | `telemetry-worker/` | `backend/Dockerfile`                   | Projections consumer; schedulers **off**             |
-| `deml-relay`            | rust-data-plane | `relay/`            | `rust/deml-daemon/Dockerfile`          | `DEML_ROLE=relay`                                    |
-| `deml-scheduler`        | rust-data-plane | `scheduler/`        | same                                   | `DEML_ROLE=scheduler`                                |
-| `deml-probe`            | rust-data-plane | `probe/`            | same                                   | `DEML_ROLE=probe`                                    |
-| `deml-normalizer`       | rust-data-plane | `normalizer/`       | same                                   | `DEML_ROLE=normalizer`                               |
-| `deml-ingest`           | rust-data-plane | `ingest/`           | same                                   | `DEML_ROLE=ingest` (public ingress when cut over)    |
-| `deml-cpe`              | rust-data-plane | `cpe/`              | same                                   | `DEML_ROLE=cpe`; CPE `/unique` lookup                |
-| `deml-scanner`          | infra-app       | `scanner/`          | `infrastructure/scanner/Dockerfile`    | OSINT scanner; points at `deml-cpe`                  |
-| `deml-queue`            | infra           | `queue/`            | `infrastructure/queue/Dockerfile`      | Redpanda                                             |
-| `deml-dragonfly`        | infra           | `dragonfly/`        | `infrastructure/dragonfly/Dockerfile`  | Redis-compatible cache                               |
-| `deml-clickhouse`       | infra           | `clickhouse/`       | `infrastructure/clickhouse/Dockerfile` | OLAP / OTEL sink                                     |
-| `deml-tor-proxy`        | infra           | `tor-proxy/`        | `infrastructure/tor-proxy/Dockerfile`  | Tor egress for scanners                              |
-| `deml-rustfs`           | infra           | `rustfs/`           | `infrastructure/rustfs/Dockerfile`     | S3 report blobs (PDF/CSV/Parquet); volume at `/data` |
+| Service                 | Class           | Config dir          | Image / Dockerfile                     | Notes                                                        |
+| ----------------------- | --------------- | ------------------- | -------------------------------------- | ------------------------------------------------------------ |
+| `deml-backend`          | django-api      | `backend/`          | `backend/Dockerfile`                   | Control plane; run migrations first                          |
+| `deml-frontend`         | frontend        | `frontend/`         | `frontend/Dockerfile`                  | Public SSR only — no Django secrets                          |
+| `deml-workers`          | django-worker   | `workers/`          | `backend/Dockerfile`                   | Claims `scheduled_task_runs`; schedulers **off**             |
+| `deml-telemetry-worker` | django-worker   | `telemetry-worker/` | `backend/Dockerfile`                   | Projections consumer; schedulers **off**                     |
+| `deml-relay`            | rust-data-plane | `relay/`            | `rust/deml-daemon/Dockerfile`          | `DEML_ROLE=relay`                                            |
+| `deml-scheduler`        | rust-data-plane | `scheduler/`        | same                                   | `DEML_ROLE=scheduler`; durable triggers + native maintenance |
+| `deml-probe`            | rust-data-plane | `probe/`            | same                                   | `DEML_ROLE=probe`                                            |
+| `deml-normalizer`       | rust-data-plane | `normalizer/`       | same                                   | `DEML_ROLE=normalizer`                                       |
+| `deml-ingest`           | rust-data-plane | `ingest/`           | same                                   | `DEML_ROLE=ingest` (public ingress when cut over)            |
+| `deml-cpe`              | rust-data-plane | `cpe/`              | same                                   | `DEML_ROLE=cpe`; CPE `/unique` lookup                        |
+| `deml-scanner`          | infra-app       | `scanner/`          | `infrastructure/scanner/Dockerfile`    | OSINT scanner; points at `deml-cpe`                          |
+| `deml-queue`            | infra           | `queue/`            | `infrastructure/queue/Dockerfile`      | Redpanda                                                     |
+| `deml-dragonfly`        | infra           | `dragonfly/`        | `infrastructure/dragonfly/Dockerfile`  | Redis-compatible cache                                       |
+| `deml-clickhouse`       | infra           | `clickhouse/`       | `infrastructure/clickhouse/Dockerfile` | OLAP / OTEL sink                                             |
+| `deml-tor-proxy`        | infra           | `tor-proxy/`        | `infrastructure/tor-proxy/Dockerfile`  | Tor egress for scanners                                      |
+| `deml-rustfs`           | infra           | `rustfs/`           | `infrastructure/rustfs/Dockerfile`     | S3 report blobs (PDF/CSV/Parquet); volume at `/data`         |
 
 ### Retired (do not recreate)
 
@@ -112,13 +112,14 @@ manager or organizational PKI—never store PEM material in this repository.
 
 Role-specific:
 
-| Variable                               | Service(s)                           |
-| -------------------------------------- | ------------------------------------ |
-| `REDIS_URL`                            | **deml-ingest** (fail-closed)        |
-| `CPE_REDIS_URL`                        | **deml-cpe** (Dragonfly DB 8)        |
-| `CPE_GUESSER_URL`                      | backend, workers, scanner → deml-cpe |
-| `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` | deml-workers, deml-telemetry-worker  |
-| `NORMALIZER_GROUP_ID`                  | deml-normalizer (default in catalog) |
+| Variable                               | Service(s)                                             |
+| -------------------------------------- | ------------------------------------------------------ |
+| `REDIS_URL`                            | **deml-ingest** (fail-closed)                          |
+| `CPE_REDIS_URL`                        | **deml-cpe** (Dragonfly DB 8)                          |
+| `CPE_GUESSER_URL`                      | backend, workers, scanner → deml-cpe                   |
+| `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` | deml-workers, deml-telemetry-worker                    |
+| `NORMALIZER_GROUP_ID`                  | deml-normalizer (default in catalog)                   |
+| `CLICKHOUSE_URL`                       | **deml-scheduler** (weekly native retention; required) |
 
 `DEML_ROLE` is set by each Rust service’s `startCommand` in `railway.json` — do not run a bare `deml-daemon` image without a role.
 
@@ -126,32 +127,31 @@ Role-specific:
 
 ML workers publish trained models to Hugging Face when both `HF_TOKEN` and `HF_REPO_ID` are set. Required repository secrets:
 
-| Secret             | Description                              |
-| ------------------ | ---------------------------------------- |
-| `HF_TOKEN`         | Hugging Face API token with write access   |
-| `HF_REPO_ID`       | Repository ID (e.g., `organization/model`) |
-| `HF_SPACE_REPO`    | Space repo for whitepaper hosting (deploy) |
+| Secret          | Description                                |
+| --------------- | ------------------------------------------ |
+| `HF_TOKEN`      | Hugging Face API token with write access   |
+| `HF_REPO_ID`    | Repository ID (e.g., `organization/model`) |
+| `HF_SPACE_REPO` | Space repo for whitepaper hosting (deploy) |
 
 Models are published via `huggingface_hub.HfApi` using PyTorch `state_dict` only (no pickle for security). Tenant models are namespaced with hashed tenant slugs.
 
 ### GitHub Deploy Secrets (required)
 
-| Secret                             | Workflow                                                  |
-| ---------------------------------- | ------------------------------------------------------- |
-| `NPM_TOKEN`                        | `publish-viking-ui.yml` (npm package publishing)        |
-| `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM` | Backend, marketing hosting, and hosting merge workflows   |
-| `FIREBASE_SERVICE_ACCOUNT_DEML_UI`   | `publish-viking-ui.yml` (Viking-UI showcase hosting)    |
-| `CHROMATIC_PROJECT_TOKEN`            | `publish-viking-ui.yml` (Storybook)                     |
-| `REDPANDA_PUBLIC_BROKERS`          | `firebase-backend-deploy.yml` (direct publish path)      |
-| `REDPANDA_PUBLIC_SASL_USERNAME`    | Same (SASL credentials)                                  |
-| `REDPANDA_PUBLIC_SASL_PASSWORD`    | Same                                                     |
-| `REDPANDA_PUBLIC_TLS_CA_B64`     | Same (TLS CA for broker cert)                              |
-| `DEML_INTERNODE_KEYS`              | Same (internode encryption keyring)                        |
-| `DEML_INTERNODE_ACTIVE_KID`        | Same (active key ID)                                       |
-| `CLOUDFLARE_TOKEN`               | All Cloudflare cache purge workflows                      |
-| `CLOUDFLARE_ZONE_ID_DEML_MARKETING` | Same                                                    |
-| `CLOUDFLARE_ZONE_ID_DEML_APP`        | Same                                                    |
-
+| Secret                                | Workflow                                                |
+| ------------------------------------- | ------------------------------------------------------- |
+| `NPM_TOKEN`                           | `publish-viking-ui.yml` (npm package publishing)        |
+| `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM` | Backend, marketing hosting, and hosting merge workflows |
+| `FIREBASE_SERVICE_ACCOUNT_DEML_UI`    | `publish-viking-ui.yml` (Viking-UI showcase hosting)    |
+| `CHROMATIC_PROJECT_TOKEN`             | `publish-viking-ui.yml` (Storybook)                     |
+| `REDPANDA_PUBLIC_BROKERS`             | `firebase-backend-deploy.yml` (direct publish path)     |
+| `REDPANDA_PUBLIC_SASL_USERNAME`       | Same (SASL credentials)                                 |
+| `REDPANDA_PUBLIC_SASL_PASSWORD`       | Same                                                    |
+| `REDPANDA_PUBLIC_TLS_CA_B64`          | Same (TLS CA for broker cert)                           |
+| `DEML_INTERNODE_KEYS`                 | Same (internode encryption keyring)                     |
+| `DEML_INTERNODE_ACTIVE_KID`           | Same (active key ID)                                    |
+| `CLOUDFLARE_TOKEN`                    | All Cloudflare cache purge workflows                    |
+| `CLOUDFLARE_ZONE_ID_DEML_MARKETING`   | Same                                                    |
+| `CLOUDFLARE_ZONE_ID_DEML_APP`         | Same                                                    |
 
 ## Deployment order (production)
 
@@ -183,19 +183,25 @@ curl -sf "https://$DEML_RELAY_INTERNAL_HOST/ready"
 
 ## Cron / workers
 
-**deml-scheduler** materializes UTC buckets onto `internal-tasks`. **deml-workers** claims `scheduled_task_runs` and runs a whitelisted management command.
+**deml-scheduler** materializes replica-safe UTC buckets. It executes pure
+Postgres/ClickHouse maintenance natively and publishes encrypted triggers for
+Python ecosystem work onto `internal-tasks`. **deml-workers** runs only the
+whitelisted Python commands. The exact cadence and Python-to-Rust ownership
+ledger live in [`docs/rust-data-plane.md`](../../docs/rust-data-plane.md).
 
-| Task                   | Cadence      | Command                |
-| ---------------------- | ------------ | ---------------------- |
-| Analytics aggregation  | 1h           | `aggregate_analytics`  |
-| Subscription sync      | 24h          | `sync_subscriptions`   |
-| Account reconciliation | 24h          | `reconcile_accounts`   |
-| Database cleanup       | 24h          | `db_cleanup`           |
-| Model training         | 24h          | `train_all_models`     |
-| Key policy check       | 24h          | `rotate_keys_if_due`   |
-| DB optimize            | as scheduled | `optimize_database`    |
-| TAXII ingest           | as scheduled | `ingest_taxii`         |
-| Lighthouse             | as scheduled | `run_lighthouse_scans` |
+| Task                   | Cadence      | Command                            |
+| ---------------------- | ------------ | ---------------------------------- |
+| Analytics aggregation  | 1h           | `aggregate_analytics`              |
+| Subscription sync      | 24h          | `sync_subscriptions`               |
+| Account reconciliation | 24h          | `reconcile_accounts`               |
+| Database cleanup       | 24h          | `db_cleanup` (Rust native)         |
+| Model training         | 24h          | `train_all_models`                 |
+| Key policy check       | 24h          | `rotate_keys_if_due`               |
+| DB optimize            | 24h          | `optimize_database` (Rust native)  |
+| Report rollup          | 24h          | `archive_reports` (Rust native)    |
+| Archive retention      | 7d           | `cleanup_clickhouse` (Rust native) |
+| TAXII ingest           | as scheduled | `ingest_taxii`                     |
+| Lighthouse             | as scheduled | `run_lighthouse_scans`             |
 
 Multiple replicas of a Rust role are safe via Postgres leases and idempotency constraints.
 

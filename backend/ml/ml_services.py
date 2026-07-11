@@ -23,9 +23,10 @@ except ImportError:
   norse = None  # type: ignore
   HAS_NORSE = False
 
+from datetime import timedelta
+
 from django.conf import settings
 from django.utils import timezone
-from datetime import timedelta
 from monitor.models import AggregatedAnalytics, Endpoints
 
 from ml.models import ThreatReport, TrainingRun
@@ -970,7 +971,7 @@ def train_spiking_temporal_forecaster(
 
     # Teacher label for "future" forecast (e.g., will there be a spike?)
     prompt = (
-      f"Temporal sequence for endpoint: recent error rates { [s[0] for s in seq[-3:]] }, "
+      f"Temporal sequence for endpoint: recent error rates {[s[0] for s in seq[-3:]]}, "
       f"response times varying. Predict probability (0.0-1.0) of anomaly/spike in next window."
     )
     target = query_teacher_model(prompt)
@@ -1075,7 +1076,11 @@ def get_active_honeypots(is_platform: bool = False, user: Any = None) -> list:
 
 
 def log_honeypot_interaction(
-  honeypot: Any, source_ip: str, user_agent: str, method: str = "GET", request_headers: dict = None
+  honeypot: Any,
+  source_ip: str,
+  user_agent: str,
+  method: str = "GET",
+  request_headers: dict | None = None,
 ) -> Any:
   """Log an interaction with a honeypot endpoint for threat analysis."""
   from monitor.models import HoneypotInteraction
@@ -1095,7 +1100,8 @@ def analyze_honeypot_threats(is_platform: bool = False, user: Any = None) -> dic
 
   Returns aggregated threat metrics from decoy trap interactions.
   """
-  from monitor.models import HoneypotInteraction
+  from django.db.models import Count
+  from monitor.models import HoneypotEndpoint, HoneypotInteraction
 
   cutoff = timezone.now() - timedelta(days=90)
   if is_platform:
@@ -1103,9 +1109,13 @@ def analyze_honeypot_threats(is_platform: bool = False, user: Any = None) -> dic
       honeypot__is_platform=True, timestamp__gte=cutoff
     )
   else:
-    interactions = HoneypotInteraction.objects.filter(
-      honeypot__user=user, honeypot__is_platform=False, timestamp__gte=cutoff
-    ) if user else HoneypotInteraction.objects.none()
+    interactions = (
+      HoneypotInteraction.objects.filter(
+        honeypot__user=user, honeypot__is_platform=False, timestamp__gte=cutoff
+      )
+      if user
+      else HoneypotInteraction.objects.none()
+    )
 
   total_hits = interactions.count()
   unique_ips = interactions.values("source_ip").distinct().count()
@@ -1117,12 +1127,18 @@ def analyze_honeypot_threats(is_platform: bool = False, user: Any = None) -> dic
     trap_effectiveness[trap_type] = trap_interactions.count()
 
   # Extract features for threat model
-  suspicious_ips = interactions.filter(
-    source_ip__in=[
-      ip for ip, count in interactions.values_list("source_ip").annotate(count=models.Count("id"))
-      if count > 5  # Multiple hits from same IP = suspicious
-    ]
-  ).values("source_ip").distinct().count()
+  suspicious_ips = (
+    interactions.filter(
+      source_ip__in=[
+        ip
+        for ip, count in interactions.values_list("source_ip").annotate(count=Count("id"))
+        if count > 5  # Multiple hits from same IP = suspicious
+      ]
+    )
+    .values("source_ip")
+    .distinct()
+    .count()
+  )
 
   return {
     "total_interactions": total_hits,
@@ -1138,15 +1154,22 @@ def _extract_honeypot_features(interactions: Any) -> list[float]:
   # 6 features for compatibility with ThreatModel
   return [
     max(0.0, min(1.0, interactions.count() / 1000.0)),  # volume score
-    max(0.0, min(1.0, interactions.filter(method="POST").count() / max(1, interactions.count()))),  # mutation ratio
-    max(0.0, min(1.0, interactions.values("source_ip").distinct().count() / max(1, interactions.count()))),  # IP diversity
+    max(
+      0.0, min(1.0, interactions.filter(method="POST").count() / max(1, interactions.count()))
+    ),  # mutation ratio
+    max(
+      0.0,
+      min(1.0, interactions.values("source_ip").distinct().count() / max(1, interactions.count())),
+    ),  # IP diversity
     0.5,  # placeholder behavioral score
     0.5,  # placeholder incident confidence
     0.5,  # placeholder threat velocity
   ]
 
 
-def run_benchmark_suite(is_platform: bool = False, user: Any = None, model_type: str = "all") -> dict:
+def run_benchmark_suite(
+  is_platform: bool = False, user: Any = None, model_type: str = "all"
+) -> dict:
   """Run ML model benchmark suite and return performance metrics.
 
   Creates BenchmarkRun record and optionally publishes to UI/marketing.
@@ -1204,16 +1227,19 @@ def run_benchmark_suite(is_platform: bool = False, user: Any = None, model_type:
   return results
 
 
-def _benchmark_sla_model(is_platform: bool = False, user: Any = None) -> tuple[float, float, float, int]:
+def _benchmark_sla_model(
+  is_platform: bool = False, user: Any = None
+) -> tuple[float, float, float, int]:
   """Run benchmark on SLA model with historical data."""
   import numpy as np
-
   from monitor.models import Endpoints
 
   if is_platform:
     endpoints = Endpoints.objects.filter(is_platform=True, user__isnull=True)
   else:
-    endpoints = Endpoints.objects.filter(user=user, is_platform=False) if user else Endpoints.objects.none()
+    endpoints = (
+      Endpoints.objects.filter(user=user, is_platform=False) if user else Endpoints.objects.none()
+    )
 
   if not endpoints.exists():
     return 0.1, 0.15, 0.85, 0
@@ -1236,16 +1262,21 @@ def _benchmark_sla_model(is_platform: bool = False, user: Any = None) -> tuple[f
   return mae, rmse, accuracy, len(predictions)
 
 
-def _benchmark_threat_model(is_platform: bool = False, user: Any = None) -> tuple[float, float, float, int]:
+def _benchmark_threat_model(
+  is_platform: bool = False, user: Any = None
+) -> tuple[float, float, float, int]:
   """Run benchmark on threat model with historical data."""
   import numpy as np
-
   from monitor.models import ThreatReport
 
   if is_platform:
     reports = ThreatReport.objects.filter(is_platform=True)
   else:
-    reports = ThreatReport.objects.filter(user=user, is_platform=False) if user else ThreatReport.objects.none()
+    reports = (
+      ThreatReport.objects.filter(user=user, is_platform=False)
+      if user
+      else ThreatReport.objects.none()
+    )
 
   if not reports.exists():
     return 0.15, 0.2, 0.75, 0
@@ -1271,10 +1302,12 @@ def _publish_benchmark_to_ui(results: dict) -> None:
 
     client = firestore.Client(project=settings.FIRESTORE_PROJECT_ID)
     # Write to a dedicated benchmarks collection
-    client.collection("ml_benchmarks").add({
-      "results": results,
-      "timestamp": timezone.now().isoformat(),
-      "model_version": "1.0",
-    })
+    client.collection("ml_benchmarks").add(
+      {
+        "results": results,
+        "timestamp": timezone.now().isoformat(),
+        "model_version": "1.0",
+      }
+    )
   except Exception as e:
     logger.warning("Failed to publish benchmark to Firestore: %s", e)

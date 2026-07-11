@@ -19,6 +19,39 @@ This release reflects the DEML premium restrained luxury visual direction with m
 - `dist/design-tokens.css`, `dist/viking-components.css`, `dist/deml-components.css`, `dist/viking-ui.css`, `dist/viking-tokens.json`, `dist/web-components.js`, `dist/viking-ui-elements.js`, and `dist/widget.js` are the built artifacts.
 - `dist/viking-ui.css` is the full app bundle. Load it once per surface; do not stack it with the split CSS artifacts.
 
+### Reusable layout composition
+
+Angular surfaces can compose whole pages without defining app-local layout
+styles. The layout components map directly to the same token-owned classes used
+by Astro, Django, and plain HTML:
+
+```html
+<viking-page-shell>
+  <viking-page-header
+    title="Operations"
+    subtitle="Live service health and risk"
+  />
+  <viking-section>
+    <viking-stack spacing="compact">
+      <viking-grid [columns]="3" [equalRows]="true">
+        <viking-card>Availability</viking-card>
+        <viking-card>Latency</viking-card>
+        <viking-card>Risk</viking-card>
+      </viking-grid>
+      <viking-cluster justify="end">
+        <viking-button variant="primary">Review</viking-button>
+      </viking-cluster>
+    </viking-stack>
+  </viking-section>
+</viking-page-shell>
+```
+
+Static surfaces use the matching `.page-inner-wrapper`, `.viking-section`,
+`.viking-stack`, `.viking-grid`, and `.viking-cluster` classes from
+`viking-ui.css`. Responsive breakpoints, spacing density, equal-row behavior,
+and action alignment therefore stay in the package instead of drifting across
+applications.
+
 ## Build
 
 ```bash

@@ -23,15 +23,15 @@ Short definitions for architectural patterns, domain concepts, and production co
 
 ## System components
 
-| Term                              | Definition                                                                                                                         | Pointer                                                     |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **`telemetry_worker`**            | Independent Firestore and business projection consumers with DLQ                                                                   | `backend/telemetry/management/commands/telemetry_worker.py` |
-| **`ml_worker`**                   | ML-event consumer; daily runs originate in the durable Rust scheduler                                                              | `backend/ml/management/commands/ml_worker.py`               |
-| **Rust data plane**               | One compiled image deployed by role: leased relay, durable scheduler, bounded probe, telemetry normalizer, or optional ingest edge | `rust/deml-daemon/`                                         |
-| **`deml-relay` / `outbox_relay`** | Outbox publisher role (Rust daemon preferred in multi-service meshes)                                                              | BOOK App. C; `infrastructure/railway/README.md`             |
-| **`deml-workers`**                | ML, lifecycle, and durable whitelisted task execution consumers                                                                    | `backend/deml_workers_start.py`                             |
-| **Viking-UI**                     | Design system SSoT: tokens, CSS, Angular + Web Components                                                                          | `packages/viking-ui/`, [THEME.md](../THEME.md)              |
-| **Kyber / liboqs**                | Post-quantum KEM primitives available on hybrid key-exchange paths                                                                 | BOOK App. A / Ch. 27                                        |
+| Term                              | Definition                                                                                                                                            | Pointer                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **`telemetry_worker`**            | Independent Firestore and business projection consumers with DLQ                                                                                      | `backend/telemetry/management/commands/telemetry_worker.py` |
+| **`ml_worker`**                   | ML-event consumer; daily runs originate in the durable Rust scheduler                                                                                 | `backend/ml/management/commands/ml_worker.py`               |
+| **Rust data plane**               | One compiled image deployed by role: leased relay, durable/native scheduler, bounded probe, telemetry normalizer, optional ingest edge, or CPE lookup | `rust/deml-daemon/`                                         |
+| **`deml-relay` / `outbox_relay`** | Outbox publisher role (Rust daemon preferred in multi-service meshes)                                                                                 | BOOK App. C; `infrastructure/railway/README.md`             |
+| **`deml-workers`**                | ML, lifecycle, and durable whitelisted task execution consumers                                                                                       | `backend/deml_workers_start.py`                             |
+| **Viking-UI**                     | Design system SSoT: tokens, CSS, Angular + Web Components                                                                                             | `packages/viking-ui/`, [THEME.md](../THEME.md)              |
+| **Kyber / liboqs**                | Post-quantum KEM primitives available on hybrid key-exchange paths                                                                                    | BOOK App. A / Ch. 27                                        |
 
 ## Data stores & mesh
 

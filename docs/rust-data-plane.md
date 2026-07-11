@@ -13,6 +13,23 @@ The DEML Rust workspace owns high-volume and timing-sensitive work while Django 
 
 `DEML_ROLE=all` exists only for local diagnostics. Production uses separate roles so a probe spike, Kafka rebalance, scheduler failure, or CPE refresh cannot take down relay delivery. The pinned Python CPE package remains a one-shot dictionary importer; Rust owns the request-time `/unique` lookup path.
 
+## Python-to-Rust ownership ledger
+
+The migration changes runtime ownership, not the Django control-plane contract.
+Python models, migrations, admin/API behavior, and rollback commands remain in
+the repository; only one runtime may own each loop in production.
+
+| Capability                                            | Production owner       | Python status                              | Durable / failure contract                                                         |
+| ----------------------------------------------------- | ---------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Outbox delivery                                       | `deml-relay`           | `outbox_relay` is rollback-only            | `SKIP LOCKED` lease, broker `acks=all`, stable event header, exponential retry     |
+| Schedule creation                                     | `deml-scheduler`       | embedded interval schedulers disabled      | unique UTC task bucket plus a 60-second renewable claim                            |
+| Database retention and rollups                        | `deml-scheduler`       | management commands are guarded fallbacks  | native SQL; failed runs remain `failed` and retry instead of being marked complete |
+| Service probes                                        | `deml-probe`           | embedded pinger disabled                   | bounded concurrency, SSRF-safe resolution, transactional observation write         |
+| Raw telemetry normalization                           | `deml-normalizer`      | removed from projection worker ownership   | topic/partition/offset receipt, explicit Kafka acknowledgement, DLQ before commit  |
+| High-volume ingest                                    | optional `deml-ingest` | Django remains the default/canary fallback | API-key auth, fail-closed rate limit, batch idempotency, transactional Outbox      |
+| Request-time CPE lookup                               | `deml-cpe`             | Python imports the pinned dictionary only  | Dragonfly DB 8 Lua ranking; no Python HTTP lookup service                          |
+| Business projections, ML, billing, KMS, external APIs | Django workers         | active                                     | Rust scheduler publishes whitelisted triggers; Python performs ecosystem work      |
+
 ## Required rollout order
 
 1. Deploy the Django migration and verify `python manage.py migrate` completes
@@ -41,6 +58,42 @@ The relay provides at-least-once delivery. A crash after Redpanda acknowledgemen
 The scheduler never treats an in-memory timer as durable state. Replicas materialize the same UTC bucket, the database unique constraint elects one logical run, and a lease elects one publisher. `deml-workers` moves the run through `published → running → completed`; command failures become `failed` and are republished with the same run ID after the retry lease.
 
 The probe role never calls Django. It rejects credentials in URLs, non-HTTP schemes, redirects, and targets resolving to private, loopback, link-local, multicast, documentation, or unspecified addresses. A probe result and its compatibility `endpoints` row commit in one Postgres transaction.
+
+Kafka values published or consumed by relay, scheduler, and normalizer use the
+versioned DEML Internode Envelope (`deml-internode+jwe`, A256GCM). The Kafka
+topic is authenticated as envelope context, so ciphertext cannot be moved to a
+different topic and still validate. Production uses
+`DEML_INTERNODE_ENCRYPTION=required`; `optional` is only for bounded key
+rotation, and `disabled` is local/test only. The active key ID and JSON keyring
+support overlap during rotation without accepting unknown keys.
+
+## Durable scheduler and native maintenance
+
+The scheduler polls every 15 seconds, materializes absolute UTC buckets, and
+claims at most 20 due rows with `FOR UPDATE SKIP LOCKED`. Native maintenance is
+executed in-process. Ecosystem tasks are encrypted and published to
+`internal-tasks`, where `deml-workers` accepts only its command allowlist.
+
+| Task                   | Cadence / UTC offset | Owner          | Result                                                                           |
+| ---------------------- | -------------------- | -------------- | -------------------------------------------------------------------------------- |
+| `aggregate_analytics`  | hourly + 5m          | Python trigger | refreshes analytical rollups                                                     |
+| `fetch_threat_intel`   | hourly + 10m         | Python trigger | external threat enrichment                                                       |
+| `ingest_taxii`         | hourly + 12m30s      | Python trigger | STIX/TAXII ingestion                                                             |
+| `run_lighthouse_scans` | 6-hourly + 15m       | Python trigger | accessibility/performance scan                                                   |
+| `archive_reports`      | daily + 30m          | Rust native    | upserts yesterday's user and Tenant0 report rows symmetrically                   |
+| `rotate_keys_if_due`   | daily + 20m          | Python trigger | KMS policy work                                                                  |
+| `train_all_models`     | daily + 1h           | Python trigger | tenant-scoped PyTorch training                                                   |
+| `scan_dark_web`        | daily + 1h15m        | Python trigger | OSINT/Tor workflow                                                               |
+| `sync_subscriptions`   | daily + 2h           | Python trigger | Stripe reconciliation                                                            |
+| `reconcile_accounts`   | daily + 2h5m         | Python trigger | identity/account reconciliation                                                  |
+| `db_cleanup`           | daily + 3h           | Rust native    | 30-day raw/hourly/published retention, 7-day outbox DLQ, 90-day threat retention |
+| `cleanup_clickhouse`   | weekly + 3h20m       | Rust native    | 180/365/730-day archive retention                                                |
+| `optimize_database`    | daily + 4h           | Rust native    | `VACUUM ANALYZE` on core tables                                                  |
+
+Native task errors are recorded on `scheduled_task_runs`, release the lease with
+a bounded retry delay, and never transition to `completed`. `CLICKHOUSE_URL` is
+therefore mandatory on `deml-scheduler`; missing configuration makes the weekly
+cleanup fail visibly instead of silently succeeding.
 
 ## Rollback
 

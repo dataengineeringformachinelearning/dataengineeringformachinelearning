@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft-07/schema",
   "name": "@dataengineeringformachinelearning/viking-ui",
   "description": "Machine-readable catalog of Viking-UI components and their Angular exports. Validated by `npm run check:viking-upstream`.",
-  "lastAudited": "2026-07-04",
+  "lastAudited": "2026-07-11",
   "components": {
     "accordion": {
       "exports": ["VikingAccordion", "VikingAccordionItem"]
@@ -140,6 +140,18 @@
     },
     "loading-overlay": {
       "exports": ["VikingLoadingOverlay"]
+    },
+    "layout": {
+      "exports": [
+        "VikingCluster",
+        "VikingClusterJustify",
+        "VikingGrid",
+        "VikingGridColumns",
+        "VikingLayoutDensity",
+        "VikingPageShell",
+        "VikingSection",
+        "VikingStack"
+      ]
     },
     "menubar": {
       "exports": ["VikingMenubar", "VikingMenubarItem"]

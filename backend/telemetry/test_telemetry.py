@@ -227,6 +227,7 @@ def test_analytics_overview_hybrid_query(client) -> None:
   from django.utils import timezone
   from monitor.models import (
     AggregatedAnalytics,
+    BenchmarkRun,
     Endpoints,
     MonitoredService,
     StatusPage,
@@ -259,6 +260,16 @@ def test_analytics_overview_hybrid_query(client) -> None:
     p99_latency_ms=350.0,
     error_rate_percent=2.0,
   )
+  BenchmarkRun.objects.create(
+    is_platform=True,
+    model_type="sla",
+    mae=1.0,
+    rmse=1.0,
+    accuracy=0.0,
+    training_duration_seconds=1.0,
+    dataset_size=1,
+    benchmark_score=0.0,
+  )
 
   current_raw_time = now - timedelta(minutes=10)
   Endpoints.objects.create(
@@ -286,6 +297,7 @@ def test_analytics_overview_hybrid_query(client) -> None:
   assert response.status_code == 200
   res_data = response.json()
   assert res_data["status"] == "success"
+  assert res_data["data"]["ces"]["latest_benchmark_score"] == 0.0
   metrics = res_data["data"]["user_metrics"]
 
   assert metrics["total_requests_24h"] == 101

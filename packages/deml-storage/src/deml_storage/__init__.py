@@ -4,7 +4,7 @@ Supports RustFS, AWS S3, and other S3-compatible backends.
 """
 
 import os
-from typing import Any, Final
+from typing import Final
 
 __version__ = "0.1.0"
 
@@ -14,7 +14,7 @@ DEFAULT_BUCKET: Final[str] = os.getenv("RUSTFS_BUCKET", "reports")
 
 class StorageClient:
     """S3-compatible storage client abstraction."""
-    
+
     def __init__(
         self,
         endpoint: str | None = None,
@@ -26,9 +26,10 @@ class StorageClient:
         self.access_key = access_key or os.getenv("RUSTFS_ACCESS_KEY", "")
         self.secret_key = secret_key or os.getenv("RUSTFS_SECRET_KEY", "")
         self.bucket = bucket or DEFAULT_BUCKET
-        
+
         try:
             import boto3
+
             self._client = boto3.client(
                 "s3",
                 endpoint_url=self.endpoint,
@@ -37,7 +38,7 @@ class StorageClient:
             )
         except ImportError:
             self._client = None
-    
+
     def upload_file(self, key: str, body: bytes) -> bool:
         """Upload bytes to storage."""
         if not self._client:
@@ -47,7 +48,7 @@ class StorageClient:
             return True
         except Exception:
             return False
-    
+
     def get_file(self, key: str) -> bytes | None:
         """Retrieve file from storage."""
         if not self._client:
@@ -57,7 +58,7 @@ class StorageClient:
             return response["Body"].read()
         except Exception:
             return None
-    
+
     def delete_file(self, key: str) -> bool:
         """Delete file from storage."""
         if not self._client:

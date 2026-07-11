@@ -540,13 +540,23 @@ def list_benchmarks(request, model_type: str = "all"):
 
   if request.user.is_authenticated:
     if request.user.is_superuser:
-      benchmarks = BenchmarkRun.objects.filter(model_type=model_type) if model_type != "all" else BenchmarkRun.objects.all()
+      benchmarks = (
+        BenchmarkRun.objects.filter(model_type=model_type)
+        if model_type != "all"
+        else BenchmarkRun.objects.all()
+      )
     else:
-      benchmarks = BenchmarkRun.objects.filter(
-        user=request.user, model_type=model_type
-      ) if model_type != "all" else BenchmarkRun.objects.filter(user=request.user)
+      benchmarks = (
+        BenchmarkRun.objects.filter(user=request.user, model_type=model_type)
+        if model_type != "all"
+        else BenchmarkRun.objects.filter(user=request.user)
+      )
   else:
-    benchmarks = BenchmarkRun.objects.filter(is_platform=True) if model_type != "all" else BenchmarkRun.objects.all()
+    benchmarks = (
+      BenchmarkRun.objects.filter(is_platform=True)
+      if model_type != "all"
+      else BenchmarkRun.objects.all()
+    )
 
   benchmarks = benchmarks.order_by("-created_at")[:50]
 

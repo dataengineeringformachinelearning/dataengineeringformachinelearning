@@ -376,7 +376,7 @@ def test_analytics_integration_encryption(test_user: User) -> None:
 
 
 @pytest.mark.django_db
-def test_db_cleanup_command() -> None:
+def test_db_cleanup_command(monkeypatch: pytest.MonkeyPatch) -> None:
   from datetime import timedelta
 
   from django.core.management import call_command
@@ -413,6 +413,7 @@ def test_db_cleanup_command() -> None:
   assert BugReport.objects.filter(id=bug_new.id).exists()
 
   # Call the cleanup command
+  monkeypatch.setenv("PYTHON_EMBEDDED_SCHEDULERS_ENABLED", "1")
   call_command("db_cleanup")
 
   # Verify only the recent records remain

@@ -16,7 +16,7 @@ from deml_event_client import get_producer_config, get_consumer_config, serializ
 # For producers
 producer_conf = get_producer_config()
 
-# For consumers  
+# For consumers
 consumer_conf = get_consumer_config("telemetry-raw")
 
 # Serialize events
