@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 6.1.0
+
+### Minor Changes
+
+- Sweeping component updates
+
 ## 6.0.0
 
 ### Major Changes

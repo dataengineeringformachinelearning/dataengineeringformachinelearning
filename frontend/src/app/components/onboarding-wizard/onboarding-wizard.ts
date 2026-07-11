@@ -238,9 +238,9 @@ export class OnboardingWizard {
     const statusAppUrl =
       environment.frontendUrl ?? (typeof window !== 'undefined' ? window.location.origin : '');
     const backendUrl = environment.backendUrl;
-    return `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
+    return `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
   }
 
   async copyWidget() {

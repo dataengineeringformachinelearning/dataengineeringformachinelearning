@@ -168,6 +168,10 @@
 }
 
 .blue-note-categories li {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin: 0;
   padding: var(--viking-space-0-5) var(--viking-space-1);
   border: var(--viking-space-px) solid var(--viking-border);
   border-radius: var(--viking-radius-pill);
@@ -175,6 +179,17 @@
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-xs);
   line-height: var(--viking-line-height-snug);
+  overflow: hidden;
+}
+
+.blue-note-categories li::before,
+.blue-note-categories li::after {
+  content: none;
+  display: none;
+}
+
+.blue-note-categories li:last-child {
+  margin-inline-end: 0;
 }
 
 .blue-note-read-link {

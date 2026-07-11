@@ -3571,11 +3571,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
 ></script>
 ```
 
@@ -4159,7 +4159,7 @@ Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cl
 
 **Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([docs/billing.md](docs/billing.md)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 
-## 10. Rust-Native Offloading Architecture
+## 11. Rust-Native Offloading Architecture
 
 The platform implements a **Rust-native offloading strategy** for high-performance, low-overhead background operations. A single compiled image (`deml-daemon`) runs with role selection via the `DEML_ROLE` environment variable, executing critical tasks without Python interpreter overhead:
 
@@ -4172,13 +4172,13 @@ The platform implements a **Rust-native offloading strategy** for high-performan
 
 This architecture decouples maintenance workloads from the Django control plane, ensuring predictable resource utilization and eliminating thundering-herd scenarios during daily retention purges. The Rust scheduler claims durable Postgres task buckets and executes native SQL operations directly, while Python workers remain the authoritative layer for external API integrations requiring complex library ecosystems.
 
-## 11. Team Workflows and Integrated Vulnerability Management
+## 12. Team Workflows and Integrated Vulnerability Management
 
 Collaborative security workflows require structured issue tracking native to the platform. An integrated vulnerability management component provides an interactive Kanban board to prioritize, assign, and track remediation efforts—allowing security teams to update vulnerability states based on customized impact and likelihood metrics.
 
 Strict compliance is enforced by integrating automated accessibility scanners (Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. Every surface unifies under the **Viking-UI** design system documented in [THEME.md](THEME.md): precision-engineered industrial surfaces with deep charcoal foundations, machined metallic borders, deep teal primary accents, and crimson secondary emphasis. `viking-skeleton` loaders provide structural loading states; native SVG `viking-chart` components bind to tokenized series colors—no third-party chart runtimes or decorative gradient effects.
 
-## 12. Official Integrations
+## 13. Official Integrations
 
 Enterprise teams connect existing infrastructure through six first-class integration paths. Each uses the same bearer API key, `/api/v1/ingest` for batch telemetry, and `/api/v1/predict` for low-latency inference:
 
@@ -4193,11 +4193,11 @@ Enterprise teams connect existing infrastructure through six first-class integra
 
 Guides with copy-paste examples live in [`docs/integrations/`](../docs/integrations/) and on the [Developer Portal](https://dataengineeringformachinelearning.com/documentation).
 
-## 12. Conclusion
+## 14. Conclusion
 
 The new digital battlefield demands observability infrastructure that operates ahead of failure—not behind it. By unifying asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep-learning models under defendable architectural principles, DEML establishes a rigorous data-engineering framework that elevates the reliability, security, and intelligence of machine-learning infrastructure at operational scale.
 
-## 13. Acknowledgments
+## 15. Acknowledgments
 
 This architecture rests on open-source foundations, enterprise design references, and the tooling that authored the specification.
 
@@ -4215,7 +4215,7 @@ This architecture rests on open-source foundations, enterprise design references
 - **[Cursor](https://cursor.com/)** — [Grok 4.3](https://docs.spacex.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
 - **[Pool](https://pool.ps/)** — Pool: Laguna M.1
 
-## 14. References
+## 16. References
 
 1. Redpanda Data, Inc. (2026). _Redpanda: A streaming data platform_.
 2. Apache Software Foundation. (2026). _Apache Kafka_.
@@ -4240,18 +4240,18 @@ This architecture rests on open-source foundations, enterprise design references
 21. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation.
 22. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation.
 
-## 15. DevSecOps and Platform Standardization Audit
+## 17. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 4px grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 4px grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
 ></script>
 ```
 
@@ -4276,6 +4276,6 @@ The July 2026 daily platform audit codified several evolutionary steps critical 
 
 These milestones do not replace formal certification—they produce traceable evidence that Visibility, Manageability, and Survivability controls described in Section 3 remain operable under daily engineering velocity.
 
-## 16. License
+## 18. License
 
 This work is licensed under a [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
