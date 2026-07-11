@@ -153,7 +153,7 @@ export class SessionStateService implements OnDestroy {
     this.sessionIdle.stop();
     await this.authService.logout();
     const query = reason === 'timeout' ? { reason: 'timeout' } : undefined;
-    void this.router.navigate(['/login'], { queryParams: query });
+    void this.router.navigate(['/'], { queryParams: query });
   }
 
   /** Server- or cross-tab initiated sign-out. */

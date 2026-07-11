@@ -89,7 +89,7 @@ describe('SessionIdleService', () => {
 
     await vi.advanceTimersByTimeAsync(1);
     expect(authMock.logout).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/login'], {
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/'], {
       queryParams: { reason: 'timeout' },
     });
   });
@@ -101,7 +101,7 @@ describe('SessionIdleService', () => {
     await flushPromises();
 
     expect(authMock.logout).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/login'], {
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/'], {
       queryParams: { reason: 'timeout' },
     });
   });
