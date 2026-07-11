@@ -1,5 +1,14 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 6.2.0
+
+### Minor Changes
+
+- Component enhancement
+- Add intrinsic auto-fit grids and the `viking-switcher` Angular layout primitive,
+  with equal-height card action alignment, 8px-grid minimum sizes, Storybook
+  coverage, and hosted visual documentation.
+
 ## Unreleased
 
 ### Minor Changes

@@ -78,14 +78,12 @@ jobs:
             echo "No Storybook HTML files found, skipping axe checks."
           fi
 
+      - name: Require Chromatic publication credentials
+        run: test -n "$CHROMATIC_PROJECT_TOKEN"
+
       - name: Run visual regression in Chromatic
-        if: env.CHROMATIC_PROJECT_TOKEN != ''
         run: |
           npx chromatic \
             --project-token "$CHROMATIC_PROJECT_TOKEN" \
             --storybook-build-dir packages/viking-ui/storybook-static \
             --exit-zero-on-changes
-
-      - name: Skip Chromatic
-        if: env.CHROMATIC_PROJECT_TOKEN == ''
-        run: echo "CHROMATIC_PROJECT_TOKEN is not set; skipping PR visual-regression publish."

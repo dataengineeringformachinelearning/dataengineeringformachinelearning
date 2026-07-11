@@ -47,6 +47,8 @@ Viking-UI's final locked aesthetic is a **premium precision-engineered command a
 
 High-quality references for primitive clarity, data density, and precision engineering inform the approach as directional quality bars only. Viking-UI does not import external UI libraries, copy source, duplicate visual systems, or move styling ownership out of `packages/viking-ui/`.
 
+Directional references are [Material Design 3](https://m3.material.io/) for adaptive foundations, [Flux UI](https://fluxui.dev/) for composable layouts, [Spartan](https://spartan.ng/) for accessible Angular behavior, [shadcn/ui](https://ui.shadcn.com/) for component anatomy and reusable blocks, [Cloudscape](https://cloudscape.design/) for AWS-scale responsive operational patterns, and [Trust Controls](https://www.trustcontrols.ai/) for evidence-minded security governance. They inform contracts and testing, never runtime adoption or visual copying.
+
 - **Precision engineering** — clean hierarchy, machined surfaces, deterministic rhythm, high-contrast operational readability, and zero visual drift under pressure.
 - **Digital battlefield restraint** — subtle tactical structure, strong silhouettes, ceremonial severity, and presence without fantasy illustration, decorative clutter, or roleplay UI.
 - **Dark-first command surfaces** — deep navy/charcoal backgrounds, machined metallic edges, no decorative noise.
@@ -708,6 +710,13 @@ only token-backed density, column, equal-row, and alignment choices. Static
 surfaces use their matching `.page-inner-wrapper`, `.viking-section`,
 `.viking-stack`, `.viking-grid`, and `.viking-cluster` classes. Do not recreate
 these contracts with app-local wrappers or breakpoint CSS.
+
+For content-led responsiveness, use `viking-grid columns="auto"` with the
+`compact`, `default`, or `wide` item-size contract. Use `viking-switcher` when a
+row must become a column from its own available width. These intrinsic layouts
+keep 256px/320px/384px minimums on the 8px grid, set `min-width: 0` on children,
+and can align structured card footers across equal-height rows without fixed
+heights or text truncation.
 
 ---
 

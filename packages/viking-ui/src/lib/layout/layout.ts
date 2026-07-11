@@ -6,8 +6,9 @@ import {
 } from "@angular/core";
 
 export type VikingLayoutDensity = "tight" | "compact" | "default" | "loose";
-export type VikingGridColumns = 1 | 2 | 3 | 4;
+export type VikingGridColumns = 1 | 2 | 3 | 4 | "auto";
 export type VikingClusterJustify = "start" | "between" | "end";
+export type VikingIntrinsicItemSize = "compact" | "default" | "wide";
 
 /** Constrained, centered page canvas shared by every application surface. */
 @Component({
@@ -71,6 +72,7 @@ export class VikingStack {
 })
 export class VikingGrid {
   readonly columns = input<VikingGridColumns>(1);
+  readonly itemSize = input<VikingIntrinsicItemSize>("default");
   readonly spacing =
     input<Extract<VikingLayoutDensity, "tight" | "default" | "loose">>(
       "default",
@@ -81,8 +83,37 @@ export class VikingGrid {
     [
       "viking-grid",
       `viking-grid--${this.columns()}`,
+      this.columns() === "auto" ? `viking-grid--item-${this.itemSize()}` : "",
       this.spacing() === "default" ? "" : `viking-grid--${this.spacing()}`,
       this.equalRows() ? "viking-grid--equal-rows" : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
+/**
+ * Intrinsic row-to-column layout that wraps from available space, not a
+ * device-name breakpoint. Useful for toolbars, card groups, and form regions.
+ */
+@Component({
+  selector: "viking-switcher",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { "[class]": "hostClass()" },
+  template: `<ng-content />`,
+})
+export class VikingSwitcher {
+  readonly itemSize = input<VikingIntrinsicItemSize>("default");
+  readonly spacing =
+    input<Extract<VikingLayoutDensity, "tight" | "default" | "loose">>(
+      "default",
+    );
+
+  protected readonly hostClass = computed(() =>
+    [
+      "viking-switcher",
+      `viking-switcher--${this.itemSize()}`,
+      this.spacing() === "default" ? "" : `viking-switcher--${this.spacing()}`,
     ]
       .filter(Boolean)
       .join(" "),

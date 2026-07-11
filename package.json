@@ -45,7 +45,7 @@
     "build:viking-ui-docs": "npm run build --prefix viking-ui-docs",
     "start:viking-ui-docs": "npm run start --prefix viking-ui-docs",
     "start": "npm run start:viking-ui-docs",
-    "deploy:viking-ui-docs": "npm run build:viking-ui-docs && npx --yes firebase-tools@latest deploy --only hosting:deml-ui --project deml-ui",
+    "deploy:viking-ui-docs": "npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui && npm run build:viking-ui-docs && npm run embed:storybook --prefix viking-ui-docs && npx --yes firebase-tools@latest deploy --only hosting:deml-ui --project deml-ui",
     "test:visual": "playwright test",
     "chromatic": "chromatic --playwright",
     "chromatic:ci": "npm run test:visual && chromatic --playwright --exit-zero-on-changes",

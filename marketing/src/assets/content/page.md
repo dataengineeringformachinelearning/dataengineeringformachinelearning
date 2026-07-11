@@ -1405,7 +1405,8 @@ By combining per-account RBAC with publication- and ownership-aware ABAC, the pl
 The DEML platform stands on open-source foundations, enterprise design references, and the tooling that authored this architecture. Gratitude is extended to each project, standard, and inspiration cited below.
 
 - **Frontend**: [Angular](https://angular.dev/), [ng-packagr](https://github.com/ng-packagr/ng-packagr), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/), [Vitest](https://vitest.dev/), [AnalogJS](https://analogjs.org/), [Astro](https://astro.build/), [axe-core](https://github.com/dequelabs/axe-core)
-- **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium command palette); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
+- **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium command palette); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display); directional references [Material Design 3](https://m3.material.io/), [Flux UI](https://fluxui.dev/), [Spartan](https://spartan.ng/), [shadcn/ui](https://ui.shadcn.com/), and the AWS-built [Cloudscape Design System](https://cloudscape.design/) for adaptive foundations, composable primitives, clear component anatomy, accessible responsive patterns, and operational application density
+- **Design-system delivery & governance**: [Storybook](https://storybook.js.org/) component documentation, [Chromatic](https://www.chromatic.com/) visual regression publication, and [Trust Controls](https://www.trustcontrols.ai/) as a directional security/control-governance reference. Viking-UI remains an original zero-runtime implementation; reference component libraries are not production dependencies.
 - **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
@@ -2537,7 +2538,7 @@ Furthermore, critical business logic—such as billing, telemetry, and backgroun
 
 ## Chapter 31: Viking-UI — The Zero-Dependency UI Kit
 
-The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles, framework-neutral Web Components, shared utility exports, and Angular wrapper components. The historical split that placed library ownership under frontend-specific paths has been retired; apps now consume the package the way they would consume Angular Material or another external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
+The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles, framework-neutral Web Components, shared utility exports, and Angular wrapper components. The historical split that placed library ownership under frontend-specific paths has been retired; apps now consume the package the way they would consume an external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. Intrinsic `viking-grid columns="auto"` and `viking-switcher` contracts form tracks from available content space rather than device names, preserving readable minimums, equal-height cards, aligned action rows, and natural row-to-column flow from 320px and 400% zoom through wide operational canvases. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
 
 ### Design philosophy (THEME.md)
 
@@ -2583,11 +2584,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/web-components.js"
 ></script>
 ```
 

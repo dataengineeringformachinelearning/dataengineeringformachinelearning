@@ -118,18 +118,20 @@ jobs:
           echo "published=false" >> "$GITHUB_OUTPUT"
           exit 1
 
+      # Governance reference: Trust Controls-style evidence is mandatory; a
+      # release is incomplete without its published visual regression record.
+      - name: Require Chromatic publication credentials
+        if: steps.ensure-release.outputs.published == 'true'
+        run: test -n "$CHROMATIC_PROJECT_TOKEN"
+
       - name: Build Storybook and publish to Chromatic
-        if: steps.ensure-release.outputs.published == 'true' && env.CHROMATIC_PROJECT_TOKEN != ''
+        if: steps.ensure-release.outputs.published == 'true'
         run: |
           npm run build-storybook --prefix packages/viking-ui
           npx chromatic \
             --project-token "$CHROMATIC_PROJECT_TOKEN" \
             --storybook-build-dir packages/viking-ui/storybook-static \
             --exit-zero-on-changes
-
-      - name: Skip Storybook publish
-        if: steps.ensure-release.outputs.published == 'true' && env.CHROMATIC_PROJECT_TOKEN == ''
-        run: echo "CHROMATIC_PROJECT_TOKEN is not set; skipping Storybook publish."
 
       - name: Sync canonical design-system assets
         if: steps.ensure-release.outputs.published == 'true'
@@ -138,6 +140,10 @@ jobs:
       - name: Build Viking-UI showcase
         if: steps.ensure-release.outputs.published == 'true'
         run: npm run build:viking-ui-docs
+
+      - name: Host Storybook with Viking-UI documentation
+        if: steps.ensure-release.outputs.published == 'true'
+        run: npm run embed:storybook --prefix viking-ui-docs
 
       - name: Authenticate to Firebase
         if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''

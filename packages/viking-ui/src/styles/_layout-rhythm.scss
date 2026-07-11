@@ -2,6 +2,9 @@
 // Viking-UI Layout Rhythm — composable spacing primitives
 // Layout uses the 8px primary rhythm. The 4px token is reserved for tight
 // inline composition and optical adjustments.
+// Directional references: Material adaptive layout, Flux reusable layouts,
+// Spartan/shadcn composable primitives, and Cloudscape responsive patterns.
+// These are original zero-runtime Viking-UI contracts, not copied components.
 // ============================================================================
 
 .viking-stack {
@@ -103,6 +106,13 @@
   height: 100%;
 }
 
+/* Keep structured card actions aligned even when body copy lengths differ. */
+.viking-grid--equal-rows
+  > :where(viking-card, .viking-card, viking-metric-card, .viking-metric-card)
+  > :where(.viking-card-footer, viking-card-footer) {
+  margin-block-start: auto;
+}
+
 .viking-grid--tight {
   --viking-grid-gap: var(--viking-space-2);
 }
@@ -117,6 +127,56 @@
 .viking-grid--3,
 .viking-grid--4 {
   grid-template-columns: 1fr;
+}
+
+/* Intrinsic grid: cards add or remove columns based on actual available width. */
+.viking-grid--auto {
+  --viking-grid-item-min: var(--viking-layout-item-default);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--viking-grid-item-min)), 1fr)
+  );
+}
+
+.viking-grid--item-compact {
+  --viking-grid-item-min: var(--viking-layout-item-compact);
+}
+
+.viking-grid--item-wide {
+  --viking-grid-item-min: var(--viking-layout-item-wide);
+}
+
+/* Intrinsic switcher: a flexible row that becomes a readable stack naturally. */
+.viking-switcher {
+  --viking-switcher-gap: var(--viking-space-6);
+  --viking-switcher-item-min: var(--viking-layout-item-default);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--viking-switcher-gap);
+  align-items: stretch;
+  width: 100%;
+}
+
+.viking-switcher > * {
+  flex-grow: 1;
+  flex-basis: calc((var(--viking-switcher-item-min) - 100%) * 999);
+  min-width: 0;
+}
+
+.viking-switcher--compact {
+  --viking-switcher-item-min: var(--viking-layout-item-compact);
+}
+
+.viking-switcher--wide {
+  --viking-switcher-item-min: var(--viking-layout-item-wide);
+}
+
+.viking-switcher--tight {
+  --viking-switcher-gap: var(--viking-space-2);
+}
+
+.viking-switcher--loose {
+  --viking-switcher-gap: var(--viking-space-8);
 }
 
 /* Tablet and up: predictable scaling */
