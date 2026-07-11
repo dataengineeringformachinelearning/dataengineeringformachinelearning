@@ -7,6 +7,19 @@ Angular wrappers.
 Every library change should carry a Changeset, prove the package can build,
 and verify the showcase before changes are fanned out to the apps.
 
+The canonical version is read from `packages/viking-ui/package.json`. Consumer
+manifests, standalone and workspace lockfiles, pinned CDN examples, and current
+release copy are synchronized with one command:
+
+```bash
+npm run sync:viking-ui:version
+```
+
+The companion `npm run check:viking-ui:version` command is read-only and runs
+in pre-commit, CI, and the publish workflow. Changesets versioning delegates to
+the same synchronizer, so a future package bump updates every consumer before
+the release PR is created.
+
 ## Everyday Update Flow
 
 1. Edit source in `packages/viking-ui/src`: `src/styles/` for tokens and CSS,
@@ -91,6 +104,10 @@ npm run version:viking-ui
 npm run publish:viking-ui
 ```
 
+`npm run version:viking-ui` applies the Changesets bump and then regenerates
+all consumer ranges, lockfiles, and versioned public examples from the new
+canonical package version. Do not hand-edit consumer lockfiles after a bump.
+
 Choose `patch` for compatible fixes, `minor` for new components or props, and
 `major` for breaking selectors, exports, token contracts, or behavior.
 
@@ -100,8 +117,10 @@ Before publishing, verify that the local version does not already exist on npm:
 npm view @dataengineeringformachinelearning/viking-ui@$(node -p "require('./packages/viking-ui/package.json').version") version
 ```
 
-If npm returns a version, bump the package before publishing. The current
-publish target is `4.1.5`.
+If npm returns the intended version because it was published manually, the
+workflow treats the release as idempotently complete and continues asset sync
+and showcase deployment. Otherwise, bump the package before publishing. The
+current publish target is `6.0.0`.
 
 The publish workflow performs the release in this order:
 

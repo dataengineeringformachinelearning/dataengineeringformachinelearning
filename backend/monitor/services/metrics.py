@@ -184,9 +184,9 @@ class MetricsService:
       return [], 100.0, 0, 0.0
 
     archives = list(
-      ReportArchive.objects.filter(
-        **archive_filter, report_date__gte=since_date
-      ).order_by("report_date")
+      ReportArchive.objects.filter(**archive_filter, report_date__gte=since_date).order_by(
+        "report_date"
+      )
     )
 
     days_list = [today - dt.timedelta(days=i) for i in range(30)]
@@ -203,7 +203,9 @@ class MetricsService:
       if archive and archive.total_requests > 0:
         # Convert error rate to uptime percentage
         uptime = 100.0 - archive.error_rate_percent
-        status = "operational" if uptime >= 99.9 else "partial_outage" if uptime >= 95 else "major_outage"
+        status = (
+          "operational" if uptime >= 99.9 else "partial_outage" if uptime >= 95 else "major_outage"
+        )
         history.append(UptimeDay(status, round(uptime, 2)))
         total_up += archive.total_requests * (uptime / 100.0)
         total_count += archive.total_requests

@@ -42,7 +42,13 @@ const capabilities = [
       { label: 'Uptime', value: '99.97%', trend: 'stable' },
       { label: 'Requests/min', value: '12.4K', trend: 'up' },
     ],
-    link: { href: '/documentation', label: 'Review integration specifications →', muted: false },
+    link: {
+      href: '/documentation',
+      label: 'Review integration specifications →',
+      authenticatedHref: undefined,
+      authenticatedLabel: undefined,
+      muted: false,
+    },
   },
   {
     tag: 'SECURITY',
@@ -55,7 +61,13 @@ const capabilities = [
       { label: 'Open CVEs', value: '3', trend: 'down' },
       { label: 'Blocked', value: '847', trend: 'up' },
     ],
-    link: { href: FRONTEND_URL + '/login', label: 'Activate threat monitoring →', muted: true },
+    link: {
+      href: FRONTEND_URL + '/login',
+      label: 'Activate threat monitoring →',
+      authenticatedHref: FRONTEND_URL + '/vulnerabilities',
+      authenticatedLabel: 'Open threat operations →',
+      muted: true,
+    },
   },
   {
     tag: 'PIPELINE',
@@ -68,7 +80,13 @@ const capabilities = [
       { label: 'DLQ Rate', value: '0.01%', trend: 'down' },
       { label: 'Tenants', value: 'Symmetrical', trend: 'stable' },
     ],
-    link: { href: FRONTEND_URL + '/status/platform-status', label: 'Observe live projections →', muted: true },
+    link: {
+      href: FRONTEND_URL + '/status/platform-status',
+      label: 'Observe live projections →',
+      authenticatedHref: undefined,
+      authenticatedLabel: undefined,
+      muted: true,
+    },
   },
 ];
 
@@ -216,6 +234,9 @@ const integrations = [
           <a
             href={cap.link.href}
             class={`showcase-link ${cap.link.muted ? 'muted-link' : ''}`}
+            data-authenticated-href={cap.link.authenticatedHref}
+            data-authenticated-label={cap.link.authenticatedLabel}
+            data-auth-label
           >
             {cap.link.label}
           </a>
@@ -316,7 +337,13 @@ const integrations = [
             <li><VikingIcon name="check" size={20} /> Core Analytics</li>
             <li><VikingIcon name="check" size={20} /> Community Support</li>
           </ul>
-          <a href={FRONTEND_URL + '/login'} class="viking-btn viking-btn-subtle cta-button secondary-btn">Get Started</a>
+          <a
+            href={FRONTEND_URL + '/login'}
+            class="viking-btn viking-btn-subtle cta-button secondary-btn"
+            data-authenticated-href={FRONTEND_URL + '/dashboard'}
+            data-authenticated-label="Open Dashboard"
+            data-auth-label
+          >Get Started</a>
         </div>
         <div class="viking-card pricing-card pro-tier">
           <div class="recommended-badge">RECOMMENDED</div>
@@ -327,7 +354,13 @@ const integrations = [
             <li><VikingIcon name="check" size={20} /> Advanced Threat Detection</li>
             <li><VikingIcon name="check" size={20} /> Priority Support</li>
           </ul>
-          <a href={FRONTEND_URL + '/login?action=checkout'} class="viking-btn viking-btn-primary cta-button cta-primary pro-btn">
+          <a
+            href={FRONTEND_URL + '/login?action=checkout'}
+            class="viking-btn viking-btn-primary cta-button cta-primary pro-btn"
+            data-authenticated-href={FRONTEND_URL + '/account'}
+            data-authenticated-label="Manage Subscription"
+            data-auth-label
+          >
             Upgrade to Pro
           </a>
         </div>

@@ -9,12 +9,13 @@
     "prebuild": "npm run build:viking-ui:package --prefix ..",
     "dev": "astro dev",
     "build": "astro build && node scripts/postbuild.mjs",
+    "test": "node --test --experimental-strip-types src/lib/*.spec.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "@dataengineeringformachinelearning/viking-ui": "^5.2.0",
+    "@dataengineeringformachinelearning/viking-ui": "^6.0.0",
     "astro": "^7.0.3",
     "canvas-confetti": "^1.9.4",
     "marked": "^18.0.5"

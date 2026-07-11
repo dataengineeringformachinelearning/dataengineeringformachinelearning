@@ -461,7 +461,10 @@ ${footerColumns
         <h3 class="footer-column-title">${column.title}</h3>
         <ul class="footer-list">
 ${column.links
-  .map(link => `          <li><a href="${resolveBackendFooterHref(link)}">${link.label}</a></li>`)
+  .map(
+    link =>
+      `          <li${link.requireAuth ? ' data-authenticated-only hidden' : ''}><a href="${resolveBackendFooterHref(link)}">${link.label}</a></li>`,
+  )
   .join('\n')}
         </ul>
       </div>`,

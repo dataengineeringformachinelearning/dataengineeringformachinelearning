@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { vi } from 'vitest';
 
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
@@ -16,6 +17,7 @@ class MockVikingSiteNavbar {}
 describe('Navbar', () => {
   let component: Navbar;
   let fixture: ComponentFixture<Navbar>;
+  const navigateToMarketingSite = vi.fn(async (): Promise<void> => undefined);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -27,6 +29,7 @@ describe('Navbar', () => {
           useValue: {
             isAuthenticated: signal(false),
             logout: async (): Promise<void> => undefined,
+            navigateToMarketingSite,
           },
         },
         {
@@ -49,5 +52,13 @@ describe('Navbar', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('uses the authenticated handoff path for marketing navigation', () => {
+    component.navigateToMarketing('https://dataengineeringformachinelearning.com/blog/');
+
+    expect(navigateToMarketingSite).toHaveBeenCalledWith(
+      'https://dataengineeringformachinelearning.com/blog/',
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, HostListener, OnInit, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -10,7 +10,7 @@ const TRUSTED_PARENT_HOSTS = [
   'deml.app',
 ];
 
-const isTrustedParentOrigin = (origin: string): boolean => {
+export const isTrustedParentOrigin = (origin: string): boolean => {
   try {
     const host = new URL(origin).hostname;
     return TRUSTED_PARENT_HOSTS.some(trusted => host === trusted || host.endsWith(`.${trusted}`));
@@ -19,7 +19,7 @@ const isTrustedParentOrigin = (origin: string): boolean => {
   }
 };
 
-const resolveParentOrigin = (explicitOrigin: string | null, referrer: string): string => {
+export const resolveParentOrigin = (explicitOrigin: string | null, referrer: string): string => {
   if (explicitOrigin && isTrustedParentOrigin(explicitOrigin)) {
     return explicitOrigin;
   }
@@ -55,18 +55,31 @@ export class AuthStatus implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.checkAuth();
-
     const params = this.route.snapshot.queryParamMap;
     this.parentOrigin = resolveParentOrigin(
       params.get('parent_origin'),
       typeof document !== 'undefined' ? document.referrer : '',
     );
-
     const action = params.get('action');
     if (action === 'signout') {
       void this.authService.logout().then(() => this.postStatus());
+      return;
     }
+
+    void this.authService.checkAuth();
+  }
+
+  @HostListener('window:message', ['$event'])
+  protected onMessage(event: MessageEvent): void {
+    if (
+      !this.parentOrigin ||
+      event.origin !== this.parentOrigin ||
+      event.source !== window.parent ||
+      event.data?.type !== 'AUTH_STATUS_REQUEST'
+    ) {
+      return;
+    }
+    this.postStatus();
   }
 
   private postStatus(): void {

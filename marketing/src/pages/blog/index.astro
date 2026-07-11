@@ -1,0 +1,136 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import VikingIcon from '../../components/VikingIcon.astro';
+import { blueNoteHref, formatBlueNoteDate, getBlueNotes } from '../../lib/blue-notes';
+import { canonicalHref, webPageJsonLd } from '../../lib/seo';
+import { siteEnv } from '../../lib/site-env';
+
+const notes = await getBlueNotes();
+const featured = notes.find(note => note.data.featured) ?? notes[0];
+const pageTitle = 'Blue Notes — DEML Platform Changes';
+const pageDescription =
+  'A chronological field log of DEML platform releases, architectural changes, reliability work, and new operator capabilities.';
+const { MARKETING_URL } = siteEnv();
+const pageUrl = canonicalHref('/blog/', MARKETING_URL);
+const pageJsonLd = [
+  webPageJsonLd(pageTitle, pageDescription, pageUrl),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'DEML Blue Notes',
+    itemListOrder: 'https://schema.org/ItemListOrderDescending',
+    numberOfItems: notes.length,
+    itemListElement: notes.map((note, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: note.data.title,
+      url: canonicalHref(blueNoteHref(note), MARKETING_URL),
+    })),
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  keywords="DEML changelog, release notes, platform updates, product blog, data engineering, AI engineering, cybersecurity"
+  ogType="website"
+  jsonLd={pageJsonLd}
+>
+  <div class="dashboard-page-container blue-notes-page">
+    <div class="page-inner-wrapper blue-notes-wrapper">
+      <header class="blue-notes-hero">
+        <div class="blue-notes-kicker">
+          <VikingIcon name="insights" size={20} color="accent" />
+          <span>DEML change log</span>
+        </div>
+        <h1>Blue Notes</h1>
+        <p>
+          The platform field log: significant features, architectural decisions, reliability work,
+          and the operator impact behind each change.
+        </p>
+        <div class="blue-notes-hero-actions">
+          <a class="viking-button" data-variant="outline" href="/blog/rss.xml">
+            <VikingIcon name="send" size={18} />
+            Follow the RSS feed
+          </a>
+          <a
+            class="viking-button"
+            data-variant="ghost"
+            href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <VikingIcon name="terminal" size={18} />
+            View the engineering record
+          </a>
+        </div>
+      </header>
+
+      {featured && (
+        <section class="blue-notes-featured" aria-labelledby="featured-note-title">
+          <div class="blue-notes-section-heading">
+            <span class="section-tag">Latest featured note</span>
+            <span>{notes.length} notes in the field log</span>
+          </div>
+          <article class="viking-card blue-note-feature-card">
+            <div class="blue-note-card-meta">
+              <span class="viking-badge viking-badge-accent">{featured.data.note}</span>
+              <time datetime={featured.data.publishedAt.toISOString()}>
+                {formatBlueNoteDate(featured.data.publishedAt)}
+              </time>
+            </div>
+            <h2 id="featured-note-title">
+              <a href={blueNoteHref(featured)}>{featured.data.title}</a>
+            </h2>
+            <p>{featured.data.summary}</p>
+            <div class="blue-note-card-footer">
+              <ul class="blue-note-categories" aria-label="Categories">
+                {featured.data.categories.map(category => <li>{category}</li>)}
+              </ul>
+              <a class="blue-note-read-link" href={blueNoteHref(featured)}>
+                Read the note <VikingIcon name="arrow-right" size={18} />
+              </a>
+            </div>
+          </article>
+        </section>
+      )}
+
+      <section class="blue-notes-archive" aria-labelledby="notes-archive-title">
+        <div class="blue-notes-section-heading">
+          <div>
+            <span class="section-tag">Chronological archive</span>
+            <h2 id="notes-archive-title">Changes over time</h2>
+          </div>
+          <p>Newest first. Every note is sourced from a shipped platform milestone.</p>
+        </div>
+
+        <ol class="blue-notes-timeline">
+          {notes.map(note => (
+            <li>
+              <article class="viking-card blue-note-card">
+                <div class="blue-note-timeline-marker" aria-hidden="true"></div>
+                <div class="blue-note-card-meta">
+                  <span>{note.data.note}</span>
+                  <time datetime={note.data.publishedAt.toISOString()}>
+                    {formatBlueNoteDate(note.data.publishedAt)}
+                  </time>
+                </div>
+                <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
+                <p>{note.data.summary}</p>
+                <div class="blue-note-card-footer">
+                  <ul class="blue-note-categories" aria-label="Categories">
+                    {note.data.categories.map(category => <li>{category}</li>)}
+                  </ul>
+                  <a class="blue-note-read-link" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
+                    Read note <VikingIcon name="chevron_right" size={18} />
+                  </a>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+  </div>
+</Layout>

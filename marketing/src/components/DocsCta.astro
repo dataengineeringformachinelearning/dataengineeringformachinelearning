@@ -5,18 +5,25 @@ export interface Props {
   href: string;
   icon: string;
   variant?: 'primary' | 'secondary';
+  authenticatedHref?: string;
+  authenticatedLabel?: string;
 }
 
-const { href, icon, variant = 'primary' } = Astro.props;
+const { href, icon, variant = 'primary', authenticatedHref, authenticatedLabel } = Astro.props;
 const className =
   variant === 'primary'
     ? 'cta-button cta-primary viking-btn viking-btn-primary'
     : 'cta-button docs-cta-secondary viking-btn viking-btn-outline';
 ---
 
-<a href={href} class={className}>
+<a
+  href={href}
+  class={className}
+  data-authenticated-href={authenticatedHref}
+  data-authenticated-label={authenticatedLabel}
+>
   <span class="cta-content">
     <VikingIcon name={icon} size={20} class="cta-icon" />
-    <span class="cta-label"><slot /></span>
+    <span class="cta-label" data-auth-label><slot /></span>
   </span>
 </a>

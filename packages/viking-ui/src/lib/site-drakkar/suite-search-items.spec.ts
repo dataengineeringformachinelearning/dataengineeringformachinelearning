@@ -15,6 +15,7 @@ describe("buildSuiteSearchItems", () => {
     expect(titles).toContain("Documentation");
     expect(titles).toContain("Whitepaper");
     expect(titles).toContain("Book");
+    expect(titles).toContain("Blue Notes");
     expect(titles).toContain("Privacy Policy");
     expect(titles).toContain("Terms of Service");
     expect(titles).toContain("SOC2 Compliance");
@@ -38,6 +39,20 @@ describe("buildSuiteSearchItems", () => {
     expect(
       privacy?.keywords?.some((keyword) => keyword.includes("privacy")),
     ).toBe(true);
+  });
+
+  it("shows account-only routes only after cross-site authentication", () => {
+    const anonymousTitles = buildSuiteSearchItems("marketing", urls, {
+      authenticated: false,
+    }).map((item) => item.title);
+    const authenticatedTitles = buildSuiteSearchItems("marketing", urls, {
+      authenticated: true,
+    }).map((item) => item.title);
+
+    expect(anonymousTitles).not.toContain("Dashboard");
+    expect(anonymousTitles).not.toContain("Account");
+    expect(authenticatedTitles).toContain("Dashboard");
+    expect(authenticatedTitles).toContain("Account");
   });
 
   it("includes Viking-UI docs entries for docs context", () => {

@@ -22,6 +22,42 @@ const buildFirebaseConfig = (): Record<string, string> => ({
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', true);
+const AUTH_STATUS_CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.firebaseapp.com",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://backend.deml.app https://*.backend.deml.app",
+  "frame-src 'self' https://*.firebaseapp.com",
+  "frame-ancestors 'self' https://dataengineeringformachinelearning.com https://*.dataengineeringformachinelearning.com https://backend.deml.app https://*.backend.deml.app https://ui.dataengineeringformachinelearning.com http://localhost:* http://127.0.0.1:*",
+  "base-uri 'self'",
+  "object-src 'none'",
+].join('; ');
+
+const withAuthStatusHeaders = (response: Response): Response => {
+  const headers = new Headers(response.headers);
+  headers.delete('x-frame-options');
+  headers.set('Content-Security-Policy', AUTH_STATUS_CSP);
+  headers.set('Cache-Control', 'no-store');
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  headers.set('X-Content-Type-Options', 'nosniff');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+};
+
+const sendAuthStatusFallback = (res: express.Response, body: string): void => {
+  res.status(200);
+  res.removeHeader('X-Frame-Options');
+  res
+    .set('Content-Security-Policy', AUTH_STATUS_CSP)
+    .set('Cache-Control', 'no-store')
+    .set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    .set('X-Content-Type-Options', 'nosniff')
+    .send(body);
+};
 const angularApp = new AngularNodeAppEngine({
   // Railway + Cloudflare set X-Forwarded-* headers; trust them for SSR URL construction.
   trustProxyHeaders: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto'],
@@ -131,16 +167,18 @@ app.get('/auth-status', async (req, res) => {
   try {
     const response = await angularApp.handle(req);
     if (response) {
-      writeResponseToNodeResponse(response, res);
+      writeResponseToNodeResponse(withAuthStatusHeaders(response), res);
     } else {
-      res
-        .status(200)
-        .send(
-          '<!doctype html><html><head><title>Auth Status</title></head><body><div hidden>Auth status checker</div></body></html>',
-        );
+      sendAuthStatusFallback(
+        res,
+        '<!doctype html><html><head><title>Auth Status</title></head><body><div hidden>Auth status checker</div></body></html>',
+      );
     }
   } catch {
-    res.status(200).send('<!doctype html><html><body><div hidden>Auth status</div></body></html>');
+    sendAuthStatusFallback(
+      res,
+      '<!doctype html><html><body><div hidden>Auth status</div></body></html>',
+    );
   }
 });
 

@@ -61,7 +61,31 @@ export class VikingSiteFooterWc extends VikingReactiveElement<FooterProps> {
   static readonly legacyTag = "viking-site-footer-wc";
 
   static get observedAttributes(): string[] {
-    return ["context", "app-url", "marketing-url", "backend-url", "year"];
+    return [
+      "context",
+      "app-url",
+      "marketing-url",
+      "backend-url",
+      "year",
+      "authenticated",
+    ];
+  }
+
+  private readonly onAuthState = (event: Event): void => {
+    const detail = (event as CustomEvent<{ isAuthenticated?: boolean }>).detail;
+    this.toggleAttribute("authenticated", detail?.isAuthenticated === true);
+  };
+
+  override connectedCallback(): void {
+    window.addEventListener("deml:auth-state", this.onAuthState);
+    if (document.documentElement.dataset["authenticated"] === "true") {
+      this.setAttribute("authenticated", "");
+    }
+    super.connectedCallback();
+  }
+
+  disconnectedCallback(): void {
+    window.removeEventListener("deml:auth-state", this.onAuthState);
   }
 
   private resolveContext(): SiteDrakkarContext {
@@ -101,9 +125,11 @@ export class VikingSiteFooterWc extends VikingReactiveElement<FooterProps> {
     const context = this.resolveContext();
     const urls = this.resolveUrls();
     const year = this.resolveYear();
+    const authenticated = this.hasAttribute("authenticated");
 
     const links = SITE_FOOTER_COLUMNS.map((column) => {
       const items = column.links
+        .filter((link) => !link.requireAuth || authenticated)
         .map((link: SiteFooterLink) => {
           const href = resolveFooterHref(link, context, urls);
           return `
