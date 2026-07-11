@@ -1341,7 +1341,7 @@
 
 .hero-copy .title {
   max-width: 18ch;
-  text-transform: none;
+  text-transform: uppercase;
   text-wrap: balance;
 }
 
@@ -1350,16 +1350,47 @@
   text-wrap: pretty;
 }
 
-.hero-badge,
-.hero-stats,
-.hero-copy .cta-group {
+.hero-badge {
   justify-content: center;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--viking-metric-card-min-width)), 1fr)
+  );
+  width: min(100%, var(--viking-content-readable-max-width));
+}
+
+.hero-copy .cta-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: center;
+  width: min(100%, var(--viking-content-readable-max-width));
+  margin-inline: auto;
+}
+
+.hero-copy .cta-group .cta-button {
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
 }
 
 .hero-mockup {
   width: min(100%, var(--viking-container-max-width));
   margin-inline: auto;
   justify-self: center;
+  padding-inline-end: 0;
+  perspective: none;
+}
+
+.landing-container .hero-mockup .viking-page-mockup-window,
+.landing-container .hero-mockup .mockup-window,
+.landing-container .hero-mockup .viking-page-mockup-window:hover,
+.landing-container .hero-mockup .mockup-window:hover {
+  transform: none;
+  transform-origin: center;
 }
 
 .quick-start-steps,
@@ -1518,5 +1549,9 @@
   .hero-copy .cta-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .hero-copy .cta-group {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

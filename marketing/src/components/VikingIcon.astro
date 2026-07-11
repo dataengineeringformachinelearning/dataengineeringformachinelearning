@@ -47,7 +47,7 @@ const brandSvg = isBrandIntegration
     viewBox="0 0 24 24"
     width={size}
     height={size}
-    class={`viking-icon-integration-brand ${className}`.trim()}
+    class={`viking-icon-inline viking-icon-integration-brand ${className}`.trim()}
     aria-hidden="true"
     set:html={brandSvg ?? ''}
   />
@@ -62,7 +62,7 @@ const brandSvg = isBrandIntegration
     stroke-linejoin={isFilled ? undefined : 'round'}
     width={size}
     height={size}
-    class={className}
+    class={`viking-icon-inline ${className}`.trim()}
     aria-hidden="true"
     set:html={paths}
   />

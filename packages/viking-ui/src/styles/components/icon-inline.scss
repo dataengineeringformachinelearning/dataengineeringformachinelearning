@@ -25,6 +25,49 @@ viking-icon,
   line-height: 1;
 }
 
+/* Framework-neutral inline icon contract. Astro's VikingIcon emits this class;
+   interactive/text hosts gain one centered baseline and one 8px text gap. */
+.viking-icon-inline {
+  display: block;
+  flex: 0 0 auto;
+  align-self: center;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+:where(
+    a,
+    button,
+    .viking-button,
+    .viking-btn,
+    .cta-button,
+    .viking-icon-text,
+    .blue-notes-kicker,
+    .hero-stat-pill,
+    .integration-logo-item,
+    .blue-note-read-link
+  ):has(> .viking-icon-inline) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+}
+
+:where(
+    a,
+    button,
+    .viking-button,
+    .viking-btn,
+    .cta-button,
+    .viking-icon-text,
+    .blue-notes-kicker,
+    .hero-stat-pill,
+    .integration-logo-item,
+    .blue-note-read-link
+  ):has(> .viking-icon-inline) > :not(.viking-icon-inline) {
+  min-width: 0;
+}
+
 .nav-btn,
 .mobile-nav-btn,
 .auth-btn,

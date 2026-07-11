@@ -1880,6 +1880,40 @@ viking-card-wc.landing-doctrine-card > * {
   text-align: center;
 }
 
+.showcase-hero {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: var(--viking-space-5);
+  padding-block: var(--viking-space-6);
+  text-align: center;
+}
+
+.showcase-hero-copy {
+  align-items: center;
+  width: min(100%, var(--viking-content-readable-max-width));
+}
+
+.showcase-hero-copy::after {
+  display: none;
+}
+
+.showcase-hero-actions {
+  justify-content: center;
+}
+
+.showcase-hero-panel {
+  width: min(100%, var(--viking-content-readable-max-width));
+  margin-inline: auto;
+  text-align: left;
+}
+
+.landing-stats {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--viking-metric-card-min-width)), 1fr)
+  );
+}
+
 .showcase-component-grid,
 .landing-doctrine-grid {
   grid-template-columns: repeat(
