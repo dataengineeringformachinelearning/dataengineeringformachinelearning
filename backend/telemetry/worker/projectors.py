@@ -14,7 +14,7 @@ from asgiref.sync import sync_to_async
 from django.core.cache import cache
 from monitor.models import BugReport, Endpoints, ThreatIntelligence
 from utils.enrichment import get_ip_enrichment_batch, parse_user_agent
-from utils.kafka import get_kafka_producer
+from utils.kafka import decode_kafka_value, get_kafka_producer, send_kafka_value
 from utils.request import anonymize_ip
 from utils.service_urls import get_normalized_service_info
 from utils.structured_log import log_event
@@ -391,7 +391,7 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
       threat_data_list = []
       for msg in messages:
         try:
-          payload = json.loads(msg.value.decode("utf-8"))
+          payload = json.loads(decode_kafka_value(msg.value, tp.topic))
           if "source" in payload and payload["source"].endswith("_threat_intel"):
             threat_data_list.append(payload)
           else:
@@ -426,7 +426,7 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
     elif tp.topic == "user-issues":
       for msg in messages:
         try:
-          payload = json.loads(msg.value.decode("utf-8"))
+          payload = json.loads(decode_kafka_value(msg.value, tp.topic))
           if payload.get("event_type") == "user_issue":
             bug_report_id = payload.get("bug_report_id")
             report_text = payload.get("report")
@@ -443,8 +443,10 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
       dlq_published = 0
       batch_safe_to_commit = True
       for msg in messages:
+        plaintext = msg.value
         try:
-          payload = json.loads(msg.value.decode("utf-8"))
+          plaintext = decode_kafka_value(msg.value, tp.topic)
+          payload = json.loads(plaintext)
           if not isinstance(payload, dict):
             raise ValueError("frontend event must be a JSON object")
           uid = payload.get("uid")
@@ -473,9 +475,10 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
           _write(stderr, style.ERROR(f"Failed to project frontend-event msg: {exc}"))
           try:
             dlq_producer = await get_kafka_producer()
-            await dlq_producer.send_and_wait(
+            await send_kafka_value(
+              dlq_producer,
               "frontend-events-dlq",
-              msg.value,
+              plaintext,
               key=msg.key,
               headers=[
                 ("x-deml-error", str(exc)[:500].encode("utf-8")),

@@ -52,6 +52,10 @@ Firebase (Auth, `ingestEvent`, Firestore, marketing Hosting) is shared across co
 
 ## 4. Data paths
 
+### 4.0 Cryptographic transport invariant
+
+Production service connections use verified TLS (`https`, `rediss`, Postgres `sslmode=verify-full`, Redpanda `SSL`/`SASL_SSL`, and HTTPS OTLP). Durable Redpanda values are additionally wrapped in the versioned DEML Internode Envelope (`A256GCM`) before publication and decrypted only by authorized consumers. `DEML_INTERNODE_ENCRYPTION=required` is the production steady state; `optional` is a bounded rolling-migration mode, and `disabled` is restricted to local development/tests. The envelope binds the ciphertext to its Kafka topic so a valid message cannot be moved to a different stream without authentication failure.
+
 ### 4.1 Client commands (primary)
 
 ```
@@ -64,6 +68,7 @@ Angular ← onSnapshot ← Firestore
 - Events carry `version: "1.0"` and a validated, path-safe `idempotency_key` (16–128 characters).
 - Worker is the **only** authoritative writer of stats projections.
 - Projection failures are committed only after an acknowledged write to `frontend-events-dlq`; a failed DLQ publish leaves the source batch uncommitted for retry.
+- Redpanda message values are ciphertext on the wire and at broker rest; idempotency keys remain visible only when deliberately carried as broker headers for routing/deduplication.
 
 ### 4.2 API / integration commands
 

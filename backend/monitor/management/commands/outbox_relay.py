@@ -6,7 +6,7 @@ from datetime import timedelta
 from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from utils.kafka import get_kafka_producer
+from utils.kafka import get_kafka_producer, send_kafka_value
 from utils.structured_log import log_event, set_correlation_id
 
 from monitor.models import OutboxEvent
@@ -93,7 +93,8 @@ class Command(BaseCommand):
           [(k, str(v).encode()) for k, v in event.headers.items()] if event.headers else None
         )
 
-        await producer.send_and_wait(
+        await send_kafka_value(
+          producer,
           event.topic,
           value=value,
           key=key,

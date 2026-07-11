@@ -1,6 +1,6 @@
 import json
 
-from utils.kafka import create_kafka_producer
+from utils.kafka import create_kafka_producer, send_kafka_value
 
 
 async def send_issue_to_redpanda(topic: str, issue_report: str, bug_report_id: str | None = None):
@@ -16,5 +16,5 @@ async def send_issue_to_redpanda(topic: str, issue_report: str, bug_report_id: s
   producer = create_kafka_producer()
   async with producer:
     value = json.dumps(payload).encode("utf-8")
-    await producer.send_and_wait(topic, value)
+    await send_kafka_value(producer, topic, value)
   return f"Successfully sent issue report to topic '{topic}'"

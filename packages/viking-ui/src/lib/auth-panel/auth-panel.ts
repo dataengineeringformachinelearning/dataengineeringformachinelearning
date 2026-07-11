@@ -88,8 +88,11 @@ import { VikingSeparator } from "../separator/separator";
         gap: var(--viking-space-4);
         width: 100%;
         padding: var(--viking-card-padding);
-        background: var(--viking-surface);
-        border-radius: var(--viking-radius-lg);
+        background: var(--viking-surface-recipe, var(--viking-surface));
+        border: 1px solid var(--viking-border-strong);
+        border-radius: var(--viking-radius-xl);
+        box-shadow: var(--viking-shadow-md);
+        box-sizing: border-box;
       }
       .viking-auth-header {
         display: flex;
@@ -157,6 +160,8 @@ import { VikingSeparator } from "../separator/separator";
         flex-direction: column;
         gap: var(--viking-space-3);
         width: 100%;
+        max-width: 100%;
+        margin-inline: 0;
       }
       .viking-auth-social {
         display: flex;
@@ -189,6 +194,7 @@ import { VikingSeparator } from "../separator/separator";
       /* Uniform full-width stack: fields, inputs, and every action button. */
       :host ::ng-deep viking-field,
       :host ::ng-deep viking-input,
+      :host ::ng-deep viking-input-wc,
       :host ::ng-deep viking-verification-code-field,
       :host ::ng-deep viking-callout,
       :host ::ng-deep .viking-auth-social,
@@ -211,6 +217,7 @@ import { VikingSeparator } from "../separator/separator";
         box-sizing: border-box;
       }
       :host ::ng-deep viking-input .viking-input,
+      :host ::ng-deep viking-input-wc,
       :host ::ng-deep viking-input input,
       :host ::ng-deep .viking-input-control {
         width: 100%;

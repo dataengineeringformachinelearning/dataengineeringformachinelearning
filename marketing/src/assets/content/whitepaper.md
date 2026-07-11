@@ -39,11 +39,13 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 | Identity              | Firebase Auth                                              | JWT perimeter; MFA-verified session on site mutations                                       |
 | Read models           | Firestore (`deml` DB)                                      | `users/{uid}/data/stats` projections                                                        |
 | Marketing             | Firebase Hosting                                           | Astro landing and documentation site                                                        |
-| Security controls     | GCP (KMS, immutable audit logs)                            | Envelope encryption, tamper-evident logging (when GCP plane used)                           |
+| Security controls     | GCP (KMS, immutable audit logs)                            | TLS + AES-256-GCM internode envelopes, KMS envelope encryption at rest, tamper-evident logs |
 | Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                                           |
 | Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                                     |
 
 Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [`docs/glossary.md`](docs/glossary.md).
+
+Every production transport is cryptographically authenticated: HTTPS/HSTS at public app boundaries and verified TLS for Postgres, Redis-compatible caches, Redpanda, ClickHouse, and OTLP. Durable broker payloads receive an independent AES-256-GCM DEML Internode Envelope before publication. This defense-in-depth layer binds ciphertext to the topic and sender role, remains encrypted across broker storage and TLS termination boundaries, supports additive key rotation through `kid`, and fails closed against plaintext downgrade once required mode is enabled.
 
 ### 2.3 Actors & workflows
 

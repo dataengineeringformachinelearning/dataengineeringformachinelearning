@@ -6,7 +6,7 @@ from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from ml.ml_services import train_tenant_sla
-from utils.kafka import get_kafka_brokers
+from utils.kafka import decode_kafka_value, get_kafka_brokers, get_kafka_client_config
 
 User = get_user_model()
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
     brokers = get_kafka_brokers()
     consumer = AIOKafkaConsumer(
       "ml-training-events",
-      bootstrap_servers=brokers,
+      **get_kafka_client_config(),
       group_id="ml-training-group",
       auto_offset_reset="latest",
       enable_auto_commit=False,
@@ -68,7 +68,7 @@ class Command(BaseCommand):
           for _tp, messages in result.items():
             for msg in messages:
               try:
-                payload = json.loads(msg.value.decode("utf-8"))
+                payload = json.loads(decode_kafka_value(msg.value, _tp.topic))
                 self.stdout.write(f"Received event: {payload}")
                 action = payload.get("action")
 

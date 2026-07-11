@@ -45,9 +45,9 @@ class MlConfig(AppConfig):
     # Lazy import: avoids pulling aiokafka (and Redpanda stack) at module load.
     # Enables clean core test runs (sqlite) and keeps worker deps isolated to runtime paths.
     # Cursor - Grok 4.3
-    from utils.kafka import create_kafka_producer
+    from utils.kafka import create_kafka_producer, send_kafka_value
 
     producer = create_kafka_producer()
     async with producer:
       msg = {"action": "train_all_tenants"}
-      await producer.send_and_wait("ml-training-events", json.dumps(msg).encode("utf-8"))
+      await send_kafka_value(producer, "ml-training-events", json.dumps(msg).encode("utf-8"))

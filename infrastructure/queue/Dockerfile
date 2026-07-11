@@ -2,10 +2,10 @@ FROM redpandadata/redpanda:v26.1.9
 
 # Dual-listener secure setup for Event Projections (and other client commands):
 #
-# - Internal listener (9092 / PLAINTEXT): Railway private network only.
-#   Used by Django, telemetry_worker, outbox_relay, etc. (fast path, no auth overhead).
+# - Internal listener (9092 / mTLS): verified service-to-service transport.
+#   Used by Django, telemetry_worker, outbox_relay, and the Rust data plane.
 #
-# - External listener (9093 / SASL_SSL): Public, authenticated endpoint.
+# - External listener (9093 / SASL_SSL): public, authenticated endpoint.
 #   Used by Firebase Cloud Functions (`ingestEvent`) which live outside the Railway private network.
 #
 # SASL (SCRAM-SHA-256) + SSL is required on the public listener.

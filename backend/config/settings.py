@@ -134,6 +134,7 @@ if not firebase_admin._apps:
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 from utils.env import configure_database_url, get_bool, get_csv, get_str, validate_production_config
+from utils.tls import materialize_tls_file
 
 # Fail fast on Railway/production if SECRET_KEY, DEBUG, or DATABASE_URL are insecure.
 validate_production_config()
@@ -205,13 +206,18 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 DRAGONFLY_HOST = os.getenv("DRAGONFLY_HOST", "deml-dragonfly.railway.internal")
+REDIS_URL = get_str("REDIS_URL", f"redis://{DRAGONFLY_HOST}:6379")
+REDIS_SSL_CA = materialize_tls_file("REDIS_SSL_CA", "REDIS_SSL_CA_B64")
+_redis_channel_host = {"address": REDIS_URL}
+if REDIS_SSL_CA:
+  _redis_channel_host.update(ssl_ca_certs=REDIS_SSL_CA, ssl_cert_reqs="required")
 
 # Channels
 CHANNEL_LAYERS = {
   "default": {
     "BACKEND": "channels_redis.core.RedisChannelLayer",
     "CONFIG": {
-      "hosts": [(DRAGONFLY_HOST, 6379)],
+      "hosts": [_redis_channel_host],
     },
   },
 }

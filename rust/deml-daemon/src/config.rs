@@ -51,8 +51,16 @@ pub struct Config {
     pub sasl_username: Option<String>,
     pub sasl_password: Option<String>,
 
-    /// Set to "true" to use SASL_SSL instead of SASL_PLAINTEXT.
-    pub sasl_ssl: bool,
+    /// Kafka transport protocol. Production permits only SSL or SASL_SSL.
+    pub redpanda_security_protocol: String,
+
+    /// Optional private CA and mTLS client identity paths for Redpanda.
+    pub redpanda_ssl_ca: Option<String>,
+    pub redpanda_ssl_cert: Option<String>,
+    pub redpanda_ssl_key: Option<String>,
+    pub redpanda_ssl_ca_pem: Option<String>,
+    pub redpanda_ssl_cert_pem: Option<String>,
+    pub redpanda_ssl_key_pem: Option<String>,
 
     /// Max events fetched per poll cycle.
     pub batch_size: i64,
@@ -86,6 +94,9 @@ pub struct Config {
     /// Dragonfly database containing the imported CPE word/rank index.
     pub cpe_redis_url: Option<String>,
 
+    /// Private CA for verified Dragonfly/Redis TLS, supplied as base64 PEM.
+    pub redis_ssl_ca_pem: Option<Vec<u8>>,
+
     /// Kafka group for the Rust telemetry normalizer.
     pub normalizer_group_id: String,
 }
@@ -102,7 +113,7 @@ impl Config {
             bail!("MAX_CONCURRENCY must be greater than zero");
         }
 
-        Ok(Self {
+        let config = Self {
             role: Role::from_env()?,
             database_url: env::var("DATABASE_URL").context("DATABASE_URL must be set")?,
 
@@ -115,9 +126,24 @@ impl Config {
             sasl_password: env::var("REDPANDA_SASL_PASSWORD")
                 .ok()
                 .filter(|s| !s.is_empty()),
-            sasl_ssl: env::var("REDPANDA_SSL")
-                .map(|v| v.eq_ignore_ascii_case("true"))
-                .unwrap_or(false),
+            redpanda_security_protocol: env::var("REDPANDA_SECURITY_PROTOCOL")
+                .unwrap_or_else(|_| {
+                    if env::var("REDPANDA_SSL")
+                        .map(|value| value.eq_ignore_ascii_case("true"))
+                        .unwrap_or(false)
+                    {
+                        "SASL_SSL".to_string()
+                    } else {
+                        "PLAINTEXT".to_string()
+                    }
+                })
+                .to_ascii_uppercase(),
+            redpanda_ssl_ca: env::var("REDPANDA_SSL_CA").ok().filter(|v| !v.is_empty()),
+            redpanda_ssl_cert: env::var("REDPANDA_SSL_CERT").ok().filter(|v| !v.is_empty()),
+            redpanda_ssl_key: env::var("REDPANDA_SSL_KEY").ok().filter(|v| !v.is_empty()),
+            redpanda_ssl_ca_pem: decode_pem_env("REDPANDA_SSL_CA_B64")?,
+            redpanda_ssl_cert_pem: decode_pem_env("REDPANDA_SSL_CERT_B64")?,
+            redpanda_ssl_key_pem: decode_pem_env("REDPANDA_SSL_KEY_B64")?,
 
             batch_size: env::var("BATCH_SIZE")
                 .ok()
@@ -154,8 +180,105 @@ impl Config {
             ),
             redis_url: env::var("REDIS_URL").ok().filter(|v| !v.is_empty()),
             cpe_redis_url: env::var("CPE_REDIS_URL").ok().filter(|v| !v.is_empty()),
+            redis_ssl_ca_pem: decode_bytes_env("REDIS_SSL_CA_B64")?,
             normalizer_group_id: env::var("NORMALIZER_GROUP_ID")
                 .unwrap_or_else(|_| "deml-rust-telemetry-normalizer-v1".to_string()),
-        })
+        };
+        config.validate_transport_security()?;
+        Ok(config)
     }
+
+    fn validate_transport_security(&self) -> Result<()> {
+        let production = env::var("RAILWAY_ENVIRONMENT")
+            .map(|value| value.eq_ignore_ascii_case("production"))
+            .unwrap_or(false);
+        if !production {
+            return Ok(());
+        }
+        if env::var("DEML_TRANSPORT_SECURITY")
+            .unwrap_or_else(|_| "required".to_string())
+            .to_ascii_lowercase()
+            != "required"
+        {
+            bail!("DEML_TRANSPORT_SECURITY must be required in production");
+        }
+        let database = url::Url::parse(&self.database_url).context("DATABASE_URL is invalid")?;
+        let sslmode = database
+            .query_pairs()
+            .find(|(name, _)| name == "sslmode")
+            .map(|(_, value)| value.into_owned())
+            .unwrap_or_default();
+        if !matches!(sslmode.as_str(), "verify-ca" | "verify-full") {
+            bail!("production DATABASE_URL must set sslmode=verify-ca or sslmode=verify-full");
+        }
+        if !matches!(self.redpanda_security_protocol.as_str(), "SSL" | "SASL_SSL")
+            && matches!(
+                self.role,
+                Role::Relay | Role::Scheduler | Role::Normalizer | Role::All
+            )
+        {
+            bail!("production Redpanda transport must use SSL or SASL_SSL");
+        }
+        for (name, value) in [
+            ("REDIS_URL", self.redis_url.as_deref()),
+            ("CPE_REDIS_URL", self.cpe_redis_url.as_deref()),
+        ] {
+            if value.is_some_and(|url| !url.starts_with("rediss://")) {
+                bail!("production {name} must use rediss://");
+            }
+        }
+        if (self.redis_url.is_some() || self.cpe_redis_url.is_some())
+            && self.redis_ssl_ca_pem.is_none()
+        {
+            bail!("production Redis TLS requires REDIS_SSL_CA_B64");
+        }
+        if self.skip_tls_verify {
+            bail!("HEALTH_PINGER_SKIP_TLS_VERIFY cannot be enabled in production");
+        }
+        if let Ok(endpoint) = env::var("OTEL_EXPORTER_OTLP_ENDPOINT") {
+            if !endpoint.is_empty() && !endpoint.starts_with("https://") {
+                bail!("production OTEL_EXPORTER_OTLP_ENDPOINT must use https://");
+            }
+        }
+        let has_cert = self.redpanda_ssl_cert.is_some() || self.redpanda_ssl_cert_pem.is_some();
+        let has_key = self.redpanda_ssl_key.is_some() || self.redpanda_ssl_key_pem.is_some();
+        let has_ca = self.redpanda_ssl_ca.is_some() || self.redpanda_ssl_ca_pem.is_some();
+        if has_cert != has_key {
+            bail!("REDPANDA_SSL_CERT and REDPANDA_SSL_KEY must be configured together");
+        }
+        if matches!(
+            self.role,
+            Role::Relay | Role::Scheduler | Role::Normalizer | Role::All
+        ) && (!has_ca || !has_cert || !has_key)
+        {
+            bail!("production Redpanda mTLS requires a CA, client certificate, and key");
+        }
+        Ok(())
+    }
+}
+
+fn decode_pem_env(name: &str) -> Result<Option<String>> {
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+
+    let Some(encoded) = env::var(name).ok().filter(|value| !value.is_empty()) else {
+        return Ok(None);
+    };
+    let bytes = STANDARD
+        .decode(encoded)
+        .with_context(|| format!("{name} must be valid base64"))?;
+    String::from_utf8(bytes)
+        .with_context(|| format!("{name} must decode to UTF-8 PEM"))
+        .map(Some)
+}
+
+fn decode_bytes_env(name: &str) -> Result<Option<Vec<u8>>> {
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+
+    let Some(encoded) = env::var(name).ok().filter(|value| !value.is_empty()) else {
+        return Ok(None);
+    };
+    STANDARD
+        .decode(encoded)
+        .with_context(|| format!("{name} must be valid base64"))
+        .map(Some)
 }

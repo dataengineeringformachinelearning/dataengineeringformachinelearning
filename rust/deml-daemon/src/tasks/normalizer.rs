@@ -17,7 +17,7 @@ use tracing::{error, info, warn};
 use url::Url;
 use uuid::Uuid;
 
-use crate::{config::Config, kafka};
+use crate::{config::Config, internode, kafka};
 
 #[derive(Debug, Deserialize)]
 struct TelemetryEvent {
@@ -39,7 +39,7 @@ struct TelemetryEvent {
     #[serde(default)]
     user_agent: Option<String>,
     #[serde(default)]
-    telemetry_context: Map<String, Value>,
+    telemetry_context: Option<Map<String, Value>>,
     #[serde(default)]
     idempotency_key: Option<String>,
 }
@@ -66,8 +66,13 @@ pub async fn run(pool: PgPool, cfg: Config) -> Result<()> {
             }
         };
         let raw = message.payload().unwrap_or_default();
+        let decrypted = internode::decrypt_kafka_value(raw, message.topic());
+        let dlq_payload = decrypted.as_deref().unwrap_or(raw);
         let result = async {
-            let event: TelemetryEvent = serde_json::from_slice(raw)?;
+            let plaintext = decrypted
+                .as_deref()
+                .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+            let event: TelemetryEvent = serde_json::from_slice(plaintext)?;
             persist_event(
                 &pool,
                 message.topic(),
@@ -98,7 +103,7 @@ pub async fn run(pool: PgPool, cfg: Config) -> Result<()> {
                     &producer,
                     "telemetry-raw-dlq",
                     message.key_view::<str>().and_then(Result::ok),
-                    raw,
+                    dlq_payload,
                     &headers,
                 )
                 .await
@@ -195,7 +200,7 @@ async fn persist_event(
     let user_agent = event.user_agent.as_deref().unwrap_or_default();
     let ua = summarize_user_agent(user_agent);
     let anonymized_ip = event.ip_address.as_deref().and_then(anonymize_ip);
-    let context = Value::Object(event.telemetry_context.clone());
+    let context = Value::Object(event.telemetry_context.clone().unwrap_or_default());
     sqlx::query(
         r#"
         INSERT INTO endpoints

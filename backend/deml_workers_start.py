@@ -34,7 +34,13 @@ django.setup()
 from aiokafka import AIOKafkaConsumer
 from asgiref.sync import sync_to_async
 from django.core.management import call_command
-from utils.kafka import get_kafka_brokers, get_kafka_producer
+from utils.kafka import (
+  decode_kafka_value,
+  get_kafka_brokers,
+  get_kafka_client_config,
+  get_kafka_producer,
+  send_kafka_value,
+)
 
 logger = logging.getLogger("deml_workers")
 
@@ -118,7 +124,7 @@ async def run_task_consumer() -> None:
 
   consumer = AIOKafkaConsumer(
     "internal-tasks",
-    bootstrap_servers=brokers,
+    **get_kafka_client_config(),
     group_id="deml-workers-task-consumer",
     auto_offset_reset="latest",
     enable_auto_commit=False,
@@ -175,9 +181,11 @@ async def run_task_consumer() -> None:
     producer = await get_kafka_producer()
     raw_value = getattr(msg, "value", b"")
     source_topic = str(getattr(msg, "topic", "internal-tasks"))
-    await producer.send_and_wait(
+    plaintext = decode_kafka_value(raw_value, source_topic)
+    await send_kafka_value(
+      producer,
       "internal-tasks-dlq",
-      value=raw_value,
+      value=plaintext,
       headers=[
         ("x-deml-error", reason[:500].encode("utf-8", errors="replace")),
         ("x-deml-source-topic", source_topic.encode("utf-8")),
@@ -227,7 +235,7 @@ async def run_task_consumer() -> None:
       for _tp, messages in result.items():
         for msg in messages:
           try:
-            payload = json.loads(msg.value.decode("utf-8"))
+            payload = json.loads(decode_kafka_value(msg.value, _tp.topic))
             task_name: str | None = payload.get("task")
             run_id: str | None = payload.get("run_id")
             triggered_at: str = payload.get("triggered_at", "unknown")

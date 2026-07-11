@@ -16,8 +16,9 @@ RUN wget -qO /tmp/dragonfly.tar.gz "https://github.com/dragonflydb/dragonfly/rel
     mv /usr/local/bin/dragonfly-x86_64 /usr/local/bin/dragonfly && \
     chmod +x /usr/local/bin/dragonfly
 
-# Stage 2: Final Image
-FROM gcr.io/distroless/cc-debian12:nonroot
+# Stage 2: minimal runtime. A shell is required only to materialize Railway's
+# base64-injected TLS secrets before dropping to the Dragonfly process.
+FROM debian:bookworm-slim
 
 
 # Copy the binary from the downloader stage
@@ -29,14 +30,18 @@ COPY --from=downloader /usr/local/bin/dragonfly /usr/local/bin/dragonfly
 #   "error while loading shared libraries: libz.so.1: cannot open shared object file".
 # Copy zlib from the Debian build stage so the binary can start.
 COPY --from=downloader /usr/lib/x86_64-linux-gnu/libz.so.1* /usr/lib/x86_64-linux-gnu/
+COPY entrypoint.sh /usr/local/bin/dragonfly-entrypoint
+
+RUN groupadd --gid 10001 dragonfly \
+    && useradd --uid 10001 --gid dragonfly --no-create-home --shell /usr/sbin/nologin dragonfly \
+    && mkdir -p /run/dragonfly-tls \
+    && chown dragonfly:dragonfly /run/dragonfly-tls /usr/local/bin/dragonfly-entrypoint \
+    && chmod 750 /run/dragonfly-tls /usr/local/bin/dragonfly-entrypoint
 
 # Expose default Dragonfly/Redis port
 EXPOSE 6379
 
-USER nonroot
+USER dragonfly
 
 # Set the entrypoint to the Dragonfly binary
-ENTRYPOINT ["/usr/local/bin/dragonfly"]
-
-# Run with standard arguments, binding to all interfaces
-CMD ["--bind=0.0.0.0", "--port=6379"]
+ENTRYPOINT ["/usr/local/bin/dragonfly-entrypoint"]

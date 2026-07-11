@@ -60,25 +60,32 @@ jobs:
         #   REDPANDA_PUBLIC_BROKERS        e.g. zephyr.proxy.rlwy.net:32253 (Railway TCP Proxy)
         #   REDPANDA_PUBLIC_SASL_USERNAME  e.g. admin
         #   REDPANDA_PUBLIC_SASL_PASSWORD  (same value as the deml-queue service)
-        #   REDPANDA_PUBLIC_SSL            optional; leave unset/false for a Railway TCP
-        #                                  Proxy (plain TCP). Only "true" if TLS is
-        #                                  terminated in front of the broker.
+        #   REDPANDA_PUBLIC_TLS_CA_B64     CA that signed the advertised broker certificate
+        #   DEML_INTERNODE_KEYS            rotation keyring JSON
+        #   DEML_INTERNODE_ACTIVE_KID      active key id in that keyring
         # If REDPANDA_PUBLIC_BROKERS is not set, ingestEvent uses the resilient Firestore
         # inbox fallback (slower, polled) instead of the direct path.
         env:
           REDPANDA_PUBLIC_BROKERS: ${{ secrets.REDPANDA_PUBLIC_BROKERS }}
           REDPANDA_PUBLIC_SASL_USERNAME: ${{ secrets.REDPANDA_PUBLIC_SASL_USERNAME }}
           REDPANDA_PUBLIC_SASL_PASSWORD: ${{ secrets.REDPANDA_PUBLIC_SASL_PASSWORD }}
-          REDPANDA_PUBLIC_SSL: ${{ secrets.REDPANDA_PUBLIC_SSL }}
+          REDPANDA_PUBLIC_TLS_CA_B64: ${{ secrets.REDPANDA_PUBLIC_TLS_CA_B64 }}
+          DEML_INTERNODE_KEYS: ${{ secrets.DEML_INTERNODE_KEYS }}
+          DEML_INTERNODE_ACTIVE_KID: ${{ secrets.DEML_INTERNODE_ACTIVE_KID }}
         run: |
           if [ -n "$REDPANDA_PUBLIC_BROKERS" ]; then
             {
               echo "REDPANDA_BROKERS=${REDPANDA_PUBLIC_BROKERS}"
               echo "REDPANDA_SASL_USERNAME=${REDPANDA_PUBLIC_SASL_USERNAME}"
               echo "REDPANDA_SASL_PASSWORD=${REDPANDA_PUBLIC_SASL_PASSWORD}"
-              echo "REDPANDA_SSL=${REDPANDA_PUBLIC_SSL:-false}"
+              echo "REDPANDA_SSL=true"
+              echo "REDPANDA_SSL_CA_B64=${REDPANDA_PUBLIC_TLS_CA_B64}"
+              echo "DEML_INTERNODE_ENCRYPTION=required"
+              echo "DEML_INTERNODE_ACTIVE_KID=${DEML_INTERNODE_ACTIVE_KID}"
+              echo "DEML_INTERNODE_KEYS=${DEML_INTERNODE_KEYS}"
+              echo "DEML_NODE_ID=deml-firebase-ingest"
             } > functions/.env
-            echo "Wrote functions/.env (REDPANDA_BROKERS + SASL; REDPANDA_SSL=${REDPANDA_PUBLIC_SSL:-false})"
+            echo "Wrote functions/.env (verified TLS, SASL, and internode encryption enabled)"
           else
             echo "REDPANDA_PUBLIC_BROKERS not configured; ingestEvent will use Firestore inbox fallback"
           fi
