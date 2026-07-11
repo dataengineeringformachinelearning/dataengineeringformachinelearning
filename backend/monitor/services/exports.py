@@ -19,6 +19,7 @@ from utils.object_storage import (
   is_configured,
   put_bytes,
 )
+from utils.retention import REPORT_ARCHIVE_RETENTION_DAYS
 
 from monitor.models import (
   AggregatedAnalytics,
@@ -27,7 +28,6 @@ from monitor.models import (
   ThreatIntelligence,
   Vulnerability,
 )
-from utils.retention import REPORT_ARCHIVE_RETENTION_DAYS
 
 logger = logging.getLogger(__name__)
 

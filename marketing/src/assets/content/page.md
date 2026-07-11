@@ -2138,35 +2138,76 @@ This appendix is the **single source of truth** for all scheduled maintenance: b
 
 ### Continuous Background Workers
 
-| Service          | Command                             | Cadence                   | Responsibility                                                        |
-| ---------------- | ----------------------------------- | ------------------------- | --------------------------------------------------------------------- |
-| Rust Relay       | `DEML_ROLE=relay deml-daemon`       | Continuous / event wake   | Leased `OutboxEvent` delivery to Redpanda                             |
-| Rust Normalizer  | `DEML_ROLE=normalizer deml-daemon`  | Continuous                | Validates and persists `telemetry-raw` endpoint events                |
-| Rust Probe       | `DEML_ROLE=probe deml-daemon`       | Every **30s**             | Bounded service probes and durable observations                       |
-| Rust Scheduler   | `DEML_ROLE=scheduler deml-daemon`   | Continuous                | Claims durable task buckets and publishes `internal-tasks`            |
-| Telemetry Worker | `python manage.py telemetry_worker` | Continuous                | Independent Firestore and user-issue projection consumers             |
-| ML Worker        | `python manage.py ml_worker`        | Continuous                | Kafka `ml-training-events` consumer                                   |
-| ML Worker        | ↑                                   | Every **24h**             | `train_all_models` (SLA, Threat, CES models)                          |
-| Security Worker  | `python manage.py security_worker`  | Every **1h**              | `fetch_threat_intel`                                                  |
-| Security Worker  | ↑                                   | Every **24h** (staggered) | `db_cleanup`, `scan_dark_web`, `sync_subscriptions`, `VACUUM ANALYZE` |
+| Service          | Command                             | Cadence                 | Responsibility                                                   |
+| ---------------- | ----------------------------------- | ----------------------- | ---------------------------------------------------------------- |
+| Rust Relay       | `DEML_ROLE=relay deml-daemon`       | Continuous / event wake | Leased `OutboxEvent` delivery to Redpanda                        |
+| Rust Normalizer  | `DEML_ROLE=normalizer deml-daemon`  | Continuous              | Validates and persists `telemetry-raw` endpoint events           |
+| Rust Probe       | `DEML_ROLE=probe deml-daemon`       | Every **30s**           | Bounded service probes and durable observations                  |
+| Rust Scheduler   | `DEML_ROLE=scheduler deml-daemon`   | Continuous              | Claims durable task buckets, executes Rust-native tasks directly |
+| Telemetry Worker | `python manage.py telemetry_worker` | Continuous              | Independent Firestore and user-issue projection consumers        |
+| ML Worker        | `python manage.py ml_worker`        | Continuous              | Kafka `ml-training-events` consumer                              |
+| ML Worker        | ↑                                   | Every **24h**           | `train_all_models` (SLA, Threat, CES models)                     |
+| Security Worker  | `python manage.py security_worker`  | Every **1h**            | `fetch_threat_intel` (Python-only: external API calls)           |
+| Task Consumer    | `deml_workers_start.py`             | On trigger              | Executes Python-only tasks from `internal-tasks` Kafka topic     |
+
+**Rust-native tasks** (executed directly by `deml-scheduler` without Kafka):
+
+- `db_cleanup` (daily) — Neon retention purge
+- `optimize_database` (daily) — VACUUM ANALYZE
+- `archive_reports` (daily) — Materialized view rollups
+- `cleanup_clickhouse` (weekly) — Archival table purge
+
+**Python-only tasks** (published to `internal-tasks` for worker execution):
+
+- `fetch_threat_intel` (hourly) — External API integration
+- `train_all_models` (daily) — PyTorch training
+- `sync_subscriptions` (daily) — Stripe API
+- `scan_dark_web` (daily) — OSINT/Tor ecosystem
+- `rotate_keys_if_due` (daily) — KMS operations
+- `ingest_taxii` (hourly) — STIX/TAXII parsing
+- `run_lighthouse_scans` (6-hourly) — Lighthouse audits
 
 Daily security jobs are **staggered** in the durable schedule registry to avoid thundering-herd load on Postgres and Stripe. Python workers execute claimed commands but do not independently schedule them.
 
-### Data Retention (`db_cleanup`)
+### Data Retention (`db_cleanup` + `cleanup_clickhouse`)
 
-Owned exclusively by `security_worker` (not `train_all_models`). Policy constants: `RAW_TELEMETRY_RETENTION_DAYS = 30`.
+Owned exclusively by the Rust scheduler (`deml-daemon`). Policy constants defined in `backend/utils/retention.py`.
 
-| Data Class                                 | Retention  | Action                         |
-| ------------------------------------------ | ---------- | ------------------------------ |
-| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted                        |
-| `AuditLog`                                 | 30 days    | Deleted                        |
-| `CookieConsent`                            | 30 days    | Deleted                        |
-| `OutboxEvent` (published)                  | 30 days    | Deleted                        |
-| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted                        |
-| `ThreatIntelligence`                       | Indefinite | Legacy duplicates removed only |
-| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record       |
-| ClickHouse OLAP spans                      | 30 days    | TTL in OTEL collector config   |
-| GCS object storage                         | 30 days    | Terraform lifecycle rule       |
+**Neon (PostgreSQL):**
+
+| Data Class                                 | Retention  | Action                            |
+| ------------------------------------------ | ---------- | --------------------------------- |
+| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted, archived to ClickHouse   |
+| `AuditLog`                                 | 30 days    | Deleted, archived to ClickHouse   |
+| `CookieConsent`                            | 30 days    | Deleted                           |
+| `OutboxEvent` (published)                  | 30 days    | Deleted                           |
+| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted                           |
+| `ThreatIntelligence`                       | 90 days    | Deleted, duplicates purged        |
+| `AggregatedAnalytics` (hourly)             | 30 days    | Deleted after daily rollups       |
+| `ReportArchive` (daily rollups)            | 90 days    | Materialized; older in ClickHouse |
+| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record          |
+
+**ClickHouse (Archival):**
+
+| Data Class                   | Retention | Action                     |
+| ---------------------------- | --------- | -------------------------- |
+| `audit_archive`              | 180 days  | `cleanup_clickhouse` purge |
+| `security_events`            | 365 days  | `cleanup_clickhouse` purge |
+| `asset_vulnerability_ledger` | 730 days  | `cleanup_clickhouse` purge |
+| OTEL traces/metrics          | 730+ days | TTL via MergeTree          |
+
+**Dragonfly/Redis (Rate Limiting):**
+
+| Data Class      | Retention  | Action                       |
+| --------------- | ---------- | ---------------------------- |
+| Rate limit keys | 60 seconds | Auto-expire (sliding window) |
+| IP blocklist    | 24 hours   | TTL via `setex`              |
+
+**GCS Object Storage:**
+
+| Data Class       | Retention | Action                   |
+| ---------------- | --------- | ------------------------ |
+| Export artifacts | 30 days   | Terraform lifecycle rule |
 
 ### Billing & Account Lifecycle
 

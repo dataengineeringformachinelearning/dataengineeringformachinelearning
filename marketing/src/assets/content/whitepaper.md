@@ -239,9 +239,37 @@ To provide world-class threat detection, a dual-model strategy applies. The glob
 
 Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cloudflare tokens) are protected via transparent application-level AES-256 Fernet encryption at-rest. Public access to status page details, services, incidents, and telemetry graphs remains restricted unless the status page owner explicitly publishes the page—preventing exposure of private endpoints or telemetry.
 
-A strict 30-day retention and lifecycle policy governs raw telemetry data. Raw endpoint telemetry, audit logs, and tracking consents are automatically purged after 30 days. Long-term raw metrics and traces route to ClickHouse for OLAP querying. High-value business objects—incident histories, bug reports, threat reports, and user configuration data—persist indefinitely as the system of record. The ML training worker triggers full model retraining and data optimization upon deployment and executes daily thereafter.
+**Tiered retention strategy** prevents database bloat while preserving operational data:
+
+**Neon (PostgreSQL) - Hot data:**
+
+- Raw endpoint telemetry, audit logs, cookie consent: **30 days** (auto-purged)
+- Hourly `AggregatedAnalytics`: **30 days** (after daily rollups)
+- `ThreatIntelligence`, `ReportArchive`: **90 days** (security + reports)
+- Business objects (`BugReport`, `ThreatReport`, API keys): **Indefinite** (system of record)
+
+**ClickHouse - Cold storage:**
+
+- `audit_archive`, `security_events`, telemetry: **180-730 days** (archival)
+- OTEL traces/metrics: **TTL via MergeTree** (365+ days)
+
+- `ReportArchive` materialized daily for fast 90-day report queries
+- Older analytics available via ClickHouse long-term storage
 
 **Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([docs/billing.md](docs/billing.md)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
+
+## 10. Rust-Native Offloading Architecture
+
+The platform implements a **Rust-native offloading strategy** for high-performance, low-overhead background operations. A single compiled image (`deml-daemon`) runs with role selection via the `DEML_ROLE` environment variable, executing critical tasks without Python interpreter overhead:
+
+| Role         | Native Operations                                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `relay`      | Leased Outbox delivery to Redpanda with exponential retry                                                          |
+| `scheduler`  | Direct execution of maintenance tasks (`db_cleanup`, `optimize_database`, `archive_reports`, `cleanup_clickhouse`) |
+| `probe`      | Bounded 30s service probes with concurrent execution                                                               |
+| `normalizer` | High-volume event validation and enrichment                                                                        |
+
+This architecture decouples maintenance workloads from the Django control plane, ensuring predictable resource utilization and eliminating thundering-herd scenarios during daily retention purges. The Rust scheduler claims durable Postgres task buckets and executes native SQL operations directly, while Python workers remain the authoritative layer for external API integrations requiring complex library ecosystems.
 
 ## 11. Team Workflows and Integrated Vulnerability Management
 
@@ -249,7 +277,7 @@ Collaborative security workflows require structured issue tracking native to the
 
 Strict compliance is enforced by integrating automated accessibility scanners (Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. Every surface unifies under the **Viking-UI** design system documented in [THEME.md](THEME.md): precision-engineered industrial surfaces with deep charcoal foundations, machined metallic borders, deep teal primary accents, and crimson secondary emphasis. `viking-skeleton` loaders provide structural loading states; native SVG `viking-chart` components bind to tokenized series colors—no third-party chart runtimes or decorative gradient effects.
 
-## 11.1 Official Integrations
+## 12. Official Integrations
 
 Enterprise teams connect existing infrastructure through six first-class integration paths. Each uses the same bearer API key, `/api/v1/ingest` for batch telemetry, and `/api/v1/predict` for low-latency inference:
 
@@ -293,22 +321,23 @@ This architecture rests on open-source foundations, enterprise design references
 3. Polars. (2026). _Polars: Fast multi-threaded DataFrame library_.
 4. Paszke, A., et al. (2019). _PyTorch: An Imperative Style, High-Performance Deep Learning Library_.
 5. Pedregosa, F., et al. (2011). _Scikit-learn: Machine Learning in Python_.
-6. OpenTelemetry Authors. (2026). _OpenTelemetry_.
-7. ClickHouse, Inc. (2026). _ClickHouse_.
-8. OASIS Cyber Threat Intelligence (CTI) TC. (2021). _STIX 2.1 and TAXII 2.1_.
-9. IBM Security. (2026). _IBM X-Force Threat Intelligence_.
-10. Google Cloud. (2026). _Mandiant Threat Intelligence_.
-11. GreyNoise Intelligence. (2026). _GreyNoise: Internet Background Noise_.
-12. National Security Agency (NSA). (2026). _Ghidra Software Reverse Engineering Framework_.
-13. National Institute of Standards and Technology (NIST). (2026). _NIST Cybersecurity Framework and Cryptographic Standards_.
-14. The Python Software Foundation. (2026). _The Python Language Reference_.
-15. The Angular Team (Google). (2026). _Angular: The modern web developer's platform_.
-16. Stripe. (2026). _Stripe: Financial Infrastructure Platform_.
-17. Mend.io. (2026). _Mend: Application Security Testing_.
-18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
-19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
-20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation.
-21. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation.
+6. The Rust Project. (2026). _Rust: A language empowering everyone_.
+7. OpenTelemetry Authors. (2026). _OpenTelemetry_.
+8. ClickHouse, Inc. (2026). _ClickHouse_.
+9. OASIS Cyber Threat Intelligence (CTI) TC. (2021). _STIX 2.1 and TAXII 2.1_.
+10. IBM Security. (2026). _IBM X-Force Threat Intelligence_.
+11. Google Cloud. (2026). _Mandiant Threat Intelligence_.
+12. GreyNoise Intelligence. (2026). _GreyNoise: Internet Background Noise_.
+13. National Security Agency (NSA). (2026). _Ghidra Software Reverse Engineering Framework_.
+14. National Institute of Standards and Technology (NIST). (2026). _NIST Cybersecurity Framework and Cryptographic Standards_.
+15. The Python Software Foundation. (2026). _The Python Language Reference_.
+16. The Angular Team (Google). (2026). _Angular: The modern web developer's platform_.
+17. Stripe. (2026). _Stripe: Financial Infrastructure Platform_.
+18. Mend.io. (2026). _Mend: Application Security Testing_.
+19. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
+20. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
+21. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation.
+22. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation.
 
 ## 15. DevSecOps and Platform Standardization Audit
 

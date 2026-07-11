@@ -13,8 +13,8 @@ run_cleanup_clickhouse directly. This file remains as fallback for PYTHON_EMBEDD
 from __future__ import annotations
 
 import logging
-import urllib.request
 import urllib.error
+import urllib.request
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
@@ -64,7 +64,9 @@ class Command(BaseCommand):
     try:
       query = f"DELETE FROM asset_vulnerability_ledger WHERE timestamp < '{vuln_cutoff}'"
       self._execute_http_query(http_url, query)
-      self.stdout.write(self.style.SUCCESS(f"Purged asset_vulnerability_ledger before {vuln_cutoff}"))
+      self.stdout.write(
+        self.style.SUCCESS(f"Purged asset_vulnerability_ledger before {vuln_cutoff}")
+      )
       purged_any = True
     except Exception as e:
       logger.debug("ClickHouse asset_vulnerability_ledger cleanup skipped: %s", e)

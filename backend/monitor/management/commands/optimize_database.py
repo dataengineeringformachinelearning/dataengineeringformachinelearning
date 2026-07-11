@@ -3,6 +3,7 @@
 NOTE: This command is now Rust-native. The deml-daemon:scheduler executes
 run_optimize_database directly. This file remains as fallback for PYTHON_EMBEDDED_SCHEDULERS_ENABLED=1.
 """
+
 from typing import Any
 
 from django.core.management.base import BaseCommand

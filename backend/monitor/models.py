@@ -473,7 +473,7 @@ class ReportArchive(models.Model):
 
   Stores pre-computed daily summaries to accelerate report generation.
   Uses time-based partitioning for efficient querying in Neon serverless.
-  Retains 2 years of history as per archival policy.
+  Retains 90 days of history; older data archived to ClickHouse.
   """
 
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -15,9 +15,9 @@ from typing import Any
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from utils.retention import REPORT_ARCHIVE_RETENTION_DAYS
 
 from monitor.models import AggregatedAnalytics, ReportArchive
-from utils.retention import REPORT_ARCHIVE_RETENTION_DAYS
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

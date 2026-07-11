@@ -34,9 +34,7 @@ class Command(BaseCommand):
     import os
 
     embedded = os.environ.get("PYTHON_EMBEDDED_SCHEDULERS_ENABLED", "0") == "1"
-    self.stdout.write(
-      f"Starting Security Worker (embedded schedulers: {embedded})..."
-    )
+    self.stdout.write(f"Starting Security Worker (embedded schedulers: {embedded})...")
     if not embedded:
       self.stdout.write(
         "Embedded schedulers disabled; this command is a no-op in production. "
