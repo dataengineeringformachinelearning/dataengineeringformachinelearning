@@ -1,11 +1,22 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
+
+// Auto-redirect to homepage after 3 seconds for cleaner UX
+// User still sees 404 content but is automatically redirected
+const redirectUrl = '/';
 ---
+
+<script define:vars={{ redirectUrl }}>
+  // Auto-redirect to homepage after brief delay for cleaner UX
+  setTimeout(() => {
+    window.location.href = redirectUrl;
+  }, 3000);
+</script>
 
 <Layout
   title="404: Page Not Found - DEML Platform"
-  description="The requested DEML marketing page could not be found. Return to the homepage or explore the app."
+  description="The requested DEML marketing page could not be found. Redirecting to homepage."
   robots="noindex, nofollow"
 >
   <div class="dashboard-page-container">
@@ -16,9 +27,10 @@ import VikingIcon from '../components/VikingIcon.astro';
     <p class="marketing-not-found-message">
       The page you are looking for does not exist, has been moved, or you might have mistyped the URL.
     </p>
+    <p class="marketing-not-found-redirect">Redirecting to <a href="/">homepage</a> in 3 seconds...</p>
     <a href="/" class="viking-btn viking-btn-primary">
       <VikingIcon name="home" size={20} />
-      Return Home
+      Return Home Now
     </a>
     </div>
   </div>
