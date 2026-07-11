@@ -121,7 +121,7 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         description:
           "Multi-step onboarding with progress and validation gates.",
         preview: `<div class="viking-wizard-demo viking-card">
-  <div class="viking-progress" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+  <div class="viking-progress" role="progressbar" aria-label="Onboarding progress" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
     <div class="viking-progress-bar viking-progress-value-33"></div>
   </div>
   <h3 class="viking-heading viking-heading-sm">Step 1 — Tenant setup</h3>

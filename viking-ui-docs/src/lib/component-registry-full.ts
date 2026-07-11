@@ -29,7 +29,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs viking-demo-muted-xs" aria-hidden="true">
     <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
   </div>
-  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs" role="grid" aria-label="Days of month">
+  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs" role="group" aria-label="Days of month">
     <viking-button-wc variant="ghost" size="sm" aria-label="June 28">28</viking-button-wc>
     <viking-button-wc variant="ghost" size="sm" aria-label="June 29">29</viking-button-wc>
     <viking-button-wc variant="ghost" size="sm" aria-label="June 30">30</viking-button-wc>
@@ -230,7 +230,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Icon + title lockup for settings sections and dashboard panels.",
           preview: `<div class="viking-demo-full viking-icon-heading-stack">
   <div class="viking-icon-heading">
-    <span class="viking-icon-heading__icon" aria-hidden="true">◆</span>
+    <span class="viking-icon-heading__icon" data-viking-icon="shield" data-viking-icon-size="24" aria-hidden="true"></span>
     <h3 class="viking-icon-heading__title">Threat scoring</h3>
   </div>
   <p class="viking-text-muted">Behavioral biometrics and AbuseIPDB enrichment at ingress.</p>

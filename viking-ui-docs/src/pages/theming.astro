@@ -18,9 +18,12 @@ import { SITE } from '../lib/site';
         lives in <a href="/tokens">Design tokens</a> and <a href={SITE.github + '/blob/main/THEME.md'} target="_blank" rel="noopener">THEME.md</a>.
       </p>
       <div class="viking-demo-row">
-        <button type="button" class="theme-toggle-btn" id="theming-demo-toggle" aria-label="Preview light and dark theme">
-          Toggle theme preview
-        </button>
+        <viking-theme-toggle-wc
+          id="theming-demo-toggle"
+          class="theme-toggle-btn"
+          role="button"
+          aria-label="Preview light and dark theme"
+        ></viking-theme-toggle-wc>
       </div>
     </header>
 
@@ -183,11 +186,3 @@ document.documentElement.style.setProperty('--viking-accent', 'var(--viking-teal
     </section>
   </div>
 </DocLayout>
-
-<script>
-  const toggle = document.getElementById('theming-demo-toggle');
-  toggle?.addEventListener('click', () => {
-    const root = document.documentElement;
-    root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
-  });
-</script>

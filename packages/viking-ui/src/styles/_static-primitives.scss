@@ -984,6 +984,25 @@
   gap: var(--viking-space-2);
 }
 
+.viking-carousel-static {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-2);
+  width: min(100%, 28rem);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.viking-carousel-static > * {
+  margin-block: 0;
+}
+
+.viking-carousel-static .viking-demo-row {
+  justify-content: center;
+}
+
 .viking-toggle-group-static {
   display: inline-flex;
   gap: var(--viking-space-0-5);

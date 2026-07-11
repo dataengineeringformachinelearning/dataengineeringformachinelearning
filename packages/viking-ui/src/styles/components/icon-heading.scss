@@ -26,12 +26,20 @@
   vertical-align: middle;
 
   svg,
+  [data-viking-icon],
   viking-icon,
   viking-app-icon {
     display: block;
     width: var(--viking-icon-size-lg, 24px);
     height: var(--viking-icon-size-lg, 24px);
     margin: 0;
+  }
+
+  [data-viking-icon] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
 }
 

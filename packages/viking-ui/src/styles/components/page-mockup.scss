@@ -377,6 +377,19 @@
   padding-inline-end: clamp(0.5rem, 3vw, 2rem);
 }
 
+/* Centered docs specimen with enough on-grid breathing room for the 3D edge. */
+.viking-page-mockup--showcase {
+  width: min(100%, 36rem);
+  margin-inline: auto;
+  padding: var(--viking-space-3) var(--viking-space-4);
+}
+
+@media (min-width: 641px) {
+  .viking-page-mockup--showcase {
+    padding: var(--viking-space-4) var(--viking-space-6);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viking-page-mockup-window,
   .mockup-window {

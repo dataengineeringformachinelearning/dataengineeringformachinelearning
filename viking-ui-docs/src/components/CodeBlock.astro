@@ -12,20 +12,22 @@ const uid = `code-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div class="code-block" data-code-block={uid}>
-  <div class="code-block-tabs" role="tablist" aria-label="Framework code examples">
-    {FRAMEWORK_TABS.map((tab) => (
-      <button
-        type="button"
-        class:list={['code-block-tab', { 'is-active': tab.id === defaultTab }]}
-        role="tab"
-        aria-selected={tab.id === defaultTab}
-        data-tab={tab.id}
-      >
-        {tab.label}
-      </button>
-    ))}
+  <div class="code-block-tabs">
+    <div class="code-block-tab-list" role="tablist" aria-label="Framework code examples">
+      {FRAMEWORK_TABS.map((tab) => (
+        <button
+          type="button"
+          class:list={['code-block-tab', { 'is-active': tab.id === defaultTab }]}
+          role="tab"
+          aria-selected={tab.id === defaultTab}
+          data-tab={tab.id}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
     <button type="button" class="code-block-copy" data-copy-btn aria-label="Copy code to clipboard">
-      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span data-viking-icon="copy" data-viking-icon-size="16" aria-hidden="true"></span>
       <span class="code-block-copy-label">Copy</span>
     </button>
   </div>

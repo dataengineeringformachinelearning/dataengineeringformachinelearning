@@ -455,7 +455,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         id: "progress",
         name: "Progress",
         description: "Determinate and indeterminate loading indicators.",
-        preview: `<div class="viking-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
+        preview: `<div class="viking-progress" role="progressbar" aria-label="Deployment progress" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
   <div class="viking-progress-bar viking-progress-value-72"></div>
 </div>
 <div class="viking-progress viking-progress-indeterminate" role="progressbar" aria-label="Loading"></div>`,
@@ -539,7 +539,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         name: "Page Mockup",
         description:
           "Angled product-window chrome for heroes and empty states. Overflows slightly so the 3D transform never clips on the trailing edge.",
-        preview: `<div class="viking-page-mockup hero-mockup" aria-hidden="true" style="max-width:18rem;transform:scale(0.72);transform-origin:top left">
+        preview: `<div class="viking-page-mockup hero-mockup viking-page-mockup--showcase" aria-hidden="true">
   <div class="viking-page-mockup-window mockup-window">
     <div class="viking-page-mockup-titlebar mockup-titlebar">
       <span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span>
@@ -622,7 +622,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         description: "HUD-style page titles with actions and breadcrumbs slot.",
         preview: `<header class="viking-page-header-static">
   <p class="viking-label">Component library</p>
-  <h1 class="viking-heading viking-heading-xl">Viking-UI</h1>
+  <h3 class="viking-heading viking-heading-xl">Viking-UI</h3>
   <p class="viking-text-muted">Precision-engineered primitives for operational ML platforms.</p>
   <div class="viking-demo-row">
     <viking-button-wc variant="primary">Get started</viking-button-wc>
@@ -856,7 +856,7 @@ palette.openPalette();
         description:
           "Light/dark mode switch respecting prefers-color-scheme and localStorage.",
         preview: `<div class="viking-demo-row">
-  <viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>
+  <viking-theme-toggle-wc role="button" aria-label="Toggle theme"></viking-theme-toggle-wc>
   <button type="button" class="theme-toggle-btn" aria-label="Toggle theme (CSS class)" title="Light / dark"></button>
 </div>
 <p class="viking-text-muted viking-demo-caption">Web component + static CSS utility for light/dark switching</p>`,

@@ -295,6 +295,13 @@ html[data-theme="light"] .theme-icon-moon {
   background: var(--viking-surface);
 }
 
+.code-block-tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-0-5);
+}
+
 .code-block-tab {
   padding: var(--viking-space-0-5) var(--viking-space-1);
   border: none;

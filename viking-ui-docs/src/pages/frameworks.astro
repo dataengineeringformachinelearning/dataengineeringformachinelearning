@@ -1,7 +1,64 @@
 ---
 import DocLayout from '../layouts/DocLayout.astro';
 import CodeBlock from '../components/CodeBlock.astro';
+import CopyCodeBlock from '../components/CopyCodeBlock.astro';
 import { SITE } from '../lib/site';
+
+const cdnCss = `<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
+/>`;
+
+const cdnWebComponents = `<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
+></script>`;
+
+const cdnBundle = `${cdnCss}
+${cdnWebComponents}`;
+
+const cdnPinned = `<!-- Continuously updated -->
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
+
+<!-- Deterministic release -->
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
+></script>
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
+/>`;
+
+const cdnDocument = `<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
+    ></script>
+  </head>
+  <body>
+    <main class="page-inner-wrapper viking-stack viking-stack--loose">
+      <h1 class="viking-heading viking-heading-lg">Operational widget</h1>
+      <viking-card-wc compact>
+        <h2 class="viking-heading viking-heading-sm">External site ready</h2>
+        <p class="viking-text-muted">Embed this HTML directly into any marketing or dashboard page.</p>
+      </viking-card-wc>
+      <viking-button-wc variant="primary">Launch operation</viking-button-wc>
+    </main>
+  </body>
+</html>`;
 ---
 
 <DocLayout
@@ -82,71 +139,19 @@ import { SITE } from '../lib/site';
         updates or pin to a release for deterministic rollouts.
       </p>
       <p class="viking-label">1) CSS only</p>
-      <pre><code>{`<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
-/>`}</code></pre>
+      <CopyCodeBlock label="CSS only" code={cdnCss} />
 
       <p class="viking-label">2) Web Components only</p>
-      <pre><code>{`<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
-></script>`}</code></pre>
+      <CopyCodeBlock label="Web Components only" code={cdnWebComponents} />
 
       <p class="viking-label">3) CSS + Web Components</p>
-      <pre><code>{`<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
-/>
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
-></script>`}</code></pre>
+      <CopyCodeBlock label="CSS + Web Components" code={cdnBundle} />
 
       <p class="viking-label">4) Version pinning</p>
-      <pre><code>{`<!-- Latest -->
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
-></script>
-
-<!-- Pinned release -->
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
-></script>
-
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
-/>`}</code></pre>
+      <CopyCodeBlock label="Version pinning" code={cdnPinned} />
 
       <p class="viking-label">5) Full minimal HTML</p>
-      <pre><code>{`<!doctype html>
-<html lang="en" data-theme="dark">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/viking-ui.css"
-    />
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.0.0/dist/web-components.js"
-    ></script>
-  </head>
-  <body>
-    <main class="page-inner-wrapper viking-stack viking-stack--loose">
-      <h1 class="viking-heading viking-heading-lg">Operational widget</h1>
-      <viking-card-wc compact>
-        <h2 class="viking-heading viking-heading-sm">External site ready</h2>
-        <p class="viking-text-muted">Embed this HTML directly into any marketing or dashboard page.</p>
-      </viking-card-wc>
-      <viking-button-wc variant="primary">Launch operation</viking-button-wc>
-    </main>
-  </body>
-</html>`}</code></pre>
+      <CopyCodeBlock label="Full minimal HTML" code={cdnDocument} />
     </section>
 
     <section class="showcase-category" aria-labelledby="angular-setup">

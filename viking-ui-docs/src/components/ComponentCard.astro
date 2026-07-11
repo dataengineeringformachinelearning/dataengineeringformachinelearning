@@ -57,7 +57,11 @@ const isCompact = variant === 'compact';
     </header>
   )}
 
-  <div class="component-showcase-preview" aria-label={`${component.name} preview`}>
+  <div
+    class="component-showcase-preview viking-demo-wrapper"
+    role="region"
+    aria-label={`${component.name} preview`}
+  >
     <Fragment set:html={component.preview} />
   </div>
 
