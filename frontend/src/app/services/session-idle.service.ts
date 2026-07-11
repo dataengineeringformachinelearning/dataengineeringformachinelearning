@@ -242,7 +242,13 @@ export class SessionIdleService {
   private updateWarningCountdown(): void {
     const seconds = Math.max(0, Math.ceil((this.logoutAt - Date.now()) / 1000));
     this.warningRemainingSeconds.set(seconds);
-    this.dialog.updateConfirm({ message: this.warningMessage(seconds) });
+    const activeDialog = this.dialog.active();
+    if (activeDialog?.kind === 'confirm' && activeDialog.data) {
+      this.dialog.active.set({
+        ...activeDialog,
+        data: { ...activeDialog.data, message: this.warningMessage(seconds) },
+      });
+    }
   }
 
   private async showWarning(): Promise<void> {
