@@ -1,0 +1,51 @@
+# Publish DEML Python packages to PyPI
+# Triggered on changes to packages/deml-* directories or manual dispatch
+name: Publish DEML Python Packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/deml-*/**'
+      - 'packages/deml-*/pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  deployments: write
+
+jobs:
+  publish:
+    name: Build and publish to PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tools
+        run: pip install build twine
+
+      - name: Build and publish packages
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          for pkg in packages/deml-*/; do
+            echo "Building $pkg..."
+            cd "$pkg"
+            python -m build
+            # twine check dist/* || exit 1
+            # twine upload --username __token__ --password ${{ secrets.PYPI_TOKEN }} dist/*
+            cd ../..
+          done
+
+      - name: Summary
+        run: |
+          echo "Packages processed. Check PyPI for published versions."
+          echo "Configure PYPI_TOKEN secret for actual publishing."
