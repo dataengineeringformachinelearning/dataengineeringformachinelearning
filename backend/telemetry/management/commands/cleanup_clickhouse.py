@@ -1,10 +1,10 @@
 """Purge old archived data from ClickHouse based on retention policies.
 
-ClickHouse retention schedule:
-- audit_archive: 90 days (backup retention after Postgres purge)
-- security_events: 180 days (security incident tracking)
-- asset_vulnerability_ledger: 365 days (vulnerability tracking)
-- otel_traces/metrics: TTL managed by ClickHouse MergeTree (365+ days)
+ClickHouse retention schedule (from utils/retention.py):
+- audit_archive: CH_AUDIT_ARCHIVE_RETENTION_DAYS (180) retention
+- security_events: CH_SECURITY_EVENTS_RETENTION_DAYS (365) retention
+- asset_vulnerability_ledger: 730 days (2 years)
+- otel_traces/metrics: TTL managed by ClickHouse MergeTree (730+ days)
 """
 
 from __future__ import annotations
@@ -16,8 +16,12 @@ from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-
 from utils.env import clickhouse_uri
+from utils.retention import (
+  CH_AUDIT_ARCHIVE_RETENTION_DAYS,
+  CH_SECURITY_EVENTS_RETENTION_DAYS,
+  CH_TELEMETRY_RETENTION_DAYS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +36,8 @@ class Command(BaseCommand):
     # Convert adbc URI to HTTP endpoint
     http_url = uri.replace("clickhouse://", "http://").replace(":9000/", ":8123/").rstrip("/")
 
-    # Purge audit_archive older than 90 days (backup retention)
-    audit_cutoff = (timezone.now() - timedelta(days=90)).date()
+    # Purge audit_archive (CH_AUDIT_ARCHIVE_RETENTION_DAYS = 180)
+    audit_cutoff = (timezone.now() - timedelta(days=CH_AUDIT_ARCHIVE_RETENTION_DAYS)).date()
     try:
       query = f"DELETE FROM audit_archive WHERE timestamp < '{audit_cutoff}'"
       self._execute_http_query(http_url, query)
@@ -42,8 +46,8 @@ class Command(BaseCommand):
     except Exception as e:
       logger.warning("ClickHouse audit_archive cleanup skipped: %s", e)
 
-    # Purge security_events older than 180 days
-    security_cutoff = (timezone.now() - timedelta(days=180)).date()
+    # Purge security_events (CH_SECURITY_EVENTS_RETENTION_DAYS = 365)
+    security_cutoff = (timezone.now() - timedelta(days=CH_SECURITY_EVENTS_RETENTION_DAYS)).date()
     try:
       query = f"DELETE FROM security_events WHERE timestamp < '{security_cutoff}'"
       self._execute_http_query(http_url, query)
@@ -52,10 +56,10 @@ class Command(BaseCommand):
     except Exception as e:
       logger.warning("ClickHouse security_events cleanup skipped: %s", e)
 
-    # Purge asset_vulnerability_ledger older than 365 days
-    vuln_cutoff = (timezone.now() - timedelta(days=365)).date()
+    # Purge asset_vulnerability_ledger (2 years for vulnerability history)
+    vuln_cutoff = (timezone.now() - timedelta(days=CH_TELEMETRY_RETENTION_DAYS)).date()
     try:
-      query = f"DELETE FROM asset_vulnerability_ledger WHERE account_id != 'Internal' AND timestamp < '{vuln_cutoff}'"
+      query = f"DELETE FROM asset_vulnerability_ledger WHERE timestamp < '{vuln_cutoff}'"
       self._execute_http_query(http_url, query)
       self.stdout.write(self.style.SUCCESS(f"Purged asset_vulnerability_ledger before {vuln_cutoff}"))
       purged_any = True

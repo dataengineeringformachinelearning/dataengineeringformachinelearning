@@ -27,6 +27,7 @@ from monitor.models import (
   ThreatIntelligence,
   Vulnerability,
 )
+from utils.retention import REPORT_ARCHIVE_RETENTION_DAYS
 
 logger = logging.getLogger(__name__)
 
@@ -99,10 +100,11 @@ def _rows_for_job(job: ExportJob) -> list[dict[str, Any]]:
 
   # analytics (default) - prefer ReportArchive for daily rollups (faster)
   days = int(job.params.get("days", 7)) if isinstance(job.params, dict) else 7
-  days = max(1, min(days, 180))  # Support up to 180 days of historical data
+  days = max(1, min(days, REPORT_ARCHIVE_RETENTION_DAYS))  # Cap at Neon retention limit
   since = timezone.now() - timedelta(days=days)
 
-  # Use ReportArchive for daily rollups when available (supports 180-day history)
+  # Use ReportArchive for daily rollups when available (supports 90-day queryable history)
+  # Beyond that, ClickHouse archival is available via separate endpoint
   if job.user and days >= 7:
     archive_qs = ReportArchive.objects.filter(
       user=job.user, report_date__gte=since.date()

@@ -1,3 +1,14 @@
+"""Database cleanup for Neon - wipes raw telemetry to prevent bloat.
+
+Retention strategy:
+- Raw telemetry (Endpoints): 30 days
+- Hourly AggregatedAnalytics: 30 days (after daily rollups materialized)
+- AuditLog: 30 days (archived to ClickHouse first)
+- CookieConsent: 30 days (compliance)
+- ReportArchive: 90 days (queryable reports; older in ClickHouse)
+- ThreatIntelligence: 90 days (security data)
+"""
+
 from datetime import timedelta
 from typing import Any
 
@@ -9,23 +20,32 @@ from utils.retention import (
   OUTBOX_PUBLISHED_RETENTION_DAYS,
   RAW_TELEMETRY_RETENTION_DAYS,
   REPORT_ARCHIVE_RETENTION_DAYS,
+  THREAT_INTELLIGENCE_RETENTION_DAYS,
 )
 
-from monitor.models import AuditLog, CookieConsent, Endpoints, OutboxEvent
+from monitor.models import (
+  AggregatedAnalytics,
+  AuditLog,
+  CookieConsent,
+  Endpoints,
+  OutboxEvent,
+  ThreatIntelligence,
+)
 
 
 class Command(BaseCommand):
   help = (
-    f"Cleans up raw telemetry, audit logs, and cookie consent older than "
-    f"{RAW_TELEMETRY_RETENTION_DAYS} days; purges stale outbox events."
+    f"Cleans up Neon raw telemetry older than {RAW_TELEMETRY_RETENTION_DAYS} days; "
+    f"purges stale outbox events and old analytics rollups."
   )
 
   def handle(self, *args: Any, **options: Any) -> None:
     cutoff = timezone.now() - timedelta(days=RAW_TELEMETRY_RETENTION_DAYS)
     outbox_published_cutoff = timezone.now() - timedelta(days=OUTBOX_PUBLISHED_RETENTION_DAYS)
     outbox_dlq_cutoff = timezone.now() - timedelta(days=OUTBOX_DLQ_RETENTION_DAYS)
+    threat_cutoff = timezone.now() - timedelta(days=THREAT_INTELLIGENCE_RETENTION_DAYS)
 
-    threat_dupes_deleted = self._purge_legacy_threat_intel_dupes()
+    self._purge_legacy_threat_intel_dupes()
 
     endpoints_deleted, _ = Endpoints.objects.filter(last_tested__lt=cutoff).delete()
 
@@ -44,16 +64,21 @@ class Command(BaseCommand):
       is_published=False, attempts__gte=5, created_at__lt=outbox_dlq_cutoff
     ).delete()
 
-    # ReportArchive records are kept for REPORT_ARCHIVE_RETENTION_DAYS (180) in Neon.
-    # Beyond that period, data is available via ClickHouse long-term analytics.
+    # Purge old hourly AggregatedAnalytics (after daily rollups materialized)
+    hourly_analytics_deleted, _ = AggregatedAnalytics.objects.filter(
+      bucket_size="1h", timestamp__lt=cutoff
+    ).delete()
+
+    # Purge old ThreatIntelligence (90 day retention)
+    threat_deleted, _ = ThreatIntelligence.objects.filter(timestamp__lt=threat_cutoff).delete()
 
     self.stdout.write(
       self.style.SUCCESS(
         f"Cleanup completed: {endpoints_deleted} Endpoints, "
         f"{audit_logs_deleted} AuditLogs, "
-        f"{cookie_consents_deleted} CookieConsents older than "
-        f"{RAW_TELEMETRY_RETENTION_DAYS} days deleted; "
-        f"{threat_dupes_deleted} legacy ThreatIntelligence duplicates removed; "
+        f"{cookie_consents_deleted} CookieConsents older than {RAW_TELEMETRY_RETENTION_DAYS} days; "
+        f"{hourly_analytics_deleted} hourly AggregatedAnalytics; "
+        f"{threat_deleted} ThreatIntelligence older than {THREAT_INTELLIGENCE_RETENTION_DAYS} days; "
         f"{outbox_published_deleted} published outbox events and "
         f"{outbox_dlq_deleted} DLQ outbox events purged."
       )
@@ -61,15 +86,9 @@ class Command(BaseCommand):
 
     self.stdout.write(
       self.style.SUCCESS(
-        f"ReportArchive records retained for {REPORT_ARCHIVE_RETENTION_DAYS} days "
-        f"(Neon archival tier for 180-day report queries)."
+        f"ReportArchive retained for {REPORT_ARCHIVE_RETENTION_DAYS} days (queryable reports)."
       )
     )
-
-    # ThreatIntelligence, BugReport, and user configuration (profiles, API keys)
-    # are kept indefinitely. Long-term raw metrics are routed to ClickHouse for OLAP.
-
-    self.stdout.write(self.style.SUCCESS("Database raw telemetry cleanup completed successfully."))
 
   def _purge_legacy_threat_intel_dupes(self) -> int:
     """Remove pre-constraint duplicates in one pass (UniqueConstraint prevents new ones)."""

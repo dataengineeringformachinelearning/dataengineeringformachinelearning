@@ -1,8 +1,7 @@
 """Materialize nightly report archives from hourly rollups.
 
-Supports 180-day report queries via ReportArchive. The worker processes
-yesterday's data into daily rollups, keeping materialized data for fast reads.
-Beyond 180 days, analytics are available via ClickHouse for long-term storage.
+Supports REPORT_ARCHIVE_RETENTION_DAYS (90) queryable days in Neon.
+Beyond that period, analytics are available via ClickHouse for long-term storage.
 """
 
 import logging
@@ -14,13 +13,13 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from monitor.models import AggregatedAnalytics, ReportArchive
+from utils.retention import REPORT_ARCHIVE_RETENTION_DAYS
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
-
 # Number of days to process in backfill mode
-MAX_BACKFILL_DAYS = 180
+MAX_BACKFILL_DAYS = REPORT_ARCHIVE_RETENTION_DAYS
 
 
 class Command(BaseCommand):
