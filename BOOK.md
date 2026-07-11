@@ -2149,17 +2149,32 @@ This appendix is the **single source of truth** for all scheduled maintenance: b
 
 ### Continuous Background Workers
 
-| Service          | Command                             | Cadence                   | Responsibility                                                        |
-| ---------------- | ----------------------------------- | ------------------------- | --------------------------------------------------------------------- |
-| Rust Relay       | `DEML_ROLE=relay deml-daemon`       | Continuous / event wake   | Leased `OutboxEvent` delivery to Redpanda                             |
-| Rust Normalizer  | `DEML_ROLE=normalizer deml-daemon`  | Continuous                | Validates and persists `telemetry-raw` endpoint events                |
-| Rust Probe       | `DEML_ROLE=probe deml-daemon`       | Every **30s**             | Bounded service probes and durable observations                       |
-| Rust Scheduler   | `DEML_ROLE=scheduler deml-daemon`   | Continuous                | Claims durable task buckets and publishes `internal-tasks`            |
-| Telemetry Worker | `python manage.py telemetry_worker` | Continuous                | Independent Firestore and user-issue projection consumers             |
-| ML Worker        | `python manage.py ml_worker`        | Continuous                | Kafka `ml-training-events` consumer                                   |
-| ML Worker        | ↑                                   | Every **24h**             | `train_all_models` (SLA, Threat, CES models)                          |
-| Security Worker  | `python manage.py security_worker`  | Every **1h**              | `fetch_threat_intel`                                                  |
-| Security Worker  | ↑                                   | Every **24h** (staggered) | `db_cleanup`, `scan_dark_web`, `sync_subscriptions`, `VACUUM ANALYZE` |
+| Service          | Command                             | Cadence                   | Responsibility                                                            |
+| ---------------- | ----------------------------------- | ------------------------- | ------------------------------------------------------------------------- |
+| Rust Relay       | `DEML_ROLE=relay deml-daemon`       | Continuous / event wake   | Leased `OutboxEvent` delivery to Redpanda                                 |
+| Rust Normalizer  | `DEML_ROLE=normalizer deml-daemon`  | Continuous                | Validates and persists `telemetry-raw` endpoint events                      |
+| Rust Probe       | `DEML_ROLE=probe deml-daemon`       | Every **30s**             | Bounded service probes and durable observations                             |
+| Rust Scheduler   | `DEML_ROLE=scheduler deml-daemon`   | Continuous                | Claims durable task buckets, executes Rust-native tasks directly            |
+| Telemetry Worker | `python manage.py telemetry_worker` | Continuous                | Independent Firestore and user-issue projection consumers                   |
+| ML Worker        | `python manage.py ml_worker`        | Continuous                | Kafka `ml-training-events` consumer                                         |
+| ML Worker        | ↑                                   | Every **24h**             | `train_all_models` (SLA, Threat, CES models)                                |
+| Security Worker  | `python manage.py security_worker`  | Every **1h**              | `fetch_threat_intel` (Python-only: external API calls)                      |
+| Task Consumer    | `deml_workers_start.py`             | On trigger                | Executes Python-only tasks from `internal-tasks` Kafka topic                  |
+
+**Rust-native tasks** (executed directly by `deml-scheduler` without Kafka):
+- `db_cleanup` (daily) — Neon retention purge
+- `optimize_database` (daily) — VACUUM ANALYZE
+- `archive_reports` (daily) — Materialized view rollups
+- `cleanup_clickhouse` (weekly) — Archival table purge
+
+**Python-only tasks** (published to `internal-tasks` for worker execution):
+- `fetch_threat_intel` (hourly) — External API integration
+- `train_all_models` (daily) — PyTorch training
+- `sync_subscriptions` (daily) — Stripe API
+- `scan_dark_web` (daily) — OSINT/Tor ecosystem
+- `rotate_keys_if_due` (daily) — KMS operations
+- `ingest_taxii` (hourly) — STIX/TAXII parsing
+- `run_lighthouse_scans` (6-hourly) — Lighthouse audits
 
 Daily security jobs are **staggered** in the durable schedule registry to avoid thundering-herd load on Postgres and Stripe. Python workers execute claimed commands but do not independently schedule them.
 

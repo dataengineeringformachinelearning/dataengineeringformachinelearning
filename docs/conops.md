@@ -132,20 +132,24 @@ Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-de
 
 ## 8. Maintenance schedule
 
-| Cadence    | Job                                    | Owner                                 |
-| ---------- | -------------------------------------- | ------------------------------------- |
-| Continuous | Leased `outbox_relay`                  | `deml-relay`                          |
-| Continuous | Kafka consumers                        | `deml-normalizer`, `telemetry_worker` |
-| 30s        | Service pingers                        | `deml-probe`                          |
-| Continuous | Durable schedule claims                | `deml-scheduler`                      |
-| 1h         | Threat intel                           | `deml-workers` (Security thread)      |
-| 24h        | ML training, `db_cleanup`, Stripe sync | `deml-workers`                        |
-| Weekly     | `cleanup_clickhouse`                   | `deml-workers` (Security thread)      |
+| Cadence    | Job                                    | Owner                                  |
+| ---------- | -------------------------------------- | -------------------------------------- |
+| Continuous | Leased `outbox_relay`                  | `deml-relay`                           |
+| Continuous | Kafka consumers                        | `deml-normalizer`, `telemetry_worker`  |
+| 30s        | Service pingers                        | `deml-probe`                           |
+| Continuous | Durable schedule claims + native exec  | `deml-scheduler`                       |
+| 1h         | Threat intel                           | `deml-workers` (via internal-tasks)    |
+| 24h        | ML training                            | `deml-workers` (via internal-tasks)    |
+| 24h        | `db_cleanup`, `optimize_database`      | `deml-scheduler` (Rust-native)         |
+| 24h        | `archive_reports`                      | `deml-scheduler` (Rust-native)         |
+| 24h        | `sync_subscriptions`                   | `deml-workers` (via internal-tasks)    |
+| Weekly     | `cleanup_clickhouse`                   | `deml-scheduler` (Rust-native)         |
 
 | Weekly | Renovate PRs | GitHub Actions |
 | Monthly / Quarterly | Semgrep, audits | GitHub Actions |
 
-Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule).
+**Rust-native tasks** execute directly without Kafka publish.
+**Python-only tasks** are published to `internal-tasks` for worker execution.
 
 ## 9. Security operations (summary)
 
