@@ -156,7 +156,8 @@
         "DEML_INTERNODE_ACTIVE_KID",
         "DEML_INTERNODE_KEYS",
         "DEML_NODE_ID",
-        "STRUCTURED_LOGS"
+        "STRUCTURED_LOGS",
+        "CLICKHOUSE_URL"
       ],
       "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
       "envDefaults": {
