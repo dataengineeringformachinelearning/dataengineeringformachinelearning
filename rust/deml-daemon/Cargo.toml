@@ -28,6 +28,7 @@ rdkafka = { version = "0.36", features = ["cmake-build", "ssl", "sasl"] }
 
 # HTTP client — health probes + Django internal API calls
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
 
 # Concurrent futures (join_all for parallel probes)
 futures = "0.3"

@@ -15,6 +15,7 @@ printf '%s' "$DRAGONFLY_TLS_KEY_B64" | base64 -d > /run/dragonfly-tls/server.key
 chmod 600 /run/dragonfly-tls/server.key
 
 exec /usr/local/bin/dragonfly \
+  --logtostderr \
   --bind=0.0.0.0 \
   --port=6379 \
   --tls \

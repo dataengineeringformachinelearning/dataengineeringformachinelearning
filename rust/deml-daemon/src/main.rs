@@ -18,6 +18,9 @@ use config::Role;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .map_err(|_| anyhow::anyhow!("failed to install the rustls ring crypto provider"))?;
     let cfg = config::Config::from_env()?;
     if matches!(
         cfg.role,
