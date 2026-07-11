@@ -24,12 +24,18 @@ struct CronTask {
 
 const HOUR: i64 = 3_600;
 const DAY: i64 = 86_400;
+const WEEK: i64 = 7 * DAY;
 
 const CRON_TASKS: &[CronTask] = &[
     CronTask {
         name: "aggregate_analytics",
         interval_seconds: HOUR,
         offset_seconds: 300,
+    },
+    CronTask {
+        name: "archive_reports",
+        interval_seconds: DAY,
+        offset_seconds: 1800, // Run early (1800s/30m after midnight) to populate yesterday's data
     },
     CronTask {
         name: "fetch_threat_intel",
@@ -75,6 +81,11 @@ const CRON_TASKS: &[CronTask] = &[
         name: "db_cleanup",
         interval_seconds: DAY,
         offset_seconds: 10_800,
+    },
+    CronTask {
+        name: "cleanup_clickhouse",
+        interval_seconds: WEEK, // Weekly - archival cleanup
+        offset_seconds: 12_000,
     },
     CronTask {
         name: "optimize_database",

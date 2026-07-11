@@ -24,14 +24,25 @@ DAILY_INTERVAL_SECONDS = 86400
 
 
 class Command(BaseCommand):
-  help = "Runs the async Security and Compliance background worker"
+  help = "Runs the async Security and Compliance background worker (fallback mode)"
 
   def __init__(self, *args: Any, **kwargs: Any) -> None:
     super().__init__(*args, **kwargs)
     self.background_tasks: set[asyncio.Task] = set()
 
   def handle(self, *args: Any, **options: Any) -> None:
-    self.stdout.write(self.style.SUCCESS("Starting Security Worker..."))
+    import os
+
+    embedded = os.environ.get("PYTHON_EMBEDDED_SCHEDULERS_ENABLED", "0") == "1"
+    self.stdout.write(
+      f"Starting Security Worker (embedded schedulers: {embedded})..."
+    )
+    if not embedded:
+      self.stdout.write(
+        "Embedded schedulers disabled; this command is a no-op in production. "
+        "Tasks are scheduled by Rust scheduler (deml-daemon)."
+      )
+      return
     asyncio.run(self.run_worker())
 
   async def run_worker(self) -> None:

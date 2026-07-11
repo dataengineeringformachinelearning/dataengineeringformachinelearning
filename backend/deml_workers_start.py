@@ -50,6 +50,7 @@ logger = logging.getLogger("deml_workers")
 ALLOWED_TASKS: frozenset[str] = frozenset(
   {
     "aggregate_analytics",
+    "archive_reports",
     "sync_subscriptions",
     "reconcile_accounts",
     "train_all_models",
