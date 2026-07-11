@@ -358,7 +358,8 @@ services:
 
   rustfs:
     build:
-      context: ./infrastructure/rustfs
+      context: .
+      dockerfile: infrastructure/rustfs/Dockerfile
     container_name: rustfs
     depends_on:
       rustfs-perms:
