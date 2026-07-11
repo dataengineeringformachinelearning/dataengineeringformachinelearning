@@ -3,18 +3,18 @@ dj-database-url==3.1.2
 opentelemetry-distro
 opentelemetry-instrumentation-django
 opentelemetry-exporter-otlp
-clickhouse-connect
+# ClickHouse IO uses Polars + ADBC (adbc-driver-postgresql / connectorx), not clickhouse-connect.
 Django==5.2.15
 django-migration-linter==6.0.0
 django-cors-headers==4.6.0
-gunicorn==23.0.0
+# Production ASGI: Daphne only (Channels/WebSockets). Do not add Gunicorn — it is unused.
 numpy==1.26.4
 polars==1.41.2
 psycopg2-binary==2.9.11
 python-dotenv==1.2.2
 scikit-learn==1.9.0
 scipy==1.17.1
-skops==0.14.0
+# ML weights: PyTorch state_dict only (no skops/pickle for model persistence).
 torch==2.12.0
 whitenoise==6.12.0
 django-ninja==1.3.0
@@ -30,6 +30,7 @@ sentry-sdk==2.62.0
 google-cloud-kms==3.13.0
 google-cloud-logging==3.16.0
 pytest-asyncio>=0.24.0
+# SOCKS for Tor (dark-web / recon). PySocks is pulled by requests[socks].
 requests[socks]
 resend==2.4.0
 aiohttp==3.9.5
@@ -37,7 +38,6 @@ adbc-driver-postgresql
 connectorx
 liboqs-python==0.15.0
 huggingface-hub>=0.23.0
-safetensors>=0.4.5
 channels>=4.0.0
 daphne>=4.0.0
 channels-redis>=4.2.0
@@ -45,6 +45,5 @@ stripe>=9.0.0
 redis>=5.0.0
 norse>=1.1.0
 wappalyzer==2.0.1
-pysocks
 # S3-compatible client for RustFS report object store (exports PDF/CSV/Parquet)
 boto3>=1.35.0

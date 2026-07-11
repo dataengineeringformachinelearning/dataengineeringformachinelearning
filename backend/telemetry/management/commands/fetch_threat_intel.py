@@ -41,7 +41,7 @@ class Command(BaseCommand):
         self.stderr.write(self.style.ERROR(f"Sync failed for {integration.provider}: {e!s}"))
 
   def sync_google_analytics(self, integration):
-    credentials = integration.credentials
+    credentials = integration.credentials if isinstance(integration.credentials, dict) else {}
     refresh_token = credentials.get("refresh_token")
     if not refresh_token:
       self.stderr.write("No refresh token found. User must re-authenticate.")
@@ -49,6 +49,10 @@ class Command(BaseCommand):
 
     # Refresh Access Token
     from django.conf import settings
+    from monitor.services.ga4_scope import (
+      build_site_bindings,
+      credentials_scope_snapshot,
+    )
 
     client_id = getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
     client_secret = getattr(settings, "GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
@@ -62,7 +66,7 @@ class Command(BaseCommand):
     }
 
     response = requests.post(refresh_url, data=data, timeout=10)
-    tokens = response.json()
+    tokens = response.json() if response.content else {}
     access_token = tokens.get("access_token")
 
     if not access_token:
@@ -74,73 +78,122 @@ class Command(BaseCommand):
     integration.credentials = credentials
     integration.save()
 
-    # GA4 Data API runReport (real when property_id configured; derived fallback otherwise)
-    property_id = credentials.get("property_id") or integration.credentials.get("property_id")
-    analytics_rows = self._fetch_ga4_report(access_token, property_id, integration)
+    # Only DEML-configured sites (StatusPage.google_analytics_id + MonitoredService hosts).
+    # Never pull every property on the Google account.
+    bindings = build_site_bindings(integration.user, access_token)
+    credentials["scoped_properties"] = credentials_scope_snapshot(bindings)
+    # Drop legacy whole-account property_id so we never re-use an unscoped binding.
+    credentials.pop("property_id", None)
+    integration.credentials = credentials
+    integration.save()
+
+    if not bindings:
+      self.stdout.write(
+        self.style.WARNING(
+          f"No site-scoped GA4 bindings for {integration.user.username}. "
+          "Set google_analytics_id on each Status Page and ensure monitored service URLs exist. "
+          "Falling back to first-party endpoint telemetry for this user only."
+        )
+      )
+      analytics_rows = self._derive_analytics_from_endpoints(integration)
+    else:
+      analytics_rows = self._fetch_ga4_report_scoped(access_token, bindings)
+      if not analytics_rows:
+        self.stdout.write(
+          "GA4 returned no rows for scoped hosts; using first-party endpoint fallback."
+        )
+        analytics_rows = self._derive_analytics_from_endpoints(integration)
 
     self.stdout.write(
       self.style.SUCCESS(
-        f"Fetched {len(analytics_rows)} GA4 geo rows for {integration.user.username}"
+        f"Fetched {len(analytics_rows)} GA4 geo rows for {integration.user.username} "
+        f"({len(bindings)} site binding(s))"
       )
     )
     for row in analytics_rows:
       self.stdout.write(
-        f"  - {row['city']}, {row['country']}: {row['active_users']} active users "
+        f"  - {row.get('host', '')} {row['city']}, {row['country']}: "
+        f"{row['active_users']} active users "
         f"({row['suspicious_requests']} suspicious requests)"
       )
 
     self._publish_threat_rows(integration, analytics_rows, source="google_analytics_threat_intel")
 
-  def _fetch_ga4_report(
-    self, access_token: str, property_id: str | None, integration: AnalyticsIntegration
-  ) -> list[dict]:
-    if property_id:
+  def _fetch_ga4_report_scoped(self, access_token: str, bindings: list) -> list[dict]:
+    """Query only bound properties and filter hostName to DEML site hosts."""
+    from monitor.services.ga4_scope import ga4_hostname_filter
+
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    merged: list[dict] = []
+    # One property may appear on multiple pages if misconfigured; union hosts per property.
+    by_property: dict[str, set[str]] = {}
+    for binding in bindings:
+      by_property.setdefault(binding.property_id, set()).update(binding.hosts)
+
+    for property_id, hosts in by_property.items():
+      host_filter = ga4_hostname_filter(hosts)
+      if not host_filter:
+        continue
       url = f"https://analyticsdata.googleapis.com/v1beta/properties/{property_id}:runReport"
-      headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
       body = {
-        "dimensions": [{"name": "country"}, {"name": "city"}],
+        "dimensions": [
+          {"name": "hostName"},
+          {"name": "country"},
+          {"name": "city"},
+        ],
         "metrics": [{"name": "activeUsers"}],
         "dateRanges": [{"startDate": "7daysAgo", "endDate": "today"}],
+        "dimensionFilter": host_filter,
       }
       try:
         response = requests.post(url, headers=headers, json=body, timeout=15)
-        if response.status_code == 200:
-          rows = []
-          for report_row in response.json().get("rows", []):
-            dims = [d.get("value", "") for d in report_row.get("dimensionValues", [])]
-            metrics = report_row.get("metricValues", [])
-            active = int(metrics[0].get("value", 0)) if metrics else 0
-            country = dims[0] if dims else "Unknown"
-            city = dims[1] if len(dims) > 1 else "Unknown"
-            suspicious = (
-              1
-              if active < 20 and country not in ("United States", "Canada", "United Kingdom")
-              else 0
-            )
-            rows.append(
-              {
-                "country": country,
-                "city": city,
-                "active_users": active,
-                "suspicious_requests": suspicious,
-              }
-            )
-          if rows:
-            return rows
+        if response.status_code != 200:
+          self.stderr.write(
+            f"GA4 runReport failed property={property_id} status={response.status_code}"
+          )
+          continue
+        for report_row in (response.json() if response.content else {}).get("rows", []):
+          dims = [d.get("value", "") for d in report_row.get("dimensionValues", [])]
+          metrics = report_row.get("metricValues", [])
+          active = int(metrics[0].get("value", 0)) if metrics else 0
+          host = dims[0] if dims else ""
+          country = dims[1] if len(dims) > 1 else "Unknown"
+          city = dims[2] if len(dims) > 2 else "Unknown"
+          # Defense in depth: drop rows whose host is not in the DEML allow-list.
+          if host and host.lower() not in {h.lower() for h in hosts}:
+            continue
+          suspicious = (
+            1 if active < 20 and country not in ("United States", "Canada", "United Kingdom") else 0
+          )
+          merged.append(
+            {
+              "host": host,
+              "country": country,
+              "city": city,
+              "active_users": active,
+              "suspicious_requests": suspicious,
+              "property_id": property_id,
+            }
+          )
       except Exception as exc:
-        self.stderr.write(f"GA4 API call failed, using derived fallback: {exc}")
-
-    return self._derive_analytics_from_endpoints(integration)
+        self.stderr.write(f"GA4 API call failed property={property_id}: {exc}")
+    return merged
 
   def _derive_analytics_from_endpoints(self, integration: AnalyticsIntegration) -> list[dict]:
-    """Low-overhead fallback from first-party endpoint telemetry (no mock fixtures)."""
+    """Low-overhead fallback from first-party endpoint telemetry for this user only."""
     from django.utils import timezone as tz
     from monitor.models import Endpoints
+    from monitor.services.ga4_scope import normalize_hostname, user_site_hosts
 
     cutoff = tz.now() - tz.timedelta(hours=24)
+    allowed_hosts = user_site_hosts(integration.user)
     endpoints = Endpoints.objects.filter(user=integration.user, last_tested__gte=cutoff)
     by_location: dict[str, dict] = {}
     for ep in endpoints[:500]:
+      if allowed_hosts:
+        ep_host = normalize_hostname(ep.url)
+        if ep_host and ep_host not in allowed_hosts:
+          continue
       loc = ep.location or "Unknown"
       bucket = by_location.setdefault(loc, {"active_users": 0, "suspicious_requests": 0})
       bucket["active_users"] += 1
@@ -180,11 +233,14 @@ class Command(BaseCommand):
         producer = create_kafka_producer()
         async with producer:
           for row in rows:
+            host = (row.get("host") or "").strip()
+            place = f"{row['city']}, {row['country']}"
+            location = f"{host} · {place}" if host else place
             payload = {
               "source": source,
               "account_id": account_id,
               "user_id": integration.user.id,
-              "location": f"{row['city']}, {row['country']}",
+              "location": location,
               "active_users": row["active_users"],
               "suspicious_requests": row["suspicious_requests"],
               "raw_payload": row,

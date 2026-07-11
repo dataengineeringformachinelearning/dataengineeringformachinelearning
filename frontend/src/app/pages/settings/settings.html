@@ -236,12 +236,16 @@
               </h3>
               <div class="settings-form-panel">
                 <p class="embed-desc">
-                  Configure your third-party tracking scripts by entering your analytics property
-                  IDs. These scripts are injected directly onto your public status page to let you
-                  monitor visitor traffic and telemetry.
+                  Enter IDs for this status page only. GA4 OAuth sync uses each page’s Google
+                  Analytics measurement ID (G-…) plus monitored service hostnames—never every
+                  property on the Google account. Scripts are also injected on the public status
+                  page for visitor telemetry.
                 </p>
                 <div class="form-row">
-                  <viking-field label="Google Analytics ID">
+                  <viking-field
+                    label="Google Analytics ID"
+                    description="Measurement ID for this site’s host only (not all GA properties)"
+                  >
                     <viking-input
                       [(ngModel)]="editGoogleAnalyticsId"
                       placeholder="e.g. G-XXXXXXX"

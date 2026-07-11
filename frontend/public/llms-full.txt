@@ -489,11 +489,11 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
 - **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
-- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
+- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/), [RustFS](https://github.com/rustfs/rustfs) (S3-compatible report object store for analytics exports — see [docs/exports-rustfs.md](docs/exports-rustfs.md))
 - **Rust data plane**: [Rust](https://www.rust-lang.org/), [Tokio](https://tokio.rs/), [Axum](https://github.com/tokio-rs/axum), [SQLx](https://github.com/launchbadge/sqlx), [rust-rdkafka](https://github.com/fede1024/rust-rdkafka), and [RustCrypto AES-GCM](https://github.com/RustCrypto/AEADs) (authenticated DEML Internode Envelopes)
 - **Official Integrations** (customer-facing): [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](docs/integrations/)
-- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Norse (Spiking Neural Networks for temporal data)](https://github.com/norse/norse), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration for predictive systems), [Antigravity AI Agent (Google)](https://google.com/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Norse (Spiking Neural Networks for temporal data)](https://github.com/norse/norse), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration for predictive systems), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
 - **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/) (presentation companion)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
@@ -2141,7 +2141,7 @@ With an established data engineering pipeline actively streaming and persisting 
 I begin by provisioning a dedicated application boundary within my Django monolith, explicitly isolating the machine learning logic from my standard web operations to maintain architectural purity.
 
 ```bash
-pip install torch polars skops scikit-learn
+pip install torch polars scikit-learn
 python manage.py startapp ml
 ```
 
@@ -2838,10 +2838,10 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
 - **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
-- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
+- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](../docs/integrations/)
-- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
 - **Documentation & code maps**: [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning), [`docs/glossary.md`](docs/glossary.md), [`docs/billing.md`](docs/billing.md)
@@ -4216,21 +4216,20 @@ This document outlines the dependencies and libraries used in this project.
 - `opentelemetry-distro`
 - `opentelemetry-instrumentation-django`
 - `opentelemetry-exporter-otlp`
-- `clickhouse-connect`
 - `Django`==5.2.15
 - `django-migration-linter`==6.0.0
 - `django-cors-headers`==4.6.0
-- `gunicorn`==23.0.0
 - `numpy`==1.26.4
 - `polars`==1.41.2
 - `psycopg2-binary`==2.9.11
 - `python-dotenv`==1.2.2
 - `scikit-learn`==1.9.0
 - `scipy`==1.17.1
-- `skops`==0.14.0
 - `torch`==2.12.0
 - `whitenoise`==6.12.0
 - `django-ninja`==1.3.0
+- `aiokafka`==0.12.0
+- `cramjam`>=2.8.0
 - `protobuf`==5.29.6
 - `pytest`==9.0.3
 - `pytest-django`==4.8.0
@@ -4239,23 +4238,21 @@ This document outlines the dependencies and libraries used in this project.
 - `google-cloud-kms`==3.13.0
 - `google-cloud-logging`==3.16.0
 - `pytest-asyncio`>=0.24.0
-- `requests`
+- `requests[socks]`
 - `resend`==2.4.0
 - `aiohttp`==3.9.5
 - `adbc-driver-postgresql`
 - `connectorx`
 - `liboqs-python`==0.15.0
 - `huggingface-hub`>=0.23.0
-- `safetensors`>=0.4.5
-- `aiokafka`==0.12.0
-- `stripe`>=9.0.0
-- `redis`>=5.0.0
 - `channels`>=4.0.0
 - `daphne`>=4.0.0
 - `channels-redis`>=4.2.0
+- `stripe`>=9.0.0
+- `redis`>=5.0.0
+- `norse`>=1.1.0
 - `wappalyzer`==2.0.1
-- `pysocks`
-- `requests[socks]`
+- `boto3`>=1.35.0
 
 ## Appendix K: Platform Maintenance Log
 

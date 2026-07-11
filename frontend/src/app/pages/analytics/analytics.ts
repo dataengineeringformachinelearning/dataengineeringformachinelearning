@@ -12,11 +12,16 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import {
   VikingChart,
   VikingBadge,
+  VikingButton,
   VikingChartSeries,
+  VikingField,
+  VikingFormSection,
   VikingGaugeArc,
+  VikingInput,
   VikingPageHeader,
   VikingChartPanel,
   VikingChartCardHeader,
@@ -60,9 +65,14 @@ export type ExportJobRow = {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     UnifiedSelect,
     VikingChart,
     VikingBadge,
+    VikingButton,
+    VikingField,
+    VikingFormSection,
+    VikingInput,
     VikingGaugeArc,
     VikingAppIcon,
     VikingPageHeader,
@@ -169,6 +179,28 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public exportBusy = false;
   public exportMessage = '';
   public exportsList: ExportJobRow[] = [];
+
+  public readonly exportKindOptions: SelectOption[] = [
+    { value: 'analytics', label: 'Analytics' },
+    { value: 'threat', label: 'Threat intel' },
+    { value: 'lighthouse', label: 'Lighthouse' },
+    { value: 'vulnerabilities', label: 'Vulnerabilities' },
+  ];
+  public readonly exportFormatOptions: SelectOption[] = [
+    { value: 'csv', label: 'CSV' },
+    { value: 'json', label: 'JSON' },
+    { value: 'parquet', label: 'Parquet' },
+    { value: 'pdf', label: 'PDF' },
+  ];
+
+  get exportDaysLabel(): string {
+    return String(this.exportDays);
+  }
+
+  public onExportDaysChange(value: string): void {
+    const n = Number.parseInt(value, 10);
+    this.exportDays = Number.isFinite(n) ? Math.min(90, Math.max(1, n)) : 7;
+  }
 
   get isDarkMode(): boolean {
     return this.themeService.theme() === 'dark';
