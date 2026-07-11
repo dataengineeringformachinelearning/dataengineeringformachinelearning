@@ -903,3 +903,102 @@ class ExportJob(models.Model):
 
   def __str__(self) -> str:
     return f"ExportJob {self.kind}/{self.format} ({self.status})"
+
+
+class HoneypotEndpoint(models.Model):
+  """Decoy endpoints for detecting crawlers, scanners, and malicious actors.
+
+  Honeypots are intentionally exposed at common crawler paths (/.env, /admin, /wp-login, etc.)
+  and log all interactions for threat intelligence analysis.
+  """
+
+  class TrapType(models.TextChoices):
+    ENV_FILE = "env_file", "Environment File Leak"
+    ADMIN_PANEL = "admin_panel", "Fake Admin Panel"
+    WORDPRESS_LOGIN = "wordpress_login", "WordPress Login"
+    GITLAB = "gitlab", "GitLab CI File"
+    DOCKER_COMPOSE = "docker_compose", "Docker Compose File"
+    DATABASE_CONFIG = "database_config", "Database Config File"
+    API_SECRET = "api_secret", "Fake API Secret"
+    GENERIC = "generic", "Generic Decoy"
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="honeypots", null=True, blank=True
+  )
+  is_platform = models.BooleanField(default=False)
+  trap_type = models.CharField(
+    max_length=32, choices=TrapType.choices, default=TrapType.GENERIC
+  )
+  path = models.CharField(max_length=255, help_text="Relative path e.g., /.env or /admin")
+  created_at = models.DateTimeField(auto_now_add=True)
+  is_active = models.BooleanField(default=True)
+
+  class Meta:
+    db_table = "honeypot_endpoints"
+    unique_together = ("user", "path")
+    indexes = [
+      models.Index(fields=["is_platform", "is_active"]),
+      models.Index(fields=["created_at"]),
+    ]
+
+  def __str__(self):
+    owner = "platform" if self.is_platform else f"user-{self.user_id}"
+    return f"Honeypot ({self.get_trap_type_display()}) at {self.path} [{owner}]"
+
+
+class HoneypotInteraction(models.Model):
+  """Logged interaction with a honeypot endpoint for ML training."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  honeypot = models.ForeignKey(
+    HoneypotEndpoint, on_delete=models.CASCADE, related_name="interactions"
+  )
+  source_ip = models.GenericIPAddressField()
+  user_agent = models.TextField(null=True, blank=True)
+  method = models.CharField(max_length=10, default="GET")
+  timestamp = models.DateTimeField(auto_now_add=True)
+  request_headers = models.JSONField(default=dict, blank=True)
+  response_code = models.IntegerField(default=404)
+
+  class Meta:
+    db_table = "honeypot_interactions"
+    ordering = ["-timestamp"]
+    indexes = [
+      models.Index(fields=["honeypot", "-timestamp"]),
+      models.Index(fields=["source_ip", "-timestamp"]),
+      models.Index(fields=["timestamp"]),
+    ]
+
+  def __str__(self):
+    return f"Honeypot hit from {self.source_ip} at {self.timestamp}"
+
+
+class BenchmarkRun(models.Model):
+  """ML model self-benchmarking results for performance tracking."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="benchmarks", null=True, blank=True
+  )
+  is_platform = models.BooleanField(default=False)
+  model_type = models.CharField(max_length=32, help_text="e.g., sla, threat, spiking")
+  mae = models.FloatField(help_text="Mean Absolute Error on benchmark dataset")
+  rmse = models.FloatField(help_text="Root Mean Square Error")
+  accuracy = models.FloatField(null=True, blank=True, help_text="Classification accuracy (0-1)")
+  training_duration_seconds = models.FloatField()
+  dataset_size = models.IntegerField()
+  benchmark_score = models.FloatField(help_text="Normalized performance score")
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "benchmark_runs"
+    ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["model_type", "-created_at"]),
+      models.Index(fields=["is_platform", "-created_at"]),
+    ]
+
+  def __str__(self):
+    owner = "platform" if self.is_platform else f"user-{self.user_id}"
+    return f"Benchmark ({self.model_type}) for {owner}: MAE={self.mae:.4f}, Score={self.benchmark_score:.2f}"

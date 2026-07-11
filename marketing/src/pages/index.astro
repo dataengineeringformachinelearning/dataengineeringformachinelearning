@@ -149,7 +149,7 @@ const integrations = [
           <span class="badge-dot pulse-dot"></span>
           <span class="badge-text">Field Grade · Version {version}</span>
         </div>
-        <h1 class="title" id="main-title">Operational Intelligence<br />for the Digital Battlefield</h1>
+        <h1 class="title" id="main-title">Operational intelligence for resilient AI systems</h1>
         <p class="subtitle">
           DEML fuses data engineering, AI engineering, and intelligence-driven cybersecurity defense
           into one multi-tenant operational fabric. Ingest telemetry at scale, forecast SLA breach
@@ -203,12 +203,20 @@ const integrations = [
         {quickStartSteps.map((item) => (
           <li class="quick-start-step">
             <span class="step-number" aria-hidden="true">{item.step}</span>
-            <VikingIcon name="{item.icon}" size={20} class="step-icon" />
+            <VikingIcon name={item.icon} size={20} class="step-icon" />
             <h3>{item.title}</h3>
             <p>{item.description}</p>
           </li>
         ))}
       </ol>
+      <div class="quick-start-code viking-card" aria-label="Quick start code example">
+        <div class="quick-start-code-copy">
+          <span class="section-tag">ONE-SCRIPT START</span>
+          <h3>Project live operational status anywhere.</h3>
+          <p>Use the public Tenant0 projection first, then replace the page identifier with your registered tenant scope.</p>
+        </div>
+        <pre><code set:html={widgetEmbedSnippetHtml} /></pre>
+      </div>
     </section>
 
     <!-- Integrations strip -->
@@ -217,7 +225,7 @@ const integrations = [
       <div class="integration-logos">
         {integrations.map((item) => (
           <a href="/documentation" class="integration-logo-item">
-            <VikingIcon name="{item.icon}" size={20} />
+            <VikingIcon name={item.icon} size={20} />
             <span>{item.name}</span>
           </a>
         ))}
@@ -244,7 +252,7 @@ const integrations = [
         <div class="showcase-band-visual" aria-hidden="true">
           <div class="visual-panel">
             <div class="visual-panel-header">
-              <VikingIcon name="{cap.icon}" size={20} />
+              <VikingIcon name={cap.icon} size={20} />
               <span>{cap.title}</span>
             </div>
             <div class="visual-metrics">
@@ -313,7 +321,7 @@ const integrations = [
       <ul class="security-pillars-grid">
         {securityPillars.map((pillar) => (
           <li class="security-pillar">
-            <VikingIcon name="{pillar.icon}" size={20} />
+            <VikingIcon name={pillar.icon} size={20} />
             <strong>{pillar.label}</strong>
             <span>{pillar.detail}</span>
           </li>

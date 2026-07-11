@@ -93,7 +93,7 @@ class Command(BaseCommand):
   @sync_to_async
   def train_all(self):
     from django.db import close_old_connections
-    from ml.ml_services import train_spiking_temporal_forecaster, train_threat_model
+    from ml.ml_services import run_benchmark_suite, train_spiking_temporal_forecaster, train_threat_model
 
     close_old_connections()
     try:
@@ -142,6 +142,14 @@ class Command(BaseCommand):
       spiking_platform = train_spiking_temporal_forecaster(None, is_platform=True)
       if spiking_platform:
         self.stdout.write(self.style.SUCCESS("Trained platform Spiking Temporal Forecaster (4th)"))
+
+      # Run benchmarks and publish to UI
+      benchmark_results = run_benchmark_suite(is_platform=True)
+      self.stdout.write(
+        self.style.SUCCESS(
+          f"Benchmark suite completed: {len(benchmark_results)} model types evaluated"
+        )
+      )
     finally:
       close_old_connections()
 

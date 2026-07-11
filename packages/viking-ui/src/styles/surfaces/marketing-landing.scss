@@ -1317,3 +1317,203 @@
   flex-shrink: 0;
   vertical-align: middle;
 }
+
+/* Precision landing composition: centered first impression, fluid grids, and an
+   exact token rhythm shared by every marketing viewport. */
+.hero-showcase {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: var(--viking-space-6);
+  margin-bottom: var(--viking-space-10);
+  text-align: center;
+}
+
+.hero-copy {
+  align-items: center;
+  width: min(100%, var(--viking-content-readable-max-width));
+  margin-inline: auto;
+}
+
+.hero-copy::before,
+.hero-copy::after {
+  display: none;
+}
+
+.hero-copy .title {
+  max-width: 18ch;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+.hero-copy .subtitle {
+  max-width: var(--viking-content-readable-max-width);
+  text-wrap: pretty;
+}
+
+.hero-badge,
+.hero-stats,
+.hero-copy .cta-group {
+  justify-content: center;
+}
+
+.hero-mockup {
+  width: min(100%, var(--viking-container-max-width));
+  margin-inline: auto;
+  justify-self: center;
+}
+
+.quick-start-steps,
+.security-pillars-grid,
+.pricing-cards-container {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      1fr
+    )
+  );
+  gap: var(--viking-space-3);
+}
+
+.quick-start-step {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: var(--viking-space-2);
+  min-height: 100%;
+}
+
+.quick-start-step .step-number {
+  top: var(--viking-space-2);
+  right: var(--viking-space-2);
+}
+
+.quick-start-code {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      1fr
+    )
+  );
+  align-items: center;
+  gap: var(--viking-space-4);
+  margin-top: var(--viking-space-4);
+  padding: var(--viking-card-padding);
+  overflow: hidden;
+  text-align: left;
+}
+
+.quick-start-code-copy {
+  display: grid;
+  gap: var(--viking-space-2);
+}
+
+.quick-start-code h3,
+.quick-start-code p,
+.quick-start-code pre {
+  margin: 0;
+}
+
+.quick-start-code p {
+  color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.quick-start-code pre {
+  width: 100%;
+  min-width: 0;
+  padding: var(--viking-space-3);
+  overflow-x: auto;
+  border: var(--viking-space-px) solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-alt);
+  color: var(--viking-text);
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-sm);
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.integrations-strip,
+.showcase-band,
+.security-pillars-band,
+.pricing-showcase,
+.transparency-atmospheric {
+  padding-block: var(--viking-space-8);
+}
+
+.integration-logos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--viking-space-2);
+}
+
+.integration-logo-item {
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+}
+
+.showcase-band {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      1fr
+    )
+  );
+  gap: var(--viking-space-6);
+}
+
+.showcase-band-copy,
+.widget-copy {
+  display: grid;
+  align-content: center;
+  gap: var(--viking-space-2);
+}
+
+.showcase-band-copy .section-tag,
+.showcase-band-copy h2,
+.showcase-band-copy p {
+  margin: 0;
+}
+
+.transparency-atmospheric {
+  margin-top: var(--viking-space-8);
+  gap: var(--viking-space-6);
+}
+
+.transparency-atmospheric .purpose-list {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      1fr
+    )
+  );
+  gap: var(--viking-space-3);
+  width: 100%;
+}
+
+.transparency-atmospheric .purpose-list li {
+  max-width: none;
+  padding: var(--viking-card-padding);
+  border: var(--viking-space-px) solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface);
+}
+
+@media (max-width: 37.5rem) {
+  .hero-stats,
+  .hero-copy .cta-group {
+    width: 100%;
+  }
+
+  .hero-stat-pill,
+  .hero-copy .cta-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

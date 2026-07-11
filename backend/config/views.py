@@ -18,6 +18,39 @@ def home(request: HttpRequest) -> HttpResponse:
   )
 
 
+def honeypot_trap(request: HttpRequest, path: str) -> HttpResponse:
+  """Catch crawlers/scanners at decoy paths and log the interaction.
+
+  This catch-all view checks if the requested path is a registered honeypot trap.
+  If so, it logs the interaction for later threat analysis and ML training.
+  """
+  from monitor.models import HoneypotEndpoint
+  from ml.ml_services import log_honeypot_interaction
+
+  # Check if this is a registered honeypot trap
+  honeypot = HoneypotEndpoint.objects.filter(
+    path=f"/{path}", is_active=True
+  ).first()
+
+  if honeypot:
+    source_ip = (
+      request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "unknown"))
+      .split(",")[0]
+      .strip()
+    )
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
+    log_honeypot_interaction(
+      honeypot=honeypot,
+      source_ip=source_ip,
+      user_agent=user_agent,
+      method=request.method,
+      request_headers=dict(request.headers),
+    )
+
+  # Always return 404 to appear like a real dead-end
+  return HttpResponse(status=404)
+
+
 def custom_404(request: HttpRequest, exception: Exception) -> HttpResponse:
   frontend_url = settings.FRONTEND_URL.rstrip("/")
   return render(

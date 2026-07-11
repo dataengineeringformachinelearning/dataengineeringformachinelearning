@@ -23,9 +23,9 @@ urlpatterns = [
   path("assets/<path:path>", views.serve_asset, name="serve_asset"),
   path("api/v1/", api.urls),  # Using /api/v1/ for the ninja router
   path("robots.txt", views.robots_txt, name="robots_txt"),
-  path(
-    "sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"
-  ),
+  path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
+  # Catch-all honeypot trap routes (must be last)
+  path("<path:path>", views.honeypot_trap, name="honeypot_trap"),
 ]
 
 handler404 = "config.views.custom_404"

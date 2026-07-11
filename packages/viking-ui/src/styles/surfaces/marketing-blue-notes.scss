@@ -428,3 +428,101 @@
     transition: none;
   }
 }
+
+/* Blue Notes index: editorial calm instead of a left-heavy changelog rail. */
+.blue-notes-wrapper {
+  gap: var(--viking-space-8);
+}
+
+.blue-notes-hero {
+  justify-items: center;
+  width: min(100%, var(--viking-content-readable-max-width));
+  max-width: none;
+  margin-inline: auto;
+  padding-block: var(--viking-space-8);
+  text-align: center;
+}
+
+.blue-notes-hero > p {
+  text-wrap: pretty;
+}
+
+.blue-notes-hero-actions,
+.blue-notes-kicker {
+  justify-content: center;
+}
+
+.blue-notes-featured,
+.blue-notes-archive {
+  gap: var(--viking-space-3);
+}
+
+.blue-notes-section-heading {
+  display: grid;
+  justify-items: center;
+  justify-content: stretch;
+  gap: var(--viking-space-2);
+  text-align: center;
+}
+
+.blue-notes-section-heading > div {
+  justify-items: center;
+}
+
+.blue-note-feature-card {
+  width: min(100%, var(--viking-content-readable-max-width));
+  margin-inline: auto;
+  padding: var(--viking-card-padding);
+}
+
+.blue-note-feature-card h2,
+.blue-note-feature-card > p {
+  max-width: var(--viking-content-readable-max-width);
+}
+
+.blue-notes-timeline {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      1fr
+    )
+  );
+  align-items: stretch;
+  gap: var(--viking-space-3);
+  padding: 0;
+}
+
+.blue-notes-timeline::before,
+.blue-note-timeline-marker {
+  display: none;
+}
+
+.blue-notes-timeline > li,
+.blue-note-card {
+  min-width: 0;
+  height: 100%;
+}
+
+.blue-note-card {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  padding: var(--viking-card-padding);
+}
+
+@media (max-width: 37.5rem) {
+  .blue-notes-hero-actions,
+  .blue-notes-hero-actions .viking-button {
+    width: 100%;
+  }
+
+  .blue-notes-hero-actions .viking-button {
+    justify-content: center;
+  }
+
+  .blue-note-card-meta,
+  .blue-note-card-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

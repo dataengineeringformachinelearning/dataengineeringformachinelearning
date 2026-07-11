@@ -513,3 +513,62 @@ def delete_incident(request, incident_id: str):
   forbid_platform_page(incident.status_page)
   incident.delete()
   return {"success": True}
+
+
+# =============================================================================
+# Honeypot Endpoints
+# =============================================================================
+
+# The honeypot trap is handled by config/views.py honeypot_trap() function
+# for a catch-all URL pattern. This API endpoint can be used for manual testing.
+
+
+class BenchmarkOut(Schema):
+  model_type: str
+  mae: float
+  rmse: float
+  accuracy: float | None = None
+  benchmark_score: float
+  dataset_size: int
+  created_at: datetime.datetime
+
+
+@router.get("/benchmarks", response=list[BenchmarkOut])
+def list_benchmarks(request, model_type: str = "all"):
+  """List recent ML model benchmark runs for the current scope."""
+  from monitor.models import BenchmarkRun
+
+  if request.user.is_authenticated:
+    if request.user.is_superuser:
+      benchmarks = BenchmarkRun.objects.filter(model_type=model_type) if model_type != "all" else BenchmarkRun.objects.all()
+    else:
+      benchmarks = BenchmarkRun.objects.filter(
+        user=request.user, model_type=model_type
+      ) if model_type != "all" else BenchmarkRun.objects.filter(user=request.user)
+  else:
+    benchmarks = BenchmarkRun.objects.filter(is_platform=True) if model_type != "all" else BenchmarkRun.objects.all()
+
+  benchmarks = benchmarks.order_by("-created_at")[:50]
+
+  return [
+    BenchmarkOut(
+      model_type=b.model_type,
+      mae=b.mae,
+      rmse=b.rmse,
+      accuracy=b.accuracy,
+      benchmark_score=b.benchmark_score,
+      dataset_size=b.dataset_size,
+      created_at=b.created_at,
+    )
+    for b in benchmarks
+  ]
+
+
+@router.post("/benchmarks/run")
+@role_required(["Operator", "Security Admin"])
+def trigger_benchmark(request, model_type: str = "all"):
+  """Trigger a manual benchmark run and return results."""
+  from ml.ml_services import run_benchmark_suite
+
+  results = run_benchmark_suite(user=request.user, is_platform=False, model_type=model_type)
+  return {"status": "completed", "results": results}

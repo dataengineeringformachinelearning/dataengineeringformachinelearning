@@ -51,6 +51,7 @@ class Command(BaseCommand):
       self.dark_web_scheduler(),
       self.subscription_sweep_scheduler(),
       self.optimize_scheduler(),
+      self.honeypot_scheduler(),
     )
     for coro in schedulers:
       task = asyncio.create_task(coro)
@@ -238,3 +239,37 @@ class Command(BaseCommand):
       self.stderr.write(self.style.ERROR(f"Security Worker: Database optimization failed: {e}"))
     finally:
       close_old_connections()
+
+  async def honeypot_scheduler(self) -> None:
+    """Analyze honeypot interactions hourly for threat intelligence."""
+    self.stdout.write(self.style.SUCCESS("Starting Honeypot Analysis scheduler..."))
+    while True:
+      try:
+        self.stdout.write("Security Worker: Analyzing honeypot interactions...")
+        await self.analyze_honeypots()
+        self.stdout.write(self.style.SUCCESS("Security Worker: Honeypot analysis completed."))
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Security Worker: Honeypot analysis failed: {e}"))
+
+      await asyncio.sleep(HOURLY_INTERVAL_SECONDS)
+
+  @sync_to_async
+  def analyze_honeypots(self) -> None:
+    """Process honeypot interactions and feed to threat model."""
+    from ml.ml_services import analyze_honeypot_threats
+    from monitor.models import HoneypotEndpoint
+
+    # Analyze platform-wide honeypot data
+    platform_stats = analyze_honeypot_threats(is_platform=True)
+    self.stdout.write(
+      f"Security Worker: Platform honeypots - {platform_stats['total_interactions']} hits, "
+      f"{platform_stats['unique_ips']} unique IPs"
+    )
+
+    # Analyze per-user honeypot data (for accounts with honeypots)
+    for user in User.objects.filter(profile__isnull=False).select_related("profile"):
+      user_stats = analyze_honeypot_threats(user=user)
+      if user_stats["total_interactions"] > 0:
+        self.stdout.write(
+          f"Security Worker: {user.username} honeypots - {user_stats['total_interactions']} hits"
+        )

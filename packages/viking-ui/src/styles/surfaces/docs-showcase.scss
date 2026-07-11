@@ -1869,3 +1869,64 @@ viking-card-wc.landing-doctrine-card > * {
   gap: var(--viking-space-1);
   padding-left: var(--viking-space-3);
 }
+
+/* Fluid gallery geometry. Every specimen stays centered and unclipped without
+   forcing desktop visitors through a one-card-per-row catalogue. */
+.showcase-section-header,
+.landing-section-header {
+  align-items: center;
+  max-width: var(--viking-content-readable-max-width);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.showcase-component-grid,
+.landing-doctrine-grid {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(100%, calc(var(--viking-space-24) + var(--viking-space-12))),
+      1fr
+    )
+  );
+  gap: var(--viking-space-3);
+}
+
+.component-showcase-card {
+  min-width: 0;
+  gap: var(--viking-space-3);
+  padding: var(--viking-card-padding);
+}
+
+.component-showcase-preview,
+.viking-demo-wrapper {
+  width: 100%;
+  min-width: 0;
+  min-height: clamp(12rem, 24vw, 18rem);
+  padding: clamp(var(--viking-space-3), 4vw, var(--viking-space-5));
+  overflow: visible;
+}
+
+.component-showcase-preview > *,
+.viking-demo-wrapper > * {
+  margin-inline: auto;
+}
+
+.component-showcase-code pre,
+.playground-code pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 37.5rem) {
+  .component-showcase-footer,
+  .component-showcase-frameworks {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .component-showcase-cta {
+    justify-content: center;
+    width: 100%;
+  }
+}
