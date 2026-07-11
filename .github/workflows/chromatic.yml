@@ -1,6 +1,16 @@
 name: Viking-UI Storybook Visual Regression
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/viking-ui/**"
+      - ".github/workflows/chromatic.yml"
+  pull_request:
+    paths:
+      - "packages/viking-ui/**"
+      - ".github/workflows/chromatic.yml"
   workflow_dispatch:
 
 

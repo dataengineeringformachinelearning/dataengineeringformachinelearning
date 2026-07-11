@@ -342,9 +342,11 @@
   /* ── Layout ────────────────────────────────────────────────────────────── */
   --viking-container-max-width: 1260px;
   --viking-container-max-width-wide: 1440px; /* dashboard/analytics pages */
-  --viking-container-max-width-wide: 1440px; /* dashboard/analytics pages */
   --viking-navbar-height: var(--viking-space-8); /* 64px */
   --viking-sidebar-width: 256px; /* 32 × 8px — on-grid layout constant */
+  --viking-layout-item-compact: 16rem; /* 256px / 32 grid units */
+  --viking-layout-item-default: 20rem; /* 320px / 40 grid units */
+  --viking-layout-item-wide: 24rem; /* 384px / 48 grid units */
 
   /* ── Layout rhythm — premium spacing enforcement (THEME.md §3) ───────────
      All gaps/padding resolve to --viking-space-* integer steps (or 0-5 tight).

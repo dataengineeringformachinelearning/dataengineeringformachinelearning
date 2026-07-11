@@ -1,6 +1,6 @@
 # Viking-UI
 
-Publish target: **`@dataengineeringformachinelearning/viking-ui@6.1.0`**
+Publish target: **`@dataengineeringformachinelearning/viking-ui@6.2.0`**
 Single source of truth: **`packages/viking-ui/`** (framework-agnostic styles, tokens, Web Components, and Angular wrapper entrypoints are consolidated here).
 
 Universal DEML component library for Astro, Angular, and Django.
@@ -33,7 +33,7 @@ by Astro, Django, and plain HTML:
   />
   <viking-section>
     <viking-stack spacing="compact">
-      <viking-grid [columns]="3" [equalRows]="true">
+      <viking-grid columns="auto" itemSize="compact" [equalRows]="true">
         <viking-card>Availability</viking-card>
         <viking-card>Latency</viking-card>
         <viking-card>Risk</viking-card>
@@ -51,6 +51,21 @@ Static surfaces use the matching `.page-inner-wrapper`, `.viking-section`,
 `viking-ui.css`. Responsive breakpoints, spacing density, equal-row behavior,
 and action alignment therefore stay in the package instead of drifting across
 applications.
+
+Use `columns="auto"` for intrinsic card landscapes that add and remove tracks
+from available space rather than device names. Use `viking-switcher` for rows
+of controls or content that should become a readable stack automatically:
+
+```html
+<viking-switcher itemSize="compact" spacing="tight">
+  <viking-button variant="primary">Deploy</viking-button>
+  <viking-button variant="outline">Review</viking-button>
+</viking-switcher>
+```
+
+The three item-size contracts are `compact` (256px), `default` (320px), and
+`wide` (384px). All resolve to the 8px grid, allow long content to shrink with
+`min-width: 0`, and preserve equal-height card/action alignment when requested.
 
 ## Build
 
@@ -315,7 +330,9 @@ const exploreUptime: ExploreCardUptimePoint[] = Array.from(
 ## Storybook and Chromatic
 
 Storybook is the release-grade visual cockpit for the Web Component layer and
-publishing workflow.
+publishing workflow. The release workflow embeds the same static build at
+[`ui.dataengineeringformachinelearning.com/storybook/`](https://ui.dataengineeringformachinelearning.com/storybook/)
+and publishes its mobile, tablet, and desktop evidence to Chromatic.
 
 ```bash
 npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui
@@ -394,7 +411,7 @@ The package artifacts are published in `dist/`, so you can load them directly fr
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/viking-ui.css"
 />
 ```
 
@@ -403,7 +420,7 @@ The package artifacts are published in `dist/`, so you can load them directly fr
 ```html
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/web-components.js"
 ></script>
 ```
 
@@ -412,11 +429,11 @@ The package artifacts are published in `dist/`, so you can load them directly fr
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/web-components.js"
 ></script>
 ```
 
@@ -429,11 +446,11 @@ builds.
 <!-- Latest -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/web-components.js"
 ></script>
 ```
 
@@ -441,11 +458,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/web-components.js"
 ></script>
 ```
 
@@ -460,11 +477,11 @@ builds.
     <title>Viking-UI CDN demo</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/viking-ui.css"
     />
     <script
       type="module"
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/web-components.js"
     ></script>
   </head>
   <body>
@@ -506,14 +523,14 @@ Use this when embedding a live status badge on external pages:
     <title>DEML Status Widget</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/viking-ui.css"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/viking-ui.css"
     />
     <script
       type="module"
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/web-components.js"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/web-components.js"
     ></script>
     <script
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/widget.js"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/widget.js"
       async
       defer
       data-page-id="platform-status"
@@ -529,7 +546,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.1.0/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.2.0/dist/widget.js"
   async
   defer
   data-page-id="platform-status"

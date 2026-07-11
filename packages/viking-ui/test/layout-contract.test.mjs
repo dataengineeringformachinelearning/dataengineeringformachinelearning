@@ -31,6 +31,14 @@ test("spacing tokens preserve the 4px micro and 8px primary grids", () => {
   assert.match(variables, /--viking-space-unit:\s*8px;/);
   assert.match(variables, /--viking-space-0-5:\s*4px;/);
   assert.match(variables, /--viking-card-padding:\s*var\(--viking-space-5\);/);
+  assert.deepEqual(
+    [
+      tokens.layout.intrinsicItemCompact,
+      tokens.layout.intrinsicItemDefault,
+      tokens.layout.intrinsicItemWide,
+    ],
+    ["256px", "320px", "384px"],
+  );
 
   for (const [name, value] of Object.entries(tokens.spacing)) {
     if (!/^\d+$/.test(name) || name === "0") {
@@ -64,12 +72,32 @@ test("Angular layout primitives compose the canonical layout classes", () => {
     "viking-stack",
     "viking-grid",
     "viking-cluster",
+    "viking-switcher",
   ]) {
     assert.match(layout, new RegExp(`selector: \\\"${selector}\\\"`));
   }
   assert.match(layout, /page-inner-wrapper/);
   assert.match(layout, /viking-grid--equal-rows/);
   assert.match(layout, /viking-cluster--/);
+  assert.match(layout, /viking-grid--item-/);
+  assert.match(layout, /viking-switcher--/);
+});
+
+test("intrinsic layouts adapt to available space without device breakpoints", () => {
+  const layout = readPackageFile("src", "styles", "_layout-rhythm.scss");
+  const variables = readPackageFile("src", "styles", "_variables.scss");
+
+  assert.match(layout, /\.viking-grid--auto\s*\{/);
+  assert.match(layout, /repeat\(\s*auto-fit,/s);
+  assert.match(
+    layout,
+    /minmax\(min\(100%, var\(--viking-grid-item-min\)\), 1fr\)/,
+  );
+  assert.match(layout, /\.viking-switcher\s*>\s*\*\s*\{/);
+  assert.match(layout, /flex-basis:\s*calc\(/);
+  assert.match(variables, /--viking-layout-item-compact:\s*16rem;/);
+  assert.match(variables, /--viking-layout-item-default:\s*20rem;/);
+  assert.match(variables, /--viking-layout-item-wide:\s*24rem;/);
 });
 
 test("component spacing declarations use Viking spacing tokens", () => {

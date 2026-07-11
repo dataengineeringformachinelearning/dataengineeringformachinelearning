@@ -37,6 +37,10 @@ Viking-UI must read as **Lockheed Martin × The Northman precision digital battl
 - **The Northman reference:** severe silhouettes, cold materiality, sparse runic/geometric restraint, ceremonial weight, and disciplined asymmetry. Do not drift into fantasy theming, faux-medieval ornament, or decorative storytelling.
 - **spartan.ng reference:** clean Angular primitive language, accessible composition, predictable component APIs, SSR-safe behavior, and layout clarity.
 - **fluxui.dev reference:** practical spacing, dense but breathable data surfaces, responsive dark mode, reusable layouts, and lightweight chart ergonomics.
+- **Material Design 3 reference:** adaptive foundations, accessible state clarity, and content hierarchy without adopting Material runtimes or visual branding.
+- **shadcn/ui reference:** explicit component anatomy, composable blocks, and container-aware field/layout patterns without copying source or Tailwind utilities.
+- **Cloudscape reference:** AWS-scale operational density, fluid responsive layouts, zoom resilience, and documented application patterns.
+- **Trust Controls reference:** evidence-minded security and governance UX; controls must remain understandable, attributable, and auditable.
 - **Implementation boundary:** every style, token, wrapper, Web Component, chart treatment, or visual utility required by this direction belongs in `packages/viking-ui/`; app folders only consume the result.
 
 Translate the aesthetic into concrete UI: machined borders, dark steel surfaces, electric-teal command accents, crimson escalation, compact telemetry panels, native SVG charts, readable tables/forms, and strategic geometric dividers. Data dominates ornament.

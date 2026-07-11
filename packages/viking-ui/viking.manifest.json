@@ -147,10 +147,12 @@
         "VikingClusterJustify",
         "VikingGrid",
         "VikingGridColumns",
+        "VikingIntrinsicItemSize",
         "VikingLayoutDensity",
         "VikingPageShell",
         "VikingSection",
-        "VikingStack"
+        "VikingStack",
+        "VikingSwitcher"
       ]
     },
     "menubar": {

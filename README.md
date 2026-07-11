@@ -12,6 +12,8 @@ license: apache-2.0
 
 # Data Engineering for AI Engineering and Cybersecurity: Developer Platform
 
+[Acknowledgements & Technologies](#acknowledgements--technologies)
+
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.svg)
 
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
@@ -90,6 +92,20 @@ Authorization: Bearer YOUR_API_KEY
 ---
 
 **Resources:** [GitHub](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+
+## Acknowledgements & Technologies
+
+DEML and Viking-UI are original implementations informed by the open standards,
+tools, and public design-system guidance below. References are directional
+quality bars; their component runtimes and source are not bundled into Viking-UI.
+
+- **Design systems and UI references:** [Material Design 3](https://m3.material.io/) for adaptive foundations and accessibility; [Flux UI](https://fluxui.dev/) for composable, responsive layouts; [Spartan](https://spartan.ng/) for accessible Angular primitives and signal-first ergonomics; [shadcn/ui](https://ui.shadcn.com/) for open composition, blocks, and clear component anatomy; and [Cloudscape Design System](https://cloudscape.design/) for AWS-scale responsive application patterns, accessibility guidance, and operational density.
+- **Security and governance reference:** [Trust Controls](https://www.trustcontrols.ai/) for control-oriented product governance and evidence-minded security UX.
+- **Design-system delivery:** [Storybook](https://storybook.js.org/) for component documentation and accessibility review; [Chromatic](https://www.chromatic.com/) for published visual regression evidence; [axe-core](https://github.com/dequelabs/axe-core) for automated WCAG checks; and [Inter](https://rsms.me/inter/) for self-hosted variable typography.
+- **Core application stack:** [Angular](https://angular.dev/), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Firebase](https://firebase.google.com/), [OpenTelemetry](https://opentelemetry.io/), and [AWS](https://aws.amazon.com/).
+
+The comprehensive technology acknowledgement and software inventory remain in
+[BOOK.md](BOOK.md#acknowledgements--technologies) and the generated SBOM.
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
 
