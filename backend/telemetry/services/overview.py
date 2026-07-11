@@ -256,17 +256,18 @@ class OverviewService:
     total_hits = HoneypotInteraction.objects.filter(
       honeypot__is_platform=True, timestamp__gte=honeypot_cutoff
     ).count()
-    unique_ips = HoneypotInteraction.objects.filter(
-      honeypot__is_platform=True, timestamp__gte=honeypot_cutoff
-    ).values("source_ip").distinct().count()
+    unique_ips = (
+      HoneypotInteraction.objects.filter(honeypot__is_platform=True, timestamp__gte=honeypot_cutoff)
+      .values("source_ip")
+      .distinct()
+      .count()
+    )
     honeypot_score = min(100, (total_hits / max(1, unique_ips * 10)) * 100) if unique_ips > 0 else 0
 
     # Latest benchmark score
     from monitor.models import BenchmarkRun
 
-    latest_benchmark = BenchmarkRun.objects.filter(
-      is_platform=True
-    ).order_by("-created_at").first()
+    latest_benchmark = BenchmarkRun.objects.filter(is_platform=True).order_by("-created_at").first()
     latest_benchmark_score = latest_benchmark.benchmark_score if latest_benchmark else None
 
     return {
@@ -276,7 +277,9 @@ class OverviewService:
       "stability": round(ces_stability, 2),
       "spiking_temporal_forecast": round(temporal_score, 2),  # fourth model output
       "honeypot_score": round(honeypot_score, 2),
-      "latest_benchmark_score": round(latest_benchmark_score, 2) if latest_benchmark_score else None,
+      "latest_benchmark_score": (
+        round(latest_benchmark_score, 2) if latest_benchmark_score is not None else None
+      ),
     }
 
   @staticmethod

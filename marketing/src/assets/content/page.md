@@ -1405,7 +1405,7 @@ By combining per-account RBAC with publication- and ownership-aware ABAC, the pl
 The DEML platform stands on open-source foundations, enterprise design references, and the tooling that authored this architecture. Gratitude is extended to each project, standard, and inspiration cited below.
 
 - **Frontend**: [Angular](https://angular.dev/), [ng-packagr](https://github.com/ng-packagr/ng-packagr), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/), [Vitest](https://vitest.dev/), [AnalogJS](https://analogjs.org/), [Astro](https://astro.build/), [axe-core](https://github.com/dequelabs/axe-core)
-- **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
+- **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium command palette); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
 - **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
@@ -1755,6 +1755,19 @@ The compiled Rust (`tokio`) image is started with `DEML_ROLE=relay|scheduler|pro
 - `PORT=8080` for the optional ingress and role health endpoint
 
 **Invariant:** Each production deployment has one owner per role. Multiple Rust replicas of the same role are safe because claims are leased and idempotent; Python relay, pinger, and interval schedulers remain rollback-only and must not run alongside their Rust owner.
+
+**Python-to-Rust ownership:** `deml-relay` replaces the Python outbox loop;
+`deml-probe` replaces embedded pingers; `deml-normalizer` owns raw telemetry
+validation independently of Firestore projections; `deml-scheduler` replaces
+in-process timers and directly executes `db_cleanup`, `archive_reports`,
+`optimize_database`, and `cleanup_clickhouse`; `deml-cpe` replaces the Python
+request-time lookup service while retaining Python only as the pinned dictionary
+importer. Django workers continue to own business projections, ML training,
+billing, KMS, threat APIs, TAXII, and account lifecycle work. Native scheduler
+failures remain `failed` and retryable in `scheduled_task_runs`; they are never
+marked complete merely because the Rust function returned control. The complete
+role/cadence ledger and rollback order live in
+[`docs/rust-data-plane.md`](docs/rust-data-plane.md).
 
 ### 5. Consolidated Background Workers (`deml-workers`)
 

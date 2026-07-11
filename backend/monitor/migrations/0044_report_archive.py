@@ -19,7 +19,10 @@ class Migration(migrations.Migration):
     migrations.CreateModel(
       name="ReportArchive",
       fields=[
-        ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)),
+        (
+          "id",
+          models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+        ),
         ("is_platform", models.BooleanField(db_index=True, default=False)),
         ("report_date", models.DateField(db_index=True)),
         ("period_start", models.DateTimeField()),

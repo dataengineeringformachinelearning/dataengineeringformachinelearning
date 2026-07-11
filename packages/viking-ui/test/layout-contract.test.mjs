@@ -55,6 +55,23 @@ test("grid utilities expose an opt-in equal-height row contract", () => {
   assert.match(layout, /\.viking-grid--equal-rows[\s\S]*height:\s*100%;/);
 });
 
+test("Angular layout primitives compose the canonical layout classes", () => {
+  const layout = readPackageFile("src", "lib", "layout", "layout.ts");
+
+  for (const selector of [
+    "viking-page-shell",
+    "viking-section",
+    "viking-stack",
+    "viking-grid",
+    "viking-cluster",
+  ]) {
+    assert.match(layout, new RegExp(`selector: \\\"${selector}\\\"`));
+  }
+  assert.match(layout, /page-inner-wrapper/);
+  assert.match(layout, /viking-grid--equal-rows/);
+  assert.match(layout, /viking-cluster--/);
+});
+
 test("component spacing declarations use Viking spacing tokens", () => {
   const componentFiles = [
     ...sourceFilesIn(path.join(packageDir, "src", "lib")),

@@ -5,6 +5,7 @@ import PageMockup from '../components/PageMockup.astro';
 import { SITE } from '../lib/site';
 import { COMPONENT_COUNT, SHOWCASE_CATEGORIES } from '../lib/component-registry';
 import { LIBRARY_COMPONENT_COUNT } from '../lib/library-stats';
+import vikingUiPackage from '@dataengineeringformachinelearning/viking-ui/package.json';
 import type { ComponentSnippet } from '../lib/component-registry';
 
 const featuredComponents = SHOWCASE_CATEGORIES.flatMap((category) =>
@@ -69,9 +70,9 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
       <div class="landing-hero-copy">
         <div class="landing-hero-badge">
           <span class="landing-hero-badge-dot" aria-hidden="true"></span>
-          <span>Universal design system / v4 / Apache-2.0</span>
+          <span>Viking-UI / v{vikingUiPackage.version} / Apache-2.0</span>
         </div>
-        <h1 class="viking-heading viking-heading-xl">
+        <h1 class="viking-heading viking-heading-xl viking-font-display">
           Precision-engineered UI for operational intelligence.
         </h1>
         <p class="viking-text-muted">

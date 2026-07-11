@@ -640,7 +640,8 @@
 .component-showcase-footer {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
+  flex-direction: column;
   justify-content: space-between;
   gap: var(--viking-space-2);
   padding-top: var(--viking-space-2);
@@ -651,6 +652,8 @@
 .component-showcase-frameworks {
   display: flex;
   flex-wrap: wrap;
+  align-items: stretch;
+  flex-direction: column;
   gap: var(--viking-space-0-5);
 }
 
@@ -678,6 +681,8 @@
   text-decoration: none;
   min-height: var(--viking-control-height, 44px);
   padding-inline: var(--viking-space-1);
+  justify-content: center;
+  width: 100%;
 }
 
 .component-showcase-cta:hover {
@@ -1985,15 +1990,15 @@ viking-card-wc.landing-doctrine-card > * {
   overflow-x: auto;
 }
 
-@media (max-width: 37.5rem) {
+@media (min-width: 37.5rem) {
   .component-showcase-footer,
   .component-showcase-frameworks {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
   }
 
   .component-showcase-cta {
-    justify-content: center;
-    width: 100%;
+    justify-content: flex-start;
+    width: auto;
   }
 }

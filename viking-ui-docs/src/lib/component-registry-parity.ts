@@ -14,6 +14,50 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     components: [
       entry(
         {
+          id: "layout",
+          name: "Layout primitives",
+          description:
+            "Reusable page shell, section, stack, grid, and cluster composition with token-owned responsive behavior.",
+          preview: `<div class="page-inner-wrapper viking-stack viking-stack--compact">
+  <section class="viking-section viking-stack viking-stack--compact">
+    <span class="viking-label">Reusable layout</span>
+    <div class="viking-grid viking-grid--3 viking-grid--equal-rows">
+      <div class="viking-card viking-card-compact">Availability</div>
+      <div class="viking-card viking-card-compact">Latency</div>
+      <div class="viking-card viking-card-compact">Risk</div>
+    </div>
+    <div class="viking-cluster viking-cluster--end">
+      <viking-button-wc variant="primary">Review</viking-button-wc>
+    </div>
+  </section>
+</div>`,
+          selector: "viking-page-shell",
+          tags: ["angular", "layout", "responsive"],
+        },
+        snippets(
+          `<viking-page-shell>
+  <viking-section>
+    <viking-stack spacing="compact">
+      <viking-grid [columns]="3" [equalRows]="true">...</viking-grid>
+      <viking-cluster justify="end">...</viking-cluster>
+    </viking-stack>
+  </viking-section>
+</viking-page-shell>`,
+          `<div class="page-inner-wrapper viking-stack">
+  <section class="viking-section">
+    <div class="viking-grid viking-grid--3">...</div>
+  </section>
+</div>`,
+          `<main class="page-inner-wrapper viking-stack">
+  <section class="viking-section">
+    <div class="viking-grid viking-grid--3">...</div>
+  </section>
+</main>`,
+          `shell.className = 'page-inner-wrapper viking-stack';`,
+        ),
+      ),
+      entry(
+        {
           id: "app-header",
           name: "App header",
           description:

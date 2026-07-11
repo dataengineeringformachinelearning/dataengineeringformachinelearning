@@ -59,6 +59,7 @@
 
 .blue-notes-hero-actions {
   margin-top: var(--viking-space-2);
+  width: 100%;
 }
 
 .blue-notes-hero-actions .viking-button {
@@ -66,6 +67,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--viking-space-1);
+  width: 100%;
 }
 
 .blue-notes-featured,
@@ -110,6 +112,8 @@
 }
 
 .blue-note-card-meta {
+  align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-sm);
@@ -155,6 +159,8 @@
 }
 
 .blue-note-card-footer {
+  align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -534,10 +540,10 @@
   padding: var(--viking-card-padding);
 }
 
-@media (max-width: 37.5rem) {
+@media (min-width: 37.5rem) {
   .blue-notes-hero-actions,
   .blue-notes-hero-actions .viking-button {
-    width: 100%;
+    width: auto;
   }
 
   .blue-notes-hero-actions .viking-button {
@@ -546,7 +552,7 @@
 
   .blue-note-card-meta,
   .blue-note-card-footer {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
   }
 }

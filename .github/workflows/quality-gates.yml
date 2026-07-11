@@ -22,16 +22,26 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Install Trivy
+        run: |
+          curl -fsSL https://aquasecurity.github.io/trivy-repo/deb/public.key \
+            | gpg --dearmor \
+            | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
+            | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
       - name: Install uv
         run: pip install uv
 
-      - name: Install frontend deps (theme + axe checks)
-        working-directory: frontend
+      - name: Install workspace dependencies (theme + axe checks)
         run: npm ci --legacy-peer-deps
 
       - name: Install backend deps (migration linter)
-        working-directory: backend
-        run: pip install -r requirements.txt
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/pip install -r backend/requirements.txt
 
       - name: Install pre-commit hooks
         run: uvx pre-commit install --install-hooks --hook-type pre-commit --hook-type pre-push

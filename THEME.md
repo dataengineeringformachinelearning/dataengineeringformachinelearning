@@ -62,14 +62,15 @@ High-quality references for primitive clarity, data density, and precision engin
 
 [Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/packages/viking-ui) follows a **composable primitive** model: consume package components and synced CSS from applications, and place all styling behavior in the package.
 
-| Pattern                  | Viking-UI equivalent                                                   | Notes                                                                |
-| ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                | Machined top-edge hairline, `--viking-radius-lg`, no glass blur      |
-| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)          | Label, description, error; shake on invalid                          |
-| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking                   |
-| Dark-first shell         | `data-theme="dark"` default                                            | Light mode shifts electric/crimson lightness only — no hue inversion |
-| Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                     |
-| Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
+| Pattern                  | Viking-UI equivalent                                                                   | Notes                                                                |
+| ------------------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                                | Machined top-edge hairline, `--viking-radius-lg`, no glass blur      |
+| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)                          | Label, description, error; shake on invalid                          |
+| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`)                 | Min 44px touch on mobile; semibold + wide tracking                   |
+| Dark-first shell         | `data-theme="dark"` default                                                            | Light mode shifts electric/crimson lightness only — no hue inversion |
+| Accessible focus         | `--viking-ring` 2px + 2px offset                                                       | Visible on keyboard; never remove for aesthetics                     |
+| Settings / billing forms | `viking-form-section`, grouped fields                                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
+| Page composition         | `viking-page-shell`, `viking-section`, `viking-stack`, `viking-grid`, `viking-cluster` | Responsive rhythm stays package-owned                                |
 
 **Palette discipline:** **deep navy/black command surfaces, dark steel metallic borders, and restrained electric-teal/crimson battlefield accents** — luxurious, severe, and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** inside Viking-UI so Django, Astro, Angular, docs, widgets, and Swagger share the same CSS variables without Tailwind runtime or platform-local stylesheets.
 
@@ -699,6 +700,15 @@ Compose every input through **`viking-field`** — the label wraps the control f
 | Control surface | `--viking-surface-alt` bg, `--viking-border`, `--viking-radius-sm`, min-height `--viking-control-height` |
 | Focus           | `--viking-ring` outline on `:focus-visible`                                                              |
 
+### 8.9 Layout composition
+
+Angular pages compose `viking-page-shell` → `viking-section` with
+`viking-stack`, `viking-grid`, and `viking-cluster`. These primitives expose
+only token-backed density, column, equal-row, and alignment choices. Static
+surfaces use their matching `.page-inner-wrapper`, `.viking-section`,
+`.viking-stack`, `.viking-grid`, and `.viking-cluster` classes. Do not recreate
+these contracts with app-local wrappers or breakpoint CSS.
+
 ---
 
 ## 9. Z-index layering
@@ -858,4 +868,4 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 
 When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
 
-**Version:** Viking-UI premium palette v4.1 (precision-engineered command aesthetic, deep navy / teal / crimson, composable primitives, dense operational data, unified package governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+**Theme identity:** Viking-UI premium palette (precision-engineered command aesthetic, deep navy / teal / crimson, composable primitives, dense operational data, unified package governance). The publish version is read from `packages/viking-ui/package.json`; never duplicate it in customer-facing UI. Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

@@ -55,6 +55,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 | Dark-first shell         | `data-theme="dark"` default                                            | Preserve dark-first; light mode shifts lightness only        |
 | Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Never remove `:focus-visible` for aesthetics                 |
 | Settings / billing forms | `viking-form-section` + grouped `viking-field`                         | Section rhythm: `--viking-space-3` / `--viking-font-size-lg` |
+| Page layouts             | `viking-page-shell` → `viking-section` + stack/grid/cluster            | Never rebuild package breakpoints or gutters locally          |
 
 **Intentional palette:** **deep charcoals, dark steel metallic borders, restrained teal/crimson battlefield accents** — Lockheed Martin × The Northman precision digital battlefield, not startup-neutral.
 
@@ -68,6 +69,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 - **Never** add Angular Material, ng-zorro, PrimeNG, Bootstrap, shadcn runtimes, or other third-party UI kits.
 - **Never** create one-off styled buttons, inputs, modals, toasts, tables, or charts when a `viking-*` component exists.
 - **Prefer** shell primitives: `viking-app-header`, `viking-app-sidebar`, `viking-page-header`, `viking-footer`, `viking-site-navbar`, `viking-site-footer`.
+- **Compose** page layouts with `viking-page-shell`, `viking-section`, `viking-stack`, `viking-grid`, and `viking-cluster`; static surfaces use their matching package CSS classes.
 - **Charts:** `viking-chart` (native SVG) only — no ApexCharts, Chart.js, D3 wrappers, or canvas libs.
 - **Icons:** `viking-icon` only — no Material Icons, Font Awesome, or Lucide runtime packages.
 - **Feedback:** `viking-toast` / `VikingToastService`, `viking-callout`, `viking-badge` — not browser `alert()` or ad-hoc banners.

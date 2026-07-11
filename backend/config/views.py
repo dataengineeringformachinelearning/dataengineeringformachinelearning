@@ -24,13 +24,11 @@ def honeypot_trap(request: HttpRequest, path: str) -> HttpResponse:
   This catch-all view checks if the requested path is a registered honeypot trap.
   If so, it logs the interaction for later threat analysis and ML training.
   """
-  from monitor.models import HoneypotEndpoint
   from ml.ml_services import log_honeypot_interaction
+  from monitor.models import HoneypotEndpoint
 
   # Check if this is a registered honeypot trap
-  honeypot = HoneypotEndpoint.objects.filter(
-    path=f"/{path}", is_active=True
-  ).first()
+  honeypot = HoneypotEndpoint.objects.filter(path=f"/{path}", is_active=True).first()
 
   if honeypot:
     source_ip = (

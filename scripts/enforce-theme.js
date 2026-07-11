@@ -1379,7 +1379,7 @@ const main = () => {
     console.log("  npm run theme:clean -- --apply");
   }
 
-  console.log("\nReference: THEME.md — Viking-UI premium palette v2\n");
+  console.log("\nReference: THEME.md — Viking-UI premium command palette\n");
 
   if (report.findings.length > 0 && !apply) {
     process.exit(1);

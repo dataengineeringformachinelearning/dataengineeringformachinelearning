@@ -4,6 +4,7 @@ from datetime import timedelta
 from typing import Any
 
 from asgiref.sync import sync_to_async
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -12,6 +13,7 @@ from utils.retention import DEK_ROTATION_MAX_AGE_DAYS, RAW_TELEMETRY_RETENTION_D
 from monitor.models import DataEncryptionKey
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
 
 # Stagger daily jobs so they do not hammer Postgres/Stripe at worker startup.
 DAILY_COMPLIANCE_OFFSET_SECONDS = 0
@@ -257,7 +259,6 @@ class Command(BaseCommand):
   def analyze_honeypots(self) -> None:
     """Process honeypot interactions and feed to threat model."""
     from ml.ml_services import analyze_honeypot_threats
-    from monitor.models import HoneypotEndpoint
 
     # Analyze platform-wide honeypot data
     platform_stats = analyze_honeypot_threats(is_platform=True)

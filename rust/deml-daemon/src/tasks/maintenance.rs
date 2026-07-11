@@ -23,15 +23,15 @@ const THREAT_INTELLIGENCE_RETENTION_DAYS: i32 = 90;
 /// Runs database cleanup: deletes old telemetry, audit logs, and outbox events.
 #[tracing::instrument(name = "db_cleanup", skip_all)]
 pub async fn run_db_cleanup(pool: &PgPool) -> Result<()> {
-
     let cutoff = Utc::now() - chrono::Duration::days(RAW_TELEMETRY_RETENTION_DAYS as i64);
     let outbox_cutoff = Utc::now() - chrono::Duration::days(OUTBOX_PUBLISHED_RETENTION_DAYS as i64);
     let outbox_dlq_cutoff = Utc::now() - chrono::Duration::days(OUTBOX_DLQ_RETENTION_DAYS as i64);
-    let threat_cutoff = Utc::now() - chrono::Duration::days(THREAT_INTELLIGENCE_RETENTION_DAYS as i64);
+    let threat_cutoff =
+        Utc::now() - chrono::Duration::days(THREAT_INTELLIGENCE_RETENTION_DAYS as i64);
 
     // Purge legacy duplicate ThreatIntelligence records (pre-constraint duplicates)
     info!("Removing legacy duplicate ThreatIntelligence records...");
-    let dupes: i64 = sqlx::query_scalar(
+    let dupes = sqlx::query(
         r#"
         DELETE FROM threat_intelligence AS newer
         USING threat_intelligence AS older
@@ -42,72 +42,75 @@ pub async fn run_db_cleanup(pool: &PgPool) -> Result<()> {
           AND newer.location IS NOT DISTINCT FROM older.location
         "#,
     )
-    .fetch_one(pool)
-    .await.unwrap_or(0);
-    info!("Deleted {} legacy duplicate ThreatIntelligence records", dupes);
+    .execute(pool)
+    .await
+    .map(|result| result.rows_affected())
+    .unwrap_or(0);
+    info!(
+        "Deleted {} legacy duplicate ThreatIntelligence records",
+        dupes
+    );
 
     // Delete old endpoints (raw telemetry)
-    let endpoints_deleted: i64 = sqlx::query_scalar(
-        "DELETE FROM endpoints WHERE last_tested < $1",
-    )
-    .bind(cutoff)
-    .fetch_one(pool)
-    .await
-    .context("failed to delete old endpoints")?;
+    let endpoints_deleted = sqlx::query("DELETE FROM endpoints WHERE last_tested < $1")
+        .bind(cutoff)
+        .execute(pool)
+        .await
+        .context("failed to delete old endpoints")?
+        .rows_affected();
 
     // Delete old audit logs (archived to ClickHouse first by telemetry_worker)
-    let audit_deleted: i64 = sqlx::query_scalar(
-        "DELETE FROM audit_log WHERE timestamp < $1",
-    )
-    .bind(cutoff)
-    .fetch_one(pool)
-    .await
-    .context("failed to delete old audit logs")?;
+    let audit_deleted = sqlx::query("DELETE FROM audit_logs WHERE timestamp < $1")
+        .bind(cutoff)
+        .execute(pool)
+        .await
+        .context("failed to delete old audit logs")?
+        .rows_affected();
 
     // Delete old cookie consent records
-    let cookie_deleted: i64 = sqlx::query_scalar(
-        "DELETE FROM cookie_consent WHERE created_at < $1",
-    )
-    .bind(cutoff)
-    .fetch_one(pool)
-    .await
-    .context("failed to delete old cookie consent")?;
+    let cookie_deleted = sqlx::query("DELETE FROM cookie_consents WHERE created_at < $1")
+        .bind(cutoff)
+        .execute(pool)
+        .await
+        .context("failed to delete old cookie consent")?
+        .rows_affected();
 
     // Delete published outbox events
-    let outbox_published_deleted: i64 = sqlx::query_scalar(
-        "DELETE FROM outbox_events WHERE is_published = true AND published_at < $1",
+    let outbox_published_deleted = sqlx::query(
+        "DELETE FROM monitor_outboxevent WHERE is_published = true AND published_at < $1",
     )
     .bind(outbox_cutoff)
-    .fetch_one(pool)
+    .execute(pool)
     .await
-    .context("failed to delete published outbox events")?;
+    .context("failed to delete published outbox events")?
+    .rows_affected();
 
     // Delete DLQ outbox events (failed retries)
-    let outbox_dlq_deleted: i64 = sqlx::query_scalar(
-        "DELETE FROM outbox_events WHERE is_published = false AND attempts >= 5 AND created_at < $1",
+    let outbox_dlq_deleted = sqlx::query(
+        "DELETE FROM monitor_outboxevent WHERE is_published = false AND attempts >= 5 AND created_at < $1",
     )
     .bind(outbox_dlq_cutoff)
-    .fetch_one(pool)
+    .execute(pool)
     .await
-    .context("failed to delete DLQ outbox events")?;
+    .context("failed to delete DLQ outbox events")?
+    .rows_affected();
 
     // Delete old hourly aggregate analytics (after daily rollups materialized)
-    let hourly_deleted: i64 = sqlx::query_scalar(
-        "DELETE FROM aggregated_analytics WHERE bucket_size = '1h' AND timestamp < $1",
-    )
-    .bind(cutoff)
-    .fetch_one(pool)
-    .await
-    .context("failed to delete hourly aggregates")?;
+    let hourly_deleted =
+        sqlx::query("DELETE FROM aggregated_analytics WHERE bucket_size = '1h' AND timestamp < $1")
+            .bind(cutoff)
+            .execute(pool)
+            .await
+            .context("failed to delete hourly aggregates")?
+            .rows_affected();
 
     // Delete old threat intelligence
-    let threat_deleted: i64 = sqlx::query_scalar(
-        "DELETE FROM threat_intelligence WHERE timestamp < $1",
-    )
-    .bind(threat_cutoff)
-    .fetch_one(pool)
-    .await
-    .context("failed to delete old threat intelligence")?;
+    let threat_deleted = sqlx::query("DELETE FROM threat_intelligence WHERE timestamp < $1")
+        .bind(threat_cutoff)
+        .execute(pool)
+        .await
+        .context("failed to delete old threat intelligence")?
+        .rows_affected();
 
     info!(
         endpoints = endpoints_deleted,
@@ -126,7 +129,6 @@ pub async fn run_db_cleanup(pool: &PgPool) -> Result<()> {
 /// Runs VACUUM ANALYZE on all tables to optimize storage and query performance.
 #[tracing::instrument(name = "optimize_database", skip_all)]
 pub async fn run_optimize_database(pool: &PgPool) -> Result<()> {
-
     // Simple VACUUM ANALYZE on core tables
     let tables = [
         "endpoints",
@@ -151,45 +153,110 @@ pub async fn run_optimize_database(pool: &PgPool) -> Result<()> {
     Ok(())
 }
 
-/// Archives hourly analytics into daily rollup materialized view.
+/// Archives yesterday's hourly analytics into symmetrical user and Tenant0 rollups.
 #[tracing::instrument(name = "archive_reports", skip_all)]
 pub async fn run_archive_reports(pool: &PgPool) -> Result<()> {
-
-    // Insert daily rollups from hourly aggregates
-    let archived: i64 = sqlx::query_scalar(
+    let user_archived = sqlx::query(
         r#"
-        INSERT INTO report_archive (user_id, date, avg_response_time, p95_response_time, p99_response_time, uptime_pct)
+        INSERT INTO report_archives (
+            id, user_id, is_platform, report_date, period_start, period_end,
+            total_requests, avg_latency_ms, p99_latency_ms, error_rate_percent,
+            threats_detected, active_incidents, unique_visitors,
+            total_vulnerabilities, summary_json, created_at
+        )
         SELECT
-            user_id,
-            DATE(timestamp) as date,
-            AVG(response_time) as avg_response_time,
-            PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_time) as p95_response_time,
-            PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY response_time) as p99_response_time,
-            AVG(CASE WHEN status_code < 500 THEN 100.0 ELSE 0.0 END) as uptime_pct
+            md5(user_id::text || DATE(timestamp)::text)::uuid,
+            user_id, false, DATE(timestamp), DATE(timestamp), DATE(timestamp) + INTERVAL '1 day',
+            SUM(total_requests),
+            CASE WHEN SUM(total_requests) > 0
+                THEN SUM(avg_latency_ms * total_requests) / SUM(total_requests)
+                ELSE 0 END,
+            MAX(p99_latency_ms),
+            CASE WHEN SUM(total_requests) > 0
+                THEN SUM(error_rate_percent * total_requests) / SUM(total_requests)
+                ELSE 0 END,
+            SUM(threats_detected), MAX(active_incidents), MAX(unique_visitors),
+            0, jsonb_build_object('hourly_bucket_count', COUNT(*)), NOW()
         FROM aggregated_analytics
         WHERE bucket_size = '1h'
+          AND is_platform = false
+          AND user_id IS NOT NULL
           AND timestamp >= CURRENT_DATE - INTERVAL '2 days'
           AND timestamp < CURRENT_DATE
         GROUP BY user_id, DATE(timestamp)
-        ON CONFLICT (user_id, date) DO UPDATE SET
-            avg_response_time = EXCLUDED.avg_response_time,
-            p95_response_time = EXCLUDED.p95_response_time,
-            p99_response_time = EXCLUDED.p99_response_time,
-            uptime_pct = EXCLUDED.uptime_pct
+        ON CONFLICT (user_id, report_date) WHERE is_platform = false DO UPDATE SET
+            period_start = EXCLUDED.period_start,
+            period_end = EXCLUDED.period_end,
+            total_requests = EXCLUDED.total_requests,
+            avg_latency_ms = EXCLUDED.avg_latency_ms,
+            p99_latency_ms = EXCLUDED.p99_latency_ms,
+            error_rate_percent = EXCLUDED.error_rate_percent,
+            threats_detected = EXCLUDED.threats_detected,
+            active_incidents = EXCLUDED.active_incidents,
+            unique_visitors = EXCLUDED.unique_visitors,
+            summary_json = EXCLUDED.summary_json
         "#,
     )
-    .fetch_one(pool)
+    .execute(pool)
     .await
-    .unwrap_or(0);
+    .context("failed to archive user report rollups")?
+    .rows_affected();
 
-    info!("Archived {} daily report records", archived);
+    let platform_archived = sqlx::query(
+        r#"
+        INSERT INTO report_archives (
+            id, user_id, is_platform, report_date, period_start, period_end,
+            total_requests, avg_latency_ms, p99_latency_ms, error_rate_percent,
+            threats_detected, active_incidents, unique_visitors,
+            total_vulnerabilities, summary_json, created_at
+        )
+        SELECT
+            md5('platform:' || DATE(timestamp)::text)::uuid,
+            NULL, true, DATE(timestamp), DATE(timestamp), DATE(timestamp) + INTERVAL '1 day',
+            SUM(total_requests),
+            CASE WHEN SUM(total_requests) > 0
+                THEN SUM(avg_latency_ms * total_requests) / SUM(total_requests)
+                ELSE 0 END,
+            MAX(p99_latency_ms),
+            CASE WHEN SUM(total_requests) > 0
+                THEN SUM(error_rate_percent * total_requests) / SUM(total_requests)
+                ELSE 0 END,
+            SUM(threats_detected), MAX(active_incidents), MAX(unique_visitors),
+            0, jsonb_build_object('hourly_bucket_count', COUNT(*)), NOW()
+        FROM aggregated_analytics
+        WHERE bucket_size = '1h'
+          AND is_platform = true
+          AND timestamp >= CURRENT_DATE - INTERVAL '2 days'
+          AND timestamp < CURRENT_DATE
+        GROUP BY DATE(timestamp)
+        ON CONFLICT (report_date) WHERE is_platform = true DO UPDATE SET
+            period_start = EXCLUDED.period_start,
+            period_end = EXCLUDED.period_end,
+            total_requests = EXCLUDED.total_requests,
+            avg_latency_ms = EXCLUDED.avg_latency_ms,
+            p99_latency_ms = EXCLUDED.p99_latency_ms,
+            error_rate_percent = EXCLUDED.error_rate_percent,
+            threats_detected = EXCLUDED.threats_detected,
+            active_incidents = EXCLUDED.active_incidents,
+            unique_visitors = EXCLUDED.unique_visitors,
+            summary_json = EXCLUDED.summary_json
+        "#,
+    )
+    .execute(pool)
+    .await
+    .context("failed to archive Tenant0 report rollups")?
+    .rows_affected();
+
+    info!(
+        user_archived,
+        platform_archived, "archived daily report records"
+    );
     Ok(())
 }
 
 /// Purges old data from ClickHouse archival storage via HTTP interface.
 #[tracing::instrument(name = "cleanup_clickhouse", skip_all)]
 pub async fn run_cleanup_clickhouse(clickhouse_url: &str) -> Result<()> {
-
     let client = Client::new();
     // Convert ClickHouse URI to HTTP endpoint
     let http_url = clickhouse_url
@@ -199,29 +266,73 @@ pub async fn run_cleanup_clickhouse(clickhouse_url: &str) -> Result<()> {
         .to_string();
 
     // Purge audit_archive (180 days retention)
-    let audit_cutoff = (Utc::now() - chrono::Duration::days(CH_AUDIT_ARCHIVE_RETENTION_DAYS as i64)).format("%Y-%m-%d");
-    let query = format!("DELETE FROM audit_archive WHERE timestamp < '{}'", audit_cutoff);
-    match client.post(format!("{}/?query={}&default_week_start=0", http_url, query)).send().await {
-        Ok(resp) if resp.status().is_success() => info!("Purged audit_archive before {}", audit_cutoff),
+    let audit_cutoff = (Utc::now()
+        - chrono::Duration::days(CH_AUDIT_ARCHIVE_RETENTION_DAYS as i64))
+    .format("%Y-%m-%d");
+    let query = format!(
+        "DELETE FROM audit_archive WHERE timestamp < '{}'",
+        audit_cutoff
+    );
+    match client
+        .post(format!(
+            "{}/?query={}&default_week_start=0",
+            http_url, query
+        ))
+        .send()
+        .await
+    {
+        Ok(resp) if resp.status().is_success() => {
+            info!("Purged audit_archive before {}", audit_cutoff)
+        }
         Ok(resp) => warn!("audit_archive cleanup returned: {}", resp.status()),
         Err(e) => warn!("audit_archive cleanup skipped: {}", e),
     }
 
     // Purge security_events (365 days retention)
-    let security_cutoff = (Utc::now() - chrono::Duration::days(CH_SECURITY_EVENTS_RETENTION_DAYS as i64)).format("%Y-%m-%d");
-    let query = format!("DELETE FROM security_events WHERE timestamp < '{}'", security_cutoff);
-    match client.post(format!("{}/?query={}&default_week_start=0", http_url, query)).send().await {
-        Ok(resp) if resp.status().is_success() => info!("Purged security_events before {}", security_cutoff),
+    let security_cutoff = (Utc::now()
+        - chrono::Duration::days(CH_SECURITY_EVENTS_RETENTION_DAYS as i64))
+    .format("%Y-%m-%d");
+    let query = format!(
+        "DELETE FROM security_events WHERE timestamp < '{}'",
+        security_cutoff
+    );
+    match client
+        .post(format!(
+            "{}/?query={}&default_week_start=0",
+            http_url, query
+        ))
+        .send()
+        .await
+    {
+        Ok(resp) if resp.status().is_success() => {
+            info!("Purged security_events before {}", security_cutoff)
+        }
         Ok(resp) => warn!("security_events cleanup returned: {}", resp.status()),
         Err(e) => warn!("security_events cleanup skipped: {}", e),
     }
 
     // Purge asset_vulnerability_ledger (730 days)
-    let vuln_cutoff = (Utc::now() - chrono::Duration::days(CH_TELEMETRY_RETENTION_DAYS as i64)).format("%Y-%m-%d");
-    let query = format!("DELETE FROM asset_vulnerability_ledger WHERE timestamp < '{}'", vuln_cutoff);
-    match client.post(format!("{}/?query={}&default_week_start=0", http_url, query)).send().await {
-        Ok(resp) if resp.status().is_success() => info!("Purged asset_vulnerability_ledger before {}", vuln_cutoff),
-        Ok(resp) => warn!("asset_vulnerability_ledger cleanup returned: {}", resp.status()),
+    let vuln_cutoff = (Utc::now() - chrono::Duration::days(CH_TELEMETRY_RETENTION_DAYS as i64))
+        .format("%Y-%m-%d");
+    let query = format!(
+        "DELETE FROM asset_vulnerability_ledger WHERE timestamp < '{}'",
+        vuln_cutoff
+    );
+    match client
+        .post(format!(
+            "{}/?query={}&default_week_start=0",
+            http_url, query
+        ))
+        .send()
+        .await
+    {
+        Ok(resp) if resp.status().is_success() => {
+            info!("Purged asset_vulnerability_ledger before {}", vuln_cutoff)
+        }
+        Ok(resp) => warn!(
+            "asset_vulnerability_ledger cleanup returned: {}",
+            resp.status()
+        ),
         Err(e) => warn!("asset_vulnerability_ledger cleanup skipped: {}", e),
     }
 

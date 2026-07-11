@@ -199,10 +199,9 @@ impl Config {
         if !production {
             return Ok(());
         }
-        if env::var("DEML_TRANSPORT_SECURITY")
+        if !env::var("DEML_TRANSPORT_SECURITY")
             .unwrap_or_else(|_| "required".to_string())
-            .to_ascii_lowercase()
-            != "required"
+            .eq_ignore_ascii_case("required")
         {
             bail!("DEML_TRANSPORT_SECURITY must be required in production");
         }

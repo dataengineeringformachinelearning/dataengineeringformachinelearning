@@ -15,7 +15,7 @@ import {
 const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
 const pageTitle = 'DEML — Operational Intelligence for the Digital Battlefield';
 const pageDescription =
-  'Precision-engineered observability for contested ML infrastructure. Ingest telemetry at scale, forecast SLA breach before degradation manifests, and enforce symmetrical tenant isolation through versioned event projections.';
+  'Operational intelligence for resilient AI systems. See service health in real time, forecast reliability risks before impact, and protect every customer workspace by design.';
 const homeJsonLd = [
   organizationJsonLd(MARKETING_URL),
   webSiteJsonLd(MARKETING_URL),
@@ -35,7 +35,7 @@ const capabilities = [
     tag: 'TELEMETRY',
     title: 'Operational Visibility',
     description:
-      'Every request is traced, enriched at the edge, and projected in under one second. OpenTelemetry flows into ClickHouse rollups and Firestore dashboards — continuous witness before drift becomes downtime.',
+      'See performance, availability, and emerging risk in one live operational view. Fast updates turn subtle drift into an early warning before customers feel the impact.',
     icon: 'analytics',
     metrics: [
       { label: 'P99 Latency', value: '42ms', trend: 'down' },
@@ -73,7 +73,7 @@ const capabilities = [
     tag: 'PIPELINE',
     title: 'Event Projections',
     description:
-      'Commands ingress through Firebase, commit to a transactional Outbox, and stream to Redpanda. Idempotent workers materialize live views in Firestore — versioned, replayable, symmetrical across every tenant.',
+      'Every operational change is durable, replayable, and reflected across live views without losing history. The same reliable path protects every customer workspace.',
     icon: 'layers',
     metrics: [
       { label: 'Events/sec', value: '8.2K', trend: 'up' },
@@ -121,7 +121,7 @@ const securityPillars = [
   { icon: 'lock', label: 'AES-256-GCM at rest', detail: 'Field-level encryption with KMS rotation every 90 days' },
   { icon: 'fingerprint', label: 'UUID isolation', detail: 'No sequential identifiers. No cross-tenant data paths.' },
   { icon: 'gpp_maybe', label: 'Behavioral enrichment', detail: 'ASN, ISP, and biometric signals at ingress' },
-  { icon: 'verified_user', label: 'Zero-trust perimeter', detail: 'Firebase JWT + ABAC on every endpoint' },
+  { icon: 'verified_user', label: 'Zero-trust perimeter', detail: 'Verified identity and policy checks on every protected action' },
 ];
 
 const integrations = [
@@ -288,8 +288,8 @@ const integrations = [
           <span class="section-tag">EMBED ANYWHERE</span>
           <h2 id="widget-title">Live Status Widget</h2>
           <p>
-            One script tag streams real-time telemetry from any surface. Zero runtime dependencies,
-            full OpenTelemetry enrichment, and automatic tenant isolation at every boundary.
+            One script tag brings live service health to any surface. Zero runtime dependencies,
+            privacy-aware operational context, and automatic workspace isolation at every boundary.
           </p>
           <div class="embed-code">
             <code set:html={widgetEmbedSnippetHtml} />

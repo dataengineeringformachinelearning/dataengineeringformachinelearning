@@ -41,7 +41,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -53,6 +53,9 @@ jobs:
       - name: Install workspace dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Isolate Storybook's supported Vite toolchain
+        run: npm ci --legacy-peer-deps --prefix packages/viking-ui
+
       - name: Run theme enforcement check
         run: node scripts/enforce-theme.js
 
@@ -63,7 +66,7 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Build Storybook
-        run: npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui
+        run: npm run build-storybook --prefix packages/viking-ui
 
       - name: Run accessibility checks on Storybook output
         run: |

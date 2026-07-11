@@ -52,9 +52,9 @@ describe('Viking-UI docs smoke', () => {
     cy.request({ url: docsUrl, failOnStatusCode: false }).then(resp => {
       if (resp.status === 200) {
         cy.visit(docsUrl);
-        cy.contains(/Stop fighting your component library/i).should('exist');
+        cy.contains(/Precision-engineered UI for operational intelligence/i).should('exist');
         cy.visit(`${docsUrl}/components`);
-        cy.get('#cat-foundations').should('exist');
+        cy.get('#foundations').should('exist');
       } else {
         cy.log('Viking-UI docs server not running — skipping live visit');
       }
