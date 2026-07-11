@@ -25,6 +25,15 @@ const DEFAULT_INDEXES: readonly string[] = [
   "DEML UI",
 ];
 
+/** Map crawler index names → public origin when hits only store path. */
+const INDEX_ORIGIN: Readonly<Record<string, string>> = {
+  dataengineeringformachinelearning_com_zjafyosh2v_pages:
+    "https://dataengineeringformachinelearning.com",
+  deml_app_pages: "https://deml.app",
+  deml_backend_pages: "https://backend.deml.app",
+  "DEML UI": "https://ui.dataengineeringformachinelearning.com",
+};
+
 const readConfig = (): AlgoliaConfig => {
   if (typeof globalThis === "undefined") {
     return {};
@@ -37,15 +46,56 @@ const readConfig = (): AlgoliaConfig => {
 const asString = (value: unknown): string | null =>
   typeof value === "string" && value.trim() ? value : null;
 
+const asHttpUrl = (value: unknown): string | null => {
+  const raw = asString(value);
+  if (!raw) {
+    return null;
+  }
+  if (/^https?:\/\//i.test(raw)) {
+    return raw;
+  }
+  return null;
+};
+
+const resolveHitUrl = (
+  hit: Record<string, unknown>,
+  indexName: string,
+): string | null => {
+  const objectId = asString(hit["objectID"]);
+  const direct =
+    asHttpUrl(hit["url"]) ||
+    asHttpUrl(hit["url_without_anchor"]) ||
+    asHttpUrl(hit["permalink"]) ||
+    asHttpUrl(hit["link"]) ||
+    asHttpUrl(objectId);
+  if (direct) {
+    return direct;
+  }
+
+  const path = asString(hit["path"]);
+  if (!path) {
+    return null;
+  }
+
+  const hostname = asString(hit["hostname"]);
+  const origin =
+    INDEX_ORIGIN[indexName] ||
+    (hostname ? `https://${hostname.replace(/^https?:\/\//i, "")}` : null);
+  if (!origin) {
+    return null;
+  }
+  try {
+    return new URL(path.startsWith("/") ? path : `/${path}`, origin).href;
+  } catch {
+    return null;
+  }
+};
+
 const hitToItem = (
   hit: Record<string, unknown>,
   indexName: string,
 ): AlgoliaHitItem | null => {
-  const objectId = asString(hit["objectID"]);
-  const url =
-    asString(hit["url"]) ||
-    asString(hit["url_without_anchor"]) ||
-    (objectId?.startsWith("http") ? objectId : null);
+  const url = resolveHitUrl(hit, indexName);
   if (!url) {
     return null;
   }
@@ -88,7 +138,7 @@ const hitToItem = (
       indexName,
       path,
       ...(keywordField ? keywordField.split(/[,\s]+/).filter(Boolean) : []),
-    ].filter(Boolean),
+    ].filter(Boolean) as string[],
   };
 };
 
@@ -136,6 +186,8 @@ export const searchAlgoliaPages = async (
             attributesToRetrieve: [
               "url",
               "url_without_anchor",
+              "permalink",
+              "link",
               "title",
               "description",
               "content",
@@ -144,6 +196,7 @@ export const searchAlgoliaPages = async (
               "keywords",
               "hierarchy",
               "type",
+              "objectID",
             ].join(","),
             attributesToHighlight: "[]",
           }).toString(),
