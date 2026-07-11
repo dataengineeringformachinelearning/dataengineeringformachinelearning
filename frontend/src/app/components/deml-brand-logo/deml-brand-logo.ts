@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
 
-/** Official DEML brand mark via viking-ui icons. */
+/** Official DEML brand mark via viking-ui icons. Uses Drakkar (Viking longship) icon. */
 @Component({
   selector: 'deml-brand-logo',
   imports: [VikingIcon],
@@ -10,7 +10,7 @@ import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
     'aria-hidden': 'true',
     '[class]': 'hostClass()',
   },
-  template: `<viking-icon name="deml" [size]="size()" color="accent" />`,
+  template: `<viking-icon name="drakkar" [size]="size()" color="accent" />`,
   styles: [
     `
       :host {
