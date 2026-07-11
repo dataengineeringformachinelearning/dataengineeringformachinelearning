@@ -1,6 +1,10 @@
 # Large binary assets tracked via Git LFS (required for Hugging Face Spaces push).
 # Self-hosted web fonts stay in Git so deployment archives contain real font bytes,
 # not Git LFS pointer files served as .woff2.
+# Small preview images are stored as regular git blobs for proper CDN serving in README.
+# Exclude preview images from LFS (they're small enough for direct git storage)
+/frontend/public/data-engineering-for-machine-learning-preview.png filter=
+/marketing/public/data-engineering-for-machine-learning-preview.png filter=
 *.png filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.jpeg filter=lfs diff=lfs merge=lfs -text

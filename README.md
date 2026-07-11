@@ -12,7 +12,7 @@ license: apache-2.0
 
 # Data Engineering for AI Engineering and Cybersecurity: Developer Platform
 
-![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
+![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.svg)
 
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering (including predictive machine learning, model serving, and intelligent systems), and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
