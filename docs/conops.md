@@ -140,6 +140,7 @@ Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-de
 | Continuous | Durable schedule claims                | `deml-scheduler`                      |
 | 1h         | Threat intel                           | `deml-workers` (Security thread)      |
 | 24h        | ML training, `db_cleanup`, Stripe sync | `deml-workers`                        |
+| Weekly     | `cleanup_clickhouse`                   | `deml-workers` (Security thread)      |
 
 | Weekly | Renovate PRs | GitHub Actions |
 | Monthly / Quarterly | Semgrep, audits | GitHub Actions |

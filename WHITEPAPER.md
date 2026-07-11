@@ -239,7 +239,20 @@ To provide world-class threat detection, a dual-model strategy applies. The glob
 
 Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cloudflare tokens) are protected via transparent application-level AES-256 Fernet encryption at-rest. Public access to status page details, services, incidents, and telemetry graphs remains restricted unless the status page owner explicitly publishes the page—preventing exposure of private endpoints or telemetry.
 
-A strict 30-day retention and lifecycle policy governs raw telemetry data. Raw endpoint telemetry, audit logs, and tracking consents are automatically purged after 30 days. Long-term raw metrics and traces route to ClickHouse for OLAP querying. High-value business objects—incident histories, bug reports, threat reports, and user configuration data—persist indefinitely as the system of record. The ML training worker triggers full model retraining and data optimization upon deployment and executes daily thereafter.
+**Tiered retention strategy** prevents database bloat while preserving operational data:
+
+**Neon (PostgreSQL) - Hot data:**
+- Raw endpoint telemetry, audit logs, cookie consent: **30 days** (auto-purged)
+- Hourly `AggregatedAnalytics`: **30 days** (after daily rollups)
+- `ThreatIntelligence`, `ReportArchive`: **90 days** (security + reports)
+- Business objects (`BugReport`, `ThreatReport`, API keys): **Indefinite** (system of record)
+
+**ClickHouse - Cold storage:**
+- `audit_archive`, `security_events`, telemetry: **180-730 days** (archival)
+- OTEL traces/metrics: **TTL via MergeTree** (365+ days)
+
+- `ReportArchive` materialized daily for fast 90-day report queries
+- Older analytics available via ClickHouse long-term storage
 
 **Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([docs/billing.md](docs/billing.md)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 

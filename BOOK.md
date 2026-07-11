@@ -2163,21 +2163,45 @@ This appendix is the **single source of truth** for all scheduled maintenance: b
 
 Daily security jobs are **staggered** in the durable schedule registry to avoid thundering-herd load on Postgres and Stripe. Python workers execute claimed commands but do not independently schedule them.
 
-### Data Retention (`db_cleanup`)
+### Data Retention (`db_cleanup` + `cleanup_clickhouse`)
 
-Owned exclusively by `security_worker` (not `train_all_models`). Policy constants: `RAW_TELEMETRY_RETENTION_DAYS = 30`.
+Owned exclusively by `security_worker` (not `train_all_models`). Policy constants defined in `backend/utils/retention.py`.
 
-| Data Class                                 | Retention  | Action                         |
-| ------------------------------------------ | ---------- | ------------------------------ |
-| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted                        |
-| `AuditLog`                                 | 30 days    | Deleted                        |
-| `CookieConsent`                            | 30 days    | Deleted                        |
-| `OutboxEvent` (published)                  | 30 days    | Deleted                        |
-| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted                        |
-| `ThreatIntelligence`                       | Indefinite | Legacy duplicates removed only |
-| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record       |
-| ClickHouse OLAP spans                      | 30 days    | TTL in OTEL collector config   |
-| GCS object storage                         | 30 days    | Terraform lifecycle rule       |
+**Neon (PostgreSQL):**
+
+| Data Class                                 | Retention  | Action                              |
+| ------------------------------------------ | ---------- | ----------------------------------- |
+| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted, archived to ClickHouse       |
+| `AuditLog`                                 | 30 days    | Deleted, archived to ClickHouse       |
+| `CookieConsent`                            | 30 days    | Deleted                             |
+| `OutboxEvent` (published)                  | 30 days    | Deleted                             |
+| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted                             |
+| `ThreatIntelligence`                       | 90 days    | Deleted, duplicates purged            |
+| `AggregatedAnalytics` (hourly)             | 30 days    | Deleted after daily rollups           |
+| `ReportArchive` (daily rollups)            | 90 days    | Materialized; older in ClickHouse     |
+| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record             |
+
+**ClickHouse (Archival):**
+
+| Data Class                     | Retention  | Action                     |
+| ------------------------------ | ---------- | -------------------------- |
+| `audit_archive`                | 180 days   | `cleanup_clickhouse` purge |
+| `security_events`              | 365 days   | `cleanup_clickhouse` purge |
+| `asset_vulnerability_ledger`   | 730 days   | `cleanup_clickhouse` purge |
+| OTEL traces/metrics            | 730+ days  | TTL via MergeTree          |
+
+**Dragonfly/Redis (Rate Limiting):**
+
+| Data Class          | Retention  | Action                        |
+| ------------------- | ---------- | ----------------------------- |
+| Rate limit keys     | 60 seconds | Auto-expire (sliding window)  |
+| IP blocklist        | 24 hours   | TTL via `setex`               |
+
+**GCS Object Storage:**
+
+| Data Class          | Retention  | Action                     |
+| ------------------- | ---------- | -------------------------- |
+| Export artifacts    | 30 days    | Terraform lifecycle rule   |
 
 ### Billing & Account Lifecycle
 
