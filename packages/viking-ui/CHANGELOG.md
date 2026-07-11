@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 6.3.0
+
+### Minor Changes
+
+- Chart updates
+
 ## 6.2.0
 
 ### Minor Changes

@@ -3380,9 +3380,11 @@ app-status-cta.isolated-status-cta {
 .isolated-status-page viking-chart,
 .isolated-status-page .viking-chart {
   width: 100%;
-  aspect-ratio: var(--viking-chart-ratio, 3 / 1);
+  min-width: 0;
+  aspect-ratio: auto;
   min-height: var(--viking-chart-fill-min-height);
-  max-height: var(--viking-chart-fill-max-height);
+  max-height: none;
+  overflow: hidden;
 }
 
 .dashboard-page-container .section-tag,
@@ -3845,10 +3847,7 @@ app-status-cta.isolated-status-cta {
 @container viking-app-page (min-width: 72rem) {
   .dashboard-page-container .triage-grid {
     grid-template-columns:
-      minmax(
-        calc(var(--viking-space-24) + var(--viking-space-12)),
-        0.9fr
-      )
+      minmax(calc(var(--viking-space-24) + var(--viking-space-12)), 0.9fr)
       minmax(0, 2fr);
   }
 
@@ -3872,10 +3871,7 @@ app-status-cta.isolated-status-cta {
 .dashboard-page-container .ces-gauge-cluster {
   grid-template-columns: repeat(
     auto-fit,
-    minmax(
-      min(100%, calc(var(--viking-space-24) + var(--viking-space-2))),
-      1fr
-    )
+    minmax(min(100%, calc(var(--viking-space-24) + var(--viking-space-2))), 1fr)
   );
 }
 
@@ -3894,10 +3890,7 @@ app-status-cta.isolated-status-cta {
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(
-      min(100%, calc(var(--viking-space-24) + var(--viking-space-2))),
-      1fr
-    )
+    minmax(min(100%, calc(var(--viking-space-24) + var(--viking-space-2))), 1fr)
   );
   align-items: end;
 }

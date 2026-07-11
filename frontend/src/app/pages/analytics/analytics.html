@@ -247,7 +247,14 @@
             </div>
             <div class="gauge-card-footer">
               <viking-app-icon name="info" />
-              <span>Latest ML performance benchmark</span>
+              @if (latestBenchmark?.evaluation_status === 'measured') {
+              <span>
+                {{ latestBenchmark?.model_type | uppercase }} · n={{ latestBenchmark?.dataset_size
+                }} · accuracy {{ latestBenchmark?.accuracy_percent | number:'1.1-1' }}%
+              </span>
+              } @else {
+              <span>Insufficient observations for a measured benchmark</span>
+              }
             </div>
           </div>
 

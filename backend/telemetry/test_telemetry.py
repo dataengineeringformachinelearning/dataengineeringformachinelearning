@@ -298,6 +298,15 @@ def test_analytics_overview_hybrid_query(client) -> None:
   res_data = response.json()
   assert res_data["status"] == "success"
   assert res_data["data"]["ces"]["latest_benchmark_score"] == 0.0
+  assert res_data["data"]["ces"]["latest_benchmark"] == {
+    "model_type": "sla",
+    "mae": 1.0,
+    "rmse": 1.0,
+    "accuracy_percent": 0.0,
+    "dataset_size": 1,
+    "evaluation_status": "measured",
+    "created_at": res_data["data"]["ces"]["latest_benchmark"]["created_at"],
+  }
   metrics = res_data["data"]["user_metrics"]
 
   assert metrics["total_requests_24h"] == 101
