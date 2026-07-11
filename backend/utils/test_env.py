@@ -52,7 +52,11 @@ def test_validate_production_config_defaults_debug_false_on_railway(monkeypatch)
   monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
   monkeypatch.delenv("DEBUG", raising=False)
   monkeypatch.setenv("SECRET_KEY", "railway-test-secret-key")
-  monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
+  monkeypatch.setenv(
+    "DATABASE_URL",
+    "postgresql://user:pass@host:5432/db?sslmode=verify-full",
+  )
+  monkeypatch.setenv("REDIS_URL", "rediss://user:pass@cache.example:6379")
   env.validate_production_config()
   assert os.getenv("DEBUG") == "False"
 
@@ -98,6 +102,24 @@ def test_configure_database_url_keeps_postgres_when_set(monkeypatch):
   monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
   env.configure_database_url()
   assert os.getenv("DATABASE_URL") == "postgresql://user:pass@host:5432/db"
+
+
+def test_production_transport_rejects_plaintext_postgres(monkeypatch):
+  monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
+  monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
+  with pytest.raises(RuntimeError, match="sslmode"):
+    env.validate_encrypted_transport_config()
+
+
+def test_production_transport_rejects_plaintext_redis(monkeypatch):
+  monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
+  monkeypatch.setenv(
+    "DATABASE_URL",
+    "postgresql://user:pass@host:5432/db?sslmode=verify-full",
+  )
+  monkeypatch.setenv("REDIS_URL", "redis://cache.internal:6379")
+  with pytest.raises(RuntimeError, match="rediss"):
+    env.validate_encrypted_transport_config()
 
 
 def test_tor_proxy_url_reads_env(monkeypatch):

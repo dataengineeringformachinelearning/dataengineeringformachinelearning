@@ -19,7 +19,7 @@ import time
 
 from asgiref.sync import sync_to_async
 from django.db import close_old_connections
-from utils.kafka import get_kafka_producer
+from utils.kafka import get_kafka_producer, send_kafka_value
 
 # Reserved, non-real user id used only by the synthetic probe. Every run uses its
 # unique probe nonce as the idempotency key, exercising the production contract.
@@ -85,7 +85,8 @@ async def _run_probe() -> tuple[str, int | None, str]:
   kafka_ok = False
   try:
     producer = await get_kafka_producer()
-    await producer.send_and_wait(
+    await send_kafka_value(
+      producer,
       "frontend-events",
       value=json.dumps(event).encode("utf-8"),
       key=SYNTHETIC_HEALTH_UID.encode("utf-8"),

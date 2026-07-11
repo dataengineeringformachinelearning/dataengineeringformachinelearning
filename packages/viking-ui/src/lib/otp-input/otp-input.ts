@@ -1,8 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  computed,
   input,
   model,
   output,
@@ -11,7 +9,8 @@ import { VikingControl, provideVikingCva } from "../core/cva";
 
 /**
  * viking-otp-input — one-time-passcode input.
- * Auto-advances between cells and supports paste. ControlValueAccessor-compatible.
+ * Uses one native field so SMS codes and password managers can autofill the
+ * entire value atomically. ControlValueAccessor-compatible.
  */
 @Component({
   selector: "viking-otp-input",
@@ -21,61 +20,56 @@ import { VikingControl, provideVikingCva } from "../core/cva";
     "[class.viking-otp-centered]": "centered()",
   },
   template: `
-    <div
-      class="viking-otp"
-      role="group"
-      [attr.aria-label]="label() || 'One-time passcode'"
-    >
-      @for (index of indexes(); track index) {
-        <input
-          class="viking-otp-cell"
-          type="text"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          autocomplete="one-time-code"
-          maxlength="1"
-          [attr.name]="index === 0 ? name() || 'one-time-code' : null"
-          [attr.id]="index === 0 ? inputId() || null : null"
-          [value]="value().charAt(index) || ''"
-          [disabled]="disabled() || formDisabled()"
-          [attr.aria-label]="
-            'Digit ' + (index + 1) + ' of ' + (label() || 'verification code')
-          "
-          (input)="onCellInput($event, index)"
-          (keydown)="onKeydown($event, index)"
-          (paste)="onPaste($event)"
-          (blur)="onTouched()"
-        />
-      }
+    <div class="viking-otp">
+      <input
+        class="viking-otp-input"
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="one-time-code"
+        [attr.maxlength]="length()"
+        [attr.name]="name() || 'one-time-code'"
+        [attr.id]="inputId() || null"
+        [value]="value()"
+        [disabled]="disabled() || formDisabled()"
+        [attr.aria-label]="label() || 'One-time passcode'"
+        (input)="onInput($event)"
+        (blur)="onTouched()"
+      />
     </div>
   `,
   styles: [
     `
       .viking-otp {
         display: flex;
-        gap: var(--viking-space-1);
+        width: 100%;
       }
       :host(.viking-otp-centered) .viking-otp {
         justify-content: center;
-        width: 100%;
-        gap: var(--viking-space-2);
       }
-      .viking-otp-cell {
-        width: var(--viking-control-height);
-        height: var(--viking-control-height);
+      .viking-otp-input {
+        width: 100%;
+        min-width: 0;
+        min-height: var(--viking-control-height);
+        padding: 0 var(--viking-control-padding-x);
+        box-sizing: border-box;
         text-align: center;
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-lg);
         font-weight: var(--viking-font-weight-semibold);
+        letter-spacing: var(--viking-letter-spacing-caps);
         color: var(--viking-text);
-        background: var(--viking-surface-alt);
-        border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius-sm);
+        background: var(
+          --viking-surface-recipe-muted,
+          var(--viking-surface-alt)
+        );
+        border: 1px solid var(--viking-border-strong);
+        border-radius: var(--viking-radius-md);
         box-shadow: var(--viking-shadow-xs);
         transition: var(--viking-transition-interactive);
         font-variant-numeric: tabular-nums;
       }
-      .viking-otp-cell:hover:not(:disabled) {
+      .viking-otp-input:hover:not(:disabled) {
         border-color: color-mix(
           in srgb,
           var(--viking-accent) 35%,
@@ -83,12 +77,12 @@ import { VikingControl, provideVikingCva } from "../core/cva";
         );
         box-shadow: var(--viking-shadow-sm);
       }
-      .viking-otp-cell:focus-visible {
+      .viking-otp-input:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
         border-color: var(--viking-accent);
       }
-      .viking-otp-cell:disabled {
+      .viking-otp-input:disabled {
         opacity: var(--viking-state-disabled-opacity);
       }
     `,
@@ -107,14 +101,6 @@ export class VikingOtpInput extends VikingControl<string> {
 
   readonly completed = output<string>();
 
-  constructor(private readonly host: ElementRef<HTMLElement>) {
-    super();
-  }
-
-  protected readonly indexes = computed(() =>
-    Array.from({ length: this.length() }, (_, index) => index),
-  );
-
   writeValue(value: string): void {
     this.value.set(value ?? "");
   }
@@ -127,47 +113,14 @@ export class VikingOtpInput extends VikingControl<string> {
     }
   }
 
-  private focusCell(index: number): void {
-    const cells =
-      this.host.nativeElement.querySelectorAll<HTMLInputElement>(
-        ".viking-otp-cell",
-      );
-    cells[Math.min(this.length() - 1, Math.max(0, index))]?.focus();
-  }
-
-  protected onCellInput = (event: Event, index: number): void => {
-    const char = (event.target as HTMLInputElement).value
-      .replace(/\D/g, "")
-      .slice(-1);
-    const chars = this.value().padEnd(this.length(), " ").split("");
-    chars[index] = char || " ";
-    this.commit(chars.join("").trimEnd().replace(/ /g, ""));
-    if (char) {
-      this.focusCell(index + 1);
-    }
-  };
-
-  protected onKeydown = (event: KeyboardEvent, index: number): void => {
-    if (
-      event.key === "Backspace" &&
-      !(event.target as HTMLInputElement).value
-    ) {
-      this.focusCell(index - 1);
-    } else if (event.key === "ArrowLeft") {
-      this.focusCell(index - 1);
-    } else if (event.key === "ArrowRight") {
-      this.focusCell(index + 1);
-    }
-  };
-
-  protected onPaste = (event: ClipboardEvent): void => {
-    event.preventDefault();
-    const digits = (event.clipboardData?.getData("text") ?? "")
+  protected onInput = (event: Event): void => {
+    const inputElement = event.target as HTMLInputElement;
+    const digits = inputElement.value
       .replace(/\D/g, "")
       .slice(0, this.length());
-    if (digits) {
-      this.commit(digits);
-      this.focusCell(digits.length - 1);
+    if (inputElement.value !== digits) {
+      inputElement.value = digits;
     }
+    this.commit(digits);
   };
 }

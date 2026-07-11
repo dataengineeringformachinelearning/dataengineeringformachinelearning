@@ -10,6 +10,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilte
 mod config;
 mod db;
 mod http_server;
+mod internode;
 mod kafka;
 mod tasks;
 
@@ -18,6 +19,12 @@ use config::Role;
 #[tokio::main]
 async fn main() -> Result<()> {
     let cfg = config::Config::from_env()?;
+    if matches!(
+        cfg.role,
+        Role::Relay | Role::Scheduler | Role::Normalizer | Role::All
+    ) {
+        internode::validate_configuration()?;
+    }
     let tracer_provider = init_tracing(&cfg)?;
     info!(version = env!("CARGO_PKG_VERSION"), role = ?cfg.role, "deml-daemon: starting");
 

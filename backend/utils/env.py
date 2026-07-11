@@ -9,6 +9,7 @@ production URLs, broker hosts, or secrets in application code.
 from __future__ import annotations
 
 import os
+from urllib.parse import parse_qs, urlparse
 
 # Insecure Django default — must never ship to production unchanged.
 _INSECURE_SECRET_KEY = (
@@ -131,6 +132,46 @@ def validate_production_config() -> None:
     if not db_url.startswith(_POSTGRES_SCHEMES):
       raise RuntimeError("DATABASE_URL on Railway must use postgres:// or postgresql:// scheme.")
 
+  validate_encrypted_transport_config()
+
+
+def validate_encrypted_transport_config() -> None:
+  """Fail closed when a production service-to-service connection is not encrypted."""
+  if not is_production():
+    return
+  policy = get_str("DEML_TRANSPORT_SECURITY", "required").lower()
+  if policy != "required":
+    raise RuntimeError("DEML_TRANSPORT_SECURITY must be required in production.")
+
+  db_url = get_str("DATABASE_URL")
+  if db_url.startswith(_POSTGRES_SCHEMES):
+    sslmode = parse_qs(urlparse(db_url).query).get("sslmode", [""])[0].lower()
+    if sslmode not in {"verify-ca", "verify-full"}:
+      raise RuntimeError(
+        "production DATABASE_URL must set sslmode=verify-ca or sslmode=verify-full."
+      )
+
+  if not get_str("REDIS_URL"):
+    raise RuntimeError("production REDIS_URL is required and must use rediss://.")
+  for name in ("REDIS_URL", "CPE_REDIS_URL"):
+    value = get_str(name)
+    if value and not value.lower().startswith("rediss://"):
+      raise RuntimeError(f"production {name} must use rediss:// with certificate verification.")
+
+  if get_str("REDPANDA_BROKERS"):
+    protocol = get_str("REDPANDA_SECURITY_PROTOCOL", "SASL_SSL").upper()
+    if protocol not in {"SSL", "SASL_SSL"}:
+      raise RuntimeError("production Redpanda transport must use SSL or SASL_SSL.")
+
+  for name in (
+    "OTEL_EXPORTER_OTLP_ENDPOINT",
+    "SCANNER_SERVICE_URL",
+    "CPE_GUESSER_URL",
+  ):
+    value = get_str(name)
+    if value and not value.lower().startswith("https://"):
+      raise RuntimeError(f"production {name} must use https://.")
+
 
 def tor_proxy_url() -> str:
   """SOCKS5 proxy for dark-web OSINT (Tor). Override via TOR_PROXY_URL."""
@@ -139,12 +180,14 @@ def tor_proxy_url() -> str:
 
 def scanner_service_url() -> str:
   """CVE scanner internal service URL."""
-  return get_str("SCANNER_SERVICE_URL", "http://deml-scanner.railway.internal:8000")
+  default = "" if is_production() else "http://localhost:8000"
+  return get_str("SCANNER_SERVICE_URL", default)
 
 
 def cpe_guesser_url() -> str:
   """Rust CPE lookup service URL."""
-  return get_str("CPE_GUESSER_URL", "http://deml-cpe.railway.internal:8080/unique")
+  default = "" if is_production() else "http://localhost:8080/unique"
+  return get_str("CPE_GUESSER_URL", default)
 
 
 def clickhouse_uri() -> str:

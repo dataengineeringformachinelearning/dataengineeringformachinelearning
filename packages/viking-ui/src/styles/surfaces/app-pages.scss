@@ -3509,11 +3509,11 @@ app-status-cta.isolated-status-cta {
 
 @media (min-width: 900px) {
   .dashboard-page-container .overview-grid {
-    grid-template-columns: minmax(0, 280px) repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      "setup setup setup"
-      "health kpis kpis"
-      "threats threats metrics";
+      "setup setup"
+      "health kpis"
+      "threats metrics";
   }
 }
 
@@ -3582,7 +3582,7 @@ app-status-cta.isolated-status-cta {
 
 @media (min-width: 1024px) {
   .dashboard-page-container .dashboard-grid-responsive {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -3707,7 +3707,7 @@ app-status-cta.isolated-status-cta {
 
 /* Performance tab short cards */
 .dashboard-page-container .chart-container.short {
-  min-height: clamp(13.5rem, 26vw, 16.5rem);
+  min-height: clamp(17rem, 30vw, 20rem);
   max-height: none;
 }
 
@@ -3730,10 +3730,10 @@ app-status-cta.isolated-status-cta {
 
 /* 2/3-up analytics cards — same medium scale as anomalies card */
 .dashboard-page-container .dashboard-grid-responsive viking-chart-panel {
-  --viking-chart-panel-min-height-md: 21rem;
-  --viking-chart-panel-body-min-height-md: clamp(13.5rem, 26vw, 16rem);
-  --viking-chart-fill-min-height: clamp(12.5rem, 24vw, 15rem);
-  --viking-chart-fill-max-height: clamp(15rem, 28vw, 17.5rem);
+  --viking-chart-panel-min-height-md: 25rem;
+  --viking-chart-panel-body-min-height-md: clamp(17rem, 30vw, 20rem);
+  --viking-chart-fill-min-height: clamp(16rem, 28vw, 19rem);
+  --viking-chart-fill-max-height: clamp(19rem, 32vw, 21rem);
 }
 
 .dashboard-page-container

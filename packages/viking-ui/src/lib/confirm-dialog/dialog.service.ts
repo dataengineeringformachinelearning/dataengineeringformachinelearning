@@ -41,6 +41,18 @@ export class VikingDialogService {
     this.active.set(null);
   }
 
+  /** Update an open confirm without replacing its pending promise resolver. */
+  updateConfirm(data: Partial<VikingConfirmDialogData>): void {
+    const active = this.active();
+    if (active?.kind !== "confirm") {
+      return;
+    }
+    this.active.set({
+      ...active,
+      data: { ...(active.data as VikingConfirmDialogData), ...data },
+    });
+  }
+
   openSearch(): void {
     if (this.active()?.kind === "search") {
       return;

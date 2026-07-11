@@ -1713,8 +1713,10 @@ must be provided as **environment variables** (`process.env`) — the legacy
 - `REDPANDA_PUBLIC_BROKERS` → `REDPANDA_BROKERS`, e.g. `zephyr.proxy.rlwy.net:32253`
 - `REDPANDA_PUBLIC_SASL_USERNAME` → `REDPANDA_SASL_USERNAME`, e.g. `admin`
 - `REDPANDA_PUBLIC_SASL_PASSWORD` → `REDPANDA_SASL_PASSWORD` (same value as the `deml-queue` service)
-- `REDPANDA_PUBLIC_SSL` (optional) → `REDPANDA_SSL`; **leave unset/false** for a Cloud Run
-  TCP Proxy (plain TCP). Only `true` if TLS is terminated at the edge (e.g. Cloudflare Spectrum).
+- `REDPANDA_PUBLIC_TLS_CA_B64` → `REDPANDA_SSL_CA_B64`; the CA for the certificate
+  covering the advertised broker hostname. `REDPANDA_SSL=true` is mandatory.
+- `DEML_INTERNODE_KEYS` and `DEML_INTERNODE_ACTIVE_KID`; the same rotation keyring
+  consumed by the projection worker. `DEML_INTERNODE_ENCRYPTION=required` is set by CI.
 
 Set those secrets, then re-run the "Deploy Firebase Backend" workflow. (For stricter
 secret handling you may instead bind `REDPANDA_SASL_PASSWORD` via Google Secret Manager /
@@ -2384,7 +2386,28 @@ The agent is strictly read-only and executes within a hardened sandbox environme
 
 ## 3. End-to-End Encryption
 
-All telemetry is encrypted end-to-end using TLS 1.3. The ingestion endpoints enforce mutual TLS (mTLS) for enterprise tenants.
+All public application traffic is encrypted in transit using HTTPS with HSTS, secure cookies, and TLS termination at the managed edge. Enterprise ingestion can additionally require mutual TLS (mTLS). Internal traffic does not rely on a provider's private-network label as a cryptographic control: Postgres, Dragonfly/Redis, Redpanda, ClickHouse, and OTLP connections must use their TLS-capable schemes and verified certificate chains in production.
+
+Durable node-to-node messages use a second, transport-independent protection layer named the **DEML Internode Envelope (DIE) v1**. Before an event enters Redpanda, its serialized bytes are encrypted with AES-256-GCM using a random 96-bit nonce. The authenticated header binds the ciphertext to the destination topic, sender role, key identifier, event identifier, algorithm, and protocol version. Consumers authenticate and decrypt before schema parsing. A broker, packet capture, proxy, or storage snapshot therefore sees ciphertext even if its own TLS boundary is terminated elsewhere. Event idempotency remains the replay control because durable topics and DLQs intentionally support later replay.
+
+Keys are supplied as a rotation-capable keyring (`DEML_INTERNODE_KEYS`) with a single active `kid` (`DEML_INTERNODE_ACTIVE_KID`). Production uses `DEML_INTERNODE_ENCRYPTION=required`, which fails service startup when the active key is missing or malformed and rejects plaintext messages. `optional` exists only for rolling migration, where readers accept legacy plaintext but writers encrypt whenever a valid keyring is present. Local development and isolated tests may use `disabled`. Keys are 32 random bytes, base64url encoded, distributed through the deployment secret manager, never committed, logged, placed in frontend bundles, or reused as Django/Firebase/API credentials.
+
+```json
+{
+  "v": 1,
+  "kid": "2026-07-a",
+  "alg": "dir",
+  "enc": "A256GCM",
+  "ctx": "kafka:frontend-events",
+  "sender": "deml-relay",
+  "iat": 1783728000,
+  "jti": "0190e2f7-...",
+  "nonce": "base64url(12 random bytes)",
+  "ciphertext": "base64url(ciphertext || authentication-tag)"
+}
+```
+
+Rotation is additive: deploy the new key to every reader, switch the active `kid` on writers, retain old keys through the maximum topic/DLQ retention window, then retire them. The envelope is not a replacement for TLS, Firebase JWT verification, API keys, tenant authorization, idempotency, or KMS-backed encryption at rest. Browser JavaScript never receives internode keys; browser-to-platform confidentiality remains HTTPS, while especially sensitive stored fields use server-side envelope encryption with GCP KMS.
 
 ## 4. Data Privacy & Multi-Tenancy
 

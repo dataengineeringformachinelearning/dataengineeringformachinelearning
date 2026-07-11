@@ -5,6 +5,7 @@ import { describe, it, expect } from "vitest";
 import { VikingField } from "./field/field";
 import { VikingInput } from "./input/input";
 import { VikingFormSection } from "./form-section/form-section";
+import { VikingOtpInput } from "./otp-input/otp-input";
 
 @Component({
   imports: [VikingField, VikingInput, FormsModule],
@@ -31,6 +32,20 @@ class FieldInputHost {
 })
 class FormStackHost {
   name = "";
+}
+
+@Component({
+  imports: [VikingOtpInput, FormsModule],
+  template: `
+    <viking-otp-input
+      [(ngModel)]="code"
+      name="one-time-code"
+      label="SMS code"
+    />
+  `,
+})
+class OtpInputHost {
+  code = "";
 }
 
 describe("viking forms", () => {
@@ -77,6 +92,42 @@ describe("viking forms", () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.componentInstance.email).toBe("ops@deml.app");
+  });
+
+  it("accepts a complete autofilled one-time code in one native input", async () => {
+    const fixture = await render(OtpInputHost);
+    const input = fixture.nativeElement.querySelector(
+      ".viking-otp-input",
+    ) as HTMLInputElement;
+
+    expect(
+      fixture.nativeElement.querySelectorAll(".viking-otp-input"),
+    ).toHaveLength(1);
+    expect(input.autocomplete).toBe("one-time-code");
+    expect(input.name).toBe("one-time-code");
+    expect(input.maxLength).toBe(6);
+
+    input.value = "123456";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.code).toBe("123456");
+  });
+
+  it("normalizes pasted one-time codes without stopping after one digit", async () => {
+    const fixture = await render(OtpInputHost);
+    const input = fixture.nativeElement.querySelector(
+      ".viking-otp-input",
+    ) as HTMLInputElement;
+
+    input.value = "12 34-56";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(input.value).toBe("123456");
+    expect(fixture.componentInstance.code).toBe("123456");
   });
 
   it("does not register the Angular wrapper tag as a custom element", async () => {

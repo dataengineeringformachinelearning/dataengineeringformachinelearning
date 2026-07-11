@@ -70,8 +70,8 @@ Auth: Railway CLI token under `~/.railway` (already linked for this workspace). 
    - Infra (queue, dragonfly, tor) stays near-empty of app secrets
 4. **Dockerfile path is explicit.** Every monorepo service sets `RAILWAY_DOCKERFILE_PATH` (audit enforces this). Root-context builds need it.
 5. **Python schedulers off next to Rust.** `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` on `deml-workers` and `deml-telemetry-worker` (env + startCommand).
-6. **CPE consumers point at deml-cpe:**
-   `CPE_GUESSER_URL=http://deml-cpe.railway.internal:8080/unique`
+6. **CPE consumers point at a TLS endpoint for deml-cpe:**
+   `CPE_GUESSER_URL=https://<internal-cpe-domain>/unique`
 7. **No dual ownership.** Never run Python `outbox_relay` / embedded pinger beside the equivalent Rust role. See cutover order in `docs/rust-data-plane.md`.
 
 ## What `railway_audit.py` does / does not do
@@ -89,13 +89,25 @@ For broader Infisical-style pollution (stale Postgres plugin vars, secrets on in
 
 Shared on Rust data-plane roles + Django API/workers:
 
-| Variable           | Who needs it                                       |
-| ------------------ | -------------------------------------------------- |
-| `DATABASE_URL`     | All Rust roles + Django                            |
-| `REDPANDA_BROKERS` | relay, scheduler, normalizer (+ Django)            |
-| `REDPANDA_SASL_*`  | Only when production SASL is enabled; empty = omit |
-| `STRUCTURED_LOGS`  | Recommended `true`                                 |
-| `PORT`             | Optional; Rust defaults health to `8080`           |
+| Variable                     | Who needs it                                                 |
+| ---------------------------- | ------------------------------------------------------------ |
+| `DATABASE_URL`               | All Rust roles + Django; `sslmode=verify-full`               |
+| `REDPANDA_BROKERS`           | relay, scheduler, normalizer (+ Django)                      |
+| `REDPANDA_SECURITY_PROTOCOL` | Kafka clients; production value is `SASL_SSL`                |
+| `REDPANDA_SSL_*_B64`         | Kafka CA/client certificate/private key as base64 PEM        |
+| `DEML_INTERNODE_*`           | Kafka publishers/consumers; active key plus rotation keyring |
+| `DEML_TRANSPORT_SECURITY`    | Production value is `required`                               |
+| `REDIS_SSL_CA_B64`           | Private CA for verified Dragonfly TLS                        |
+| `REDPANDA_SASL_*`            | Production Kafka username/password                           |
+| `STRUCTURED_LOGS`            | Recommended `true`                                           |
+| `PORT`                       | Optional; Rust defaults health to `8080`                     |
+
+The `deml-queue` service also requires `REDPANDA_TLS_CERT_B64`,
+`REDPANDA_TLS_KEY_B64`, and `REDPANDA_TLS_CA_B64`. The server certificate must
+cover every advertised Kafka hostname. Internal port 9092 requires a client
+certificate signed by that CA; external port 9093 uses verified TLS plus
+SCRAM-SHA-256. Generate and rotate certificates through the deployment secret
+manager or organizational PKI—never store PEM material in this repository.
 
 Role-specific:
 
@@ -130,10 +142,11 @@ Rust roles: `/health` and `/ready` (Railway healthcheck uses `/ready`). Backend:
 curl -sf "$BACKEND_URL/api/v1/system-status/health"
 ```
 
-Internal (from another Railway service):
+Internal health endpoints must also be exposed through an authenticated TLS route
+before production use:
 
 ```bash
-curl -sf "http://deml-relay.railway.internal:${PORT:-8080}/ready"
+curl -sf "https://$DEML_RELAY_INTERNAL_HOST/ready"
 ```
 
 ## Cron / workers

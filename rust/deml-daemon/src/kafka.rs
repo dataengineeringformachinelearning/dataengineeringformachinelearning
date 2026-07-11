@@ -8,7 +8,7 @@ use rdkafka::{
 use serde_json::Value;
 use std::time::Duration;
 
-use crate::config::Config;
+use crate::{config::Config, internode};
 
 /// Build a Redpanda/Kafka `FutureProducer` from the daemon config.
 ///
@@ -38,18 +38,7 @@ pub fn build_producer(cfg: &Config) -> Result<FutureProducer> {
         // of containers that are only listening on IPv4 (0.0.0.0).
         .set("broker.address.family", "v4");
 
-    if let (Some(user), Some(pass)) = (&cfg.sasl_username, &cfg.sasl_password) {
-        let protocol = if cfg.sasl_ssl {
-            "SASL_SSL"
-        } else {
-            "SASL_PLAINTEXT"
-        };
-        client_cfg
-            .set("security.protocol", protocol)
-            .set("sasl.mechanism", "SCRAM-SHA-256")
-            .set("sasl.username", user.as_str())
-            .set("sasl.password", pass.as_str());
-    }
+    apply_security(&mut client_cfg, cfg)?;
 
     client_cfg
         .create::<FutureProducer>()
@@ -67,25 +56,42 @@ pub fn build_consumer(cfg: &Config, group_id: &str) -> Result<StreamConsumer> {
         .set("session.timeout.ms", "30000")
         .set("max.poll.interval.ms", "300000")
         .set("broker.address.family", "v4");
-    apply_security(&mut client_cfg, cfg);
+    apply_security(&mut client_cfg, cfg)?;
     client_cfg
         .create::<StreamConsumer>()
         .context("failed to create Kafka consumer")
 }
 
-fn apply_security(client_cfg: &mut ClientConfig, cfg: &Config) {
-    if let (Some(user), Some(pass)) = (&cfg.sasl_username, &cfg.sasl_password) {
-        let protocol = if cfg.sasl_ssl {
-            "SASL_SSL"
-        } else {
-            "SASL_PLAINTEXT"
-        };
+fn apply_security(client_cfg: &mut ClientConfig, cfg: &Config) -> Result<()> {
+    client_cfg.set("security.protocol", &cfg.redpanda_security_protocol);
+    if let Some(ca) = &cfg.redpanda_ssl_ca {
+        client_cfg.set("ssl.ca.location", ca);
+    }
+    if let Some(ca) = &cfg.redpanda_ssl_ca_pem {
+        client_cfg.set("ssl.ca.pem", ca);
+    }
+    if let (Some(cert), Some(key)) = (&cfg.redpanda_ssl_cert, &cfg.redpanda_ssl_key) {
         client_cfg
-            .set("security.protocol", protocol)
+            .set("ssl.certificate.location", cert)
+            .set("ssl.key.location", key);
+    }
+    if let (Some(cert), Some(key)) = (&cfg.redpanda_ssl_cert_pem, &cfg.redpanda_ssl_key_pem) {
+        client_cfg
+            .set("ssl.certificate.pem", cert)
+            .set("ssl.key.pem", key);
+    }
+    if let (Some(user), Some(pass)) = (&cfg.sasl_username, &cfg.sasl_password) {
+        client_cfg
             .set("sasl.mechanism", "SCRAM-SHA-256")
             .set("sasl.username", user.as_str())
             .set("sasl.password", pass.as_str());
     }
+    if cfg.redpanda_security_protocol.starts_with("SASL_")
+        && (cfg.sasl_username.is_none() || cfg.sasl_password.is_none())
+    {
+        anyhow::bail!("SASL Redpanda transport requires username and password");
+    }
+    Ok(())
 }
 
 /// Publish a single message to a Redpanda topic, waiting for delivery confirmation.
@@ -102,6 +108,7 @@ pub async fn publish(
     payload: &[u8],
     headers: &Value,
 ) -> Result<()> {
+    let encrypted_payload = internode::encrypt_kafka_value(payload, topic)?;
     // Build Kafka headers from the JSON object stored in the outbox.
     let mut owned_headers = OwnedHeaders::new();
     if let Some(obj) = headers.as_object() {
@@ -116,7 +123,7 @@ pub async fn publish(
     }
 
     let mut record = FutureRecord::to(topic)
-        .payload(payload)
+        .payload(&encrypted_payload)
         .headers(owned_headers);
 
     if let Some(k) = key {

@@ -5,7 +5,6 @@ import requests
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from monitor.models import AnalyticsIntegration
-from utils.kafka import get_kafka_brokers
 
 logger = logging.getLogger(__name__)
 
@@ -173,13 +172,12 @@ class Command(BaseCommand):
       import json
 
       from account.context import account_id_for_user
-      from aiokafka import AIOKafkaProducer
+      from utils.kafka import create_kafka_producer, send_kafka_value
 
       account_id = account_id_for_user(integration.user)
 
       async def produce_all():
-        brokers = get_kafka_brokers()
-        producer = AIOKafkaProducer(bootstrap_servers=brokers)
+        producer = create_kafka_producer()
         async with producer:
           for row in rows:
             payload = {
@@ -192,7 +190,11 @@ class Command(BaseCommand):
               "raw_payload": row,
               "timestamp": timezone.now().isoformat(),
             }
-            await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
+            await send_kafka_value(
+              producer,
+              "app-events",
+              json.dumps(payload).encode("utf-8"),
+            )
 
       asyncio.run(produce_all())
     except Exception:
@@ -425,11 +427,10 @@ class Command(BaseCommand):
       try:
         import asyncio
 
-        from aiokafka import AIOKafkaProducer
+        from utils.kafka import create_kafka_producer, send_kafka_value
 
         async def produce_telemetry(sess, rep, account_id=account_id):
-          brokers = get_kafka_brokers()
-          producer = AIOKafkaProducer(bootstrap_servers=brokers)
+          producer = create_kafka_producer()
           async with producer:
             payload = {
               "source": "microsoft_clarity_threat_intel",
@@ -443,7 +444,11 @@ class Command(BaseCommand):
               "raw_payload": {"session": sess, "reputation": rep},
               "timestamp": timezone.now().isoformat(),
             }
-            await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
+            await send_kafka_value(
+              producer,
+              "app-events",
+              json.dumps(payload).encode("utf-8"),
+            )
 
         asyncio.run(produce_telemetry(sess, rep))
       except Exception:
@@ -482,11 +487,10 @@ class Command(BaseCommand):
       try:
         import asyncio
 
-        from aiokafka import AIOKafkaProducer
+        from utils.kafka import create_kafka_producer, send_kafka_value
 
         async def produce_telemetry(sess, rep, account_id=account_id):
-          brokers = get_kafka_brokers()
-          producer = AIOKafkaProducer(bootstrap_servers=brokers)
+          producer = create_kafka_producer()
           async with producer:
             payload = {
               "source": "cloudflare_threat_intel",
@@ -500,7 +504,11 @@ class Command(BaseCommand):
               "raw_payload": {"session": sess, "reputation": rep},
               "timestamp": timezone.now().isoformat(),
             }
-            await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
+            await send_kafka_value(
+              producer,
+              "app-events",
+              json.dumps(payload).encode("utf-8"),
+            )
 
         asyncio.run(produce_telemetry(sess, rep))
       except Exception:

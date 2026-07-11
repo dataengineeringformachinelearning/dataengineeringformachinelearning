@@ -74,19 +74,14 @@ pub async fn run(
     enable_ingest: bool,
     enable_cpe: bool,
 ) -> anyhow::Result<()> {
-    let redis = cfg
-        .redis_url
-        .as_deref()
-        .map(redis::Client::open)
-        .transpose()?;
+    let redis = build_redis_client(cfg.redis_url.as_deref(), cfg.redis_ssl_ca_pem.as_deref())?;
     if enable_ingest && redis.is_none() {
         anyhow::bail!("REDIS_URL is required when DEML_ROLE=ingest");
     }
-    let cpe_redis = cfg
-        .cpe_redis_url
-        .as_deref()
-        .map(redis::Client::open)
-        .transpose()?;
+    let cpe_redis = build_redis_client(
+        cfg.cpe_redis_url.as_deref(),
+        cfg.redis_ssl_ca_pem.as_deref(),
+    )?;
     if enable_cpe && cpe_redis.is_none() {
         anyhow::bail!("CPE_REDIS_URL is required when DEML_ROLE=cpe");
     }
@@ -113,6 +108,27 @@ pub async fn run(
     info!(address = %cfg.bind_address, enable_ingest, enable_cpe, "http: listening");
     axum::serve(listener, router).await?;
     Ok(())
+}
+
+fn build_redis_client(
+    url: Option<&str>,
+    root_cert: Option<&[u8]>,
+) -> anyhow::Result<Option<redis::Client>> {
+    let Some(url) = url else {
+        return Ok(None);
+    };
+    let client = if let Some(root_cert) = root_cert {
+        redis::Client::build_with_tls(
+            url,
+            redis::TlsCertificates {
+                client_tls: None,
+                root_cert: Some(root_cert.to_vec()),
+            },
+        )?
+    } else {
+        redis::Client::open(url)?
+    };
+    Ok(Some(client))
 }
 
 #[tracing::instrument(name = "cpe_lookup", skip_all)]

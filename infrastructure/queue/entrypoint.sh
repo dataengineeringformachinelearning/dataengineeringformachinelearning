@@ -14,13 +14,24 @@ if [ "$(id -u)" = "0" ]; then
   exec runuser -u redpanda -- "$0" "$@"
 fi
 
-echo "==> Redpanda entrypoint starting (authenticated public endpoint support)..."
+echo "==> Redpanda entrypoint starting (TLS on every Kafka listener)..."
+
+TLS_DIR="/etc/redpanda/tls"
+mkdir -p "$TLS_DIR"
+if [ -z "${REDPANDA_TLS_CERT_B64:-}" ] || [ -z "${REDPANDA_TLS_KEY_B64:-}" ] || [ -z "${REDPANDA_TLS_CA_B64:-}" ]; then
+  echo "ERROR: REDPANDA_TLS_CERT_B64, REDPANDA_TLS_KEY_B64, and REDPANDA_TLS_CA_B64 are required."
+  exit 1
+fi
+printf '%s' "$REDPANDA_TLS_CERT_B64" | base64 -d > "$TLS_DIR/server.crt"
+printf '%s' "$REDPANDA_TLS_KEY_B64" | base64 -d > "$TLS_DIR/server.key"
+printf '%s' "$REDPANDA_TLS_CA_B64" | base64 -d > "$TLS_DIR/ca.crt"
+chmod 600 "$TLS_DIR/server.key"
 
 # Use a config file for listener configuration.
 # The v26.1.9 CLI in this container rejects --kafka-addr and --mode on the command line.
 # Generating redpanda.yaml is the reliable way to define:
-#   - internal PLAINTEXT listener (no auth) on 9092 for Railway services
-#   - external SASL listener (SCRAM-SHA-256 over TCP) on 9093 for Firebase Cloud Functions
+#   - internal mTLS listener on 9092 for Railway services
+#   - external SASL_SSL listener on 9093 for Firebase Cloud Functions
 
 INTERNAL_HOST="deml-queue.railway.internal"
 PUBLIC_HOST="${PUBLIC_REDPANDA_HOST:-localhost}"
@@ -45,11 +56,17 @@ mkdir -p "$CONFIG_DIR"
 cat > "$CONFIG_FILE" << 'CONFIGEOF'
 redpanda:
   data_directory: /var/lib/redpanda/data
+  rpc_server_tls:
+    enabled: true
+    cert_file: /etc/redpanda/tls/server.crt
+    key_file: /etc/redpanda/tls/server.key
+    truststore_file: /etc/redpanda/tls/ca.crt
+    require_client_auth: true
   kafka_api:
     - name: internal
       address: 0.0.0.0
       port: 9092
-      authentication_method: none
+      authentication_method: mtls_identity
     - name: external
       address: 0.0.0.0
       port: 9093
@@ -61,21 +78,32 @@ redpanda:
     - name: external
       address: __PUBLIC_HOST__
       port: __PUBLIC_PORT__
-  # SASL enforcement is driven entirely by the per-listener `authentication_method`
-  # above (external=sasl, internal=none) plus the `sasl_mechanisms` cluster property
-  # set via the Admin API below. The cluster-level `enable_sasl` /
-  # `kafka_enable_authorization` flags are intentionally NOT set here:
-  #   * They are cluster properties, so redpanda logs "Unknown property ... for node
-  #     config store" if placed in this node config and ignores them.
-  #   * Leaving cluster authorization at its default (off) is required so the
-  #     anonymous principal on the internal no-auth 9092 listener (Django,
-  #     telemetry_worker, outbox_relay) is not rejected with
-  #     TopicAuthorizationFailedError on consume/group operations.
+  kafka_api_tls:
+    - name: internal
+      enabled: true
+      cert_file: /etc/redpanda/tls/server.crt
+      key_file: /etc/redpanda/tls/server.key
+      truststore_file: /etc/redpanda/tls/ca.crt
+      require_client_auth: true
+    - name: external
+      enabled: true
+      cert_file: /etc/redpanda/tls/server.crt
+      key_file: /etc/redpanda/tls/server.key
+      truststore_file: /etc/redpanda/tls/ca.crt
+      require_client_auth: false
+  # Listener authentication is explicit: internal=mTLS identity, external=SASL.
+  # Authorization remains a separate staged control because enabling ACL
+  # enforcement requires provisioning topic/group ACLs before the cutover.
 
 rpk:
   kafka_api:
     brokers:
-      - 127.0.0.1:9092
+      - __INTERNAL_HOST__:9092
+    tls:
+      enabled: true
+      truststore_file: /etc/redpanda/tls/ca.crt
+      cert_file: /etc/redpanda/tls/server.crt
+      key_file: /etc/redpanda/tls/server.key
 CONFIGEOF
 
 # Substitute the actual hosts/ports (sed for portability)
@@ -84,9 +112,9 @@ sed -i "s|__PUBLIC_HOST__|$PUBLIC_HOST|g" "$CONFIG_FILE"
 sed -i "s|__PUBLIC_PORT__|$PUBLIC_PORT|g" "$CONFIG_FILE"
 
 echo "Generated $CONFIG_FILE"
-echo "Internal: $INTERNAL_HOST:9092 (no auth)"
-echo "External (listen): 0.0.0.0:9093 (SASL)"
-echo "External (advertised): $PUBLIC_HOST:$PUBLIC_PORT (SASL)"
+echo "Internal: $INTERNAL_HOST:9092 (mTLS)"
+echo "External (listen): 0.0.0.0:9093 (SASL_SSL)"
+echo "External (advertised): $PUBLIC_HOST:$PUBLIC_PORT (SASL_SSL)"
 echo "PUBLIC_REDPANDA_HOST (raw): ${PUBLIC_REDPANDA_HOST:-<unset>} ; PUBLIC_REDPANDA_PORT: ${PUBLIC_REDPANDA_PORT:-<unset, default 9093>}"
 
 # Start the broker using the bare `redpanda` binary and the generated config.

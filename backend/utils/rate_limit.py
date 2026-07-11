@@ -16,6 +16,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 from utils.env import get_int, get_str
+from utils.tls import materialize_tls_file
 
 # Dragonfly/Redis — prefer DRAGONFLY_HOST (canonical); REDIS_URL overrides all.
 redis_host = get_str("REDISHOST") or getattr(settings, "DRAGONFLY_HOST", "dragonfly")
@@ -25,8 +26,13 @@ if HAS_REDIS:
   try:
     redis_url = get_str("REDIS_URL")
     if redis_url:
+      redis_ca = materialize_tls_file("REDIS_SSL_CA", "REDIS_SSL_CA_B64")
       redis_client = redis.from_url(
-        redis_url, decode_responses=True, socket_connect_timeout=2, socket_timeout=2
+        redis_url,
+        decode_responses=True,
+        socket_connect_timeout=2,
+        socket_timeout=2,
+        **({"ssl_ca_certs": redis_ca, "ssl_cert_reqs": "required"} if redis_ca else {}),
       )
     else:
       redis_client = redis.Redis(

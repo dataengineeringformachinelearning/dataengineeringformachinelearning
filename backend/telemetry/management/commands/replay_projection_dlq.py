@@ -9,7 +9,12 @@ from typing import Any
 
 from aiokafka import AIOKafkaConsumer
 from django.core.management.base import BaseCommand, CommandParser
-from utils.kafka import get_kafka_brokers, get_kafka_producer
+from utils.kafka import (
+  decode_kafka_value,
+  get_kafka_client_config,
+  get_kafka_producer,
+  send_kafka_value,
+)
 from utils.structured_log import log_event
 
 from telemetry.worker.reliability import PROJECTION_DLQ_REPLAY_GROUP, PROJECTION_DLQ_TOPIC
@@ -47,7 +52,7 @@ class Command(BaseCommand):
   async def _replay(self, max_records: int, timeout_ms: int, dry_run: bool) -> None:
     consumer = AIOKafkaConsumer(
       PROJECTION_DLQ_TOPIC,
-      bootstrap_servers=get_kafka_brokers(),
+      **get_kafka_client_config(),
       group_id=PROJECTION_DLQ_REPLAY_GROUP,
       auto_offset_reset="earliest",
       enable_auto_commit=False,
@@ -71,9 +76,10 @@ class Command(BaseCommand):
 
       producer = await get_kafka_producer()
       for message in messages:
-        await producer.send_and_wait(
+        await send_kafka_value(
+          producer,
           "frontend-events",
-          message.value,
+          decode_kafka_value(message.value, PROJECTION_DLQ_TOPIC),
           key=message.key,
           headers=[("x-deml-replayed-from", PROJECTION_DLQ_TOPIC.encode("utf-8"))],
         )

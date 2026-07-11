@@ -1,5 +1,6 @@
 from collections.abc import Callable
 
+from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse
 
@@ -74,8 +75,11 @@ class ContentSecurityPolicyMiddleware:
     content_type = response.get("Content-Type", "")
     if "text/html" in content_type:
       dynamic_domains = _get_dynamic_csp_domains()
-      extra_connect = " ".join(f"https://{d} http://{d}" for d in dynamic_domains)
-      extra_img = " ".join(f"https://{d} http://{d}" for d in dynamic_domains)
+      schemes = ("https",) if not settings.DEBUG else ("https", "http")
+      extra_connect = " ".join(
+        f"{scheme}://{domain}" for domain in dynamic_domains for scheme in schemes
+      )
+      extra_img = extra_connect
 
       csp_policy = (
         "default-src 'self'; "
@@ -86,7 +90,8 @@ class ContentSecurityPolicyMiddleware:
         "font-src 'self' data: https://fonts.gstatic.com; "
         f"connect-src {_CSP_CONNECT_SRC} {extra_connect}; "
         f"img-src {_CSP_IMG_SRC} {extra_img}; "
-        f"frame-src {_CSP_FRAME_SRC};"
+        f"frame-src {_CSP_FRAME_SRC}; "
+        "upgrade-insecure-requests; block-all-mixed-content;"
       )
       response["Content-Security-Policy"] = csp_policy.strip()
       response["X-Content-Type-Options"] = "nosniff"

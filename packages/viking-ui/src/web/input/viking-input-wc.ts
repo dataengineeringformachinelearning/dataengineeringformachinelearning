@@ -80,8 +80,10 @@ export class VikingInputWc extends HTMLElementBase {
 
   set value(next: string) {
     const normalized = next ?? "";
-    this.setAttribute("value", normalized);
-    if (this.input) {
+    if (this.getAttribute("value") !== normalized) {
+      this.setAttribute("value", normalized);
+    }
+    if (this.input && this.input.value !== normalized) {
       this.input.value = normalized;
     }
     this.syncFormValue();
@@ -105,10 +107,12 @@ export class VikingInputWc extends HTMLElementBase {
 
   private readonly onInput = (): void => {
     const next = this.input?.value ?? "";
-    this.setAttribute("value", next);
     this.syncFormValue();
     this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
     this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+    if (this.getAttribute("value") !== next) {
+      this.setAttribute("value", next);
+    }
   };
 
   private readonly onBlur = (): void => {

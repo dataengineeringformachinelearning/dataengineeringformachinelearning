@@ -15,8 +15,19 @@
       "healthcheckPath": "/api/v1/system-status/health",
       "requiredEnv": [
         "DATABASE_URL",
+        "REDIS_URL",
+        "REDIS_SSL_CA_B64",
         "SECRET_KEY",
         "REDPANDA_BROKERS",
+        "REDPANDA_SECURITY_PROTOCOL",
+        "REDPANDA_SSL_CA_B64",
+        "REDPANDA_SSL_CERT_B64",
+        "REDPANDA_SSL_KEY_B64",
+        "DEML_TRANSPORT_SECURITY",
+        "DEML_INTERNODE_ENCRYPTION",
+        "DEML_INTERNODE_ACTIVE_KID",
+        "DEML_INTERNODE_KEYS",
+        "DEML_NODE_ID",
         "CPE_GUESSER_URL",
         "STRUCTURED_LOGS"
       ],
@@ -31,6 +42,8 @@
       "forbiddenEnv": [
         "DEML_ROLE",
         "DATABASE_URL",
+        "REDIS_URL",
+        "REDIS_SSL_CA_B64",
         "SECRET_KEY",
         "INTERNAL_SECRET"
       ],
@@ -43,8 +56,19 @@
       "startCommand": "sh -c 'export PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0; exec python deml_workers_start.py'",
       "requiredEnv": [
         "DATABASE_URL",
+        "REDIS_URL",
+        "REDIS_SSL_CA_B64",
         "SECRET_KEY",
         "REDPANDA_BROKERS",
+        "REDPANDA_SECURITY_PROTOCOL",
+        "REDPANDA_SSL_CA_B64",
+        "REDPANDA_SSL_CERT_B64",
+        "REDPANDA_SSL_KEY_B64",
+        "DEML_TRANSPORT_SECURITY",
+        "DEML_INTERNODE_ENCRYPTION",
+        "DEML_INTERNODE_ACTIVE_KID",
+        "DEML_INTERNODE_KEYS",
+        "DEML_NODE_ID",
         "PYTHON_EMBEDDED_SCHEDULERS_ENABLED",
         "CPE_GUESSER_URL",
         "STRUCTURED_LOGS"
@@ -59,8 +83,18 @@
       "startCommand": "sh -c 'export PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0; exec python manage.py telemetry_worker'",
       "requiredEnv": [
         "DATABASE_URL",
+        "REDIS_URL",
         "SECRET_KEY",
         "REDPANDA_BROKERS",
+        "REDPANDA_SECURITY_PROTOCOL",
+        "REDPANDA_SSL_CA_B64",
+        "REDPANDA_SSL_CERT_B64",
+        "REDPANDA_SSL_KEY_B64",
+        "DEML_TRANSPORT_SECURITY",
+        "DEML_INTERNODE_ENCRYPTION",
+        "DEML_INTERNODE_ACTIVE_KID",
+        "DEML_INTERNODE_KEYS",
+        "DEML_NODE_ID",
         "PYTHON_EMBEDDED_SCHEDULERS_ENABLED",
         "STRUCTURED_LOGS"
       ],
@@ -78,6 +112,15 @@
         "DEML_ROLE",
         "DATABASE_URL",
         "REDPANDA_BROKERS",
+        "REDPANDA_SECURITY_PROTOCOL",
+        "REDPANDA_SSL_CA_B64",
+        "REDPANDA_SSL_CERT_B64",
+        "REDPANDA_SSL_KEY_B64",
+        "DEML_TRANSPORT_SECURITY",
+        "DEML_INTERNODE_ENCRYPTION",
+        "DEML_INTERNODE_ACTIVE_KID",
+        "DEML_INTERNODE_KEYS",
+        "DEML_NODE_ID",
         "STRUCTURED_LOGS"
       ],
       "forbiddenEnv": [
@@ -85,7 +128,13 @@
         "INTERNAL_SECRET",
         "FIREBASE_SERVICE_ACCOUNT_JSON"
       ],
-      "envDefaults": { "DEML_ROLE": "relay", "STRUCTURED_LOGS": "true" }
+      "envDefaults": {
+        "DEML_ROLE": "relay",
+        "DEML_TRANSPORT_SECURITY": "required",
+        "DEML_INTERNODE_ENCRYPTION": "required",
+        "REDPANDA_SECURITY_PROTOCOL": "SASL_SSL",
+        "STRUCTURED_LOGS": "true"
+      }
     },
     "deml-scheduler": {
       "class": "rust-data-plane",
@@ -98,10 +147,25 @@
         "DEML_ROLE",
         "DATABASE_URL",
         "REDPANDA_BROKERS",
+        "REDPANDA_SECURITY_PROTOCOL",
+        "REDPANDA_SSL_CA_B64",
+        "REDPANDA_SSL_CERT_B64",
+        "REDPANDA_SSL_KEY_B64",
+        "DEML_TRANSPORT_SECURITY",
+        "DEML_INTERNODE_ENCRYPTION",
+        "DEML_INTERNODE_ACTIVE_KID",
+        "DEML_INTERNODE_KEYS",
+        "DEML_NODE_ID",
         "STRUCTURED_LOGS"
       ],
       "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": { "DEML_ROLE": "scheduler", "STRUCTURED_LOGS": "true" }
+      "envDefaults": {
+        "DEML_ROLE": "scheduler",
+        "DEML_TRANSPORT_SECURITY": "required",
+        "DEML_INTERNODE_ENCRYPTION": "required",
+        "REDPANDA_SECURITY_PROTOCOL": "SASL_SSL",
+        "STRUCTURED_LOGS": "true"
+      }
     },
     "deml-probe": {
       "class": "rust-data-plane",
@@ -110,9 +174,18 @@
       "role": "probe",
       "startCommand": "sh -c 'export DEML_ROLE=probe PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
       "healthcheckPath": "/ready",
-      "requiredEnv": ["DEML_ROLE", "DATABASE_URL", "STRUCTURED_LOGS"],
+      "requiredEnv": [
+        "DEML_ROLE",
+        "DATABASE_URL",
+        "DEML_TRANSPORT_SECURITY",
+        "STRUCTURED_LOGS"
+      ],
       "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": { "DEML_ROLE": "probe", "STRUCTURED_LOGS": "true" }
+      "envDefaults": {
+        "DEML_ROLE": "probe",
+        "DEML_TRANSPORT_SECURITY": "required",
+        "STRUCTURED_LOGS": "true"
+      }
     },
     "deml-normalizer": {
       "class": "rust-data-plane",
@@ -125,11 +198,23 @@
         "DEML_ROLE",
         "DATABASE_URL",
         "REDPANDA_BROKERS",
+        "REDPANDA_SECURITY_PROTOCOL",
+        "REDPANDA_SSL_CA_B64",
+        "REDPANDA_SSL_CERT_B64",
+        "REDPANDA_SSL_KEY_B64",
+        "DEML_TRANSPORT_SECURITY",
+        "DEML_INTERNODE_ENCRYPTION",
+        "DEML_INTERNODE_ACTIVE_KID",
+        "DEML_INTERNODE_KEYS",
+        "DEML_NODE_ID",
         "STRUCTURED_LOGS"
       ],
       "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
       "envDefaults": {
         "DEML_ROLE": "normalizer",
+        "DEML_TRANSPORT_SECURITY": "required",
+        "DEML_INTERNODE_ENCRYPTION": "required",
+        "REDPANDA_SECURITY_PROTOCOL": "SASL_SSL",
         "STRUCTURED_LOGS": "true",
         "NORMALIZER_GROUP_ID": "deml-rust-telemetry-normalizer-v1"
       }
@@ -144,11 +229,17 @@
       "requiredEnv": [
         "DEML_ROLE",
         "DATABASE_URL",
+        "DEML_TRANSPORT_SECURITY",
         "REDIS_URL",
+        "REDIS_SSL_CA_B64",
         "STRUCTURED_LOGS"
       ],
       "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": { "DEML_ROLE": "ingest", "STRUCTURED_LOGS": "true" }
+      "envDefaults": {
+        "DEML_ROLE": "ingest",
+        "DEML_TRANSPORT_SECURITY": "required",
+        "STRUCTURED_LOGS": "true"
+      }
     },
     "deml-cpe": {
       "class": "rust-data-plane",
@@ -160,11 +251,17 @@
       "requiredEnv": [
         "DEML_ROLE",
         "DATABASE_URL",
+        "DEML_TRANSPORT_SECURITY",
         "CPE_REDIS_URL",
+        "REDIS_SSL_CA_B64",
         "STRUCTURED_LOGS"
       ],
       "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": { "DEML_ROLE": "cpe", "STRUCTURED_LOGS": "true" }
+      "envDefaults": {
+        "DEML_ROLE": "cpe",
+        "DEML_TRANSPORT_SECURITY": "required",
+        "STRUCTURED_LOGS": "true"
+      }
     },
     "deml-scanner": {
       "class": "infra-app",
@@ -173,15 +270,19 @@
       "healthcheckPath": "/health",
       "requiredEnv": ["CPE_GUESSER_URL"],
       "forbiddenEnv": ["DEML_ROLE", "SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": {
-        "CPE_GUESSER_URL": "http://deml-cpe.railway.internal:8080/unique"
-      }
+      "envDefaults": {}
     },
     "deml-queue": {
       "class": "infra",
       "configDir": "infrastructure/railway/queue",
       "dockerfile": "infrastructure/queue/Dockerfile",
-      "requiredEnv": [],
+      "requiredEnv": [
+        "REDPANDA_TLS_CERT_B64",
+        "REDPANDA_TLS_KEY_B64",
+        "REDPANDA_TLS_CA_B64",
+        "REDPANDA_SASL_USERNAME",
+        "REDPANDA_SASL_PASSWORD"
+      ],
       "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"],
       "notes": "Redpanda. Prefer minimal env; public host/port for external clients only."
     },
@@ -189,7 +290,11 @@
       "class": "infra",
       "configDir": "infrastructure/railway/dragonfly",
       "dockerfile": "infrastructure/dragonfly/Dockerfile",
-      "requiredEnv": [],
+      "requiredEnv": [
+        "DRAGONFLY_TLS_CERT_B64",
+        "DRAGONFLY_TLS_KEY_B64",
+        "DRAGONFLY_PASSWORD"
+      ],
       "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"]
     },
     "deml-clickhouse": {
@@ -208,7 +313,6 @@
     }
   },
   "crossServiceDefaults": {
-    "CPE_GUESSER_URL": "http://deml-cpe.railway.internal:8080/unique",
     "STRUCTURED_LOGS": "true"
   },
   "agentCommands": {

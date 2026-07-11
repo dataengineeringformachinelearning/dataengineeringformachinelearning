@@ -7,7 +7,7 @@ import os
 
 from aiokafka import AIOKafkaConsumer
 from django.core.management.base import BaseCommand
-from utils.kafka import get_kafka_brokers
+from utils.kafka import get_kafka_brokers, get_kafka_client_config
 
 from telemetry.worker import pingers, projectors, reliability, schedulers, synthetic
 
@@ -77,7 +77,7 @@ class Command(BaseCommand):
   async def consume_topic(self, brokers: str, topic: str, group_id: str) -> None:
     consumer = AIOKafkaConsumer(
       topic,
-      bootstrap_servers=brokers,
+      **get_kafka_client_config(),
       group_id=group_id,
       auto_offset_reset="earliest",
       enable_auto_commit=False,
