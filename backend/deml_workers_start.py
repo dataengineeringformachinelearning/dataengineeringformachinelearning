@@ -54,6 +54,7 @@ ALLOWED_TASKS: frozenset[str] = frozenset(
     "reconcile_accounts",
     "train_all_models",
     "db_cleanup",
+    "cleanup_clickhouse",
     "fetch_threat_intel",
     "generate_export",
     "ingest_taxii",
