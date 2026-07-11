@@ -466,7 +466,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       next: rows => {
         this.exportsList = Array.isArray(rows) ? rows : [];
         this.cdr.markForCheck();
-        const pending = this.exportsList.some(j => j.status === 'queued' || j.status === 'running');
+        const pending = this.exportsList.some(
+          j => (j?.status ?? '') === 'queued' || (j?.status ?? '') === 'running',
+        );
         if (pending && !this.exportPollId) {
           this.exportPollId = setInterval(() => this.loadExports(), 4000);
         }
@@ -495,7 +497,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: job => {
           this.exportBusy = false;
-          this.exportMessage = `Export ${job.id.slice(0, 8)}… ${job.status}`;
+          const jobId = job?.id ?? 'unknown';
+          this.exportMessage = `Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`;
           this.loadExports();
         },
         error: err => {
@@ -508,12 +511,19 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   public downloadExport(jobId: string): void {
+    if (!jobId) {
+      this.exportMessage = 'Invalid export job ID';
+      return;
+    }
     this.http
       .get<{ url: string; filename_hint?: string }>(API_ENDPOINTS.EXPORTS.DOWNLOAD(jobId))
       .subscribe({
         next: body => {
-          if (body?.url && this.isBrowser) {
-            window.open(body.url, '_blank', 'noopener,noreferrer');
+          const downloadUrl = body?.url;
+          if (downloadUrl && this.isBrowser) {
+            window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+          } else {
+            this.exportMessage = 'Download URL not available';
           }
         },
         error: err => {
