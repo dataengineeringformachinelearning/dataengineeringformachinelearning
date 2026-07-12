@@ -98,7 +98,7 @@ export interface VikingPropertyFilterOption {
       }
       .viking-property-filter__input {
         width: 100%;
-        padding-left: calc(var(--viking-space-2) + 24px);
+        padding-left: calc(var(--viking-space-2) + var(--viking-icon-size-lg));
         padding-right: var(--viking-space-2);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);

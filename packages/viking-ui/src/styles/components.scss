@@ -56,28 +56,28 @@ a {
 }
 
 .viking-section {
-  padding-block: var(--viking-page-section-gap, var(--viking-space-8)); /* Improved section breathing */
+  padding-block: var(
+    --viking-page-section-gap,
+    var(--viking-space-8)
+  ); /* Improved section breathing */
 }
 
 .viking-card {
   display: grid;
-  gap: var(--viking-card-content-gap, var(--viking-space-5));
+  gap: var(--viking-card-content-gap, var(--viking-space-2));
   align-self: stretch;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
   background-clip: padding-box;
   isolation: isolate;
-  padding: var(--viking-card-padding, var(--viking-space-5));
-  border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 86%, var(--viking-border));
-  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+  padding: var(--viking-card-padding, var(--viking-space-3));
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-container);
+  border-radius: var(--viking-card-radius, var(--viking-radius-lg));
   background: var(--viking-surface-recipe);
   color: var(--viking-text);
-  box-shadow:
-    var(--viking-shadow-md),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 24%, transparent);
+  box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
 }
 
 /* Better integration of text with card UI */
@@ -92,36 +92,11 @@ a {
 }
 
 .viking-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(
-      in srgb,
-      var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
-      transparent
-    ),
-    transparent
-  );
-  pointer-events: none;
+  display: none;
 }
 
 .viking-card::after {
-  content: "";
-  position: absolute;
-  inset: 0 auto auto 0;
-  right: 0;
-  width: 2px;
-  height: var(--viking-space-4);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--viking-metallic-100) 30%, transparent),
-    transparent
-  );
-  pointer-events: none;
+  display: none;
 }
 
 .viking-card[data-compact="true"] {
@@ -138,12 +113,10 @@ a {
 .viking-card[data-interactive="true"]:hover,
 .viking-card.viking-card-interactive:hover {
   border-color: var(--viking-accent-strong);
-  box-shadow:
-    var(--viking-shadow-hover),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 22%, transparent);
+  background: var(--viking-surface-recipe-elevated);
+  box-shadow: var(--viking-shadow-sm), var(--viking-surface-highlight);
   transform: translateY(var(--viking-state-hover-lift));
-  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+  border-radius: var(--viking-card-radius, var(--viking-radius-lg));
 }
 
 .viking-card[data-interactive="true"]:active,

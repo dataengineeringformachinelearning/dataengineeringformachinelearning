@@ -43,18 +43,24 @@ Viking-UI is the single source of truth for all DEML styling. Every visual rule 
 
 ## Design philosophy
 
-Viking-UI's final locked aesthetic is a **premium precision-engineered command aesthetic**: machined industrial surfaces with austere geometric restraint, expressed through clean component primitives and dense operational data surfaces. The system must feel engineered, battle-ready, restrained, and expensive without becoming cosplay, fantasy decoration, or generic enterprise SaaS.
+Viking-UI's current aesthetic is a **grid-first modern enterprise SaaS system**: highly consistent component anatomy, quiet Cyber-Noir surfaces, restrained Ocean Blue Serenity accents, balanced data density, and predictable responsive composition. The system should feel calm, precise, premium, and deliberately unsurprising across every product surface.
+
+The concise component specification is maintained in
+[`docs/viking-ui-style-guide.md`](docs/viking-ui-style-guide.md). Controls share
+a 40px frame and 8px radius; content surfaces share a 12px radius; badges use a
+24px pill frame; tables, charts, headers, and sidebars consume the same border,
+hover, selected, focus, and elevation contracts.
 
 High-quality references for primitive clarity, data density, and precision engineering inform the approach as directional quality bars only. Viking-UI does not import external UI libraries, copy source, duplicate visual systems, or move styling ownership out of `packages/viking-ui/`.
 
 Directional references are [Material Design 3](https://m3.material.io/) for adaptive foundations, [Flux UI](https://fluxui.dev/) for composable layouts, [Spartan](https://spartan.ng/) for accessible Angular behavior, [shadcn/ui](https://ui.shadcn.com/) for component anatomy and reusable blocks, [Cloudscape](https://cloudscape.design/) for AWS-scale responsive operational patterns, and [Trust Controls](https://www.trustcontrols.ai/) for evidence-minded security governance. They inform contracts and testing, never runtime adoption or visual copying.
 
-- **Precision engineering** — clean hierarchy, machined surfaces, deterministic rhythm, high-contrast operational readability, and zero visual drift under pressure.
-- **Digital battlefield restraint** — subtle tactical structure, strong silhouettes, ceremonial severity, and presence without fantasy illustration, decorative clutter, or roleplay UI.
+- **Precision engineering** — clean hierarchy, deterministic rhythm, high-contrast operational readability, and zero visual drift under pressure.
+- **Boring consistency** — templates, grids, and semantic tokens make every route feel like one coherent enterprise product.
 - **Dark-first command surfaces** — deep navy/charcoal backgrounds, machined metallic edges, no decorative noise.
-- **Tactile surface depth** — crisp borders, directional elevation, and subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`) on cards, panels, and buttons.
+- **Quiet surface depth** — crisp one-pixel borders, stepped surfaces, and soft low-elevation shadows distinguish hierarchy without visual noise.
 - **Refined accent discipline** — restrained electric-teal (`#2176ff`) for command/confirmation, rich crimson for escalation, secondary emphasis, and danger; no neon gradients or ambient glow orbs on base surfaces.
-- **Dense, breathable telemetry** — spacing is compact enough for operational dashboards and charts, but never cramped; every gap resolves to the **8px primary grid** (`--viking-space-unit`) via `--viking-space-*` (4px only for tight micro cases).
+- **Dense, breathable telemetry** — spacing is compact enough for operational dashboards and charts, but never cramped; semantic roles compose on a 4px primitive grid while stable numbered aliases retain compatibility.
 - **Primitive clarity** — component language follows clean, composable primitive style: small accessible primitives, predictable APIs, and layout visible through structure rather than bespoke styling.
 - **Geometric severity, not fantasy** — austere geometry, cold materiality, and sparse restraint appear as severe silhouettes and structural accents, never themed illustration, faux-medieval ornament, or decorative storytelling.
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
@@ -352,18 +358,18 @@ Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics
 
 ---
 
-## 3. Spacing (8px primary grid)
+## 3. Spacing (4px primitive grid, stable compatibility scale)
 
-All layout, padding, and gaps use the **8px primary unit** (`--viking-space-unit: 8px`). Integer steps are preferred. The only micro exception is `--viking-space-0-5: 4px` for tight icon/chip gaps. Hairlines use `--viking-space-px` (1px) — never for layout.
+Existing numbered `--viking-space-*` tokens retain their public 8px progression for compatibility. New components use semantic spacing roles built from the 4px primitive grid: `--viking-space-control-gap`, `--viking-space-content-gap`, `--viking-space-container-gap`, `--viking-space-section-gap`, and `--viking-space-page-gap`. Hairlines use `--viking-space-px` (1px) and never participate in layout.
 
 **Rules:**
 
 - Prefer `var(--viking-space-1)` … `var(--viking-space-12)` (and larger documented steps). Never invent `13px` / `18px` / `27px`.
 - Outer page gutters: `--viking-page-gutter` (`space-2` → `space-4` clamp).
-- Card interior: `--viking-card-padding` (`space-5` / 40px); compact tiles use `--viking-card-padding-compact` (`space-4`).
+- Card interior: `--viking-card-padding` (24px); compact tiles use `--viking-card-padding-compact` (16px).
 - Form field stack: `--viking-space-3` between sections; `--viking-space-1` between label and control.
 - Button groups / chips: `--viking-space-2` gap.
-- Section breaks: `--viking-page-section-gap` (`space-12` / 96px) or `--viking-space-6+`.
+- Section breaks: `--viking-page-section-gap` (64px), with 32px internal section rhythm.
 - Deprecated half-steps (`--viking-space-1-5`, `--viking-space-2-5`, `--viking-space-half`) **alias** onto on-grid tokens — do not introduce new half-step usages.
 - Dense but breathable: use `.viking-stack` / `.viking-grid` utilities for rhythm. Cards and sections should separate clearly without sparseness.
 
@@ -407,12 +413,12 @@ Steps through `8` are consecutive **+8px**. Larger steps remain **multiples of 8
 | `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`)      |
 | `--viking-page-gutter`                | clamp(`space-2`, 5vw, `space-4`)    |
 | `--viking-page-gutter-lg`             | `--viking-space-5`                  |
-| `--viking-page-stack-gap`             | `--viking-space-6`                  |
-| `--viking-page-section-gap`           | `--viking-space-10` (96px)          |
-| `--viking-card-padding`               | `--viking-space-5` (default)        |
-| `--viking-card-padding-compact`       | `--viking-space-4` (metrics)        |
-| `--viking-card-content-gap`           | `--viking-space-4`                  |
-| `--viking-panel-padding`              | `--viking-space-5`                  |
+| `--viking-page-stack-gap`             | 32px                                |
+| `--viking-page-section-gap`           | 64px                                |
+| `--viking-card-padding`               | 24px                                |
+| `--viking-card-padding-compact`       | 16px                                |
+| `--viking-card-content-gap`           | 16px                                |
+| `--viking-panel-padding`              | 24px                                |
 | `--viking-form-max-width`             | 42rem                               |
 | `--viking-form-narrow-max-width`      | 28rem                               |
 | `--viking-content-readable-max-width` | 48rem                               |
@@ -445,13 +451,13 @@ Softer, more modern premium feel: favor 12–16px for cards and containers for a
 | `--viking-radius-2xl`  | 24px  | Hero/feature cards (marketing) |
 | `--viking-radius-pill` | 999px | Badges, pills                  |
 
-**Recommendation:** Primary cards, panels, and containers use `--viking-radius-xl` (or the --viking-card-radius token) for the softer, more modern feel. This gives generous rounding without losing the machined precision.
+**Recommendation:** Primary cards and panels use `--viking-card-radius` (12px). Buttons use `--viking-button-radius` (8px). Reserve 16px for large overlays and 24px for exceptional marketing features.
 
 ---
 
 ## 5. Shadows & elevation
 
-Directional shadows with a **machined top-edge specular line** and restrained falloff. The feel should be tactile and engineered, not soft SaaS. No diffuse colored glows on standard UI. Elevation communicates hierarchy — cards lift 1px on hover max (`--viking-state-hover-lift`), never “float” 8px+ on static dashboards.
+Soft neutral shadows with restrained falloff support stepped surfaces and one-pixel borders. No colored glows or deep floating cards. Elevation communicates hierarchy; interactive cards lift by at most 1px.
 
 | Token                   | Recipe                                                           |
 | ----------------------- | ---------------------------------------------------------------- |
@@ -719,6 +725,14 @@ only token-backed density, column, equal-row, and alignment choices. Static
 surfaces use their matching `.page-inner-wrapper`, `.viking-section`,
 `.viking-stack`, `.viking-grid`, and `.viking-cluster` classes. Do not recreate
 these contracts with app-local wrappers or breakpoint CSS.
+
+Application routes should use `viking-app-layout` and `viking-page-template`
+for shell and page regions. Balanced dashboard and marketing content uses
+`viking-column-layout` with one to four equal columns or intrinsic `auto`
+tracks. Unequal regions use `viking-grid columns="12"` with
+`viking-grid-item` mobile, tablet, and desktop spans. Content is inlaid in
+`viking-container`, `viking-card`, `viking-chart-panel`, or another documented
+surface primitive; route-specific grid and card wrappers are not layout APIs.
 
 For content-led responsiveness, use `viking-grid columns="auto"` with the
 `compact`, `default`, or `wide` item-size contract. Use `viking-switcher` when a

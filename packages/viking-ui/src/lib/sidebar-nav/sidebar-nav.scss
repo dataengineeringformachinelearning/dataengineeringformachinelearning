@@ -1,18 +1,18 @@
 .viking-sidebar-nav {
-  padding: var(--viking-space-1) var(--viking-space-1) var(--viking-space-1);
+  padding: var(--viking-space-1);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-0-5);
 }
 
 @media (min-width: 901px) {
   .viking-sidebar-nav {
-    padding: var(--viking-space-2) 0;
+    padding: var(--viking-space-2) var(--viking-space-1);
     flex-direction: column;
     flex-wrap: nowrap;
-    gap: var(--viking-space-1);
+    gap: var(--viking-space-0-5);
   }
 }
 
@@ -33,11 +33,10 @@
       color var(--viking-duration) var(--viking-ease-default),
       background-color var(--viking-duration) var(--viking-ease-default),
       border-color var(--viking-duration) var(--viking-ease-default);
-    border-left: 3px solid transparent;
-    border-bottom: 3px solid transparent;
-    border-radius: var(--viking-radius);
+    border: var(--viking-border-width) var(--viking-border-style) transparent;
+    border-radius: var(--viking-component-radius);
     flex: 0 0 auto;
-    min-height: 44px;
+    min-height: var(--viking-navigation-item-height);
     white-space: nowrap;
     cursor: pointer;
     background: transparent;
@@ -57,8 +56,7 @@
 
     &.viking-sidebar-nav-link-active {
       background: var(--sidebar-active-bg);
-      border-left-color: transparent;
-      border-bottom-color: var(--sidebar-active-border);
+      border-color: var(--viking-border-accent);
       color: var(--sidebar-active-border);
     }
 
@@ -83,14 +81,12 @@
   .viking-sidebar-nav-link a {
     width: 100%;
     padding: var(--viking-space-1) var(--viking-space-2);
-    border-bottom: none;
-    border-left: 3px solid transparent;
-    border-radius: 0;
-    min-height: var(--viking-space-5);
+    border: var(--viking-border-width) var(--viking-border-style) transparent;
+    border-radius: var(--viking-component-radius);
+    min-height: var(--viking-navigation-item-height);
 
     &.viking-sidebar-nav-link-active {
-      border-left-color: var(--sidebar-active-border);
-      border-bottom-color: transparent;
+      border-color: var(--viking-border-accent);
     }
   }
 }
@@ -131,7 +127,7 @@
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-bold);
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: var(--viking-letter-spacing-wide);
   cursor: pointer;
   transition: color var(--viking-duration) var(--viking-ease-default);
@@ -178,7 +174,8 @@
     color var(--viking-duration) var(--viking-ease-default),
     background-color var(--viking-duration) var(--viking-ease-default),
     border-color var(--viking-duration) var(--viking-ease-default);
-  border-left: 3px solid transparent;
+  border: var(--viking-border-width) var(--viking-border-style) transparent;
+  border-radius: var(--viking-radius-sm);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
@@ -205,7 +202,7 @@
 
   &.viking-sidebar-nav-tree-item-active {
     background: var(--sidebar-active-bg);
-    border-left-color: var(--sidebar-active-border);
+    border-color: var(--viking-border-accent);
     color: var(--sidebar-active-border);
     font-weight: var(--viking-font-weight-semibold);
   }
@@ -224,7 +221,7 @@
   &.viking-sidebar-nav-tree-item-accent {
     color: var(--viking-accent);
     font-weight: var(--viking-font-weight-semibold);
-    border-left: 3px solid transparent;
+    border-color: transparent;
 
     &:hover {
       background-color: var(--sidebar-hover-bg);

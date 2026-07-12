@@ -13,63 +13,22 @@
   --viking-state-disabled-opacity: 0.48;
   --viking-state-hover-lift: -1px;
   --viking-state-active-scale: 0.985;
-  --viking-state-press-inset:
-    inset 0 1px 3px rgba(0, 0, 0, 0.32),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.02);
+  --viking-state-press-inset: inset 0 1px 2px rgba(0, 0, 0, 0.28);
 
   --viking-shadow-hover: var(
     --shadow-hover,
-    0 22px 42px rgba(0, 0, 0, 0.34),
-    0 8px 18px rgba(0, 0, 0, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08)
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    0 12px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05)
   );
 
   --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.055);
 
-  /* Sophisticated surface recipes for visual depth.
-     Top-edge metallic specular + very subtle directional tint gives
-     machined premium feel without clutter or glassmorphism. */
-  --viking-surface-recipe:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-metallic-100) 6%, transparent) 0%,
-      transparent 32%
-    ),
-    linear-gradient(
-      160deg,
-      color-mix(in srgb, var(--viking-metallic-050) 2.5%, transparent) 0%,
-      transparent 55%
-    ),
-    var(--viking-surface);
-
-  --viking-surface-recipe-elevated:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-metallic-100) 9%, transparent) 0%,
-      transparent 30%
-    ),
-    linear-gradient(
-      160deg,
-      color-mix(in srgb, var(--viking-metallic-050) 3.5%, transparent) 0%,
-      transparent 52%
-    ),
-    var(--viking-surface);
-
-  --viking-surface-recipe-inset:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-black) 12%, transparent) 0%,
-      transparent 40%
-    ),
-    var(--viking-surface-inset);
-
-  --viking-surface-recipe-muted:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-metallic-100) 4.5%, transparent) 0%,
-      transparent 38%
-    ),
-    var(--viking-surface-alt);
+  /* Solid, stepped surfaces keep the hierarchy quiet and deterministic. */
+  --viking-surface-recipe: var(--viking-surface);
+  --viking-surface-recipe-elevated: var(--viking-surface-raised);
+  --viking-surface-recipe-inset: var(--viking-surface-inset);
+  --viking-surface-recipe-muted: var(--viking-surface-alt);
 
   --viking-transition-interactive:
     color var(--viking-duration) var(--viking-ease-default),
@@ -79,7 +38,8 @@
     transform var(--viking-duration-fast) var(--viking-ease-default),
     opacity var(--viking-duration-fast) var(--viking-ease-default);
 
-  --viking-transition-transform: transform var(--viking-duration-fast) var(--viking-ease-default);
+  --viking-transition-transform: transform var(--viking-duration-fast)
+    var(--viking-ease-default);
 }
 
 /* Shared keyframes */
@@ -204,7 +164,7 @@
 }
 
 .viking-touch-target::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 50%;
   width: max(100%, var(--viking-touch-target-min));

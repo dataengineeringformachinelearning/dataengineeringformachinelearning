@@ -10,8 +10,8 @@
 }
 
 .viking-app-layout__main {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   min-width: 0;
   min-height: calc(100vh - var(--viking-navbar-height));
 }
@@ -206,7 +206,7 @@
 .viking-page-template__inner {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--viking-page-section-gap);
+  gap: var(--viking-page-stack-gap);
   width: min(100%, var(--viking-container-max-width));
   margin-inline: auto;
   padding-inline: var(--viking-page-gutter);
@@ -214,11 +214,10 @@
 }
 
 .viking-page-template__header {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-content-gap);
   padding-block-end: var(--viking-space-3);
   border-bottom: 1px solid var(--viking-border-divider);
 }
@@ -240,7 +239,7 @@
 .viking-page-template__content {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--viking-page-section-gap);
+  gap: var(--viking-space-container-gap);
   min-width: 0;
 }
 
@@ -434,16 +433,22 @@
   min-width: 0;
   padding: var(--viking-panel-padding);
   background: var(--viking-surface-recipe);
-  border: 1px solid var(--viking-border-container);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-container);
   border-radius: var(--viking-card-radius);
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
 }
 
 .viking-section__header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
-  gap: var(--viking-space-2);
-  margin-block-end: var(--viking-space-2);
+  gap: var(--viking-space-content-gap);
+  margin-block-end: var(--viking-space-content-gap);
+}
+
+.viking-section__header:has(.viking-section__icon) {
+  grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
 .viking-section__heading-group {
@@ -463,9 +468,8 @@
 .viking-section__title {
   margin: 0;
   color: var(--viking-text-heading);
-  font: var(--viking-type-label);
-  letter-spacing: var(--viking-letter-spacing-caps);
-  text-transform: uppercase;
+  font: var(--viking-type-heading-sm);
+  letter-spacing: var(--viking-letter-spacing-tight);
 }
 
 .viking-section--large .viking-section__title {
@@ -490,7 +494,7 @@
 .viking-section__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-container-gap);
 }
 
 .viking-section--stack .viking-section__body {
@@ -503,10 +507,32 @@
   grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-card-content-gap);
   min-width: 0;
+  width: 100%;
   color: var(--viking-text);
-  border: 1px solid var(--viking-border);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-container);
   border-radius: var(--viking-card-radius);
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
+}
+
+.viking-container--width-readable {
+  max-width: var(--viking-container-max-width-readable);
+}
+
+.viking-container--width-default {
+  max-width: var(--viking-container-max-width);
+}
+
+.viking-container--width-wide {
+  max-width: var(--viking-container-max-width-wide);
+}
+
+.viking-container--width-full {
+  max-width: none;
+}
+
+.viking-container--centered {
+  margin-inline: auto;
 }
 
 .viking-container--surface {
@@ -538,11 +564,16 @@
 }
 
 .viking-container__header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-content-gap);
   padding-block-end: var(--viking-space-3);
   border-bottom: 1px solid var(--viking-border-subtle);
+}
+
+.viking-container__header:has(.viking-container__icon) {
+  grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
 .viking-container__icon {
@@ -598,6 +629,10 @@
 
   .viking-section--grid .viking-section__body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .viking-page-template__header {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 }
 

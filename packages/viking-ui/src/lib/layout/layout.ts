@@ -6,7 +6,9 @@ import {
 } from "@angular/core";
 
 export type VikingLayoutDensity = "tight" | "compact" | "default" | "loose";
-export type VikingGridColumns = 1 | 2 | 3 | 4 | "auto";
+export type VikingGridColumns = 1 | 2 | 3 | 4 | 6 | 12 | "auto";
+export type VikingGridSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+export type VikingColumnLayoutColumns = 1 | 2 | 3 | 4 | "auto";
 export type VikingClusterJustify = "start" | "between" | "end";
 export type VikingIntrinsicItemSize = "compact" | "default" | "wide";
 
@@ -63,7 +65,7 @@ export class VikingStack {
   );
 }
 
-/** Mobile-first responsive grid with one to four predictable columns. */
+/** Mobile-first responsive grid with equal columns, intrinsic flow, or 12 tracks. */
 @Component({
   selector: "viking-grid",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,6 +88,65 @@ export class VikingGrid {
       this.columns() === "auto" ? `viking-grid--item-${this.itemSize()}` : "",
       this.spacing() === "default" ? "" : `viking-grid--${this.spacing()}`,
       this.equalRows() ? "viking-grid--equal-rows" : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
+/** Responsive item for the 12-column Viking grid. Mobile defaults to full width. */
+@Component({
+  selector: "viking-grid-item",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { "[class]": "hostClass()" },
+  template: `<ng-content />`,
+})
+export class VikingGridItem {
+  readonly span = input<VikingGridSpan>(12);
+  readonly tabletSpan = input<VikingGridSpan | null>(null);
+  readonly desktopSpan = input<VikingGridSpan | null>(null);
+
+  protected readonly hostClass = computed(() =>
+    [
+      "viking-grid-item",
+      `viking-grid-item--span-${this.span()}`,
+      this.tabletSpan() ? `viking-grid-item--span-md-${this.tabletSpan()}` : "",
+      this.desktopSpan()
+        ? `viking-grid-item--span-lg-${this.desktopSpan()}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
+/** Balanced Cloudscape-style columns for cards, forms, and dashboard regions. */
+@Component({
+  selector: "viking-column-layout",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { "[class]": "hostClass()" },
+  template: `<ng-content />`,
+})
+export class VikingColumnLayout {
+  readonly columns = input<VikingColumnLayoutColumns>(2);
+  readonly itemSize = input<VikingIntrinsicItemSize>("default");
+  readonly spacing =
+    input<Extract<VikingLayoutDensity, "tight" | "default" | "loose">>(
+      "default",
+    );
+  readonly equalRows = input<boolean>(true);
+
+  protected readonly hostClass = computed(() =>
+    [
+      "viking-column-layout",
+      `viking-column-layout--${this.columns()}`,
+      this.columns() === "auto"
+        ? `viking-column-layout--item-${this.itemSize()}`
+        : "",
+      this.spacing() === "default"
+        ? ""
+        : `viking-column-layout--${this.spacing()}`,
+      this.equalRows() ? "viking-column-layout--equal-rows" : "",
     ]
       .filter(Boolean)
       .join(" "),

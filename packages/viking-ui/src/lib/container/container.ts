@@ -8,6 +8,7 @@ import { VikingIconComponent } from "../icon/icon";
 
 export type VikingContainerVariant = "surface" | "inset" | "transparent";
 export type VikingContainerPadding = "compact" | "default" | "none";
+export type VikingContainerWidth = "readable" | "default" | "wide" | "full";
 
 /** Cloudscape-style content container with one deterministic anatomy. */
 @Component({
@@ -50,12 +51,16 @@ export class VikingContainer {
   readonly icon = input<string | null>(null);
   readonly variant = input<VikingContainerVariant>("surface");
   readonly padding = input<VikingContainerPadding>("default");
+  readonly width = input<VikingContainerWidth>("full");
+  readonly centered = input<boolean>(true);
 
   protected readonly hostClass = computed(() =>
     [
       "viking-container",
       `viking-container--${this.variant()}`,
       `viking-container--padding-${this.padding()}`,
+      `viking-container--width-${this.width()}`,
+      this.centered() ? "viking-container--centered" : "",
     ].join(" "),
   );
 }

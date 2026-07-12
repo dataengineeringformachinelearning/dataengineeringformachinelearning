@@ -21,7 +21,7 @@ const sourceFilesIn = (directory) =>
     return /\.(?:scss|ts)$/.test(entry.name) ? [entryPath] : [];
   });
 
-test("spacing tokens preserve the 4px micro and 8px primary grids", () => {
+test("spacing tokens preserve compatibility and expose semantic SaaS roles", () => {
   const variables = readPackageFile("src", "styles", "_variables.scss");
   const tokens = JSON.parse(
     readPackageFile("src", "tokens", "viking-tokens.json"),
@@ -30,7 +30,15 @@ test("spacing tokens preserve the 4px micro and 8px primary grids", () => {
   assert.match(variables, /--viking-grid-unit:\s*4px;/);
   assert.match(variables, /--viking-space-unit:\s*8px;/);
   assert.match(variables, /--viking-space-0-5:\s*4px;/);
-  assert.match(variables, /--viking-card-padding:\s*var\(--viking-space-5\);/);
+  assert.match(
+    variables,
+    /--viking-space-content-gap:\s*var\(--viking-space-2\);/,
+  );
+  assert.match(
+    variables,
+    /--viking-space-container-gap:\s*var\(--viking-space-3\);/,
+  );
+  assert.match(variables, /--viking-card-padding:\s*var\(--viking-space-3\);/);
   assert.deepEqual(
     [
       tokens.layout.intrinsicItemCompact,
@@ -71,6 +79,8 @@ test("Angular layout primitives compose the canonical layout classes", () => {
     "viking-section",
     "viking-stack",
     "viking-grid",
+    "viking-grid-item",
+    "viking-column-layout",
     "viking-cluster",
     "viking-switcher",
   ]) {
@@ -80,7 +90,25 @@ test("Angular layout primitives compose the canonical layout classes", () => {
   assert.match(layout, /viking-grid--equal-rows/);
   assert.match(layout, /viking-cluster--/);
   assert.match(layout, /viking-grid--item-/);
+  assert.match(layout, /viking-grid-item--span-md-/);
+  assert.match(layout, /viking-grid-item--span-lg-/);
+  assert.match(layout, /viking-column-layout--/);
   assert.match(layout, /viking-switcher--/);
+});
+
+test("grid system exposes 12-track, intrinsic column, and centered container contracts", () => {
+  const layoutStyles = readPackageFile("src", "styles", "_layout-rhythm.scss");
+  const templateStyles = readPackageFile("src", "styles", "_templates.scss");
+  const container = readPackageFile("src", "lib", "container", "container.ts");
+
+  assert.match(layoutStyles, /\.viking-grid\.viking-grid--12/);
+  assert.match(layoutStyles, /@for \$span from 1 through 12/);
+  assert.match(layoutStyles, /\.viking-column-layout/);
+  assert.match(layoutStyles, /repeat\(\s*auto-fit,/s);
+  assert.match(container, /VikingContainerWidth/);
+  assert.match(container, /viking-container--width-/);
+  assert.match(templateStyles, /\.viking-container--centered/);
+  assert.match(templateStyles, /--viking-container-max-width-wide/);
 });
 
 test("intrinsic layouts adapt to available space without device breakpoints", () => {

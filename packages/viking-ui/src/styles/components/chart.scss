@@ -176,7 +176,7 @@ viking-chart {
   border: none;
 }
 
-/* Tooltip — elegant, light chrome */
+/* Tooltip — compact, opaque SaaS chrome */
 .viking-chart-tooltip {
   position: absolute;
   z-index: var(--viking-z-tooltip, 40);
@@ -197,7 +197,7 @@ viking-chart {
     );
   border-radius: var(--viking-chart-tooltip-radius, var(--viking-radius));
   box-shadow: var(--viking-shadow-sm);
-  backdrop-filter: blur(8px);
+  backdrop-filter: none;
   font-size: 11px;
   color: var(--viking-chart-tooltip-text, var(--viking-text));
   white-space: nowrap;
@@ -284,16 +284,36 @@ viking-chart {
   display: none;
 }
 
-/* Chart panels: keep chrome light so the plot stays primary */
+/* Chart panels: a consistent grid-aligned analytics container. */
 .viking-chart-panel,
 viking-chart-panel {
-  box-shadow: var(--viking-shadow-xs);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  container-type: inline-size;
+  container-name: viking-chart-panel;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--viking-text);
+  background: var(--viking-surface-recipe);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-container);
+  border-radius: var(--viking-card-radius);
+  box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
 }
 
 .viking-chart-panel-body,
 .card-body-clean.viking-chart-panel-body {
   background: transparent;
   border: none;
+  padding: var(--viking-space-content-gap);
+}
+
+@container viking-chart-panel (min-width: 40rem) {
+  .viking-chart-panel-body,
+  .card-body-clean.viking-chart-panel-body {
+    padding: var(--viking-space-content-gap) var(--viking-space-container-gap)
+      var(--viking-space-container-gap);
+  }
 }
 
 .viking-chart-panel-body viking-chart,

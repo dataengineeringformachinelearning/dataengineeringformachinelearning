@@ -4,15 +4,9 @@
 // ============================================================================
 
 @mixin viking-btn-base {
-  --viking-btn-depth-shadow:
-    var(--viking-shadow-sm),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 7%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 18%, transparent);
-  --viking-btn-hover-shadow: var(--viking-shadow-hover);
-  --viking-btn-press-shadow:
-    inset 0 1px 3px color-mix(in srgb, var(--viking-black) 34%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--viking-white-pure) 3%, transparent),
-    var(--viking-shadow-xs);
+  --viking-btn-depth-shadow: none;
+  --viking-btn-hover-shadow: var(--viking-shadow-xs);
+  --viking-btn-press-shadow: var(--viking-shadow-inner);
 
   font-family: var(--viking-font-family);
   font-size: var(--viking-font-size-ui);
@@ -22,16 +16,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-2); /* Improved spacing for icons + label */
+  gap: var(--viking-space-control-gap);
   min-height: var(--viking-control-height);
-  padding: var(--viking-space-1) var(--viking-control-padding-x); /* More generous vertical breathing */
-  border-radius: var(--viking-button-radius, var(--viking-radius-xl)); /* Softer modern buttons */
-  border: 1px solid transparent;
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-component-radius);
+  border: var(--viking-border-width) var(--viking-border-style) transparent;
   cursor: pointer;
   text-decoration: none;
   transition: var(--viking-transition-interactive);
   width: auto;
-  min-width: var(--viking-btn-min-width, 120px);
+  min-width: var(--viking-btn-min-width, 0);
   white-space: nowrap;
   position: relative;
   background-clip: padding-box;
@@ -48,35 +42,11 @@
   }
 
   &::before {
-    content: "";
-    position: absolute;
-    inset: 1px 1px auto 1px;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--viking-metallic-100) 58%, transparent),
-      transparent
-    );
-    pointer-events: none;
-    opacity: 0.88;
-    transition: var(--viking-transition-interactive);
+    display: none;
   }
 
   &::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--viking-metallic-100) 24%, transparent),
-      transparent
-    );
-    pointer-events: none;
-    opacity: 0.45;
-    transition: var(--viking-transition-interactive);
+    display: none;
   }
 
   &:disabled,
@@ -163,41 +133,17 @@
 }
 
 @mixin viking-btn-primary {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-white-pure) 12%, transparent) 0%,
-      transparent 42%
-    ),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--viking-electric-300) 18%, transparent) 0%,
-      transparent 55%
-    ),
-    var(--viking-accent);
+  background: var(--viking-accent);
   color: var(--viking-accent-content);
   border-color: color-mix(
     in srgb,
     var(--viking-accent) 82%,
     var(--viking-black)
   );
-  box-shadow:
-    var(--viking-btn-depth-shadow),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 12%, transparent);
+  box-shadow: var(--viking-btn-depth-shadow);
 
   &:hover:not(:disabled):not([aria-busy="true"]) {
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--viking-white-pure) 16%, transparent) 0%,
-        transparent 44%
-      ),
-      linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--viking-electric-200) 20%, transparent) 0%,
-        transparent 58%
-      ),
-      var(--viking-accent-hover);
+    background: var(--viking-accent-hover);
     border-color: var(--viking-accent-hover);
     color: var(--viking-accent-content);
     box-shadow: var(--viking-btn-hover-shadow);
@@ -216,31 +162,17 @@
 }
 
 @mixin viking-btn-secondary {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-white-pure) 11%, transparent) 0%,
-      transparent 42%
-    ),
-    var(--viking-accent-secondary);
+  background: var(--viking-accent-secondary);
   color: var(--viking-accent-secondary-content);
   border-color: color-mix(
     in srgb,
     var(--viking-accent-secondary) 82%,
     var(--viking-black)
   );
-  box-shadow:
-    var(--viking-btn-depth-shadow),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent);
+  box-shadow: var(--viking-btn-depth-shadow);
 
   &:hover:not(:disabled):not([aria-busy="true"]) {
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--viking-white-pure) 14%, transparent) 0%,
-        transparent 44%
-      ),
-      var(--viking-accent-secondary-hover);
+    background: var(--viking-accent-secondary-hover);
     border-color: var(--viking-accent-secondary-hover);
     color: var(--viking-accent-secondary-content);
     box-shadow: var(--viking-btn-hover-shadow);
@@ -296,22 +228,14 @@
 }
 
 @mixin viking-btn-danger {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-white-pure) 10%, transparent) 0%,
-      transparent 42%
-    ),
-    var(--viking-danger);
+  background: var(--viking-danger);
   color: var(--viking-on-danger);
   border-color: color-mix(
     in srgb,
     var(--viking-danger) 85%,
     var(--viking-black)
   );
-  box-shadow:
-    var(--viking-btn-depth-shadow),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent);
+  box-shadow: var(--viking-btn-depth-shadow);
 
   &:hover:not(:disabled):not([aria-busy="true"]) {
     background: color-mix(
@@ -353,12 +277,10 @@
   border-color: transparent;
 
   &:hover:not(:disabled):not([aria-busy="true"]) {
-    background: var(--viking-accent-soft);
-    color: var(--viking-accent-strong);
-    border-color: var(--viking-border-subtle);
-    box-shadow: inset 0 1px 0
-      color-mix(in srgb, var(--viking-white-pure) 5%, transparent);
-    transform: translateY(var(--viking-state-hover-lift));
+    background: var(--viking-component-hover-bg);
+    color: var(--viking-text);
+    border-color: transparent;
+    box-shadow: none;
   }
 
   &:active:not(:disabled):not([aria-busy="true"]) {
@@ -377,10 +299,9 @@
 
   &:hover:not(:disabled):not([aria-busy="true"]) {
     color: var(--viking-text);
-    background: var(--viking-accent-soft);
-    border-color: var(--viking-border-strong);
-    box-shadow: inset 0 1px 0
-      color-mix(in srgb, var(--viking-white-pure) 5%, transparent);
+    background: var(--viking-component-hover-bg);
+    border-color: var(--viking-component-border-hover);
+    box-shadow: none;
   }
 
   &:active:not(:disabled):not([aria-busy="true"]) {

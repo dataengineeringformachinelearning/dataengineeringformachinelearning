@@ -83,27 +83,27 @@ $breakpoints: (
 
   [data-density="compact"] {
     --viking-density-name: compact;
-    --viking-control-height: var(--viking-space-5);
+    --viking-control-height: 40px;
     --viking-control-padding-x: var(--viking-space-control-gap);
     --viking-page-stack-gap: var(--viking-space-container-gap);
     --viking-page-section-gap: var(--viking-space-section-gap);
-    --viking-card-padding: var(--viking-space-container-gap);
-    --viking-card-padding-compact: var(--viking-space-content-gap);
-    --viking-card-content-gap: var(--viking-space-content-gap);
+    --viking-card-padding: var(--viking-space-content-gap);
+    --viking-card-padding-compact: var(--viking-space-compact-gap);
+    --viking-card-content-gap: var(--viking-space-compact-gap);
     --viking-panel-padding: var(--viking-space-container-gap);
     --viking-section-padding-y: var(--viking-space-section-gap);
   }
 
   [data-density="comfortable"] {
     --viking-density-name: comfortable;
-    --viking-control-height: var(--viking-space-6);
+    --viking-control-height: 48px;
     --viking-control-padding-x: var(--viking-space-content-gap);
     --viking-page-stack-gap: var(--viking-space-page-gap);
-    --viking-page-section-gap: var(--viking-space-12);
-    --viking-card-padding: var(--viking-space-6);
+    --viking-page-section-gap: var(--viking-space-10);
+    --viking-card-padding: var(--viking-space-4);
     --viking-card-padding-compact: var(--viking-space-container-gap);
     --viking-card-content-gap: var(--viking-space-container-gap);
-    --viking-panel-padding: var(--viking-space-6);
+    --viking-panel-padding: var(--viking-space-4);
     --viking-section-padding-y: var(--viking-space-10);
   }
 }

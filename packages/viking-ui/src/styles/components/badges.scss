@@ -3,13 +3,14 @@
 .status-badge-premium {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--border-radius-xl);
-  font-weight: 600;
-  font-size: 1rem;
-  line-height: 1.2;
-  letter-spacing: 0.03em;
+  gap: var(--viking-space-0-5);
+  min-height: var(--viking-badge-height);
+  padding: 0 var(--viking-space-1);
+  border-radius: var(--viking-radius-pill);
+  font-weight: var(--viking-font-weight-semibold);
+  font-size: var(--viking-font-size-xs);
+  line-height: var(--viking-line-height-snug);
+  letter-spacing: var(--viking-letter-spacing-wide);
   text-transform: capitalize;
   border: 1px solid transparent;
   white-space: nowrap;
@@ -17,8 +18,8 @@
 
   .status-dot,
   .status-dot-greenblue {
-    width: var(--space-1);
-    height: var(--space-1);
+    width: var(--viking-space-1);
+    height: var(--viking-space-1);
     border-radius: 50%;
     flex-shrink: 0;
     background-color: currentColor;
@@ -66,7 +67,7 @@
     border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 
-  html[data-theme='light'] &.primary {
+  html[data-theme="light"] &.primary {
     color: var(--color-primary);
   }
 
@@ -94,9 +95,13 @@
     }
   }
 
-  html[data-theme='light'] &.pro-verified {
+  html[data-theme="light"] &.pro-verified {
     color: var(--viking-crimson-500);
-    border-color: color-mix(in srgb, var(--viking-crimson-500) 28%, transparent);
+    border-color: color-mix(
+      in srgb,
+      var(--viking-crimson-500) 28%,
+      transparent
+    );
     background: color-mix(in srgb, var(--viking-crimson-500) 10%, transparent);
   }
 }

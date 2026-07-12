@@ -143,7 +143,10 @@ const integrations = [
   <div class="page-inner-wrapper landing-container showcase-layout">
 
     <!-- Hero: split layout with mock dashboard -->
-    <section class="hero-showcase" aria-labelledby="main-title">
+    <section
+      class="hero-showcase viking-column-layout viking-column-layout--2 viking-column-layout--loose"
+      aria-labelledby="main-title"
+    >
       <div class="hero-copy">
         <div class="hero-badge">
           <span class="badge-dot pulse-dot"></span>
@@ -199,9 +202,9 @@ const integrations = [
         <h2 id="quick-start-title">Operational Onboarding in Four Steps</h2>
         <p>Connect, observe, and act. The platform sustains projections, enrichment, and threat scoring autonomously.</p>
       </header>
-      <ol class="quick-start-steps">
+      <ol class="quick-start-steps viking-column-layout viking-column-layout--4">
         {quickStartSteps.map((item) => (
-          <li class="quick-start-step">
+          <li class="quick-start-step viking-card">
             <span class="step-number" aria-hidden="true">{item.step}</span>
             <VikingIcon name={item.icon} size={20} class="step-icon" />
             <h3>{item.title}</h3>
@@ -234,7 +237,10 @@ const integrations = [
 
     <!-- Wide capability showcases -->
     {capabilities.map((cap, idx) => (
-      <section class={`showcase-band ${idx % 2 === 1 ? 'reversed' : ''}`} aria-labelledby={`cap-${idx}`}>
+      <section
+        class={`showcase-band viking-column-layout viking-column-layout--2 viking-column-layout--loose ${idx % 2 === 1 ? 'reversed' : ''}`}
+        aria-labelledby={`cap-${idx}`}
+      >
         <div class="showcase-band-copy">
           <span class="section-tag">{cap.tag}</span>
           <h2 id={`cap-${idx}`}>{cap.title}</h2>
@@ -250,7 +256,7 @@ const integrations = [
           </a>
         </div>
         <div class="showcase-band-visual" aria-hidden="true">
-          <div class="visual-panel">
+          <div class="visual-panel viking-card">
             <div class="visual-panel-header">
               <VikingIcon name={cap.icon} size={20} />
               <span>{cap.title}</span>
@@ -283,7 +289,7 @@ const integrations = [
 
     <!-- Live widget — full width -->
     <section class="widget-showcase" aria-labelledby="widget-title">
-      <div class="widget-showcase-inner">
+      <div class="widget-showcase-inner viking-column-layout viking-column-layout--2">
         <div class="widget-copy">
           <span class="section-tag">EMBED ANYWHERE</span>
           <h2 id="widget-title">Live Status Widget</h2>
@@ -318,9 +324,11 @@ const integrations = [
           and audited. Operators focus on models; the platform sustains the perimeter.
         </p>
       </header>
-      <ul class="security-pillars-grid">
+      <ul
+        class="security-pillars-grid viking-column-layout viking-column-layout--auto viking-column-layout--item-compact"
+      >
         {securityPillars.map((pillar) => (
-          <li class="security-pillar">
+          <li class="security-pillar viking-card">
             <VikingIcon name={pillar.icon} size={20} />
             <strong>{pillar.label}</strong>
             <span>{pillar.detail}</span>
@@ -336,7 +344,7 @@ const integrations = [
         <h2 id="pricing-title">Transparent Throughput Tiers</h2>
         <p>Select the operational tier aligned with your telemetry volume and threat-analytics requirements.</p>
       </header>
-      <div class="pricing-cards-container">
+      <div class="pricing-cards-container viking-column-layout viking-column-layout--2">
         <div class="viking-card pricing-card standard-tier">
           <h3>Standard Tier</h3>
           <div class="price">Free</div>
