@@ -19,24 +19,13 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-from typing import Final
+from pathlib import Path
+from typing import Any, Final
 
 RAILWAY_BIN: Final = "railway"
-
-# Services that run Django/Rust workers and need the full backend env bundle.
-# Rust data plane uses one service per DEML_ROLE (see docs/rust-data-plane.md).
-BACKEND_SERVICES: Final[frozenset[str]] = frozenset(
-  {
-    "deml-backend",
-    "deml-workers",
-    "deml-telemetry-worker",
-    "deml-relay",
-    "deml-scheduler",
-    "deml-probe",
-    "deml-normalizer",
-    "deml-ingest",
-    "deml-cpe",
-  }
+CATALOG_PATH: Final = Path(__file__).resolve().parents[1] / "infrastructure/railway/services.json"
+FULL_ENV_CLASSES: Final[frozenset[str]] = frozenset(
+  {"django-api", "django-worker", "rust-data-plane"}
 )
 
 # Railway Postgres plugin vars leaked onto app services during deml-postgres references.
@@ -106,46 +95,18 @@ SCANNER_KEEP: Final[frozenset[str]] = frozenset(
   }
 )
 
-DTRACK_KEEP: Final[frozenset[str]] = frozenset(
-  {
-    "ALPINE_DATABASE_MODE",
-    "ALPINE_DATABASE_PASSWORD",
-    "ALPINE_DATABASE_URL",
-    "ALPINE_DATABASE_USERNAME",
-  }
-)
-
-OTEL_KEEP: Final[frozenset[str]] = frozenset(
-  {
-    "CLICKHOUSE_DB",
-    "CLICKHOUSE_HOST",
-    "CLICKHOUSE_PASSWORD",
-    "CLICKHOUSE_PORT",
-    "CLICKHOUSE_USER",
-    "PORT",
-  }
-)
-
-INFRA_EMPTY: Final[frozenset[str]] = frozenset()  # dragonfly, tor-proxy
-
-SERVICE_KEEP: Final[dict[str, frozenset[str]]] = {
+OPTIONAL_KEEP: Final[dict[str, frozenset[str]]] = {
   "deml-frontend": FRONTEND_KEEP,
   "deml-queue": QUEUE_KEEP,
   "deml-clickhouse": CLICKHOUSE_KEEP,
   "deml-scanner": SCANNER_KEEP,
-  "deml-dtrack-api": DTRACK_KEEP,
-  "deml-otel-collector": OTEL_KEEP,
-  "deml-dragonfly": INFRA_EMPTY,
-  "deml-tor-proxy": INFRA_EMPTY,
 }
 
-# Retired services (do not re-create; see infrastructure/railway/services.json).
-RETIRED_SERVICES: Final[frozenset[str]] = frozenset(
-  {
-    "deml-daemon",
-    "deml-cpe-guesser",
-  }
-)
+
+def _load_catalog() -> dict[str, dict[str, Any]]:
+  with CATALOG_PATH.open(encoding="utf-8") as catalog_file:
+    catalog = json.load(catalog_file)
+  return catalog["services"]
 
 
 def _railway_vars(service: str) -> dict[str, str]:
@@ -162,7 +123,7 @@ def _should_keep(key: str, keep: frozenset[str]) -> bool:
   if key.startswith("RAILWAY_"):
     return True
   if key == "PORT":
-    return False  # never keep manual PORT except otel (handled via keep set)
+    return key in keep
   return key in keep
 
 
@@ -193,14 +154,19 @@ def cleanup_backend_pg_pollution(service: str, dry_run: bool) -> tuple[int, int]
   return len(to_delete), deleted
 
 
-def cleanup_service(service: str, dry_run: bool) -> tuple[int, int]:
-  if service in BACKEND_SERVICES:
+def cleanup_service(
+  service: str, service_config: dict[str, Any] | None, dry_run: bool
+) -> tuple[int, int]:
+  if service_config is None:
+    print(f"SKIP service absent from canonical catalog: {service}")
+    return 0, 0
+
+  if service_config["class"] in FULL_ENV_CLASSES:
     return cleanup_backend_pg_pollution(service, dry_run)
 
-  keep = SERVICE_KEEP.get(service)
-  if keep is None:
-    print(f"SKIP unknown service: {service}")
-    return 0, 0
+  catalog_keep = set(service_config.get("requiredEnv", []))
+  catalog_keep.update(service_config.get("envDefaults", {}).keys())
+  keep = frozenset(catalog_keep) | OPTIONAL_KEEP.get(service, frozenset())
 
   vars_map = _railway_vars(service)
   to_delete = [k for k in sorted(vars_map) if not _should_keep(k, keep)]
@@ -215,7 +181,8 @@ def cleanup_service(service: str, dry_run: bool) -> tuple[int, int]:
 
 def main() -> None:
   dry_run = "--dry-run" in sys.argv
-  services = sorted(set(SERVICE_KEEP.keys()) | BACKEND_SERVICES)
+  catalog = _load_catalog()
+  services = sorted(catalog)
   if "--service" in sys.argv:
     idx = sys.argv.index("--service")
     services = [sys.argv[idx + 1]]
@@ -224,7 +191,7 @@ def main() -> None:
   removed = 0
   for svc in services:
     print(f"\n=== {svc} ===")
-    n, d = cleanup_service(svc, dry_run)
+    n, d = cleanup_service(svc, catalog.get(svc), dry_run)
     print(f"  -> {d}/{n} removed")
     total += n
     removed += d
