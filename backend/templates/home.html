@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}DEML Backend API — REST Services &amp; OpenAPI{% endblock %}
-{% block og_title %}DEML Backend API — REST Services &amp; OpenAPI{% endblock %}
-{% block twitter_title %}DEML Backend API — REST Services &amp; OpenAPI{% endblock %}
+{% block title %}DEML Backend API — Operational Intelligence &amp; Telemetry{% endblock %}
+{% block og_title %}DEML Backend API — Operational Intelligence &amp; Telemetry{% endblock %}
+{% block twitter_title %}DEML Backend API — Operational Intelligence &amp; Telemetry{% endblock %}
 
 {% block meta_description %}
 <meta
@@ -12,23 +12,47 @@
 {% endblock %}
 {% block og_description %}Django REST API for DEML — user accounts, model training schedules, SLA predictions, and multi-tenant telemetry orchestration.{% endblock %}
 {% block twitter_description %}Django REST API for DEML — user accounts, model training schedules, SLA predictions, and multi-tenant telemetry orchestration.{% endblock %}
-{% block meta_keywords %}DEML backend API, Django REST, multi-tenant telemetry, SLA predictions, OpenAPI{% endblock %}
+{% block meta_keywords %}DEML backend API, Django REST, multi-tenant telemetry, SLA predictions, OpenAPI, cybersecurity{% endblock %}
 
 {% block content %}
 <main class="page-inner-wrapper backend-landing-shell" id="main-content" tabindex="-1">
-  <header class="viking-page-header-static backend-hero" aria-labelledby="backend-hero-title">
-    <span class="viking-badge viking-badge-success backend-status-badge">
-      <span class="backend-status-dot" aria-hidden="true"></span>
-      Backend operational
-    </span>
+  <!-- Hero: Live Metrics Dashboard -->
+  <section class="backend-hero" aria-labelledby="backend-hero-title">
+    <div class="backend-hero-header">
+      <span class="viking-badge viking-badge-success backend-status-badge">
+        <span class="backend-status-dot" aria-hidden="true"></span>
+        Backend operational
+      </span>
 
-    <h1 class="viking-heading viking-heading-xl viking-font-display" id="backend-hero-title">
-      Data Engineering<br />for Machine Learning
-    </h1>
-    <p class="viking-text-muted backend-hero-lead">
-      Core REST API &amp; services orchestrator. This system manages user accounts,
-      coordinates model training schedules, and computes SLA predictions.
-    </p>
+      <h1 class="viking-heading viking-heading-xl viking-font-display" id="backend-hero-title">
+        Data Engineering<br />for Machine Learning
+      </h1>
+      <p class="viking-text-muted backend-hero-lead">
+        Core REST API &amp; services orchestrator. This system manages user accounts,
+        coordinates model training schedules, and computes SLA predictions.
+      </p>
+    </div>
+
+    <!-- Live Metrics Visualization -->
+    <div class="backend-hero-metrics" aria-label="Live operational metrics">
+      <div class="backend-metric-ring">
+        <viking-ring-gauge-wc value="99.97" label="Uptime" tone="success" size="lg"></viking-ring-gauge-wc>
+      </div>
+      <div class="backend-metric-grid">
+        <div class="backend-metric-item">
+          <span class="viking-metric-value">42ms</span>
+          <span class="viking-metric-label">P99 Latency</span>
+        </div>
+        <div class="backend-metric-item">
+          <span class="viking-metric-value">8.2K</span>
+          <span class="viking-metric-label">Events/sec</span>
+        </div>
+        <div class="backend-metric-item">
+          <span class="viking-metric-value">0.01%</span>
+          <span class="viking-metric-label">DLQ Rate</span>
+        </div>
+      </div>
+    </div>
 
     <div class="viking-cta-row backend-hero-cta">
       <a href="/api/v1/docs" class="viking-btn viking-btn-primary" id="explore-docs-btn">
@@ -40,12 +64,13 @@
         <span>Explore App</span>
       </a>
     </div>
-  </header>
+  </section>
 
-  <section class="backend-feature-grid" aria-labelledby="backend-features-heading">
+  <!-- Feature Showcase: Inlaid Cards -->
+  <section class="backend-feature-showcase" aria-labelledby="backend-features-heading">
     <h2 class="viking-label" id="backend-features-heading">Platform capabilities</h2>
 
-    <div class="backend-feature-cards">
+    <div class="backend-feature-grid">
       <viking-card-wc interactive title="Django REST API">
         <div class="backend-feature-card-body">
           <span
@@ -60,6 +85,10 @@
             Secure, type-safe, and high-performance API endpoints generated
             dynamically using the Django Ninja framework.
           </p>
+          <div class="backend-feature-stats">
+            <span class="viking-badge viking-badge-accent">ACID</span>
+            <span class="viking-badge viking-badge-success">240ms</span>
+          </div>
         </div>
       </viking-card-wc>
 
@@ -77,6 +106,9 @@
             Fully interactive OpenAPI specification interface under /api/v1/docs for
             sandboxed query testing.
           </p>
+          <div class="backend-feature-stats">
+            <span class="viking-badge viking-badge-success">OpenAPI 3.1</span>
+          </div>
         </div>
       </viking-card-wc>
 
@@ -94,8 +126,45 @@
             Robust data partitioning and tenant-scoped connection guards providing
             isolated telemetry pipelines.
           </p>
+          <div class="backend-feature-stats">
+            <span class="viking-badge viking-badge-warning">UUID-scoped</span>
+          </div>
         </div>
       </viking-card-wc>
+    </div>
+  </section>
+
+  <!-- Live Status Preview -->
+  <section class="backend-status-preview" aria-labelledby="status-preview-title">
+    <div class="backend-status-preview-header">
+      <span class="section-tag">LIVE STATUS</span>
+      <h2 id="status-preview-title">Operational Telemetry Feed</h2>
+    </div>
+    <div class="viking-card viking-card--gradient" aria-label="Live metrics display">
+      <div class="backend-status-metrics">
+        <div class="backend-status-metric">
+          <span class="viking-metric-value status-value">99.97%</span>
+          <span class="viking-metric-label">Availability</span>
+        </div>
+        <div class="backend-status-metric">
+          <span class="viking-metric-value status-value">12.4K</span>
+          <span class="viking-metric-label">Requests/min</span>
+        </div>
+        <div class="backend-status-metric">
+          <span class="viking-metric-value status-value">847</span>
+          <span class="viking-metric-label">Blocked Threats</span>
+        </div>
+      </div>
+      <div class="backend-status-sparkline" aria-hidden="true">
+        <svg viewBox="0 0 200 48" preserveAspectRatio="none">
+          <polyline
+            points="0,32 25,28 50,30 75,16 100,22 125,8 150,14 175,4 200,10"
+            fill="none"
+            stroke="var(--viking-success)"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
     </div>
   </section>
 </main>

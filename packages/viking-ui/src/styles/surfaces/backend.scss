@@ -33,34 +33,80 @@ body {
   min-height: calc(100vh - var(--viking-navbar-height, 64px));
 }
 
+/* Enhanced hero with live metrics */
 .backend-hero {
   text-align: center;
   align-items: center;
   max-width: var(--viking-content-readable-max-width, 48rem);
   margin-inline: auto;
   padding-block: var(--viking-page-section-gap);
-  box-shadow: var(--viking-shadow-sm);
+}
 
-  .viking-heading,
-  .viking-heading-xl {
-    font-family: var(--viking-font-family);
-    font-weight: var(--viking-font-weight-extrabold, 800);
-    letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
-    text-transform: uppercase;
-    line-height: var(--viking-line-height-none, 1);
-    font-size: clamp(
-      var(--viking-font-size-3xl, 36px),
-      6vw,
-      var(--viking-font-size-5xl, 56px)
-    );
-  }
+.backend-hero-header {
+  display: grid;
+  gap: var(--viking-space-3);
+  margin-bottom: var(--viking-space-5);
+}
 
-  .viking-heading-sm {
-    font-size: var(--viking-font-size-lg);
-    font-weight: var(--viking-font-weight-bold);
-    letter-spacing: var(--viking-letter-spacing-caps, 0.06em);
-    text-transform: uppercase;
-  }
+.backend-hero .viking-heading,
+.backend-hero .viking-heading-xl {
+  font-family: var(--viking-font-family);
+  font-weight: var(--viking-font-weight-extrabold, 800);
+  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+  text-transform: uppercase;
+  line-height: var(--viking-line-height-none, 1);
+  font-size: clamp(
+    var(--viking-font-size-3xl, 36px),
+    6vw,
+    var(--viking-font-size-5xl, 56px)
+  );
+}
+
+.backend-hero .viking-heading-sm {
+  font-size: var(--viking-font-size-lg);
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-caps, 0.06em);
+  text-transform: uppercase;
+}
+
+.backend-hero-metrics {
+  display: grid;
+  gap: var(--viking-space-4);
+  margin-top: var(--viking-space-4);
+}
+
+.backend-metric-ring {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--viking-space-3);
+}
+
+.backend-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--viking-space-3);
+}
+
+.backend-metric-item {
+  display: grid;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-3);
+  border-radius: var(--viking-radius-md);
+  background: var(--viking-surface-alt);
+}
+
+.backend-metric-value {
+  font-size: var(--viking-font-size-xl);
+  font-weight: var(--viking-font-weight-bold);
+  color: var(--viking-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.backend-metric-label {
+  font-size: var(--viking-font-size-sm);
+  color: var(--viking-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--viking-letter-spacing-wide);
 }
 
 .backend-status-badge {
@@ -116,19 +162,16 @@ body {
   }
 }
 
-/* ── Feature cards (VikingCard WC + icon tile) ─────────────────────────────── */
-.backend-feature-grid {
-  display: flex;
-  flex-direction: column;
+/* Feature showcase with styling */
+.backend-feature-showcase {
+  display: grid;
   gap: var(--viking-space-5);
-  width: 100%;
 }
 
-.backend-feature-cards {
+.backend-feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--viking-space-4);
-  width: 100%;
 }
 
 .backend-feature-card-body {
@@ -138,12 +181,67 @@ body {
 }
 
 .backend-feature-icon {
-  /* Extends .viking-icon-badge-static — page-specific sizing only */
   width: var(--viking-space-6);
   height: var(--viking-space-6);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-sm);
   border: none;
+}
+
+.backend-feature-stats {
+  display: flex;
+  gap: var(--viking-space-2);
+  margin-top: auto;
+}
+
+/* Live status preview */
+.backend-status-preview {
+  display: grid;
+  gap: var(--viking-space-3);
+}
+
+.backend-status-preview-header {
+  display: grid;
+  gap: var(--viking-space-1);
+  text-align: center;
+}
+
+.backend-status-preview-header h2 {
+  margin: 0;
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-2xl);
+  letter-spacing: var(--viking-letter-spacing-tight);
+  text-transform: uppercase;
+}
+
+.backend-status-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--viking-space-3);
+}
+
+.backend-status-metric {
+  display: grid;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-4);
+  text-align: center;
+}
+
+.status-value {
+  font-size: var(--viking-font-size-2xl);
+  font-weight: var(--viking-font-weight-bold);
+  color: var(--viking-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.backend-status-sparkline {
+  height: 48px;
+  margin-top: var(--viking-space-2);
+}
+
+.backend-status-sparkline svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* ── 404 page ──────────────────────────────────────────────────────────────── */
