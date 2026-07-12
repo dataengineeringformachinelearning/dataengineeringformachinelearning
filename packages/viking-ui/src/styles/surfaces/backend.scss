@@ -75,12 +75,6 @@ body {
   margin-top: var(--viking-space-4);
 }
 
-.backend-metric-ring {
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--viking-space-3);
-}
-
 .backend-metric-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -89,14 +83,20 @@ body {
 
 .backend-metric-item {
   display: grid;
-  gap: var(--viking-space-1);
-  padding: var(--viking-space-3);
-  border-radius: var(--viking-radius-md);
-  background: var(--viking-surface-alt);
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-4);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border-strong);
+}
+
+.backend-metric-item:hover {
+  border-color: var(--viking-accent-strong);
+  box-shadow: var(--viking-shadow-md);
 }
 
 .backend-metric-value {
-  font-size: var(--viking-font-size-xl);
+  font-size: var(--viking-font-size-2xl);
   font-weight: var(--viking-font-weight-bold);
   color: var(--viking-text);
   font-variant-numeric: tabular-nums;
@@ -121,6 +121,7 @@ body {
   border-radius: 50%;
   background-color: var(--viking-success);
   animation: backend-status-pulse 2s infinite;
+  margin-right: var(--viking-space-1);
 }
 
 @keyframes backend-status-pulse {
@@ -162,36 +163,44 @@ body {
   }
 }
 
-/* Feature showcase with styling */
+/* Feature showcase with styled panels */
 .backend-feature-showcase {
   display: grid;
   gap: var(--viking-space-5);
 }
 
-.backend-feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: var(--viking-space-4);
-}
-
-.backend-feature-card-body {
+.backend-feature-panel {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-3);
+  padding: var(--viking-space-5);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border-strong);
+  transition: var(--viking-transition-elevated);
+}
+
+.backend-feature-panel:hover {
+  border-color: var(--viking-accent-strong);
+  box-shadow: var(--viking-shadow-md);
 }
 
 .backend-feature-icon {
   width: var(--viking-space-6);
   height: var(--viking-space-6);
   border-radius: var(--viking-radius-lg);
-  box-shadow: var(--viking-shadow-sm);
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--viking-surface-alt);
+  margin-bottom: var(--viking-space-2);
 }
 
 .backend-feature-stats {
   display: flex;
   gap: var(--viking-space-2);
   margin-top: auto;
+  flex-wrap: wrap;
 }
 
 /* Live status preview */
@@ -237,6 +246,8 @@ body {
 .backend-status-sparkline {
   height: 48px;
   margin-top: var(--viking-space-2);
+  border-radius: var(--viking-radius);
+  overflow: hidden;
 }
 
 .backend-status-sparkline svg {

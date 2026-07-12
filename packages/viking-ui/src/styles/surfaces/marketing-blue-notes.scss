@@ -566,7 +566,9 @@
 }
 
 .blog-slider-link:hover,
-.blog-slider-link:focus-visible {
+.blog-slider-link:focus-visible,
+.viking-card:hover,
+.viking-card:focus-within {
   border-color: var(--viking-accent-strong);
   box-shadow: var(--viking-shadow-md);
 }

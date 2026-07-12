@@ -35,21 +35,22 @@
 
     <!-- Live Metrics Visualization -->
     <div class="backend-hero-metrics" aria-label="Live operational metrics">
-      <div class="backend-metric-ring">
-        <viking-ring-gauge-wc value="99.97" label="Uptime" tone="success" size="lg"></viking-ring-gauge-wc>
-      </div>
       <div class="backend-metric-grid">
-        <div class="backend-metric-item">
+        <div class="viking-card viking-metric-card">
+          <span class="viking-metric-value">99.97%</span>
+          <span class="viking-metric-label">Uptime</span>
+        </div>
+        <div class="viking-card viking-metric-card">
           <span class="viking-metric-value">42ms</span>
           <span class="viking-metric-label">P99 Latency</span>
         </div>
-        <div class="backend-metric-item">
+        <div class="viking-card viking-metric-card">
           <span class="viking-metric-value">8.2K</span>
           <span class="viking-metric-label">Events/sec</span>
         </div>
-        <div class="backend-metric-item">
-          <span class="viking-metric-value">0.01%</span>
-          <span class="viking-metric-label">DLQ Rate</span>
+        <div class="viking-card viking-metric-card">
+          <span class="viking-metric-value">847</span>
+          <span class="viking-metric-label">Blocked Threats</span>
         </div>
       </div>
     </div>
@@ -70,67 +71,59 @@
   <section class="backend-feature-showcase" aria-labelledby="backend-features-heading">
     <h2 class="viking-label" id="backend-features-heading">Platform capabilities</h2>
 
-    <div class="backend-feature-grid">
-      <viking-card-wc interactive title="Django REST API">
-        <div class="backend-feature-card-body">
-          <span
-            class="viking-icon-badge-static backend-feature-icon"
-            data-viking-icon="server"
-            data-viking-icon-color="accent"
-            data-viking-icon-size="24"
-            aria-hidden="true"
-          ></span>
-          <h3 class="viking-heading viking-heading-sm">Django REST API</h3>
-          <p class="viking-text-muted">
-            Secure, type-safe, and high-performance API endpoints generated
-            dynamically using the Django Ninja framework.
-          </p>
-          <div class="backend-feature-stats">
-            <span class="viking-badge viking-badge-accent">ACID</span>
-            <span class="viking-badge viking-badge-success">240ms</span>
-          </div>
-        </div>
-      </viking-card-wc>
+    <div class="viking-card viking-feature-panel" aria-label="Django REST API">
+      <span
+        class="viking-icon-badge-static backend-feature-icon"
+        data-viking-icon="server"
+        data-viking-icon-color="accent"
+        data-viking-icon-size="24"
+        aria-hidden="true"
+      ></span>
+      <h3 class="viking-heading viking-heading-sm">Django REST API</h3>
+      <p class="viking-text-muted">
+        Secure, type-safe, and high-performance API endpoints generated
+        dynamically using the Django Ninja framework.
+      </p>
+      <div class="backend-feature-stats">
+        <span class="viking-badge viking-badge-accent">ACID</span>
+        <span class="viking-badge viking-badge-success">240ms</span>
+      </div>
+    </div>
 
-      <viking-card-wc interactive title="Interactive Swagger">
-        <div class="backend-feature-card-body">
-          <span
-            class="viking-icon-badge-static backend-feature-icon"
-            data-viking-icon="terminal"
-            data-viking-icon-color="accent"
-            data-viking-icon-size="24"
-            aria-hidden="true"
-          ></span>
-          <h3 class="viking-heading viking-heading-sm">Interactive Swagger</h3>
-          <p class="viking-text-muted">
-            Fully interactive OpenAPI specification interface under /api/v1/docs for
-            sandboxed query testing.
-          </p>
-          <div class="backend-feature-stats">
-            <span class="viking-badge viking-badge-success">OpenAPI 3.1</span>
-          </div>
-        </div>
-      </viking-card-wc>
+    <div class="viking-card viking-feature-panel" aria-label="Interactive Swagger">
+      <span
+        class="viking-icon-badge-static backend-feature-icon"
+        data-viking-icon="terminal"
+        data-viking-icon-color="accent"
+        data-viking-icon-size="24"
+        aria-hidden="true"
+      ></span>
+      <h3 class="viking-heading viking-heading-sm">Interactive Swagger</h3>
+      <p class="viking-text-muted">
+        Fully interactive OpenAPI specification interface under /api/v1/docs for
+        sandboxed query testing.
+      </p>
+      <div class="backend-feature-stats">
+        <span class="viking-badge viking-badge-success">OpenAPI 3.1</span>
+      </div>
+    </div>
 
-      <viking-card-wc interactive title="Multi-Tenant Engine">
-        <div class="backend-feature-card-body">
-          <span
-            class="viking-icon-badge-static backend-feature-icon"
-            data-viking-icon="globe"
-            data-viking-icon-color="accent"
-            data-viking-icon-size="24"
-            aria-hidden="true"
-          ></span>
-          <h3 class="viking-heading viking-heading-sm">Multi-Tenant Engine</h3>
-          <p class="viking-text-muted">
-            Robust data partitioning and tenant-scoped connection guards providing
-            isolated telemetry pipelines.
-          </p>
-          <div class="backend-feature-stats">
-            <span class="viking-badge viking-badge-warning">UUID-scoped</span>
-          </div>
-        </div>
-      </viking-card-wc>
+    <div class="viking-card viking-feature-panel" aria-label="Multi-Tenant Engine">
+      <span
+        class="viking-icon-badge-static backend-feature-icon"
+        data-viking-icon="globe"
+        data-viking-icon-color="accent"
+        data-viking-icon-size="24"
+        aria-hidden="true"
+      ></span>
+      <h3 class="viking-heading viking-heading-sm">Multi-Tenant Engine</h3>
+      <p class="viking-text-muted">
+        Robust data partitioning and tenant-scoped connection guards providing
+        isolated telemetry pipelines.
+      </p>
+      <div class="backend-feature-stats">
+        <span class="viking-badge viking-badge-warning">UUID-scoped</span>
+      </div>
     </div>
   </section>
 

@@ -38,9 +38,9 @@ const pageJsonLd = [
   ogType="website"
   jsonLd={pageJsonLd}
 >
-  <div class="blue-notes-wrapper">
+  <div class="page-inner-wrapper blue-notes-wrapper">
 
-    <!-- Hero Slider for Featured Notes -->
+    <!-- Hero Header -->
     <header class="blog-hero" aria-label="Featured updates">
       <div class="blog-hero-badge">
         <VikingIcon name="insights" size={20} color="accent" />
@@ -52,13 +52,14 @@ const pageJsonLd = [
       </p>
     </header>
 
+    <!-- Hero Slider for Featured Notes -->
     {featuredNotes.length > 0 && (
     <section class="blog-slider-section" aria-label="Featured notes carousel">
       <div class="blog-slider">
         <div class="blog-slider-track" id="blog-slider-track">
           {featuredNotes.map((note, idx) => (
             <article class="blog-slider-slide" key={idx} aria-label={`Featured: ${note.data.title}`}>
-              <a href={blueNoteHref(note)} class="blog-slider-link">
+              <a href={blueNoteHref(note)} class="blog-slider-link viking-card">
                 <div class="blog-slider-content">
                   <span class="viking-badge viking-badge-accent">{note.data.note}</span>
                   <time datetime={note.data.publishedAt.toISOString()}>
@@ -106,56 +107,60 @@ const pageJsonLd = [
     </section>
     )}
 
-      <section class="blue-notes-archive" aria-labelledby="notes-archive-title">
-        <div class="blue-notes-section-heading">
-          <div>
-            <span class="section-tag">Chronological archive</span>
-            <h2 id="notes-archive-title">Changes over time</h2>
-          </div>
-          <p>Newest first. Every note is sourced from a shipped platform milestone.</p>
+    <!-- Archive Section -->
+    <section class="blue-notes-archive" aria-labelledby="notes-archive-title">
+      <div class="blue-notes-section-heading">
+        <div>
+          <span class="section-tag">Chronological archive</span>
+          <h2 id="notes-archive-title">Changes over time</h2>
         </div>
-
-        <ol class="blue-notes-timeline">
-          {otherNotes.map(note => (
-            <li>
-              <article class="viking-card blue-note-card">
-                <div class="blue-note-timeline-marker" aria-hidden="true"></div>
-                <div class="blue-note-card-meta">
-                  <span>{note.data.note}</span>
-                  <time datetime={note.data.publishedAt.toISOString()}>
-                    {formatBlueNoteDate(note.data.publishedAt)}
-                  </time>
-                </div>
-                <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
-                <p>{note.data.summary}</p>
-                <div class="blue-note-card-footer">
-                  <ul class="blue-note-categories" aria-label="Categories">
-                    {note.data.categories.map(category => <li>{category}</li>)}
-                  </ul>
-                  <a class="blue-note-read-link" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
-                    Read note <VikingIcon name="chevron_right" size={18} />
-                  </a>
-                </div>
-              </article>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <div class="blog-actions">
-        <a class="viking-btn viking-btn-outline" href="/blog/rss.xml">
-          <VikingIcon name="send" size={18} />
-          Follow the RSS feed
-        </a>
-        <a
-          class="viking-btn viking-btn-ghost"
-          href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <VikingIcon name="terminal" size={18} />
-          View the engineering record
-        </a>
+        <p>Newest first. Every note is sourced from a shipped platform milestone.</p>
       </div>
+
+      <ol class="blue-notes-timeline">
+        {otherNotes.map(note => (
+          <li>
+            <article class="viking-card blue-note-card">
+              <div class="blue-note-timeline-marker" aria-hidden="true"></div>
+              <div class="blue-note-card-meta">
+                <span>{note.data.note}</span>
+                <time datetime={note.data.publishedAt.toISOString()}>
+                  {formatBlueNoteDate(note.data.publishedAt)}
+                </time>
+              </div>
+              <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
+              <p>{note.data.summary}</p>
+              <div class="blue-note-card-footer">
+                <ul class="blue-note-categories" aria-label="Categories">
+                  {note.data.categories.map(category => <li>{category}</li>)}
+                </ul>
+                <a class="blue-note-read-link" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
+                  Read note <VikingIcon name="chevron_right" size={18} />
+                </a>
+              </div>
+            </article>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- Actions -->
+    <div class="blog-actions">
+      <a class="viking-btn viking-btn-outline" href="/blog/rss.xml">
+        <VikingIcon name="send" size={18} />
+        Follow the RSS feed
+      </a>
+      <a
+        class="viking-btn viking-btn-ghost"
+        href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <VikingIcon name="terminal" size={18} />
+        View the engineering record
+      </a>
     </div>
+
+  </div>
+  <script is:inline src="/assets/widgets/blog-slider.js" defer></script>
 </Layout>
