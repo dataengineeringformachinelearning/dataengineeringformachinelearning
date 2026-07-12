@@ -2551,6 +2551,8 @@ Furthermore, critical business logic—such as billing, telemetry, and backgroun
 
 The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles, framework-neutral Web Components, shared utility exports, and Angular wrapper components. The historical split that placed library ownership under frontend-specific paths has been retired; apps now consume the package the way they would consume an external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. Intrinsic `viking-grid columns="auto"` and `viking-switcher` contracts form tracks from available content space rather than device names, preserving readable minimums, equal-height cards, aligned action rows, and natural row-to-column flow from 320px and 400% zoom through wide operational canvases. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
 
+Information-dense metric groups follow a wide-card density contract: one column when space is constrained and no more than two equal columns on larger canvases, equivalent to 6/12 per card. Status metrics, KPI tiles, CES gauges, and explore-card metrics stretch to the tallest peer in their row so repeated surfaces retain a stable silhouette. Labels, supporting captions, and values remain on one line when presented inside these compact operational tiles; when a narrow viewport cannot preserve that line, the component clips with an ellipsis while retaining the complete accessible name instead of making one card taller than its neighbors. Four-across 3/12 metric layouts are prohibited for dense components because they compress content, force unpredictable wrapping, and slow scanning. Simple navigation and non-content collections are not metric grids and may still use their documented column counts.
+
 ### Design philosophy (THEME.md)
 
 Viking-UI expresses **precision engineering** and **high-end industrial tech** — see the canonical token matrix in [THEME.md](THEME.md):
@@ -2597,11 +2599,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/web-components.js"
 ></script>
 ```
 

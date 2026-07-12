@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 6.4.0
+
+### Minor Changes
+
+- Update componenet layout
+
 ## 6.3.0
 
 ### Minor Changes

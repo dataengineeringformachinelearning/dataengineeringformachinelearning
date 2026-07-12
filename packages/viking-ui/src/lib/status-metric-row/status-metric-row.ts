@@ -39,6 +39,7 @@ import type { VikingIconName } from "../../core/icons";
         width: 100%;
         min-width: 0;
         min-height: var(--viking-space-6);
+        height: 100%;
         padding: var(--viking-space-2); /* Consistent padding */
         border-radius: var(--viking-radius); /* Improved rounding */
         background: color-mix(
@@ -64,6 +65,9 @@ import type { VikingIconName } from "../../core/icons";
         gap: var(--viking-space-2);
         min-width: 0;
       }
+      .stat-info > div {
+        min-width: 0;
+      }
       .stat-title {
         display: block;
         font-size: var(--viking-font-size-2xs);
@@ -71,12 +75,18 @@ import type { VikingIconName } from "../../core/icons";
         letter-spacing: var(--viking-letter-spacing-caps);
         text-transform: uppercase;
         color: var(--viking-text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .stat-subtitle {
         display: block;
         font-size: var(--viking-font-size-3xs);
         color: var(--viking-text-subtle);
         margin-top: var(--viking-space-px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .stat-value-container {
         display: inline-flex;
@@ -89,6 +99,7 @@ import type { VikingIconName } from "../../core/icons";
         color: var(--viking-accent-strong);
         font-variant-numeric: tabular-nums;
         text-align: right;
+        white-space: nowrap;
       }
     `,
   ],

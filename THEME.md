@@ -727,6 +727,15 @@ keep 256px/320px/384px minimums on the 8px grid, set `min-width: 0` on children,
 and can align structured card footers across equal-height rows without fixed
 heights or text truncation.
 
+**Wide-card density law:** information-dense metric, KPI, status, forecast, and
+gauge groups render as one column when constrained and no more than two equal
+columns (6/12 per item) when space allows. Their grid tracks and children stretch
+to equal height. Compact labels, captions, and values stay on one line; use
+ellipsis plus a complete accessible name at genuinely narrow widths rather than
+wrapping one tile into a different height. Do not use four-across 3/12 layouts
+for dense operational cards. This rule does not apply to simple navigation or
+non-content collections such as footer link groups.
+
 ---
 
 ## 9. Z-index layering

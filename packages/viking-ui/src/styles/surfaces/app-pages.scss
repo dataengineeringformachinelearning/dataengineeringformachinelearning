@@ -649,6 +649,9 @@
   color: var(--viking-text-muted);
   text-transform: uppercase;
   letter-spacing: var(--viking-letter-spacing-caps);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .snapshot-value {
@@ -3462,7 +3465,7 @@ app-status-cta.isolated-status-cta {
   gap: var(--viking-space-2);
 
   @media (min-width: 900px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -3605,7 +3608,7 @@ app-status-cta.isolated-status-cta {
 
 @media (min-width: 1180px) {
   .dashboard-page-container .ces-gauge-cluster {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -3643,7 +3646,7 @@ app-status-cta.isolated-status-cta {
 @media (min-width: 1024px) {
   .dashboard-page-container .ml-stat-panels-row,
   .dashboard-page-container .stat-panels-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -3656,12 +3659,16 @@ app-status-cta.isolated-status-cta {
 
 .dashboard-page-container .stat-title {
   font-size: var(--viking-font-size-xs);
-  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dashboard-page-container .stat-value {
   font-size: var(--viking-font-size-lg);
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dashboard-page-container .status-card-outlined,

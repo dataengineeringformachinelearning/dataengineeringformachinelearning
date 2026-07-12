@@ -128,6 +128,7 @@ const segmentToDataPoint = (
         gap: var(--viking-space-2);
         min-width: 0;
         min-height: var(--viking-touch-target-comfort);
+        height: 100%;
         padding: var(--viking-space-3);
         border-radius: var(--viking-radius-md);
         background: var(--viking-surface-alt);
@@ -169,7 +170,9 @@ const segmentToDataPoint = (
         letter-spacing: var(--viking-letter-spacing-caps);
         line-height: var(--viking-line-height-snug);
         text-transform: uppercase;
-        overflow-wrap: anywhere;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .viking-explore-card-metric-sublabel {
@@ -192,7 +195,9 @@ const segmentToDataPoint = (
         font-weight: var(--viking-font-weight-bold);
         font-variant-numeric: tabular-nums;
         line-height: var(--viking-line-height-tight);
-        overflow-wrap: anywhere;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         text-align: left;
         max-width: 100%;
       }
@@ -408,7 +413,8 @@ export class ExploreCardMetricItemComponent {
         gap: var(--viking-space-3);
         width: 100%;
         min-width: 0;
-        align-items: start;
+        align-items: stretch;
+        grid-auto-rows: 1fr;
       }
 
       .viking-explore-card-footer {
@@ -428,12 +434,6 @@ export class ExploreCardMetricItemComponent {
         .viking-explore-card-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: var(--viking-space-3);
-        }
-      }
-
-      @container viking-explore-card (min-width: 70rem) {
-        .viking-explore-card-metrics {
-          grid-template-columns: repeat(4, minmax(0, 1fr));
         }
       }
     `,

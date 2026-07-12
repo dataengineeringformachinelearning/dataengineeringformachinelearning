@@ -165,6 +165,7 @@ Enforce these floors on every page — no Spartan drift, no cramped KPI rows:
 - **Readable copy width:** long prose/subtitles cap at `--viking-content-readable-max-width` (~48rem).
 - **Touch targets:** interactive controls ≥ 44px height on mobile (`--viking-control-height` / `--viking-space-5` minimum).
 - **Responsive grids:** use tokenized gaps (`--grid-gap`, `--viking-space-2`–`--viking-space-3`); collapse single-column on mobile before squeezing padding.
+- **Dense card width:** metric, KPI, status, forecast, and gauge collections cap at two equal columns (6/12 each), stretch cards to equal height, and preserve single-line compact labels/values with accessible ellipsis only when space is genuinely constrained. Never create four-across 3/12 dense-card rows.
 
 ### Component wrapper law (Angular + static)
 

@@ -100,6 +100,38 @@ test("intrinsic layouts adapt to available space without device breakpoints", ()
   assert.match(variables, /--viking-layout-item-wide:\s*24rem;/);
 });
 
+test("dense metric components keep the shared 6/12 wide-card contract", () => {
+  const metricCard = readPackageFile(
+    "src",
+    "lib",
+    "metric-card",
+    "metric-card.ts",
+  );
+  const exploreCard = readPackageFile(
+    "src",
+    "lib",
+    "explore-card",
+    "explore-card.ts",
+  );
+  const statusSection = readPackageFile(
+    "src",
+    "lib",
+    "status-section",
+    "status-section.ts",
+  );
+  const pageShell = readPackageFile("src", "styles", "page-shell.scss");
+
+  assert.match(metricCard, /col-span-6 col-span-md-6/);
+  assert.doesNotMatch(metricCard, /col-span-4 col-span-md-4/);
+  assert.match(exploreCard, /grid-auto-rows:\s*1fr;/);
+  assert.doesNotMatch(exploreCard, /repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.doesNotMatch(statusSection, /repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(
+    pageShell,
+    /\.viking-metric-row,[\s\S]*grid-auto-rows:\s*1fr;[\s\S]*repeat\(2, minmax\(0, 1fr\)\)/,
+  );
+});
+
 test("component spacing declarations use Viking spacing tokens", () => {
   const componentFiles = [
     ...sourceFilesIn(path.join(packageDir, "src", "lib")),

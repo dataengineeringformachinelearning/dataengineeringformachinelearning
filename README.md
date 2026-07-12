@@ -49,6 +49,7 @@ license: apache-2.0
 - **Predictive SLAs**: Machine learning forecasts service-level breach trajectories
 - **SIEM/SOAR Federation**: STIX 2.1 threat intelligence export
 - **WCAG 2.1 AA Design**: Premium Viking-UI theme across all surfaces ([THEME.md](THEME.md))
+- **Readable Metric Layouts**: Dense Viking-UI cards use a two-column maximum (6/12 each), equal-height rows, and single-line operational labels
 - **Canonical Brand Assets**: DEML artwork uses brand navy `#070C20` and brand blue `#0078FF`, governed and synchronized through Viking-UI
 
 ---

@@ -9,14 +9,22 @@
   margin-bottom: var(--viking-page-section-gap, var(--viking-space-6));
   width: 100%;
   min-width: 0;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   @media (min-width: 760px) {
-    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.viking-metric-row > *,
+.hud-metrics > * {
+  height: 100%;
+  min-width: 0;
 }
 
 .viking-metric-card,
@@ -67,6 +75,10 @@
   font-family: var(--viking-font-family);
   color: var(--viking-text-muted);
   letter-spacing: 0.05em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .viking-metric-value,
@@ -76,7 +88,9 @@
   font-family: var(--viking-font-family);
   line-height: 1.2;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .viking-metric-card-warning,
@@ -820,11 +834,16 @@
   font-size: var(--viking-font-size-xs);
   letter-spacing: var(--viking-letter-spacing-caps);
   text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .snapshot-value {
   display: block;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (min-width: 600px) {
@@ -938,7 +957,7 @@
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -983,7 +1002,9 @@
   letter-spacing: var(--viking-letter-spacing-caps, 0.04em);
   text-transform: uppercase;
   color: var(--viking-text-muted, var(--text-muted));
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stat-value {
@@ -993,7 +1014,9 @@
   letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
   line-height: var(--viking-line-height-tight, 1.2);
   max-width: 100%;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stat-unit {
@@ -1314,7 +1337,7 @@ viking-card.monitored-services-card {
   }
 
   @media (min-width: 1180px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

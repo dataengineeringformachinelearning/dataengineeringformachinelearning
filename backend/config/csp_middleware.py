@@ -32,6 +32,7 @@ _CSP_CONNECT_SRC = (
   "wss://ui.dataengineeringformachinelearning.com "
   "https://*.ui.dataengineeringformachinelearning.com "
   "wss://*.ui.dataengineeringformachinelearning.com "
+  "https://analytics.google.com https://*.analytics.google.com "
   "https://*.google-analytics.com https://*.googletagmanager.com "
   "https://*.clarity.ms https://*.bing.com"
 )

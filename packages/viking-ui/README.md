@@ -1,6 +1,6 @@
 # Viking-UI
 
-Publish target: **`@dataengineeringformachinelearning/viking-ui@6.3.0`**
+Publish target: **`@dataengineeringformachinelearning/viking-ui@6.4.0`**
 Single source of truth: **`packages/viking-ui/`** (framework-agnostic styles, tokens, Web Components, and Angular wrapper entrypoints are consolidated here).
 
 Universal DEML component library for Astro, Angular, and Django.
@@ -327,6 +327,12 @@ const exploreUptime: ExploreCardUptimePoint[] = Array.from(
 );
 ```
 
+Explore metrics and other information-dense Viking-UI card groups use the
+wide-card density contract: one column when constrained and no more than two
+equal columns (6/12 each) when space allows. Cards stretch to equal row height;
+compact labels and values stay on one line and use accessible ellipsis only
+when the available width cannot contain them.
+
 ## Storybook and Chromatic
 
 Storybook is the release-grade visual cockpit for the Web Component layer and
@@ -411,7 +417,7 @@ The package artifacts are published in `dist/`, so you can load them directly fr
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/viking-ui.css"
 />
 ```
 
@@ -420,7 +426,7 @@ The package artifacts are published in `dist/`, so you can load them directly fr
 ```html
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/web-components.js"
 ></script>
 ```
 
@@ -429,11 +435,11 @@ The package artifacts are published in `dist/`, so you can load them directly fr
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/web-components.js"
 ></script>
 ```
 
@@ -446,11 +452,11 @@ builds.
 <!-- Latest -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/web-components.js"
 ></script>
 ```
 
@@ -458,11 +464,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/web-components.js"
 ></script>
 ```
 
@@ -477,11 +483,11 @@ builds.
     <title>Viking-UI CDN demo</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/viking-ui.css"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/viking-ui.css"
     />
     <script
       type="module"
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/web-components.js"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/web-components.js"
     ></script>
   </head>
   <body>
@@ -523,14 +529,14 @@ Use this when embedding a live status badge on external pages:
     <title>DEML Status Widget</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/viking-ui.css"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/viking-ui.css"
     />
     <script
       type="module"
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/web-components.js"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/web-components.js"
     ></script>
     <script
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/widget.js"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/widget.js"
       async
       defer
       data-page-id="platform-status"
@@ -546,7 +552,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.3.0/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@6.4.0/dist/widget.js"
   async
   defer
   data-page-id="platform-status"

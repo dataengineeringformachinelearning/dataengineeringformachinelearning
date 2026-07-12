@@ -62,6 +62,7 @@ export class VikingMetricRow {}
         width: 100%;
         min-width: 0;
         align-self: stretch;
+        height: 100%;
         min-height: var(--viking-touch-target-comfort);
         padding: var(--viking-card-padding-compact, var(--viking-space-3));
         border: 1px solid var(--viking-border-subtle);
@@ -146,6 +147,9 @@ export class VikingMetricRow {}
         line-height: var(--viking-line-height-snug);
         text-transform: uppercase;
         margin-bottom: var(--viking-space-0-5);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .viking-metric-value {
@@ -155,7 +159,9 @@ export class VikingMetricRow {}
         font-weight: var(--viking-font-weight-bold);
         line-height: var(--viking-line-height-tight);
         font-variant-numeric: tabular-nums;
-        overflow-wrap: anywhere;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .viking-metric-sublabel {
@@ -164,6 +170,9 @@ export class VikingMetricRow {}
         font-size: var(--viking-font-size-xs);
         line-height: var(--viking-line-height-snug);
         margin-top: var(--viking-space-0-5);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       :host(.viking-metric-card-success) .viking-metric-card-icon,
@@ -215,7 +224,7 @@ export class MetricCardComponent {
   });
 
   protected readonly hostClass = computed(() => ({
-    "viking-metric-card metric-card col-span-4 col-span-md-4": true,
+    "viking-metric-card metric-card col-span-6 col-span-md-6": true,
     [`viking-metric-card-${this.resolvedTone()}`]:
       this.resolvedTone() !== "default",
   }));

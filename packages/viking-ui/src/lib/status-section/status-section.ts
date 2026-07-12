@@ -261,15 +261,6 @@ import {
         }
       }
 
-      @media (min-width: 1024px) {
-        .viking-status-section-content
-          ::ng-deep
-          .viking-status-section-metrics {
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: var(--viking-space-6);
-        }
-      }
-
       @media (max-width: 767px) {
         .viking-status-section-hero,
         .viking-status-section-content ::ng-deep .viking-status-section-block {
