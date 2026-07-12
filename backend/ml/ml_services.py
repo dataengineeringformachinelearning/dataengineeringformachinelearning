@@ -35,6 +35,12 @@ MODEL_TYPE_SLA: Final[str] = TrainingRun.MODEL_TYPE_SLA
 MODEL_TYPE_SPIKING: Final[str] = TrainingRun.MODEL_TYPE_SPIKING
 
 
+# Lazy import SearchQuery to avoid circular dependency at model load time
+def _get_search_query_model():
+  from monitor.models import SearchQuery
+  return SearchQuery
+
+
 def get_platform_model_path():
   path = os.path.join(settings.BASE_DIR, "ml", "saved_models")
   os.makedirs(path, exist_ok=True)
@@ -1320,3 +1326,97 @@ def _publish_benchmark_to_ui(results: dict) -> None:
     )
   except Exception as e:
     logger.warning("Failed to publish benchmark to Firestore: %s", e)
+
+
+def evaluate_search_query_threat(query: str) -> float:
+  """
+  Evaluate search query keywords for potential threat patterns.
+  Returns a threat score between 0.0 and 1.0.
+  """
+  import re
+
+  if not query or not query.strip():
+    return 0.0
+
+  query_lower = query.lower().strip()
+  threat_score = 0.0
+
+  # Prompt injection patterns
+  injection_patterns = [
+    r"ignore.*previous.*instructions",
+    r"system.*prompt",
+    r"bypass.*security",
+    r"you.*are.*now",
+    r"disregard.*policy",
+    r"override.*guard",
+    r"jailbreak",
+    r"DAN\s+mode",  # Do Anything Now
+    r"developer.*mode",
+  ]
+
+  for pattern in injection_patterns:
+    if re.search(pattern, query_lower):
+      threat_score = max(threat_score, 0.9)
+
+  # SQL injection patterns
+  sql_patterns = [
+    r"(select|insert|update|delete|drop|union).*from",
+    r";.*--",
+    r"'\s*or\s*'",
+    r"1\s*=\s*1",
+    r"'\s*=\s*'",
+  ]
+
+  for pattern in sql_patterns:
+    if re.search(pattern, query_lower):
+      threat_score = max(threat_score, 0.85)
+
+  # Credential harvesting patterns
+  cred_patterns = [
+    r"(password|api.*key|token|secret).*[{}\[\]]",  # Looking for placeholder patterns
+    r"(database.*connection|dsn).string",
+    r"credential",
+  ]
+
+  for pattern in cred_patterns:
+    if re.search(pattern, query_lower):
+      threat_score = max(threat_score, 0.75)
+
+  # Adversarial ML patterns
+  adversarial_patterns = [
+    r"(adversarial|perturbation|evasion)",
+    r"gradient.*mask",
+    r"model.*inversion",
+  ]
+
+  for pattern in adversarial_patterns:
+    if re.search(pattern, query_lower):
+      threat_score = max(threat_score, 0.7)
+
+  # Reduce score for very short common queries (likely benign)
+  if len(query_lower) <= 3 and threat_score < 0.5:
+    threat_score *= 0.3
+
+  return max(0.0, min(1.0, threat_score))
+
+
+def record_search_query_threat(
+  query: str,
+  user: Any = None,
+  *,
+  is_platform: bool = False,
+  ip_address: str | None = None,
+  user_agent: str | None = None,
+) -> SearchQuery:
+  """Record a search query with its evaluated threat score."""
+  from monitor.models import SearchQuery
+
+  threat_score = evaluate_search_query_threat(query)
+  return SearchQuery.objects.create(
+    user=user,
+    is_platform=is_platform,
+    query_text=query,
+    threat_score=threat_score,
+    ip_address=ip_address,
+    user_agent=user_agent,
+  )

@@ -500,6 +500,34 @@ class ReportArchive(models.Model):
 
   created_at = models.DateTimeField(auto_now_add=True)
 
+
+class SearchQuery(models.Model):
+  """Track search keywords for threat evaluation and analytics."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="search_queries", null=True, blank=True
+  )
+  is_platform = models.BooleanField(default=False)
+  query_text = models.TextField()
+  threat_score = models.FloatField(default=0.0)
+  source = models.CharField(max_length=50, default="algolia")  # algolia, command-palette
+  ip_address = models.GenericIPAddressField(null=True, blank=True)
+  user_agent = models.TextField(null=True, blank=True)
+  timestamp = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "search_queries"
+    ordering = ["-timestamp"]
+    indexes = [
+      models.Index(fields=["timestamp"]),
+      models.Index(fields=["threat_score"]),
+      models.Index(fields=["user", "is_platform", "timestamp"]),
+    ]
+
+  def __str__(self):
+    return f"SearchQuery: {self.query_text[:50]}... (score: {self.threat_score:.2f})"
+
   class Meta:
     db_table = "report_archives"
     ordering = ["-report_date"]

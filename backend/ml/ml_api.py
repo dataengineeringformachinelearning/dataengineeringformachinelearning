@@ -1,13 +1,15 @@
 import datetime
+from datetime import timedelta
 from typing import Any
 
 from django.core.cache import cache
-from monitor.models import StatusPage
+from monitor.models import SearchQuery, StatusPage
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
 from ml.ml_services import (
   HAS_NORSE,
+  evaluate_search_query_threat,
   infer_spiking_temporal_forecast,
   train_spiking_temporal_forecaster,
   train_tenant_sla,
@@ -491,3 +493,62 @@ from ml.compliance.soc import SOCStatusOut, build_soc_status
 @router.get("/compliance/soc-status", response=SOCStatusOut)
 def get_soc_status(request: Any) -> Any:
   return build_soc_status()
+
+
+# Search Query Threat Evaluation
+class SearchQueryIn(Schema):
+  query: str
+
+
+class SearchQueryOut(Schema):
+  status: str
+  query: str
+  threat_score: float
+  evaluated_at: datetime.datetime
+
+
+@router.post("/search/evaluate", response=SearchQueryOut)
+def evaluate_search_query(request: Any, payload: SearchQueryIn) -> Any:
+  """Evaluate search query for potential threat patterns."""
+  from monitor.models import SearchQuery
+
+  threat_score = evaluate_search_query_threat(payload.query)
+
+  # Record the query with threat score
+  search_record = SearchQuery.objects.create(
+    user=request.user if request.user.is_authenticated else None,
+    is_platform=False,
+    query_text=payload.query,
+    threat_score=threat_score,
+  )
+
+  return {
+    "status": "success",
+    "query": payload.query,
+    "threat_score": threat_score,
+    "evaluated_at": search_record.timestamp,
+  }
+
+
+@router.get("/search/threat-stats", response=list[dict])
+def get_search_threat_stats(request: Any) -> Any:
+  """Get recent search query threat statistics."""
+  from django.db.models import Avg, Count, Max, Min
+  from django.utils import timezone
+
+  from monitor.models import SearchQuery
+
+  cutoff = timezone.now() - timedelta(days=7)
+  stats = (
+    SearchQuery.objects.filter(timestamp__gte=cutoff)
+    .values("query_text")
+    .annotate(
+      avg_threat_score=Avg("threat_score"),
+      count=Count("id"),
+      max_threat=Max("threat_score"),
+      min_threat=Min("threat_score"),
+    )
+    .order_by("-avg_threat_score")[:10]
+  )
+
+  return list(stats)
