@@ -1,0 +1,109 @@
+@use "sass:map";
+
+// Canonical authoring API for Viking-UI foundations. Components consume
+// semantic CSS roles; SCSS authors use these helpers instead of raw values.
+
+$breakpoints: (
+  sm: 600px,
+  md: 768px,
+  sidebar: 901px,
+  lg: 1024px,
+  xl: 1440px,
+  2xl: 1920px,
+);
+
+@function space($step) {
+  @return var(--viking-space-#{$step});
+}
+
+@mixin respond-up($breakpoint) {
+  $value: map.get($breakpoints, $breakpoint);
+  @if $value == null {
+    @error "Unknown Viking-UI breakpoint: #{$breakpoint}";
+  }
+  @media (min-width: $value) {
+    @content;
+  }
+}
+
+@mixin type($role: body) {
+  font: var(--viking-type-#{$role});
+}
+
+@mixin focus-ring {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+@mixin surface(
+  $background: container,
+  $border: container,
+  $radius: var(--viking-card-radius),
+  $shadow: var(--viking-shadow-sm)
+) {
+  color: var(--viking-text-body);
+  background: var(--viking-surface-#{$background});
+  border: var(--viking-space-px) solid var(--viking-border-#{$border});
+  border-radius: $radius;
+  box-shadow: $shadow;
+}
+
+@mixin stack($gap: content-gap) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-#{$gap});
+  min-width: 0;
+}
+
+@mixin cluster($gap: control-gap) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-#{$gap});
+  min-width: 0;
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+@mixin forced-colors {
+  @media (forced-colors: active) {
+    @content;
+  }
+}
+
+@mixin emit-density-contexts {
+  :root,
+  [data-density="default"] {
+    --viking-density-name: default;
+  }
+
+  [data-density="compact"] {
+    --viking-density-name: compact;
+    --viking-control-height: var(--viking-space-5);
+    --viking-control-padding-x: var(--viking-space-control-gap);
+    --viking-page-stack-gap: var(--viking-space-container-gap);
+    --viking-page-section-gap: var(--viking-space-section-gap);
+    --viking-card-padding: var(--viking-space-container-gap);
+    --viking-card-padding-compact: var(--viking-space-content-gap);
+    --viking-card-content-gap: var(--viking-space-content-gap);
+    --viking-panel-padding: var(--viking-space-container-gap);
+    --viking-section-padding-y: var(--viking-space-section-gap);
+  }
+
+  [data-density="comfortable"] {
+    --viking-density-name: comfortable;
+    --viking-control-height: var(--viking-space-6);
+    --viking-control-padding-x: var(--viking-space-content-gap);
+    --viking-page-stack-gap: var(--viking-space-page-gap);
+    --viking-page-section-gap: var(--viking-space-12);
+    --viking-card-padding: var(--viking-space-6);
+    --viking-card-padding-compact: var(--viking-space-container-gap);
+    --viking-card-content-gap: var(--viking-space-container-gap);
+    --viking-panel-padding: var(--viking-space-6);
+    --viking-section-padding-y: var(--viking-space-10);
+  }
+}

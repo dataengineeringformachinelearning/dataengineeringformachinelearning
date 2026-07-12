@@ -1,0 +1,94 @@
+---
+export type CompactExample = {
+  id: 'angular' | 'web-component' | 'css';
+  label: string;
+  code: string;
+};
+
+export interface Props {
+  componentId: string;
+  examples: readonly CompactExample[];
+}
+
+const { componentId, examples } = Astro.props;
+const uid = `component-code-${componentId}`;
+---
+
+<div class="code-block component-reference-code" data-compact-code={uid}>
+  <div class="code-block-tabs">
+    <div class="code-block-tab-list" role="tablist" aria-label={`${componentId} framework examples`}>
+      {examples.map((example, index) => (
+        <button
+          type="button"
+          class:list={['code-block-tab', { 'is-active': index === 0 }]}
+          role="tab"
+          aria-selected={index === 0}
+          aria-controls={`${uid}-${example.id}`}
+          data-compact-tab={example.id}
+        >
+          {example.label}
+        </button>
+      ))}
+    </div>
+    <button type="button" class="code-block-copy" data-copy-btn aria-label={`Copy ${componentId} example`}>
+      <span data-viking-icon="copy" data-viking-icon-size="16" aria-hidden="true"></span>
+      <span class="code-block-copy-label">Copy</span>
+    </button>
+  </div>
+  {examples.map((example, index) => (
+    <pre
+      id={`${uid}-${example.id}`}
+      class:list={['code-block-panel', { 'is-active': index === 0 }]}
+      role="tabpanel"
+      data-compact-panel={example.id}
+      hidden={index !== 0}
+    ><code>{example.code}</code></pre>
+  ))}
+</div>
+
+<script>
+  const initializeCompactCodeBlocks = (): void => {
+    document.querySelectorAll<HTMLElement>('[data-compact-code]').forEach((root) => {
+      if (root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+
+      const tabs = root.querySelectorAll<HTMLButtonElement>('[data-compact-tab]');
+      const panels = root.querySelectorAll<HTMLElement>('[data-compact-panel]');
+      const copyButton = root.querySelector<HTMLButtonElement>('[data-copy-btn]');
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const selected = tab.dataset.compactTab;
+          tabs.forEach((candidate) => {
+            const active = candidate.dataset.compactTab === selected;
+            candidate.classList.toggle('is-active', active);
+            candidate.setAttribute('aria-selected', String(active));
+          });
+          panels.forEach((panel) => {
+            const active = panel.dataset.compactPanel === selected;
+            panel.classList.toggle('is-active', active);
+            panel.hidden = !active;
+          });
+        });
+      });
+
+      copyButton?.addEventListener('click', async () => {
+        const activeCode = root.querySelector<HTMLElement>('[data-compact-panel].is-active code');
+        if (!activeCode) return;
+        try {
+          await navigator.clipboard.writeText(activeCode.textContent ?? '');
+          const label = copyButton.querySelector('.code-block-copy-label');
+          if (label) {
+            label.textContent = 'Copied!';
+            window.setTimeout(() => { label.textContent = 'Copy'; }, 2000);
+          }
+        } catch {
+          /* Clipboard access may be blocked by browser policy. */
+        }
+      });
+    });
+  };
+
+  initializeCompactCodeBlocks();
+  document.addEventListener('astro:page-load', initializeCompactCodeBlocks);
+</script>
