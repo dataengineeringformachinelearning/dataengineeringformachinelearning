@@ -535,7 +535,6 @@ def get_search_threat_stats(request: Any) -> Any:
   """Get recent search query threat statistics."""
   from django.db.models import Avg, Count, Max, Min
   from django.utils import timezone
-
   from monitor.models import SearchQuery
 
   cutoff = timezone.now() - timedelta(days=7)
