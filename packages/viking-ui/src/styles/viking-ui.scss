@@ -1,18 +1,22 @@
-@use 'variables';
-@use 'series-colors';
-@use 'legacy-aliases';
-@use 'typography';
-@use 'component-primitives';
-@use 'forms';
-@use 'buttons';
-@use 'layout-rhythm';
-@use 'layout-enforcement';
-@use 'page-shell';
-@use 'layout-shell';
-@use 'static-navbar';
-@use 'components/footer';
-@use 'components/chart';
-@use 'components/page-mockup';
+@use "variables";
+@use "series-colors";
+@use "legacy-aliases";
+@use "typography";
+@use "component-primitives";
+@use "forms";
+@use "buttons";
+@use "layout-rhythm";
+@use "layout-enforcement";
+@use "page-shell";
+@use "layout-shell";
+@use "templates";
+@use "theme" as theme;
+@use "static-navbar";
+@use "components/footer";
+@use "components/chart";
+@use "components/page-mockup";
+
+@include theme.emit-density-contexts;
 
 // ============================================================================
 // Viking-UI design tokens
@@ -27,13 +31,24 @@
   --viking-accent: var(--color-primary, var(--viking-electric-500));
   --viking-accent-hover: var(--viking-electric-400);
   --viking-accent-content: var(--color-on-primary, var(--viking-white-pure));
-  --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 18%, transparent);
-  --viking-accent-strong: var(--color-primary-container, var(--viking-electric-300));
+  --viking-accent-soft: color-mix(
+    in srgb,
+    var(--viking-accent) 18%,
+    transparent
+  );
+  --viking-accent-strong: var(
+    --color-primary-container,
+    var(--viking-electric-300)
+  );
 
   --viking-accent-secondary: var(--accent-color, var(--viking-crimson-600));
   --viking-accent-secondary-hover: var(--viking-crimson-500);
   --viking-accent-secondary-content: var(--viking-white-pure);
-  --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-accent-secondary) 16%, transparent);
+  --viking-accent-secondary-soft: color-mix(
+    in srgb,
+    var(--viking-accent-secondary) 16%,
+    transparent
+  );
 
   /* Surfaces — refined hierarchy for depth (dark-first)
      bg          : deepest page / backdrop
@@ -43,10 +58,17 @@
      surface-raised: elevated chips, hover targets, controls */
   --viking-bg: var(--bg-color, var(--viking-charcoal-900));
   --viking-surface: var(--card-bg, var(--viking-charcoal-800));
-  --viking-surface-alt: var(--color-surface-variant, var(--viking-charcoal-700));
+  --viking-surface-alt: var(
+    --color-surface-variant,
+    var(--viking-charcoal-700)
+  );
   --viking-surface-inset: var(--viking-charcoal-850);
   --viking-surface-raised: var(--viking-charcoal-600);
-  --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-950) 72%, transparent);
+  --viking-overlay-backdrop: color-mix(
+    in srgb,
+    var(--viking-charcoal-950) 72%,
+    transparent
+  );
 
   /* Text — improved hierarchy and contrast on deep navy */
   --viking-text: var(--text-color, var(--viking-white));
@@ -55,9 +77,19 @@
   --viking-text-inverted: var(--color-on-primary, var(--viking-charcoal-900));
 
   /* Borders / focus — fallbacks match _variables.scss premium v2.1 depths */
-  --viking-border: var(--border, color-mix(in srgb, var(--viking-metallic-600) 48%, transparent));
-  --viking-border-strong: var(--border-layout, color-mix(in srgb, var(--viking-metallic-400) 68%, transparent));
-  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 28%, transparent);
+  --viking-border: var(
+    --border,
+    color-mix(in srgb, var(--viking-metallic-600) 48%, transparent)
+  );
+  --viking-border-strong: var(
+    --border-layout,
+    color-mix(in srgb, var(--viking-metallic-400) 68%, transparent)
+  );
+  --viking-border-subtle: color-mix(
+    in srgb,
+    var(--viking-metallic-600) 28%,
+    transparent
+  );
   --viking-ring: var(--focus-ring-color, var(--viking-electric-400));
   --viking-ring-width: var(--focus-ring-width, 2px);
   --viking-ring-offset: var(--focus-ring-offset, 2px);
@@ -67,7 +99,11 @@
   --viking-warning: var(--color-warning, var(--viking-gold-500));
   --viking-danger: var(--color-error, var(--viking-crimson-500));
   --viking-info: var(--color-info, var(--viking-blue-500));
-  --viking-danger-text: color-mix(in srgb, var(--viking-danger) 50%, var(--viking-charcoal-900));
+  --viking-danger-text: color-mix(
+    in srgb,
+    var(--viking-danger) 50%,
+    var(--viking-charcoal-900)
+  );
   --viking-on-danger: var(--viking-white-pure);
 
   /* Shape */
@@ -80,35 +116,35 @@
   --viking-radius-pill: var(--border-radius-pill, 999px);
 
   /* Elevation */
-  --viking-shadow-xs:
-    0 1px 2px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --viking-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
   --viking-shadow-sm: var(
     --shadow-sm,
-    0 3px 8px rgba(0, 0, 0, 0.34),
-    0 1px 2px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05)
+    0 1px 2px rgba(0, 0, 0, 0.26),
+    0 4px 12px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035)
   );
   --viking-shadow-md: var(
     --shadow-md,
-    0 14px 30px rgba(0, 0, 0, 0.3),
-    0 5px 12px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06)
+    0 2px 4px rgba(0, 0, 0, 0.24),
+    0 10px 24px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04)
   );
   --viking-shadow-lg: var(
     --shadow-lg,
-    0 28px 54px rgba(0, 0, 0, 0.36),
-    0 10px 24px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07)
+    0 4px 8px rgba(0, 0, 0, 0.26),
+    0 20px 40px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045)
   );
   --viking-shadow-inner:
     inset 0 1px 2px rgba(0, 0, 0, 0.22),
     inset 0 -1px 0 rgba(255, 255, 255, 0.02);
 
   /* Typography — 16px body floor, 14px Drakkar shell controls */
-  --viking-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
-  --viking-font-family-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas,
+  --viking-font-family:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --viking-font-family-mono:
+    ui-monospace, "JetBrains Mono", "SF Mono", "Cascadia Code", Consolas,
     monospace;
 
   --viking-font-size-2xs: 11px;
@@ -130,17 +166,17 @@
   --viking-font-weight-semibold: 600;
   --viking-font-weight-bold: 700;
 
-  --viking-line-height-tight: 1.25;
-  --viking-line-height-snug: 1.375;
+  --viking-line-height-tight: 1.2;
+  --viking-line-height-snug: 1.35;
   --viking-line-height-normal: 1.5;
-  --viking-line-height-relaxed: 1.625;
-  --viking-line-height-loose: 1.75;
+  --viking-line-height-relaxed: 1.6;
+  --viking-line-height-loose: 1.7;
 
-  --viking-letter-spacing-tight: var(--header-letter-spacing, -0.02em);
+  --viking-letter-spacing-tight: var(--header-letter-spacing, -0.015em);
   --viking-letter-spacing-normal: 0;
-  --viking-letter-spacing-wide: 0.025em;
-  --viking-letter-spacing-wider: 0.05em;
-  --viking-letter-spacing-caps: 0.08em;
+  --viking-letter-spacing-wide: 0.01em;
+  --viking-letter-spacing-wider: 0.04em;
+  --viking-letter-spacing-caps: 0.06em;
 
   /* Controls — mobile-first: meet 44px touch; desktop snaps to 8px grid (40).
      Heights live in _variables.scss; only mobile bump here. */
@@ -148,25 +184,33 @@
     var(--viking-touch-target-min, 44px),
     var(--viking-space-5)
   ); /* ≥44, prefers 40 when touch min allows */
-  --viking-control-height-sm: var(--viking-space-4); /* 32px */
-  --viking-control-height-xs: var(--viking-space-3); /* 24px */
+  --viking-control-height-sm: 36px;
+  --viking-control-height-xs: 28px;
   --viking-control-padding-x: var(--viking-space-2);
-  --viking-btn-min-width: var(--btn-min-width, 120px);
+  --viking-btn-min-width: var(--btn-min-width, 0);
 
-  /* Spacing is canonical in _variables.scss (8px primary + 0-5 micro).
+  /* Spacing is canonical in _variables.scss (4px primitive / 8px composition).
      Do not re-hardcode the scale here — that forks the theme. */
 
-  /* Chart gutters use on-grid multiples of 8 (and 4 only where needed). */
+  /* Chart gutters use the shared 4px grid. */
   --viking-chart-axis-size: 12px;
   --viking-chart-axis-size-mobile: 12px;
   --viking-chart-gutter-default: 16px 24px 48px 48px;
   --viking-chart-gutter-fill: 8px 16px 32px 32px;
   --viking-chart-padding: var(--viking-space-2) var(--viking-space-1);
   --viking-chart-padding-fill: var(--viking-space-3) var(--viking-space-2);
-  --viking-chart-grid-stroke: color-mix(in srgb, var(--viking-border) 32%, transparent);
+  --viking-chart-grid-stroke: color-mix(
+    in srgb,
+    var(--viking-border) 32%,
+    transparent
+  );
   --viking-chart-grid-width: 1;
   --viking-chart-grid-dash: 4 4;
-  --viking-chart-axis-stroke: color-mix(in srgb, var(--viking-border) 68%, transparent);
+  --viking-chart-axis-stroke: color-mix(
+    in srgb,
+    var(--viking-border) 68%,
+    transparent
+  );
   --viking-chart-axis-width: 1;
   --viking-chart-tick-length: 4px;
   --viking-chart-axis-color: var(--viking-text-subtle);
@@ -193,7 +237,7 @@
 
   /* Page shell */
   --viking-container-max-width: var(--container-max-width, 1260px);
-  --viking-navbar-height: var(--navbar-height, 64px);
+  --viking-navbar-height: var(--navbar-height, 56px);
   --viking-sidebar-width: 256px;
 
   /* Motion */
@@ -206,7 +250,10 @@
     background-color var(--viking-duration) var(--viking-ease-default),
     border-color var(--viking-duration) var(--viking-ease-default),
     box-shadow var(--viking-duration) var(--viking-ease-default);
-  --viking-transition: var(--transition-smooth, all 0.25s cubic-bezier(0.4, 0, 0.2, 1));
+  --viking-transition: var(
+    --transition-smooth,
+    all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+  );
 
   /* Layering */
   --viking-z-overlay: 1000;
@@ -215,7 +262,7 @@
 }
 
 /* Dark surfaces — refined depth, borders, and hierarchy */
-html[data-theme='dark'] {
+html[data-theme="dark"] {
   --viking-danger-text: var(--viking-danger);
 
   /* Stronger recession for page background vs cards */
@@ -226,9 +273,21 @@ html[data-theme='dark'] {
   --viking-surface-raised: var(--viking-navy-600);
 
   /* More sophisticated border separation in dark */
-  --viking-border: color-mix(in srgb, var(--viking-metallic-600) 52%, transparent);
-  --viking-border-strong: color-mix(in srgb, var(--viking-metallic-400) 72%, transparent);
-  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 26%, transparent);
+  --viking-border: color-mix(
+    in srgb,
+    var(--viking-metallic-600) 52%,
+    transparent
+  );
+  --viking-border-strong: color-mix(
+    in srgb,
+    var(--viking-metallic-400) 72%,
+    transparent
+  );
+  --viking-border-subtle: color-mix(
+    in srgb,
+    var(--viking-metallic-600) 26%,
+    transparent
+  );
 
   /* Better text contrast hierarchy on richer navy */
   --viking-text-muted: var(--viking-metallic-200);
@@ -236,7 +295,7 @@ html[data-theme='dark'] {
 }
 
 @media (prefers-color-scheme: dark) {
-  html:not([data-theme='light']) {
+  html:not([data-theme="light"]) {
     --viking-danger-text: var(--viking-danger);
 
     --viking-bg: var(--viking-navy-900);
@@ -292,17 +351,18 @@ body,
   border-radius: var(--viking-radius);
   box-shadow: var(--viking-shadow-lg);
   pointer-events: none;
-  animation: viking-tooltip-in var(--viking-duration-fast) var(--viking-ease-out);
+  animation: viking-tooltip-in var(--viking-duration-fast)
+    var(--viking-ease-out);
 }
 
-html[data-theme='light'] .viking-tooltip {
+html[data-theme="light"] .viking-tooltip {
   color: var(--viking-white-pure);
   background: var(--viking-surface-raised);
   border-color: var(--viking-border-strong);
 }
 
 @media (prefers-color-scheme: light) {
-  html:not([data-theme='dark']) .viking-tooltip {
+  html:not([data-theme="dark"]) .viking-tooltip {
     color: var(--viking-white-pure);
     background: var(--viking-surface-raised);
     border-color: var(--viking-border-strong);
@@ -318,7 +378,8 @@ html[data-theme='light'] .viking-tooltip {
   font-family: var(--viking-font-family-mono);
   font-size: var(--viking-font-size-xs);
   padding: 0 var(--viking-space-0-5);
-  border: 1px solid color-mix(in srgb, var(--viking-text-inverted) 35%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-text-inverted) 35%, transparent);
   border-radius: var(--viking-radius-xs);
   line-height: 1.4;
   white-space: nowrap;

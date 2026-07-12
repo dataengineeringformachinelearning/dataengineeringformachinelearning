@@ -1,4 +1,10 @@
-// Global typography — Inter via self-hosted variable font (_fonts.scss).
+// Global foundation — modern reset and Inter typography.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 html {
   font-family: var(--viking-font-family);
@@ -12,12 +18,52 @@ html {
 
 body,
 .viking-ui-body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
   font-weight: var(--viking-font-weight-regular, 400);
   color: var(--viking-text);
   background-color: var(--viking-bg);
+}
+
+img,
+picture,
+svg,
+canvas,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+}
+
+button,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+a {
+  color: var(--viking-text-link);
+  text-decoration-thickness: var(--viking-border-width);
+  text-underline-offset: var(--viking-space-1);
+}
+
+a:hover {
+  color: var(--viking-text-link-hover);
+}
+
+::selection {
+  color: var(--viking-accent-content);
+  background: var(--viking-accent);
 }
 
 h1,
@@ -79,13 +125,6 @@ samp,
   font-family: var(--viking-font-family-mono);
 }
 
-button,
-input,
-select,
-textarea {
-  font-family: inherit;
-}
-
 /* Lists */
 ul,
 ol {
@@ -119,7 +158,7 @@ table {
 
 th,
 td {
-  padding: var(--viking-space-2) var(--viking-space-3);
+  padding: var(--viking-table-cell-padding-y) var(--viking-table-cell-padding-x);
   text-align: left;
   border-bottom: 1px solid var(--viking-border-subtle);
   vertical-align: top;
@@ -128,9 +167,9 @@ td {
 th {
   font-weight: var(--viking-font-weight-semibold);
   color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-sm);
-  letter-spacing: var(--viking-letter-spacing-caps);
-  text-transform: uppercase;
+  font-size: var(--viking-font-size-xs);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  background: var(--viking-component-bg-subtle);
 }
 
 tr:last-child td {

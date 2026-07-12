@@ -36,11 +36,19 @@ export type VikingChartPanelBody = "default" | "origin-map";
   styles: [
     `
       :host {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        container-type: inline-size;
+        container-name: viking-chart-panel;
         position: relative;
         overflow: hidden;
         min-width: 0;
+        color: var(--viking-text);
+        background: var(--viking-surface-recipe);
+        border: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-border-container);
+        border-radius: var(--viking-card-radius);
+        box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
       }
 
       :host(.viking-chart-panel-large) {
@@ -59,11 +67,17 @@ export type VikingChartPanelBody = "default" | "origin-map";
         justify-content: center;
         position: relative;
         overflow: hidden;
-        padding: var(--viking-space-3) var(--viking-space-4)
-          var(--viking-space-4);
+        padding: var(--viking-space-content-gap);
         box-sizing: border-box;
         gap: var(--viking-space-2);
         min-width: 0;
+      }
+
+      @container viking-chart-panel (min-width: 40rem) {
+        .viking-chart-panel-body {
+          padding: var(--viking-space-content-gap)
+            var(--viking-space-container-gap) var(--viking-space-container-gap);
+        }
       }
 
       .viking-chart-panel-body > viking-chart,

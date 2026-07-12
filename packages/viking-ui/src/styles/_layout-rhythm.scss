@@ -1,7 +1,6 @@
 // ============================================================================
 // Viking-UI Layout Rhythm — composable spacing primitives
-// Layout uses the 8px primary rhythm. The 4px token is reserved for tight
-// inline composition and optical adjustments.
+// Layout uses a 4px primitive grid and an 8px composition rhythm.
 // Directional references: Material adaptive layout, Flux reusable layouts,
 // Spartan/shadcn composable primitives, and Cloudscape responsive patterns.
 // These are original zero-runtime Viking-UI contracts, not copied components.
@@ -10,10 +9,7 @@
 .viking-stack {
   display: flex;
   flex-direction: column;
-  gap: var(
-    --viking-stack-gap,
-    var(--viking-space-6)
-  ); /* More generous default for component-like breathing */
+  gap: var(--viking-stack-gap, var(--viking-space-6));
   align-items: var(--viking-stack-align, stretch);
 }
 
@@ -65,10 +61,7 @@
 
 .viking-grid {
   display: grid;
-  gap: var(
-    --viking-grid-gap,
-    var(--viking-space-6)
-  ); /* Premium spacing parity with components */
+  gap: var(--viking-grid-gap, var(--viking-layout-column-gap));
   width: 100%;
   align-items: stretch;
 }
@@ -122,11 +115,32 @@
 }
 
 /* Mobile-first grid foundation: always start single column */
-.viking-grid--1,
-.viking-grid--2,
-.viking-grid--3,
-.viking-grid--4 {
+.viking-grid.viking-grid--1,
+.viking-grid.viking-grid--2,
+.viking-grid.viking-grid--3,
+.viking-grid.viking-grid--4,
+.viking-grid.viking-grid--6 {
   grid-template-columns: 1fr;
+}
+
+.viking-grid.viking-grid--12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.viking-grid-item {
+  display: block;
+  min-width: 0;
+  grid-column: 1 / -1;
+}
+
+@for $span from 1 through 12 {
+  .viking-grid-item--span-#{$span} {
+    grid-column: span $span;
+  }
+}
+
+.viking-grid--12 > :not(viking-grid-item):not(.viking-grid-item) {
+  grid-column: 1 / -1;
 }
 
 /* Intrinsic grid: cards add or remove columns based on actual available width. */
@@ -144,6 +158,67 @@
 
 .viking-grid--item-wide {
   --viking-grid-item-min: var(--viking-layout-item-wide);
+}
+
+/* Balanced content columns for dashboard cards, forms, and marketing bands. */
+.viking-column-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--viking-layout-column-gap);
+  row-gap: var(--viking-layout-row-gap);
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.viking-column-layout:is(
+  .viking-column-layout--1,
+  .viking-column-layout--2,
+  .viking-column-layout--3,
+  .viking-column-layout--4,
+  .viking-column-layout--auto
+) {
+  display: grid;
+  column-gap: var(--viking-layout-column-gap);
+  row-gap: var(--viking-layout-row-gap);
+}
+
+.viking-column-layout > * {
+  min-width: 0;
+}
+
+.viking-column-layout--equal-rows {
+  grid-auto-rows: 1fr;
+}
+
+.viking-column-layout--equal-rows > * {
+  height: 100%;
+}
+
+.viking-column-layout--tight {
+  column-gap: var(--viking-space-control-gap);
+  row-gap: var(--viking-space-control-gap);
+}
+
+.viking-column-layout--loose {
+  column-gap: var(--viking-space-section-gap);
+  row-gap: var(--viking-space-section-gap);
+}
+
+.viking-column-layout.viking-column-layout--auto {
+  --viking-column-layout-item-min: var(--viking-layout-item-default);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--viking-column-layout-item-min)), 1fr)
+  );
+}
+
+.viking-column-layout--item-compact {
+  --viking-column-layout-item-min: var(--viking-layout-item-compact);
+}
+
+.viking-column-layout--item-wide {
+  --viking-column-layout-item-min: var(--viking-layout-item-wide);
 }
 
 /* Intrinsic switcher: a flexible row that becomes a readable stack naturally. */
@@ -181,22 +256,57 @@
 
 /* Tablet and up: predictable scaling */
 @media (min-width: 768px) {
-  .viking-grid--2 {
+  .viking-grid.viking-grid--2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .viking-grid--3,
-  .viking-grid--4 {
+  .viking-grid.viking-grid--3,
+  .viking-grid.viking-grid--4,
+  .viking-grid.viking-grid--6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .viking-grid.viking-grid--12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  @for $span from 1 through 12 {
+    .viking-grid-item--span-md-#{$span} {
+      grid-column: span $span;
+    }
+  }
+
+  .viking-column-layout.viking-column-layout--2,
+  .viking-column-layout.viking-column-layout--3,
+  .viking-column-layout.viking-column-layout--4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  .viking-grid--3 {
+  .viking-grid.viking-grid--3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .viking-grid--4 {
+  .viking-grid.viking-grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .viking-grid.viking-grid--6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  @for $span from 1 through 12 {
+    .viking-grid-item--span-lg-#{$span} {
+      grid-column: span $span;
+    }
+  }
+
+  .viking-column-layout.viking-column-layout--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .viking-column-layout.viking-column-layout--4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

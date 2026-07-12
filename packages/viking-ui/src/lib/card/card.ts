@@ -39,23 +39,24 @@ import { VikingSkeleton } from "../skeleton/skeleton";
     `
       :host {
         display: grid;
-        gap: var(--viking-card-content-gap, var(--viking-space-5));
+        gap: var(--viking-card-content-gap, var(--viking-space-2));
         width: 100%;
         background: var(--viking-surface-recipe);
-        border: 1px solid var(--viking-border);
-        border-radius: var(--viking-card-radius, var(--viking-radius-xl));
-        padding: var(--viking-card-padding, var(--viking-space-5));
+        border: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-border-container);
+        border-radius: var(--viking-card-radius, var(--viking-radius-lg));
+        padding: var(--viking-card-padding, var(--viking-space-3));
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
         min-width: 0;
         align-self: stretch;
         box-sizing: border-box;
-        box-shadow: var(--viking-shadow-sm);
+        box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
       }
 
       /* Clearer visual separation when cards sit on other surfaces */
       :host(.viking-card) {
-        border-color: var(--viking-border);
+        border-color: var(--viking-border-container);
       }
       :host(.viking-card-headerless) .viking-card-header,
       :host(.viking-card-headerless) viking-card-header {
@@ -71,7 +72,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       }
       :host(.viking-card-interactive):hover {
         border-color: var(--viking-accent-strong);
-        box-shadow: var(--viking-shadow-hover);
+        box-shadow: var(--viking-shadow-sm), var(--viking-surface-highlight);
         background: var(--viking-surface-recipe-elevated);
         transform: translateY(var(--viking-state-hover-lift));
       }
@@ -90,19 +91,19 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       /* Structured content sections for premium polish */
       :host ::ng-deep .viking-card-header,
       :host ::ng-deep viking-card-header {
-        padding-bottom: var(--viking-space-3);
-        margin-bottom: var(--viking-space-3);
+        padding-bottom: var(--viking-space-4);
+        margin-bottom: 0;
         border-bottom: 1px solid var(--viking-border-subtle);
       }
 
       :host ::ng-deep .viking-card-content,
       :host ::ng-deep .viking-card-body {
-        padding: var(--viking-space-2) 0;
+        padding: 0;
       }
 
       :host ::ng-deep .viking-card-footer {
-        padding-top: var(--viking-space-3);
-        margin-top: var(--viking-space-3);
+        padding-top: var(--viking-space-4);
+        margin-top: 0;
         border-top: 1px solid var(--viking-border-subtle);
       }
 
@@ -141,8 +142,8 @@ export class VikingCard {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: var(--viking-space-3);
-        padding-bottom: var(--viking-space-3);
+        gap: var(--viking-space-4);
+        padding-bottom: var(--viking-space-4);
         margin-bottom: 0;
         border-bottom: 1px solid var(--viking-border-subtle);
       }
@@ -173,7 +174,7 @@ export class VikingCardHeader {}
         align-items: center;
         justify-content: flex-end;
         gap: var(--viking-space-2);
-        padding-top: var(--viking-space-2);
+        padding-top: var(--viking-space-4);
         margin-top: 0;
         border-top: 1px solid var(--viking-border-subtle);
       }

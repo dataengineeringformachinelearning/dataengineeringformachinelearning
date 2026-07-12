@@ -211,25 +211,25 @@
       "extrabold": 800
     },
     "lineHeight": {
-      "tight": 1.25,
-      "snug": 1.375,
+      "tight": 1.2,
+      "snug": 1.35,
       "normal": 1.5,
-      "relaxed": 1.625,
-      "loose": 1.75
+      "relaxed": 1.6,
+      "loose": 1.7
     },
     "letterSpacing": {
-      "tighter": "-0.03em",
-      "tight": "-0.02em",
+      "tighter": "-0.025em",
+      "tight": "-0.015em",
       "normal": "0",
-      "wide": "0.025em",
-      "wider": "0.05em",
-      "caps": "0.08em"
+      "wide": "0.01em",
+      "wider": "0.04em",
+      "caps": "0.06em"
     }
   },
   "spacing": {
     "gridUnit": "4px",
     "spaceUnit": "8px",
-    "description": "8px primary grid. Use integer steps. 0.5 (4px) is the only micro exception. Deprecated half-steps alias onto on-grid values.",
+    "description": "Stable 8px compatibility scale with 4px primitive and semantic component spacing roles.",
     "0": "0",
     "px": "1px",
     "0.5": "4px",
@@ -249,6 +249,15 @@
     "16": "192px",
     "20": "256px",
     "24": "320px",
+    "roles": {
+      "inlineGap": "4px",
+      "controlGap": "8px",
+      "compactGap": "12px",
+      "contentGap": "16px",
+      "containerGap": "24px",
+      "sectionGap": "32px",
+      "pageGap": "48px"
+    },
     "deprecated": {
       "half": "{spacing.0.5}",
       "1.5": "{spacing.2}",
@@ -269,11 +278,11 @@
   },
   "shadow": {
     "xs": "0 1px 2px rgba(0, 0, 0, 0.2)",
-    "sm": "0 1px 2px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.04)",
-    "md": "0 2px 4px rgba(0,0,0,0.16), 0 4px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.05)",
-    "lg": "0 4px 8px rgba(0,0,0,0.14), 0 12px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
+    "sm": "0 1px 2px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.12)",
+    "md": "0 2px 4px rgba(0,0,0,0.18), 0 10px 24px rgba(0,0,0,0.16)",
+    "lg": "0 4px 8px rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.2)",
     "inner": "inset 0 1px 2px rgba(0, 0, 0, 0.14)",
-    "hover": "0 8px 16px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.06)",
+    "hover": "0 2px 4px rgba(0,0,0,0.2), 0 12px 28px rgba(0,0,0,0.2)",
     "focus": "0 0 0 var(--viking-ring-offset) var(--viking-bg), 0 0 0 calc(var(--viking-ring-offset) + var(--viking-ring-width)) var(--viking-ring)",
     "surfaceHighlight": "inset 0 1px 0 rgba(255,255,255,0.06)"
   },
@@ -297,27 +306,48 @@
       "disabledOpacity": "0.48"
     }
   },
+  "component": {
+    "controlHeight": "40px",
+    "controlRadius": "8px",
+    "surfaceRadius": "12px",
+    "badgeHeight": "24px",
+    "navigationItemHeight": "40px",
+    "tableCellPadding": "12px 16px",
+    "focusRing": "2px solid Ocean Blue with a 2px offset",
+    "hoverLift": "-1px maximum"
+  },
+  "chart": {
+    "ratio": "16 / 7",
+    "panelPaddingCompact": "16px",
+    "panelPaddingDefault": "16px 24px 24px",
+    "responsive": true
+  },
   "layout": {
     "containerMaxWidth": "1260px",
-    "navbarHeight": "64px",
+    "containerMaxWidthWide": "1440px",
+    "containerMaxWidthReadable": "48rem",
+    "columns": 12,
+    "columnGap": "24px",
+    "rowGap": "24px",
+    "navbarHeight": "56px",
     "sidebarWidth": "256px",
     "intrinsicItemCompact": "256px",
     "intrinsicItemDefault": "320px",
     "intrinsicItemWide": "384px",
     "controlHeight": "40px",
-    "controlHeightSm": "32px",
-    "controlHeightXs": "24px",
-    "btnMinWidth": "120px",
+    "controlHeightSm": "36px",
+    "controlHeightXs": "28px",
+    "btnMinWidth": "0",
     "touchTargetMin": "44px",
-    "pageGutter": "24px",
+    "pageGutter": "clamp(16px, 4vw, 32px)",
     "pageGutterLg": "32px",
     "pageStackGap": "32px",
-    "pageSectionGap": "48px",
-    "cardPadding": "32px",
-    "cardPaddingCompact": "24px",
-    "cardContentGap": "24px",
-    "cardContentGapCompact": "16px",
-    "panelPadding": "32px",
+    "pageSectionGap": "64px",
+    "cardPadding": "24px",
+    "cardPaddingCompact": "16px",
+    "cardContentGap": "16px",
+    "cardContentGapCompact": "12px",
+    "panelPadding": "24px",
     "formMaxWidth": "42rem",
     "formNarrowMaxWidth": "28rem",
     "contentReadableMaxWidth": "48rem"

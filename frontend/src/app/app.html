@@ -13,19 +13,23 @@
   <!-- Navbar -->
   <app-navbar></app-navbar>
 
-  @if (isDashboardPage()) {
-  <div class="dashboard-wrapper">
-    <app-sidebar></app-sidebar>
-    <div class="dashboard-content" id="main-content" tabindex="-1">
+  <viking-app-layout
+    [hasSidebar]="isDashboardPage()"
+    [sidebarCollapsible]="true"
+    [autoOpenSidebar]="true"
+  >
+    @if (isDashboardPage()) {
+    <app-sidebar vikingAppLayoutSidebar></app-sidebar>
+    } @if (isDashboardPage()) {
+    <main vikingAppLayoutContent class="dashboard-content" id="main-content" tabindex="-1">
       <router-outlet />
-    </div>
-  </div>
-  } @else {
-  <!-- Main Content -->
-  <div class="main-content" id="main-content" tabindex="-1">
-    <router-outlet />
-  </div>
-  }
+    </main>
+    } @if (!isDashboardPage()) {
+    <main vikingAppLayoutContent class="main-content" id="main-content" tabindex="-1">
+      <router-outlet />
+    </main>
+    }
+  </viking-app-layout>
 
   <!-- Footer -->
   <app-footer ngSkipHydration></app-footer>

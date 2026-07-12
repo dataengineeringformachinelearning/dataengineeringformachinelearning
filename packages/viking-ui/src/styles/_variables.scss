@@ -1,9 +1,9 @@
 // ============================================================================
-// Viking-UI Premium Foundation Tokens
+// Viking-UI Modern SaaS Foundation Tokens
 // ----------------------------------------------------------------------------
-// Locked Viking-UI aesthetic: premium precision-engineered industrial command surfaces with machined metallic borders and dense operational data.
-// Deep navy/black command surfaces, #2176ff command accent, crimson escalation,
-// machined dark-steel borders, tactile top-edge highlights, and Inter typography.
+// Grid-first enterprise SaaS foundations using the existing Cyber-Noir surfaces
+// and Ocean Blue Serenity accents. Primitive scales remain stable and semantic
+// aliases carry layout, typography, border, and elevation decisions.
 // All --viking-* semantic tokens in viking-ui.scss map from these values.
 // ============================================================================
 
@@ -113,18 +113,14 @@
   --viking-white-pure: #ffffff;
   --viking-black: #000000;
 
-  /* ── Spacing — 8px primary grid (THEME.md §3) ───────────────────────────
-     Primary unit: --viking-space-unit (8px). Layout, padding, and gaps use
-     integer steps only. --viking-space-0-5 (4px) is the sole micro exception
-     for icon gaps, chip guts, and hairline offset.
-
-     Deprecated half-steps (1-5, 2-5, 8-5) alias onto the nearest on-grid step
-     so legacy call sites keep working while source migrates to integers. */
-  --viking-grid-unit: 4px; /* micro only — not the primary layout grid */
-  --viking-space-unit: 8px; /* primary layout rhythm */
+  /* ── Spacing — 4px primitive grid, stable 8px compatibility scale ───────
+     Existing numbered tokens retain their public values. New component work
+     consumes semantic roles below, which combine 4px and 8px increments. */
+  --viking-grid-unit: 4px;
+  --viking-space-unit: 8px;
   --viking-space-0: 0;
   --viking-space-px: 1px; /* hairline borders only — not layout spacing */
-  --viking-space-0-5: 4px; /* tight-only exception (0.5 × unit) */
+  --viking-space-0-5: 4px;
   --viking-space-half: var(--viking-space-0-5); /* deprecated alias → 0-5 */
   --viking-space-1: 8px;
   --viking-space-2: 16px;
@@ -134,8 +130,6 @@
   --viking-space-6: 48px;
   --viking-space-7: 56px;
   --viking-space-8: 64px;
-  /* Larger steps stay multiples of 8 (named tiers for section / shell rhythm).
-     Values skip some intermediate 8px slots so marketing/page shells keep stable scale. */
   --viking-space-9: 80px;
   --viking-space-10: 96px;
   --viking-space-11: 112px;
@@ -144,10 +138,20 @@
   --viking-space-16: 192px;
   --viking-space-20: 256px;
   --viking-space-24: 320px;
-  /* Deprecated half-steps — resolve to on-grid tokens (do not reintroduce px). */
-  --viking-space-1-5: var(--viking-space-2); /* was 12px → 16px */
-  --viking-space-2-5: var(--viking-space-2); /* was 20px → 16px */
-  --viking-space-8-5: 72px; /* rare mid-tier; prefer space-8 or space-9 in new code */
+
+  /* Semantic spacing roles keep component rhythm boringly consistent. */
+  --viking-space-inline-gap: var(--viking-space-0-5);
+  --viking-space-control-gap: var(--viking-space-1);
+  --viking-space-compact-gap: 12px;
+  --viking-space-content-gap: var(--viking-space-2);
+  --viking-space-container-gap: var(--viking-space-3);
+  --viking-space-section-gap: var(--viking-space-4);
+  --viking-space-page-gap: var(--viking-space-6);
+
+  /* Deprecated aliases retain source compatibility during migration. */
+  --viking-space-1-5: var(--viking-space-2);
+  --viking-space-2-5: var(--viking-space-2);
+  --viking-space-8-5: 72px;
 
   /* ── Typography (Inter self-hosted — see _fonts.scss) ───────────────────── */
   --viking-font-family:
@@ -178,18 +182,18 @@
   --viking-font-weight-extrabold: 800;
 
   --viking-line-height-none: 1;
-  --viking-line-height-tight: 1.25;
-  --viking-line-height-snug: 1.375;
+  --viking-line-height-tight: 1.2;
+  --viking-line-height-snug: 1.35;
   --viking-line-height-normal: 1.5;
-  --viking-line-height-relaxed: 1.625;
-  --viking-line-height-loose: 1.75;
+  --viking-line-height-relaxed: 1.6;
+  --viking-line-height-loose: 1.7;
 
-  --viking-letter-spacing-tighter: -0.03em;
-  --viking-letter-spacing-tight: -0.02em;
+  --viking-letter-spacing-tighter: -0.025em;
+  --viking-letter-spacing-tight: -0.015em;
   --viking-letter-spacing-normal: 0;
-  --viking-letter-spacing-wide: 0.025em;
-  --viking-letter-spacing-wider: 0.05em;
-  --viking-letter-spacing-caps: 0.08em;
+  --viking-letter-spacing-wide: 0.01em;
+  --viking-letter-spacing-wider: 0.04em;
+  --viking-letter-spacing-caps: 0.06em;
 
   --viking-type-caption: var(--viking-font-weight-medium)
     var(--viking-font-size-xs) / var(--viking-line-height-normal)
@@ -212,6 +216,13 @@
   --viking-type-display: var(--viking-font-weight-extrabold)
     var(--viking-font-size-4xl) / var(--viking-line-height-none)
     var(--viking-font-family);
+  --viking-type-label: var(--viking-font-weight-semibold)
+    var(--viking-font-size-sm) / var(--viking-line-height-snug)
+    var(--viking-font-family);
+
+  /* Semantic type roles */
+  --viking-text-heading: var(--viking-text);
+  --viking-text-body: var(--viking-text);
 
   /* ── Border radius — 6–12px premium feel ─────────────────────────────────── */
   --viking-radius-xs: 4px;
@@ -224,26 +235,22 @@
   --viking-radius-pill: 999px;
   --viking-radius-full: var(--viking-radius-pill);
 
-  /* Softer modern defaults: favor larger radii */
-  --viking-card-radius: var(--viking-radius-xl);
-  --viking-button-radius: var(--viking-radius-xl);
+  /* Professional rounding: friendly, but never bubbly. */
+  --viking-card-radius: var(--viking-radius-lg);
+  --viking-button-radius: var(--viking-radius);
 
   /* ── Elevation — sophisticated machined depth and hierarchy ─────────────
      Dark navy benefits from layered low-opacity drops + crisp metallic
      top-edge specular highlights. Higher elevation = stronger drop + brighter
      inset line. Use token stepping for surfaces; shadows provide tactile lift.
      Never stack many layers — prefer stepped navy + one good shadow. */
-  --viking-shadow-xs:
-    0 1px 1px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  --viking-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
   --viking-shadow-sm:
-    0 2px 4px rgba(0, 0, 0, 0.26), 0 1px 2px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.12);
   --viking-shadow-md:
-    0 8px 18px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+    0 2px 4px rgba(0, 0, 0, 0.18), 0 10px 24px rgba(0, 0, 0, 0.16);
   --viking-shadow-lg:
-    0 16px 32px rgba(0, 0, 0, 0.32), 0 4px 12px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.065);
+    0 4px 8px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2);
   --viking-shadow-xl:
     0 24px 48px rgba(0, 0, 0, 0.36), 0 8px 18px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
@@ -251,26 +258,28 @@
     inset 0 1px 2px rgba(0, 0, 0, 0.32),
     inset 0 -1px 0 rgba(255, 255, 255, 0.015);
   --viking-shadow-hover:
-    0 14px 28px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.075);
+    0 2px 4px rgba(0, 0, 0, 0.2), 0 12px 28px rgba(0, 0, 0, 0.2);
   --viking-shadow-focus:
     0 0 0 var(--viking-ring-offset) var(--viking-bg),
     0 0 0 calc(var(--viking-ring-offset) + var(--viking-ring-width))
       var(--viking-ring);
   --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.055);
 
+  /* Border contracts */
+  --viking-border-width: 1px;
+  --viking-border-style: solid;
+
   /* ── Refined surface layering for depth (dark-first) ───────────────────── */
   --viking-surface-inset: var(--viking-navy-850);
 
-  /* ── Chart scale — wide 3:1 aspect (premium analytics cadence) ─ */
-  --viking-chart-ratio: 3 / 1;
-  /* Happy medium: full plot visible, not towering (matches anomalies card) */
-  --viking-chart-min-height: clamp(11.5rem, 24vw, 14rem);
-  --viking-chart-max-height: clamp(14rem, 28vw, 16.5rem);
-  --viking-chart-fill-min-height: clamp(12.5rem, 24vw, 15rem);
-  --viking-chart-fill-max-height: clamp(14.5rem, 28vw, 17rem);
-  --viking-chart-fill-min-height-lg: clamp(13rem, 26vw, 15.5rem);
-  --viking-chart-fill-max-height-lg: clamp(15rem, 30vw, 17.5rem);
+  /* ── Chart scale — responsive dashboard inlay ─────────────────────────── */
+  --viking-chart-ratio: 16 / 7;
+  --viking-chart-min-height: clamp(12rem, 26vw, 20rem);
+  --viking-chart-max-height: none;
+  --viking-chart-fill-min-height: clamp(13rem, 28vw, 21rem);
+  --viking-chart-fill-max-height: none;
+  --viking-chart-fill-min-height-lg: clamp(15rem, 30vw, 23rem);
+  --viking-chart-fill-max-height-lg: none;
   --viking-chart-empty-min-height: var(--viking-chart-fill-min-height);
   --viking-chart-empty-min-height-lg: var(--viking-chart-fill-min-height-lg);
   /* Panel shells sized to the plot (header + body + breathing) */
@@ -335,44 +344,67 @@
   --viking-control-height-xs: 24px;
   --viking-touch-target-min: 44px;
   --viking-control-padding-x: var(--viking-space-2); /* 16px — on-grid */
-  --viking-btn-min-width: 120px;
+  --viking-btn-min-width: 0;
   --viking-select-panel-bg: var(--viking-surface-raised);
   --viking-select-half-max-width: min(100%, 24rem);
+
+  /* ── Unified component language ───────────────────────────────────────── */
+  --viking-component-radius: var(--viking-radius);
+  --viking-component-surface-radius: var(--viking-radius-lg);
+  --viking-component-border: var(--viking-border);
+  --viking-component-border-hover: var(--viking-border-strong);
+  --viking-component-border-active: var(--viking-border-accent);
+  --viking-component-bg: var(--viking-surface);
+  --viking-component-bg-subtle: var(--viking-surface-alt);
+  --viking-component-bg-inset: var(--viking-surface-inset);
+  --viking-component-hover-bg: var(--viking-state-hover-bg);
+  --viking-component-selected-bg: var(--viking-state-selected-bg);
+  --viking-component-shadow: var(--viking-shadow-xs);
+  --viking-component-shadow-raised: var(--viking-shadow-sm);
+  --viking-focus-shadow: 0 0 0 3px var(--viking-accent-soft);
+  --viking-badge-height: 24px;
+  --viking-table-cell-padding-y: var(--viking-space-1-5);
+  --viking-table-cell-padding-x: var(--viking-space-2);
+  --viking-navigation-item-height: 40px;
 
   /* ── Layout ────────────────────────────────────────────────────────────── */
   --viking-container-max-width: 1260px;
   --viking-container-max-width-wide: 1440px; /* dashboard/analytics pages */
-  --viking-navbar-height: var(--viking-space-8); /* 64px */
+  --viking-container-max-width-readable: 48rem;
+  --viking-navbar-height: var(--viking-space-7); /* 56px */
   --viking-sidebar-width: 256px; /* 32 × 8px — on-grid layout constant */
+  --viking-trailing-width: 20rem;
+  --viking-split-panel-height-compact: 12rem;
+  --viking-split-panel-height-default: 20rem;
+  --viking-split-panel-height-large: 28rem;
   --viking-layout-item-compact: 16rem; /* 256px / 32 grid units */
   --viking-layout-item-default: 20rem; /* 320px / 40 grid units */
   --viking-layout-item-wide: 24rem; /* 384px / 48 grid units */
+  --viking-layout-columns: 12;
+  --viking-layout-column-gap: var(--viking-space-3);
+  --viking-layout-row-gap: var(--viking-space-3);
 
   /* ── Layout rhythm — premium spacing enforcement (THEME.md §3) ───────────
      All gaps/padding resolve to --viking-space-* integer steps (or 0-5 tight).
      App pages share the same stack/card tokens via viking-ui.css. */
   --viking-page-gutter: clamp(
     var(--viking-space-2),
-    5vw,
+    4vw,
     var(--viking-space-4)
   );
-  --viking-page-gutter-lg: var(--viking-space-5);
-  --viking-page-gutter-xl: var(--viking-space-7);
-  --viking-page-stack-gap: var(--viking-space-6);
-  --viking-page-section-gap: var(
-    --viking-space-10
-  ); /* 96px — large section break */
-  --viking-dashboard-grid-gap: var(--viking-space-4);
+  --viking-page-gutter-lg: var(--viking-space-4);
+  --viking-page-gutter-xl: var(--viking-space-8);
+  --viking-page-stack-gap: var(--viking-space-4);
+  --viking-page-section-gap: var(--viking-space-8);
+  --viking-dashboard-grid-gap: var(--viking-space-3);
   --viking-section-padding-y: var(--viking-space-8);
-  --viking-section-padding-y-compact: var(--viking-space-6);
-  --viking-card-padding: var(--viking-space-5); /* 40px */
-  --viking-card-padding-compact: var(--viking-space-4);
-  --viking-card-content-gap: var(
-    --viking-space-4
-  ); /* was space-5 — tighter internal stack on 8px */
-  --viking-card-content-gap-compact: var(--viking-space-3);
-  --viking-panel-padding: var(--viking-space-5);
-  --viking-panel-header-padding: var(--viking-space-3) var(--viking-space-5);
+  --viking-section-padding-y-compact: var(--viking-space-4);
+  --viking-card-padding: var(--viking-space-3);
+  --viking-card-padding-compact: var(--viking-space-2);
+  --viking-card-content-gap: var(--viking-space-2);
+  --viking-card-content-gap-compact: var(--viking-space-compact-gap);
+  --viking-panel-padding: var(--viking-space-3);
+  --viking-panel-header-padding: var(--viking-space-2) var(--viking-space-3);
   --viking-form-max-width: 42rem;
   --viking-form-narrow-max-width: 28rem;
   --viking-content-readable-max-width: 48rem;
@@ -382,6 +414,13 @@
   --viking-metric-card-tall-min-height: 9.5rem;
   --viking-metric-card-min-width: 10rem;
   --viking-surface-hairline-strength: 36%;
+
+  /* Semantic component surfaces and seams */
+  --viking-surface-container: var(--viking-surface);
+  --viking-surface-container-muted: var(--viking-surface-alt);
+  --viking-border-container: var(--viking-border);
+  --viking-border-control: var(--viking-border-strong);
+  --viking-border-divider: var(--viking-border-subtle);
 
   /* ── Layering ────────────────────────────────────────────────────────────── */
   --viking-z-overlay: 1000;
@@ -395,8 +434,8 @@
   /* Internal breathing (gutters + viewport padding) */
   --viking-chart-gutter-default: 16px 24px 48px 48px; /* top right bottom left — 8px grid */
   --viking-chart-gutter-fill: 8px 16px 32px 32px;
-  --viking-chart-padding: var(--viking-space-1) 0;
-  --viking-chart-padding-fill: var(--viking-space-2) var(--viking-space-1);
+  --viking-chart-padding: var(--viking-space-2) 0;
+  --viking-chart-padding-fill: var(--viking-space-1) 0;
   /* Grid & axes */
   --viking-chart-grid-stroke: color-mix(
     in srgb,
@@ -596,17 +635,17 @@ html[data-theme="dark"] {
   );
 
   --viking-shadow-sm:
-    0 3px 8px rgba(0, 0, 0, 0.34), 0 1px 2px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 1px 2px rgba(0, 0, 0, 0.26), 0 4px 12px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
   --viking-shadow-md:
-    0 14px 30px rgba(0, 0, 0, 0.3), 0 5px 12px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 2px 4px rgba(0, 0, 0, 0.24), 0 10px 24px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   --viking-shadow-lg:
-    0 28px 54px rgba(0, 0, 0, 0.36), 0 10px 24px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    0 4px 8px rgba(0, 0, 0, 0.26), 0 20px 40px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
   --viking-shadow-hover:
-    0 22px 42px rgba(0, 0, 0, 0.34), 0 8px 18px rgba(0, 0, 0, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 2px 4px rgba(0, 0, 0, 0.25), 0 12px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* ── Light mode ──────────────────────────────────────────────────────────── */
@@ -735,13 +774,13 @@ html[data-theme="light"] {
   );
 
   --viking-shadow-sm:
-    0 3px 8px rgba(17, 24, 39, 0.08), 0 1px 2px rgba(17, 24, 39, 0.08);
+    0 1px 2px rgba(17, 24, 39, 0.06), 0 4px 12px rgba(17, 24, 39, 0.06);
   --viking-shadow-md:
-    0 14px 28px rgba(17, 24, 39, 0.1), 0 4px 10px rgba(17, 24, 39, 0.08);
+    0 2px 4px rgba(17, 24, 39, 0.06), 0 10px 24px rgba(17, 24, 39, 0.08);
   --viking-shadow-lg:
-    0 24px 48px rgba(17, 24, 39, 0.13), 0 8px 18px rgba(17, 24, 39, 0.1);
+    0 4px 8px rgba(17, 24, 39, 0.07), 0 20px 40px rgba(17, 24, 39, 0.1);
   --viking-shadow-hover:
-    0 20px 36px rgba(17, 24, 39, 0.14), 0 8px 16px rgba(17, 24, 39, 0.1);
+    0 2px 4px rgba(17, 24, 39, 0.08), 0 12px 28px rgba(17, 24, 39, 0.11);
 }
 
 /* Respect system preference when no explicit theme is set */

@@ -41,26 +41,13 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         display: block;
         width: 100%;
         overflow-x: auto;
-        border: 1px solid var(--viking-border);
-        border-radius: var(--viking-card-radius, var(--viking-radius-xl));
-        background: var(--viking-surface-recipe);
-        box-shadow: var(--viking-shadow-sm);
+        border: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-component-border);
+        border-radius: var(--viking-component-surface-radius);
+        background: var(--viking-component-bg);
+        box-shadow: var(--viking-component-shadow);
         transition: var(--viking-transition-interactive);
         position: relative;
-      }
-      :host::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
-          transparent
-        );
-        pointer-events: none;
-        z-index: 1;
       }
       .viking-table-loading-state {
         display: flex;
@@ -70,6 +57,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       }
       .viking-table {
         width: 100%;
+        min-width: 40rem;
         border-collapse: collapse;
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-sm);
@@ -77,22 +65,16 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       }
       :host ::ng-deep thead th {
         font-size: var(--viking-font-size-xs);
-        font-weight: var(--viking-font-weight-bold);
+        font-weight: var(--viking-font-weight-semibold);
         text-align: left;
-        letter-spacing: var(--viking-letter-spacing-caps);
-        text-transform: uppercase;
+        letter-spacing: var(--viking-letter-spacing-wide);
         color: var(--viking-text-muted);
-        background: color-mix(
-          in srgb,
-          var(--viking-bg) 40%,
-          var(--viking-surface)
-        );
-        padding: var(--viking-space-2) var(--viking-space-3);
-        border-bottom: 1px solid var(--viking-border-strong);
+        background: var(--viking-component-bg-subtle);
+        padding: var(--viking-table-cell-padding-y)
+          var(--viking-table-cell-padding-x);
+        border-bottom: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-component-border);
         white-space: nowrap;
-      }
-      :host ::ng-deep tbody tr:hover td {
-        background: var(--viking-surface-alt);
       }
 
       :host ::ng-deep tbody tr:focus-visible td {
@@ -101,7 +83,8 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       }
 
       :host ::ng-deep tbody td {
-        padding: var(--viking-space-2) var(--viking-space-3);
+        padding: var(--viking-table-cell-padding-y)
+          var(--viking-table-cell-padding-x);
         border-bottom: 1px solid var(--viking-border-subtle);
         vertical-align: middle;
         transition: background-color var(--viking-duration-fast)
@@ -111,28 +94,29 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         border-bottom: none;
       }
       :host ::ng-deep tbody tr:hover td {
-        background: var(--viking-accent-soft);
+        background: color-mix(
+          in srgb,
+          var(--viking-accent) 6%,
+          var(--viking-component-bg)
+        );
       }
       :host(.viking-table-striped) ::ng-deep tbody tr:nth-child(even) td {
         background: color-mix(
           in srgb,
-          var(--viking-surface-alt) 50%,
-          transparent
+          var(--viking-component-bg-subtle) 52%,
+          var(--viking-component-bg)
         );
       }
       :host(.viking-table-striped) ::ng-deep tbody tr:nth-child(even):hover td {
-        background: var(--viking-accent-soft);
+        background: color-mix(
+          in srgb,
+          var(--viking-accent) 6%,
+          var(--viking-component-bg)
+        );
       }
       :host(.viking-table-compact) ::ng-deep thead th,
       :host(.viking-table-compact) ::ng-deep tbody td {
         padding: var(--viking-space-1) var(--viking-space-2);
-      }
-      @media (max-width: 640px) {
-        :host ::ng-deep thead th,
-        :host ::ng-deep tbody td {
-          padding: var(--viking-space-1);
-          font-size: var(--viking-font-size-xs);
-        }
       }
     `,
   ],

@@ -3,7 +3,7 @@
 // Single source of truth aligned to THEME.md §8 (composable field stack)
 // ============================================================================
 
-@use 'forms' as forms;
+@use "forms" as forms;
 
 @mixin viking-input-shell {
   @include forms.viking-control-surface;
@@ -21,7 +21,7 @@
   padding: 0;
 
   &::placeholder {
-    color: var(--viking-text-muted);
+    color: var(--viking-text-subtle);
   }
 
   &:disabled {
@@ -40,7 +40,7 @@
   color: var(--viking-text-muted);
   cursor: pointer;
   padding: var(--viking-space-0-5);
-  border-radius: var(--viking-radius-pill);
+  border-radius: var(--viking-component-radius);
   transition: var(--viking-transition-interactive);
   position: relative;
   flex-shrink: 0;
@@ -48,7 +48,7 @@
 
   &:hover {
     color: var(--viking-text);
-    background: var(--viking-accent-soft);
+    background: var(--viking-component-hover-bg);
   }
 
   &:focus-visible {

@@ -45,28 +45,26 @@ import { VikingSize, VikingTone } from "../../core/types";
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-wide);
         line-height: var(--viking-line-height-snug);
-        padding: var(--viking-space-0-5) var(--viking-space-1);
+        min-height: var(--viking-badge-height);
+        padding: 0 var(--viking-space-1);
         border-radius: var(--viking-radius-pill);
-        border: 1px solid var(--viking-border);
-        background: var(--viking-surface-alt);
+        border: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-component-border);
+        background: var(--viking-component-bg-subtle);
         color: var(--viking-text);
         white-space: nowrap;
         transition: var(--viking-transition-interactive);
-        box-shadow: var(--viking-shadow-xs);
+        box-shadow: none;
       }
       :host(.viking-badge-sm) {
         padding: 0 var(--viking-space-1);
         font-size: var(--viking-font-size-2xs);
       }
       :host(.viking-badge-accent) {
-        background: var(--viking-accent);
-        border-color: color-mix(
-          in srgb,
-          var(--viking-accent) 80%,
-          var(--viking-black)
-        );
-        color: var(--viking-accent-content);
-        box-shadow: var(--viking-shadow-sm);
+        background: var(--viking-accent-soft);
+        border-color: color-mix(in srgb, var(--viking-accent) 32%, transparent);
+        color: var(--viking-accent-strong);
+        box-shadow: none;
       }
       :host(.viking-badge-secondary) {
         background: color-mix(
@@ -76,7 +74,7 @@ import { VikingSize, VikingTone } from "../../core/types";
         );
         border-color: color-mix(
           in srgb,
-          var(--viking-accent-secondary) 55%,
+          var(--viking-accent-secondary) 32%,
           transparent
         );
         color: var(--viking-accent-secondary);
@@ -89,7 +87,7 @@ import { VikingSize, VikingTone } from "../../core/types";
         );
         border-color: color-mix(
           in srgb,
-          var(--viking-success) 55%,
+          var(--viking-success) 32%,
           transparent
         );
         color: var(--viking-success);
@@ -102,7 +100,7 @@ import { VikingSize, VikingTone } from "../../core/types";
         );
         border-color: color-mix(
           in srgb,
-          var(--viking-warning) 55%,
+          var(--viking-warning) 32%,
           transparent
         );
         color: var(--viking-warning);
@@ -113,7 +111,7 @@ import { VikingSize, VikingTone } from "../../core/types";
           var(--viking-danger) 14%,
           var(--viking-surface)
         );
-        border-color: color-mix(in srgb, var(--viking-danger) 50%, transparent);
+        border-color: color-mix(in srgb, var(--viking-danger) 32%, transparent);
         color: var(--viking-danger-text);
       }
       :host(.viking-badge-info) {
@@ -122,7 +120,7 @@ import { VikingSize, VikingTone } from "../../core/types";
           var(--viking-info) 14%,
           var(--viking-surface)
         );
-        border-color: color-mix(in srgb, var(--viking-info) 50%, transparent);
+        border-color: color-mix(in srgb, var(--viking-info) 32%, transparent);
         color: var(--viking-info);
       }
       :host(.viking-badge-muted) {

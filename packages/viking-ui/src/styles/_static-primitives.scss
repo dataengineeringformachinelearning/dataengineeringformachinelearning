@@ -82,42 +82,93 @@
   margin-bottom: var(--viking-space-1);
 }
 
+// Card — framework-neutral mirror of the Angular viking-card contract.
+.viking-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-card-content-gap);
+  min-width: 0;
+  padding: var(--viking-card-padding);
+  color: var(--viking-text);
+  background: var(--viking-surface-recipe);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-container);
+  border-radius: var(--viking-card-radius);
+  box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
+  transition: var(--viking-transition-interactive);
+}
+
+.viking-card[data-compact="true"] {
+  gap: var(--viking-card-content-gap-compact);
+  padding: var(--viking-card-padding-compact);
+}
+
+.viking-card[data-interactive="true"] {
+  cursor: pointer;
+}
+
+.viking-card[data-interactive="true"]:hover {
+  background: var(--viking-surface-recipe-elevated);
+  border-color: var(--viking-border-accent);
+  box-shadow: var(--viking-shadow-sm), var(--viking-surface-highlight);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+
+.viking-card[data-interactive="true"]:active {
+  box-shadow: var(--viking-shadow-inner);
+  transform: none;
+}
+
 // Badge
 .viking-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--viking-space-0-5);
-  padding: var(--viking-space-0-5) var(--viking-space-1);
+  min-height: var(--viking-badge-height);
+  padding: 0 var(--viking-space-1);
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-semibold);
   letter-spacing: var(--viking-letter-spacing-wide);
   border-radius: var(--viking-radius-pill);
-  border: 1px solid var(--viking-border);
-  background: var(--viking-surface-alt);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-component-border);
+  background: var(--viking-component-bg-subtle);
   color: var(--viking-text);
   white-space: nowrap;
 }
 
 .viking-badge-accent {
-  background: var(--viking-accent);
-  border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
-  color: var(--viking-accent-content);
+  background: var(--viking-accent-soft);
+  border-color: color-mix(in srgb, var(--viking-accent) 32%, transparent);
+  color: var(--viking-accent-strong);
 }
 
 .viking-badge-success {
-  background: color-mix(in srgb, var(--viking-success) 18%, var(--viking-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-success) 18%,
+    var(--viking-surface)
+  );
   border-color: color-mix(in srgb, var(--viking-success) 40%, transparent);
   color: var(--viking-success);
 }
 
 .viking-badge-warning {
-  background: color-mix(in srgb, var(--viking-warning) 18%, var(--viking-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-warning) 18%,
+    var(--viking-surface)
+  );
   border-color: color-mix(in srgb, var(--viking-warning) 40%, transparent);
   color: var(--viking-warning);
 }
 
 .viking-badge-danger {
-  background: color-mix(in srgb, var(--viking-danger) 18%, var(--viking-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-danger) 18%,
+    var(--viking-surface)
+  );
   border-color: color-mix(in srgb, var(--viking-danger) 40%, transparent);
   color: var(--viking-danger);
 }
@@ -148,23 +199,55 @@
 }
 
 .viking-callout-info {
-  border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border));
-  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 35%,
+    var(--viking-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 8%,
+    var(--viking-surface)
+  );
 }
 
 .viking-callout-warning {
-  border-color: color-mix(in srgb, var(--viking-warning) 35%, var(--viking-border));
-  background: color-mix(in srgb, var(--viking-warning) 8%, var(--viking-surface));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-warning) 35%,
+    var(--viking-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--viking-warning) 8%,
+    var(--viking-surface)
+  );
 }
 
 .viking-callout-success {
-  border-color: color-mix(in srgb, var(--viking-success) 35%, var(--viking-border));
-  background: color-mix(in srgb, var(--viking-success) 8%, var(--viking-surface));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-success) 35%,
+    var(--viking-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--viking-success) 8%,
+    var(--viking-surface)
+  );
 }
 
 .viking-callout-danger {
-  border-color: color-mix(in srgb, var(--viking-danger) 35%, var(--viking-border));
-  background: color-mix(in srgb, var(--viking-danger) 8%, var(--viking-surface));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-danger) 35%,
+    var(--viking-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--viking-danger) 8%,
+    var(--viking-surface)
+  );
 }
 
 // Progress
@@ -317,17 +400,23 @@
 .viking-table-wrap {
   overflow-x: auto;
   width: 100%;
+  background: var(--viking-component-bg);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-component-border);
+  border-radius: var(--viking-component-surface-radius);
+  box-shadow: var(--viking-component-shadow);
 }
 
 .viking-table {
   width: 100%;
+  min-width: 40rem;
   border-collapse: collapse;
   font-size: var(--viking-font-size-sm);
 }
 
 .viking-table th,
 .viking-table td {
-  padding: var(--viking-space-1) var(--viking-space-2);
+  padding: var(--viking-table-cell-padding-y) var(--viking-table-cell-padding-x);
   text-align: left;
   border-bottom: 1px solid var(--viking-border);
 }
@@ -335,6 +424,17 @@
 .viking-table th {
   color: var(--viking-text-muted);
   font-weight: var(--viking-font-weight-semibold);
+  font-size: var(--viking-font-size-xs);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  background: var(--viking-component-bg-subtle);
+}
+
+.viking-table tbody tr:hover td {
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 6%,
+    var(--viking-component-bg)
+  );
 }
 
 // Tabs
@@ -411,7 +511,7 @@
 
 .viking-divider::before,
 .viking-divider::after {
-  content: '';
+  content: "";
   flex: 1;
   height: 1px;
   background: var(--viking-border);
@@ -462,7 +562,7 @@
 }
 
 .viking-breadcrumbs-list li:not(:last-child)::after {
-  content: '/';
+  content: "/";
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -520,7 +620,10 @@
   list-style: none;
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
-  background: var(--viking-select-panel-bg, var(--viking-surface-raised, var(--viking-surface)));
+  background: var(
+    --viking-select-panel-bg,
+    var(--viking-surface-raised, var(--viking-surface))
+  );
   box-shadow: var(--viking-shadow-md);
 }
 
@@ -535,7 +638,7 @@
   line-height: 1.2;
 }
 
-.viking-select-panel-static li[aria-selected='true'],
+.viking-select-panel-static li[aria-selected="true"],
 .viking-select-panel-static li.is-selected {
   color: var(--viking-text);
   background: var(--viking-accent-soft);

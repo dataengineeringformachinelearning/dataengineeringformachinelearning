@@ -495,7 +495,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         box-shadow: none;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
-        aspect-ratio: var(--viking-chart-ratio, 3 / 1);
+        aspect-ratio: var(--viking-chart-ratio, 16 / 7);
         min-height: var(--viking-chart-min-height, clamp(12rem, 26vw, 15rem));
         max-height: var(--viking-chart-max-height, clamp(15rem, 32vw, 18rem));
         height: auto;
@@ -581,9 +581,10 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         backface-visibility: hidden;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) svg {
-        min-height: var(--viking-chart-min-height, clamp(9.5rem, 22vw, 12rem));
-        max-height: var(--viking-chart-max-height, clamp(13rem, 36vw, 17.5rem));
-        aspect-ratio: 720 / 240;
+        height: 100%;
+        min-height: 0;
+        max-height: none;
+        aspect-ratio: inherit;
       }
       .viking-chart-fill svg {
         width: 100%;

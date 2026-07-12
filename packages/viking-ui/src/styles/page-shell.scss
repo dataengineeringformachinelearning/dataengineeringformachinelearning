@@ -236,7 +236,11 @@
   gap: var(--viking-space-1);
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius-pill);
-  background: color-mix(in srgb, var(--viking-surface-alt) 82%, var(--viking-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-surface-alt) 82%,
+    var(--viking-surface)
+  );
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-semibold);
   letter-spacing: var(--viking-letter-spacing-caps);
@@ -249,29 +253,19 @@
   height: var(--viking-space-1);
   border-radius: 50%;
   background: var(--viking-accent);
-  animation: pulseDot 2s ease-in-out infinite;
-}
-
-@keyframes pulseDot {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-accent) 60%, transparent);
-  }
-  50% {
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--viking-accent) 0%, transparent);
-  }
 }
 
 .viking-page-header,
 .hud-header,
 .dashboard-topbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--viking-space-4);
-  padding-bottom: var(--viking-space-5);
-  margin-bottom: var(--viking-page-section-gap, var(--viking-space-4));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+  gap: var(--viking-space-content-gap);
+  padding-bottom: var(--viking-space-container-gap);
+  margin-bottom: var(--viking-space-section-gap);
+  border-bottom: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-subtle);
 }
 
 .viking-page-header-sidebar.dashboard-topbar {
@@ -283,7 +277,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-control-gap);
   min-width: 0;
   flex: 1 1 min(100%, 36rem);
 }
@@ -307,10 +301,10 @@
   margin: 0;
   font-size: clamp(
     var(--viking-font-size-xl),
-    3vw,
-    var(--viking-font-size-3xl)
+    2.5vw,
+    var(--viking-font-size-2xl)
   );
-  font-weight: 700;
+  font-weight: var(--viking-font-weight-bold);
   letter-spacing: var(--viking-letter-spacing-tight);
   color: var(--viking-text);
   line-height: var(--viking-line-height-tight);
@@ -336,6 +330,14 @@
   flex-shrink: 0;
   min-width: 0;
   margin-left: auto;
+}
+
+@media (min-width: 768px) {
+  .viking-page-header,
+  .hud-header,
+  .dashboard-topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
 }
 
 .viking-empty-state,
@@ -399,7 +401,10 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--viking-chart-empty-padding, var(--viking-space-5) var(--viking-space-4));
+  padding: var(
+    --viking-chart-empty-padding,
+    var(--viking-space-5) var(--viking-space-4)
+  );
   gap: var(--viking-chart-empty-gap, var(--viking-space-3));
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
@@ -799,7 +804,11 @@
 }
 
 .kpi-value {
-  font-size: clamp(var(--viking-font-size-xl), 5vw, var(--viking-font-size-3xl));
+  font-size: clamp(
+    var(--viking-font-size-xl),
+    5vw,
+    var(--viking-font-size-3xl)
+  );
   font-weight: var(--viking-font-weight-bold);
   line-height: var(--viking-line-height-tight);
   overflow-wrap: anywhere;
@@ -1080,14 +1089,16 @@ app-status-card.status-directory-card:hover {
 .status-card-actions {
   justify-content: space-between;
   padding: var(--viking-space-2) 0 0;
-  border-top: 1px solid color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
+  border-top: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
   margin-top: var(--viking-space-2);
 }
 
 .status-card-footer-action {
   padding-top: var(--viking-space-3);
   margin-top: var(--viking-space-2);
-  border-top: 1px solid color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
+  border-top: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
 }
 
 .status-incidents-list {
@@ -1098,7 +1109,11 @@ app-status-card.status-directory-card:hover {
 }
 
 .status-incidents-list viking-card {
-  background: color-mix(in srgb, var(--viking-surface-alt) 88%, var(--viking-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-surface-alt) 88%,
+    var(--viking-surface)
+  );
   border-color: color-mix(in srgb, var(--viking-border) 72%, transparent);
 }
 

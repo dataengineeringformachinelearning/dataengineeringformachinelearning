@@ -6,36 +6,32 @@
 @mixin viking-control-surface {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-2); /* Better breathing */
+  gap: var(--viking-space-control-gap);
   min-height: var(--viking-control-height);
   padding: 0 var(--viking-control-padding-x);
   font-family: var(--viking-font-family);
   font-size: var(--viking-font-size);
   color: var(--viking-text);
-  background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
-  border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 68%, var(--viking-border));
-  border-radius: var(--viking-radius-lg); /* Consistent with cards/buttons */
-  box-shadow:
-    var(--viking-shadow-xs),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 4%, transparent);
+  background: var(--viking-component-bg-inset);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-component-border);
+  border-radius: var(--viking-component-radius);
+  box-shadow: none;
   transition: var(--viking-transition-interactive);
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
 
   &:hover:not(.viking-disabled):not(.viking-loading):not(:disabled) {
-    border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border-strong));
-    box-shadow: var(--viking-shadow-sm);
+    background: var(--viking-component-bg-subtle);
+    border-color: var(--viking-component-border-hover);
   }
 
   &:focus-within:not(.viking-loading) {
     outline: var(--viking-ring-width) solid var(--viking-ring);
     outline-offset: var(--viking-ring-offset);
-    border-color: var(--viking-accent);
-    box-shadow:
-      var(--viking-shadow-sm),
-      0 0 0 1px color-mix(in srgb, var(--viking-accent) 22%, transparent);
+    border-color: var(--viking-component-border-active);
+    box-shadow: var(--viking-focus-shadow);
   }
 }
 
@@ -46,7 +42,7 @@
 .viking-form-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-4);
+  gap: var(--viking-space-container-gap);
   width: 100%;
   max-width: var(--viking-form-max-width);
 
