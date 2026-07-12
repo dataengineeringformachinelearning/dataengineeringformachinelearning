@@ -14,7 +14,7 @@
 .showcase-layout {
   max-width: var(
     --viking-container-max-width,
-    var(--container-max-width, 1260px)
+    var(--viking-container-max-width, 1260px)
   );
   margin: 0 auto;
   overflow: visible;
@@ -99,7 +99,7 @@
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius-pill);
   width: fit-content;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--viking-shadow-sm);
   position: relative;
   overflow: hidden;
   border-color: var(--viking-border-strong);
@@ -117,17 +117,17 @@
   }
 
   .badge-dot {
-    width: var(--grid-unit, 8px);
-    height: var(--grid-unit, 8px);
+    width: var(--viking-space-2, 8px);
+    height: var(--viking-space-2, 8px);
     border-radius: 50%;
-    background-color: var(--color-primary);
+    background-color: var(--viking-accent);
   }
 
   .badge-text {
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.05em;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 }
 
@@ -137,13 +137,13 @@
   line-height: 1.05;
   letter-spacing: -0.02em;
   margin: 0;
-  color: var(--hero-title-color, var(--text-color)) !important;
+  color: var(--hero-title-color, var(--viking-text)) !important;
   text-transform: uppercase;
 }
 
 .subtitle {
   font-size: clamp(1.05rem, 2vw, 1.25rem);
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
   line-height: 1.6;
   margin: 0;
   max-width: 520px;
@@ -164,17 +164,17 @@
   background: color-mix(
     in srgb,
     var(--viking-accent) 10%,
-    var(--color-surface)
+    var(--viking-surface)
   );
   border: 1px solid color-mix(in srgb, var(--viking-accent) 25%, transparent);
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--viking-text);
   letter-spacing: 0.02em;
   position: relative;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--viking-accent) 28%, var(--border));
-  box-shadow: var(--shadow-sm);
+  border-color: color-mix(in srgb, var(--viking-accent) 28%, var(--viking-border));
+  box-shadow: var(--viking-shadow-sm);
 
   &::before {
     content: "";
@@ -247,7 +247,7 @@
 .quick-start-band {
   padding: var(--viking-space-7) 0 var(--viking-space-8);
   margin-bottom: var(--viking-space-4);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--viking-border);
   position: relative;
 }
 
@@ -283,7 +283,7 @@
   }
 
   p {
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0;
     line-height: 1.6;
     font-size: 1.1rem;
@@ -310,8 +310,8 @@
 
 .quick-start-step {
   position: relative;
-  background: var(--color-surface);
-  border: 1px solid var(--border);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-xl, 16px);
   padding: var(--viking-card-padding);
   text-align: center;
@@ -319,7 +319,7 @@
     border-color 0.25s ease,
     transform 0.25s ease,
     box-shadow 0.25s ease;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--viking-shadow-sm);
   overflow: hidden;
 
   &::before {
@@ -341,7 +341,7 @@
   &:hover {
     border-color: var(--viking-accent);
     transform: translateY(var(--viking-state-hover-lift));
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--viking-shadow-hover);
   }
 
   .step-number {
@@ -374,7 +374,7 @@
 
   p {
     margin: 0;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     line-height: 1.55;
     font-size: 1rem;
   }
@@ -383,7 +383,7 @@
 /* ── Security pillars ── */
 .security-pillars-band {
   padding: var(--viking-page-section-gap) 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--viking-border);
   position: relative;
 }
 
@@ -419,7 +419,7 @@
   }
 
   p {
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0;
     line-height: 1.6;
     font-size: 1.1rem;
@@ -451,7 +451,7 @@
   gap: var(--viking-space-2);
   padding: var(--viking-card-padding);
   border-radius: var(--viking-radius-lg);
-  background: color-mix(in srgb, var(--viking-accent) 6%, var(--color-surface));
+  background: color-mix(in srgb, var(--viking-accent) 6%, var(--viking-surface));
   border: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
   position: relative;
   overflow: hidden;
@@ -476,12 +476,12 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 
   span:last-child {
     font-size: 0.9rem;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     line-height: 1.45;
   }
 
@@ -536,7 +536,7 @@
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.15em;
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
   margin: 0 0 24px 0;
 }
 
@@ -552,7 +552,7 @@
   align-items: center;
   gap: 10px;
   text-decoration: none !important;
-  color: var(--text-muted) !important;
+  color: var(--viking-text-muted) !important;
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 0.04em;
@@ -569,7 +569,7 @@
   }
 
   &:hover {
-    color: var(--text-color) !important;
+    color: var(--viking-text) !important;
   }
 }
 
@@ -580,7 +580,7 @@
   gap: var(--viking-space-5);
   align-items: center;
   padding: var(--viking-space-7) 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--viking-border);
   position: relative;
 
   @media (min-width: 900px) {
@@ -652,12 +652,12 @@
     margin: 0 0 16px 0;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 
   p {
     font-size: 1.1rem;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     line-height: 1.65;
     margin: 0 0 24px 0;
   }
@@ -684,7 +684,7 @@
   }
 
   &.muted-link {
-    color: var(--text-muted) !important;
+    color: var(--viking-text-muted) !important;
     font-weight: 600;
 
     &:hover {
@@ -694,11 +694,11 @@
 }
 
 .visual-panel {
-  background: var(--color-surface);
-  border: 1px solid var(--border);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-xl, 16px);
   padding: var(--viking-card-padding, var(--viking-space-4));
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--viking-shadow-md);
   position: relative;
   overflow: hidden;
 
@@ -739,7 +739,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
 
   svg {
     width: 24px;
@@ -768,28 +768,28 @@
   background: color-mix(
     in srgb,
     var(--viking-charcoal-900) 35%,
-    var(--color-surface)
+    var(--viking-surface)
   );
-  border: 1px solid var(--border);
+  border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   padding: var(--viking-card-padding-compact, var(--viking-space-3));
   position: relative;
-  border-color: color-mix(in srgb, var(--viking-accent) 12%, var(--border));
-  box-shadow: var(--shadow-sm);
+  border-color: color-mix(in srgb, var(--viking-accent) 12%, var(--viking-border));
+  box-shadow: var(--viking-shadow-sm);
 
   .metric-label {
     display: block;
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin-bottom: 6px;
   }
 
   .metric-value {
     font-size: 1.35rem;
     font-weight: 800;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 
   .metric-trend {
@@ -806,7 +806,7 @@
       color: var(--viking-gold-500);
     }
     &.trend-stable {
-      color: var(--text-muted);
+      color: var(--viking-text-muted);
     }
   }
 }
@@ -824,7 +824,7 @@
 /* ── Widget showcase ── */
 .widget-showcase {
   padding: var(--viking-space-9) 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--viking-border);
   position: relative;
 }
 
@@ -877,7 +877,7 @@
   }
 
   p {
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     line-height: 1.6;
     margin: 0 0 24px 0;
   }
@@ -904,11 +904,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface);
-  border: 1px solid var(--border);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-xl, 16px);
   padding: var(--viking-card-padding, var(--viking-space-4));
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--viking-shadow-md);
   position: relative;
   overflow: hidden;
   border-color: color-mix(
@@ -942,7 +942,7 @@
 .pricing-showcase {
   padding: var(--viking-space-9) 0;
   text-align: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--viking-border);
   position: relative;
 }
 
@@ -985,7 +985,7 @@
   }
 
   p {
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0;
   }
 }
@@ -1012,9 +1012,9 @@
     max-width: 100%;
     padding: var(--viking-space-5) var(--viking-card-padding);
     border-radius: var(--viking-radius-xl);
-    background: var(--color-surface);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
+    background: var(--viking-surface);
+    border: 1px solid var(--viking-border);
+    box-shadow: var(--viking-shadow-sm);
     position: relative;
     overflow: hidden;
     transition:
@@ -1034,7 +1034,7 @@
     &:hover {
       transform: translateY(-2px);
       border-color: var(--viking-accent);
-      box-shadow: var(--shadow-hover);
+      box-shadow: var(--viking-shadow-hover);
     }
 
     &::before {
@@ -1055,7 +1055,7 @@
 
     h3 {
       font-size: 1.1rem;
-      color: var(--text-muted);
+      color: var(--viking-text-muted);
       margin: 0;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -1066,12 +1066,12 @@
       font-size: 3rem;
       font-weight: 800;
       margin: 1rem 0;
-      color: var(--text-color);
+      color: var(--viking-text);
 
       span {
         font-size: 1rem;
         font-weight: normal;
-        color: var(--text-muted);
+        color: var(--viking-text-muted);
       }
     }
 
@@ -1085,7 +1085,7 @@
         display: flex;
         align-items: center;
         margin-bottom: 1rem;
-        color: var(--text-color);
+        color: var(--viking-text);
         font-size: 1rem;
 
         svg {
@@ -1110,7 +1110,7 @@
       background: color-mix(
         in srgb,
         var(--viking-accent) 6%,
-        var(--color-surface)
+        var(--viking-surface)
       );
       box-shadow: inset 0 1px 0
         color-mix(in srgb, var(--viking-white) 8%, transparent);
@@ -1133,7 +1133,7 @@
 
       .pro-btn {
         background: var(--viking-accent);
-        color: var(--white);
+        color: var(--viking-white);
         border: none;
 
         &:hover {
@@ -1165,7 +1165,7 @@
   align-items: flex-start;
   padding: 40px;
   border-radius: var(--viking-radius-xl, 16px);
-  background: color-mix(in srgb, var(--viking-accent) 8%, var(--color-surface));
+  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface));
   border: 1px solid color-mix(in srgb, var(--viking-accent) 20%, transparent);
 
   @media (min-width: 768px) {
@@ -1192,7 +1192,7 @@
   }
 
   p {
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0;
     max-width: 480px;
     line-height: 1.55;
@@ -1241,7 +1241,7 @@
     h2 {
       font-size: clamp(1.75rem, 3vw, 2.5rem);
       font-weight: 200;
-      color: var(--text-color);
+      color: var(--viking-text);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       margin: 0 0 12px 0;
@@ -1249,7 +1249,7 @@
 
     p {
       font-size: 1.1rem;
-      color: var(--text-muted);
+      color: var(--viking-text-muted);
       line-height: 1.6;
       margin: 0;
     }
@@ -1283,12 +1283,12 @@
 
       .purpose-text {
         font-size: 1rem;
-        color: var(--text-muted);
+        color: var(--viking-text-muted);
         line-height: 1.55;
 
         strong {
           display: block;
-          color: var(--text-color);
+          color: var(--viking-text);
           font-weight: 600;
           letter-spacing: 0.08em;
           text-transform: uppercase;

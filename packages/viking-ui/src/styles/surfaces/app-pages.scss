@@ -1585,7 +1585,7 @@
 
     &::before {
       transform: translate(20px, -50%);
-      background-color: var(--white);
+      background-color: var(--viking-white);
     }
   }
 }
@@ -1691,19 +1691,19 @@
 
 .header-action-btn {
   margin-left: auto;
-  background-color: var(--viking-teal-600) !important;
-  color: var(--white) !important;
-  border-radius: var(--viking-radius-sm) !important;
-  padding: var(--space-1) var(--space-2) !important;
+  background-color: var(--viking-accent);
+  color: var(--viking-accent-content, var(--viking-white));
+  border-radius: var(--viking-radius-sm);
+  padding: var(--viking-space-1) var(--viking-space-2);
   font-family: var(--viking-font-family);
-  font-size: max(16px, var(--base-font-size));
+  font-size: max(16px, var(--viking-font-size-base, 16px));
   font-weight: 600;
-  border: 1px solid var(--viking-teal-400) !important;
+  border: 1px solid var(--viking-accent-strong, var(--viking-accent));
   cursor: pointer;
   min-height: 44px;
 
   &:hover {
-    background-color: var(--viking-teal-400) !important;
+    background-color: var(--viking-accent-strong, var(--viking-accent));
   }
 
   &:disabled {
@@ -1716,9 +1716,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  margin-top: var(--space-2);
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-2);
+  margin-top: var(--viking-space-2);
   border-radius: var(--viking-radius);
   border: 1px solid var(--viking-teal-400);
   background: color-mix(in srgb, var(--viking-teal-400) 12%, transparent);
@@ -1731,18 +1731,18 @@
 }
 
 .intel-action-console {
-  margin-top: var(--space-3);
+  margin-top: var(--viking-space-3);
 }
 
 .intel-action-body {
-  padding: var(--space-2);
+  padding: var(--viking-space-2);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--viking-space-3);
 }
 
 .intel-action-group {
-  padding: var(--space-2);
+  padding: var(--viking-space-2);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
   background: color-mix(
@@ -1753,20 +1753,20 @@
 }
 
 .intel-action-title {
-  margin: 0 0 var(--space-1);
+  margin: 0 0 var(--viking-space-1);
   font-size: var(--viking-font-size-md);
   color: var(--viking-text);
 }
 
 .intel-action-desc {
-  margin: 0 0 var(--space-2);
+  margin: 0 0 var(--viking-space-2);
   color: var(--viking-text-muted);
 }
 
 .intel-action-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: var(--viking-space-1);
 }
 
 /* Theme Switch */
@@ -1814,7 +1814,7 @@
 
   input:checked + .slider:before {
     transform: translateX(24px);
-    background-color: var(--white);
+    background-color: var(--viking-white);
   }
 }
 
@@ -2902,23 +2902,10 @@ viking-card-header {
   flex: 1 1 auto;
 }
 
-.dashboard-content .page-inner-wrapper,
-.dashboard-page-container .page-inner-wrapper {
-  width: 100%;
-  max-width: var(--viking-container-max-width);
-  margin-inline: auto;
-  padding: var(--viking-space-4) var(--viking-page-gutter);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--viking-page-stack-gap);
+// page-inner-wrapper for dashboard pages: canonical definition in layout-shell.scss.
+// Only additive properties needed here (flex for sidebar layout).
+.dashboard-content .page-inner-wrapper {
   flex: 1 1 auto;
-}
-
-@media (min-width: 768px) {
-  .dashboard-content .page-inner-wrapper,
-  .dashboard-page-container .page-inner-wrapper {
-    padding-inline: var(--viking-page-gutter-lg);
-  }
 }
 
 .inline-status-link {
@@ -3781,12 +3768,10 @@ app-status-cta.isolated-status-cta {
 /* ── Content-aware app layouts ─────────────────────────────────────────────
    The sidebar changes usable width independently of the viewport. Query the
    real page column so cards stack before labels, values, or controls scrunch. */
+// Container query for content-aware app layouts.
+// Max-width already set in layout-shell.scss; only container props needed here.
 .dashboard-content .page-inner-wrapper,
 .dashboard-page-container .page-inner-wrapper {
-  max-width: var(
-    --viking-container-max-width-wide,
-    var(--viking-container-max-width)
-  );
   container-name: viking-app-page;
   container-type: inline-size;
 }

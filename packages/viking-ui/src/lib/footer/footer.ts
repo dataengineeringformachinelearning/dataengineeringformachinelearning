@@ -23,6 +23,6 @@ import {
       </div>
     </footer>
   `,
-  styleUrl: "./footer.scss",
+  styleUrl: "../../styles/components/footer.scss",
 })
 export class VikingFooter {}

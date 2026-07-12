@@ -10,7 +10,6 @@ import {
   afterNextRender,
   Injector,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
@@ -32,7 +31,6 @@ import { StatusCta } from '../../components/status-cta/status-cta';
   selector: 'app-explore',
   standalone: true,
   imports: [
-    CommonModule,
     VikingButton,
     VikingExploreCard,
     VikingPageHeader,

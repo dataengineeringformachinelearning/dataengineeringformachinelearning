@@ -7,7 +7,6 @@ import {
   afterNextRender,
   computed,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   VikingButton,
@@ -34,7 +33,6 @@ type WizardStep = (typeof STEPS)[number];
   selector: 'app-onboarding-wizard',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     VikingModal,
     VikingButton,
@@ -238,9 +236,9 @@ export class OnboardingWizard {
     const statusAppUrl =
       environment.frontendUrl ?? (typeof window !== 'undefined' ? window.location.origin : '');
     const backendUrl = environment.backendUrl;
-    return `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.0.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.0.0/dist/web-components.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.0.0/dist/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
+    return `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/web-components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
   }
 
   async copyWidget() {

@@ -1,18 +1,21 @@
-// Marketing / static section shell — Tailwind-inspired structure, Viking tokens only.
-// Full-bleed sections with constrained inner content at 1260px.
+// ============================================================================
+// Viking-UI Page Shell — single source of truth for all page containers.
+// Canonical definition. All surfaces (marketing, Angular app, backend, docs)
+// consume this. Context-specific overrides use ancestor selectors below.
+// ============================================================================
 
+// Base page container — constrained, centered, 1fr grid.
+// Used by: marketing landing pages, docs, static surfaces.
 .viking-page-shell,
-.page-inner-wrapper {
+.page-inner-wrapper,
+.viking-page-container {
   width: 100%;
   max-width: var(
     --viking-container-max-width,
     var(--container-max-width, 1260px)
   );
   margin-inline: auto;
-  padding-inline: var(
-    --viking-page-gutter,
-    var(--viking-space-2, var(--space-2, 16px))
-  );
+  padding-inline: var(--viking-page-gutter, var(--viking-space-2));
   padding-block: var(--viking-space-6, 48px) var(--viking-space-8, 64px);
   box-sizing: border-box;
   display: grid;
@@ -21,30 +24,55 @@
 }
 
 .viking-page-shell > *,
-.page-inner-wrapper > * {
+.page-inner-wrapper > *,
+.viking-page-container > * {
   min-width: 0;
 }
 
-/* Phone → TV: keep content centered with breathable gutters on ultra-wide displays */
+// Wide container variant — dashboards, analytics, data-dense pages.
+// Max-width expands to 1440px; tighter vertical padding for density.
+.dashboard-page-container .page-inner-wrapper,
+.dashboard-page-container .viking-page-container,
+.viking-app-page .page-inner-wrapper,
+.viking-dashboard-page .page-inner-wrapper {
+  max-width: var(--viking-container-max-width-wide, 1440px);
+  padding-block: var(--viking-space-3) var(--viking-space-5);
+  padding-inline: var(--viking-page-gutter);
+
+  @media (min-width: 601px) {
+    padding-block: var(--viking-space-4) var(--viking-space-6);
+    padding-inline: var(--viking-page-gutter-lg);
+  }
+
+  @media (min-width: 1440px) {
+    padding-inline: var(--viking-page-gutter-xl);
+  }
+}
+
+// Content-area nested container — whitepaper, blog, docs detail pages.
+.dashboard-page-container > .dashboard-content-area > .page-inner-wrapper {
+  width: 100%;
+  max-width: var(--viking-container-max-width, 1260px);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+// Responsive gutters — scale padding at ultra-wide breakpoints.
 @media (min-width: 1440px) {
   .viking-page-shell,
   .page-inner-wrapper,
+  .viking-page-container,
   .viking-section-inner {
-    padding-inline: var(
-      --viking-page-gutter-lg,
-      var(--viking-space-5, var(--space-5, 40px))
-    );
+    padding-inline: var(--viking-page-gutter-lg, var(--viking-space-4));
   }
 }
 
 @media (min-width: 1920px) {
   .viking-page-shell,
   .page-inner-wrapper,
+  .viking-page-container,
   .viking-section-inner {
-    padding-inline: var(
-      --viking-page-gutter-xl,
-      var(--viking-space-7, var(--space-7, 56px))
-    );
+    padding-inline: var(--viking-page-gutter-xl, var(--viking-space-7));
   }
 }
 

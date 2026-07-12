@@ -107,7 +107,7 @@
     <div class="sidebar-footer">
       <div
         class="system-health"
-        [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}"
+        [class.degraded]="globalStatus() !== 'All Systems Normal'"
         [title]="globalStatus()"
       >
         <span class="health-dot"></span>

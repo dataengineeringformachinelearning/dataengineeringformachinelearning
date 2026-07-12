@@ -1,38 +1,42 @@
 <div class="dashboard-page-container success-container">
-  <div class="page-inner-wrapper">
-    <div class="viking-card success-card" id="success-card">
-      <div *ngIf="isSyncing" class="syncing-state">
-        <div class="spinner"></div>
-        <h1 class="success-title">Verifying Subscription...</h1>
-        <p class="success-message">Please wait while we confirm your subscription details.</p>
-      </div>
-
-      <div *ngIf="!isSyncing && syncSuccess" class="success-state">
-        <div class="success-icon">✓</div>
-        <h1 class="success-title">Subscription Successful!</h1>
-        <p class="success-message">
-          Thank you for subscribing. Your account has been upgraded successfully.
-        </p>
-        <div class="action-box">
-          <viking-button variant="primary" href="/" class="home-btn" id="success-home-btn">
-            Return to Dashboard
-          </viking-button>
+  <div class="dashboard-content-area">
+    <div class="page-inner-wrapper">
+      <viking-card class="success-card" id="success-card">
+        @if (isSyncing) {
+        <div class="syncing-state">
+          <div class="spinner" role="status" aria-label="Loading"></div>
+          <viking-heading [level]="1" size="xl" class="success-title">Verifying Subscription...</viking-heading>
+          <p class="success-message">Please wait while we confirm your subscription details.</p>
         </div>
-      </div>
-
-      <div *ngIf="!isSyncing && !syncSuccess" class="error-state">
-        <div class="success-icon u-style-3010d8">!</div>
-        <h1 class="success-title">Verification Delayed</h1>
-        <p class="success-message">
-          Your payment may still be processing. Your account will be upgraded automatically once it
-          clears.
-        </p>
-        <div class="action-box">
-          <viking-button variant="primary" href="/" class="home-btn" id="success-home-btn">
-            Return to Dashboard
-          </viking-button>
+        } @else if (syncSuccess) {
+        <div class="success-state">
+          <viking-app-icon name="check_circle" hostClass="success-icon" tone="success" [ariaHidden]="true" />
+          <viking-heading [level]="1" size="xl" class="success-title">Subscription Successful!</viking-heading>
+          <p class="success-message">
+            Thank you for subscribing. Your account has been upgraded successfully.
+          </p>
+          <div class="action-box">
+            <viking-button variant="primary" href="/" class="home-btn" id="success-home-btn">
+              Return to Dashboard
+            </viking-button>
+          </div>
         </div>
-      </div>
+        } @else {
+        <div class="error-state">
+          <viking-app-icon name="error" hostClass="success-icon" tone="danger" [ariaHidden]="true" />
+          <viking-heading [level]="1" size="xl" class="success-title">Verification Delayed</viking-heading>
+          <p class="success-message">
+            Your payment may still be processing. Your account will be upgraded automatically once it
+            clears.
+          </p>
+          <div class="action-box">
+            <viking-button variant="primary" href="/" class="home-btn" id="success-home-btn">
+              Return to Dashboard
+            </viking-button>
+          </div>
+        </div>
+        }
+      </viking-card>
     </div>
   </div>
 </div>

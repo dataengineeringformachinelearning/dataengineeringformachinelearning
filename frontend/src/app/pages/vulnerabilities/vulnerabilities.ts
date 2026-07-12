@@ -13,6 +13,7 @@ import { RouterModule } from '@angular/router';
 import {
   VikingBadge,
   VikingButton,
+  VikingCheckbox,
   VikingHudPanel,
   VikingMetricCard,
   VikingMetricRow,
@@ -48,6 +49,7 @@ import {
     VikingAppIcon,
     VikingBadge,
     VikingButton,
+    VikingCheckbox,
     VikingHudPanel,
     VikingMetricCard,
     VikingMetricRow,

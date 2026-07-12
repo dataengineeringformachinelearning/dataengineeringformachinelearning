@@ -74,7 +74,7 @@ body.backend-swagger {
 .swagger-ui .info {
   margin: 0;
   padding: var(--viking-space-2, 16px) 0;
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
 }
 
 .swagger-ui .info .markdown,
@@ -100,7 +100,7 @@ body.backend-swagger {
     color-mix(
       in srgb,
       var(--viking-accent, var(--color-primary)) 22%,
-      var(--border)
+      var(--viking-border)
     );
   background: color-mix(
     in srgb,
@@ -130,7 +130,7 @@ body.backend-swagger {
   margin: 0;
   padding: var(--viking-space-2, 16px) 0;
   border: none;
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   border-radius: 0;
   box-shadow: none !important;
   background: transparent !important;
@@ -150,7 +150,7 @@ body.backend-swagger {
 
 .swagger-ui .scheme-container select {
   background: var(--viking-surface-alt, var(--viking-charcoal-700));
-  border: 1px solid var(--viking-border-strong, var(--border));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius-sm, 6px);
   color: var(--viking-text, var(--text-color));
   font-family: inherit;
@@ -179,7 +179,7 @@ body.backend-swagger {
   max-width: 100%;
   min-height: 36px;
   padding: 0 var(--viking-space-2, 16px);
-  border: 1px solid var(--viking-border, var(--border));
+  border: 1px solid var(--viking-border, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
   background: var(--viking-surface-alt, var(--viking-charcoal-800));
   box-shadow: none;
@@ -189,7 +189,7 @@ body.backend-swagger {
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 .swagger-ui .btn {
   background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
   box-shadow: none;
   color: var(--viking-text, var(--text-color));
@@ -338,7 +338,7 @@ body.backend-swagger {
 .swagger-ui .opblock-tag {
   margin: var(--viking-space-3, 24px) 0 var(--viking-space-1, 8px);
   padding: 0 0 var(--viking-space-1, 8px);
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -361,7 +361,7 @@ body.backend-swagger {
 .swagger-ui .opblock {
   margin: 0;
   border: none;
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   border-radius: 0;
   box-shadow: none;
   background: transparent;
@@ -375,7 +375,7 @@ body.backend-swagger {
 .swagger-ui .opblock.opblock-options,
 .swagger-ui .opblock.opblock-head {
   border: none;
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   background: transparent;
 }
 
@@ -386,7 +386,7 @@ body.backend-swagger {
 }
 
 .swagger-ui .opblock.is-open .opblock-summary {
-  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-bottom: 1px solid var(--viking-border-subtle, var(--viking-border));
 }
 
 .swagger-ui .opblock .opblock-summary-method {
@@ -449,7 +449,7 @@ body.backend-swagger {
     var(--viking-surface-alt, var(--viking-charcoal-800)) 72%,
     transparent
   ) !important;
-  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-bottom: 1px solid var(--viking-border-subtle, var(--viking-border));
   box-shadow: none !important;
   min-height: auto;
   padding: var(--viking-space-2) var(--viking-space-2, 16px);
@@ -488,7 +488,7 @@ body.backend-swagger {
     var(--viking-surface-alt, var(--viking-charcoal-800)) 72%,
     transparent
   ) !important;
-  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-bottom: 1px solid var(--viking-border-subtle, var(--viking-border));
   box-shadow: none !important;
   padding: var(--viking-space-2) 0;
 }
@@ -583,7 +583,7 @@ body.backend-swagger {
 }
 
 .swagger-ui .tab li:first-of-type:after {
-  background: var(--viking-border-subtle, var(--border));
+  background: var(--viking-border-subtle, var(--viking-border));
 }
 
 .swagger-ui .tab li.active {
@@ -654,7 +654,7 @@ body.backend-swagger {
 
 .swagger-ui .btn.cancel {
   background: transparent !important;
-  border-color: var(--viking-border-strong, var(--border)) !important;
+  border-color: var(--viking-border-strong, var(--viking-border)) !important;
   color: var(--viking-text-muted, var(--text-muted)) !important;
 }
 
@@ -670,7 +670,7 @@ body.backend-swagger {
 
 .swagger-ui .opblock-body pre.microlight {
   background: var(--viking-charcoal-950, #0a0a0a) !important;
-  border: 1px solid var(--viking-border, var(--border));
+  border: 1px solid var(--viking-border, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
   color: var(--viking-text, var(--text-color)) !important;
   font-family: var(
@@ -697,7 +697,7 @@ body.backend-swagger {
 
 .swagger-ui .copy-to-clipboard {
   background: var(--viking-surface-alt, var(--viking-charcoal-700));
-  border: 1px solid var(--viking-border, var(--border));
+  border: 1px solid var(--viking-border, var(--viking-border));
 }
 
 .swagger-ui .copy-to-clipboard:hover {
@@ -721,7 +721,7 @@ body.backend-swagger {
 .swagger-ui input[type="url"],
 .swagger-ui select {
   background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius-sm, 6px);
   color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
@@ -752,7 +752,7 @@ body.backend-swagger {
 
 .swagger-ui table thead tr th,
 .swagger-ui table thead tr td {
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   color: var(--viking-text-muted, var(--text-muted));
   font-size: 0.68rem;
   font-weight: 700;
@@ -761,7 +761,7 @@ body.backend-swagger {
 }
 
 .swagger-ui table tbody tr td {
-  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-bottom: 1px solid var(--viking-border-subtle, var(--viking-border));
   font-size: 0.88rem;
   padding: var(--viking-space-2) 0;
 }
@@ -787,7 +787,7 @@ body.backend-swagger {
 .swagger-ui .renderedMarkdown pre,
 .swagger-ui pre {
   background: var(--viking-charcoal-950, #0a0a0a) !important;
-  border: 1px solid var(--viking-border, var(--border));
+  border: 1px solid var(--viking-border, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
   color: var(--viking-text, var(--text-color)) !important;
   font-family: var(
@@ -807,7 +807,7 @@ body.backend-swagger {
     var(--viking-surface-alt, #1a1a1a) 70%,
     transparent
   );
-  border: 1px solid var(--viking-border-subtle, var(--border));
+  border: 1px solid var(--viking-border-subtle, var(--viking-border));
   border-radius: 4px;
   color: var(--viking-accent-strong, var(--viking-teal-400));
   font-size: 0.84em;
@@ -818,7 +818,7 @@ body.backend-swagger {
 .swagger-ui section.models {
   margin-top: var(--viking-space-3, 24px);
   border: none;
-  border-top: 1px solid var(--viking-border, var(--border));
+  border-top: 1px solid var(--viking-border, var(--viking-border));
   border-radius: 0;
   overflow: visible;
 }
@@ -852,7 +852,7 @@ body.backend-swagger {
   margin: 0;
   padding: var(--viking-space-2, 16px) 0;
   border: none;
-  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-bottom: 1px solid var(--viking-border-subtle, var(--viking-border));
   border-radius: 0;
   background: transparent;
 }
@@ -912,7 +912,7 @@ body.backend-swagger {
 }
 
 .swagger-ui .model .property-row {
-  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-bottom: 1px solid var(--viking-border-subtle, var(--viking-border));
 }
 
 /* ── Modal (Authorize) ───────────────────────────────────────────────────── */
@@ -922,14 +922,14 @@ body.backend-swagger {
 
 .swagger-ui .dialog-ux .modal-ux-content {
   background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius-lg, 12px);
   box-shadow: var(--viking-shadow-lg, var(--shadow-lg));
   padding: var(--viking-space-3, 24px);
 }
 
 .swagger-ui .dialog-ux .modal-ux-header {
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   padding: 0 0 var(--viking-space-2, 16px);
   margin-bottom: var(--viking-space-2, 16px);
 }
@@ -1042,7 +1042,7 @@ html[data-theme="light"] .swagger-ui select {
 .swagger-ui .try-out__btn,
 .swagger-ui .btn.try-out__btn {
   background: transparent !important;
-  border: 1px solid var(--viking-border-strong, var(--border)) !important;
+  border: 1px solid var(--viking-border-strong, var(--viking-border)) !important;
   color: var(--viking-text, var(--text-color)) !important;
   border-radius: var(--viking-radius, 8px);
   min-height: var(--viking-control-height-sm, 36px);
@@ -1161,7 +1161,7 @@ html[data-theme="light"] .swagger-ui select {
 .swagger-ui .opblock-section-header {
   background: transparent !important;
   box-shadow: none !important;
-  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-bottom: 1px solid var(--viking-border-subtle, var(--viking-border));
 }
 
 .swagger-ui .checkbox,
@@ -1177,14 +1177,14 @@ html[data-theme="light"] .swagger-ui select {
 }
 
 .swagger-ui .dialog-ux .modal-ux-header {
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   background: var(--viking-surface-alt, var(--viking-charcoal-800));
 }
 
 .swagger-ui .dialog-ux .modal-ux-content input[type="text"],
 .swagger-ui .dialog-ux .modal-ux-content input[type="password"] {
   background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   color: var(--viking-text, var(--text-color));
 }
 

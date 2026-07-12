@@ -17,19 +17,19 @@
   min-width: var(--viking-control-height, 40px);
   padding: 0;
   margin: 0;
-  border: 1px solid var(--viking-border-strong, var(--border));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
-  background: var(--viking-surface, var(--card-bg));
-  color: var(--viking-text, var(--text-color));
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  background: var(--viking-surface, var(--viking-surface));
+  color: var(--viking-text, var(--viking-text));
+  box-shadow: var(--viking-shadow-sm, var(--viking-shadow-sm));
   cursor: pointer;
   transition: var(--viking-transition-interactive, all 0.25s ease);
 
   &:hover {
     border-color: var(--viking-accent-strong, var(--viking-ring));
     background: var(--viking-surface-alt, var(--viking-charcoal-700));
-    color: var(--viking-text, var(--text-color));
-    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+    color: var(--viking-text, var(--viking-text));
+    box-shadow: var(--viking-shadow-md, var(--viking-shadow-md));
   }
 
   &:focus-visible {
@@ -43,10 +43,10 @@
   gap: var(--viking-space-1, 8px);
   min-height: var(--viking-control-height, 40px);
   padding: 0 var(--viking-space-2, 16px);
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
+  background: var(--viking-surface, var(--viking-surface));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  box-shadow: var(--viking-shadow-sm, var(--viking-shadow-sm));
   transition: var(
     --viking-transition-interactive,
     border-color 0.25s ease,
@@ -57,19 +57,19 @@
     border-color: color-mix(
       in srgb,
       var(--viking-accent-strong, var(--viking-ring)) 55%,
-      var(--viking-border-strong, var(--border))
+      var(--viking-border-strong, var(--viking-border))
     );
-    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+    box-shadow: var(--viking-shadow-md, var(--viking-shadow-md));
   }
 }
 
 @mixin viking-navbar-search-panel {
   margin: 0;
   padding: var(--viking-space-1, 8px);
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
+  background: var(--viking-surface, var(--viking-surface));
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
-  box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  box-shadow: var(--viking-shadow-md, var(--viking-shadow-md));
   max-height: 288px;
   overflow: auto;
   font-family: var(--viking-font-family, inherit);
@@ -119,10 +119,10 @@
 }
 
 .navbar-title {
-  font-size: var(--base-font-size);
+  font-size: var(--viking-font-size-base);
   font-weight: 700;
   line-height: 1.2;
-  color: var(--text-color);
+  color: var(--viking-text);
   letter-spacing: -0.02em;
 }
 
@@ -131,7 +131,7 @@
   width: 36px;
   height: 36px;
   line-height: 1;
-  color: var(--color-primary, var(--viking-accent));
+  color: var(--viking-accent);
   overflow: visible;
   flex-shrink: 0;
   display: inline-flex;
@@ -149,13 +149,13 @@
   width: 36px !important;
   height: 36px !important;
   min-width: 36px !important;
-  color: var(--color-primary, var(--viking-accent)) !important;
+  color: var(--viking-accent) !important;
   overflow: visible;
 }
 
 .navbar-brand .navbar-logo,
 .navbar-brand viking-icon.navbar-logo {
-  color: var(--color-primary, var(--viking-accent)) !important;
+  color: var(--viking-accent) !important;
 }
 
 /* Brand mark stroke parity: Angular viking-icon + static navbar.js */
@@ -293,7 +293,7 @@ viking-theme-toggle-wc,
 .nav-btn {
   position: relative;
   font-size: var(--viking-font-size-sm, 14px) !important;
-  color: var(--nav-link-color, var(--text-muted)) !important;
+  color: var(--nav-link-color, var(--viking-text-muted)) !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
@@ -373,7 +373,7 @@ viking-button-wc.auth-signout-btn::part(control) {
 .navbar-search-mobile-btn:focus-visible,
 .mobile-auth-btn:focus-visible {
   outline: var(--viking-ring-width, 2px) solid
-    var(--viking-ring, var(--focus-ring-color));
+    var(--viking-ring, var(--viking-ring));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
@@ -385,7 +385,7 @@ viking-button-wc.auth-signout-btn::part(control) {
 .viking-button-wc.navbar-search-trigger:focus-visible::part(control),
 .viking-button-wc.navbar-search-mobile-btn:focus-visible::part(control) {
   outline: var(--viking-ring-width, 2px) solid
-    var(--viking-ring, var(--focus-ring-color));
+    var(--viking-ring, var(--viking-ring));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
@@ -448,13 +448,13 @@ viking-button[hidden] {
 }
 
 .nav-btn .material-icons {
-  font-size: var(--base-font-size);
+  font-size: var(--viking-font-size-base);
   width: 16px;
   height: 16px;
 }
 
 .nav-btn:hover {
-  color: var(--text-color) !important;
+  color: var(--viking-text) !important;
   background-color: color-mix(
     in srgb,
     var(--viking-accent) 10%,
@@ -466,7 +466,7 @@ html[data-theme="light"] {
   --nav-link-color: color-mix(
     in srgb,
     var(--viking-charcoal-900) 88%,
-    var(--white)
+    var(--viking-white)
   );
 
   .nav-btn,
@@ -478,7 +478,7 @@ html[data-theme="light"] {
   .theme-toggle-btn,
   .navbar-search-trigger,
   .navbar-search-mobile-btn {
-    color: var(--viking-text, var(--text-color)) !important;
+    color: var(--viking-text, var(--viking-text)) !important;
   }
 
   viking-button-wc.auth-btn::part(control),
@@ -487,12 +487,12 @@ html[data-theme="light"] {
     border-color: color-mix(
       in srgb,
       var(--viking-accent-strong, var(--viking-accent)) 72%,
-      var(--viking-border-strong, var(--border))
+      var(--viking-border-strong, var(--viking-border))
     ) !important;
     box-shadow:
       inset 0 1px 0
         color-mix(in srgb, var(--viking-white-pure) 34%, transparent),
-      var(--viking-shadow-sm, var(--shadow-sm)) !important;
+      var(--viking-shadow-sm, var(--viking-shadow-sm)) !important;
   }
 
   .nav-btn:hover,
@@ -506,7 +506,7 @@ html[data-theme="light"] {
 }
 
 .nav-btn.active {
-  color: var(--text-color) !important;
+  color: var(--viking-text) !important;
   background-color: color-mix(
     in srgb,
     var(--viking-accent) 14%,
@@ -623,25 +623,25 @@ viking-button.menu-toggle-btn .viking-btn svg,
     color-mix(
       in srgb,
       var(--viking-accent, var(--viking-accent)) 32%,
-      var(--viking-border-strong, var(--border))
+      var(--viking-border-strong, var(--viking-border))
     ) !important;
   background: color-mix(
     in srgb,
     var(--viking-accent, var(--viking-accent)) 8%,
-    var(--viking-surface, var(--card-bg))
+    var(--viking-surface, var(--viking-surface))
   ) !important;
   color: var(--viking-accent-strong, var(--viking-ring)) !important;
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm)) !important;
+  box-shadow: var(--viking-shadow-sm, var(--viking-shadow-sm)) !important;
 
   &:hover {
     border-color: var(--viking-accent-strong, var(--viking-ring)) !important;
     background: color-mix(
       in srgb,
       var(--viking-accent, var(--viking-accent)) 14%,
-      var(--viking-surface-alt, var(--card-bg))
+      var(--viking-surface-alt, var(--viking-surface))
     ) !important;
     color: var(--viking-accent-strong, var(--viking-ring)) !important;
-    box-shadow: var(--viking-shadow-md, var(--shadow-md)) !important;
+    box-shadow: var(--viking-shadow-md, var(--viking-shadow-md)) !important;
   }
 }
 
@@ -664,13 +664,13 @@ viking-button.menu-toggle-btn[aria-expanded="true"] .viking-btn {
     --viking-accent-soft,
     color-mix(in srgb, var(--viking-accent) 12%, transparent)
   ) !important;
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm)) !important;
+  box-shadow: var(--viking-shadow-sm, var(--viking-shadow-sm)) !important;
 }
 
 .divider {
   height: 24px;
   width: 0px;
-  background-color: var(--border);
+  background-color: var(--viking-border);
   margin: 0 8px;
 }
 
@@ -762,7 +762,7 @@ viking-button.auth-btn.viking-full .viking-btn {
   border-radius: var(--viking-radius-md, var(--viking-radius, 8px)) !important;
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 24%, transparent),
-    var(--viking-shadow-sm, var(--shadow-sm)) !important;
+    var(--viking-shadow-sm, var(--viking-shadow-sm)) !important;
 }
 
 .auth-btn[aria-busy="true"]::part(label),
@@ -788,11 +788,11 @@ viking-button.auth-btn .viking-btn:disabled {
 
 .auth-signout-btn {
   background: transparent !important;
-  color: var(--text-muted) !important;
+  color: var(--viking-text-muted) !important;
   font-weight: 600 !important;
   border-radius: var(--viking-radius, 8px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
-  border: 1px solid var(--border) !important;
+  border: 1px solid var(--viking-border) !important;
   height: var(--viking-control-height, 40px) !important;
   line-height: var(--viking-control-height, 40px) !important;
   display: inline-flex !important;
@@ -843,7 +843,7 @@ viking-button.auth-btn .viking-btn:disabled {
 }
 
 .auth-signout-btn:hover {
-  color: var(--text-color) !important;
+  color: var(--viking-text) !important;
   border-color: var(--viking-crimson-500) !important;
   background: color-mix(
     in srgb,
@@ -908,9 +908,9 @@ viking-button.auth-btn .viking-btn:disabled {
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  background-color: var(--viking-surface, var(--card-bg));
-  box-shadow: var(--viking-shadow-md, var(--shadow-md));
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  background-color: var(--viking-surface, var(--viking-surface));
+  box-shadow: var(--viking-shadow-md, var(--viking-shadow-md));
+  border-bottom: 1px solid var(--viking-border, var(--viking-border));
   padding: var(--viking-space-3, 24px);
   padding-bottom: calc(
     var(--viking-space-3, 24px) + env(safe-area-inset-bottom, 0px)
@@ -957,7 +957,7 @@ viking-button.auth-btn .viking-btn:disabled {
   font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
-  color: var(--viking-text-muted, var(--text-muted)) !important;
+  color: var(--viking-text-muted, var(--viking-text-muted)) !important;
   min-height: 44px !important;
   border-radius: var(--viking-radius, 8px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
@@ -978,7 +978,7 @@ viking-button.auth-btn .viking-btn:disabled {
 }
 
 .mobile-nav-btn:hover {
-  color: var(--viking-text, var(--text-color)) !important;
+  color: var(--viking-text, var(--viking-text)) !important;
   background-color: var(
     --viking-accent-soft,
     color-mix(in srgb, var(--viking-accent) 8%, transparent)
@@ -986,7 +986,7 @@ viking-button.auth-btn .viking-btn:disabled {
 }
 
 .mobile-nav-btn.active {
-  color: var(--viking-text, var(--text-color)) !important;
+  color: var(--viking-text, var(--viking-text)) !important;
   background-color: var(
     --viking-accent-soft,
     color-mix(in srgb, var(--viking-accent) 12%, transparent)
@@ -996,7 +996,7 @@ viking-button.auth-btn .viking-btn:disabled {
 
 .mobile-divider {
   height: 1px;
-  background-color: var(--viking-border, var(--border));
+  background-color: var(--viking-border, var(--viking-border));
   margin: var(--viking-space-2, 16px) 0 var(--viking-space-1, 8px);
   flex-shrink: 0;
 }
@@ -1013,16 +1013,16 @@ viking-button.auth-btn .viking-btn:disabled {
 
 .navbar-link {
   font-size: 1rem;
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-decoration: none;
-  transition: var(--transition-smooth);
+  transition: var(--viking-transition);
 }
 
 .navbar-link:hover {
-  color: var(--text-color);
+  color: var(--viking-text);
 }
 
 .glowing-icon-sm {
@@ -1037,28 +1037,28 @@ viking-button.auth-btn .viking-btn:disabled {
 .navbar-brand.glowing-icon-sm,
 .navbar-brand:has(.glowing-icon-sm) {
   filter: drop-shadow(
-    0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent)
+    0 0 6px color-mix(in srgb, var(--viking-electric-500) 60%, transparent)
   );
 }
 
 .navbar-brand.glowing-icon-sm:hover,
 .navbar-brand:has(.glowing-icon-sm):hover {
   filter: drop-shadow(
-    0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent)
+    0 0 10px color-mix(in srgb, var(--viking-electric-500) 90%, transparent)
   );
 }
 
 .loader-logo.glowing-icon-sm,
 :not(.navbar-brand) > .glowing-icon-sm {
   filter: drop-shadow(
-    0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent)
+    0 0 6px color-mix(in srgb, var(--viking-electric-500) 60%, transparent)
   );
 }
 
 .loader-logo.glowing-icon-sm:hover,
 :not(.navbar-brand) > .glowing-icon-sm:hover {
   filter: drop-shadow(
-    0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent)
+    0 0 10px color-mix(in srgb, var(--viking-electric-500) 90%, transparent)
   );
 }
 
@@ -1135,13 +1135,13 @@ viking-button.auth-btn .viking-btn:disabled {
     max-width: 600px;
     width: 100%;
     border: 1px solid
-      var(--viking-border-strong, var(--viking-border, var(--border)));
+      var(--viking-border-strong, var(--viking-border, var(--viking-border)));
     border-radius: var(--viking-radius-lg, 12px);
-    background: var(--viking-surface, var(--card-bg));
-    box-shadow: var(--viking-shadow-lg, var(--shadow-md));
+    background: var(--viking-surface, var(--viking-surface));
+    box-shadow: var(--viking-shadow-lg, var(--viking-shadow-md));
     overflow: hidden;
     font-family: var(--viking-font-family, inherit);
-    color: var(--viking-text, var(--text-color));
+    color: var(--viking-text, var(--viking-text));
     position: relative;
   }
 
@@ -1169,7 +1169,7 @@ viking-button.auth-btn .viking-btn:disabled {
     width: 100%;
     margin: 0 !important;
     border: 0 !important;
-    border-bottom: 1px solid var(--viking-border, var(--border)) !important;
+    border-bottom: 1px solid var(--viking-border, var(--viking-border)) !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     background: color-mix(
@@ -1219,13 +1219,13 @@ viking-button.auth-btn .viking-btn:disabled {
     width: 100%;
     margin: 0 auto;
     padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
-    border: 1px solid var(--viking-border, var(--border));
+    border: 1px solid var(--viking-border, var(--viking-border));
     border-top: 0;
     border-radius: 0 0 var(--viking-radius-lg, 12px)
       var(--viking-radius-lg, 12px);
-    background: var(--viking-surface, var(--card-bg));
+    background: var(--viking-surface, var(--viking-surface));
     font-size: calc(var(--viking-font-size, 16px) * 0.85);
-    color: var(--viking-text-muted, var(--text-muted));
+    color: var(--viking-text-muted, var(--viking-text-muted));
     text-align: center;
     letter-spacing: 0.01em;
   }
@@ -1352,7 +1352,7 @@ viking-button.auth-btn .viking-btn:disabled {
   border-radius: 0 !important;
   outline: none !important;
   background: transparent !important;
-  color: var(--viking-text, var(--text-color));
+  color: var(--viking-text, var(--viking-text));
   font: inherit;
   font-size: var(--viking-font-size, 16px);
   line-height: var(--viking-line-height-normal, 1.5);
@@ -1362,7 +1362,7 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .aa-Input::placeholder,
 .algolia-autocomplete-host .ais-AutocompleteInput::placeholder,
 .algolia-autocomplete-host input::placeholder {
-  color: var(--viking-text-muted, var(--text-muted));
+  color: var(--viking-text-muted, var(--viking-text-muted));
 }
 
 .algolia-autocomplete-host .aa-Panel,
@@ -1407,14 +1407,14 @@ viking-button.auth-btn .viking-btn:disabled {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--viking-text-muted, var(--text-muted));
+  color: var(--viking-text-muted, var(--viking-text-muted));
 }
 
 .algolia-autocomplete-host .aa-SourceHeaderLine,
 .algolia-autocomplete-host .ais-AutocompleteSourceHeaderLine {
   flex: 1;
   height: 1px;
-  background: var(--viking-border, var(--border));
+  background: var(--viking-border, var(--viking-border));
 }
 
 .algolia-autocomplete-host .aa-Item,
@@ -1433,7 +1433,7 @@ viking-button.auth-btn .viking-btn:disabled {
   min-height: var(--viking-control-height-sm, 36px);
   padding: var(--viking-space-2);
   border-radius: calc(var(--viking-radius, 8px) / 1.5);
-  color: var(--viking-text, var(--text-color));
+  color: var(--viking-text, var(--viking-text));
   text-decoration: none;
   transition: var(--viking-transition-interactive, background-color 0.2s ease);
 }
@@ -1513,7 +1513,7 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .ais-ItemTemplateTitle {
   font-size: var(--viking-font-size, 16px);
   font-weight: 600;
-  color: var(--viking-text, var(--text-color));
+  color: var(--viking-text, var(--viking-text));
   line-height: 1.3;
 }
 
@@ -1521,7 +1521,7 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .ais-ItemTemplateDescription,
 .algolia-autocomplete-host .ais-ItemTemplateCategory {
   font-size: var(--viking-font-size-sm, 14px);
-  color: var(--viking-text-muted, var(--text-muted));
+  color: var(--viking-text-muted, var(--viking-text-muted));
   line-height: var(--viking-line-height-relaxed, 1.625);
   white-space: normal;
   overflow: hidden;
@@ -1573,10 +1573,10 @@ viking-button.auth-btn .viking-btn:disabled {
 
 .aa-DetachedContainer {
   font-family: var(--viking-font-family, inherit);
-  border: 1px solid var(--viking-border, var(--border)) !important;
+  border: 1px solid var(--viking-border, var(--viking-border)) !important;
   border-radius: var(--viking-radius-lg, 12px) !important;
-  background: var(--viking-surface, var(--card-bg)) !important;
-  box-shadow: var(--viking-shadow-lg, var(--shadow-md)) !important;
+  background: var(--viking-surface, var(--viking-surface)) !important;
+  box-shadow: var(--viking-shadow-lg, var(--viking-shadow-md)) !important;
 }
 
 body.algolia-search-open > .aa-DetachedContainer,
@@ -1599,7 +1599,7 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
   @include viking-navbar-search-shell;
   margin: 0 !important;
   border: 0 !important;
-  border-bottom: 1px solid var(--viking-border, var(--border)) !important;
+  border-bottom: 1px solid var(--viking-border, var(--viking-border)) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }

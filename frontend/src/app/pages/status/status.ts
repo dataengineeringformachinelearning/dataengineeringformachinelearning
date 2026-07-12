@@ -10,7 +10,6 @@ import {
   afterNextRender,
   Injector,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import {
   IncidentData,
@@ -43,7 +42,6 @@ import { timeout } from 'rxjs';
   selector: 'app-status',
   standalone: true,
   imports: [
-    CommonModule,
     VikingButton,
     VikingCallout,
     VikingPageHeader,

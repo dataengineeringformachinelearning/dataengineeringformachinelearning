@@ -133,7 +133,7 @@
             @if (newlyGeneratedKey()) {
             <div class="alert alert-success api-key-reveal">
               <strong>Save this key now! You will not be able to see it again.</strong>
-              <div class="code-block-container mt-2">
+              <div class="code-block-container">
                 <div class="code-block-outlined">
                   <code>{{ newlyGeneratedKey() }}</code>
                 </div>
@@ -149,7 +149,7 @@
             </div>
             }
 
-            <viking-form-section heading="Generate API Key" icon="key" layout="inline" class="mt-3">
+            <viking-form-section heading="Generate API Key" icon="key" layout="inline">
               <viking-field label="New Key Name" class="full-width">
                 <viking-input
                   [(ngModel)]="newApiKeyName"
@@ -172,7 +172,7 @@
               </ng-container>
             </viking-form-section>
 
-            <div class="data-list-outlined mt-3">
+            <div class="data-list-outlined">
               @for (key of apiKeys(); track key.id) {
               <div class="data-item-row">
                 <div class="data-info">
@@ -215,7 +215,7 @@
               Once connected, you can sign in using either method.
             </p>
 
-            <div class="integrations-list panel-clean mt-3">
+            <div class="integrations-list panel-clean">
               <div class="integration-item">
                 <viking-icon-text
                   icon="google"
@@ -256,9 +256,9 @@
             </div>
 
             @if (providerError()) {
-            <viking-callout tone="danger" class="mt-3">{{ providerError() }}</viking-callout>
+            <viking-callout tone="danger">{{ providerError() }}</viking-callout>
             } @if (providerSuccess()) {
-            <viking-callout tone="success" class="mt-3">{{ providerSuccess() }}</viking-callout>
+            <viking-callout tone="success">{{ providerSuccess() }}</viking-callout>
             }
           </div>
         </viking-card>
@@ -270,7 +270,7 @@
           </viking-card-header>
           <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
 
-          <viking-form-panel class="mt-3">
+          <viking-form-panel>
             <viking-form-section heading="Update Email" icon="mail" layout="inline">
               <viking-field label="New Email Address" class="full-width">
                 <viking-input

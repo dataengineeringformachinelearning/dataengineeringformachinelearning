@@ -82,42 +82,8 @@
   margin-bottom: var(--viking-space-1);
 }
 
-// Card — framework-neutral mirror of the Angular viking-card contract.
-.viking-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--viking-card-content-gap);
-  min-width: 0;
-  padding: var(--viking-card-padding);
-  color: var(--viking-text);
-  background: var(--viking-surface-recipe);
-  border: var(--viking-border-width) var(--viking-border-style)
-    var(--viking-border-container);
-  border-radius: var(--viking-card-radius);
-  box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
-  transition: var(--viking-transition-interactive);
-}
-
-.viking-card[data-compact="true"] {
-  gap: var(--viking-card-content-gap-compact);
-  padding: var(--viking-card-padding-compact);
-}
-
-.viking-card[data-interactive="true"] {
-  cursor: pointer;
-}
-
-.viking-card[data-interactive="true"]:hover {
-  background: var(--viking-surface-recipe-elevated);
-  border-color: var(--viking-border-accent);
-  box-shadow: var(--viking-shadow-sm), var(--viking-surface-highlight);
-  transform: translateY(var(--viking-state-hover-lift));
-}
-
-.viking-card[data-interactive="true"]:active {
-  box-shadow: var(--viking-shadow-inner);
-  transform: none;
-}
+// viking-card: canonical definition lives in _layout-enforcement.scss.
+// Do NOT redefine here — use the canonical source.
 
 // Badge
 .viking-badge {
@@ -500,8 +466,8 @@
   vertical-align: middle;
 }
 
-// Divider
-.viking-divider {
+// Labeled divider (text-with-lines separator, e.g. "— or —")
+.viking-divider-labeled {
   display: flex;
   align-items: center;
   gap: var(--viking-space-2);
@@ -509,8 +475,8 @@
   font-size: var(--viking-font-size-xs);
 }
 
-.viking-divider::before,
-.viking-divider::after {
+.viking-divider-labeled::before,
+.viking-divider-labeled::after {
   content: "";
   flex: 1;
   height: 1px;

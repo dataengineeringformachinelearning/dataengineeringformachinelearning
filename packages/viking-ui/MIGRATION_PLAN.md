@@ -35,8 +35,8 @@
   `@dataengineeringformachinelearning/viking-ui/tokens.json`, and
   `@dataengineeringformachinelearning/viking-ui/manifest`.
   External pages can use jsDelivr CDN equivalents:
-  - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.0.0/dist/viking-ui.css`
-  - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.0.0/dist/web-components.js`
+  - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/viking-ui.css`
+  - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/web-components.js`
 - Django templates and Swagger load the same static CSS and element bundle from collected static assets.
 - Angular keeps framework wrappers where they add typed APIs, forms integration, or signals, and imports them from `@dataengineeringformachinelearning/viking-ui` or `/angular`.
 

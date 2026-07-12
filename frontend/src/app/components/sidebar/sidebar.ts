@@ -8,7 +8,6 @@ import {
   ChangeDetectorRef,
   HostListener,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import {
   VikingAppSidebar,
@@ -30,7 +29,6 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
   selector: 'app-sidebar',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     VikingAppSidebar,
     VikingSidebarNav,

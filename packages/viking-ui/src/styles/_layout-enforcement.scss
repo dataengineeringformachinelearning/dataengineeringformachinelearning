@@ -32,27 +32,13 @@
 // - Full-width 1fr stacked cards (see status-directory-grid, viking-card) + dashboard grid (sidebar auto + main 1fr) for alignment.
 // - References: THEME.md premium rhythm, previous full-width card changes, navbar fixes, dark theme surface-recipe.
 // Ensures layouts on /analytics /vulnerabilities /account /settings /dashboard feel consistent with components, not "too big or messy".
-// Wider max-width for dense data pages (dashboard, analytics, explore, vulnerabilities, account, settings).
+// App page shell: wider max-width (1440px), tighter gap, flex for sidebar layout.
+// Base container definition (max-width, padding, grid) lives in layout-shell.scss.
 .dashboard-page-container .page-inner-wrapper,
 .viking-app-page .page-inner-wrapper,
 .viking-dashboard-page .page-inner-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--viking-page-stack-gap, var(--viking-space-5)); /* tightened for app pages */
+  gap: var(--viking-page-stack-gap, var(--viking-space-5));
   flex: 1;
-  padding-block: var(--viking-space-3) var(--viking-space-5);
-  padding-inline: var(--viking-page-gutter);
-  box-sizing: border-box;
-  max-width: var(--viking-container-max-width-wide, 1440px);
-
-  @media (min-width: 601px) {
-    padding-block: var(--viking-space-4) var(--viking-space-6);
-    padding-inline: var(--viking-page-gutter-lg);
-  }
-
-  @media (min-width: 1440px) {
-    padding-inline: var(--viking-page-gutter-xl);
-  }
 }
 
 /* Force stacked full-width layout for settings/account stacks only.

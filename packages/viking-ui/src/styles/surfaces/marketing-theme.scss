@@ -1,7 +1,7 @@
 body {
-  font-size: var(--base-font-size);
-  color: var(--text-color);
-  background-color: var(--bg-color);
+  font-size: var(--viking-font-size-base);
+  color: var(--viking-text);
+  background-color: var(--viking-bg);
 }
 
 h1,
@@ -10,5 +10,5 @@ h3,
 h4,
 h5,
 h6 {
-  letter-spacing: var(--header-letter-spacing);
+  letter-spacing: var(--viking-letter-spacing-caps);
 }

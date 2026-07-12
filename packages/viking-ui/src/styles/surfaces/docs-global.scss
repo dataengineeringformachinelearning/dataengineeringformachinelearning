@@ -41,18 +41,7 @@ body.docs-body {
   transform: translateY(0);
 }
 
-.page-inner-wrapper {
-  width: 100%;
-  max-width: var(--viking-container-max-width, 1260px);
-  margin-inline: auto;
-  padding-inline: var(--viking-page-gutter, var(--viking-space-2));
-}
-
-@media (min-width: 768px) {
-  .page-inner-wrapper {
-    padding-inline: var(--viking-page-gutter-lg, var(--viking-space-3));
-  }
-}
+// page-inner-wrapper canonical definition lives in layout-shell.scss.
 
 a {
   color: var(--viking-accent);

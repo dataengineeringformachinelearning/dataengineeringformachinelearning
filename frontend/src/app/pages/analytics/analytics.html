@@ -141,7 +141,7 @@
           <viking-app-icon name="security" />
         </div>
         <div class="gauge-wrapper threat-gauge">
-          <viking-gauge-arc class="theme-amber" tone="amber" [value]="threatLevel" />
+          <viking-gauge-arc tone="amber" [value]="threatLevel" />
           <div class="gauge-center-text threat-text">
             <viking-app-icon name="warning" hostClass="gauge-inner-icon" />
             <span class="unit">DETECTED</span>
@@ -163,7 +163,7 @@
           <viking-app-icon name="analytics" />
         </div>
         <div class="gauge-wrapper main-gauge">
-          <viking-gauge-arc class="theme-red" tone="danger" [value]="cesLevel" />
+          <viking-gauge-arc tone="danger" [value]="cesLevel" />
           <div class="gauge-center-text main-text">
             <viking-app-icon name="stars" hostClass="gauge-inner-icon" />
             <span class="unit">SCORE</span>
@@ -183,7 +183,7 @@
           <viking-app-icon name="timeline" />
         </div>
         <div class="gauge-wrapper temporal-gauge">
-          <viking-gauge-arc class="theme-amber" tone="amber" [value]="temporalForecast" />
+          <viking-gauge-arc tone="amber" [value]="temporalForecast" />
           <div class="gauge-center-text temporal-text">
             <viking-app-icon name="trending-up" hostClass="gauge-inner-icon" />
             <span class="unit">SPIKE RISK</span>
@@ -205,7 +205,7 @@
           <viking-app-icon name="bug-report" />
         </div>
         <div class="gauge-wrapper honeypot-gauge">
-          <viking-gauge-arc class="theme-crimson" tone="danger" [value]="honeypotScore" />
+          <viking-gauge-arc tone="danger" [value]="honeypotScore" />
           <div class="gauge-center-text honeypot-text">
             <viking-app-icon name="security" hostClass="gauge-inner-icon" />
             <span class="unit">CAPTURES</span>
@@ -227,7 +227,7 @@
           <viking-app-icon name="science" />
         </div>
         <div class="gauge-wrapper benchmark-gauge">
-          <viking-gauge-arc class="theme-teal" tone="primary" [value]="latestBenchmarkScore ?? 0" />
+          <viking-gauge-arc tone="primary" [value]="latestBenchmarkScore ?? 0" />
           <div class="gauge-center-text benchmark-text">
             <viking-app-icon name="speed" hostClass="gauge-inner-icon" />
             <span class="unit">SCORE</span>
@@ -259,7 +259,7 @@
           <viking-app-icon name="health_and_safety" />
         </div>
         <div class="gauge-wrapper stability-gauge">
-          <viking-gauge-arc class="theme-primary" tone="primary" [value]="stabilityLevel" />
+          <viking-gauge-arc tone="primary" [value]="stabilityLevel" />
           <div class="gauge-center-text stability-text">
             <viking-app-icon name="monitor_heart" hostClass="gauge-inner-icon" />
             <span class="unit">UPTIME</span>

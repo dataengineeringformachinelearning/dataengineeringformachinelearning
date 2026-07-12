@@ -44,7 +44,7 @@
       <div class="grid-layout triage-grid">
         <!-- Left Triage Queue Panel -->
         <viking-hud-panel
-          class="queue-panel col-span-4 col-span-md-4"
+          class="queue-panel"
           icon="filter"
           title="Ingestion Queue"
         >
@@ -76,7 +76,7 @@
           <div class="queue-list">
             @if (vulnService.isLoading()) {
             <div class="loader-state">
-              <span class="spinner"></span>
+              <span class="spinner" aria-hidden="true"></span>
               <p>Ingesting feed...</p>
             </div>
             } @else if (filteredVulnerabilities().length === 0) {
@@ -119,9 +119,9 @@
         </viking-hud-panel>
 
         <!-- Center Triage Detail & Interactive Matrix Panel -->
-        <section class="panel-section detail-panel col-span-4 col-span-md-8">
+        <section class="panel-section detail-panel">
           @if (selectedVuln()) {
-          <div class="panel-header border-b">
+          <div class="panel-header detail-panel-header">
             <viking-app-icon name="assessment" hostClass="panel-icon" />
             <h2>Vulnerability Profile & Prioritization</h2>
           </div>
@@ -253,7 +253,7 @@
           <div class="soc-panel-body panel-body">
             @if (vulnService.incidentsLoading()) {
             <div class="soc-empty-state">
-              <span class="spinner"></span>
+              <span class="spinner" aria-hidden="true"></span>
               <p>Loading incident cases…</p>
             </div>
             } @else if (activeIncidents().length === 0) {
@@ -280,7 +280,7 @@
               >
                 <div class="soc-card-top">
                   <span class="soc-id">INC-{{ incident.id.substring(0, 8).toUpperCase() }}</span>
-                  <span class="severity-pill" [ngClass]="incident.severity.toLowerCase()">
+                  <span class="severity-pill" [class]="incident.severity.toLowerCase()">
                     {{ incident.severity }}
                   </span>
                 </div>
@@ -325,7 +325,7 @@
           <div class="soc-panel-body panel-body">
             @if (vulnService.playbooksLoading()) {
             <div class="soc-empty-state">
-              <span class="spinner"></span>
+              <span class="spinner" aria-hidden="true"></span>
               <p>Loading playbooks…</p>
             </div>
             } @else if (playbooks().length === 0) {
@@ -362,21 +362,12 @@
                   <p class="soc-card-desc">{{ playbook.description }}</p>
                 </div>
                 <div class="playbook-toggle-row">
-                  <label class="playbook-toggle">
-                    <span class="sr-only"
-                      >{{ playbook.is_active ? 'Deactivate' : 'Activate' }} playbook {{
-                      playbook.name }}</span
-                    >
-                    <input
-                      type="checkbox"
-                      [checked]="playbook.is_active"
-                      (change)="togglePlaybook(playbook)"
-                    />
-                    <span class="toggle-track" aria-hidden="true"></span>
-                  </label>
-                  <span class="toggle-label"
-                    >{{ playbook.is_active ? 'Enabled' : 'Disabled' }}</span
+                  <viking-checkbox
+                    [checked]="playbook.is_active"
+                    (change)="togglePlaybook(playbook)"
                   >
+                    {{ playbook.is_active ? 'Enabled' : 'Disabled' }}
+                  </viking-checkbox>
                 </div>
               </div>
               }

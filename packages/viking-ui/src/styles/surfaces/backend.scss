@@ -12,8 +12,8 @@ body {
 }
 
 body {
-  background-color: var(--viking-bg, var(--bg-color));
-  color: var(--viking-text, var(--text-color));
+  background-color: var(--viking-bg);
+  color: var(--viking-text);
   font-family: var(
     --viking-font-family,
     "Inter",
@@ -236,7 +236,7 @@ body {
   text-align: center;
 }
 
-.status-value {
+.backend-status-value {
   font-size: var(--viking-font-size-2xl);
   font-weight: var(--viking-font-weight-bold);
   color: var(--viking-accent);

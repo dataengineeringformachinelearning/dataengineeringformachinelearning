@@ -17,15 +17,15 @@
 .skip-link {
   position: absolute;
   top: 0;
-  left: var(--space-2, 16px);
+  left: var(--viking-space-2, 16px);
   z-index: 10000;
-  padding: var(--space-1, 8px) var(--space-2, 16px);
-  border-radius: var(--border-radius-sm, 8px);
-  background-color: var(--black, var(--viking-black)) !important;
-  color: var(--white, var(--viking-white-pure)) !important;
+  padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
+  border-radius: var(--viking-radius-sm, 8px);
+  background-color: var(--viking-black) !important;
+  color: var(--viking-white-pure) !important;
   text-decoration: none;
   font-weight: 600;
-  font-size: max(16px, var(--base-font-size, 16px));
+  font-size: max(16px, var(--viking-font-size-base, 16px));
   line-height: 1.4;
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
@@ -44,8 +44,8 @@
   height: auto;
   overflow: visible;
   white-space: normal;
-  outline: var(--focus-ring-width, 3px) solid var(--focus-ring-color, var(--viking-accent));
-  outline-offset: var(--focus-ring-offset, 2px);
+  outline: var(--viking-ring-width, 3px) solid var(--viking-ring, var(--viking-accent));
+  outline-offset: var(--viking-ring-offset, 2px);
 }
 
 a:focus-visible,
@@ -56,8 +56,8 @@ select:focus-visible,
 [role='button']:focus-visible,
 [role='tab']:focus-visible,
 [tabindex]:not([tabindex='-1']):focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color) !important;
-  outline-offset: var(--focus-ring-offset) !important;
+  outline: var(--viking-ring-width) solid var(--viking-ring) !important;
+  outline-offset: var(--viking-ring-offset) !important;
 }
 
 // Viking shells own the focus ring on the control border — not the inner native input.

@@ -11,13 +11,13 @@
   display: inline-flex;
   border-radius: var(--viking-radius, var(--border-radius-md, 8px));
   overflow: hidden;
-  border: 1px solid var(--viking-border, var(--border));
+  border: 1px solid var(--viking-border, var(--viking-border));
 
   > .viking-btn,
   > button,
   > a {
     border-radius: 0;
-    border-right: 1px solid var(--viking-border, var(--border));
+    border-right: 1px solid var(--viking-border, var(--viking-border));
     margin: 0;
 
     &:last-child {
@@ -42,9 +42,9 @@
 
 .viking-field-label {
   display: block;
-  font-size: max(16px, var(--base-font-size));
+  font-size: max(16px, var(--viking-font-size-base));
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--viking-text);
   margin-bottom: var(--viking-space-2);
 }
 
@@ -63,8 +63,8 @@
 .viking-field-description {
   display: block;
   font-size: 1rem;
-  color: var(--text-muted);
-  margin-bottom: var(--space-1);
+  color: var(--viking-text-muted);
+  margin-bottom: var(--viking-space-1);
 }
 
 .viking-input-group {
@@ -80,13 +80,13 @@
   }
 
   > :first-child {
-    border-top-left-radius: var(--border-radius-md);
-    border-bottom-left-radius: var(--border-radius-md);
+    border-top-left-radius: var(--viking-radius-md);
+    border-bottom-left-radius: var(--viking-radius-md);
   }
 
   > :last-child {
-    border-top-right-radius: var(--border-radius-md);
-    border-bottom-right-radius: var(--border-radius-md);
+    border-top-right-radius: var(--viking-radius-md);
+    border-bottom-right-radius: var(--viking-radius-md);
   }
 
   > * + * {
@@ -98,11 +98,11 @@
 .viking-input-suffix {
   display: inline-flex;
   align-items: center;
-  padding: 0 var(--space-2);
-  background-color: var(--color-surface-variant);
-  color: var(--text-muted);
-  font-size: max(16px, var(--base-font-size));
-  border: 1px solid var(--border);
+  padding: 0 var(--viking-space-2);
+  background-color: var(--viking-surface-raised);
+  color: var(--viking-text-muted);
+  font-size: max(16px, var(--viking-font-size-base));
+  border: 1px solid var(--viking-border);
   white-space: nowrap;
   user-select: none;
 }
@@ -111,28 +111,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 var(--space-2);
+  padding: 0 var(--viking-space-2);
   background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
+  color: var(--viking-text-muted);
+  border: 1px solid var(--viking-border);
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: var(--viking-transition);
 
   &:hover:not(:disabled) {
-    color: var(--text-color);
-    background-color: color-mix(in srgb, var(--hover-color) 12%, transparent);
+    color: var(--viking-text);
+    background-color: color-mix(in srgb, var(--viking-hover) 12%, transparent);
   }
 }
 
 // Standalone clean input base (native inputs)
 .viking-input {
   width: 100%;
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md);
-  padding: var(--space-1) var(--space-2);
-  font-size: max(16px, var(--base-font-size));
+  background-color: var(--viking-surface);
+  color: var(--viking-text);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-md);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  font-size: max(16px, var(--viking-font-size-base));
   font-family: var(--viking-font-family);
   line-height: 1.4;
   min-height: 44px;
@@ -141,19 +141,19 @@
     box-shadow 0.2s ease;
 
   &::placeholder {
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     opacity: 0.8;
   }
 
   &:hover {
-    border-color: var(--color-primary-container);
+    border-color: var(--viking-teal-300);
   }
 
   &:focus,
   &:focus-visible {
     outline: none;
-    border-color: var(--color-primary-container);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-container) 35%, transparent);
+    border-color: var(--viking-teal-300);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--viking-teal-300) 35%, transparent);
   }
 
   &:disabled {
@@ -167,12 +167,12 @@
 // ============================================
 
 .viking-select-trigger {
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md);
-  padding: var(--space-1) var(--space-2);
-  font-size: max(16px, var(--base-font-size));
+  background-color: var(--viking-surface);
+  color: var(--viking-text);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-md);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  font-size: max(16px, var(--viking-font-size-base));
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -180,37 +180,37 @@
   cursor: pointer;
 
   &:hover {
-    border-color: var(--color-primary-container);
+    border-color: var(--viking-teal-300);
   }
 
   &:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
   }
 }
 
 .viking-select-dropdown {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
+  background-color: var(--viking-surface);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-md);
+  box-shadow: var(--viking-shadow-md);
   max-height: 15rem;
   overflow-y: auto;
 }
 
 .viking-select-option {
-  padding: var(--space-1) var(--space-2);
-  color: var(--text-color);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  color: var(--viking-text);
   cursor: pointer;
 
   &:hover {
-    background-color: color-mix(in srgb, var(--hover-color) 18%, transparent);
+    background-color: color-mix(in srgb, var(--viking-hover) 18%, transparent);
   }
 
   &.selected,
   &[aria-selected='true'] {
-    background-color: var(--color-primary-container);
-    color: var(--color-on-primary-container);
+    background-color: var(--viking-teal-300);
+    color: var(--viking-charcoal-900);
     font-weight: 600;
   }
 }

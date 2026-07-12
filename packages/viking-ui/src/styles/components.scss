@@ -30,102 +30,11 @@ a {
   outline-offset: var(--viking-ring-offset);
 }
 
-.page-inner-wrapper,
-.viking-page-inner {
-  width: min(
-    100% - (var(--viking-page-gutter) * 2),
-    var(--viking-container-max-width)
-  );
-  margin-inline: auto;
-}
-
-@media (min-width: 768px) {
-  .page-inner-wrapper,
-  .viking-page-inner {
-    width: min(
-      100% - (var(--viking-page-gutter-lg) * 2),
-      var(--viking-container-max-width)
-    );
-  }
-}
-
-.viking-stack {
-  display: grid;
-  gap: var(--viking-page-stack-gap);
-  align-items: stretch;
-}
-
-.viking-section {
-  padding-block: var(
-    --viking-page-section-gap,
-    var(--viking-space-8)
-  ); /* Improved section breathing */
-}
-
-.viking-card {
-  display: grid;
-  gap: var(--viking-card-content-gap, var(--viking-space-2));
-  align-self: stretch;
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  background-clip: padding-box;
-  isolation: isolate;
-  padding: var(--viking-card-padding, var(--viking-space-3));
-  border: var(--viking-border-width) var(--viking-border-style)
-    var(--viking-border-container);
-  border-radius: var(--viking-card-radius, var(--viking-radius-lg));
-  background: var(--viking-surface-recipe);
-  color: var(--viking-text);
-  box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
-}
-
-/* Better integration of text with card UI */
-.viking-card > p,
-.viking-card .viking-text {
-  margin-bottom: var(--viking-space-2);
-}
-
-.viking-card > p:last-child,
-.viking-card .viking-text:last-child {
-  margin-bottom: 0;
-}
-
-.viking-card::before {
-  display: none;
-}
-
-.viking-card::after {
-  display: none;
-}
-
-.viking-card[data-compact="true"] {
-  padding: var(--viking-card-padding-compact);
-  gap: var(--viking-card-content-gap-compact, var(--viking-space-3));
-  border-radius: var(--viking-radius-lg);
-}
-
-.viking-card[data-interactive="true"],
-.viking-card.viking-card-interactive {
-  cursor: pointer;
-}
-
-.viking-card[data-interactive="true"]:hover,
-.viking-card.viking-card-interactive:hover {
-  border-color: var(--viking-accent-strong);
-  background: var(--viking-surface-recipe-elevated);
-  box-shadow: var(--viking-shadow-sm), var(--viking-surface-highlight);
-  transform: translateY(var(--viking-state-hover-lift));
-  border-radius: var(--viking-card-radius, var(--viking-radius-lg));
-}
-
-.viking-card[data-interactive="true"]:active,
-.viking-card.viking-card-interactive:active {
-  transform: translateY(0) scale(var(--viking-state-active-scale));
-  box-shadow:
-    inset 0 1px 2px color-mix(in srgb, var(--viking-black) 24%, transparent),
-    var(--viking-shadow-sm);
-}
+// page-inner-wrapper canonical definition lives in layout-shell.scss.
+// Do NOT redefine here — use the canonical source.
+// viking-card, viking-stack, viking-section: canonical definitions live in
+// _layout-enforcement.scss, _layout-rhythm.scss, and layout-shell.scss respectively.
+// Do NOT redefine here — use the canonical sources.
 
 // Angular viking-button is a transparent host (display:contents) wrapping one
 // native .viking-btn. Never paint chrome on the host — that creates button-in-button.

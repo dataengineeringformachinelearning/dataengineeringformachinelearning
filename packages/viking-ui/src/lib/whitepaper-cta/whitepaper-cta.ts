@@ -44,7 +44,7 @@ import { VikingChartSeries } from "../../core/types";
       </div>
     </section>
   `,
-  styleUrl: "./whitepaper-cta.scss",
+  styleUrl: "../../styles/components/whitepaper-cta.scss",
   styles: [
     `
       :host {

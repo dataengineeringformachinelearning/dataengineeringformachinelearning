@@ -30,9 +30,9 @@
   &.success,
   &.low,
   &.compliant {
-    background: color-mix(in srgb, var(--color-success) 8%, transparent);
-    color: var(--color-success);
-    border-color: color-mix(in srgb, var(--color-success) 15%, transparent);
+    background: color-mix(in srgb, var(--viking-green-500) 8%, transparent);
+    color: var(--viking-green-500);
+    border-color: color-mix(in srgb, var(--viking-green-500) 15%, transparent);
   }
 
   &.degraded,
@@ -40,40 +40,40 @@
   &.medium,
   &.investigating,
   &.identified {
-    background: color-mix(in srgb, var(--color-warning) 8%, transparent);
-    color: var(--color-warning);
-    border-color: color-mix(in srgb, var(--color-warning) 15%, transparent);
+    background: color-mix(in srgb, var(--viking-gold-500) 8%, transparent);
+    color: var(--viking-gold-500);
+    border-color: color-mix(in srgb, var(--viking-gold-500) 15%, transparent);
   }
 
   &.outage,
   &.critical,
   &.high,
   &.error {
-    background: color-mix(in srgb, var(--color-error) 8%, transparent);
-    color: var(--color-error);
-    border-color: color-mix(in srgb, var(--color-error) 15%, transparent);
+    background: color-mix(in srgb, var(--viking-crimson-500) 8%, transparent);
+    color: var(--viking-crimson-500);
+    border-color: color-mix(in srgb, var(--viking-crimson-500) 15%, transparent);
   }
 
   &.info,
   &.neutral {
-    background: color-mix(in srgb, var(--color-info) 10%, transparent);
-    color: var(--color-info);
-    border-color: color-mix(in srgb, var(--color-info) 15%, transparent);
+    background: color-mix(in srgb, var(--viking-blue-500) 10%, transparent);
+    color: var(--viking-blue-500);
+    border-color: color-mix(in srgb, var(--viking-blue-500) 15%, transparent);
   }
 
   &.primary {
-    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
-    color: var(--color-primary-container);
-    border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+    background: color-mix(in srgb, var(--viking-electric-500) 12%, transparent);
+    color: var(--viking-electric-400);
+    border-color: color-mix(in srgb, var(--viking-electric-500) 20%, transparent);
   }
 
   html[data-theme="light"] &.primary {
-    color: var(--color-primary);
+    color: var(--viking-electric-600);
   }
 
   &--compact {
     padding: var(--viking-space-1) var(--viking-space-2);
-    font-size: var(--ui-font-size, 14px);
+    font-size: var(--viking-font-size-sm, 14px);
   }
 
   &.pro-verified {

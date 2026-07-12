@@ -14,14 +14,14 @@
 
 .docs-bento-card {
   grid-column: span 1;
-  background: var(--color-surface);
-  border: 1px solid var(--border);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-xl, 24px);
   padding: var(--viking-space-4, 32px);
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-3, 24px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--viking-shadow-sm);
   transition:
     transform var(--viking-duration-normal, 0.3s) ease,
     border-color var(--viking-duration-normal, 0.3s) ease,
@@ -37,7 +37,7 @@
   &:hover {
     transform: translateY(-4px);
     border-color: var(--viking-accent, var(--viking-teal-600));
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--viking-shadow-hover);
   }
 
   .viking-icon-heading {

@@ -5,18 +5,18 @@
   max-width: none;
   box-sizing: border-box;
   border-radius: var(--viking-radius-xl, 16px);
-  border: 1px solid var(--viking-border, var(--border));
-  background: var(--viking-surface, var(--color-surface));
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  border: 1px solid var(--viking-border, var(--viking-border));
+  background: var(--viking-surface, var(--viking-surface));
+  box-shadow: var(--viking-shadow-sm, var(--viking-shadow-sm));
   overflow: hidden;
 }
 
-// Book / whitepaper: fill the marketing 1260px shell (same as homepage).
+// Book / whitepaper: fill the marketing 1260px shell.
+// Uses min(100%, ...) to prevent overflow on narrow viewports.
 .book-toc-wrapper,
 .whitepaper-wrapper,
 .book-toc-page .page-inner-wrapper,
 .whitepaper-page .page-inner-wrapper {
-  width: 100%;
   max-width: min(100%, var(--viking-container-max-width, 1260px));
 }
 
@@ -24,7 +24,7 @@
   position: relative;
   text-align: center;
   padding: 36px 28px 28px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--viking-border);
   overflow: hidden;
 
   .hero-brand {
@@ -73,7 +73,7 @@
     position: relative;
     font-size: 1.05rem;
     line-height: 1.6;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     max-width: 640px;
     margin: 0 auto 16px;
   }
@@ -81,7 +81,7 @@
   .hero-meta {
     position: relative;
     font-size: 0.92rem;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin-bottom: 20px;
   }
 
@@ -121,7 +121,6 @@
     margin: 16px auto 0;
   }
 
-  .hero-btn,
   .integration-pill {
     min-width: 0;
     min-height: var(--viking-control-height, 44px);
@@ -130,13 +129,13 @@
     justify-content: center;
     gap: var(--viking-space-1, 8px);
     padding: 0 var(--viking-space-2, 16px);
-    border: 1px solid var(--viking-border-strong, var(--border));
+    border: 1px solid var(--viking-border-strong, var(--viking-border));
     border-radius: var(--viking-radius, 8px);
     box-sizing: border-box;
-    color: var(--viking-text, var(--text-color));
+    color: var(--viking-text-link, var(--link-color));
     background: color-mix(
       in srgb,
-      var(--viking-surface-raised, var(--color-surface)) 86%,
+      var(--viking-surface-raised, var(--viking-surface)) 86%,
       var(--viking-accent) 14%
     );
     font-size: 0.9rem;
@@ -157,11 +156,11 @@
 
     &:hover,
     &:focus-visible {
-      color: var(--viking-text, var(--text-color));
+      color: var(--viking-text, var(--viking-text));
       border-color: var(--viking-accent-strong, var(--viking-accent));
       background: color-mix(
         in srgb,
-        var(--viking-surface-raised, var(--color-surface)) 76%,
+        var(--viking-surface-raised, var(--viking-surface)) 76%,
         var(--viking-accent) 24%
       );
       transform: translateY(-1px);
@@ -172,35 +171,6 @@
         var(--viking-ring, var(--viking-accent));
       outline-offset: var(--viking-ring-offset, 2px);
     }
-  }
-
-  .hero-btn.primary {
-    color: var(--viking-accent-content, var(--viking-white-pure));
-    border-color: color-mix(
-      in srgb,
-      var(--viking-accent-strong, var(--viking-accent)) 82%,
-      var(--viking-white-pure)
-    );
-    background: linear-gradient(
-      180deg,
-      color-mix(
-          in srgb,
-          var(--viking-accent-strong, var(--viking-accent)) 92%,
-          var(--viking-white-pure)
-        )
-        0%,
-      color-mix(
-          in srgb,
-          var(--viking-accent, var(--color-primary)) 88%,
-          var(--viking-black)
-        )
-        100%
-    );
-  }
-
-  .hero-btn.secondary,
-  .integration-pill {
-    color: var(--viking-text-link, var(--link-color));
   }
 
   .integration-strip {
@@ -224,10 +194,10 @@
     border-radius: var(--viking-radius-lg, 12px);
     background: color-mix(
       in srgb,
-      var(--viking-surface-raised, var(--color-surface)) 86%,
+      var(--viking-surface-raised, var(--viking-surface)) 86%,
       var(--viking-accent) 14%
     );
-    color: var(--viking-text, var(--text-color));
+    color: var(--viking-text, var(--viking-text));
     line-height: 1.55;
 
     p,
@@ -239,15 +209,15 @@
 
 .publication-toc {
   padding: 20px 28px;
-  border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+  border-bottom: 1px solid var(--viking-border);
+  background: color-mix(in srgb, var(--viking-surface) 60%, transparent);
 
   .toc-heading {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0 0 12px;
   }
 
@@ -276,7 +246,7 @@
     font-size: 0.88rem;
     line-height: 1.4;
     text-decoration: none !important;
-    color: var(--text-muted) !important;
+    color: var(--viking-text-muted) !important;
     border-radius: 6px;
     transition: color 0.15s ease;
 
@@ -311,7 +281,7 @@
 
 .publication-section {
   padding: 28px 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 80%, transparent);
 
   &:first-child {
     padding-top: 0;
@@ -327,7 +297,7 @@
     font-weight: 800;
     margin: 0 0 16px;
     letter-spacing: -0.02em;
-    color: var(--text-color);
+    color: var(--viking-text);
     border-bottom: 2px solid
       color-mix(in srgb, var(--viking-teal-600) 35%, transparent);
     padding-bottom: 8px;
@@ -337,21 +307,21 @@
     font-size: 1.05rem;
     font-weight: 700;
     margin: 24px 0 10px;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 
   h4 {
     font-size: 0.95rem;
     font-weight: 700;
     margin: 20px 0 8px;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 
   p,
   li {
     font-size: 1rem;
     line-height: 1.65;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0 0 14px;
   }
 
@@ -420,7 +390,7 @@
 
     th,
     td {
-      border: 1px solid var(--border);
+      border: 1px solid var(--viking-border);
       padding: 8px 12px;
       text-align: left;
     }
@@ -429,7 +399,7 @@
       background: color-mix(
         in srgb,
         var(--viking-teal-600) 10%,
-        var(--color-surface)
+        var(--viking-surface)
       );
     }
   }
@@ -441,11 +411,11 @@
     background: color-mix(
       in srgb,
       var(--viking-teal-600) 6%,
-      var(--color-surface)
+      var(--viking-surface)
     );
     border-radius: 0 8px 8px 0;
     font-size: 0.95rem;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
   }
 }
 
@@ -454,10 +424,10 @@
   justify-content: flex-start;
   padding: var(--viking-space-2, 16px) var(--viking-space-3, 24px)
     var(--viking-space-3, 24px);
-  border-top: 1px solid var(--viking-border, var(--border));
+  border-top: 1px solid var(--viking-border, var(--viking-border));
   background: color-mix(
     in srgb,
-    var(--viking-surface, var(--color-surface)) 90%,
+    var(--viking-surface, var(--viking-surface)) 90%,
     var(--viking-accent) 10%
   );
 }
@@ -480,8 +450,8 @@ a.book-toc-link.sidebar-search {
   box-sizing: border-box;
   background: color-mix(
     in srgb,
-    var(--viking-accent, var(--color-primary)) 16%,
-    var(--viking-surface-raised, var(--color-surface))
+    var(--viking-accent, var(--viking-accent)) 16%,
+    var(--viking-surface-raised, var(--viking-surface))
   );
   color: var(--viking-text-link, var(--link-color)) !important;
   font-weight: 800;
@@ -502,8 +472,8 @@ a.book-toc-link.sidebar-search:focus-visible {
   border-color: var(--viking-accent-strong, var(--viking-accent));
   background: color-mix(
     in srgb,
-    var(--viking-accent, var(--color-primary)) 24%,
-    var(--viking-surface-raised, var(--color-surface))
+    var(--viking-accent, var(--viking-accent)) 24%,
+    var(--viking-surface-raised, var(--viking-surface))
   );
   color: var(--viking-text-link-hover, var(--link-hover-color)) !important;
 }
@@ -536,12 +506,12 @@ a.book-toc-link.sidebar-search {
   padding: var(--viking-space-3, 24px) var(--viking-space-2, 16px);
   background: color-mix(
     in srgb,
-    var(--viking-surface, var(--color-surface)) 92%,
+    var(--viking-surface, var(--viking-surface)) 92%,
     var(--viking-charcoal-950) 8%
   );
   border-right-color: color-mix(
     in srgb,
-    var(--viking-border-strong, var(--border)) 72%,
+    var(--viking-border-strong, var(--viking-border)) 72%,
     var(--viking-border)
   );
   overflow-y: auto;
@@ -578,7 +548,7 @@ a.book-toc-link.sidebar-search {
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0 0 2px 8px;
     opacity: 0.75;
   }
@@ -598,21 +568,21 @@ a.book-toc-link.sidebar-search {
   margin: 0;
 
   &:hover {
-    background-color: var(--hover-color);
-    border-color: var(--border);
+    background-color: var(--viking-surface-alt);
+    border-color: var(--viking-border);
   }
 
   &.active {
     background: linear-gradient(
       135deg,
-      color-mix(in srgb, var(--color-surface) 25%, transparent) 0%,
+      color-mix(in srgb, var(--viking-surface) 25%, transparent) 0%,
       color-mix(in srgb, var(--viking-metallic-200) 8%, transparent) 100%
     );
-    border-color: var(--color-primary-container, var(--viking-teal-400));
+    border-color: var(--viking-teal-400);
 
     .pub-chapter-num,
     .pub-chapter-title {
-      color: var(--color-primary-container, var(--viking-teal-400));
+      color: var(--viking-teal-400);
     }
 
     .pub-chapter-title {
@@ -626,14 +596,14 @@ a.book-toc-link.sidebar-search {
     font-size: 0.72rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     opacity: 0.7;
   }
 
   .pub-chapter-title {
     font-size: 0.85rem;
     line-height: 1.35;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 }
 
@@ -649,10 +619,10 @@ a.book-toc-link.sidebar-search {
   width: 100%;
   max-width: 420px;
   aspect-ratio: 3 / 4.2;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
+  background-color: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   border-radius: 8px 16px 16px 8px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--viking-shadow-md);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -667,9 +637,9 @@ a.book-toc-link.sidebar-search {
   top: 0;
   bottom: 0;
   width: 28px;
-  background-color: color-mix(in srgb, var(--black) 50%, transparent);
+  background-color: color-mix(in srgb, var(--viking-black) 50%, transparent);
   z-index: 10;
-  border-right: 1px solid color-mix(in srgb, var(--black) 20%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--viking-black) 20%, transparent);
 }
 
 .book-cover-binding {
@@ -678,7 +648,7 @@ a.book-toc-link.sidebar-search {
   top: 0;
   bottom: 0;
   width: 4px;
-  background-color: color-mix(in srgb, var(--black) 10%, transparent);
+  background-color: color-mix(in srgb, var(--viking-black) 10%, transparent);
   z-index: 9;
 }
 
@@ -697,7 +667,7 @@ a.book-toc-link.sidebar-search {
   letter-spacing: 0.15em;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
   text-transform: uppercase;
 }
 
@@ -718,7 +688,7 @@ a.book-toc-link.sidebar-search {
 
 .book-cover-subtitle {
   font-size: 0.95rem;
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
   font-weight: 500;
   font-style: italic;
 }
@@ -726,7 +696,7 @@ a.book-toc-link.sidebar-search {
 .book-cover-footer {
   margin-top: auto;
   padding-top: 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--viking-border);
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -735,7 +705,7 @@ a.book-toc-link.sidebar-search {
 
   a {
     font-weight: 600;
-    color: var(--text-color);
+    color: var(--viking-text);
     text-decoration: none;
     &:hover {
       color: var(--viking-teal-600);
@@ -744,7 +714,7 @@ a.book-toc-link.sidebar-search {
 
   .book-cover-vol {
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--viking-accent);
     letter-spacing: 0.1em;
     font-size: 0.8rem;
   }
@@ -757,8 +727,8 @@ a.book-toc-link.sidebar-search {
   align-items: center;
   gap: 16px;
   padding: 20px 28px;
-  border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+  border-top: 1px solid var(--viking-border);
+  background: color-mix(in srgb, var(--viking-surface) 50%, transparent);
 
   @media (min-width: 600px) {
     justify-content: space-between;
@@ -777,7 +747,7 @@ a.book-toc-link.sidebar-search {
         0%,
       color-mix(
           in srgb,
-          var(--viking-accent, var(--color-primary)) 88%,
+          var(--viking-accent, var(--viking-accent)) 88%,
           var(--viking-black)
         )
         100%
@@ -830,7 +800,7 @@ a.book-toc-link.sidebar-search {
 
   .page-counter {
     font-size: 0.88rem;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     font-weight: 500;
   }
 }
@@ -844,19 +814,19 @@ a.book-toc-link.sidebar-search {
     justify-content: space-between;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin-bottom: 6px;
   }
 
   .progress-percentage {
-    color: var(--color-primary-container);
+    color: var(--viking-accent-soft);
   }
 
   .progress-bar-container {
     width: 100%;
     height: 6px;
-    background-color: var(--hover-color);
-    border: 1px solid var(--border);
+    background-color: var(--viking-surface-alt);
+    border: 1px solid var(--viking-border);
     border-radius: 999px;
     overflow: hidden;
     position: relative;
@@ -877,13 +847,13 @@ a.book-toc-link.sidebar-search {
     }
 
     &::-webkit-progress-value {
-      background-color: var(--color-primary);
+      background-color: var(--viking-accent);
       border-radius: 999px;
       transition: width 0.3s ease-out;
     }
 
     &::-moz-progress-bar {
-      background-color: var(--color-primary);
+      background-color: var(--viking-accent);
       border-radius: 999px;
       transition: width 0.3s ease-out;
     }

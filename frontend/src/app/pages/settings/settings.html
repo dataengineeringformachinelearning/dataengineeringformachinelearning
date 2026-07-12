@@ -10,10 +10,10 @@
         </p>
       </viking-page-header>
 
-      <div class="settings-stack grid-layout">
+      <div class="settings-stack">
         @if (isViewer) {
         <viking-callout
-          class="alert-viewer-banner col-span-4 col-span-md-12"
+          class="alert-viewer-banner"
           tone="warning"
           heading="Read-Only Access"
           icon="lock"
@@ -24,7 +24,6 @@
         </viking-callout>
         } @else if (!authService.mfaVerifiedInSession()) {
         <viking-callout
-          class="col-span-4 col-span-md-12"
           [tone]="authService.mfaEnrolled() ? 'warning' : 'info'"
           [heading]="authService.mfaEnrolled() ? 'MFA session required' : 'MFA required to save'"
           icon="shield"
@@ -53,7 +52,7 @@
         }
 
         <viking-card
-          class="status-panel-outlined col-span-4 col-span-md-12 platform-integrations-panel"
+          class="status-panel-outlined platform-integrations-panel"
         >
           <viking-card-header>
             <viking-card-title icon="globe">Platform Integrations</viking-card-title>
@@ -78,7 +77,7 @@
           </div>
         </viking-card>
 
-        <viking-card class="status-panel-outlined col-span-4 col-span-md-12">
+        <viking-card class="status-panel-outlined">
           <viking-card-header>
             @if (selectedPage()) {
             <viking-card-title icon="pencil">{{ selectedPage()!.title }}</viking-card-title>
@@ -267,7 +266,7 @@
                     />
                   </viking-field>
                 </div>
-                <div class="settings-actions justify-end">
+                <div class="settings-actions">
                   <viking-button
                     variant="primary"
                     type="button"
@@ -288,14 +287,14 @@
               <h3 class="section-heading"><viking-app-icon name="dns" /> Monitored Services</h3>
               <div class="service-form-panel">
                 <div class="service-inputs-row">
-                  <viking-field label="Service Name" class="flex-1">
+                  <viking-field label="Service Name">
                     <viking-input
                       [(ngModel)]="newServiceName"
                       placeholder="e.g. Auth API"
                       [disabled]="!canMutateSites"
                     />
                   </viking-field>
-                  <viking-field label="Health Check URL" class="flex-2">
+                  <viking-field label="Health Check URL">
                     <viking-input
                       [(ngModel)]="newServiceUrl"
                       placeholder="https://api.example.com/health"

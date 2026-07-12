@@ -15,6 +15,7 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Title, Meta } from '@angular/platform-browser';
 import {
+  VikingCard,
   VikingChart,
   VikingButton,
   VikingBadge,
@@ -27,6 +28,11 @@ import {
   VikingTabs,
   VikingTab,
   VikingTabPanel,
+  VikingGrid,
+  VikingGridItem,
+  VikingChartPanel,
+  VikingChartCardHeader,
+  VikingSection,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
@@ -58,11 +64,12 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     CommonModule,
     RouterModule,
     UnifiedSelect,
+    VikingAppIcon,
+    VikingCard,
     VikingChart,
     VikingButton,
     VikingBadge,
     VikingRingGauge,
-    VikingAppIcon,
     VikingChartEmptyState,
     VikingPageHeader,
     VikingMetricRow,
@@ -70,6 +77,11 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     VikingTabs,
     VikingTab,
     VikingTabPanel,
+    VikingGrid,
+    VikingGridItem,
+    VikingChartPanel,
+    VikingChartCardHeader,
+    VikingSection,
   ],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

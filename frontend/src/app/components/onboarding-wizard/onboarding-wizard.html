@@ -9,7 +9,7 @@
     @switch (currentStep()) { @case ('welcome') {
     <div class="wizard-step">
       <viking-app-icon name="rocket_launch" hostClass="wizard-icon" [ariaHidden]="true" />
-      <h2 id="onboarding-title">Welcome to DEML</h2>
+      <h2 id="onboarding-title-welcome">Welcome to DEML</h2>
       <p>
         We'll walk you through creating your first monitoring site. In about two minutes you'll have
         uptime checks, a status page, and a live dashboard.
@@ -30,7 +30,7 @@
     } @case ('site') {
     <div class="wizard-step">
       <viking-app-icon name="language" hostClass="wizard-icon" [ariaHidden]="true" />
-      <h2 id="onboarding-title">Name your site</h2>
+      <h2 id="onboarding-title-site">Name your site</h2>
       <p>Give your status page a friendly name and a short URL slug.</p>
       <viking-field label="Site name">
         <viking-input [(ngModel)]="newPageTitle" placeholder="e.g. Acme API" />
@@ -42,7 +42,7 @@
     } @case ('endpoint') {
     <div class="wizard-step">
       <viking-app-icon name="monitor_heart" hostClass="wizard-icon" [ariaHidden]="true" />
-      <h2 id="onboarding-title">Add a health check</h2>
+      <h2 id="onboarding-title-endpoint">Add a health check</h2>
       <p>Point us at an endpoint we can ping to track uptime and latency.</p>
       <viking-field label="Service name">
         <viking-input [(ngModel)]="newServiceName" placeholder="e.g. API Gateway" />
@@ -58,7 +58,7 @@
     } @case ('publish') {
     <div class="wizard-step">
       <viking-app-icon name="public" hostClass="wizard-icon" [ariaHidden]="true" />
-      <h2 id="onboarding-title">Go live</h2>
+      <h2 id="onboarding-title-publish">Go live</h2>
       <p>Publish your status page so customers can see service health.</p>
       <viking-checkbox [(ngModel)]="publishPage">Publish my status page</viking-checkbox>
       @if (createdPage()) {
@@ -82,7 +82,7 @@
     } @case ('done') {
     <div class="wizard-step wizard-step-center">
       <viking-app-icon name="celebration" hostClass="wizard-icon success" [ariaHidden]="true" />
-      <h2 id="onboarding-title">You're all set!</h2>
+      <h2 id="onboarding-title-done">You're all set!</h2>
       <p>
         Your site is configured. Head to your dashboard to review analytics, threats, and
         vulnerabilities as data flows in.

@@ -58,35 +58,35 @@
 }
 
 .u-gap-1 {
-  gap: var(--space-1);
+  gap: var(--viking-space-1);
 }
 
 .u-gap-2 {
-  gap: var(--space-2);
+  gap: var(--viking-space-2);
 }
 
 .u-gap-3 {
-  gap: var(--space-3);
+  gap: var(--viking-space-3);
 }
 
 .u-mt-2 {
-  margin-top: var(--space-2);
+  margin-top: var(--viking-space-2);
 }
 
 .u-mt-3 {
-  margin-top: var(--space-3);
+  margin-top: var(--viking-space-3);
 }
 
 .u-mt-4 {
-  margin-top: var(--space-4);
+  margin-top: var(--viking-space-4);
 }
 
 .u-mb-2 {
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--viking-space-2);
 }
 
 .u-mb-3 {
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--viking-space-3);
 }
 
 .u-mx-auto {
@@ -99,20 +99,20 @@
 }
 
 .u-text-muted {
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
 }
 
 .u-text-primary {
-  color: var(--color-primary);
+  color: var(--viking-teal-400);
 }
 
 .u-text-primary-container {
-  color: var(--color-primary-container);
+  color: var(--viking-teal-300);
 }
 
 .u-skip-link-surface {
-  color: var(--white);
-  background-color: var(--black);
+  color: var(--viking-white);
+  background-color: var(--viking-black);
 }
 
 .u-word-break-all {
@@ -125,7 +125,7 @@
 }
 
 .u-icon-18 {
-  font-size: var(--base-font-size);
-  width: var(--base-font-size);
-  height: var(--base-font-size);
+  font-size: var(--viking-font-size-base);
+  width: var(--viking-font-size-base);
+  height: var(--viking-font-size-base);
 }
