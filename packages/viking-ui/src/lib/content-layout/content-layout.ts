@@ -6,7 +6,12 @@ import {
 } from "@angular/core";
 
 export type VikingContentLayoutType =
-  "dashboard" | "resource" | "collection" | "form" | "wizard" | "documentation";
+  | "dashboard"
+  | "resource"
+  | "collection"
+  | "form"
+  | "wizard"
+  | "documentation";
 export type VikingContentLayoutWidth = "readable" | "default" | "wide" | "full";
 export type VikingContentLayoutDensity = "compact" | "default" | "loose";
 

@@ -7,7 +7,9 @@ test("component anchors resolve on the single-page reference", async ({
 
   await expect(page.locator("#button")).toBeVisible();
   await expect(page).toHaveURL(/\/components#button$/);
-  await expect(page.locator("#button .component-showcase-preview")).toBeVisible();
+  await expect(
+    page.locator("#button .component-showcase-preview"),
+  ).toBeVisible();
 });
 
 test("legacy component query routes normalize to anchors", async ({ page }) => {
