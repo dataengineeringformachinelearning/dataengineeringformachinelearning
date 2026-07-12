@@ -1,6 +1,11 @@
+from __future__ import annotations
+
 import logging
 import os
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
+
+if TYPE_CHECKING:
+  from monitor.models import SearchQuery
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +41,9 @@ MODEL_TYPE_SPIKING: Final[str] = TrainingRun.MODEL_TYPE_SPIKING
 
 
 # Lazy import SearchQuery to avoid circular dependency at model load time
-def _get_search_query_model():
+def _get_search_query_model() -> type[SearchQuery]:
   from monitor.models import SearchQuery
+
   return SearchQuery
 
 

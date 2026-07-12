@@ -500,6 +500,30 @@ class ReportArchive(models.Model):
 
   created_at = models.DateTimeField(auto_now_add=True)
 
+  class Meta:
+    db_table = "report_archives"
+    ordering = ["-report_date"]
+    indexes = [
+      models.Index(fields=["user", "report_date"]),
+      models.Index(fields=["is_platform", "report_date"]),
+    ]
+    constraints = [
+      models.UniqueConstraint(
+        fields=["user", "report_date"],
+        condition=models.Q(is_platform=False),
+        name="unique_user_daily_report",
+      ),
+      models.UniqueConstraint(
+        fields=["report_date"],
+        condition=models.Q(is_platform=True),
+        name="unique_platform_daily_report",
+      ),
+    ]
+
+  def __str__(self) -> str:
+    scope = "platform" if self.is_platform else (self.user_id or "unknown")
+    return f"Report {self.report_date} ({scope})"
+
 
 class SearchQuery(models.Model):
   """Track search keywords for threat evaluation and analytics."""
@@ -525,32 +549,8 @@ class SearchQuery(models.Model):
       models.Index(fields=["user", "is_platform", "timestamp"]),
     ]
 
-  def __str__(self):
+  def __str__(self) -> str:
     return f"SearchQuery: {self.query_text[:50]}... (score: {self.threat_score:.2f})"
-
-  class Meta:
-    db_table = "report_archives"
-    ordering = ["-report_date"]
-    indexes = [
-      models.Index(fields=["user", "report_date"]),
-      models.Index(fields=["is_platform", "report_date"]),
-    ]
-    constraints = [
-      models.UniqueConstraint(
-        fields=["user", "report_date"],
-        condition=models.Q(is_platform=False),
-        name="unique_user_daily_report",
-      ),
-      models.UniqueConstraint(
-        fields=["report_date"],
-        condition=models.Q(is_platform=True),
-        name="unique_platform_daily_report",
-      ),
-    ]
-
-  def __str__(self):
-    scope = "platform" if self.is_platform else (self.user_id or "unknown")
-    return f"Report {self.report_date} ({scope})"
 
 
 class APIKey(models.Model):
