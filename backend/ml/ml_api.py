@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Any
 
 from django.core.cache import cache
-from monitor.models import SearchQuery, StatusPage
+from monitor.models import StatusPage
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
