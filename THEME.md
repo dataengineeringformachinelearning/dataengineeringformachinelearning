@@ -30,7 +30,7 @@ Viking-UI is the single source of truth for all DEML styling. Every visual rule 
 
 | Artifact           | Path                                                                                  | Purpose                                                                                                      |
 | ------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| SCSS primitives    | `packages/viking-ui/src/styles/_variables.scss`                                       | All `--viking-*` values including surface recipes — edit here first |
+| SCSS primitives    | `packages/viking-ui/src/styles/_variables.scss`                                       | All `--viking-*` values including surface recipes — edit here first                                          |
 | Series palette     | `packages/viking-ui/src/styles/_series-colors.scss`                                   | Chart / picker series slots 1–8                                                                              |
 | Legacy aliases     | `packages/viking-ui/src/styles/_legacy-aliases.scss`                                  | `--color-primary`, `--space-*`, Django/marketing compat                                                      |
 | JSON export        | `packages/viking-ui/src/tokens/viking-tokens.json`                                    | Tooling, docs, design QA                                                                                     |
@@ -70,17 +70,23 @@ Directional references are [Material Design 3](https://m3.material.io/) for adap
 
 [Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/packages/viking-ui) follows a **composable primitive** model: consume package components and synced CSS from applications, and place all styling behavior in the package.
 
-| Pattern                  | Viking-UI equivalent                                                                   | Notes                                                                |
-| ------------------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                                | `--viking-shadow-sm`, `--viking-radius-lg`, no glass blur            |
-| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)                          | Label, description, error; shake on invalid                          |
-| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`)                 | Min 44px touch on mobile; semibold + wide tracking                   |
-| Dark-first shell         | `data-theme="dark"` default                                                            | Light mode shifts electric/crimson lightness only — no hue inversion |
-| Accessible focus         | `--viking-ring` 2px + 2px offset                                                       | Visible on keyboard; never remove for aesthetics                     |
-| Settings / billing forms | `viking-form-section`, grouped fields                                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
-| Page composition         | `viking-page-shell`, `viking-section`, `viking-stack`, `viking-grid`, `viking-cluster` | Responsive rhythm stays package-owned                                |
+| Pattern                  | Viking-UI equivalent                                                   | Notes                                                                |
+| ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                | `--viking-shadow-sm`, `--viking-radius-lg`, no glass blur            |
+| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)          | Label, description, error; shake on invalid                          |
+| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking                   |
+| Dark-first shell         | `data-theme="dark"` default                                            | Light mode shifts electric/crimson lightness only — no hue inversion |
+| Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                     |
+| Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
+| Peer surface layout      | `viking-panel-grid`                                                    | Equal-height cards, HUD panels, and charts by construction           |
+| Form field layout        | `viking-form-grid`                                                     | Top-align controls when label, helper, or error copy differs         |
+| Vertical rhythm          | `viking-stack`                                                         | Separates consecutive blocks without app-specific sibling margins    |
+| Section anatomy          | `viking-section-template`                                              | Reuses heading, description, actions, divider, and body rhythm       |
+| Page composition         | `viking-page-shell`, `viking-section`, semantic layout recipes         | Responsive rhythm stays package-owned                                |
 
 **Palette discipline:** **deep navy/black command surfaces, dark steel metallic borders, and restrained electric-teal/crimson battlefield accents** — luxurious, severe, and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** inside Viking-UI so Django, Astro, Angular, docs, widgets, and Swagger share the same CSS variables without Tailwind runtime or platform-local stylesheets.
+
+Choose layout primitives by intent. Peer operational surfaces use `viking-panel-grid`; related fields use `viking-form-grid`; consecutive blocks use `viking-stack`; repeated title/description/action/body anatomy uses `viking-section-template`. Use lower-level `viking-grid` only for content-led layouts or deliberately unequal 12-track regions. Consuming templates must not reproduce these guarantees with one-off classes, sibling margins, alignment overrides, minimum heights, or repeated section-header markup.
 
 ### Directional language
 
@@ -413,28 +419,28 @@ Steps through `8` are consecutive **+8px**. Larger steps remain **multiples of 8
 
 **Layout constants:**
 
-| Token                                 | Value                               |
-| ------------------------------------- | ----------------------------------- |
-| `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`)      |
+| Token                                 | Value                                        |
+| ------------------------------------- | -------------------------------------------- |
+| `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`)               |
 | `--viking-container-wide-max-width`   | 1440px (`viking-page-template width="wide"`) |
-| `--viking-page-gutter`                | clamp(`space-2`, 5vw, `space-4`)    |
-| `--viking-page-gutter-lg`             | `--viking-space-5`                  |
-| `--viking-page-stack-gap`             | 32px                                |
-| `--viking-page-section-gap`           | 64px                                |
-| `--viking-card-padding`               | 24px                                |
-| `--viking-card-padding-compact`       | 16px                                |
-| `--viking-card-content-gap`           | 24px                                |
-| `--viking-panel-padding`              | 24px                                |
-| `--viking-form-max-width`             | 42rem                               |
-| `--viking-form-narrow-max-width`      | 28rem                               |
-| `--viking-content-readable-max-width` | 48rem                               |
-| `--viking-navbar-height`              | `--viking-space-8` (64px)           |
-| `--viking-sidebar-width`              | 256px (32 × 8px)                    |
-| `--viking-control-height`             | 40px desktop / ≥44px mobile (touch) |
-| `--viking-control-height-sm`          | 32px                                |
-| `--viking-control-height-xs`          | 24px                                |
-| `--viking-control-padding-x`          | `--viking-space-2`                  |
-| `--viking-btn-min-width`              | 120px                               |
+| `--viking-page-gutter`                | clamp(`space-2`, 5vw, `space-4`)             |
+| `--viking-page-gutter-lg`             | `--viking-space-5`                           |
+| `--viking-page-stack-gap`             | 32px                                         |
+| `--viking-page-section-gap`           | 64px                                         |
+| `--viking-card-padding`               | 24px                                         |
+| `--viking-card-padding-compact`       | 16px                                         |
+| `--viking-card-content-gap`           | 24px                                         |
+| `--viking-panel-padding`              | 24px                                         |
+| `--viking-form-max-width`             | 42rem                                        |
+| `--viking-form-narrow-max-width`      | 28rem                                        |
+| `--viking-content-readable-max-width` | 48rem                                        |
+| `--viking-navbar-height`              | `--viking-space-8` (64px)                    |
+| `--viking-sidebar-width`              | 256px (32 × 8px)                             |
+| `--viking-control-height`             | 40px desktop / ≥44px mobile (touch)          |
+| `--viking-control-height-sm`          | 32px                                         |
+| `--viking-control-height-xs`          | 24px                                         |
+| `--viking-control-padding-x`          | `--viking-space-2`                           |
+| `--viking-btn-min-width`              | 120px                                        |
 
 **Site navbar (`static-navbar.scss`):** `.navbar-content` is capped at `--viking-container-max-width` (1260px) and centered. The bar uses `container-name: viking-navbar` for responsive nav-label compaction. Desktop nav (`.desktop-nav`) must render `display: flex` from `768px+`; search trigger and utility buttons stay vertically centered at `--viking-control-height`.
 

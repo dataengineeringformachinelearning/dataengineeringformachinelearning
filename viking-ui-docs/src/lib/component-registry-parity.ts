@@ -17,11 +17,11 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           id: "layout",
           name: "Layout primitives",
           description:
-            "Reusable page shell, section, stack, grid, and cluster composition with token-owned responsive behavior.",
+            "Reusable page shell, section, panel-grid, form-grid, stack, and cluster recipes with token-owned responsive behavior.",
           preview: `<div class="page-inner-wrapper viking-stack viking-stack--compact">
   <section class="viking-section viking-stack viking-stack--compact">
     <span class="viking-label">Reusable layout</span>
-    <div class="viking-grid viking-grid--3 viking-grid--equal-rows">
+    <div class="viking-grid viking-panel-grid viking-grid--2 viking-grid--equal-rows">
       <div class="viking-card viking-card-compact">Availability</div>
       <div class="viking-card viking-card-compact">Latency</div>
       <div class="viking-card viking-card-compact">Risk</div>
@@ -38,19 +38,19 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           `<viking-page-shell>
   <viking-section>
     <viking-stack spacing="compact">
-      <viking-grid [columns]="3" [equalRows]="true">...</viking-grid>
+      <viking-panel-grid [columns]="2">...</viking-panel-grid>
       <viking-cluster justify="end">...</viking-cluster>
     </viking-stack>
   </viking-section>
 </viking-page-shell>`,
           `<div class="page-inner-wrapper viking-stack">
   <section class="viking-section">
-    <div class="viking-grid viking-grid--3">...</div>
+    <div class="viking-grid viking-panel-grid viking-grid--2 viking-grid--equal-rows">...</div>
   </section>
 </div>`,
           `<main class="page-inner-wrapper viking-stack">
   <section class="viking-section">
-    <div class="viking-grid viking-grid--3">...</div>
+    <div class="viking-grid viking-panel-grid viking-grid--2 viking-grid--equal-rows">...</div>
   </section>
 </main>`,
           `shell.className = 'page-inner-wrapper viking-stack';`,

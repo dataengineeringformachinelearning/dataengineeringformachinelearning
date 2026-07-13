@@ -93,7 +93,8 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       :host ::ng-deep viking-card-header {
         padding-bottom: var(--viking-space-4);
         margin-bottom: 0;
-        border-bottom: var(--viking-border-width) var(--viking-border-style) var(--viking-border-subtle);
+        border-bottom: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-border-subtle);
       }
 
       :host ::ng-deep .viking-card-content,
@@ -104,7 +105,8 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       :host ::ng-deep .viking-card-footer {
         padding-top: var(--viking-space-4);
         margin-top: 0;
-        border-top: var(--viking-border-width) var(--viking-border-style) var(--viking-border-subtle);
+        border-top: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-border-subtle);
       }
 
       .viking-card-skeleton {
@@ -145,7 +147,8 @@ export class VikingCard {
         gap: var(--viking-space-4);
         padding-bottom: var(--viking-space-4);
         margin-bottom: 0;
-        border-bottom: var(--viking-border-width) var(--viking-border-style) var(--viking-border-subtle);
+        border-bottom: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-border-subtle);
       }
       /* Support slotted left meta + right actions uniformly */
       :host ::ng-deep > * {

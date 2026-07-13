@@ -9,7 +9,7 @@ const renderLayout = () => `
         Resize the viewport: tracks form from available space, then refine into a readable stack.
       </p>
     </header>
-    <div class="viking-grid viking-grid--auto viking-grid--item-compact viking-grid--equal-rows">
+    <div class="viking-grid viking-panel-grid viking-grid--auto viking-grid--item-compact viking-grid--equal-rows">
       <viking-card title="Ingest health">
         <div class="viking-card-header">
           <h3>Ingest health</h3>
@@ -60,7 +60,7 @@ const meta: Meta<typeof renderLayout> = {
     docs: {
       description: {
         component:
-          "Native auto-fit grid and switcher contracts keep cards equal-height and controls readable from 320px through wide operational canvases.",
+          "The panel-grid recipe makes equal-height peer surfaces implicit; the switcher keeps actions readable from 320px through wide operational canvases.",
       },
     },
   },

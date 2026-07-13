@@ -22,12 +22,12 @@ license: apache-2.0
 
 ## Concept of Operations
 
-| Document                               | Purpose                                 |
-| -------------------------------------- | --------------------------------------- |
-| [BOOK.md](BOOK.md)                     | Full platform architecture & operations |
-| [WHITEPAPER.md](WHITEPAPER.md)         | Executive summary for reviewers         |
-| [docs/conops.md](docs/conops.md)       | On-call operational checklists          |
-| [docs/TECHSTACK.md](docs/TECHSTACK.md) | Technology stack overview               |
+| Document                                                                                  | Purpose                                 |
+| ----------------------------------------------------------------------------------------- | --------------------------------------- |
+| [BOOK.md](BOOK.md)                                                                        | Full platform architecture & operations |
+| [WHITEPAPER.md](WHITEPAPER.md)                                                            | Executive summary for reviewers         |
+| [BOOK.md § Appendix N](BOOK.md#appendix-n-concept-of-operations-operator-quick-reference) | On-call operational checklists          |
+| [BOOK.md § Appendix U](BOOK.md#appendix-u-deml-platform-technology-stack)                 | Technology stack overview               |
 
 ### Product surfaces (`deml.app`)
 
@@ -45,7 +45,7 @@ security operations client. It provides browser-based Firebase/MFA authenticatio
 a PKCE-protected return to the app, Keychain-backed desktop sessions, a
 persistent vulnerability queue, Ollama and cloud-model triage, and
 approval-gated patch application for agent-assisted remediation. See
-[`docs/macos-security-workbench.md`](docs/macos-security-workbench.md) for the
+[BOOK.md § Appendix R](BOOK.md#appendix-r-deml-macos-security-workbench) for the
 security model and build instructions.
 
 ---
@@ -66,14 +66,14 @@ security model and build instructions.
 
 ## Official Integrations
 
-| Platform       | Primary endpoints                   | Guide                                                |
-| -------------- | ----------------------------------- | ---------------------------------------------------- |
-| **Kubernetes** | `/api/v1/predict`, `/api/v1/ingest` | [kubernetes.md](docs/integrations/kubernetes.md)     |
-| **TensorFlow** | `/api/v1/ingest`, `/api/v1/predict` | [tensorflow.md](docs/integrations/tensorflow.md)     |
-| **PyTorch**    | `/api/v1/ingest`, `/api/v1/predict` | [pytorch.md](docs/integrations/pytorch.md)           |
-| **Spark**      | `/api/v1/ingest`                    | [apache-spark.md](docs/integrations/apache-spark.md) |
-| **Databricks** | `/api/v1/ingest`, `/api/v1/predict` | [databricks.md](docs/integrations/databricks.md)     |
-| **Redshift**   | `/api/v1/ingest`, `/api/v1/predict` | [redshift.md](docs/integrations/redshift.md)         |
+| Platform       | Primary endpoints                   | Guide                                                         |
+| -------------- | ----------------------------------- | ------------------------------------------------------------- |
+| **Kubernetes** | `/api/v1/predict`, `/api/v1/ingest` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **TensorFlow** | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **PyTorch**    | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **Spark**      | `/api/v1/ingest`                    | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **Databricks** | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **Redshift**   | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
 
 ---
 
@@ -99,7 +99,7 @@ Authorization: Bearer YOUR_API_KEY
 
 - **Support:** Open tickets from your dashboard
 - **Status:** Monitor on the global Status page
-- **Docs:** [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [Glossary](docs/glossary.md) · [Billing](docs/billing.md)
+- **Docs:** [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [Glossary](BOOK.md#appendix-q-deml-glossary) · [Billing](BOOK.md#appendix-m-billing--subscriptions-operator-reference)
 
 ---
 
@@ -2726,11 +2726,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/web-components.js"
 ></script>
 ```
 
@@ -4402,10 +4402,29 @@ progress or loading states.
 ## Layout composition
 
 Routes compose `viking-app-layout` → `viking-page-template` →
-`viking-column-layout` or `viking-grid`. Content is inlaid through
-`viking-container`, `viking-card`, `viking-table`, or `viking-chart-panel`.
-Application-local card, grid, control, and navigation visual systems are not
-part of the contract.
+the semantic layout recipe that matches the content. `viking-panel-grid` owns
+equal-height peer cards, HUD panels, and charts; `viking-form-grid` owns
+top-aligned responsive field groups; `viking-stack` owns vertical rhythm;
+`viking-section-template` owns repeated heading, description, action, and body
+anatomy. Use the lower-level `viking-grid` only for content-led layouts where
+equal rows are not a requirement, and use its 12-track mode with
+`viking-grid-item` for deliberately unequal regions.
+
+| Layout intent                                                      | Canonical Viking-UI recipe         | Invariant supplied by the recipe                                   |
+| ------------------------------------------------------------------ | ---------------------------------- | ------------------------------------------------------------------ |
+| Peer cards, charts, HUD panels, or status surfaces                 | `viking-panel-grid`                | Mobile-first columns, shared gaps, and equal-height rows           |
+| Related form fields with different label, helper, or error lengths | `viking-form-grid`                 | Top-aligned controls and responsive field columns                  |
+| Consecutive blocks that need vertical separation                   | `viking-stack`                     | Tokenized cross-block rhythm without sibling margins               |
+| Titled content region with optional actions                        | `viking-section-template`          | Consistent heading, description, action, divider, and body anatomy |
+| Deliberately unequal 12-track regions                              | `viking-grid` + `viking-grid-item` | Explicit tablet and desktop spans                                  |
+
+Content is inlaid through `viking-container`, `viking-card`, `viking-table`, or
+`viking-chart-panel`. Application templates must not recreate these invariants
+with one-off classes, sibling margins, `align-items` overrides, minimum heights,
+or repeated header markup. When a recurring layout defect appears on more than
+one route, the missing behavior is added to the Viking-UI recipe first and the
+routes are migrated to consume it. Application-local card, grid, form, control,
+and navigation visual systems are not part of the contract.
 
 ---
 
@@ -5124,7 +5143,7 @@ As operational proof, the platform dogfoods its own infrastructure continuously.
 
 ## 2. Concept of Operations (CONOPS)
 
-This section specifies how the DEML platform is **operated** in production: vendor boundaries, steady-state data paths, actor workflows, and degraded-mode behavior. The full operational narrative, service matrix, and contingency tables reside in [BOOK.md § Concept of Operations](BOOK.md#concept-of-operations-conops) and [`docs/conops.md`](docs/conops.md).
+This section specifies how the DEML platform is **operated** in production: vendor boundaries, steady-state data paths, actor workflows, and degraded-mode behavior. The full operational narrative, service matrix, and contingency tables reside in [BOOK.md § Concept of Operations](BOOK.md#concept-of-operations-conops) and [BOOK.md § Appendix N](BOOK.md#appendix-n-concept-of-operations-operator-quick-reference).
 
 ### 2.1 Mission
 
@@ -5147,7 +5166,7 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 | Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                                           |
 | Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                                     |
 
-Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [`docs/glossary.md`](docs/glossary.md).
+Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [BOOK.md § Appendix Q](BOOK.md#appendix-q-deml-glossary).
 
 Every production transport is cryptographically authenticated: HTTPS/HSTS at public app boundaries and verified TLS for Postgres, Redis-compatible caches, Redpanda, ClickHouse, and OTLP. Durable broker payloads receive an independent AES-256-GCM DEML Internode Envelope before publication. This defense-in-depth layer binds ciphertext to the topic and sender role, remains encrypted across broker storage and TLS termination boundaries, supports additive key rotation through `kid`, and fails closed against plaintext downgrade once required mode is enabled.
 
@@ -5360,7 +5379,7 @@ Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cl
 - `ReportArchive` materialized daily for fast 90-day report queries
 - Older analytics available via ClickHouse long-term storage
 
-**Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([docs/billing.md](docs/billing.md)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
+**Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([BOOK.md § Appendix M](BOOK.md#appendix-m-billing--subscriptions-operator-reference)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 
 ## 11. Rust-Native Offloading Architecture
 
@@ -5447,16 +5466,16 @@ This architecture rests on open-source foundations, enterprise design references
 
 ## 17. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/web-components.js"
 ></script>
 ```
 

@@ -98,58 +98,36 @@
   }
 }
 
-.health-card {
+viking-card.health-card {
   grid-area: health;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  padding: var(--viking-card-padding);
-  border-radius: var(--viking-radius-lg);
-  border: 1px solid var(--viking-border);
-  background: var(--viking-surface);
-  box-shadow: var(--viking-shadow-sm);
-  text-align: center;
-  transition: var(--viking-transition-interactive);
-}
-
-.health-card:hover {
-  box-shadow: var(--viking-shadow-md);
+  gap: var(--viking-space-2);
+  text-align: left;
 }
 
 .health-ring {
-  /* Canonical sizing lives in page-shell.scss (fluid width). */
   position: relative;
+  flex: 0 0 var(--viking-space-10);
+  width: var(--viking-space-10);
+  aspect-ratio: 1;
+  margin: 0;
 
-  svg {
-    width: 100%;
-    height: 100%;
-    transform: rotate(-90deg);
+  &[data-status="Healthy"] viking-ring-gauge {
+    color: var(--viking-success);
   }
 
-  .ring-bg {
-    fill: none;
-    stroke: var(--viking-border);
-    stroke-width: 8;
+  &[data-status="Critical"] viking-ring-gauge {
+    color: var(--viking-danger);
   }
 
-  .ring-fill {
-    fill: none;
-    stroke: var(--viking-accent);
-    stroke-width: 8;
-    stroke-linecap: round;
-    transition: stroke-dasharray 0.6s ease;
+  &[data-status="At Risk"] viking-ring-gauge {
+    color: var(--viking-warning);
   }
 
-  &[data-status="Critical"] .ring-fill {
-    stroke: var(--viking-crimson-500);
-  }
-
-  &[data-status="At Risk"] .ring-fill {
-    stroke: var(--viking-gold-500);
-  }
-
-  &[data-status="Watch"] .ring-fill {
-    stroke: var(--viking-info);
+  &[data-status="Watch"] viking-ring-gauge {
+    color: var(--viking-info);
   }
 }
 
@@ -163,7 +141,7 @@
 }
 
 .health-value {
-  /* Canonical font-size lives in page-shell.scss (fluid clamp). */
+  font-size: var(--viking-font-size-xl);
   font-weight: var(--viking-font-weight-bold);
 }
 
@@ -177,8 +155,12 @@
 }
 
 .health-caption {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
   font-size: var(--viking-font-size-sm);
   color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-snug);
 }
 
 .kpi-grid {
@@ -196,12 +178,12 @@
   }
 }
 
-.kpi-card {
+viking-card.kpi-card {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2);
-  padding: var(--viking-space-3);
-  min-height: var(--viking-metric-card-tall-min-height, 9.5rem);
+  padding: var(--viking-card-padding-compact);
+  min-height: var(--viking-metric-card-min-height);
   border-radius: var(--viking-radius-xl);
   border: 1px solid var(--viking-border);
   background: var(--viking-surface-recipe, var(--viking-surface));
@@ -306,11 +288,11 @@
 }
 
 .kpi-sparkline-slot {
-  margin-top: auto;
+  margin-top: 0;
   min-height: var(--viking-chart-sparkline-height, 2.75rem);
   width: 100%;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   overflow: visible;
 }
 
@@ -365,10 +347,10 @@
 }
 
 /* Overview status panels — single card shell, no nested dashed empty boxes */
-.panel-card.overview-panel {
+viking-card.overview-panel {
   display: flex;
   flex-direction: column;
-  min-height: 280px;
+  min-height: var(--viking-space-20);
   padding: var(--viking-card-padding);
 
   .panel-header {

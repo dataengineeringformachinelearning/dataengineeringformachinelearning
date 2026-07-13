@@ -8,7 +8,11 @@ import {
 import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { VikingButton, VikingCard, VikingHeading } from '@dataengineeringformachinelearning/viking-ui';
+import {
+  VikingButton,
+  VikingCard,
+  VikingHeading,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 
 @Component({

@@ -1,398 +1,395 @@
 <viking-page-template width="wide">
-      <viking-page-header
-        tag="Account"
-        title="Account & Billing"
-        subtitle="Manage your profile, security, API keys, subscription, and connected sign-in providers."
-      />
+  <viking-page-header
+    tag="Account"
+    title="Account & Billing"
+    subtitle="Manage your profile, security, API keys, subscription, and connected sign-in providers."
+  />
 
-      <div class="settings-stack grid-layout">
-        <!-- Multi-Factor Authentication (MFA) -->
-        <viking-card class="status-card-outlined mfa-settings-card">
-          <viking-card-header>
-            <viking-card-title icon="shield">Multi-Factor Authentication (MFA)</viking-card-title>
-          </viking-card-header>
-          <div>
-            <p class="embed-desc">
-              Secure your account by requiring a secondary verification method (SMS) during login.
-              This is required under SOC2 policies to perform administrative updates to system
-              status pages.
-            </p>
+  <div class="settings-stack grid-layout">
+    <!-- Multi-Factor Authentication (MFA) -->
+    <viking-card class="status-card-outlined mfa-settings-card">
+      <viking-card-header>
+        <viking-card-title icon="shield">Multi-Factor Authentication (MFA)</viking-card-title>
+      </viking-card-header>
+      <div>
+        <p class="embed-desc">
+          Secure your account by requiring a secondary verification method (SMS) during login. This
+          is required under SOC2 policies to perform administrative updates to system status pages.
+        </p>
 
-            @if (isMfaEnrolled()) {
-            <div class="mfa-status-enrolled panel-clean">
-              <viking-icon-text
-                icon="check-circle"
-                tone="success"
-                title="MFA Enrolled & Enforced"
-                description="SMS verification is active for your account."
-              />
-              <viking-button variant="danger" type="button" (pressed)="disableMfa()">
-                Disable MFA
+        @if (isMfaEnrolled()) {
+        <div class="mfa-status-enrolled panel-clean">
+          <viking-icon-text
+            icon="check-circle"
+            tone="success"
+            title="MFA Enrolled & Enforced"
+            description="SMS verification is active for your account."
+          />
+          <viking-button variant="danger" type="button" (pressed)="disableMfa()">
+            Disable MFA
+          </viking-button>
+        </div>
+        } @else {
+        <div class="mfa-enrollment-form panel-clean">
+          <p class="mfa-step-title">
+            <strong>Step 1: Enter your phone number</strong>
+          </p>
+          <div class="mfa-phone-block">
+            <div class="mfa-phone-row">
+              <viking-field label="Phone Number" class="mfa-input-full" [description]="phoneHint">
+                <viking-input
+                  [(ngModel)]="mfaPhoneNumber"
+                  type="tel"
+                  placeholder="+14155552671"
+                  icon="phone"
+                  [disabled]="mfaVerificationId !== null"
+                />
+              </viking-field>
+              <viking-button
+                variant="primary"
+                type="button"
+                [compact]="true"
+                (pressed)="sendMfaCode()"
+                [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
+                [loading]="isSendingMfaCode()"
+              >
+                Send SMS Code
               </viking-button>
             </div>
-            } @else {
-            <div class="mfa-enrollment-form panel-clean">
-              <p class="mfa-step-title">
-                <strong>Step 1: Enter your phone number</strong>
-              </p>
-              <div class="mfa-phone-block">
-                <div class="mfa-phone-row">
-                  <viking-field
-                    label="Phone Number"
-                    class="mfa-input-full"
-                    [description]="phoneHint"
-                  >
-                    <viking-input
-                      [(ngModel)]="mfaPhoneNumber"
-                      type="tel"
-                      placeholder="+14155552671"
-                      icon="phone"
-                      [disabled]="mfaVerificationId !== null"
-                    />
-                  </viking-field>
-                  <viking-button
-                    variant="primary"
-                    type="button"
-                    [compact]="true"
-                    (pressed)="sendMfaCode()"
-                    [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
-                    [loading]="isSendingMfaCode()"
-                  >
-                    Send SMS Code
-                  </viking-button>
-                </div>
-              </div>
-
-              @if (mfaVerificationId) {
-              <div class="verification-step">
-                <p class="mfa-step-title">
-                  <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
-                </p>
-                <div class="mfa-verify-stack">
-                  <viking-verification-code-field
-                    label="Verification Code"
-                    [required]="true"
-                    class="mfa-input-full"
-                    [(ngModel)]="mfaVerificationCode"
-                  />
-                  <viking-button
-                    variant="primary"
-                    type="button"
-                    (pressed)="verifyMfaCode()"
-                    [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
-                    [loading]="isVerifyingMfaCode()"
-                  >
-                    Verify & Enroll
-                  </viking-button>
-                </div>
-              </div>
-              } @if (mfaError() || mfaSuccess()) {
-              <div class="mfa-feedback-stack">
-                @if (mfaError()) {
-                <viking-callout tone="danger" heading="Unable to complete MFA"
-                  >{{ mfaError() }}</viking-callout
-                >
-                } @if (mfaSuccess()) {
-                <viking-callout tone="success" heading="MFA enrolled"
-                  >{{ mfaSuccess() }}</viking-callout
-                >
-                }
-              </div>
-              }
-            </div>
-            } @if (isMfaEnrolled() && !authService.mfaVerifiedInSession()) {
-            <viking-callout
-              class="mfa-relogin-callout"
-              tone="warning"
-              heading="Re-authentication required"
-              icon="shield"
-            >
-              MFA is enrolled on your account. Sign out and sign back in with SMS verification
-              before updating sites or status pages.
-            </viking-callout>
-            }
-
-            <div id="mfa-recaptcha-container" class="mfa-recaptcha-slot"></div>
           </div>
-        </viking-card>
 
-        <!-- API Keys & Security Credentials -->
-        <viking-card class="status-card-outlined api-keys-card">
-          <viking-card-header>
-            <viking-card-title icon="lock">API Keys & Integrations</viking-card-title>
-          </viking-card-header>
-          <div>
-            <p class="embed-desc">
-              Generate API keys to authenticate and ingest data from external systems (like Spark,
-              Databricks, or Kubernetes) into your platform. For security reasons, the raw key is
-              only shown once upon creation.
+          @if (mfaVerificationId) {
+          <div class="verification-step">
+            <p class="mfa-step-title">
+              <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
             </p>
-
-            @if (newlyGeneratedKey()) {
-            <viking-callout tone="success" class="api-key-reveal">
-              <strong>Save this key now! You will not be able to see it again.</strong>
-              <div class="code-block-container">
-                <div class="code-block-outlined">
-                  <code>{{ newlyGeneratedKey() }}</code>
-                </div>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  [icon]="copiedApiKey() ? 'check' : 'copy'"
-                  (pressed)="copyApiKey()"
-                >
-                  {{ copiedApiKey() ? 'Copied' : 'Copy' }}
-                </viking-button>
-              </div>
-            </viking-callout>
-            }
-
-            <viking-form-section heading="Generate API Key" icon="key" layout="inline">
-              <viking-field label="New Key Name" class="full-width">
-                <viking-input
-                  [(ngModel)]="newApiKeyName"
-                  placeholder="e.g. Databricks Ingestion Pipeline"
-                  [disabled]="isGeneratingApiKey() || isViewer"
-                />
-              </viking-field>
-              <ng-container vikingFormActions>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  icon="plus"
-                  [compact]="true"
-                  (pressed)="generateApiKey()"
-                  [disabled]="!newApiKeyName || isGeneratingApiKey() || isViewer"
-                  [loading]="isGeneratingApiKey()"
-                >
-                  Generate Key
-                </viking-button>
-              </ng-container>
-            </viking-form-section>
-
-            <div class="data-list-outlined">
-              @for (key of apiKeys(); track key.id) {
-              <div class="data-item-row">
-                <div class="data-info">
-                  <span class="data-title">{{ key.name }}</span>
-                  <span class="data-subtitle">
-                    Prefix: {{ key.prefix }}... &bull; Created: {{ key.created_at | date:'short' }}
-                  </span>
-                </div>
-                <viking-button
-                  variant="ghost"
-                  type="button"
-                  [square]="true"
-                  icon="trash"
-                  label="Revoke API Key"
-                  (pressed)="revokeApiKey(key.id)"
-                  [disabled]="isViewer"
-                />
-              </div>
-              } @if (apiKeys().length === 0) {
-              <div class="empty-data-text">
-                <viking-app-icon name="vpn_key" hostClass="empty-icon" />
-                <p class="empty-title">No Active Keys</p>
-                <p class="empty-subtitle">
-                  Generate an API key above to authenticate external data ingestion pipelines.
-                </p>
-              </div>
-              }
-            </div>
-          </div>
-        </viking-card>
-
-        <!-- Connected Accounts -->
-        <viking-card class="status-card-outlined mfa-settings-card">
-          <viking-card-header>
-            <viking-card-title icon="link">Connected Accounts</viking-card-title>
-          </viking-card-header>
-          <div>
-            <p class="embed-desc">
-              Reconcile your credentials by linking third-party identity providers to this account.
-              Once connected, you can sign in using either method.
-            </p>
-
-            <div class="integrations-list panel-clean">
-              <div class="integration-item">
-                <viking-icon-text
-                  icon="google"
-                  title="Google Account"
-                  [description]="isGoogleLinked() ? 'Connected' : 'Not Connected'"
-                />
-                <div class="integration-action">
-                  @if (isGoogleLinked()) {
-                  <viking-button variant="danger" type="button" (pressed)="unlinkGoogle()">
-                    Disconnect
-                  </viking-button>
-                  } @else {
-                  <viking-button variant="primary" type="button" (pressed)="linkGoogle()">
-                    Link Google
-                  </viking-button>
-                  }
-                </div>
-              </div>
-
-              <div class="integration-item">
-                <viking-icon-text
-                  icon="apple"
-                  title="Apple ID"
-                  [description]="isAppleLinked() ? 'Connected' : 'Not Connected'"
-                />
-                <div class="integration-action">
-                  @if (isAppleLinked()) {
-                  <viking-button variant="danger" type="button" (pressed)="unlinkApple()">
-                    Disconnect
-                  </viking-button>
-                  } @else {
-                  <viking-button variant="primary" type="button" (pressed)="linkApple()">
-                    Link Apple
-                  </viking-button>
-                  }
-                </div>
-              </div>
-            </div>
-
-            @if (providerError()) {
-            <viking-callout tone="danger">{{ providerError() }}</viking-callout>
-            } @if (providerSuccess()) {
-            <viking-callout tone="success">{{ providerSuccess() }}</viking-callout>
-            }
-          </div>
-        </viking-card>
-
-        <!-- Account & Billing Settings -->
-        <viking-card class="status-card-outlined">
-          <viking-card-header>
-            <viking-card-title icon="user">Account & Billing Settings</viking-card-title>
-          </viking-card-header>
-          <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
-
-          <viking-form-panel>
-            <viking-form-section heading="Update Email" icon="mail" layout="inline">
-              <viking-field label="New Email Address" class="full-width">
-                <viking-input
-                  [(ngModel)]="updateEmailInput"
-                  placeholder="Enter new email..."
-                  icon="mail"
-                />
-              </viking-field>
-              <ng-container vikingFormActions>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  (pressed)="updateEmail()"
-                  [disabled]="!updateEmailInput || isUpdatingEmail()"
-                  [loading]="isUpdatingEmail()"
-                >
-                  Update Email
-                </viking-button>
-              </ng-container>
-            </viking-form-section>
-
-            <viking-form-section heading="Update Password" icon="lock" layout="inline">
-              <viking-field label="New Password" class="full-width">
-                <viking-input
-                  type="password"
-                  [(ngModel)]="updatePasswordInput"
-                  placeholder="Enter new password..."
-                  icon="lock"
-                />
-              </viking-field>
-              <ng-container vikingFormActions>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  (pressed)="updatePassword()"
-                  [disabled]="!updatePasswordInput || isUpdatingPassword()"
-                  [loading]="isUpdatingPassword()"
-                >
-                  Update Password
-                </viking-button>
-              </ng-container>
-              <ng-container vikingFormFooter>
-                @if (accountError()) {
-                <viking-callout tone="danger">{{ accountError() }}</viking-callout>
-                } @if (accountSuccess()) {
-                <viking-callout tone="success">{{ accountSuccess() }}</viking-callout>
-                }
-              </ng-container>
-            </viking-form-section>
-
-            @if (!isViewer) {
-            <viking-form-section heading="Subscription Management" icon="sparkle" layout="status">
-              @if (isBillingLoading()) {
-              <div class="loading-state">
-                <viking-progress [indeterminate]="true" label="Loading subscription" />
-              </div>
-              } @else { @if (!subscriptionActive()) {
-              <viking-icon-text
-                icon="info"
-                tone="info"
-                title="Standard Plan"
-                description="Upgrade to Pro to unlock advanced features."
+            <div class="mfa-verify-stack">
+              <viking-verification-code-field
+                label="Verification Code"
+                [required]="true"
+                class="mfa-input-full"
+                [(ngModel)]="mfaVerificationCode"
               />
-              <ng-container vikingFormActions>
-                <viking-button variant="primary" type="button" (pressed)="subscribeToPro()">
-                  Subscribe to Pro
-                </viking-button>
-              </ng-container>
+              <viking-button
+                variant="primary"
+                type="button"
+                (pressed)="verifyMfaCode()"
+                [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
+                [loading]="isVerifyingMfaCode()"
+              >
+                Verify & Enroll
+              </viking-button>
+            </div>
+          </div>
+          } @if (mfaError() || mfaSuccess()) {
+          <div class="mfa-feedback-stack">
+            @if (mfaError()) {
+            <viking-callout tone="danger" heading="Unable to complete MFA"
+              >{{ mfaError() }}</viking-callout
+            >
+            } @if (mfaSuccess()) {
+            <viking-callout tone="success" heading="MFA enrolled"
+              >{{ mfaSuccess() }}</viking-callout
+            >
+            }
+          </div>
+          }
+        </div>
+        } @if (isMfaEnrolled() && !authService.mfaVerifiedInSession()) {
+        <viking-callout
+          class="mfa-relogin-callout"
+          tone="warning"
+          heading="Re-authentication required"
+          icon="shield"
+        >
+          MFA is enrolled on your account. Sign out and sign back in with SMS verification before
+          updating sites or status pages.
+        </viking-callout>
+        }
+
+        <div id="mfa-recaptcha-container" class="mfa-recaptcha-slot"></div>
+      </div>
+    </viking-card>
+
+    <!-- API Keys & Security Credentials -->
+    <viking-card class="status-card-outlined api-keys-card">
+      <viking-card-header>
+        <viking-card-title icon="lock">API Keys & Integrations</viking-card-title>
+      </viking-card-header>
+      <div>
+        <p class="embed-desc">
+          Generate API keys to authenticate and ingest data from external systems (like Spark,
+          Databricks, or Kubernetes) into your platform. For security reasons, the raw key is only
+          shown once upon creation.
+        </p>
+
+        @if (newlyGeneratedKey()) {
+        <viking-callout tone="success" class="api-key-reveal">
+          <strong>Save this key now! You will not be able to see it again.</strong>
+          <div class="code-block-container">
+            <div class="code-block-outlined">
+              <code>{{ newlyGeneratedKey() }}</code>
+            </div>
+            <viking-button
+              variant="primary"
+              type="button"
+              [icon]="copiedApiKey() ? 'check' : 'copy'"
+              (pressed)="copyApiKey()"
+            >
+              {{ copiedApiKey() ? 'Copied' : 'Copy' }}
+            </viking-button>
+          </div>
+        </viking-callout>
+        }
+
+        <viking-stack spacing="compact">
+          <viking-form-section heading="Generate API Key" icon="key" layout="inline">
+            <viking-field label="New Key Name" class="full-width">
+              <viking-input
+                [(ngModel)]="newApiKeyName"
+                placeholder="e.g. Databricks Ingestion Pipeline"
+                [disabled]="isGeneratingApiKey() || isViewer"
+              />
+            </viking-field>
+            <ng-container vikingFormActions>
+              <viking-button
+                variant="primary"
+                type="button"
+                icon="plus"
+                [compact]="true"
+                (pressed)="generateApiKey()"
+                [disabled]="!newApiKeyName || isGeneratingApiKey() || isViewer"
+                [loading]="isGeneratingApiKey()"
+              >
+                Generate Key
+              </viking-button>
+            </ng-container>
+          </viking-form-section>
+
+          <div class="data-list-outlined">
+            @for (key of apiKeys(); track key.id) {
+            <div class="data-item-row">
+              <div class="data-info">
+                <span class="data-title">{{ key.name }}</span>
+                <span class="data-subtitle">
+                  Prefix: {{ key.prefix }}... &bull; Created: {{ key.created_at | date:'short' }}
+                </span>
+              </div>
+              <viking-button
+                variant="ghost"
+                type="button"
+                [square]="true"
+                icon="trash"
+                label="Revoke API Key"
+                (pressed)="revokeApiKey(key.id)"
+                [disabled]="isViewer"
+              />
+            </div>
+            } @if (apiKeys().length === 0) {
+            <div class="empty-data-text">
+              <viking-app-icon name="vpn_key" hostClass="empty-icon" />
+              <p class="empty-title">No Active Keys</p>
+              <p class="empty-subtitle">
+                Generate an API key above to authenticate external data ingestion pipelines.
+              </p>
+            </div>
+            }
+          </div>
+        </viking-stack>
+      </div>
+    </viking-card>
+
+    <!-- Connected Accounts -->
+    <viking-card class="status-card-outlined mfa-settings-card">
+      <viking-card-header>
+        <viking-card-title icon="link">Connected Accounts</viking-card-title>
+      </viking-card-header>
+      <div>
+        <p class="embed-desc">
+          Reconcile your credentials by linking third-party identity providers to this account. Once
+          connected, you can sign in using either method.
+        </p>
+
+        <div class="integrations-list panel-clean">
+          <div class="integration-item">
+            <viking-icon-text
+              icon="google"
+              title="Google Account"
+              [description]="isGoogleLinked() ? 'Connected' : 'Not Connected'"
+            />
+            <div class="integration-action">
+              @if (isGoogleLinked()) {
+              <viking-button variant="danger" type="button" (pressed)="unlinkGoogle()">
+                Disconnect
+              </viking-button>
               } @else {
-              <viking-icon-text
-                icon="check-circle"
-                tone="success"
-                title="Pro Plan Active"
-                [description]="
+              <viking-button variant="primary" type="button" (pressed)="linkGoogle()">
+                Link Google
+              </viking-button>
+              }
+            </div>
+          </div>
+
+          <div class="integration-item">
+            <viking-icon-text
+              icon="apple"
+              title="Apple ID"
+              [description]="isAppleLinked() ? 'Connected' : 'Not Connected'"
+            />
+            <div class="integration-action">
+              @if (isAppleLinked()) {
+              <viking-button variant="danger" type="button" (pressed)="unlinkApple()">
+                Disconnect
+              </viking-button>
+              } @else {
+              <viking-button variant="primary" type="button" (pressed)="linkApple()">
+                Link Apple
+              </viking-button>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (providerError()) {
+        <viking-callout tone="danger">{{ providerError() }}</viking-callout>
+        } @if (providerSuccess()) {
+        <viking-callout tone="success">{{ providerSuccess() }}</viking-callout>
+        }
+      </div>
+    </viking-card>
+
+    <!-- Account & Billing Settings -->
+    <viking-card class="status-card-outlined">
+      <viking-card-header>
+        <viking-card-title icon="user">Account & Billing Settings</viking-card-title>
+      </viking-card-header>
+      <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
+
+      <viking-form-panel>
+        <viking-form-section heading="Update Email" icon="mail" layout="inline">
+          <viking-field label="New Email Address" class="full-width">
+            <viking-input
+              [(ngModel)]="updateEmailInput"
+              placeholder="Enter new email..."
+              icon="mail"
+            />
+          </viking-field>
+          <ng-container vikingFormActions>
+            <viking-button
+              variant="primary"
+              type="button"
+              (pressed)="updateEmail()"
+              [disabled]="!updateEmailInput || isUpdatingEmail()"
+              [loading]="isUpdatingEmail()"
+            >
+              Update Email
+            </viking-button>
+          </ng-container>
+        </viking-form-section>
+
+        <viking-form-section heading="Update Password" icon="lock" layout="inline">
+          <viking-field label="New Password" class="full-width">
+            <viking-input
+              type="password"
+              [(ngModel)]="updatePasswordInput"
+              placeholder="Enter new password..."
+              icon="lock"
+            />
+          </viking-field>
+          <ng-container vikingFormActions>
+            <viking-button
+              variant="primary"
+              type="button"
+              (pressed)="updatePassword()"
+              [disabled]="!updatePasswordInput || isUpdatingPassword()"
+              [loading]="isUpdatingPassword()"
+            >
+              Update Password
+            </viking-button>
+          </ng-container>
+          <ng-container vikingFormFooter>
+            @if (accountError()) {
+            <viking-callout tone="danger">{{ accountError() }}</viking-callout>
+            } @if (accountSuccess()) {
+            <viking-callout tone="success">{{ accountSuccess() }}</viking-callout>
+            }
+          </ng-container>
+        </viking-form-section>
+
+        @if (!isViewer) {
+        <viking-form-section heading="Subscription Management" icon="sparkle" layout="status">
+          @if (isBillingLoading()) {
+          <div class="loading-state">
+            <viking-progress [indeterminate]="true" label="Loading subscription" />
+          </div>
+          } @else { @if (!subscriptionActive()) {
+          <viking-icon-text
+            icon="info"
+            tone="info"
+            title="Standard Plan"
+            description="Upgrade to Pro to unlock advanced features."
+          />
+          <ng-container vikingFormActions>
+            <viking-button variant="primary" type="button" (pressed)="subscribeToPro()">
+              Subscribe to Pro
+            </viking-button>
+          </ng-container>
+          } @else {
+          <viking-icon-text
+            icon="check-circle"
+            tone="success"
+            title="Pro Plan Active"
+            [description]="
                     subscriptionCancelAtPeriodEnd()
                       ? 'Your subscription will cancel at the end of the current billing cycle.'
                       : 'Your subscription is active and will auto-renew.'
                   "
-              />
-              <ng-container vikingFormActions>
-                @if (subscriptionCancelAtPeriodEnd()) {
-                <viking-button variant="outline" type="button" (pressed)="resumeSubscription()">
-                  Resume Subscription
-                </viking-button>
-                } @else {
-                <viking-button variant="danger" type="button" (pressed)="cancelSubscription()">
-                  Cancel Subscription
-                </viking-button>
-                }
-              </ng-container>
-              } }
-              <ng-container vikingFormFooter>
-                @if (billingError()) {
-                <viking-callout tone="danger">{{ billingError() }}</viking-callout>
-                } @if (billingSuccess()) {
-                <viking-callout tone="success">{{ billingSuccess() }}</viking-callout>
-                }
-              </ng-container>
-            </viking-form-section>
+          />
+          <ng-container vikingFormActions>
+            @if (subscriptionCancelAtPeriodEnd()) {
+            <viking-button variant="outline" type="button" (pressed)="resumeSubscription()">
+              Resume Subscription
+            </viking-button>
+            } @else {
+            <viking-button variant="danger" type="button" (pressed)="cancelSubscription()">
+              Cancel Subscription
+            </viking-button>
             }
-          </viking-form-panel>
-        </viking-card>
+          </ng-container>
+          } }
+          <ng-container vikingFormFooter>
+            @if (billingError()) {
+            <viking-callout tone="danger">{{ billingError() }}</viking-callout>
+            } @if (billingSuccess()) {
+            <viking-callout tone="success">{{ billingSuccess() }}</viking-callout>
+            }
+          </ng-container>
+        </viking-form-section>
+        }
+      </viking-form-panel>
+    </viking-card>
 
-        <!-- Account Settings & Danger Zone -->
-        <viking-card class="status-card-outlined danger-zone-card">
-          <viking-card-header>
-            <viking-card-title icon="alert-triangle" tone="danger">Danger Zone</viking-card-title>
-          </viking-card-header>
-          <div>
-            <h3>Delete Account</h3>
-            <p>
-              Permanently delete your account, tracked pages, monitored services, and all associated
-              data. This action is irreversible.
-            </p>
-          </div>
-          <viking-button
-            variant="danger"
-            type="button"
-            (pressed)="deleteAccount()"
-            [disabled]="isDeletingAccount()"
-            [loading]="isDeletingAccount()"
-          >
-            Delete Account
-          </viking-button>
-        </viking-card>
+    <!-- Account Settings & Danger Zone -->
+    <viking-card class="status-card-outlined danger-zone-card">
+      <viking-card-header>
+        <viking-card-title icon="alert-triangle" tone="danger">Danger Zone</viking-card-title>
+      </viking-card-header>
+      <div>
+        <h3>Delete Account</h3>
+        <p>
+          Permanently delete your account, tracked pages, monitored services, and all associated
+          data. This action is irreversible.
+        </p>
       </div>
+      <viking-button
+        variant="danger"
+        type="button"
+        (pressed)="deleteAccount()"
+        [disabled]="isDeletingAccount()"
+        [loading]="isDeletingAccount()"
+      >
+        Delete Account
+      </viking-button>
+    </viking-card>
+  </div>
 </viking-page-template>

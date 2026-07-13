@@ -242,7 +242,8 @@ viking-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background-color var(--viking-duration-fast) var(--viking-ease-standard);
+  transition: background-color var(--viking-duration-fast)
+    var(--viking-ease-standard);
 
   &:hover {
     background-color: var(--viking-surface-alt);

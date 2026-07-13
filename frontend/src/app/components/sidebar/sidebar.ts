@@ -11,6 +11,7 @@ import {
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import {
   VikingAppSidebar,
+  VikingButton,
   VikingSidebarNav,
   VikingSidebarNavLink,
   VikingSidebarNavTree,
@@ -31,6 +32,7 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
   imports: [
     RouterModule,
     VikingAppSidebar,
+    VikingButton,
     VikingSidebarNav,
     VikingSidebarNavLink,
     VikingSidebarNavTree,

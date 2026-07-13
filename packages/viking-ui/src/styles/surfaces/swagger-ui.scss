@@ -120,6 +120,12 @@ body.backend-swagger {
   text-underline-offset: 3px;
 }
 
+.swagger-ui .info code {
+  background: var(--viking-surface-alt, var(--viking-charcoal-800)) !important;
+  border-color: var(--viking-border-subtle, var(--viking-border)) !important;
+  color: var(--viking-text, var(--text-color)) !important;
+}
+
 /* ── Toolbar: authorize + filter ─────────────────────────────────────────── */
 .swagger-ui .scheme-container {
   display: flex;
@@ -220,16 +226,10 @@ body.backend-swagger {
 }
 
 .swagger-ui .btn.authorize,
-.swagger-ui .btn.authorize.unlocked,
-.swagger-ui .btn.execute,
-.swagger-ui .authorization__btn {
-  background: var(--viking-accent, var(--color-primary));
-  border-color: color-mix(
-    in srgb,
-    var(--viking-accent) 82%,
-    var(--viking-black)
-  );
-  color: var(--viking-accent-content, var(--viking-white-pure));
+.swagger-ui .btn.authorize.unlocked {
+  background: var(--viking-surface-raised, var(--viking-charcoal-700));
+  border-color: var(--viking-border-strong, var(--viking-border));
+  color: var(--viking-text, var(--text-color));
   box-shadow: var(--viking-shadow-sm);
   min-height: var(--viking-control-height, 40px);
   border-radius: var(--viking-radius, 8px);
@@ -243,6 +243,16 @@ body.backend-swagger {
   white-space: nowrap;
   justify-content: center;
   align-items: center;
+}
+
+.swagger-ui .btn.execute {
+  background: var(--viking-accent, var(--color-primary));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 82%,
+    var(--viking-black)
+  );
+  color: var(--viking-accent-content, var(--viking-white-pure));
 }
 
 .swagger-ui .btn.authorize .viking-icon,
@@ -266,8 +276,13 @@ body.backend-swagger {
 }
 
 .swagger-ui .btn.authorize:hover,
-.swagger-ui .btn.authorize.unlocked:hover,
-.swagger-ui .authorization__btn:hover,
+.swagger-ui .btn.authorize.unlocked:hover {
+  background: var(--viking-surface-alt, var(--viking-charcoal-800));
+  border-color: var(--viking-accent, var(--color-primary));
+  color: var(--viking-text, var(--text-color));
+  box-shadow: var(--viking-shadow-md);
+}
+
 .swagger-ui .btn.execute:hover {
   background: var(--viking-accent-hover, var(--viking-teal-500));
   border-color: color-mix(
@@ -357,6 +372,10 @@ body.backend-swagger {
   fill: var(--viking-text-muted, var(--text-muted));
 }
 
+.swagger-ui .opblock-tag a {
+  color: inherit !important;
+}
+
 /* ── Operations — flat rows, no nested cards ─────────────────────────────── */
 .swagger-ui .opblock {
   margin: 0;
@@ -390,7 +409,11 @@ body.backend-swagger {
 }
 
 .swagger-ui .opblock .opblock-summary-method {
+  background: var(--viking-surface-raised, var(--viking-charcoal-700));
+  border: var(--viking-space-px) solid
+    var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius-sm, 6px);
+  color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
   font-size: 0.68rem;
   font-weight: 700;
@@ -400,13 +423,13 @@ body.backend-swagger {
 }
 
 .swagger-ui .opblock.opblock-get .opblock-summary-method {
-  background: color-mix(in srgb, var(--viking-accent) 16%, transparent);
-  color: var(--viking-accent-strong);
+  background: var(--viking-surface-raised, var(--viking-charcoal-700));
+  color: var(--viking-text, var(--text-color));
 }
 
 .swagger-ui .opblock.opblock-post .opblock-summary-method {
-  background: color-mix(in srgb, var(--viking-accent) 16%, transparent);
-  color: var(--viking-accent-strong);
+  background: var(--viking-surface-raised, var(--viking-charcoal-700));
+  color: var(--viking-text, var(--text-color));
 }
 
 .swagger-ui .opblock.opblock-put .opblock-summary-method,
@@ -425,6 +448,13 @@ body.backend-swagger {
   color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
   font-size: 0.88rem;
+}
+
+.swagger-ui .opblock .opblock-summary-path a,
+.swagger-ui .opblock .opblock-summary-path a span,
+.swagger-ui .opblock .opblock-summary-path__deprecated a,
+.swagger-ui .opblock .opblock-summary-path__deprecated a span {
+  color: inherit !important;
 }
 
 .swagger-ui .opblock .opblock-summary-description {
@@ -1009,13 +1039,23 @@ html[data-theme="light"] .swagger-ui select {
 .swagger-ui .opblock-summary-control,
 .swagger-ui .expand-operation,
 .swagger-ui .authorization__btn.unlocked,
-.swagger-ui .authorization__btn.locked {
+.swagger-ui .authorization__btn.locked,
+.swagger-ui .opblock .authorization__btn {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   min-height: auto;
   padding: 0;
   margin: 0;
+}
+
+.swagger-ui .opblock .authorization__btn {
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.swagger-ui .opblock .authorization__btn:hover,
+.swagger-ui .opblock .authorization__btn:focus-visible {
+  color: var(--viking-accent, var(--color-primary));
 }
 
 .swagger-ui .opblock-summary-control {
@@ -1063,13 +1103,16 @@ html[data-theme="light"] .swagger-ui select {
   ) !important;
 }
 
-/* Authorize — single primary control (no inner icon button frame) */
+/* Authorize — quiet command control (no inner icon button frame) */
 .swagger-ui .btn.authorize,
 .swagger-ui .authorization__btn.modal-btn.authorize {
-  background: var(--viking-accent, var(--color-primary)) !important;
-  border: 1px solid
-    color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black)) !important;
-  color: var(--viking-accent-content, #fff) !important;
+  background: var(
+    --viking-surface-raised,
+    var(--viking-charcoal-700)
+  ) !important;
+  border: var(--viking-space-px) solid
+    var(--viking-border-strong, var(--viking-border)) !important;
+  color: var(--viking-text, var(--text-color)) !important;
   border-radius: var(--viking-radius, 8px);
   min-height: var(--viking-control-height, 40px);
   padding: 0 var(--viking-space-3, 24px);
@@ -1077,6 +1120,15 @@ html[data-theme="light"] .swagger-ui select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.swagger-ui .btn.authorize:hover,
+.swagger-ui .btn.authorize:focus-visible,
+.swagger-ui .authorization__btn.modal-btn.authorize:hover,
+.swagger-ui .authorization__btn.modal-btn.authorize:focus-visible {
+  background: var(--viking-surface-alt, var(--viking-charcoal-800)) !important;
+  border-color: var(--viking-accent, var(--color-primary)) !important;
+  color: var(--viking-text, var(--text-color)) !important;
 }
 
 .swagger-ui .btn.authorize svg,

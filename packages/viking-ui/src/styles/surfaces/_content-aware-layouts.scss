@@ -64,13 +64,6 @@
   align-items: stretch;
 }
 
-@container viking-triage-queue (min-width: 36rem) {
-  .dashboard-page-container .queue-panel .filter-bar {
-    flex-direction: row;
-    align-items: flex-end;
-  }
-}
-
 @container viking-app-page (min-width: 72rem) {
   .dashboard-page-container .triage-grid {
     grid-template-columns:

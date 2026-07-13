@@ -9,6 +9,7 @@ export type VikingLayoutDensity = "tight" | "compact" | "default" | "loose";
 export type VikingGridColumns = 1 | 2 | 3 | 4 | 6 | 12 | "auto";
 export type VikingGridSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export type VikingColumnLayoutColumns = 1 | 2 | 3 | 4 | "auto";
+export type VikingFormGridColumns = 1 | 2 | 3 | "auto";
 export type VikingClusterJustify = "start" | "between" | "end";
 export type VikingIntrinsicItemSize = "compact" | "default" | "wide";
 
@@ -94,6 +95,35 @@ export class VikingGrid {
   );
 }
 
+/** Equal-height grid recipe for peer cards, charts, HUD panels, and status surfaces. */
+@Component({
+  selector: "viking-panel-grid",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { "[class]": "hostClass()" },
+  template: `<ng-content />`,
+})
+export class VikingPanelGrid {
+  readonly columns = input<VikingGridColumns>(2);
+  readonly itemSize = input<VikingIntrinsicItemSize>("default");
+  readonly spacing =
+    input<Extract<VikingLayoutDensity, "tight" | "default" | "loose">>(
+      "default",
+    );
+
+  protected readonly hostClass = computed(() =>
+    [
+      "viking-grid",
+      "viking-panel-grid",
+      `viking-grid--${this.columns()}`,
+      this.columns() === "auto" ? `viking-grid--item-${this.itemSize()}` : "",
+      this.spacing() === "default" ? "" : `viking-grid--${this.spacing()}`,
+      "viking-grid--equal-rows",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
 /** Responsive item for the 12-column Viking grid. Mobile defaults to full width. */
 @Component({
   selector: "viking-grid-item",
@@ -147,6 +177,38 @@ export class VikingColumnLayout {
         ? ""
         : `viking-column-layout--${this.spacing()}`,
       this.equalRows() ? "viking-column-layout--equal-rows" : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
+/** Top-aligned responsive field recipe for labels and helper copy of any length. */
+@Component({
+  selector: "viking-form-grid",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { "[class]": "hostClass()" },
+  template: `<ng-content />`,
+})
+export class VikingFormGrid {
+  readonly columns = input<VikingFormGridColumns>("auto");
+  readonly itemSize = input<VikingIntrinsicItemSize>("default");
+  readonly spacing =
+    input<Extract<VikingLayoutDensity, "tight" | "default" | "loose">>(
+      "default",
+    );
+
+  protected readonly hostClass = computed(() =>
+    [
+      "viking-column-layout",
+      "viking-form-grid",
+      `viking-column-layout--${this.columns()}`,
+      this.columns() === "auto"
+        ? `viking-column-layout--item-${this.itemSize()}`
+        : "",
+      this.spacing() === "default"
+        ? ""
+        : `viking-column-layout--${this.spacing()}`,
     ]
       .filter(Boolean)
       .join(" "),
