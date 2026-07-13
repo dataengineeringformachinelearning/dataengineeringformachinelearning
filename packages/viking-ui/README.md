@@ -359,7 +359,7 @@ npm run changeset
 npm run version:viking-ui
 ```
 
-See [docs/viking-ui-release.md](../../docs/viking-ui-release.md) for the full
+See [BOOK.md § Chapter 16](../../BOOK.md#chapter-16-developer-workflow-and-version-management) for the full
 release, visual regression, and propagation workflow.
 
 ## Consumption

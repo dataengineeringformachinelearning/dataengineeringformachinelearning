@@ -46,7 +46,7 @@ Viking-UI is the single source of truth for all DEML styling. Every visual rule 
 Viking-UI's current aesthetic is a **grid-first modern enterprise SaaS system**: highly consistent component anatomy, quiet Cyber-Noir surfaces, restrained Ocean Blue Serenity accents, balanced data density, and predictable responsive composition. The system should feel calm, precise, premium, and deliberately unsurprising across every product surface.
 
 The concise component specification is maintained in
-[`docs/viking-ui-style-guide.md`](docs/viking-ui-style-guide.md). Controls share
+[BOOK.md § Appendix Y](BOOK.md#appendix-y-viking-ui-modern-saas-style-guide). Controls share
 a 40px frame and 8px radius; content surfaces share a 12px radius; badges use a
 24px pill frame; tables, charts, headers, and sidebars consume the same border,
 hover, selected, focus, and elevation contracts.

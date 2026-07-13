@@ -57,7 +57,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full checklist.
 
 ## Release and stability checks
 
-See [docs/viking-ui-release.md](../docs/viking-ui-release.md) for the
+See [BOOK.md § Chapter 16](../BOOK.md#chapter-16-developer-workflow-and-version-management) for the
 Changesets versioning flow, visual regression commands, CI checks, and
 cross-app asset propagation steps.
 

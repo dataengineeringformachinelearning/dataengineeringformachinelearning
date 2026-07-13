@@ -2,7 +2,7 @@
 
 **Canonical catalog:** [`services.json`](./services.json)
 **Live drift check / safe apply:** `python scripts/railway_audit.py`
-**Ops cutover semantics:** [`docs/rust-data-plane.md`](../../docs/rust-data-plane.md)
+**Ops cutover semantics:** [BOOK.md § Appendix T](../../BOOK.md#appendix-t-rust-data-plane-operations)
 
 This directory is the single map of production Railway services for project **deml** / environment **production**. Agents and humans should treat `services.json` as source of truth for service names, Dockerfiles, `DEML_ROLE`s, required/forbidden env, and retired services. Do **not** invent service names or re-create retired ones.
 
@@ -73,7 +73,7 @@ Auth: Railway CLI token under `~/.railway` (already linked for this workspace). 
 5. **Python schedulers off next to Rust.** `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` on `deml-workers` and `deml-telemetry-worker` (env + startCommand).
 6. **CPE consumers point at a TLS endpoint for deml-cpe:**
    `CPE_GUESSER_URL=https://<internal-cpe-domain>/unique`
-7. **No dual ownership.** Never run Python `outbox_relay` / embedded pinger beside the equivalent Rust role. See cutover order in `docs/rust-data-plane.md`.
+7. **No dual ownership.** Never run Python `outbox_relay` / embedded pinger beside the equivalent Rust role. See cutover order in [BOOK.md § Appendix T](../../BOOK.md#appendix-t-rust-data-plane-operations).
 
 ## What `railway_audit.py` does / does not do
 
@@ -187,7 +187,7 @@ curl -sf "https://$DEML_RELAY_INTERNAL_HOST/ready"
 Postgres/ClickHouse maintenance natively and publishes encrypted triggers for
 Python ecosystem work onto `internal-tasks`. **deml-workers** runs only the
 whitelisted Python commands. The exact cadence and Python-to-Rust ownership
-ledger live in [`docs/rust-data-plane.md`](../../docs/rust-data-plane.md).
+ledger live in [BOOK.md § Appendix T](../../BOOK.md#appendix-t-rust-data-plane-operations).
 
 | Task                   | Cadence      | Command                            |
 | ---------------------- | ------------ | ---------------------------------- |
@@ -211,5 +211,5 @@ Multiple replicas of a Rust role are safe via Postgres leases and idempotency co
 2. Add or update `infrastructure/railway/<service>/railway.json`.
 3. `python scripts/railway_audit.py` → fix drift → `--apply` if defaults/forbidden only.
 4. Deploy the affected service; for control-plane schema, migrate first.
-5. If architectural, note cutover impact in `docs/rust-data-plane.md` / BOOK as needed.
+5. If architectural, note cutover impact in [BOOK.md § Appendix T](../../BOOK.md#appendix-t-rust-data-plane-operations) / BOOK as needed.
 6. Never re-add names under `retired` in `services.json`.

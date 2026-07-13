@@ -22,12 +22,12 @@ license: apache-2.0
 
 ## Concept of Operations
 
-| Document                               | Purpose                                 |
-| -------------------------------------- | --------------------------------------- |
-| [BOOK.md](BOOK.md)                     | Full platform architecture & operations |
-| [WHITEPAPER.md](WHITEPAPER.md)         | Executive summary for reviewers         |
-| [docs/conops.md](docs/conops.md)       | On-call operational checklists          |
-| [docs/TECHSTACK.md](docs/TECHSTACK.md) | Technology stack overview               |
+| Document                                       | Purpose                                 |
+| ---------------------------------------------- | --------------------------------------- |
+| [BOOK.md](BOOK.md)                             | Full platform architecture & operations |
+| [WHITEPAPER.md](WHITEPAPER.md)                 | Executive summary for reviewers         |
+| [BOOK.md § Appendix N](BOOK.md#appendix-n-concept-of-operations-operator-quick-reference) | On-call operational checklists |
+| [BOOK.md § Appendix U](BOOK.md#appendix-u-deml-platform-technology-stack) | Technology stack overview |
 
 ### Product surfaces (`deml.app`)
 
@@ -45,7 +45,7 @@ security operations client. It provides browser-based Firebase/MFA authenticatio
 a PKCE-protected return to the app, Keychain-backed desktop sessions, a
 persistent vulnerability queue, Ollama and cloud-model triage, and
 approval-gated patch application for agent-assisted remediation. See
-[`docs/macos-security-workbench.md`](docs/macos-security-workbench.md) for the
+[BOOK.md § Appendix R](BOOK.md#appendix-r-deml-macos-security-workbench) for the
 security model and build instructions.
 
 ---
@@ -68,12 +68,12 @@ security model and build instructions.
 
 | Platform       | Primary endpoints                   | Guide                                                |
 | -------------- | ----------------------------------- | ---------------------------------------------------- |
-| **Kubernetes** | `/api/v1/predict`, `/api/v1/ingest` | [kubernetes.md](docs/integrations/kubernetes.md)     |
-| **TensorFlow** | `/api/v1/ingest`, `/api/v1/predict` | [tensorflow.md](docs/integrations/tensorflow.md)     |
-| **PyTorch**    | `/api/v1/ingest`, `/api/v1/predict` | [pytorch.md](docs/integrations/pytorch.md)           |
-| **Spark**      | `/api/v1/ingest`                    | [apache-spark.md](docs/integrations/apache-spark.md) |
-| **Databricks** | `/api/v1/ingest`, `/api/v1/predict` | [databricks.md](docs/integrations/databricks.md)     |
-| **Redshift**   | `/api/v1/ingest`, `/api/v1/predict` | [redshift.md](docs/integrations/redshift.md)         |
+| **Kubernetes** | `/api/v1/predict`, `/api/v1/ingest` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **TensorFlow** | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **PyTorch**    | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **Spark**      | `/api/v1/ingest`                    | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **Databricks** | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
+| **Redshift**   | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
 
 ---
 
@@ -99,7 +99,7 @@ Authorization: Bearer YOUR_API_KEY
 
 - **Support:** Open tickets from your dashboard
 - **Status:** Monitor on the global Status page
-- **Docs:** [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [Glossary](docs/glossary.md) · [Billing](docs/billing.md)
+- **Docs:** [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [Glossary](BOOK.md#appendix-q-deml-glossary) · [Billing](BOOK.md#appendix-m-billing--subscriptions-operator-reference)
 
 ---
 

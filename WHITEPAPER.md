@@ -20,7 +20,7 @@ As operational proof, the platform dogfoods its own infrastructure continuously.
 
 ## 2. Concept of Operations (CONOPS)
 
-This section specifies how the DEML platform is **operated** in production: vendor boundaries, steady-state data paths, actor workflows, and degraded-mode behavior. The full operational narrative, service matrix, and contingency tables reside in [BOOK.md § Concept of Operations](BOOK.md#concept-of-operations-conops) and [`docs/conops.md`](docs/conops.md).
+This section specifies how the DEML platform is **operated** in production: vendor boundaries, steady-state data paths, actor workflows, and degraded-mode behavior. The full operational narrative, service matrix, and contingency tables reside in [BOOK.md § Concept of Operations](BOOK.md#concept-of-operations-conops) and [BOOK.md § Appendix N](BOOK.md#appendix-n-concept-of-operations-operator-quick-reference).
 
 ### 2.1 Mission
 
@@ -43,7 +43,7 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 | Billing               | Stripe                                                     | Standard → Pro checkout, webhooks, reconciliation                                           |
 | Artifacts             | Hugging Face Hub                                           | Namespaced PyTorch `state_dict` weights                                                     |
 
-Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [`docs/glossary.md`](docs/glossary.md).
+Container topology is multi-target (Railway IaC, Cloud Run, or AWS); Event Projections and symmetrical tenancy are invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops) and [BOOK.md § Appendix Q](BOOK.md#appendix-q-deml-glossary).
 
 Every production transport is cryptographically authenticated: HTTPS/HSTS at public app boundaries and verified TLS for Postgres, Redis-compatible caches, Redpanda, ClickHouse, and OTLP. Durable broker payloads receive an independent AES-256-GCM DEML Internode Envelope before publication. This defense-in-depth layer binds ciphertext to the topic and sender role, remains encrypted across broker storage and TLS termination boundaries, supports additive key rotation through `kid`, and fails closed against plaintext downgrade once required mode is enabled.
 
@@ -256,7 +256,7 @@ Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cl
 - `ReportArchive` materialized daily for fast 90-day report queries
 - Older analytics available via ClickHouse long-term storage
 
-**Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([docs/billing.md](docs/billing.md)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
+**Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([BOOK.md § Appendix M](BOOK.md#appendix-m-billing--subscriptions-operator-reference)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 
 ## 11. Rust-Native Offloading Architecture
 

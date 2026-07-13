@@ -2,7 +2,7 @@
 
 **Role:** S3-compatible blob storage for analytics export artifacts (PDF, CSV, Parquet, JSON).
 **Upstream:** [rustfs/rustfs](https://github.com/rustfs/rustfs) (Apache 2.0)
-**Design doc:** [`docs/exports-rustfs.md`](../../docs/exports-rustfs.md)
+**Design doc:** [BOOK.md § Appendix O](../../BOOK.md#appendix-o-analytics-exports--rustfs-object-store)
 
 RustFS replaces archived MinIO CE for new DEML object-store work. It is **not** the system of record for analytics facts — **ClickHouse + Postgres** remain the BI sources; RustFS only stores **generated files**.
 
