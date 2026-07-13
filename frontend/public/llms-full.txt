@@ -188,7 +188,7 @@ Out of scope: local developer onboarding (see [Chapter 1](#chapter-1-the-fresh-i
 | **Predictive intelligence**      | Daily `ml_worker` retraining on anonymized aggregate data; per-account inference without cross-tenant raw leakage                                        |
 | **Transparent public status**    | `platform-status` dogfoods the stack under real load; customer pages gated by `is_published` ABAC                                                        |
 | **Audit-ready security**         | Firebase Auth + **MFA-verified session** on site mutations; GCP KMS envelope encryption; immutable GCS audit logs; continuous Semgrep/Trivy/Renovate     |
-| **Paid tiers**                   | Stripe Checkout → Pro; webhooks + `sync_subscriptions` keep local tier truthful ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                                     |
+| **Paid tiers**                   | Stripe Checkout → Pro; webhooks + `sync_subscriptions` keep local tier truthful ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))    |
 
 ### 3. System Overview
 
@@ -253,7 +253,7 @@ flowchart TB
 | **Marketing hosting**      | [Firebase Hosting](https://firebase.google.com/docs/hosting)                          | Astro `marketing/dist` at `dataengineeringformachinelearning.com`                                                          |
 | **Cryptography & audit**   | [Google Cloud](https://cloud.google.com/) (Terraform)                                 | KMS envelope keys, immutable audit log bucket, service accounts (when GCP plane is enabled)                                |
 | **Secrets**                | [Infisical](https://infisical.com/) (recommended)                                     | Runtime secret injection; SOC 2 / CMMC alignment                                                                           |
-| **Billing**                | [Stripe](https://stripe.com/)                                                         | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                                     |
+| **Billing**                | [Stripe](https://stripe.com/)                                                         | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))    |
 | **Model artifacts**        | [Hugging Face Hub](https://huggingface.co/)                                           | Namespaced `.pt` state dict uploads                                                                                        |
 | **Content**                | [Sanity.io](https://www.sanity.io/)                                                   | Incident narratives decoupled from Django                                                                                  |
 
@@ -487,15 +487,15 @@ Semantic versioning and release notes: `scripts/git_flow.py` ([Chapter 16](#chap
 
 ### 15. Documentation Map
 
-| Document                                                   | Audience                 | Content                             |
-| ---------------------------------------------------------- | ------------------------ | ----------------------------------- |
-| **This CONOPS**                                            | Operators, architects    | End-to-end operational narrative    |
-| [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference)                         | On-call engineers        | Checklists, modes, quick reference  |
-| [WHITEPAPER.md](WHITEPAPER.md) §2                          | Executives, reviewers    | Concise CONOPS + hypothesis         |
-| [README.md](README.md)                                     | Integrators              | API gateway, architecture diagram   |
-| [Appendix C](#appendix-c-cloud-run-deployment)             | DevOps                   | Per-service Cloud Run variables     |
-| [Appendix D](#appendix-d-maintenance--automation-schedule) | SRE                      | Schedules and retention             |
-| [AGENTS.md](AGENTS.md)                                     | AI agents / contributors | Coding principles aligned to CONOPS |
+| Document                                                                 | Audience                 | Content                             |
+| ------------------------------------------------------------------------ | ------------------------ | ----------------------------------- |
+| **This CONOPS**                                                          | Operators, architects    | End-to-end operational narrative    |
+| [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference) | On-call engineers        | Checklists, modes, quick reference  |
+| [WHITEPAPER.md](WHITEPAPER.md) §2                                        | Executives, reviewers    | Concise CONOPS + hypothesis         |
+| [README.md](README.md)                                                   | Integrators              | API gateway, architecture diagram   |
+| [Appendix C](#appendix-c-cloud-run-deployment)                           | DevOps                   | Per-service Cloud Run variables     |
+| [Appendix D](#appendix-d-maintenance--automation-schedule)               | SRE                      | Schedules and retention             |
+| [AGENTS.md](AGENTS.md)                                                   | AI agents / contributors | Coding principles aligned to CONOPS |
 
 ---
 
@@ -1562,7 +1562,8 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - [OpenAI Codex](https://openai.com/codex/) — Codex: GPT-5.5, GPT-5.3-Codex-Spark
 - [Grok Build Beta](https://x.ai/news/grok-build-cli)
 - [Cursor](https://cursor.com/) — [Grok 4.3](https://docs.spacex.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
-- [Pool](https://pool.ps/) — Pool: Laguna M.1
+- [Pool](https://pool.ps/) — Poolside: Laguna M.1
+- [OpenCode](https://opencode.ai/) - Big Pickle
 
 ---
 
@@ -3056,7 +3057,6 @@ DEML adopts two white papers as guiding references for its threat-driven securit
 
 ## Appendix M: Billing & Subscriptions (Operator Reference)
 
-
 Stripe powers **Standard → Pro** upgrades for DEML accounts. This is a live path (checkout, webhooks, and reconciliation)—not a roadmap placeholder. Architecture narrative: [WHITEPAPER.md §10](../WHITEPAPER.md#10-data-tenancy-retention-and-lifecycle-policy); maintenance cadence: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule).
 
 ## Lifecycle
@@ -3104,7 +3104,6 @@ Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/s
 ---
 
 ## Appendix N: Concept of Operations (Operator Quick Reference)
-
 
 **Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
 **Last aligned:** July 2026 (Event Projections; multi-runtime compute)
@@ -3308,7 +3307,6 @@ Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-de
 
 ## Appendix O: Analytics Exports & RustFS Object Store
 
-
 **Status:** infrastructure, client, `ExportJob` model/API/worker, and Analytics UI exports panel.
 **Object store:** [RustFS](https://github.com/rustfs/rustfs) (Apache 2.0, S3-compatible)
 **Ops:** [`infrastructure/rustfs/README.md`](../infrastructure/rustfs/README.md)
@@ -3437,7 +3435,6 @@ RustFS is younger than historical MinIO. **Pin image tags**, smoke-test presign 
 
 ## Appendix P: Platform Features
 
-
 The Data Engineering for AI Engineering and Cybersecurity (DEML) Platform provides a comprehensive ecosystem built for robust observability, AI intelligence, data engineering, and security.
 
 ## Concept of Operations (CONOPS)
@@ -3530,7 +3527,6 @@ Operational doctrine—how the platform runs in production, who performs which w
 
 ## Appendix Q: DEML Glossary
 
-
 Short definitions for architectural patterns, domain concepts, and production code entities. Narrative detail lives in [BOOK.md](../BOOK.md); executive summary in [WHITEPAPER.md](../WHITEPAPER.md); AI-navigable code map on [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning).
 
 ## Architectural patterns
@@ -3585,7 +3581,6 @@ Short definitions for architectural patterns, domain concepts, and production co
 ---
 
 ## Appendix R: DEML macOS Security Workbench
-
 
 `native/macos-app` is a native Rust desktop surface for local vulnerability triage.
 It is deliberately local-first: findings, provider configuration, agent
@@ -3675,7 +3670,6 @@ Spotify or Discord.
 
 For a local development build:
 
-
 ```bash
 ./scripts/build_macos_installer.sh
 ```
@@ -3707,7 +3701,6 @@ Apple notarization, and staples and validates the returned tickets.
 ---
 
 ## Appendix S: Models Inventory
-
 
 This document tracks the machine learning models used across the platform, outlining their purpose, the scope of their data (Tenant vs. Platform), their architecture, and how they are trained using Knowledge Distillation from existing open-source "Teacher" models.
 
@@ -3761,7 +3754,6 @@ _Note: All Knowledge Distillation API calls happen during the offline training w
 ---
 
 ## Appendix T: Rust Data Plane Operations
-
 
 The DEML Rust workspace owns high-volume and timing-sensitive work while Django remains the control plane. One compiled image is deployed with exactly one `DEML_ROLE` per production service:
 
@@ -3876,7 +3868,6 @@ Stop the affected Rust role before enabling its Python fallback. Set `PYTHON_EMB
 
 ## Appendix U: DEML Platform Technology Stack
 
-
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is built on modern, battle-tested infrastructure. This document provides the technical details for platform contributors and operators.
 
 ## Compute & Deployment
@@ -3938,7 +3929,6 @@ For the complete technology list including all open-source foundations, see [BOO
 ---
 
 ## Appendix V: Viking-UI Grid-First Layout
-
 
 Viking-UI provides three package-owned layout levels:
 
@@ -4059,7 +4049,6 @@ contracts and consume it everywhere.
 ---
 
 ## Appendix W: Viking-UI Template-Driven Layout Migration
-
 
 ## Outcome
 
@@ -4250,7 +4239,6 @@ After, the responsive shell owns collapse state, navigation, content, tools, and
 
 ## Appendix X: Viking-UI Modern SaaS Migration
 
-
 This migration moves DEML surfaces onto the grid-first Viking-UI foundation
 without changing the Cyber-Noir or Ocean Blue Serenity color primitives. New
 work must compose the package templates and semantic tokens; application-local
@@ -4340,7 +4328,6 @@ rewriting page CSS.
 
 ## Appendix Y: Viking-UI Modern SaaS Style Guide
 
-
 Viking-UI is a dark-first enterprise SaaS system. Cyber-Noir surfaces establish
 depth; Ocean Blue is reserved for primary actions, selected states, links, and
 focus. Components are quiet by default and communicate hierarchy through
@@ -4426,7 +4413,6 @@ part of the contract.
 
 ### Apache Spark Integration
 
-
 Write Spark streaming and batch DataFrames directly to DEML ingestion endpoints for unified telemetry and ML feature pipelines.
 
 ## Prerequisites
@@ -4444,7 +4430,7 @@ import json
 import requests
 from pyspark.sql import SparkSession
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "YOUR_API_KEY"  # pragma: allowlist secret
 INGEST_URL = "https://backend.deml.app/api/v1/ingest"
 
 spark = SparkSession.builder.appName("deml-ingest").getOrCreate()
@@ -4529,7 +4515,6 @@ curl https://backend.deml.app/api/v1/integrations/apache-spark \
 
 ### Databricks Integration
 
-
 Connect Databricks notebooks and jobs to DEML for secure telemetry ingest, model inference, and cross-platform analytics.
 
 ## Prerequisites
@@ -4550,7 +4535,7 @@ databricks secrets put --scope deml --key api-key --string-value YOUR_API_KEY
 In a notebook:
 
 ```python
-api_key = dbutils.secrets.get(scope="deml", key="api-key")
+api_key = dbutils.secrets.get(scope="deml", key="api-key")  # pragma: allowlist secret
 ```
 
 ## Ingest from a Notebook
@@ -4628,7 +4613,6 @@ curl https://backend.deml.app/api/v1/integrations/databricks \
 ```
 
 ### Kubernetes Integration
-
 
 Integrating the DEML platform into your Kubernetes cluster lets microservices stream telemetry and request predictions through our API Gateway without leaving your cluster boundary.
 
@@ -4761,7 +4745,6 @@ Subscribe to release notes for operator availability.
 
 ### PyTorch Integration
 
-
 Use DEML as a remote data source and inference backend from PyTorch training scripts, DataLoaders, and deployment pipelines.
 
 ## Prerequisites
@@ -4779,7 +4762,7 @@ import requests
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "YOUR_API_KEY"  # pragma: allowlist secret
 INGEST_URL = "https://backend.deml.app/api/v1/ingest"
 PREDICT_URL = "https://backend.deml.app/api/v1/predict"
 
@@ -4847,7 +4830,7 @@ DEML hosts tenant-namespaced PyTorch `state_dict` checkpoints on Hugging Face �
 from deml.pytorch import PlatformDataLoader
 
 loader = PlatformDataLoader(
-    api_key="YOUR_API_KEY",
+    api_key="YOUR_API_KEY",  # pragma: allowlist secret
     batch_size=64,
     shuffle=True,
 )
@@ -4864,7 +4847,6 @@ curl https://backend.deml.app/api/v1/integrations/pytorch \
 ```
 
 ### AWS Redshift Integration
-
 
 Connect Amazon Redshift warehouses to DEML for scheduled analytics exports, feature-store rollups, and ML training pipelines. Redshift UNLOAD and COPY patterns push curated datasets into `/api/v1/ingest` while keeping credentials in AWS Secrets Manager or IAM roles.
 
@@ -4907,7 +4889,7 @@ import json
 import boto3
 import requests
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "YOUR_API_KEY"  # pragma: allowlist secret
 INGEST_URL = "https://backend.deml.app/api/v1/ingest"
 s3 = boto3.client("s3")
 
@@ -4932,7 +4914,7 @@ import boto3
 import requests
 
 redshift = boto3.client("redshift-data")
-API_KEY = "YOUR_API_KEY"
+API_KEY = "YOUR_API_KEY"  # pragma: allowlist secret
 INGEST_URL = "https://backend.deml.app/api/v1/ingest"
 
 response = redshift.execute_statement(
@@ -4983,7 +4965,7 @@ import boto3
 
 secrets = boto3.client("secretsmanager")
 payload = secrets.get_secret_value(SecretId="deml/production/api-key")
-api_key = json.loads(payload["SecretString"])["DEML_API_KEY"]
+api_key = json.loads(payload["SecretString"])["DEML_API_KEY"]  # pragma: allowlist secret
 ```
 
 ## Integration Health Check
@@ -5013,7 +4995,6 @@ Expected response:
 
 ### TensorFlow Integration
 
-
 Stream training data from DEML directly into a `tf.data.Dataset` for batched, high-throughput TensorFlow training loops.
 
 ## Prerequisites
@@ -5039,7 +5020,7 @@ import json
 import tensorflow as tf
 import requests
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "YOUR_API_KEY"  # pragma: allowlist secret
 INGEST_URL = "https://backend.deml.app/api/v1/ingest"
 PREDICT_URL = "https://backend.deml.app/api/v1/predict"
 
@@ -5106,7 +5087,7 @@ When `deml-tensorflow` ships, the interface will simplify to:
 from deml.tensorflow import PlatformDataset
 
 dataset = PlatformDataset(
-    api_key="YOUR_API_KEY",
+    api_key="YOUR_API_KEY",  # pragma: allowlist secret
     batch_size=32,
     prefetch=True,
 )

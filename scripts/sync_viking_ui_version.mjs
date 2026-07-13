@@ -14,7 +14,6 @@ const CONSUMER_MANIFESTS = [
 const COPY_FILES = [
   "BOOK.md",
   "WHITEPAPER.md",
-  "docs/viking-ui-release.md",
   "packages/viking-ui/README.md",
   "packages/viking-ui/MIGRATION_PLAN.md",
   "viking-ui-docs/README.md",
