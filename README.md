@@ -38,6 +38,16 @@ license: apache-2.0
 | `/status`, `/explore` | Public status pages |
 | `/settings`           | Account management  |
 
+### Native macOS security workbench
+
+The repository also includes `native/macos-app`, a local-first native Rust
+security operations client. It provides browser-based Firebase/MFA authentication with
+a PKCE-protected return to the app, Keychain-backed desktop sessions, a
+persistent vulnerability queue, Ollama and cloud-model triage, and
+approval-gated patch application for agent-assisted remediation. See
+[`docs/macos-security-workbench.md`](docs/macos-security-workbench.md) for the
+security model and build instructions.
+
 ---
 
 ## Core Capabilities

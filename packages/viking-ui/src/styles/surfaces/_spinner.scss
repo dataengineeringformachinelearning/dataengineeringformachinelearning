@@ -1,0 +1,28 @@
+// ============================================================================
+// Spinner components — shared across page-shell, dashboard, and premium-app.
+// Canonical definition: page-shell.scss version (tokenized).
+// ============================================================================
+
+.viking-spinner,
+.spinner {
+  width: var(--viking-space-4);
+  height: var(--viking-space-4);
+  border: 3px solid var(--viking-border);
+  border-top-color: var(--viking-accent);
+  border-radius: 50%;
+  animation: viking-spin 0.8s linear infinite;
+}
+
+@keyframes viking-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-spinner,
+  .spinner {
+    animation: none;
+    border-top-color: var(--viking-accent);
+  }
+}

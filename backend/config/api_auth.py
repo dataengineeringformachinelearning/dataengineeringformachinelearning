@@ -1,5 +1,11 @@
-import uuid
+import base64
+import hashlib
+import hmac
+import json
+import re
+import secrets
 
+from django.core import signing
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
@@ -60,8 +66,6 @@ def api_delete_account(request):
     "completed": completed,
   }
 
-
-import secrets
 
 from monitor.models import APIKey
 
@@ -138,10 +142,20 @@ class HandoffGenerateOut(Schema):
   token: str
 
 
+class HandoffGenerateIn(Schema):
+  code_challenge: str | None = None
+  client_name: str = "web"
+
+
+_PKCE_PATTERN = re.compile(r"^[A-Za-z0-9_-]{43,128}$")
+_DESKTOP_SESSION_SALT = "deml.desktop-session.v1"
+_DESKTOP_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
+
+
 @router.post(
   "/handoff/generate", response=HandoffGenerateOut, summary="Generate cross-domain handoff token"
 )
-def generate_handoff_token(request):
+def generate_handoff_token(request, payload: HandoffGenerateIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
 
@@ -150,19 +164,38 @@ def generate_handoff_token(request):
   if not redis_client:
     raise HttpError(500, "Redis unavailable")
 
-  token = str(uuid.uuid4())
-  # Store the user ID in redis for 60 seconds
-  redis_client.setex(f"handoff:{token}", 60, request.user.id)
+  challenge = (payload.code_challenge or "").strip()
+  if challenge and not _PKCE_PATTERN.fullmatch(challenge):
+    raise HttpError(400, "Invalid PKCE code challenge")
+
+  token = secrets.token_urlsafe(32)
+  handoff = {
+    "user_id": request.user.id,
+    "code_challenge": challenge,
+    "client_name": payload.client_name[:64],
+  }
+  # Authorization codes are one-time and deliberately short-lived.
+  redis_client.setex(f"handoff:{token}", 120, json.dumps(handoff))
 
   return {"status": "success", "token": token}
 
 
 class HandoffVerifyIn(Schema):
   token: str
+  code_verifier: str | None = None
+
+
+class DesktopAuthOut(Schema):
+  status: str
+  user: str
+  email: str
+  user_id: int
+  role: str
+  desktop_token: str | None = None
 
 
 @router.post(
-  "/handoff/verify", response=SuccessSchema, auth=None, summary="Verify cross-domain handoff token"
+  "/handoff/verify", response=DesktopAuthOut, auth=None, summary="Verify one-time handoff token"
 )
 def verify_handoff_token(request, payload: HandoffVerifyIn):
   from utils.rate_limit import redis_client
@@ -170,29 +203,94 @@ def verify_handoff_token(request, payload: HandoffVerifyIn):
   if not redis_client:
     raise HttpError(500, "Redis unavailable")
 
-  user_id = redis_client.get(f"handoff:{payload.token}")
-  if not user_id:
+  raw_handoff = redis_client.get(f"handoff:{payload.token}")
+  if not raw_handoff:
     raise HttpError(401, "Invalid or expired token")
 
-  # Token valid, delete it so it's one-time use
+  # Consume before verification so a failed PKCE attempt cannot be retried.
   redis_client.delete(f"handoff:{payload.token}")
+
+  try:
+    handoff = json.loads(raw_handoff)
+    user_id = int(handoff["user_id"])
+    expected_challenge = str(handoff.get("code_challenge") or "")
+  except (TypeError, ValueError, KeyError, json.JSONDecodeError):
+    # Backwards compatibility for handoffs issued by the previous deployment.
+    try:
+      user_id = int(raw_handoff)
+      expected_challenge = ""
+    except (TypeError, ValueError) as exc:
+      raise HttpError(401, "Invalid handoff payload") from exc
+
+  if expected_challenge:
+    verifier = (payload.code_verifier or "").strip()
+    if not _PKCE_PATTERN.fullmatch(verifier):
+      raise HttpError(401, "PKCE verification failed")
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    actual_challenge = base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+    if not hmac.compare_digest(expected_challenge, actual_challenge):
+      raise HttpError(401, "PKCE verification failed")
 
   from django.contrib.auth import get_user_model
 
   User = get_user_model()
   try:
-    user = User.objects.get(id=int(user_id))
+    user = User.objects.get(id=user_id, is_active=True)
     role = "Viewer"
     if hasattr(user, "profile"):
       role = user.profile.role
+    desktop_token = None
+    if expected_challenge:
+      desktop_token = signing.dumps({"user_id": user.id}, salt=_DESKTOP_SESSION_SALT, compress=True)
     return {
       "status": "success",
       "user": user.first_name or user.username,
+      "email": user.email,
       "user_id": user.id,
       "role": role,
+      "desktop_token": desktop_token,
     }
   except User.DoesNotExist:
     raise HttpError(404, "User not found") from None
+
+
+class DesktopSessionIn(Schema):
+  desktop_token: str
+
+
+@router.post(
+  "/desktop/session",
+  response=DesktopAuthOut,
+  auth=None,
+  summary="Validate a native desktop session",
+)
+def validate_desktop_session(request, payload: DesktopSessionIn):
+  try:
+    session = signing.loads(
+      payload.desktop_token,
+      salt=_DESKTOP_SESSION_SALT,
+      max_age=_DESKTOP_SESSION_MAX_AGE_SECONDS,
+    )
+    user_id = int(session["user_id"])
+  except (signing.BadSignature, signing.SignatureExpired, TypeError, ValueError, KeyError) as exc:
+    raise HttpError(401, "Invalid or expired desktop session") from exc
+
+  from django.contrib.auth import get_user_model
+
+  User = get_user_model()
+  try:
+    user = User.objects.get(id=user_id, is_active=True)
+  except User.DoesNotExist:
+    raise HttpError(401, "Desktop session user is unavailable") from None
+  role = user.profile.role if hasattr(user, "profile") else "Viewer"
+  return {
+    "status": "success",
+    "user": user.first_name or user.username,
+    "email": user.email,
+    "user_id": user.id,
+    "role": role,
+    "desktop_token": None,
+  }
 
 
 class SessionRegisterIn(Schema):

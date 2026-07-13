@@ -84,11 +84,8 @@
   background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid
     color-mix(in srgb, var(--viking-border-strong) 86%, var(--viking-border));
-  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
-  box-shadow:
-    var(--viking-shadow-md),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 24%, transparent);
+  border-radius: var(--viking-card-radius, var(--viking-radius-lg));
+  box-shadow: var(--viking-shadow-sm);
   padding: var(--viking-card-padding);
   color: var(--viking-text);
   min-width: var(--viking-card-min-width);
@@ -96,25 +93,8 @@
   align-self: stretch;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   transition: var(--viking-transition-interactive);
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0 auto auto 0;
-    right: 0;
-    width: 2px;
-    height: var(--viking-space-4);
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-metallic-100) 30%, transparent),
-      transparent
-    );
-    pointer-events: none;
-  }
-
-  @include viking-surface-hairline;
 
   &.viking-card-compact,
   &--compact {

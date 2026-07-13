@@ -13,6 +13,7 @@ import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 import {
   VikingAuthPanel,
   VikingButton,
@@ -59,6 +60,7 @@ export class Login implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private desktopHandoffStarted = false;
 
   constructor() {
     effect(() => {
@@ -98,6 +100,7 @@ export class Login implements OnInit, OnDestroy {
   successMessage = signal<string | null>(null);
   error = signal<string | null>(null);
   sessionExpired = signal<boolean>(false);
+  isDesktopAuth = signal<boolean>(false);
 
   loginForm: FormGroup = this.fb.group({
     username: ['', Validators.required],
@@ -155,6 +158,7 @@ export class Login implements OnInit, OnDestroy {
         this.sessionExpired.set(true);
       }
       const mode = params['mode'];
+      this.isDesktopAuth.set(Boolean(params['desktop_callback']));
       if (mode === 'reset') {
         this.isResetMode.set(true);
         this.uid.set(params['uid'] || '');
@@ -346,6 +350,13 @@ export class Login implements OnInit, OnDestroy {
     if (action === 'checkout') {
       return; // The effect will catch this and handle the redirect
     }
+    if (this.route.snapshot.queryParams['desktop_callback']) {
+      if (!this.desktopHandoffStarted) {
+        this.desktopHandoffStarted = true;
+        void this.completeDesktopAuthentication();
+      }
+      return;
+    }
     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     const marketingOrigin = (() => {
       try {
@@ -359,6 +370,72 @@ export class Login implements OnInit, OnDestroy {
       return;
     }
     this.router.navigateByUrl(returnUrl);
+  }
+
+  private desktopRequest(): {
+    callback: URL;
+    state: string;
+    codeChallenge: string;
+  } | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    const params = this.route.snapshot.queryParams;
+    try {
+      const callback = new URL(String(params['desktop_callback'] || ''));
+      const state = String(params['desktop_state'] || '');
+      const codeChallenge = String(params['code_challenge'] || '');
+      const safeValue = /^[A-Za-z0-9_-]{43,128}$/;
+      if (
+        callback.protocol !== 'http:' ||
+        callback.hostname !== '127.0.0.1' ||
+        callback.pathname !== '/callback' ||
+        !safeValue.test(state) ||
+        !safeValue.test(codeChallenge)
+      ) {
+        return null;
+      }
+      return { callback, state, codeChallenge };
+    } catch {
+      return null;
+    }
+  }
+
+  private async completeDesktopAuthentication(): Promise<void> {
+    const request = this.desktopRequest();
+    if (!request || !this.authService.auth?.currentUser) {
+      this.error.set(
+        'The desktop sign-in request is invalid or has expired. Return to the app and try again.',
+      );
+      this.desktopHandoffStarted = false;
+      return;
+    }
+    this.isLoading.set(true);
+    this.successMessage.set('Authentication complete. Returning to DEML Security Workbench…');
+    try {
+      const firebaseToken = await this.authService.auth.currentUser.getIdToken();
+      const response: any = await firstValueFrom(
+        this.http.post(
+          `${environment.backendUrl}/api/v1/auth/handoff/generate`,
+          {
+            code_challenge: request.codeChallenge,
+            client_name: 'DEML Security Workbench',
+          },
+          { headers: { Authorization: `Bearer ${firebaseToken}` } },
+        ),
+      );
+      if (response.status !== 'success' || !response.token) {
+        throw new Error('The server did not issue a desktop authorization code.');
+      }
+      request.callback.searchParams.set('code', response.token);
+      request.callback.searchParams.set('state', request.state);
+      window.location.assign(request.callback.toString());
+    } catch (error) {
+      console.error('Desktop authentication handoff failed', error);
+      this.successMessage.set(null);
+      this.error.set('Could not return authentication to the desktop app. Please try again.');
+      this.desktopHandoffStarted = false;
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   async sendVerificationCode() {

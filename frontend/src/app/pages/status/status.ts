@@ -23,6 +23,7 @@ import {
   VikingButton,
   VikingCallout,
   VikingPageHeader,
+  VikingPageTemplate,
   VikingStatusDashboard,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type {
@@ -45,6 +46,7 @@ import { timeout } from 'rxjs';
     VikingButton,
     VikingCallout,
     VikingPageHeader,
+    VikingPageTemplate,
     VikingStatusDashboard,
     RouterModule,
     StatusCta,

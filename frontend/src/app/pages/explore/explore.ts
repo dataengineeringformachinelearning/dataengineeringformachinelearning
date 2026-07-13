@@ -18,6 +18,7 @@ import {
   VikingButton,
   VikingExploreCard,
   VikingPageHeader,
+  VikingPageTemplate,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type {
   ExploreCardMetric,
@@ -34,6 +35,7 @@ import { StatusCta } from '../../components/status-cta/status-cta';
     VikingButton,
     VikingExploreCard,
     VikingPageHeader,
+    VikingPageTemplate,
     VikingAppIcon,
     RouterModule,
     StatusCta,

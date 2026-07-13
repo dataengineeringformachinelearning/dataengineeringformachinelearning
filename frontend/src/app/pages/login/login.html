@@ -11,7 +11,12 @@
         (appleSignIn)="signInWithApple()"
       >
         <div class="viking-auth-stack">
-          @if (sessionExpired()) {
+          @if (isDesktopAuth()) {
+          <viking-callout
+            tone="accent"
+            heading="Sign in to continue to DEML Security Workbench on this Mac."
+          />
+          } @if (sessionExpired()) {
           <viking-callout
             tone="warning"
             heading="Session expired due to inactivity. Please sign in again."

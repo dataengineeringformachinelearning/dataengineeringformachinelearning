@@ -583,7 +583,7 @@
   border-bottom: 1px solid var(--viking-border);
   position: relative;
 
-  @media (min-width: 900px) {
+  @media (min-width: 901px) {
     grid-template-columns: 1fr 1fr;
     gap: var(--viking-space-8);
     padding: var(--viking-space-9) 0;
@@ -624,7 +624,7 @@
   }
 
   &.reversed {
-    @media (min-width: 900px) {
+    @media (min-width: 901px) {
       .showcase-band-copy {
         order: 2;
       }
@@ -759,7 +759,7 @@
     gap: var(--viking-space-2);
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 901px) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -852,7 +852,7 @@
   gap: var(--viking-space-5);
   align-items: center;
 
-  @media (min-width: 900px) {
+  @media (min-width: 901px) {
     grid-template-columns: 1fr 1fr;
     gap: var(--viking-space-8);
   }

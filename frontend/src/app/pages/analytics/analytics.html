@@ -11,13 +11,11 @@
 
   <viking-section>
     <header class="metrics-overview-header">
-      <div>
-        <h2 class="section-title-premium">
-          <viking-app-icon name="download" />
-          Exports
-        </h2>
-        <p class="section-description-premium">Signed downloads · CSV · JSON · Parquet · PDF</p>
-      </div>
+      <h2 class="section-title-premium">
+        <viking-app-icon name="download" />
+        Exports
+      </h2>
+      <p class="section-description-premium">Signed downloads · CSV · JSON · Parquet · PDF</p>
     </header>
 
     <viking-form-section heading="Generate" icon="download" layout="inline">
@@ -133,7 +131,7 @@
         Aggregate performance and security telemetry across all nodes.
       </p>
     </header>
-    <viking-column-layout [columns]="2">
+    <viking-column-layout [columns]="3">
       <!-- THREAT GAUGE -->
       <viking-card class="gauge-card">
         <div class="gauge-card-header">
@@ -278,15 +276,13 @@
 
   <viking-section>
     <header class="metrics-overview-header">
-      <div>
-        <h2 class="section-title-premium">
-          <viking-app-icon name="person" />
-          Your Analytics
-        </h2>
-        <p class="section-description-premium">
-          Performance data isolated to your active projects and workloads.
-        </p>
-      </div>
+      <h2 class="section-title-premium">
+        <viking-app-icon name="person" />
+        Your Analytics
+      </h2>
+      <p class="section-description-premium">
+        Performance data isolated to your active projects and workloads.
+      </p>
     </header>
 
     @if (availableSites.length > 0) {
@@ -301,7 +297,7 @@
       ></app-unified-select>
     </div>
     }
-    <viking-column-layout [columns]="2">
+    <viking-column-layout [columns]="4">
       <viking-metric-card
         label="API usage (last minute)"
         [value]="formatCount(apiUsageCurrent) + ' / ' + formatCount(apiUsageQuota)"
@@ -366,36 +362,34 @@
     </div>
     }
 
-    <viking-grid [columns]="1">
-      <viking-chart-panel>
-        <viking-chart-card-header
-          title="System Latency (Last 24h)"
-          [hasData]="hasLatencyData()"
-          [value]="p99Latency + ' ms'"
-          [trend]="latencyTrend"
-          emptyLabel="Awaiting signal"
-        />
+    <viking-chart-panel>
+      <viking-chart-card-header
+        title="System Latency (Last 24h)"
+        [hasData]="hasLatencyData()"
+        [value]="p99Latency + ' ms'"
+        [trend]="latencyTrend"
+        emptyLabel="Awaiting signal"
+      />
 
-        @if (hasLatencyData()) {
-        <viking-chart
-          kind="line"
-          [series]="latencySeries()"
-          [categories]="latencyCategories()"
-          label="System Latency (Last 24h)"
-          [showArea]="true"
-          curve="smooth"
-          [fill]="true"
-          [zoomable]="true"
-        />
-        } @else {
-        <viking-chart-empty-state
-          icon="globe"
-          title="No Telemetry Signal"
-          description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
-        />
-        }
-      </viking-chart-panel>
-    </viking-grid>
+      @if (hasLatencyData()) {
+      <viking-chart
+        kind="line"
+        [series]="latencySeries()"
+        [categories]="latencyCategories()"
+        label="System Latency (Last 24h)"
+        [showArea]="true"
+        curve="smooth"
+        [fill]="true"
+        [zoomable]="true"
+      />
+      } @else {
+      <viking-chart-empty-state
+        icon="globe"
+        title="No Telemetry Signal"
+        description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
+      />
+      }
+    </viking-chart-panel>
   </viking-section>
 
   <viking-section>
@@ -410,30 +404,28 @@
     </header>
 
     <!-- Full Width Origin Map -->
-    <viking-grid [columns]="1">
-      <viking-chart-panel size="medium" body="origin-map">
-        <viking-chart-card-header
-          title="Geographic Origins"
-          [hasData]="originMapData.length > 0"
-          [value]="originMapData.length + ' Regions'"
-          [trend]="originTrend"
-          emptyLabel="Awaiting signal"
-        />
-        <div
-          id="originMap"
-          class="origin-map-canvas viking-map-ready"
-          aria-label="Geographic origin map"
-        ></div>
-        @if (originMapData.length === 0) {
-        <viking-chart-empty-state
-          layout="overlay"
-          icon="globe"
-          title="No Geographic Data"
-          description="Regional traffic origins will appear once requests are received from connected endpoints."
-        />
-        }
-      </viking-chart-panel>
-    </viking-grid>
+    <viking-chart-panel size="medium" body="origin-map">
+      <viking-chart-card-header
+        title="Geographic Origins"
+        [hasData]="originMapData.length > 0"
+        [value]="originMapData.length + ' Regions'"
+        [trend]="originTrend"
+        emptyLabel="Awaiting signal"
+      />
+      <div
+        id="originMap"
+        class="origin-map-canvas viking-map-ready"
+        aria-label="Geographic origin map"
+      ></div>
+      @if (originMapData.length === 0) {
+      <viking-chart-empty-state
+        layout="overlay"
+        icon="globe"
+        title="No Geographic Data"
+        description="Regional traffic origins will appear once requests are received from connected endpoints."
+      />
+      }
+    </viking-chart-panel>
 
     <viking-grid [columns]="12" [equalRows]="true">
       <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">

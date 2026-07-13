@@ -45,8 +45,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <viking-button-wc variant="ghost" size="sm" aria-label="July 10">10</viking-button-wc>
     <viking-button-wc variant="ghost" size="sm" aria-label="July 11">11</viking-button-wc>
   </div>
-</div>
-<p class="viking-text-muted viking-demo-caption">Year + month arrows and a denser day grid</p>`,
+</div>`,
           selector: "viking-calendar",
           tags: ["angular", "forms"],
           related: ["date-picker"],
@@ -104,8 +103,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       <li role="option">threat_scanner</li>
     </ul>
   </div>
-</div>
-<p class="viking-text-muted viking-demo-caption">Single trigger + open listbox — not nested input shells</p>`,
+</div>`,
           selector: "viking-select",
           tags: ["angular"],
           related: ["native-select", "select"],
@@ -134,8 +132,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 6 of verification code" />
   </div>
   <p class="viking-text-muted">Enter the 6-digit code we sent to your phone.</p>
-</fieldset>
-<p class="viking-text-muted viking-demo-caption">autocomplete=&quot;one-time-code&quot; for SMS autofill</p>`,
+</fieldset>`,
           selector: "viking-verification-code-field",
           tags: ["angular", "auth"],
           related: ["otp-input", "auth-panel"],

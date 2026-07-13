@@ -1,6 +1,4 @@
-<div class="dashboard-page-container">
-  <div class="dashboard-content-area">
-    <div class="page-inner-wrapper">
+<viking-page-template width="wide">
       <viking-page-header
         tag="Account"
         title="Account & Billing"
@@ -131,7 +129,7 @@
             </p>
 
             @if (newlyGeneratedKey()) {
-            <div class="alert alert-success api-key-reveal">
+            <viking-callout tone="success" class="api-key-reveal">
               <strong>Save this key now! You will not be able to see it again.</strong>
               <div class="code-block-container">
                 <div class="code-block-outlined">
@@ -146,7 +144,7 @@
                   {{ copiedApiKey() ? 'Copied' : 'Copy' }}
                 </viking-button>
               </div>
-            </div>
+            </viking-callout>
             }
 
             <viking-form-section heading="Generate API Key" icon="key" layout="inline">
@@ -314,9 +312,9 @@
               </ng-container>
               <ng-container vikingFormFooter>
                 @if (accountError()) {
-                <div class="alert alert-error">{{ accountError() }}</div>
+                <viking-callout tone="danger">{{ accountError() }}</viking-callout>
                 } @if (accountSuccess()) {
-                <div class="alert alert-success">{{ accountSuccess() }}</div>
+                <viking-callout tone="success">{{ accountSuccess() }}</viking-callout>
                 }
               </ng-container>
             </viking-form-section>
@@ -364,9 +362,9 @@
               } }
               <ng-container vikingFormFooter>
                 @if (billingError()) {
-                <div class="alert alert-error">{{ billingError() }}</div>
+                <viking-callout tone="danger">{{ billingError() }}</viking-callout>
                 } @if (billingSuccess()) {
-                <div class="alert alert-success">{{ billingSuccess() }}</div>
+                <viking-callout tone="success">{{ billingSuccess() }}</viking-callout>
                 }
               </ng-container>
             </viking-form-section>
@@ -397,6 +395,4 @@
           </viking-button>
         </viking-card>
       </div>
-    </div>
-  </div>
-</div>
+</viking-page-template>

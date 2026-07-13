@@ -67,11 +67,7 @@ import { VikingSize, VikingTone } from "../../core/types";
         box-shadow: none;
       }
       :host(.viking-badge-secondary) {
-        background: color-mix(
-          in srgb,
-          var(--viking-accent-secondary) 16%,
-          var(--viking-surface)
-        );
+        background: var(--viking-accent-secondary-soft);
         border-color: color-mix(
           in srgb,
           var(--viking-accent-secondary) 32%,
@@ -80,11 +76,7 @@ import { VikingSize, VikingTone } from "../../core/types";
         color: var(--viking-accent-secondary);
       }
       :host(.viking-badge-success) {
-        background: color-mix(
-          in srgb,
-          var(--viking-success) 16%,
-          var(--viking-surface)
-        );
+        background: var(--viking-success-soft);
         border-color: color-mix(
           in srgb,
           var(--viking-success) 32%,
@@ -93,11 +85,7 @@ import { VikingSize, VikingTone } from "../../core/types";
         color: var(--viking-success);
       }
       :host(.viking-badge-warning) {
-        background: color-mix(
-          in srgb,
-          var(--viking-warning) 18%,
-          var(--viking-surface)
-        );
+        background: var(--viking-warning-soft);
         border-color: color-mix(
           in srgb,
           var(--viking-warning) 32%,
@@ -106,20 +94,12 @@ import { VikingSize, VikingTone } from "../../core/types";
         color: var(--viking-warning);
       }
       :host(.viking-badge-danger) {
-        background: color-mix(
-          in srgb,
-          var(--viking-danger) 14%,
-          var(--viking-surface)
-        );
+        background: var(--viking-danger-soft);
         border-color: color-mix(in srgb, var(--viking-danger) 32%, transparent);
         color: var(--viking-danger-text);
       }
       :host(.viking-badge-info) {
-        background: color-mix(
-          in srgb,
-          var(--viking-info) 14%,
-          var(--viking-surface)
-        );
+        background: var(--viking-info-soft);
         border-color: color-mix(in srgb, var(--viking-info) 32%, transparent);
         color: var(--viking-info);
       }

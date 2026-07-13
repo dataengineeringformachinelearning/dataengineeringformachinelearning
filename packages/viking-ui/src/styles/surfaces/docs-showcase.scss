@@ -61,7 +61,7 @@
   }
 }
 
-@media (min-width: 960px) {
+@media (min-width: 901px) {
   .showcase-hero {
     grid-template-columns: 1.15fr 1fr;
     gap: var(--viking-space-6);
@@ -117,7 +117,7 @@
 .showcase-hero-badge-dot {
   width: var(--viking-space-1);
   height: var(--viking-space-1);
-  border-radius: 50%;
+  border-radius: var(--viking-radius-full);
   background: var(--viking-accent);
   flex-shrink: 0;
 }
@@ -234,7 +234,7 @@
   z-index: 40;
   border-block: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-bg) 94%, transparent);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--viking-surface-glass-blur, 10px));
 }
 
 .showcase-category-bar-inner {
@@ -295,7 +295,7 @@
   border-bottom: 1px solid var(--viking-border);
   scroll-margin-top: calc(
     var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
-      56px
+      var(--viking-space-7)
   );
 }
 
@@ -326,7 +326,7 @@
   border-top: 1px solid var(--viking-border-subtle);
   scroll-margin-top: calc(
     var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
-      56px
+      var(--viking-space-7)
   );
   position: relative;
 }
@@ -375,7 +375,7 @@
   gap: var(--viking-space-5);
   scroll-margin-top: calc(
     var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
-      56px
+      var(--viking-space-7)
   );
   transition: var(--viking-transition-interactive);
   border: 1px solid var(--viking-border);
@@ -482,19 +482,6 @@
   max-width: 100%;
 }
 
-/* Captions always sit under the demo, full width of the stage */
-.component-showcase-preview > .viking-demo-caption,
-.component-showcase-preview > .viking-text-muted.viking-demo-caption,
-.component-showcase-preview .viking-demo-caption {
-  display: block;
-  width: 100%;
-  max-width: 36rem;
-  margin: var(--viking-space-1) 0 0;
-  text-align: center;
-  order: 99;
-  flex: 0 0 auto;
-}
-
 /* Center rows of buttons / controls inside the preview */
 .component-showcase-preview .viking-demo-row {
   display: flex;
@@ -556,13 +543,13 @@
 
 /* Spinner must stay a perfect circle so rotation spins, not orbits */
 .component-showcase-preview .viking-spinner-static {
-  width: 1.25rem;
-  height: 1.25rem;
-  min-width: 1.25rem;
-  min-height: 1.25rem;
-  max-width: 1.25rem;
-  max-height: 1.25rem;
-  flex: 0 0 1.25rem;
+  width: var(--viking-icon-size-md);
+  height: var(--viking-icon-size-md);
+  min-width: var(--viking-icon-size-md);
+  min-height: var(--viking-icon-size-md);
+  max-width: var(--viking-icon-size-md);
+  max-height: var(--viking-icon-size-md);
+  flex: 0 0 var(--viking-icon-size-md);
   aspect-ratio: 1;
   align-self: center;
 }
@@ -748,7 +735,7 @@
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .showcase-related-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -827,7 +814,7 @@
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .api-prop-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -924,7 +911,7 @@
 .landing-hero-badge-dot {
   width: var(--viking-space-1);
   height: var(--viking-space-1);
-  border-radius: 50%;
+  border-radius: var(--viking-radius-full);
   background: var(--viking-accent);
   box-shadow: 0 0 0 2px
     color-mix(in srgb, var(--viking-accent) 30%, transparent);
@@ -1025,7 +1012,7 @@
   gap: var(--viking-space-3);
 }
 
-@media (min-width: 820px) {
+@media (min-width: 768px) {
   .landing-section-header-row {
     flex-direction: row;
     align-items: end;
@@ -1130,7 +1117,7 @@
   gap: var(--viking-space-3);
 }
 
-@media (min-width: 560px) {
+@media (min-width: 600px) {
   .landing-preview-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1204,7 +1191,7 @@ viking-card-wc.landing-doctrine-card > * {
   align-items: start;
 }
 
-@media (min-width: 980px) {
+@media (min-width: 1024px) {
   .landing-quickstart-grid {
     grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
   }
@@ -1274,7 +1261,7 @@ viking-card-wc.landing-doctrine-card > * {
   box-shadow: var(--viking-shadow-md);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
   .landing-playground-band {
     grid-template-columns: 1fr minmax(18rem, 0.72fr);
   }
@@ -1323,8 +1310,8 @@ viking-card-wc.landing-doctrine-card > * {
   align-self: flex-start;
   gap: var(--viking-space-1);
   font-size: var(--viking-font-size-ui, var(--viking-font-size-xs));
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: var(--viking-font-weight-bold, 700);
+  letter-spacing: var(--viking-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--viking-text-muted);
   padding: var(--viking-space-1) var(--viking-space-2);
@@ -1336,7 +1323,7 @@ viking-card-wc.landing-doctrine-card > * {
 .showcase-auth-panel .viking-auth-tag-dot {
   width: var(--viking-space-1);
   height: var(--viking-space-1);
-  border-radius: 50%;
+  border-radius: var(--viking-radius-full);
   background: var(--viking-accent);
   flex-shrink: 0;
 }
@@ -1416,7 +1403,7 @@ viking-card-wc.landing-doctrine-card > * {
 .showcase-search-palette-footer {
   padding: var(--viking-space-1) var(--viking-space-2);
   border-top: 1px solid var(--viking-border);
-  font-size: calc(var(--viking-font-size) * 0.85);
+  font-size: var(--viking-font-size-2xs);
   color: var(--viking-text-muted);
   text-align: center;
 }
@@ -1451,16 +1438,6 @@ viking-card-wc.landing-doctrine-card > * {
 
 .viking-demo-row-gap-lg {
   gap: var(--viking-space-4);
-}
-
-.viking-demo-caption {
-  display: block;
-  width: 100%;
-  margin-top: var(--viking-space-2);
-  font-size: var(--viking-font-size-xs);
-  line-height: var(--viking-line-height-snug);
-  color: var(--viking-text-muted);
-  text-align: center;
 }
 
 .viking-demo-label-compact {
@@ -1706,7 +1683,7 @@ viking-card-wc.landing-doctrine-card > * {
 .component-showcase-preview .viking-accordion-static summary {
   display: flex;
   align-items: center;
-  min-height: 2.5rem;
+  min-height: var(--viking-control-height);
   gap: var(--viking-space-1);
   cursor: pointer;
 }
@@ -1812,7 +1789,7 @@ viking-card-wc.landing-doctrine-card > * {
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
   .architecture-pattern {
     flex-direction: row;
     align-items: center;
@@ -1831,7 +1808,7 @@ viking-card-wc.landing-doctrine-card > * {
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
   .playground-layout {
     grid-template-columns: minmax(280px, 360px) 1fr;
   }

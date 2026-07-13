@@ -39,7 +39,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
     `
       :host {
         display: grid;
-        gap: var(--viking-card-content-gap, var(--viking-space-2));
+        gap: var(--viking-card-content-gap, var(--viking-space-3));
         width: 100%;
         background: var(--viking-surface-recipe);
         border: var(--viking-border-width) var(--viking-border-style)
@@ -51,7 +51,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         min-width: 0;
         align-self: stretch;
         box-sizing: border-box;
-        box-shadow: var(--viking-shadow-xs), var(--viking-surface-highlight);
+        box-shadow: var(--viking-shadow-sm);
       }
 
       /* Clearer visual separation when cards sit on other surfaces */
@@ -72,13 +72,13 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       }
       :host(.viking-card-interactive):hover {
         border-color: var(--viking-accent-strong);
-        box-shadow: var(--viking-shadow-sm), var(--viking-surface-highlight);
+        box-shadow: var(--viking-shadow-hover);
         background: var(--viking-surface-recipe-elevated);
         transform: translateY(var(--viking-state-hover-lift));
       }
       :host(.viking-card-interactive):active {
         transform: translateY(0) scale(var(--viking-state-active-scale));
-        box-shadow: var(--viking-shadow-sm);
+        box-shadow: var(--viking-shadow-hover);
       }
       :host(.viking-card-loading) {
         pointer-events: none;
@@ -93,7 +93,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       :host ::ng-deep viking-card-header {
         padding-bottom: var(--viking-space-4);
         margin-bottom: 0;
-        border-bottom: 1px solid var(--viking-border-subtle);
+        border-bottom: var(--viking-border-width) var(--viking-border-style) var(--viking-border-subtle);
       }
 
       :host ::ng-deep .viking-card-content,
@@ -104,7 +104,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       :host ::ng-deep .viking-card-footer {
         padding-top: var(--viking-space-4);
         margin-top: 0;
-        border-top: 1px solid var(--viking-border-subtle);
+        border-top: var(--viking-border-width) var(--viking-border-style) var(--viking-border-subtle);
       }
 
       .viking-card-skeleton {
@@ -145,7 +145,7 @@ export class VikingCard {
         gap: var(--viking-space-4);
         padding-bottom: var(--viking-space-4);
         margin-bottom: 0;
-        border-bottom: 1px solid var(--viking-border-subtle);
+        border-bottom: var(--viking-border-width) var(--viking-border-style) var(--viking-border-subtle);
       }
       /* Support slotted left meta + right actions uniformly */
       :host ::ng-deep > * {

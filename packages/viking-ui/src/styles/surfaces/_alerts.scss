@@ -1,0 +1,51 @@
+// ============================================================================
+// Alert components — shared across settings, analytics, and other surfaces.
+// Canonical definition: page-shell.scss patterns unified here.
+// ============================================================================
+
+.alert {
+  padding: var(--viking-space-2, 16px);
+  border-radius: var(--viking-radius, 8px);
+  margin-top: var(--viking-space-2, 16px);
+  border: 1px solid var(--viking-border);
+  font-size: var(--viking-font-size);
+  font-weight: 500;
+  line-height: var(--viking-line-height-relaxed);
+
+  &.alert-error {
+    background: color-mix(
+      in srgb,
+      var(--viking-crimson-600) 18%,
+      var(--viking-surface)
+    );
+    border-color: var(--viking-danger);
+    color: var(--viking-white);
+  }
+
+  &.alert-warning {
+    background: color-mix(
+      in srgb,
+      var(--viking-gold-500) 14%,
+      var(--viking-surface)
+    );
+    border-color: var(--viking-warning);
+    color: var(--viking-text);
+  }
+
+  &.alert-success {
+    background: color-mix(
+      in srgb,
+      var(--viking-green-500) 12%,
+      var(--viking-surface)
+    );
+    border-color: var(--viking-success);
+    color: var(--viking-text);
+  }
+}
+
+.alert-viewer-banner {
+  margin-bottom: var(--viking-space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+}

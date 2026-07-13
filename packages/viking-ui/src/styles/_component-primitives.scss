@@ -24,12 +24,6 @@
 
   --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.055);
 
-  /* Solid, stepped surfaces keep the hierarchy quiet and deterministic. */
-  --viking-surface-recipe: var(--viking-surface);
-  --viking-surface-recipe-elevated: var(--viking-surface-raised);
-  --viking-surface-recipe-inset: var(--viking-surface-inset);
-  --viking-surface-recipe-muted: var(--viking-surface-alt);
-
   --viking-transition-interactive:
     color var(--viking-duration) var(--viking-ease-default),
     background-color var(--viking-duration) var(--viking-ease-default),

@@ -1,0 +1,33 @@
+// ============================================================================
+// Severity pill badges — shared across dashboard-overview and siem-soc.
+// Canonical definition: _dashboard-overview.scss version (tokenized).
+// ============================================================================
+
+.severity-pill {
+  display: inline-block;
+  padding: var(--viking-space-0-5) var(--viking-space-1);
+  border-radius: var(--viking-radius-xs);
+  font-size: var(--viking-font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+
+  &.low {
+    background: color-mix(in srgb, var(--viking-teal-600) 20%, transparent);
+    color: var(--viking-teal-600);
+  }
+
+  &.medium {
+    background: color-mix(in srgb, var(--viking-teal-400) 20%, transparent);
+    color: var(--viking-teal-400);
+  }
+
+  &.high {
+    background: color-mix(in srgb, var(--viking-gold-500) 20%, transparent);
+    color: var(--viking-gold-500);
+  }
+
+  &.critical {
+    background: color-mix(in srgb, var(--viking-crimson-500) 20%, transparent);
+    color: var(--viking-crimson-500);
+  }
+}

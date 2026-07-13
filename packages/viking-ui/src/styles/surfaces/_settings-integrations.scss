@@ -1,0 +1,743 @@
+// Partial of app-pages.scss — settings & integrations (settings forms, integrations, service forms, platform tiles, MFA controls)
+
+/* ── settings ── */
+/* Light theme overrides matching THEME.md */
+
+.settings-stack,
+.manage-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-section-gap);
+}
+
+/* Outlined panel — page-specific overrides on viking-card host */
+.status-panel-outlined {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+}
+
+.status-panel-outlined:hover {
+  box-shadow: var(--viking-shadow-md);
+  border-color: var(--viking-border-strong);
+}
+
+viking-card-header {
+  .delete-page-btn {
+    align-self: center;
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+}
+
+.inline-status-link {
+  color: var(--viking-accent);
+  font-weight: var(--viking-font-weight-medium);
+  text-decoration: underline;
+}
+
+.create-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1, 8px);
+  width: 100%;
+}
+
+.settings-mfa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-2);
+  margin-top: var(--viking-space-2);
+}
+
+.settings-form-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3, 24px);
+  margin-bottom: var(--viking-space-4, 32px);
+
+  .form-row {
+    display: flex;
+    gap: var(--viking-space-3, 24px);
+    flex-wrap: wrap;
+
+    viking-field {
+      flex: 1;
+      min-width: 200px;
+    }
+  }
+
+  .settings-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--viking-space-3, 24px);
+    margin-top: var(--viking-space-1, 8px);
+
+    viking-checkbox,
+    .viking-checkbox {
+      width: 100%;
+    }
+  }
+}
+
+/* Flat section layout — one outer panel, dividers between sections (no nested cards) */
+.status-panel-outlined {
+  .panel-section {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    margin-bottom: 0;
+    padding: var(--viking-space-4, 32px) 0;
+
+    &:first-of-type {
+      padding-top: 0;
+    }
+
+    &:last-of-type {
+      padding-bottom: 0;
+    }
+
+    &:not(:first-of-type) {
+      border-top: 1px solid var(--viking-border-subtle);
+    }
+  }
+
+  .section-heading {
+    font-size: var(--viking-font-size-xs);
+    font-weight: 700;
+    letter-spacing: var(--viking-letter-spacing-caps);
+    text-transform: uppercase;
+    color: var(--viking-text-muted);
+    margin: 0 0 var(--viking-space-3, 24px);
+  }
+
+  .settings-form-panel,
+  .incident-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-2, 16px);
+    margin-bottom: var(--viking-space-2, 16px);
+  }
+
+  .service-form-panel {
+    margin-bottom: var(--viking-space-2, 16px);
+  }
+
+  .data-list-outlined {
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .data-item-row {
+    padding: var(--viking-space-2) 0;
+    border-bottom: 1px solid var(--viking-border-subtle);
+    border-radius: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .integrations-list {
+    display: flex;
+    flex-direction: column;
+    padding: var(--viking-space-3);
+    background: color-mix(in srgb, var(--viking-surface) 92%, transparent);
+    border: 1px solid var(--viking-border-subtle);
+    border-radius: var(--viking-radius-lg);
+    gap: var(--viking-space-2);
+
+    .integration-item {
+      padding: var(--viking-space-3);
+      border-radius: var(--viking-radius-md);
+      border: none;
+      box-shadow: inset 0 0 0 1px
+        color-mix(in srgb, var(--viking-border-subtle) 80%, transparent);
+      background: var(--viking-surface);
+      margin-bottom: 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .code-block-outlined {
+    background-color: color-mix(
+      in srgb,
+      var(--viking-charcoal-900) 60%,
+      var(--viking-bg)
+    );
+    border: 1px solid var(--viking-border-subtle);
+    border-radius: var(--viking-radius-sm);
+    padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
+    font-size: var(--viking-font-size-sm);
+  }
+
+  .empty-data-text {
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--viking-border-subtle);
+    padding: var(--viking-space-4, 32px) var(--viking-space-2, 16px);
+  }
+}
+
+.section-heading {
+  font-size: var(--viking-font-size-lg);
+  font-weight: var(--viking-font-weight-semibold);
+  color: var(--viking-text);
+  margin: 0 0 var(--viking-space-2, 16px);
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+
+  viking-app-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--viking-radius-sm);
+    background: var(--viking-accent-soft);
+    color: var(--viking-accent-strong);
+    font-size: var(--viking-font-size-base);
+    flex-shrink: 0;
+  }
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-2, 16px);
+}
+
+@media (min-width: 600px) {
+  .form-row {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--viking-space-3, 24px);
+  }
+}
+
+.flex-1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.flex-2 {
+  flex: 2;
+  min-width: 0;
+}
+
+/* Data rows — borders applied inside .status-panel-outlined flat layout */
+.data-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color var(--viking-duration-fast) var(--viking-ease-standard);
+
+  &:hover {
+    background-color: var(--viking-surface-alt);
+  }
+}
+
+.data-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.data-title {
+  font-weight: 600;
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-base);
+}
+
+.data-subtitle {
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-base);
+  margin-top: var(--viking-space-1);
+}
+
+/* Incident Form Layout */
+.incident-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+}
+
+.form-row-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-2, 16px);
+
+  .select-wrapper {
+    width: 100%;
+  }
+
+  .post-incident-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Select wrapper — unified-select provides its own chevron */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 11rem;
+  width: 100%;
+
+  @media (min-width: 600px) {
+    width: auto;
+  }
+}
+
+/* Post incident — layout only; variant styling from viking-button primary */
+.post-incident-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.code-block-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-1, 8px);
+
+  .code-block-outlined {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  > viking-button {
+    flex-shrink: 0;
+    margin: 0;
+    width: 100%;
+
+    @media (min-width: 600px) {
+      width: auto;
+      align-self: flex-start;
+    }
+  }
+}
+
+.embed-desc {
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-sm);
+  line-height: 1.55;
+  margin: 0 0 var(--viking-space-2, 16px);
+}
+
+.code-block-outlined {
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-sm);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  color: var(--viking-text);
+  flex: 1;
+  margin: 0;
+}
+
+.form-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+}
+
+@media (min-width: 600px) {
+  .dashboard-topbar {
+    padding: var(--viking-space-3, 24px) var(--viking-space-4, 32px);
+  }
+}
+
+/* Integrations list — even inset around tiles */
+.integrations-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-lg);
+  background: color-mix(in srgb, var(--viking-surface) 92%, transparent);
+  box-sizing: border-box;
+
+  .integration-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--viking-space-3);
+    padding: var(--viking-space-3);
+    border: none;
+    border-radius: var(--viking-radius-md);
+    background: var(--viking-surface);
+    box-shadow: inset 0 0 0 1px
+      color-mix(in srgb, var(--viking-border-subtle) 80%, transparent);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.clarity-item,
+    &.cloudflare-item {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--viking-space-3, 24px);
+      padding: var(--viking-space-3);
+    }
+  }
+
+  .integration-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .integration-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-1, 8px);
+  }
+
+  .integration-name {
+    display: block;
+    font-size: var(--viking-font-size-lg);
+    font-weight: 600;
+    color: var(--viking-text);
+  }
+
+  .integration-status {
+    font-size: var(--viking-font-size-base);
+    color: var(--viking-text-muted);
+  }
+
+  .integration-action {
+    display: flex;
+    align-items: flex-start;
+    padding-top: var(--viking-space-px);
+
+    button {
+      white-space: nowrap !important;
+      flex-shrink: 0;
+    }
+  }
+
+  .clarity-form-row,
+  .cloudflare-form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--viking-space-2, 16px);
+    width: 100%;
+
+    @media (min-width: 600px) {
+      flex-direction: row;
+      align-items: flex-end;
+    }
+
+    .inputs-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--viking-space-2, 16px);
+      width: 100%;
+      flex: 1;
+      min-width: 0;
+
+      @media (min-width: 600px) {
+        flex-direction: row;
+        align-items: flex-end;
+      }
+
+      viking-field {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    > viking-button {
+      flex-shrink: 0;
+      width: 100%;
+
+      @media (min-width: 600px) {
+        width: auto;
+        align-self: flex-end;
+      }
+    }
+  }
+}
+
+.service-form-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-2, 16px);
+  width: 100%;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  > viking-button {
+    flex-shrink: 0;
+    width: 100%;
+
+    @media (min-width: 600px) {
+      width: auto;
+      align-self: flex-end;
+    }
+  }
+}
+
+.service-inputs-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  flex: 1;
+  min-width: 0;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+.save-settings-btn {
+  width: 100%;
+}
+
+.status-icon {
+  &.success {
+    color: var(--viking-success) !important;
+  }
+}
+
+/* Semantic Layout Classes — alerts defined in _alerts.scss */
+
+.integration-sub-status {
+  margin-top: var(--viking-space-1);
+  display: block;
+  font-size: var(--viking-font-size-lg);
+  opacity: 0.7;
+}
+
+.integration-name-flex {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+}
+
+.integration-icon {
+  vertical-align: middle;
+}
+
+.platform-integrations-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-2, 16px);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.platform-integration-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1, 8px);
+  padding: var(--viking-space-2, 16px);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-md);
+  background: color-mix(
+    in srgb,
+    var(--viking-surface) 96%,
+    var(--viking-accent) 4%
+  );
+  text-decoration: none;
+  color: var(--viking-text);
+  transition:
+    border-color var(--viking-duration-fast, 150ms)
+      var(--viking-ease-standard, ease),
+    box-shadow var(--viking-duration-fast, 150ms)
+      var(--viking-ease-standard, ease);
+
+  &:hover {
+    border-color: var(--viking-border-strong);
+    box-shadow: var(--viking-shadow-sm);
+  }
+
+  &:focus-visible {
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
+    border-color: var(--viking-border-strong);
+    box-shadow: var(--viking-shadow-sm);
+  }
+}
+
+.platform-integration-name {
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-medium);
+  text-align: center;
+  color: var(--viking-text-muted);
+}
+
+.mt-3 {
+  margin-top: var(--viking-space-2);
+}
+
+.mfa-info-inline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-0-5);
+  min-width: 0;
+  flex: 1;
+
+  strong {
+    display: block;
+    font-weight: 600;
+    color: var(--viking-text);
+  }
+}
+
+.mfa-icon-inline {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.mfa-info-group {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+  min-width: 0;
+  flex: 1;
+}
+
+.mfa-status-desc {
+  margin: 0;
+  font-size: var(--viking-font-size-base);
+  color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.mfa-status-enrolled {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  align-items: stretch;
+  padding: var(--viking-space-1, 8px) 0;
+
+  viking-button {
+    align-self: stretch;
+  }
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--viking-space-3, 24px);
+
+    viking-button {
+      align-self: center;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.simple-inline-form {
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--viking-space-2, 16px);
+
+    viking-field {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .settings-actions {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 0;
+      width: auto;
+      flex-shrink: 0;
+
+      viking-button {
+        min-width: auto;
+      }
+    }
+  }
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.integration-item-bordered {
+  border-bottom: 1px solid var(--viking-border-subtle);
+  padding: var(--viking-space-3);
+  margin-bottom: 0;
+}
+
+/* Connected accounts / integration tiles — single outer shell, even inset.
+   Items are surface tiles without a second full border stack. */
+.mfa-settings-card .integrations-list,
+.status-card-outlined .integrations-list.panel-clean,
+.integrations-list.panel-clean {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  margin: 0;
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-lg);
+  background: var(
+    --viking-surface-recipe,
+    color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%)
+  );
+  box-sizing: border-box;
+}
+
+.mfa-settings-card .integration-item,
+.status-card-outlined .integrations-list .integration-item,
+.integrations-list.panel-clean .integration-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--viking-space-3);
+  padding: var(--viking-space-3);
+  margin: 0;
+  border-radius: var(--viking-radius-md);
+  border: none;
+  background: color-mix(in srgb, var(--viking-surface) 88%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--viking-border-subtle) 80%, transparent);
+}
+
+.mfa-settings-card .integration-item + .integration-item,
+.status-card-outlined .integrations-list .integration-item + .integration-item,
+.integrations-list.panel-clean .integration-item + .integration-item {
+  margin-top: 0;
+  border-top: none;
+}

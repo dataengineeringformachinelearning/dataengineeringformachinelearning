@@ -23,7 +23,7 @@
 
 .viking-btn {
   @include btn.viking-btn-base;
-  line-height: 1;
+  line-height: var(--viking-line-height-snug);
 }
 
 .viking-btn-primary {

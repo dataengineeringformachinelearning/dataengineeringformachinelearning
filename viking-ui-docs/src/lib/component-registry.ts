@@ -47,8 +47,8 @@ const btnSnippets = (label = "Launch sequence"): ComponentSnippet => ({
   django: `<button type="button" class="viking-btn viking-btn-primary">${label}</button>
 <button type="button" class="viking-btn viking-btn-secondary">Secondary</button>
 <button type="button" class="viking-btn viking-btn-outline">Outline</button>`,
-  javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/web-components.js"><\/script>
+  javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/web-components.js"><\/script>
 
 <viking-button-wc variant="primary">${label}</viking-button-wc>`,
 });
@@ -103,8 +103,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <button type="button" class="viking-btn viking-btn-primary viking-btn-compact">Compact</button>
     <button type="button" class="viking-btn viking-btn-outline viking-btn-compact">Cancel</button>
   </div>
-</div>
-<p class="viking-text-muted viking-demo-caption">Equal-height controls, aligned on a shared baseline</p>`,
+</div>`,
         snippets: btnSnippets(),
         tags: ["web-component", "css"],
         selector: "viking-button",
@@ -173,8 +172,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <span class="viking-label">Compact metric</span>
     <strong class="viking-metric">99.97%</strong>
   </viking-card-wc>
-</div>
-<p class="viking-text-muted viking-demo-caption">Matched card heights for balanced composition</p>`,
+</div>`,
         snippets: {
           angular: `<viking-card>
   <viking-card-header>
@@ -240,8 +238,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         preview: `<div class="viking-demo-row">
   <span class="showcase-icon-demo" aria-hidden="true">◆</span>
   <span class="viking-label">Use viking-icon in Angular for full registry</span>
-</div>
-<p class="viking-text-muted viking-demo-caption">Zero-dependency SVG icons from the Viking registry</p>`,
+</div>`,
         snippets: {
           angular: `import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
 
@@ -274,8 +271,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       <input id="email-demo" class="viking-input-native" name="email" type="email" autocomplete="email" placeholder="you@company.com" />
     </div>
   </div>
-</div>
-<p class="viking-text-muted viking-demo-caption">Field labels sit above controls with consistent spacing</p>`,
+</div>`,
         snippets: inputSnippets,
         tags: ["web-component", "css"],
         selector: "viking-input",
@@ -409,8 +405,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       <viking-button-wc variant="outline">Cancel</viking-button-wc>
     </footer>
   </div>
-</div>
-<p class="viking-text-muted viking-demo-caption">Live: <code>viking-modal-wc</code> with native dialog + focus trap</p>`,
+</div>`,
         snippets: {
           angular: `<viking-modal [(open)]="confirmOpen" title="Confirm deploy" size="md">
   <p>Push v2.0.0 to production?</p>
@@ -678,8 +673,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
   <footer class="showcase-search-palette-footer">
     <span class="viking-kbd-static">⌘K</span> toggle · <span class="viking-kbd-static">↑↓</span> navigate · <span class="viking-kbd-static">Enter</span> open · <span class="viking-kbd-static">Esc</span> close
   </footer>
-</div>
-<p class="viking-text-muted viking-demo-caption">Live: press <strong>⌘K</strong> anywhere in this site — powered by <code>viking-suite-command-palette</code></p>`,
+</div>`,
         snippets: {
           angular: `import { VikingSuiteSearchPalette } from '@dataengineeringformachinelearning/viking-ui';
 
@@ -702,8 +696,8 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
 {% load static %}
 <script src="{% static 'viking-ui-elements.js' %}" type="module"></script>
 <script src="/static/widgets/command-palette.js" defer></script>`,
-          javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/web-components.js"><\/script>
+          javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/web-components.js"><\/script>
 
 <button type="button" onclick="DemlWidgets.openSearch()">Search</button>
 <viking-suite-command-palette global-shortcut></viking-suite-command-palette>
@@ -858,8 +852,7 @@ palette.openPalette();
         preview: `<div class="viking-demo-row">
   <viking-theme-toggle-wc role="button" aria-label="Toggle theme"></viking-theme-toggle-wc>
   <button type="button" class="theme-toggle-btn" aria-label="Toggle theme (CSS class)" title="Light / dark"></button>
-</div>
-<p class="viking-text-muted viking-demo-caption">Web component + static CSS utility for light/dark switching</p>`,
+</div>`,
         snippets: {
           angular: `<viking-theme-toggle />`,
           astro: `<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>`,
@@ -911,8 +904,7 @@ palette.openPalette();
     <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Sign In with Apple</button>
   </div>
   <button type="button" class="viking-btn viking-btn-primary viking-btn-full">Login</button>
-</div>
-<p class="viking-text-muted viking-demo-caption">Matches deml.app login — labeled fields with password-manager autocomplete</p>`,
+</div>`,
         snippets: {
           angular: `<viking-auth-panel
   tag="Access Portal"

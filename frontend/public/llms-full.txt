@@ -38,6 +38,16 @@ license: apache-2.0
 | `/status`, `/explore` | Public status pages |
 | `/settings`           | Account management  |
 
+### Native macOS security workbench
+
+The repository also includes `native/macos-app`, a local-first native Rust
+security operations client. It provides browser-based Firebase/MFA authentication with
+a PKCE-protected return to the app, Keychain-backed desktop sessions, a
+persistent vulnerability queue, Ollama and cloud-model triage, and
+approval-gated patch application for agent-assisted remediation. See
+[`docs/macos-security-workbench.md`](docs/macos-security-workbench.md) for the
+security model and build instructions.
+
 ---
 
 ## Core Capabilities
@@ -114,903 +124,6 @@ The comprehensive technology acknowledgement and software inventory remain in
 ![GitHub Repo stars](https://img.shields.io/github/stars/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
 
 
-# Concept of Operations (CONOPS)
-
-**Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
-**Last aligned:** July 2026 (Event Projections; multi-runtime compute)
-**Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
-**Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
-**Glossary:** [glossary.md](glossary.md) · **Billing:** [billing.md](billing.md) · **DeepWiki:** [code wiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
-
----
-
-## 1. Purpose
-
-This document tells operators **how DEML runs in production**: vendors, services, data paths, user workflows, maintenance schedules, and degraded-mode behavior. Use it for on-call orientation, compliance evidence, and release planning.
-
-## 2. System mission
-
-| Goal                   | Mechanism                                                |
-| ---------------------- | -------------------------------------------------------- |
-| Non-blocking ingestion | Firebase `ingestEvent` + Django Outbox → Redpanda        |
-| Real-time dashboards   | Firestore projections (`deml` DB) + Angular `onSnapshot` |
-| Transactional truth    | PostgreSQL (users, pages, incidents, API keys, outbox)   |
-| Analytics & CES        | OpenTelemetry → ClickHouse                               |
-| Tenant isolation       | `account_id` scoping + Firestore security rules          |
-| Public transparency    | `platform-status` dogfoods under real load               |
-| Paid tiers             | Stripe Standard → Pro ([billing.md](billing.md))         |
-
-## 3. Vendor & deployment map
-
-Compute is **multi-target** with **identical container images** and Event Projections invariants:
-
-| Runtime                     | Notes                                            | Docs                                                                    |
-| --------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
-| **Railway**                 | Private service mesh; `railway.json` per service | [infrastructure/railway/README.md](../infrastructure/railway/README.md) |
-| **Cloud Run (GCP)**         | Fully managed reference topology                 | BOOK Appendix C                                                         |
-| **AWS Lightsail / Fargate** | Cost-optimized alternate; ECR                    | BOOK Ch. 23 / Appendix E                                                |
-
-Firebase (Auth, `ingestEvent`, Firestore, marketing Hosting) is shared across compute hosts. GCP KMS/audit applies when the GCP control plane is enabled.
-
-| Component                             | Example service names                                                                                                               | Deploy trigger                  |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Angular app (`deml.app`)              | `deml-frontend`                                                                                                                     | Push to `main`                  |
-| Django API                            | `deml-backend`                                                                                                                      | Push to `main`                  |
-| Workers, **Rust data plane**, scanner | `deml-workers`, `deml-relay`, `deml-scheduler`, `deml-probe`, `deml-normalizer`, `deml-cpe`, optional `deml-ingest`, `deml-scanner` | Push to `main`                  |
-| Postgres                              | managed DB / sidecar                                                                                                                | Infrastructure change           |
-| Redpanda, ClickHouse                  | `deml-queue`, `deml-clickhouse`                                                                                                     | Infrastructure + image push     |
-| `ingestEvent` + Firestore rules       | Firebase / GCP                                                                                                                      | `.github/workflows/firebase...` |
-| Marketing site                        | Firebase Hosting                                                                                                                    | `firebase-hosting-merge.yml`    |
-
-**Ownership invariant:** Rust roles own relay, durable schedule creation, pure
-database maintenance, probes, raw telemetry normalization, request-time CPE
-lookup, and optional high-volume ingest. Python equivalents are rollback-only
-and must not run concurrently. Django workers retain business projections, ML,
-billing, KMS, and external API integrations. See the
-[Python-to-Rust ownership ledger](rust-data-plane.md#python-to-rust-ownership-ledger).
-
-**Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
-
-## 4. Data paths
-
-### 4.0 Cryptographic transport invariant
-
-Production service connections use verified TLS (`https`, `rediss`, Postgres `sslmode=verify-full`, Redpanda `SSL`/`SASL_SSL`, and HTTPS OTLP). Durable Redpanda values are additionally wrapped in the versioned DEML Internode Envelope (`A256GCM`) before publication and decrypted only by authorized consumers. `DEML_INTERNODE_ENCRYPTION=required` is the production steady state; `optional` is a bounded rolling-migration mode, and `disabled` is restricted to local development/tests. The envelope binds the ciphertext to its Kafka topic so a valid message cannot be moved to a different stream without authentication failure.
-
-### 4.1 Client commands (primary)
-
-```
-Angular → Firebase callable ingestEvent → Redpanda (frontend-events)
-                                      ↘ Firestore events (fallback)
-Redpanda → telemetry_worker → Firestore users/{uid}/data/stats
-Angular ← onSnapshot ← Firestore
-```
-
-- Events carry `version: "1.0"` and a validated, path-safe `idempotency_key` (16–128 characters).
-- Worker is the **only** authoritative writer of stats projections.
-- Projection failures are committed only after an acknowledged write to `frontend-events-dlq`; a failed DLQ publish leaves the source batch uncommitted for retry.
-- Redpanda message values are ciphertext on the wire and at broker rest; idempotency keys remain visible only when deliberately carried as broker headers for routing/deduplication.
-
-### 4.2 API / integration commands
-
-```
-Client → Rust ingest (API key, high volume) or Django REST → Postgres txn + OutboxEvent
-deml-relay (leased) → Redpanda → role-specific consumer → Firestore/Postgres
-```
-
-### 4.3 Queries
-
-| Data                       | Store                 | Client access        |
-| -------------------------- | --------------------- | -------------------- |
-| Live stats                 | Firestore `deml`      | `onSnapshot`         |
-| Status pages, incidents    | Postgres + Sanity CMS | REST + Sanity API    |
-| CES / historical analytics | ClickHouse            | REST (authenticated) |
-
-## 5. Actors
-
-| Actor          | Access                              | Notes                                |
-| -------------- | ----------------------------------- | ------------------------------------ |
-| Anonymous      | Published pages + `platform-status` | ABAC enforced server-side            |
-| Viewer         | Read dashboards                     | No mutations (`403` on writes)       |
-| Operator       | Full account management             | MFA required for writes              |
-| Security Admin | Platform bootstrap                  | Same as Operator for owned resources |
-| API integrator | `/api/v1/ingest`, `/api/v1/predict` | Bearer API key → `account_id`        |
-
-See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-control-rbac--abac) for the access matrix.
-
-## 6. Operational modes
-
-| Mode                            | Indicators                               | Actions                                                                      |
-| ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                           |
-| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; internal broker unaffected   |
-| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-relay`; inspect `frontend-events-dlq` |
-| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                         |
-| **Maintenance**                 | Deploy in progress                       | Rolling deploy; expect brief projection lag and verify Rust task leases      |
-
-## 7. Service matrix
-
-The logical services are identical across deployment targets. On the canonical Cloud Run path they map 1:1 to Cloud Run services. On the AWS alternative they are grouped: most application containers (frontend, backend, workers, daemon, scanner, sidecars) run inside a single Lightsail Container Service; Redpanda and ClickHouse run as dedicated Fargate tasks or Lightsail instances.
-
-| Logical Service                              | Role                                                    | AWS Grouping                                       |
-| -------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
-| `deml-frontend`                              | Angular UI (SSR)                                        | Lightsail Container Service                        |
-| `deml-backend`                               | Django API                                              | Lightsail Container Service                        |
-| `deml-postgres`                              | OLTP database                                           | RDS or Lightsail DB                                |
-| `deml-queue`                                 | Redpanda broker                                         | Dedicated Fargate / Lightsail instance             |
-| `deml-telemetry-worker`                      | Firestore and business projections only                 | Lightsail Container Service (or workers container) |
-| `deml-relay`                                 | Rust leased outbox delivery                             | Lightsail Container Service                        |
-| `deml-scheduler`                             | Rust durable schedule claims                            | Lightsail Container Service                        |
-| `deml-probe`                                 | Rust bounded probes and durable observations            | Lightsail Container Service                        |
-| `deml-normalizer`                            | Rust `telemetry-raw` validation and persistence         | Lightsail Container Service                        |
-| `deml-ingest`                                | Optional Rust high-volume integration ingress           | Lightsail Container Service                        |
-| `deml-workers`                               | Consolidated ML training, threat intel, and task runner | Lightsail Container Service                        |
-| `deml-clickhouse`                            | OLAP                                                    | Dedicated Fargate / Lightsail instance             |
-| `deml-dragonfly`                             | Cache / rate limits                                     | Sidecar or small task                              |
-| `deml-scanner`, `deml-cpe`, `deml-tor-proxy` | Vulnerability ledger & OSINT; Rust serves CPE lookups   | Lightsail Container Service (sidecars)             |
-
-Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
-
-## 8. Maintenance schedule
-
-| Cadence    | Job                                   | Owner                                 |
-| ---------- | ------------------------------------- | ------------------------------------- |
-| Continuous | Leased `outbox_relay`                 | `deml-relay`                          |
-| Continuous | Kafka consumers                       | `deml-normalizer`, `telemetry_worker` |
-| 30s        | Service pingers                       | `deml-probe`                          |
-| Continuous | Durable schedule claims + native exec | `deml-scheduler`                      |
-| 1h         | Threat intel                          | `deml-workers` (via internal-tasks)   |
-| 24h        | ML training                           | `deml-workers` (via internal-tasks)   |
-| 24h        | `db_cleanup`, `optimize_database`     | `deml-scheduler` (Rust-native)        |
-| 24h        | `archive_reports`                     | `deml-scheduler` (Rust-native)        |
-| 24h        | `sync_subscriptions`                  | `deml-workers` (via internal-tasks)   |
-| Weekly     | `cleanup_clickhouse`                  | `deml-scheduler` (Rust-native)        |
-
-| Weekly | Renovate PRs | GitHub Actions |
-| Monthly / Quarterly | Semgrep, audits | GitHub Actions |
-
-**Rust-native tasks** execute directly without Kafka publish.
-**Python-only tasks** are published to `internal-tasks` for worker execution.
-
-## 9. Security operations (summary)
-
-- Firebase Auth + App Check at perimeter; Django verifies JWTs.
-- MFA (`amr` claim) required for customer mutations.
-- AES-256-GCM + GCP KMS envelope encryption for integration secrets.
-- Immutable GCS audit logs (Terraform).
-- Pre-commit and CI: Ruff, ESLint, Axe, Semgrep, Trivy, Gitleaks.
-
-## 10. Monitoring checklist
-
-- [ ] Settings → **Event Projections Verification** succeeds
-- [ ] `platform-status` loads for anonymous users
-- [ ] Sentry error rate baseline
-- [ ] Cloud Run CPU/memory on `deml-backend`, `deml-telemetry-worker`
-- [ ] DLQ topic depth (`frontend-events-dlq`)
-- [ ] `platform-status` → **Event Projections DLQ** is Operational (replay-group lag is zero)
-- [ ] Outbox unpublished row count (Postgres)
-- [ ] CES gauges responding (ClickHouse path)
-
-## 11. Contingency quick reference
-
-| Failure                     | First response                                                                                                                             |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Stale realtime stats        | Restart telemetry worker + outbox relay                                                                                                    |
-| Function publish errors     | Check Redpanda public endpoint; confirm fallback events in Firestore                                                                       |
-| DLQ growth                  | Run `python manage.py replay_projection_dlq --dry-run`; fix the transient/code cause, then replay a bounded batch with `--max-records 100` |
-| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Cloud Run backend                                                                         |
-| Firestore permission denied | Redeploy `firestore.rules` via Firebase workflow                                                                                           |
-
-## 12. Related documents
-
-| Document                                                             | Use                                       |
-| -------------------------------------------------------------------- | ----------------------------------------- |
-| [BOOK.md](../BOOK.md)                                                | Full CONOPS narrative + chapters          |
-| [WHITEPAPER.md](../WHITEPAPER.md)                                    | Executive architecture                    |
-| [README.md](../README.md)                                            | API integration gateway                   |
-| [features.md](features.md)                                           | Feature catalog                           |
-| [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles         |
-| [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                          |
-| [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                                 |
-| [Rust data plane](rust-data-plane.md)                                | Role rollout, failure semantics, rollback |
-
-
-# Kubernetes Integration
-
-Integrating the DEML platform into your Kubernetes cluster lets microservices stream telemetry and request predictions through our API Gateway without leaving your cluster boundary.
-
-## Architecture Options
-
-| Pattern                        | Best for                          | Latency | Ops overhead    |
-| ------------------------------ | --------------------------------- | ------- | --------------- |
-| **Sidecar proxy**              | Per-pod inference + ingest        | Lowest  | Medium          |
-| **Cluster gateway**            | Shared ingress for many services  | Low     | Low             |
-| **CRD / Operator** _(roadmap)_ | Declarative pipeline provisioning | Low     | Lowest at scale |
-
-## Sidecar Proxy Pattern (Recommended)
-
-Deploy a lightweight sidecar alongside your application pods. The sidecar injects your API key, handles rate-limit backoff, and forwards traffic to `/api/v1/predict` and `/api/v1/ingest`.
-
-### 1. Store your API key in a Secret
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: deml-platform-credentials
-  namespace: production
-type: Opaque
-stringData:
-  api-key: YOUR_API_KEY
-```
-
-### 2. Configure the sidecar in your Pod spec
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: ml-inference-service
-  labels:
-    app: ml-inference
-spec:
-  containers:
-    - name: app
-      image: your-registry/inference-app:latest
-      env:
-        - name: DEML_GATEWAY_URL
-          value: "http://127.0.0.1:8080"
-    - name: deml-sidecar
-      image: ghcr.io/deml/sidecar-proxy:latest
-      ports:
-        - containerPort: 8080
-      env:
-        - name: DEML_UPSTREAM_URL
-          value: "https://backend.deml.app/api/v1"
-        - name: DEML_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: deml-platform-credentials
-              key: api-key
-```
-
-Your application calls `http://127.0.0.1:8080/predict` locally; the sidecar adds authentication and forwards to DEML.
-
-### 3. Verify connectivity
-
-```bash
-kubectl exec -it ml-inference-service -c app -- \
-  curl -s http://127.0.0.1:8080/health
-```
-
-Check integration status from your cluster (optional health endpoint):
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/kubernetes \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-## Cluster Gateway Pattern
-
-For shared access across namespaces, expose a single internal Service that proxies to DEML:
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: deml-gateway
-  namespace: platform
-spec:
-  selector:
-    app: deml-gateway
-  ports:
-    - port: 443
-      targetPort: 8443
-```
-
-Point workloads at `https://deml-gateway.platform.svc.cluster.local` and mount the API key via External Secrets or GCP Secret Manager.
-
-## Telemetry Ingest from Kubernetes
-
-Stream pod metrics, request logs, or custom events to `/api/v1/ingest`:
-
-```bash
-curl -X POST https://backend.deml.app/api/v1/ingest \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "source": "kubernetes",
-    "cluster_id": "prod-us-east-1",
-    "records": [
-      {"pod": "inference-7f8b", "latency_ms": 42, "status": 200}
-    ]
-  }'
-```
-
-Events flow through Redpanda → telemetry workers → your analytics dashboard in real time.
-
-## Roadmap: Kubernetes Operator
-
-We are developing a native **MLPlatform CRD** so you can declare inference routes and ingestion pipelines in Git:
-
-```yaml
-apiVersion: deml.app/v1
-kind: InferenceRoute
-metadata:
-  name: sla-model
-spec:
-  modelVersion: v2
-  replicas: 3
-  tenantId: YOUR_TENANT_UUID
-```
-
-Subscribe to release notes for operator availability.
-
-
-# PyTorch Integration
-
-Use DEML as a remote data source and inference backend from PyTorch training scripts, DataLoaders, and deployment pipelines.
-
-## Prerequisites
-
-- Python 3.11+
-- PyTorch 2.x
-- A DEML API key (Settings → API Keys)
-
-## Custom DataLoader (Available Today)
-
-```python
-from __future__ import annotations
-
-import requests
-import torch
-from torch.utils.data import Dataset, DataLoader
-
-API_KEY = "YOUR_API_KEY"
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-PREDICT_URL = "https://backend.deml.app/api/v1/predict"
-
-
-class DemlRemoteDataset(Dataset):
-    def __init__(self, page_size: int = 64) -> None:
-        self.page_size = page_size
-        self._cache: list[tuple[torch.Tensor, torch.Tensor]] = []
-        self._index = 0
-        self._refresh()
-
-    def _refresh(self) -> None:
-        response = requests.post(
-            INGEST_URL,
-            headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"batch_size": self.page_size, "format": "pytorch"},
-            timeout=30,
-        )
-        response.raise_for_status()
-        records = response.json()["records"]
-        self._cache = [
-            (torch.tensor(r["features"], dtype=torch.float32), torch.tensor(r["label"]))
-            for r in records
-        ]
-        self._index = 0
-
-    def __len__(self) -> int:
-        return len(self._cache)
-
-    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
-        if idx >= len(self._cache):
-            self._refresh()
-        return self._cache[idx % len(self._cache)]
-
-
-loader = DataLoader(DemlRemoteDataset(page_size=64), batch_size=32, shuffle=True)
-
-for features, labels in loader:
-    outputs = model(features)
-    loss = criterion(outputs, labels)
-    loss.backward()
-```
-
-## Remote Inference
-
-```python
-import requests
-import torch
-
-payload = {"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}
-response = requests.post(
-    PREDICT_URL,
-    headers={"Authorization": f"Bearer {API_KEY}"},
-    json=payload,
-    timeout=5,
-)
-outputs = torch.tensor(response.json()["outputs"])
-```
-
-DEML hosts tenant-namespaced PyTorch `state_dict` checkpoints on Hugging Face — no pickle, security-first.
-
-## Planned SDK
-
-```python
-from deml.pytorch import PlatformDataLoader
-
-loader = PlatformDataLoader(
-    api_key="YOUR_API_KEY",
-    batch_size=64,
-    shuffle=True,
-)
-
-for batch in loader:
-    predictions = model(batch)
-```
-
-## Integration Health Check
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/pytorch \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-
-# Databricks Integration
-
-Connect Databricks notebooks and jobs to DEML for secure telemetry ingest, model inference, and cross-platform analytics.
-
-## Prerequisites
-
-- Databricks Runtime 13.3+ (Python or Scala)
-- DEML API key
-- Outbound HTTPS to `backend.deml.app`
-
-## Store Credentials in Databricks Secrets
-
-Never hardcode API keys in notebooks. Use a Secret Scope:
-
-```bash
-databricks secrets create-scope --scope deml
-databricks secrets put --scope deml --key api-key --string-value YOUR_API_KEY
-```
-
-In a notebook:
-
-```python
-api_key = dbutils.secrets.get(scope="deml", key="api-key")
-```
-
-## Ingest from a Notebook
-
-```python
-import requests
-
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-api_key = dbutils.secrets.get(scope="deml", key="api-key")
-
-df = spark.table("analytics.telemetry_events")
-records = [row.asDict() for row in df.limit(1000).collect()]
-
-response = requests.post(
-    INGEST_URL,
-    headers={"Authorization": f"Bearer {api_key}"},
-    json={"source": "databricks", "records": records},
-    timeout=60,
-)
-response.raise_for_status()
-print(f"Ingested {len(records)} records")
-```
-
-## Scheduled Job Pattern
-
-1. Create a Databricks Job with a Python task.
-2. Mount the `deml` secret scope on the cluster.
-3. Run on a schedule (e.g., every 5 minutes) to push aggregated features.
-
-```python
-# Databricks job: push hourly rollups to DEML
-rollup = spark.sql("""
-  SELECT tenant_id, AVG(latency_ms) AS avg_latency, COUNT(*) AS requests
-  FROM delta.`/mnt/telemetry/raw`
-  WHERE event_time > current_timestamp() - INTERVAL 1 HOUR
-  GROUP BY tenant_id
-""")
-
-records = rollup.collect()
-requests.post(
-    INGEST_URL,
-    headers={"Authorization": f"Bearer {api_key}"},
-    json={"source": "databricks-job", "records": [r.asDict() for r in records]},
-).raise_for_status()
-```
-
-## Real-time Inference from Databricks
-
-```python
-PREDICT_URL = "https://backend.deml.app/api/v1/predict"
-
-def predict_row(features: list[float]) -> float:
-    result = requests.post(
-        PREDICT_URL,
-        headers={"Authorization": f"Bearer {api_key}"},
-        json={"model_version": "v2", "inputs": features},
-        timeout=10,
-    )
-    result.raise_for_status()
-    return result.json()["outputs"][0]
-
-# Apply to a Spark UDF or driver-side batch calls
-scores = [predict_row(row.features) for row in df.limit(100).collect()]
-```
-
-## Unity Catalog & Multi-Tenancy
-
-Map Databricks workspace catalogs to DEML tenant UUIDs in your job metadata so analytics remain isolated per customer.
-
-## Integration Health Check
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/databricks \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-
-# Apache Spark Integration
-
-Write Spark streaming and batch DataFrames directly to DEML ingestion endpoints for unified telemetry and ML feature pipelines.
-
-## Prerequisites
-
-- Apache Spark 3.4+ (Structured Streaming or batch)
-- Network egress to `https://backend.deml.app`
-- DEML API key stored in your cluster secrets manager
-
-## Batch Write Pattern
-
-Transform your DataFrame and POST batches via a `mapPartitions` sink:
-
-```python
-import json
-import requests
-from pyspark.sql import SparkSession
-
-API_KEY = "YOUR_API_KEY"
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-
-spark = SparkSession.builder.appName("deml-ingest").getOrCreate()
-df = spark.read.parquet("s3://datalake/events/")
-
-def send_partition(rows):
-    records = [row.asDict() for row in rows]
-    if not records:
-        return
-    requests.post(
-        INGEST_URL,
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"source": "spark", "records": records},
-        timeout=60,
-    ).raise_for_status()
-
-df.foreachPartition(send_partition)
-```
-
-## Structured Streaming
-
-Stream micro-batches to DEML as they arrive:
-
-```python
-from pyspark.sql.functions import col, struct, to_json
-
-stream = (
-    spark.readStream.format("kafka")
-    .option("kafka.bootstrap.servers", "broker:9092")
-    .option("subscribe", "telemetry")
-    .load()
-)
-
-payload = stream.select(
-    to_json(struct(col("value").alias("payload"))).alias("record")
-)
-
-def write_batch(batch_df, batch_id):
-    rows = [row.record for row in batch_df.collect()]
-    if rows:
-        requests.post(
-            INGEST_URL,
-            headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"source": "spark-stream", "batch_id": batch_id, "records": rows},
-            timeout=60,
-        ).raise_for_status()
-
-query = payload.writeStream.foreachBatch(write_batch).start()
-```
-
-## Scala Alternative
-
-```scala
-df.writeStream
-  .format("org.apache.spark.sql.kafka010.KafkaSourceProvider")
-  .option("checkpointLocation", "/checkpoints/deml")
-  .foreachBatch { (batchDF: DataFrame, batchId: Long) =>
-    val records = batchDF.collect().map(_.getAs[String]("payload"))
-    // POST records to https://backend.deml.app/api/v1/ingest
-  }
-  .start()
-```
-
-## Planned Native Spark Connector
-
-A first-class `deml` format will simplify writes:
-
-```scala
-df.writeStream
-  .format("deml")
-  .option("api_key", sys.env("DEML_API_KEY"))
-  .option("endpoint", "https://backend.deml.app/api/v1/ingest")
-  .start()
-```
-
-## Integration Health Check
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/apache-spark \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-
-# AWS Redshift Integration
-
-Connect Amazon Redshift warehouses to DEML for scheduled analytics exports, feature-store rollups, and ML training pipelines. Redshift UNLOAD and COPY patterns push curated datasets into `/api/v1/ingest` while keeping credentials in AWS Secrets Manager or IAM roles.
-
-## Prerequisites
-
-- Amazon Redshift cluster or Redshift Serverless workgroup
-- Network egress to `https://backend.deml.app` (or VPC endpoint + NAT)
-- DEML API key stored in AWS Secrets Manager
-- Optional: S3 staging bucket for UNLOAD/COPY workflows
-
-## Architecture Options
-
-| Pattern                   | Best for                              | Latency  | Ops overhead |
-| ------------------------- | ------------------------------------- | -------- | ------------ |
-| **Scheduled UNLOAD → S3** | Nightly feature rollups, batch ingest | Minutes  | Low          |
-| **Lambda + UNLOAD**       | Event-driven exports after ETL        | Seconds  | Medium       |
-| **Redshift Data API**     | Serverless queries without JDBC       | Variable | Low          |
-| **Spectrum + Spark sink** | Lakehouse federated queries           | Minutes  | Medium       |
-
-## Scheduled UNLOAD to DEML Ingest
-
-Export aggregated metrics from Redshift to S3, then POST batches to DEML:
-
-```sql
-UNLOAD (
-  'SELECT tenant_id, metric_name, metric_value, recorded_at
-   FROM analytics.daily_rollups
-   WHERE recorded_at >= CURRENT_DATE - 1'
-)
-TO 's3://your-bucket/deml-export/'
-IAM_ROLE 'arn:aws:iam::123456789012:role/RedshiftUnloadRole'
-FORMAT AS PARQUET
-ALLOWOVERWRITE;
-```
-
-Python job (Lambda, ECS, or Databricks) reads Parquet and ingests:
-
-```python
-import json
-import boto3
-import requests
-
-API_KEY = "YOUR_API_KEY"
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-s3 = boto3.client("s3")
-
-def ingest_parquet_object(bucket: str, key: str) -> None:
-    obj = s3.get_object(Bucket=bucket, Key=key)
-    # Parse Parquet with pyarrow/polars in production
-    records = [{"source": "redshift", "payload": obj["Body"].read().decode("utf-8", errors="ignore")}]
-    requests.post(
-        INGEST_URL,
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"batch_id": key, "source": "aws-redshift", "records": records},
-        timeout=120,
-    ).raise_for_status()
-```
-
-## Redshift Data API (Serverless)
-
-Query without persistent JDBC connections and stream rows to DEML:
-
-```python
-import boto3
-import requests
-
-redshift = boto3.client("redshift-data")
-API_KEY = "YOUR_API_KEY"
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-
-response = redshift.execute_statement(
-    ClusterIdentifier="prod-analytics",
-    Database="analytics",
-    Sql="SELECT feature_a, feature_b, label FROM ml.training_features LIMIT 1000",
-)
-statement_id = response["Id"]
-
-# Poll until FINISHED, then fetch results and POST to DEML
-records = [{"feature_a": 1.0, "feature_b": 0.5, "label": 1}]  # map from GetStatementResult
-requests.post(
-    INGEST_URL,
-    headers={"Authorization": f"Bearer {API_KEY}"},
-    json={"source": "redshift-data-api", "records": records},
-    timeout=60,
-).raise_for_status()
-```
-
-## COPY from S3 After DEML Predictions
-
-Write inference results back to the warehouse for BI dashboards:
-
-```sql
-COPY analytics.model_predictions
-FROM 's3://your-bucket/deml-predictions/'
-IAM_ROLE 'arn:aws:iam::123456789012:role/RedshiftCopyRole'
-FORMAT AS JSON 'auto'
-TIMEFORMAT 'auto';
-```
-
-Fetch predictions from DEML first:
-
-```bash
-curl -X POST https://backend.deml.app/api/v1/predict \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}'
-```
-
-## Secrets Manager Pattern
-
-Store the DEML API key alongside Redshift credentials:
-
-```python
-import json
-import boto3
-
-secrets = boto3.client("secretsmanager")
-payload = secrets.get_secret_value(SecretId="deml/production/api-key")
-api_key = json.loads(payload["SecretString"])["DEML_API_KEY"]
-```
-
-## Integration Health Check
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/redshift \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-Expected response:
-
-```json
-{
-  "integration": "AWS Redshift",
-  "status": "ready",
-  "enabled": true,
-  "version": "2.0+",
-  "message": "AWS Redshift warehouse integration is active."
-}
-```
-
-## Related Guides
-
-- [Apache Spark](apache-spark.md) — lakehouse batch and streaming sinks
-- [Databricks](databricks.md) — notebook and job scheduling on AWS
-- [PyTorch](pytorch.md) — train on features exported from Redshift
-
-
-# TensorFlow Integration
-
-Stream training data from DEML directly into a `tf.data.Dataset` for batched, high-throughput TensorFlow training loops.
-
-## Prerequisites
-
-- Python 3.11+
-- TensorFlow 2.15+
-- A DEML API key (Settings → API Keys in the dashboard)
-
-## Quick Start
-
-### Install the SDK _(planned package)_
-
-```bash
-pip install deml-tensorflow
-```
-
-Until the package ships, use the REST ingest endpoint with a custom generator (see below).
-
-### Stream via `tf.data.Dataset`
-
-```python
-import json
-import tensorflow as tf
-import requests
-
-API_KEY = "YOUR_API_KEY"
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-PREDICT_URL = "https://backend.deml.app/api/v1/predict"
-
-
-def fetch_batch(batch_size: int = 32) -> list[dict]:
-    response = requests.post(
-        INGEST_URL,
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"batch_size": batch_size, "format": "tensorflow"},
-        timeout=30,
-    )
-    response.raise_for_status()
-    return response.json()["records"]
-
-
-def record_generator():
-    while True:
-        for record in fetch_batch():
-            yield record["features"], record["label"]
-
-
-def build_dataset(batch_size: int = 32) -> tf.data.Dataset:
-    dataset = tf.data.Dataset.from_generator(
-        record_generator,
-        output_signature=(
-            tf.TensorSpec(shape=(None,), dtype=tf.float32),
-            tf.TensorSpec(shape=(), dtype=tf.int32),
-        ),
-    )
-    return dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
-
-
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(64, activation="relu"),
-    tf.keras.layers.Dense(1, activation="sigmoid"),
-])
-
-model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
-model.fit(build_dataset(), steps_per_epoch=100, epochs=10)
-```
-
-## Real-time Inference
-
-Call `/api/v1/predict` from TensorFlow Serving sidecars or directly in training callbacks:
-
-```python
-import requests
-
-payload = {"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}
-result = requests.post(
-    PREDICT_URL,
-    headers={"Authorization": f"Bearer {API_KEY}"},
-    json=payload,
-    timeout=5,
-)
-prediction = result.json()["outputs"]
-```
-
-## Planned SDK API
-
-When `deml-tensorflow` ships, the interface will simplify to:
-
-```python
-from deml.tensorflow import PlatformDataset
-
-dataset = PlatformDataset(
-    api_key="YOUR_API_KEY",
-    batch_size=32,
-    prefetch=True,
-)
-model.fit(dataset, epochs=10)
-```
-
-## Integration Health Check
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/tensorflow \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-
 # Data Engineering for AI Engineering and Cybersecurity: The Book
 
 _Operational Intelligence for the New Digital Battlefield_
@@ -1030,7 +143,7 @@ This volume constitutes the authoritative build specification for a production-g
 
 The platform addresses a structural gap in modern infrastructure. Observability tooling remains predominantly reactive; threat analytics remain siloed; multi-tenant isolation remains inconsistently enforced. DEML closes that gap by fusing rigorous **data engineering** (high-throughput pipelines, event projections, schema evolution), **AI engineering** (model lifecycle management, inference serving, hyperparameter automation, responsible AI), and **cybersecurity** (threat intelligence fusion, adversarial detection, compliance-grade controls, zero-trust tenancy) under defense-in-depth security—prioritizing quality, symmetry, and precision at every architectural boundary. The build sequence proceeds from bare-metal environment setup through deployed, secure, observable AI- and security-driven operations.
 
-For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
+For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [Appendix N: CONOPS Quick Reference](#appendix-n-concept-of-operations-operator-quick-reference). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
 **Architectural posture (2026):** The system emphasizes **Event Projections** with production reliability guarantees. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for event streaming and Firestore (named `deml` database with dedicated security rules) for materialized read models. Django writes a **Transactional Outbox** (`OutboxEvent`) and the Rust `deml-relay` leases and publishes those rows. The `telemetry_worker` performs idempotent projections with dead-letter-queue support; Rust separately owns durable schedules, active probes, raw endpoint normalization, optional high-volume ingress, and request-time CPE lookup. Firebase Functions and rules deploy via a dedicated GitHub workflow. The end-to-end loop is health-checked automatically by a synthetic projection monitor and surfaced on the `platform-status` sentinel.
 
@@ -1039,10 +152,10 @@ For the platform hypothesis, value proposition, architecture diagrams, and algor
 - [Concept of Operations (CONOPS)](#concept-of-operations-conops)
 - [Whitepaper](WHITEPAPER.md)
 - [Developer Portal & Integrations (README.md)](README.md#official-integrations)
-- [Integration Guides (`docs/integrations/`)](docs/integrations/)
-- [Operator Reference (`docs/conops.md`)](docs/conops.md)
-- [Glossary (`docs/glossary.md`)](docs/glossary.md)
-- [Billing (`docs/billing.md`)](docs/billing.md)
+- [Integration Guides (Appendix Z)](#appendix-z-integration-guides)
+- [Operator Reference (Appendix N)](#appendix-n-concept-of-operations-operator-quick-reference)
+- [Glossary (Appendix Q)](#appendix-q-deml-glossary)
+- [Billing (Appendix M)](#appendix-m-billing--subscriptions-operator-reference)
 - [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) — AI-navigable code wiki
 - [Presentation (Gamma)](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg) — slide-deck companion to this book
 - [Acknowledgements & Technologies](#acknowledgements--technologies)
@@ -1051,7 +164,7 @@ For the platform hypothesis, value proposition, architecture diagrams, and algor
 
 ## Concept of Operations (CONOPS)
 
-This section constitutes the **single operational narrative** for the DEML platform: actors, production behavior, technology responsibilities, and degraded-mode contingencies. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Rust data-plane workers, Django control-plane projectors, Firestore read models). Production compute is **multi-target**: **Railway** (in-repo service IaC), **Google Cloud Run** (fully managed reference topology), and **AWS Lightsail Container Services / Fargate** (cost-optimized alternate). All targets run the same container images and Event Projections contracts. Detailed checklists reside in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), [`infrastructure/railway/README.md`](infrastructure/railway/README.md), and [`docs/conops.md`](docs/conops.md). Terms of art: [`docs/glossary.md`](docs/glossary.md).
+This section constitutes the **single operational narrative** for the DEML platform: actors, production behavior, technology responsibilities, and degraded-mode contingencies. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Rust data-plane workers, Django control-plane projectors, Firestore read models). Production compute is **multi-target**: **Railway** (in-repo service IaC), **Google Cloud Run** (fully managed reference topology), and **AWS Lightsail Container Services / Fargate** (cost-optimized alternate). All targets run the same container images and Event Projections contracts. Detailed checklists reside in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), [`infrastructure/railway/README.md`](infrastructure/railway/README.md), and [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference). Terms of art: [Appendix Q](#appendix-q-deml-glossary).
 
 ### 1. Purpose & Scope
 
@@ -1075,7 +188,7 @@ Out of scope: local developer onboarding (see [Chapter 1](#chapter-1-the-fresh-i
 | **Predictive intelligence**      | Daily `ml_worker` retraining on anonymized aggregate data; per-account inference without cross-tenant raw leakage                                        |
 | **Transparent public status**    | `platform-status` dogfoods the stack under real load; customer pages gated by `is_published` ABAC                                                        |
 | **Audit-ready security**         | Firebase Auth + **MFA-verified session** on site mutations; GCP KMS envelope encryption; immutable GCS audit logs; continuous Semgrep/Trivy/Renovate     |
-| **Paid tiers**                   | Stripe Checkout → Pro; webhooks + `sync_subscriptions` keep local tier truthful ([docs/billing.md](docs/billing.md))                                     |
+| **Paid tiers**                   | Stripe Checkout → Pro; webhooks + `sync_subscriptions` keep local tier truthful ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                                     |
 
 ### 3. System Overview
 
@@ -1140,7 +253,7 @@ flowchart TB
 | **Marketing hosting**      | [Firebase Hosting](https://firebase.google.com/docs/hosting)                          | Astro `marketing/dist` at `dataengineeringformachinelearning.com`                                                          |
 | **Cryptography & audit**   | [Google Cloud](https://cloud.google.com/) (Terraform)                                 | KMS envelope keys, immutable audit log bucket, service accounts (when GCP plane is enabled)                                |
 | **Secrets**                | [Infisical](https://infisical.com/) (recommended)                                     | Runtime secret injection; SOC 2 / CMMC alignment                                                                           |
-| **Billing**                | [Stripe](https://stripe.com/)                                                         | Standard → Pro checkout, webhooks, reconciliation ([docs/billing.md](docs/billing.md))                                     |
+| **Billing**                | [Stripe](https://stripe.com/)                                                         | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                                     |
 | **Model artifacts**        | [Hugging Face Hub](https://huggingface.co/)                                           | Namespaced `.pt` state dict uploads                                                                                        |
 | **Content**                | [Sanity.io](https://www.sanity.io/)                                                   | Incident narratives decoupled from Django                                                                                  |
 
@@ -1229,7 +342,7 @@ Production is **multi-target**: **Railway** ([`infrastructure/railway/`](infrast
 ### 9. Security Operations
 
 - **Perimeter:** Firebase App Check + reCAPTCHA; TLS 1.3 everywhere; strict CSP on marketing ([`firebase.json`](firebase.json)).
-- **Authentication:** JWT verification in `FirebaseAuthenticationMiddleware`; site/settings **mutations** require an **MFA-verified session** (`amr` / `firebase.sign_in_second_factor`—see [`docs/glossary.md`](docs/glossary.md)). Enrolled MFA without a fresh second-factor sign-in leaves Settings forms locked.
+- **Authentication:** JWT verification in `FirebaseAuthenticationMiddleware`; site/settings **mutations** require an **MFA-verified session** (`amr` / `firebase.sign_in_second_factor`—see [Appendix Q](#appendix-q-deml-glossary)). Enrolled MFA without a fresh second-factor sign-in leaves Settings forms locked.
 - **Authorization:** RBAC (`Viewer` / `Operator` / `Security Admin`) + ABAC (`is_published`, ownership, `platform-status` immutability).
 - **Data protection:** AES-256-GCM field encryption; DEK rotation every 30 days; GCP KMS envelope ([Chapter 10](#chapter-10-encrypting-the-data--key-management)).
 - **Supply chain:** Pre-commit + GitHub Actions (Semgrep, Trivy, Gitleaks, Renovate); internal Kanban for vulns ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)).
@@ -1265,7 +378,7 @@ Automation is the manageability engine. **`deml-relay`**, **`deml-scheduler`**, 
 
 Survivability means the platform **continues its mission under stress**—broker outages, worker stalls, crypto failures, or active attack—without silent data loss or unbounded blast radius.
 
-DEML engineers survivability into the command path itself. When Redpanda is unreachable from Firebase Functions, **`ingestEvent` falls back to Firestore `events`** while internal services continue consuming via the private broker ([§5](#5-operational-modes)). The **Transactional Outbox** ensures API-origin events are never published without a durable Postgres record. **`telemetry_worker` idempotency keys** and the **`frontend-events-dlq`** topic prevent poison messages from stalling the entire projection fleet—operators replay with stable keys after fixing enrichment logic ([§13](#13-contingency--degraded-operations)). Multi-tenant isolation (Postgres `account_id`, Firestore security rules, Hugging Face namespaced model artifacts) contains compromise: one tenant's incident does not become another's data leak. Sanity-backed status communications ([Chapter 14](#chapter-14-scaling-reporting-and-announcements-with-sanity)) survive primary backend outages. Daily **`ml_worker` retraining loops** keep threat and SLA models current even as attack patterns shift. Survivability is not "always up"; it is **graceful degradation with recoverable state** and explicit operator runbooks in [`docs/conops.md`](docs/conops.md).
+DEML engineers survivability into the command path itself. When Redpanda is unreachable from Firebase Functions, **`ingestEvent` falls back to Firestore `events`** while internal services continue consuming via the private broker ([§5](#5-operational-modes)). The **Transactional Outbox** ensures API-origin events are never published without a durable Postgres record. **`telemetry_worker` idempotency keys** and the **`frontend-events-dlq`** topic prevent poison messages from stalling the entire projection fleet—operators replay with stable keys after fixing enrichment logic ([§13](#13-contingency--degraded-operations)). Multi-tenant isolation (Postgres `account_id`, Firestore security rules, Hugging Face namespaced model artifacts) contains compromise: one tenant's incident does not become another's data leak. Sanity-backed status communications ([Chapter 14](#chapter-14-scaling-reporting-and-announcements-with-sanity)) survive primary backend outages. Daily **`ml_worker` retraining loops** keep threat and SLA models current even as attack patterns shift. Survivability is not "always up"; it is **graceful degradation with recoverable state** and explicit operator runbooks in [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference).
 
 **Virtuous Knowledge Cycle.** Threat-driven design is not a one-time architecture review—it is a closed loop. **Design** phases prioritize adversary objectives and map them to Visibility / Manageability / Survivability controls. **Build** phases encode those controls in Event Projections, workers, encryption, and access matrices. **Run** phases generate telemetry, CES scores, DLQ depth, and threat-intel matches that validate—or falsify—design assumptions. **Defend** phases feed incident outcomes, new IoCs, and model false-positive rates back into the next design iteration. Each lap tightens detection fidelity, reduces operator toil, and hardens degraded-mode behavior. The platform dogfoods this cycle on Tenant0 (`platform-status`) before any control reaches customer tenants.
 
@@ -1377,7 +490,7 @@ Semantic versioning and release notes: `scripts/git_flow.py` ([Chapter 16](#chap
 | Document                                                   | Audience                 | Content                             |
 | ---------------------------------------------------------- | ------------------------ | ----------------------------------- |
 | **This CONOPS**                                            | Operators, architects    | End-to-end operational narrative    |
-| [`docs/conops.md`](docs/conops.md)                         | On-call engineers        | Checklists, modes, quick reference  |
+| [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference)                         | On-call engineers        | Checklists, modes, quick reference  |
 | [WHITEPAPER.md](WHITEPAPER.md) §2                          | Executives, reviewers    | Concise CONOPS + hypothesis         |
 | [README.md](README.md)                                     | Integrators              | API gateway, architecture diagram   |
 | [Appendix C](#appendix-c-cloud-run-deployment)             | DevOps                   | Per-service Cloud Run variables     |
@@ -2435,11 +1548,11 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
-- **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](../docs/integrations/)
+- **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [Appendix Z](#appendix-z-integration-guides)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
-- **Documentation & code maps**: [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning), [`docs/glossary.md`](docs/glossary.md), [`docs/billing.md`](docs/billing.md)
+- **Documentation & code maps**: [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning), [Appendix Q: Glossary](#appendix-q-deml-glossary), [Appendix M: Billing](#appendix-m-billing--subscriptions-operator-reference)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [OASIS CTI](https://www.oasis-open.org/committees/cyber-threat-intelligence/) (STIX 2.1 / TAXII 2.1), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
@@ -2792,7 +1905,7 @@ billing, KMS, threat APIs, TAXII, and account lifecycle work. Native scheduler
 failures remain `failed` and retryable in `scheduled_task_runs`; they are never
 marked complete merely because the Rust function returned control. The complete
 role/cadence ledger and rollback order live in
-[`docs/rust-data-plane.md`](docs/rust-data-plane.md).
+[Appendix T: Rust Data Plane Operations](#appendix-t-rust-data-plane-operations).
 
 ### 5. Consolidated Background Workers (`deml-workers`)
 
@@ -3612,11 +2725,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/web-components.js"
 ></script>
 ```
 
@@ -3938,6 +3051,2074 @@ DEML adopts two white papers as guiding references for its threat-driven securit
 
 > [!NOTE]
 > **Grok Build Beta** annotations in source (e.g. footer comments, this appendix) mark maintenance performed during automated end-of-day pipelines. Re-run `./scripts/deml-cleanup.sh` before each session and consult [Appendix D](#appendix-d-maintenance--automation-schedule) for scheduled worker cadence.
+
+---
+
+## Appendix M: Billing & Subscriptions (Operator Reference)
+
+
+Stripe powers **Standard → Pro** upgrades for DEML accounts. This is a live path (checkout, webhooks, and reconciliation)—not a roadmap placeholder. Architecture narrative: [WHITEPAPER.md §10](../WHITEPAPER.md#10-data-tenancy-retention-and-lifecycle-policy); maintenance cadence: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule).
+
+## Lifecycle
+
+1. Authenticated **Operator** / **Security Admin** (not Viewer) starts checkout via the billing API.
+2. Stripe Checkout completes; webhook `checkout.session.completed` upgrades the profile to **Pro** and stores `stripe_customer_id` / `stripe_subscription_id`.
+3. `customer.subscription.updated` / `deleted` keep `subscription_active` and `subscription_current_period_end` in sync (canceled / unpaid / past_due → Standard).
+4. Frontend `/success` calls **sync** so the UI reflects Pro even if the webhook races.
+5. Durable **`sync_subscriptions`** runs (`deml-scheduler` → `deml-workers`) heal missed webhooks without restart-driven duplicates.
+
+## API surface
+
+| Endpoint / command                    | Role                                                                      |
+| ------------------------------------- | ------------------------------------------------------------------------- |
+| `POST` billing checkout session       | Create Stripe Checkout URL (`client_reference_id` = account id)           |
+| Stripe webhook                        | Async tier mutations                                                      |
+| Billing **sync**                      | Manual / success-page refresh from Stripe by customer id or linked emails |
+| `python manage.py sync_subscriptions` | Sweep non-Standard profiles against Stripe                                |
+
+Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/sync_subscriptions.py`, frontend `success` page.
+
+## Profile fields
+
+| Field                             | Meaning                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `tier`                            | `Standard` or `Pro`                                                                                |
+| `stripe_customer_id`              | Stripe customer                                                                                    |
+| `stripe_subscription_id`          | Active subscription id                                                                             |
+| `subscription_active`             | Local cache of paid status                                                                         |
+| `subscription_current_period_end` | Period end (Stripe “basil” API may nest period end on subscription items—code handles both shapes) |
+
+## Operator notes
+
+- **Secrets:** `STRIPE_*` keys via Infisical / host env—never commit.
+- **Viewers** cannot open checkout.
+- **Pro vs Standard** may gate higher-frequency model refresh and product features; workers still run **symmetrical** pipelines for every account.
+- After deploy, verify webhook endpoint URL and signing secret in the Stripe dashboard point at the current `BACKEND_URL`.
+
+## Related
+
+- [Glossary](glossary.md)
+- [CONOPS](conops.md)
+- [DeepWiki · Billing](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning/2.8-billing-and-subscriptions)
+
+---
+
+## Appendix N: Concept of Operations (Operator Quick Reference)
+
+
+**Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
+**Last aligned:** July 2026 (Event Projections; multi-runtime compute)
+**Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
+**Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
+**Glossary:** [glossary.md](glossary.md) · **Billing:** [billing.md](billing.md) · **DeepWiki:** [code wiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+
+---
+
+## 1. Purpose
+
+This document tells operators **how DEML runs in production**: vendors, services, data paths, user workflows, maintenance schedules, and degraded-mode behavior. Use it for on-call orientation, compliance evidence, and release planning.
+
+## 2. System mission
+
+| Goal                   | Mechanism                                                |
+| ---------------------- | -------------------------------------------------------- |
+| Non-blocking ingestion | Firebase `ingestEvent` + Django Outbox → Redpanda        |
+| Real-time dashboards   | Firestore projections (`deml` DB) + Angular `onSnapshot` |
+| Transactional truth    | PostgreSQL (users, pages, incidents, API keys, outbox)   |
+| Analytics & CES        | OpenTelemetry → ClickHouse                               |
+| Tenant isolation       | `account_id` scoping + Firestore security rules          |
+| Public transparency    | `platform-status` dogfoods under real load               |
+| Paid tiers             | Stripe Standard → Pro ([billing.md](billing.md))         |
+
+## 3. Vendor & deployment map
+
+Compute is **multi-target** with **identical container images** and Event Projections invariants:
+
+| Runtime                     | Notes                                            | Docs                                                                    |
+| --------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| **Railway**                 | Private service mesh; `railway.json` per service | [infrastructure/railway/README.md](../infrastructure/railway/README.md) |
+| **Cloud Run (GCP)**         | Fully managed reference topology                 | BOOK Appendix C                                                         |
+| **AWS Lightsail / Fargate** | Cost-optimized alternate; ECR                    | BOOK Ch. 23 / Appendix E                                                |
+
+Firebase (Auth, `ingestEvent`, Firestore, marketing Hosting) is shared across compute hosts. GCP KMS/audit applies when the GCP control plane is enabled.
+
+| Component                             | Example service names                                                                                                               | Deploy trigger                  |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Angular app (`deml.app`)              | `deml-frontend`                                                                                                                     | Push to `main`                  |
+| Django API                            | `deml-backend`                                                                                                                      | Push to `main`                  |
+| Workers, **Rust data plane**, scanner | `deml-workers`, `deml-relay`, `deml-scheduler`, `deml-probe`, `deml-normalizer`, `deml-cpe`, optional `deml-ingest`, `deml-scanner` | Push to `main`                  |
+| Postgres                              | managed DB / sidecar                                                                                                                | Infrastructure change           |
+| Redpanda, ClickHouse                  | `deml-queue`, `deml-clickhouse`                                                                                                     | Infrastructure + image push     |
+| `ingestEvent` + Firestore rules       | Firebase / GCP                                                                                                                      | `.github/workflows/firebase...` |
+| Marketing site                        | Firebase Hosting                                                                                                                    | `firebase-hosting-merge.yml`    |
+
+**Ownership invariant:** Rust roles own relay, durable schedule creation, pure
+database maintenance, probes, raw telemetry normalization, request-time CPE
+lookup, and optional high-volume ingest. Python equivalents are rollback-only
+and must not run concurrently. Django workers retain business projections, ML,
+billing, KMS, and external API integrations. See the
+[Python-to-Rust ownership ledger](rust-data-plane.md#python-to-rust-ownership-ledger).
+
+**Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
+
+## 4. Data paths
+
+### 4.0 Cryptographic transport invariant
+
+Production service connections use verified TLS (`https`, `rediss`, Postgres `sslmode=verify-full`, Redpanda `SSL`/`SASL_SSL`, and HTTPS OTLP). Durable Redpanda values are additionally wrapped in the versioned DEML Internode Envelope (`A256GCM`) before publication and decrypted only by authorized consumers. `DEML_INTERNODE_ENCRYPTION=required` is the production steady state; `optional` is a bounded rolling-migration mode, and `disabled` is restricted to local development/tests. The envelope binds the ciphertext to its Kafka topic so a valid message cannot be moved to a different stream without authentication failure.
+
+### 4.1 Client commands (primary)
+
+```
+Angular → Firebase callable ingestEvent → Redpanda (frontend-events)
+                                      ↘ Firestore events (fallback)
+Redpanda → telemetry_worker → Firestore users/{uid}/data/stats
+Angular ← onSnapshot ← Firestore
+```
+
+- Events carry `version: "1.0"` and a validated, path-safe `idempotency_key` (16–128 characters).
+- Worker is the **only** authoritative writer of stats projections.
+- Projection failures are committed only after an acknowledged write to `frontend-events-dlq`; a failed DLQ publish leaves the source batch uncommitted for retry.
+- Redpanda message values are ciphertext on the wire and at broker rest; idempotency keys remain visible only when deliberately carried as broker headers for routing/deduplication.
+
+### 4.2 API / integration commands
+
+```
+Client → Rust ingest (API key, high volume) or Django REST → Postgres txn + OutboxEvent
+deml-relay (leased) → Redpanda → role-specific consumer → Firestore/Postgres
+```
+
+### 4.3 Queries
+
+| Data                       | Store                 | Client access        |
+| -------------------------- | --------------------- | -------------------- |
+| Live stats                 | Firestore `deml`      | `onSnapshot`         |
+| Status pages, incidents    | Postgres + Sanity CMS | REST + Sanity API    |
+| CES / historical analytics | ClickHouse            | REST (authenticated) |
+
+## 5. Actors
+
+| Actor          | Access                              | Notes                                |
+| -------------- | ----------------------------------- | ------------------------------------ |
+| Anonymous      | Published pages + `platform-status` | ABAC enforced server-side            |
+| Viewer         | Read dashboards                     | No mutations (`403` on writes)       |
+| Operator       | Full account management             | MFA required for writes              |
+| Security Admin | Platform bootstrap                  | Same as Operator for owned resources |
+| API integrator | `/api/v1/ingest`, `/api/v1/predict` | Bearer API key → `account_id`        |
+
+See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-control-rbac--abac) for the access matrix.
+
+## 6. Operational modes
+
+| Mode                            | Indicators                               | Actions                                                                      |
+| ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
+| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                           |
+| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; internal broker unaffected   |
+| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-relay`; inspect `frontend-events-dlq` |
+| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                         |
+| **Maintenance**                 | Deploy in progress                       | Rolling deploy; expect brief projection lag and verify Rust task leases      |
+
+## 7. Service matrix
+
+The logical services are identical across deployment targets. On the canonical Cloud Run path they map 1:1 to Cloud Run services. On the AWS alternative they are grouped: most application containers (frontend, backend, workers, daemon, scanner, sidecars) run inside a single Lightsail Container Service; Redpanda and ClickHouse run as dedicated Fargate tasks or Lightsail instances.
+
+| Logical Service                              | Role                                                    | AWS Grouping                                       |
+| -------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
+| `deml-frontend`                              | Angular UI (SSR)                                        | Lightsail Container Service                        |
+| `deml-backend`                               | Django API                                              | Lightsail Container Service                        |
+| `deml-postgres`                              | OLTP database                                           | RDS or Lightsail DB                                |
+| `deml-queue`                                 | Redpanda broker                                         | Dedicated Fargate / Lightsail instance             |
+| `deml-telemetry-worker`                      | Firestore and business projections only                 | Lightsail Container Service (or workers container) |
+| `deml-relay`                                 | Rust leased outbox delivery                             | Lightsail Container Service                        |
+| `deml-scheduler`                             | Rust durable schedule claims                            | Lightsail Container Service                        |
+| `deml-probe`                                 | Rust bounded probes and durable observations            | Lightsail Container Service                        |
+| `deml-normalizer`                            | Rust `telemetry-raw` validation and persistence         | Lightsail Container Service                        |
+| `deml-ingest`                                | Optional Rust high-volume integration ingress           | Lightsail Container Service                        |
+| `deml-workers`                               | Consolidated ML training, threat intel, and task runner | Lightsail Container Service                        |
+| `deml-clickhouse`                            | OLAP                                                    | Dedicated Fargate / Lightsail instance             |
+| `deml-dragonfly`                             | Cache / rate limits                                     | Sidecar or small task                              |
+| `deml-scanner`, `deml-cpe`, `deml-tor-proxy` | Vulnerability ledger & OSINT; Rust serves CPE lookups   | Lightsail Container Service (sidecars)             |
+
+Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
+
+## 8. Maintenance schedule
+
+| Cadence    | Job                                   | Owner                                 |
+| ---------- | ------------------------------------- | ------------------------------------- |
+| Continuous | Leased `outbox_relay`                 | `deml-relay`                          |
+| Continuous | Kafka consumers                       | `deml-normalizer`, `telemetry_worker` |
+| 30s        | Service pingers                       | `deml-probe`                          |
+| Continuous | Durable schedule claims + native exec | `deml-scheduler`                      |
+| 1h         | Threat intel                          | `deml-workers` (via internal-tasks)   |
+| 24h        | ML training                           | `deml-workers` (via internal-tasks)   |
+| 24h        | `db_cleanup`, `optimize_database`     | `deml-scheduler` (Rust-native)        |
+| 24h        | `archive_reports`                     | `deml-scheduler` (Rust-native)        |
+| 24h        | `sync_subscriptions`                  | `deml-workers` (via internal-tasks)   |
+| Weekly     | `cleanup_clickhouse`                  | `deml-scheduler` (Rust-native)        |
+
+| Weekly | Renovate PRs | GitHub Actions |
+| Monthly / Quarterly | Semgrep, audits | GitHub Actions |
+
+**Rust-native tasks** execute directly without Kafka publish.
+**Python-only tasks** are published to `internal-tasks` for worker execution.
+
+## 9. Security operations (summary)
+
+- Firebase Auth + App Check at perimeter; Django verifies JWTs.
+- MFA (`amr` claim) required for customer mutations.
+- AES-256-GCM + GCP KMS envelope encryption for integration secrets.
+- Immutable GCS audit logs (Terraform).
+- Pre-commit and CI: Ruff, ESLint, Axe, Semgrep, Trivy, Gitleaks.
+
+## 10. Monitoring checklist
+
+- [ ] Settings → **Event Projections Verification** succeeds
+- [ ] `platform-status` loads for anonymous users
+- [ ] Sentry error rate baseline
+- [ ] Cloud Run CPU/memory on `deml-backend`, `deml-telemetry-worker`
+- [ ] DLQ topic depth (`frontend-events-dlq`)
+- [ ] `platform-status` → **Event Projections DLQ** is Operational (replay-group lag is zero)
+- [ ] Outbox unpublished row count (Postgres)
+- [ ] CES gauges responding (ClickHouse path)
+
+## 11. Contingency quick reference
+
+| Failure                     | First response                                                                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Stale realtime stats        | Restart telemetry worker + outbox relay                                                                                                    |
+| Function publish errors     | Check Redpanda public endpoint; confirm fallback events in Firestore                                                                       |
+| DLQ growth                  | Run `python manage.py replay_projection_dlq --dry-run`; fix the transient/code cause, then replay a bounded batch with `--max-records 100` |
+| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Cloud Run backend                                                                         |
+| Firestore permission denied | Redeploy `firestore.rules` via Firebase workflow                                                                                           |
+
+## 12. Related documents
+
+| Document                                                             | Use                                       |
+| -------------------------------------------------------------------- | ----------------------------------------- |
+| [BOOK.md](../BOOK.md)                                                | Full CONOPS narrative + chapters          |
+| [WHITEPAPER.md](../WHITEPAPER.md)                                    | Executive architecture                    |
+| [README.md](../README.md)                                            | API integration gateway                   |
+| [features.md](features.md)                                           | Feature catalog                           |
+| [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles         |
+| [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                          |
+| [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                                 |
+| [Rust data plane](rust-data-plane.md)                                | Role rollout, failure semantics, rollback |
+
+---
+
+## Appendix O: Analytics Exports & RustFS Object Store
+
+
+**Status:** infrastructure, client, `ExportJob` model/API/worker, and Analytics UI exports panel.
+**Object store:** [RustFS](https://github.com/rustfs/rustfs) (Apache 2.0, S3-compatible)
+**Ops:** [`infrastructure/rustfs/README.md`](../infrastructure/rustfs/README.md)
+**Catalog:** `deml-rustfs` in [`infrastructure/railway/services.json`](../infrastructure/railway/services.json)
+
+## Why RustFS (not MinIO, not a lakehouse)
+
+| Option                  | Decision                                                              |
+| ----------------------- | --------------------------------------------------------------------- |
+| MinIO CE                | **Avoid** — upstream community repo archived / unmaintained (2026)    |
+| Garage                  | Solid Rust alternative; we chose RustFS for S3-shaped DX + Apache 2.0 |
+| Delta / Iceberg / Unity | **Not for downloads** — lake table formats, not tenant PDF storage    |
+| S3 / R2                 | Valid managed fallback; same client (`boto3` path-style)              |
+| **RustFS**              | **Selected** self-hosted S3 for report **blobs**                      |
+
+**Facts vs files**
+
+- **ClickHouse + Postgres** = analytics truth (BI queries, CES, telemetry aggregates).
+- **RustFS** = durable **files** (PDF / CSV / Parquet / JSON) after a job runs.
+- **Firestore** = live UI projections — not an archive for multi‑MB reports.
+
+## Architecture
+
+```text
+  Angular ──POST /api/v1/exports──► deml-backend (Django Ninja)
+                                          │
+                                          │ ExportJob (queued)  [next]
+                                          ▼
+                                    deml-workers
+                               Polars + CH/PG → render
+                                          │
+                          put_bytes ──────► deml-rustfs (S3 API :9000)
+                          storage_uri ────► ExportJob ready
+                                          │
+  Angular ◄── presigned GET (TTL) ──────── deml-backend
+```
+
+### Object key layout
+
+```text
+accounts/{account_id}/exports/{job_id}/{filename}
+```
+
+Implemented in `backend/utils/object_storage.export_object_key`.
+
+### Client
+
+| Surface    | Module                                     |
+| ---------- | ------------------------------------------ |
+| Settings   | `RUSTFS_*` in `backend/config/settings.py` |
+| Helpers    | `backend/utils/object_storage.py`          |
+| Dependency | `boto3` in `backend/requirements.txt`      |
+
+## Local development
+
+```bash
+docker compose up -d rustfs
+# S3 API   http://localhost:9100
+# Console  http://localhost:9101  (dev keys from compose — not for prod)
+```
+
+Backend / workers (compose) receive:
+
+```text
+RUSTFS_ENDPOINT=http://rustfs:9000
+RUSTFS_ACCESS_KEY=…
+RUSTFS_SECRET_KEY=…
+RUSTFS_BUCKET=deml-exports
+RUSTFS_REGION=us-east-1
+RUSTFS_USE_SSL=false
+```
+
+Host processes outside compose use `RUSTFS_ENDPOINT=http://localhost:9100`.
+
+Create the bucket once (console or AWS CLI):
+
+```bash
+export AWS_ACCESS_KEY_ID=deml-rustfs-dev
+export AWS_SECRET_ACCESS_KEY=deml-rustfs-dev-secret-change-me
+aws --endpoint-url http://localhost:9100 s3 mb s3://deml-exports
+```
+
+Or from Django shell after `ensure_bucket()` when credentials are set.
+
+## Railway
+
+Service name: **`deml-rustfs`**
+
+1. Deploy from `infrastructure/rustfs/Dockerfile` (pinned RustFS image).
+2. Attach a **volume** at `/data`.
+3. Set strong `RUSTFS_ACCESS_KEY` / `RUSTFS_SECRET_KEY`.
+4. Point backend + workers:
+
+   ```text
+   RUSTFS_ENDPOINT=http://deml-rustfs.railway.internal:9000
+   RUSTFS_BUCKET=deml-exports
+   RUSTFS_USE_SSL=false
+   ```
+
+5. Keep console disabled publicly (`RUSTFS_CONSOLE_ENABLE=false` default in catalog).
+
+## Security invariants
+
+- Owner/RBAC checks on every export create/list/download (app layer).
+- Short-lived **presigned GET** (default 15 minutes in client helpers).
+- No frontend access to root keys.
+- Prefix isolation by `account_id` UUID.
+- Retention: expire objects + mark jobs expired (worker task — follow-up).
+
+## Implemented surfaces
+
+| Piece   | Location                                                                   |
+| ------- | -------------------------------------------------------------------------- |
+| Model   | `monitor.ExportJob` + migration `0043_export_job`                          |
+| API     | `GET/POST /api/v1/exports`, `GET /api/v1/exports/{id}`, `GET .../download` |
+| Service | `monitor/services/exports.py` (CSV/JSON/Parquet/PDF)                       |
+| Command | `python manage.py generate_export` (+ optional `--job-id`)                 |
+| Workers | `generate_export` in `ALLOWED_TASKS`                                       |
+| UI      | Analytics page exports panel                                               |
+
+## Risk note
+
+RustFS is younger than historical MinIO. **Pin image tags**, smoke-test presign after upgrades, and keep the client endpoint-abstract so a future Garage/R2 swap is env-only.
+
+---
+
+## Appendix P: Platform Features
+
+
+The Data Engineering for AI Engineering and Cybersecurity (DEML) Platform provides a comprehensive ecosystem built for robust observability, AI intelligence, data engineering, and security.
+
+## Concept of Operations (CONOPS)
+
+Operational doctrine—how the platform runs in production, who performs which workflows, and how services degrade and recover—is maintained in:
+
+- [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops) — canonical narrative
+- [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops) — executive summary
+- [conops.md](conops.md) — operator quick reference (checklists, service matrix, contingencies)
+- [glossary.md](glossary.md) — patterns, entities, stores
+- [billing.md](billing.md) — Stripe Standard → Pro
+- [exports-rustfs.md](exports-rustfs.md) — analytics export object store (RustFS) + download design
+- [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) — code-entity wiki
+
+## Product surfaces (`deml.app`)
+
+| Route                 | Purpose                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| `/dashboard`          | CES / KPI overview and performance telemetry                                                |
+| `/analytics`          | Latency, geographic origins, threat charts, CES gauges                                      |
+| `/status`, `/explore` | Status directory and public discovery                                                       |
+| `/status/:slug`       | Isolated public status page (e.g. `platform-status`)                                        |
+| `/settings`           | Sites, services, incidents, analytics IDs (**MFA-verified session** required for mutations) |
+| `/account`            | Profile, MFA enrollment, linked OAuth accounts, billing entry points                        |
+| `/vulnerabilities`    | SOC / vulnerability Kanban                                                                  |
+| `/success`            | Post–Stripe Checkout re-sync                                                                |
+| `/login`              | Auth + SMS MFA challenge                                                                    |
+
+## Core Features Outline
+
+1. **High-Throughput Asynchronous Telemetry Ingestion + Event Projections (Reliable)**
+   - Client events: Firebase Cloud Functions (`ingestEvent` with `version` + `idempotency_key`) → Redpanda or Firestore fallback.
+   - Django paths use **Transactional Outbox** (`OutboxEvent` model) + `outbox_relay` command for reliable publishing.
+   - `telemetry_worker` performs idempotent projections (with DLQ to `frontend-events-dlq`) and builds materialized read models in Firestore (`deml` DB).
+   - Queries use direct Firestore real-time subscriptions. Redpanda + Polars for heavy batch work. Decouples from transactional DB while providing at-least-once + dedup semantics.
+
+2. **Account & Site Isolation (User + Sites)**
+   - One Firebase login → one Django `User` → `UserProfile.account_id`. Each account may own many `StatusPage` sites.
+   - No organization hierarchies or multiple logins per workspace. Telemetry, integrations, and widgets are scoped to `user` / `account_id`; data cannot bleed across accounts.
+
+3. **Big Data Aggregate Threat Modeling ("Herd Immunity")**
+   - The platform trains a global `platform_threat_model.pt` that aggregates anonymized, non-PII metrics across all accounts (e.g., global failure rates, average suspicious request ratios over the last 90 days).
+
+4. **Account-Scoped Inference & Evaluation**
+   - Individual threat reports evaluate isolated telemetry (location weights, failure rates) against the global aggregate model—training on big data, inferencing on the account's footprint only.
+
+5. **Predictive SLA Deep Learning**
+   - Dedicated PyTorch models (`sla_models`) forecast uptime SLAs per account. They ingest temporal vectors, endpoint latency, and variance, updating predictions without manual tuning.
+
+6. **Spiking Temporal Forecasting (Fourth Model)**
+   - New SpikingTemporalForecaster (Dynamic Temporal Forecasting with Norse-backed or MLP fallback execution) for temporal/event-driven data. Processes sequences from telemetry streams (Redpanda events) to forecast spikes/anomalies. Trained with same teacher distillation. Exposed in status/analytics as "spiking_temporal_forecast". See models_inventory.md.
+
+7. **Next-Generation SIEM / SOAR Digest & Sharing**
+   - Automated serialization of AI anomaly predictions into industry-standard STIX 2.1 JSON payloads. These indicators are shared natively via TAXII 2.1 to central hubs (like MS-ISAC).
+
+8. **Hugging Face Global Ecosystem Integration**
+   - Native integration with Hugging Face automates the publication of PyTorch models to the Hub and continuously syncs public status pages and whitepapers via Spaces deployments.
+
+9. **`platform-status`, System Design, and Critical Path**
+   - The platform dogfoods itself via the public `platform-status` page (`user=null`, `is_platform=True`)—an "Apex Sandbox" and "Public Sentinel" under real load. Background workers iterate over active accounts plus this platform scope so pipelines stay symmetrical. Pipeline: **collect, enhance, aggregate, showcase**. Results land in optimized tables for snappy UI access.
+
+10. **Application-Level Zeek-Equivalent Middleware**
+    - Passive interception of HTTP headers, source IPs, methods, and latency. Zero-latency cached mappings associate traffic with the target `account_id` without blocking the request thread.
+
+11. **OSINT & Dark Web Threat Intel Integration**
+    - Reconnaissance against Tor (Ahmia) and Certificate Transparency logs. Findings serialize into `ThreatIntelligence` and `Endpoints` for dashboard visibility.
+
+12. **Post-Quantum Cryptography (PQC) & Forward Secrecy**
+    - Hybrid KEMs via `liboqs` on `/api/v1/telemetry/pq-key-exchange`. Ephemeral secret keys expire after five minutes.
+
+13. **Symmetrical Account Pipelines**
+    - Background workers, ML training loops, and OSINT scanners iterate over provisioned users/accounts (and the `platform` sentinel). No hardcoded single-customer exceptions.
+
+14. **Enterprise Compliance & Security Standards**
+    - Architected for SOC 2 Type II, CMMC 2.0, and NIST SP 800-171 Rev. 3 readiness.
+
+15. **RBAC & ABAC Access Control**
+    - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin` (one role per login). Status page create/update/delete requires `Operator` or `Security Admin` (`@role_required`). Settings UI disables mutations for `Viewer`.
+    - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + an **MFA-verified session** (`amr` / `firebase.sign_in_second_factor`—see [glossary.md](glossary.md)). Enrolled MFA without re-auth after second factor leaves Settings locked. `platform-status` is immutable for customers.
+    - **Public stats:** `/status/:slug` and `/explore` expose uptime and service health only when `is_published=True` or `slug=platform-status`.
+    - See [WHITEPAPER.md §8](../WHITEPAPER.md#8-role-based--attribute-based-access-control-rbac--abac) for the full access matrix.
+
+16. **Billing (Stripe)**
+    - Live Standard → Pro checkout, webhooks, success-page sync, and scheduled `sync_subscriptions`. Operator detail: [billing.md](billing.md).
+
+17. **Embeddable widgets**
+    - Public status embeds via `widget.js` (Viking-UI package / synced marketing assets) for customer sites without pulling the full Angular app.
+
+---
+
+## Appendix Q: DEML Glossary
+
+
+Short definitions for architectural patterns, domain concepts, and production code entities. Narrative detail lives in [BOOK.md](../BOOK.md); executive summary in [WHITEPAPER.md](../WHITEPAPER.md); AI-navigable code map on [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning).
+
+## Architectural patterns
+
+| Term                                    | Definition                                                                                                                                                                                                                                                             |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Event Projections**                   | Core data-flow pattern: **commands** (intent) are decoupled from **projections** (materialized read models). Commands ingress via Firebase `ingestEvent` or the Django API; Redpanda carries the bus; `telemetry_worker` projects into Firestore and relational truth. |
+| **Transactional Outbox**                | Django or the Rust ingest edge writes an `OutboxEvent` transactionally; `deml-relay` leases rows with `SKIP LOCKED` and publishes at least once to Redpanda. Stable event IDs make consumer deduplication deterministic.                                               |
+| **Symmetrical pipelines**               | Every account (and the platform sentinel) traverses the same worker loops—no hardcoded “platform-only” branches in production code.                                                                                                                                    |
+| **Command / projection / query planes** | Writes never block dashboards: commands → bus → workers; queries read Firestore projections or ClickHouse OLAP, not raw transactional joins for live UI.                                                                                                               |
+
+## Domain concepts
+
+| Term                          | Definition                                                                                                                                                                                                                   |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tenant0 / platform-status** | Public dogfood sentinel (`is_platform=True`, world-readable). The platform monitors itself through the same pipelines offered to customers.                                                                                  |
+| **Account isolation**         | Flat tenancy via `UserProfile.account_id` (UUID). No org hierarchies; telemetry, keys, and widgets cannot bleed across accounts.                                                                                             |
+| **STIX 2.1 / TAXII**          | Anomalies and indicators serialize to STIX 2.1 for ISAC-style sharing over TAXII.                                                                                                                                            |
+| **CES**                       | Countermeasure Effectiveness Standard—composite operational score (threat, SLA/stableness, temporal forecast) on analytics/status surfaces.                                                                                  |
+| **MFA-verified session**      | Site and settings **mutations** require a Firebase ID token that proves second-factor auth (`amr` / `firebase.sign_in_second_factor`, or equivalent). Enrolled MFA without a fresh SMS-verified sign-in leaves forms locked. |
+
+## System components
+
+| Term                              | Definition                                                                                                                                            | Pointer                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **`telemetry_worker`**            | Independent Firestore and business projection consumers with DLQ                                                                                      | `backend/telemetry/management/commands/telemetry_worker.py` |
+| **`ml_worker`**                   | ML-event consumer; daily runs originate in the durable Rust scheduler                                                                                 | `backend/ml/management/commands/ml_worker.py`               |
+| **Rust data plane**               | One compiled image deployed by role: leased relay, durable/native scheduler, bounded probe, telemetry normalizer, optional ingest edge, or CPE lookup | `rust/deml-daemon/`                                         |
+| **`deml-relay` / `outbox_relay`** | Outbox publisher role (Rust daemon preferred in multi-service meshes)                                                                                 | BOOK App. C; `infrastructure/railway/README.md`             |
+| **`deml-workers`**                | ML, lifecycle, and durable whitelisted task execution consumers                                                                                       | `backend/deml_workers_start.py`                             |
+| **Viking-UI**                     | Design system SSoT: tokens, CSS, Angular + Web Components                                                                                             | `packages/viking-ui/`, [THEME.md](../THEME.md)              |
+| **Kyber / liboqs**                | Post-quantum KEM primitives available on hybrid key-exchange paths                                                                                    | BOOK App. A / Ch. 27                                        |
+
+## Data stores & mesh
+
+| Term                   | Definition                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **PostgreSQL**         | Transactional system of record (users, pages, incidents, keys, outbox).                                                |
+| **Redpanda**           | Kafka-compatible internal event broker (`frontend-events`, DLQ, `internal-tasks`). Not a customer integration product. |
+| **Firestore (`deml`)** | Named database for projected real-time stats (`users/{uid}/data/stats`).                                               |
+| **ClickHouse**         | OLAP store for OpenTelemetry traces/metrics and heavy analytics.                                                       |
+| **Dragonfly**          | Redis-compatible cache / Channels / rate-limit window store.                                                           |
+
+## Related docs
+
+- [CONOPS operator reference](conops.md)
+- [Platform features](features.md)
+- [Billing & subscriptions](billing.md)
+- [Railway service topology](../infrastructure/railway/README.md)
+- [DeepWiki index](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+
+---
+
+## Appendix R: DEML macOS Security Workbench
+
+
+`native/macos-app` is a native Rust desktop surface for local vulnerability triage.
+It is deliberately local-first: findings, provider configuration, agent
+results, and audit events stay under the signed-in macOS user's Application
+Support directory. The state file is written with owner-only permissions.
+Desktop sessions and model API keys are stored in macOS Keychain, not in the
+application state file.
+
+## Browser authentication
+
+The desktop app uses the existing DEML Firebase login and MFA experience. When
+the operator selects **Continue in browser**, the app:
+
+1. Binds an ephemeral callback listener to `127.0.0.1` only.
+2. Generates a random state value and PKCE verifier/challenge.
+3. Opens `deml.app` in the default browser with the callback and challenge.
+4. Completes the normal password, phone, Google, Apple, and MFA flow in the
+   browser.
+5. Receives a two-minute, one-time authorization code on the loopback callback.
+6. Exchanges it with the PKCE verifier and stores the resulting 30-day desktop
+   session in macOS Keychain.
+
+The browser never sends a Firebase credential or desktop session through the
+callback URL. The local listener expires after five minutes, accepts only the
+exact `/callback` path, and verifies the state before exchanging the code. On
+later launches the app validates the saved session with the backend; disabled
+or deleted users cannot restore a session.
+
+For local web/backend development, set `DEML_AUTH_URL` and `DEML_API_URL` before
+launching the app. Plain HTTP authentication is accepted only for `localhost`
+or `127.0.0.1`; production authentication must use HTTPS.
+
+## Capabilities
+
+- Sign in through the system browser using the existing DEML account and MFA.
+- Create, prioritize, investigate, mitigate, and resolve local findings.
+- Use Ollama without an API key or configure OpenAI-compatible and Anthropic
+  cloud endpoints.
+- Give the triage agent an explicit list of repository-relative context files.
+- Review a structured remediation plan, proposed commands, and a unified diff.
+- Apply a proposed patch only after an explicit click. The application first
+  runs `git apply --check`; it never executes model-proposed shell commands.
+- Review a local audit log of security-relevant actions.
+
+## Security boundaries
+
+The model receives only the selected finding, the operator's request, and
+explicitly listed context files. Context paths must resolve inside the selected
+workspace and are capped at 64 KiB per request. API keys are loaded from
+Keychain only for the duration of a request. Patch paths are checked for path
+traversal before `git apply` is invoked with fixed arguments and patch data on
+standard input.
+
+This workbench assists an authorized operator; it is not an autonomous scanner
+or a substitute for change review. Cloud providers receive the supplied prompt
+and context, so use Ollama for repositories that must remain entirely local.
+
+## Run from source
+
+Requirements: macOS, Xcode Command Line Tools, and Rust 1.92 or newer.
+
+```bash
+cd native/macos-app
+cargo run
+```
+
+For local inference, start Ollama separately and select the default
+`http://127.0.0.1:11434` endpoint. The default model is `qwen2.5-coder:7b`, but
+any installed chat-capable Ollama model can be entered in Settings.
+
+## Install like a normal macOS application
+
+Two installer formats are produced:
+
+- The `.dmg` presents `DEML Security Workbench.app` next to an Applications
+  shortcut. Drag the app onto Applications, eject the image, and launch it from
+  Launchpad, Spotlight, or Finder.
+- The `.pkg` installs the application directly into `/Applications` using the
+  standard macOS Installer.
+
+Official releases must be signed with Developer ID, use the hardened runtime,
+be notarized by Apple, and have the notarization ticket stapled. This gives the
+same Gatekeeper installation experience expected from applications such as
+Spotify or Discord.
+
+## Build the application and installers
+
+For a local development build:
+
+
+```bash
+./scripts/build_macos_installer.sh
+```
+
+Artifacts are written to `dist/macos/`. Without Apple credentials, the script
+creates an ad-hoc signed `.app`, an unsigned `.pkg`, and a development `.dmg`.
+These are suitable for local testing but not public distribution.
+
+For a production release, first create Developer ID Application and Developer
+ID Installer certificates, then store App Store Connect notarization credentials
+in a Keychain profile:
+
+```bash
+xcrun notarytool store-credentials DEML_NOTARY \
+  --apple-id "release@example.com" \
+  --team-id "YOUR_TEAM_ID" \
+  --password "APP_SPECIFIC_PASSWORD"
+
+export DEVELOPER_ID_APPLICATION="Developer ID Application: Example, Inc. (TEAMID)"
+export DEVELOPER_ID_INSTALLER="Developer ID Installer: Example, Inc. (TEAMID)"
+export APPLE_NOTARY_PROFILE="DEML_NOTARY"
+./scripts/build_macos_installer.sh
+```
+
+The script runs the Rust tests and Clippy, builds the branded app bundle, signs
+it with the hardened runtime, builds both installer formats, submits each to
+Apple notarization, and staples and validates the returned tickets.
+
+---
+
+## Appendix S: Models Inventory
+
+
+This document tracks the machine learning models used across the platform, outlining their purpose, the scope of their data (Tenant vs. Platform), their architecture, and how they are trained using Knowledge Distillation from existing open-source "Teacher" models.
+
+## 1. Threat Model (`ThreatModel`)
+
+- **Purpose**: Evaluates tenant-specific telemetry to determine the probability that the tenant is currently experiencing a cyber attack or abnormal activity.
+- **Data Scope**: **Tenant-Specific**. It only analyzes endpoints, integrations, and failure rates belonging to the specific tenant.
+- **Architecture**: PyTorch Neural Network (Linear -> ReLU -> Linear -> Sigmoid). Outputs a probability from 0.0 to 1.0.
+- **Teacher Model**: `meta-llama/Meta-Llama-3-8B-Instruct` (via Hugging Face Inference API).
+- **Knowledge Distillation Strategy**: We prompt the Teacher LLM with the tenant's exact telemetry stats (location weights, suspicious ratios, failure rates) and ask it to reason about the cyber attack probability. We use this reasoned score to train our fast PyTorch model.
+- **Deployment**:
+  - Saved locally as `platform_threat_model.pt` (used as baseline).
+  - Pushed securely to your Hugging Face Repository (`HF_REPO_ID`) as `threat_models/platform_threat_model.pt`.
+
+## 2. SLA Estimator (`SLAEstimator`)
+
+- **Purpose**: Predicts the target Service Level Agreement (SLA) penalty or score based on an endpoint's error rate and latency.
+- **Data Scope**: **Tenant-Specific**.
+- **Architecture**: PyTorch Neural Network (Linear -> ReLU -> Linear). Outputs an SLA score from 0.0 to 1.0.
+- **Teacher Model**: `meta-llama/Meta-Llama-3-8B-Instruct` (via Hugging Face Inference API).
+- **Knowledge Distillation Strategy**: We prompt the Teacher LLM with an endpoint's specific HTTP status code and response time, asking for an ideal SLA penalty. This teaches the PyTorch model the complex relationship between latency/errors and business SLAs.
+- **Deployment**: Pushed securely to your Hugging Face Repository (`HF_REPO_ID`). The path dynamically uses a hashed version of the tenant's slug to maintain privacy (e.g., `sla_models/{hashed_tenant_slug}_sla_model.pt`).
+
+## 3. Countermeasure Effectiveness Score (`CESModel`)
+
+- **Purpose**: Evaluates how effectively the platform's global security rules (rate limits, IPs blocks, WAF) are neutralizing attacks platform-wide.
+- **Data Scope**: **Platform-Wide ONLY**. It aggregates telemetry across all endpoints, disregarding tenant isolation, to get a global view of stability and threat mitigation.
+- **Architecture**: PyTorch Neural Network (Linear -> ReLU -> Linear -> Sigmoid). Outputs a score from 0.0 to 100.0.
+- **Teacher Model**: `meta-llama/Meta-Llama-3-8B-Instruct` (via Hugging Face Inference API).
+- **Knowledge Distillation Strategy**: We prompt the Teacher LLM with the platform's global failure rate, global suspicious ratio, and active incidents, asking it to calculate an overall effectiveness score for our countermeasures. Our PyTorch model learns this holistic evaluation.
+- **Deployment**:
+  - Saved locally as `ces_model.pt`.
+  - Pushed securely to your Hugging Face Repository (`HF_REPO_ID`) as `ces_models/platform_ces_model.pt`.
+
+## 4. Spiking Temporal Forecaster (`SpikingTemporalForecaster`)
+
+- **Purpose**: Forecasts temporal patterns and future anomalies in telemetry/event streams using Spiking Neural Networks (SNNs). Ideal for processing time-series sequences from Redpanda events, latency spikes, and error bursts over time windows. Outputs a forecast score (0.0-1.0) for upcoming issues.
+- **Data Scope**: **Tenant-Specific + Platform**. Processes sequences of features (e.g., latency, errors over seq_len timesteps) from endpoints and analytics.
+- **Architecture**: PyTorch + Dynamic Temporal Forecasting with optional Norse-backed LIFCell layers for spiking dynamics or MLP fallback. Handles sequential input for native temporal modeling.
+- **Teacher Model**: `meta-llama/Meta-Llama-3-8B-Instruct` (via Hugging Face Inference API) or Gemini 2.5 Flash.
+- **Knowledge Distillation Strategy**: Prompt the Teacher with temporal sequences of telemetry (recent error rates, response time variations over windows) and ask for the probability of a future spike/anomaly. Use the score to supervise the SNN on sequence data. This teaches the model precise timing and event-driven patterns better than static MLPs.
+- **Deployment**:
+  - Saved locally as `spiking_temporal_forecaster.pt` (or platform variant).
+  - Pushed securely to your Hugging Face Repository (`HF_REPO_ID`) as `temporal_models/{hashed}_spiking_temporal_forecaster.pt`.
+  - Optional: Requires `norse` package (falls back to simple MLP if not installed).
+
+---
+
+_Note: All Knowledge Distillation API calls happen during the offline training workers (e.g. `ml_worker`), not during live inference. Live inference uses the fast, lightweight PyTorch models. The Spiking model is the fourth core model, focused on temporal/event data (see AGENTS.md for future-proofing and Norse integration from related projects)._
+
+---
+
+## Appendix T: Rust Data Plane Operations
+
+
+The DEML Rust workspace owns high-volume and timing-sensitive work while Django remains the control plane. One compiled image is deployed with exactly one `DEML_ROLE` per production service:
+
+| Role         | Service           | Durable boundary                                                                       |
+| ------------ | ----------------- | -------------------------------------------------------------------------------------- |
+| `relay`      | `deml-relay`      | Leased `monitor_outboxevent` rows; stable `x-deml-event-id` header                     |
+| `scheduler`  | `deml-scheduler`  | Unique `(task_name, scheduled_for)` UTC buckets in `scheduled_task_runs`               |
+| `probe`      | `deml-probe`      | Unique `health_probe_observations.observation_key` and transactional `endpoints` write |
+| `normalizer` | `deml-normalizer` | Unique Kafka topic/partition/offset receipt in `telemetry_ingest_receipts`             |
+| `ingest`     | `deml-ingest`     | API-key auth, Dragonfly rate limiting, chain-of-custody hash, transactional Outbox     |
+| `cpe`        | `deml-cpe`        | Lua-ranked CPE lookup against the imported Dragonfly database 8 index                  |
+
+`DEML_ROLE=all` exists only for local diagnostics. Production uses separate roles so a probe spike, Kafka rebalance, scheduler failure, or CPE refresh cannot take down relay delivery. The pinned Python CPE package remains a one-shot dictionary importer; Rust owns the request-time `/unique` lookup path.
+
+## Python-to-Rust ownership ledger
+
+The migration changes runtime ownership, not the Django control-plane contract.
+Python models, migrations, admin/API behavior, and rollback commands remain in
+the repository; only one runtime may own each loop in production.
+
+| Capability                                            | Production owner       | Python status                              | Durable / failure contract                                                         |
+| ----------------------------------------------------- | ---------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Outbox delivery                                       | `deml-relay`           | `outbox_relay` is rollback-only            | `SKIP LOCKED` lease, broker `acks=all`, stable event header, exponential retry     |
+| Schedule creation                                     | `deml-scheduler`       | embedded interval schedulers disabled      | unique UTC task bucket plus a 60-second renewable claim                            |
+| Database retention and rollups                        | `deml-scheduler`       | management commands are guarded fallbacks  | native SQL; failed runs remain `failed` and retry instead of being marked complete |
+| Service probes                                        | `deml-probe`           | embedded pinger disabled                   | bounded concurrency, SSRF-safe resolution, transactional observation write         |
+| Raw telemetry normalization                           | `deml-normalizer`      | removed from projection worker ownership   | topic/partition/offset receipt, explicit Kafka acknowledgement, DLQ before commit  |
+| High-volume ingest                                    | optional `deml-ingest` | Django remains the default/canary fallback | API-key auth, fail-closed rate limit, batch idempotency, transactional Outbox      |
+| Request-time CPE lookup                               | `deml-cpe`             | Python imports the pinned dictionary only  | Dragonfly DB 8 Lua ranking; no Python HTTP lookup service                          |
+| Business projections, ML, billing, KMS, external APIs | Django workers         | active                                     | Rust scheduler publishes whitelisted triggers; Python performs ecosystem work      |
+
+## Required rollout order
+
+1. Deploy the Django migration and verify `python manage.py migrate` completes
+   (`monitor.0041_rust_data_plane`, `monitor.0042_alter_outboxevent_available_at`).
+2. Start `deml-relay`; stop `relay_start.py` and any Python `outbox_relay` process.
+3. Start `deml-normalizer`, then confirm new endpoint telemetry is published to `telemetry-raw` and the `telemetry-raw-dlq` depth remains zero.
+4. Start `deml-probe`; keep `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` on the telemetry worker.
+5. Start `deml-scheduler`; keep the same Python flag disabled on `deml-workers` and the ML worker.
+6. Populate CPE Dragonfly DB 8 via the pinned Python importer, then start `deml-cpe`.
+7. Deploy `deml-ingest` behind the `/api/v1/ingest` route only after API-key, quota, duplicate-batch, and payload-size canaries pass. `/api/v1/predict` and `/api/v1/ingest/security-alert` remain on Django.
+
+Railway service configs live under `infrastructure/railway/{relay,scheduler,probe,normalizer,ingest,cpe}/` and bake `DEML_ROLE` into each `startCommand`. The full production topology (all services, required/forbidden env, retired names) is catalogued in [`infrastructure/railway/services.json`](../infrastructure/railway/services.json); agents should audit with `python scripts/railway_audit.py` and follow [infrastructure/railway/README.md](../infrastructure/railway/README.md).
+
+Do not change all owners at once in an existing production environment. Observe one complete cadence and backlog recovery before advancing to the next role.
+
+## Environment
+
+All roles require `DATABASE_URL`. Relay, scheduler, and normalizer require `REDPANDA_BROKERS` plus the existing `REDPANDA_SASL_*` variables when authentication is enabled. Ingest requires `REDIS_URL` and fails closed when Dragonfly is unavailable. Probe accepts `PINGER_INTERVAL_SECS` and `MAX_CONCURRENCY`; TLS verification is on unless the explicitly local-only `HEALTH_PINGER_SKIP_TLS_VERIFY=true` flag is set.
+
+Every role exposes `/health` and `/ready` on `PORT` (default `8080`). Readiness is Postgres-backed except for the CPE role, whose only runtime dependency is its imported Dragonfly index. The ingest role additionally exposes `POST /api/v1/ingest` with the existing `{batch_id, records}` response contract. Bodies are limited to 2 MiB and 10,000 records, batch IDs are path-safe, API-key comparison is constant-time, and rate limiting uses one atomic Dragonfly Lua operation. The Swagger demo credential remains Django-only; gateways must keep that traffic on Django during an ingest cutover.
+
+## Delivery and failure semantics
+
+The relay provides at-least-once delivery. A crash after Redpanda acknowledgement but before the Postgres completion update can republish an event; consumers must deduplicate by `x-deml-event-id` or their domain idempotency key. Failed publishes use exponential backoff and become explicit DLQ candidates after the configured maximum attempts.
+
+The scheduler never treats an in-memory timer as durable state. Replicas materialize the same UTC bucket, the database unique constraint elects one logical run, and a lease elects one publisher. `deml-workers` moves the run through `published → running → completed`; command failures become `failed` and are republished with the same run ID after the retry lease.
+
+The probe role never calls Django. It rejects credentials in URLs, non-HTTP schemes, redirects, and targets resolving to private, loopback, link-local, multicast, documentation, or unspecified addresses. A probe result and its compatibility `endpoints` row commit in one Postgres transaction.
+
+Kafka values published or consumed by relay, scheduler, and normalizer use the
+versioned DEML Internode Envelope (`deml-internode+jwe`, A256GCM). The Kafka
+topic is authenticated as envelope context, so ciphertext cannot be moved to a
+different topic and still validate. Production uses
+`DEML_INTERNODE_ENCRYPTION=required`; `optional` is only for bounded key
+rotation, and `disabled` is local/test only. The active key ID and JSON keyring
+support overlap during rotation without accepting unknown keys.
+
+## Durable scheduler and native maintenance
+
+The scheduler polls every 15 seconds, materializes absolute UTC buckets, and
+claims at most 20 due rows with `FOR UPDATE SKIP LOCKED`. Native maintenance is
+executed in-process. Ecosystem tasks are encrypted and published to
+`internal-tasks`, where `deml-workers` accepts only its command allowlist.
+
+| Task                   | Cadence / UTC offset | Owner          | Result                                                                           |
+| ---------------------- | -------------------- | -------------- | -------------------------------------------------------------------------------- |
+| `aggregate_analytics`  | hourly + 5m          | Python trigger | refreshes analytical rollups                                                     |
+| `fetch_threat_intel`   | hourly + 10m         | Python trigger | external threat enrichment                                                       |
+| `ingest_taxii`         | hourly + 12m30s      | Python trigger | STIX/TAXII ingestion                                                             |
+| `run_lighthouse_scans` | 6-hourly + 15m       | Python trigger | accessibility/performance scan                                                   |
+| `archive_reports`      | daily + 30m          | Rust native    | upserts yesterday's user and Tenant0 report rows symmetrically                   |
+| `rotate_keys_if_due`   | daily + 20m          | Python trigger | KMS policy work                                                                  |
+| `train_all_models`     | daily + 1h           | Python trigger | tenant-scoped PyTorch training                                                   |
+| `scan_dark_web`        | daily + 1h15m        | Python trigger | OSINT/Tor workflow                                                               |
+| `sync_subscriptions`   | daily + 2h           | Python trigger | Stripe reconciliation                                                            |
+| `reconcile_accounts`   | daily + 2h5m         | Python trigger | identity/account reconciliation                                                  |
+| `db_cleanup`           | daily + 3h           | Rust native    | 30-day raw/hourly/published retention, 7-day outbox DLQ, 90-day threat retention |
+| `cleanup_clickhouse`   | weekly + 3h20m       | Rust native    | 180/365/730-day archive retention                                                |
+| `optimize_database`    | daily + 4h           | Rust native    | `VACUUM ANALYZE` on core tables                                                  |
+
+Native task errors are recorded on `scheduled_task_runs`, release the lease with
+a bounded retry delay, and never transition to `completed`. `CLICKHOUSE_URL` is
+therefore mandatory on `deml-scheduler`; missing configuration makes the weekly
+cleanup fail visibly instead of silently succeeding.
+
+## Rollback
+
+Stop the affected Rust role before enabling its Python fallback. Set `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=1` only when both `deml-probe` and `deml-scheduler` are stopped. The Python relay may be started only after every `deml-relay` replica is stopped or drained. The migration is additive; rollback does not require dropping data-plane tables.
+
+## Acceptance gates
+
+- Two relay replicas process a seeded backlog without concurrently leasing the same row.
+- Killing a relay after broker acknowledgement produces at most an idempotent duplicate and no lost event.
+- Restarting two scheduler replicas does not create a second logical task bucket.
+- A Django outage does not stop probe observations or Outbox delivery.
+- A poison `telemetry-raw` record reaches its DLQ before the source offset is committed.
+- Firestore projections continue while raw telemetry normalization is intentionally stopped.
+- Rust unit tests, Clippy with warnings denied, Django migration checks, backend tests, and `docker compose config` pass before promotion.
+
+---
+
+## Appendix U: DEML Platform Technology Stack
+
+
+**Data Engineering for AI Engineering and Cybersecurity (DEML)** is built on modern, battle-tested infrastructure. This document provides the technical details for platform contributors and operators.
+
+## Compute & Deployment
+
+| Layer             | Technology                          | Notes                                  |
+| ----------------- | ----------------------------------- | -------------------------------------- |
+| Container Runtime | Docker                              | Unprivileged multi-stage builds        |
+| Orchestration     | Railway / Cloud Run / AWS Lightsail | Multi-target deployment topology       |
+| Backend           | Django (Python)                     | Control plane with async/asgi          |
+| Data Plane        | Rust                                | Role-selected services (`deml-daemon`) |
+
+## Data Layer
+
+| Component           | Technology | Purpose                                     |
+| ------------------- | ---------- | ------------------------------------------- |
+| Transactional Store | PostgreSQL | System of record (users, pages, incidents)  |
+| Event Streaming     | Redpanda   | Internal event bus with Kafka compatibility |
+| Real-time Models    | Firestore  | Materialized read models for dashboards     |
+| Analytics Store     | ClickHouse | OLAP telemetry, CES aggregates              |
+| Cache/Rate Limiting | Dragonfly  | Redis-protocol compatible caching           |
+
+## Frontend & Design
+
+| Surface        | Technology | Notes                                        |
+| -------------- | ---------- | -------------------------------------------- |
+| Application UI | Angular    | Standalone components, signals architecture  |
+| Marketing Site | Astro      | Static-rendered landing pages                |
+| Design System  | Viking-UI  | Zero-dependency, WCAG 2.1 AA by construction |
+
+## Security & Compliance
+
+| Feature        | Implementation                     |
+| -------------- | ---------------------------------- |
+| Authentication | Firebase Auth with MFA             |
+| Authorization  | RBAC + ABAC via Django middleware  |
+| Encryption     | AES-256-GCM + KMS envelope         |
+| Auditing       | GitOps, Semgrep, Trivy, pre-commit |
+| Compliance     | SOC 2, CMMC, NIST 800-171 roadmap  |
+
+## Observability
+
+| Signal         | Technology    | Notes                    |
+| -------------- | ------------- | ------------------------ |
+| Metrics        | OpenTelemetry | OTLP to ClickHouse       |
+| Tracing        | OpenTelemetry | Distributed tracing      |
+| Error Tracking | Sentry        | Production error surface |
+
+## Integrations
+
+Customer-facing integration guides available in [Appendix Z](#appendix-z-integration-guides):
+
+- Kubernetes, TensorFlow, PyTorch
+- Apache Spark, Databricks, AWS Redshift
+
+## Full Technology Bibliography
+
+For the complete technology list including all open-source foundations, see [BOOK.md § Acknowledgements](BOOK.md#acknowledgements--technologies).
+
+---
+
+## Appendix V: Viking-UI Grid-First Layout
+
+
+Viking-UI provides three package-owned layout levels:
+
+1. `viking-app-layout` owns application navigation, main content, optional
+   tools, drawers, and split panels.
+2. `viking-page-template` owns centered page width, page header/actions, and
+   vertical route rhythm.
+3. `viking-grid`, `viking-grid-item`, and `viking-column-layout` own content
+   columns. `viking-container`, `viking-card`, and `viking-chart-panel` provide
+   the uniform content inlay.
+
+## Equal and intrinsic columns
+
+Use `viking-column-layout` when sibling cards have equal visual weight. It
+starts as one column and reaches the requested count as space becomes
+available. Use `columns="auto"` when the number of tracks should follow the
+container width rather than a device breakpoint.
+
+```html
+<viking-column-layout columns="3">
+  <viking-card>Availability</viking-card>
+  <viking-card>Latency</viking-card>
+  <viking-card>Threat exposure</viking-card>
+</viking-column-layout>
+
+<viking-column-layout columns="auto" itemSize="wide">
+  <viking-chart-panel>...</viking-chart-panel>
+  <viking-chart-panel>...</viking-chart-panel>
+</viking-column-layout>
+```
+
+Static consumers use the same contract:
+
+```html
+<div
+  class="viking-column-layout viking-column-layout--auto viking-column-layout--item-compact"
+>
+  <article class="viking-card">...</article>
+  <article class="viking-card">...</article>
+</div>
+```
+
+## Twelve-column composition
+
+Use the 12-track grid when regions have intentionally unequal weight. Mobile
+span is declared first; tablet and desktop spans progressively enhance it.
+
+```html
+<viking-grid [columns]="12">
+  <viking-grid-item [span]="12" [tabletSpan]="8" [desktopSpan]="9">
+    <viking-chart-panel>Primary telemetry</viking-chart-panel>
+  </viking-grid-item>
+  <viking-grid-item [span]="12" [tabletSpan]="4" [desktopSpan]="3">
+    <viking-container heading="Current posture">...</viking-container>
+  </viking-grid-item>
+</viking-grid>
+```
+
+## Centered containers
+
+`viking-container` accepts `readable`, `default`, `wide`, and `full` width
+contracts. It remains centered by default and owns its padding, border, radius,
+and shadow.
+
+```html
+<viking-container
+  width="readable"
+  heading="Retention policy"
+  description="Changes apply to every workspace projection."
+>
+  <viking-form-section>...</viking-form-section>
+</viking-container>
+```
+
+## Before and after
+
+Before, route-specific classes owned grid behavior and cards were visual
+`div` elements:
+
+```html
+<div class="dashboard-grid dashboard-grid-responsive">
+  <div class="analytics-panel">...</div>
+  <div class="analytics-panel">...</div>
+</div>
+```
+
+After, the package components own both layout and inlay:
+
+```html
+<viking-column-layout columns="auto" itemSize="wide">
+  <viking-chart-panel>...</viking-chart-panel>
+  <viking-chart-panel>...</viking-chart-panel>
+</viking-column-layout>
+```
+
+Before, unequal dashboard regions required local span classes:
+
+```html
+<section class="dashboard-grid">
+  <div class="span-8">...</div>
+  <div class="span-4">...</div>
+</section>
+```
+
+After, spans are explicit inputs with mobile-first fallbacks:
+
+```html
+<viking-grid [columns]="12">
+  <viking-grid-item [span]="12" [desktopSpan]="8">...</viking-grid-item>
+  <viking-grid-item [span]="12" [desktopSpan]="4">...</viking-grid-item>
+</viking-grid>
+```
+
+Do not add page-specific `display`, `grid-template-columns`, gutter, card
+padding, or max-width rules. Add missing layout behavior to these Viking-UI
+contracts and consume it everywhere.
+
+---
+
+## Appendix W: Viking-UI Template-Driven Layout Migration
+
+
+## Outcome
+
+DEML uses one Cloudscape-inspired layout grammar implemented entirely by Viking-UI. Cloudscape is a structural quality reference, not a dependency or source-code donor. Viking-UI remains the sole owner of layout CSS, design tokens, Angular wrappers, and static cross-framework contracts.
+
+## Canonical templates
+
+| Contract                                                            | Responsibility                                                  | Consumer rule                                                  |
+| ------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------- |
+| `viking-app-layout`                                                 | Sidebar, content, tools, drawers, split panel, notifications    | One per application workspace shell                            |
+| `viking-content-layout`                                             | Route breadcrumbs, notifications, header, actions, body, footer | Default for dashboard, resource, collection, and form routes   |
+| `viking-page-template`                                              | Compatibility page width, gutters, section rhythm               | Migrate operational routes to `viking-content-layout`          |
+| `viking-section`                                                    | Lightweight projected section host                              | Use for complex sections whose internal anatomy already exists |
+| `viking-section-template`                                           | Heading, description, actions, divider, body                    | Default for new feature sections                               |
+| `viking-card`, `viking-container`, `viking-box`, `viking-hud-panel` | Standardized surfaces and content grouping                      | Do not create app-local card/container recipes                 |
+| `viking-grid`, `viking-column-layout`, `viking-switcher`            | Responsive symmetric composition                                | Choose intrinsic layout before adding breakpoints              |
+
+## Completed migration
+
+- The Angular root shell now uses `viking-app-layout` regions.
+- All eleven Angular route templates use `viking-page-template` with named width and density.
+- Major Angular sections use `viking-section-template`; operational panels use `viking-container`; repeated columns use `viking-column-layout`.
+- Marketing and Viking-UI docs expose the shared app-layout classes at their layout boundary.
+- Viking-UI docs register App Layout, Page Template, and Section Template as public showcase entries.
+- All new visual rules live in `packages/viking-ui/src/styles/_templates.scss` and all geometry values resolve through `--viking-*` tokens.
+- Dashboard and settings now use `viking-content-layout`; App Layout exposes controlled drawer and split-panel regions.
+
+## Remaining file-by-file migration
+
+### `marketing/src/pages/**/*.astro`
+
+Retain `marketing/src/layouts/Layout.astro` as the only site chrome owner. As each page is touched, add `viking-section` to content sections and replace repeated card/header markup with existing Viking-UI static classes or Web Components. Do not add page-local styles; missing visual contracts belong in `packages/viking-ui/src/styles/surfaces/` or the canonical template stylesheet.
+
+### `viking-ui-docs/src/pages/**/*.astro`
+
+Retain `viking-ui-docs/src/layouts/DocLayout.astro` as the only documentation shell. The registry generates one continuous `/components` reference with anchored Section Template categories and Container-based component specimens; dedicated component detail routes are retired.
+
+### `frontend/src/app/pages/**/*.html`
+
+New top-level feature groups use `viking-section-template` with projected `vikingSectionActions`. Content panels use `viking-container`; lightweight nested groups use `viking-box`; equal or emphasized columns use `viking-column-layout`; route headers project through `vikingContentHeader`. Legacy selectors may remain only where they express specialized data visualization behavior, never page geometry or general spacing.
+
+### `packages/viking-ui/src/styles/`
+
+Keep widths, gutters, density, breakpoints, and surfaces tokenized. Consolidate legacy aliases only after repository-wide usage reaches zero. Responsive rules remain mobile-first, dense metric groups stay at a maximum of two columns, focus remains visible, and light/dark mode must change semantic token values rather than component structure.
+
+## Verification gates
+
+Run these after each migration slice:
+
+```bash
+npm run build:viking-ui:package
+npm run build --prefix frontend
+npm run build --prefix marketing
+npm run build --prefix viking-ui-docs
+node scripts/enforce-theme.js
+node scripts/run_axe.js
+```
+
+The full pre-commit suite remains the release gate: `uvx pre-commit run --all-files`.
+
+## Before and after
+
+### Dashboard route interior
+
+Before, dashboard geometry used the compatibility page template and a boolean header switch:
+
+```html
+<viking-page-template density="compact" width="wide" [headerContent]="true">
+  <viking-page-header vikingPageTemplateHeader title="Command Center" />
+  ...
+</viking-page-template>
+```
+
+After, the route declares its operational content type and uses a stable named header region:
+
+```html
+<viking-content-layout type="dashboard" density="compact" width="wide">
+  <viking-page-header vikingContentHeader title="Command Center" />
+  <viking-section-template heading="Operational Overview"
+    >...</viking-section-template
+  >
+</viking-content-layout>
+```
+
+### Settings route interior
+
+Before, settings shared the generic page canvas with no resource-page semantics. After, it declares a compact resource layout; the same contract can add breadcrumbs or persistent save/error notifications without changing its section markup:
+
+```html
+<viking-content-layout type="resource" density="compact">
+  <viking-page-header vikingContentHeader title="Sites" />
+  <viking-callout vikingContentNotifications tone="warning">...</viking-callout>
+  <viking-column-layout [columns]="2">...</viking-column-layout>
+</viking-content-layout>
+```
+
+### Route shell: Analytics
+
+Before, the page header and every section were loose siblings with local header classes:
+
+```html
+<div class="page-inner-wrapper">
+  <viking-page-header title="System Analytics" />
+  <div class="metrics-overview-header metrics-section-spacing">
+    <h2 class="section-title-premium">Traffic Analytics</h2>
+  </div>
+  <div class="dashboard-grid dashboard-grid-responsive">...</div>
+</div>
+```
+
+After, the route declares named page geometry and sections own their complete anatomy:
+
+```html
+<viking-page-template density="compact" width="wide" [headerContent]="true">
+  <viking-page-header vikingPageTemplateHeader title="System Analytics" />
+  <viking-section-template
+    heading="Traffic Analytics"
+    description="Geographic origins, frequency trends, and endpoint usage patterns."
+    icon="traffic"
+  >
+    <viking-column-layout [columns]="2" [equalRows]="true"
+      >...</viking-column-layout
+    >
+  </viking-section-template>
+</viking-page-template>
+```
+
+### Dashboard panels
+
+Before, panels repeated a card class, header wrapper, title, and action alignment:
+
+```html
+<section class="viking-card panel-card">
+  <div class="panel-header">
+    <h2>Recent Threats</h2>
+    <viking-button>View all</viking-button>
+  </div>
+  <div class="panel-body">...</div>
+</section>
+```
+
+After, Container owns the border, padding, heading hierarchy, and action slot:
+
+```html
+<viking-container heading="Recent Threats" icon="shield">
+  <viking-button vikingContainerActions variant="ghost">View all</viking-button>
+  <div class="panel-body">...</div>
+</viking-container>
+```
+
+### Application shell
+
+Before, the app manually coupled sidebar and content wrappers:
+
+```html
+<div class="dashboard-wrapper">
+  <app-sidebar />
+  <div class="dashboard-content"><router-outlet /></div>
+</div>
+```
+
+After, the responsive shell owns collapse state, navigation, content, tools, and footer regions:
+
+```html
+<viking-app-layout [hasSidebar]="true" [hasTools]="true">
+  <app-sidebar vikingAppLayoutSidebar />
+  <router-outlet vikingAppLayoutContent />
+  <app-context-tools vikingAppLayoutTools />
+  <app-footer vikingAppLayoutFooter />
+</viking-app-layout>
+```
+
+## Migration checklist
+
+- [ ] Wrap operational routes in one `viking-content-layout` with named type, width, and density.
+- [ ] Project route headers through `vikingContentHeader`; do not leave loose header siblings.
+- [ ] Use `viking-section-template` for every major feature group.
+- [ ] Use `viking-container` for titled panels and project actions through `vikingContainerActions`.
+- [ ] Replace styled card `<div>` elements with `viking-card`.
+- [ ] Replace page-owned grid classes with `viking-grid` or `viking-column-layout`.
+- [ ] Keep dense metrics at one column when constrained and no more than two columns when wide.
+- [ ] Use `viking-stack`, `viking-cluster`, or form primitives instead of margin/padding utilities.
+- [ ] Add missing layout behavior to Viking-UI SCSS and semantic tokens, never app-local styles.
+- [ ] Verify keyboard toggles, focus rings, landmarks, heading order, and 400% zoom.
+- [ ] Run package tests, frontend build/lint, theme enforcement, mobile-first checks, and axe.
+
+---
+
+## Appendix X: Viking-UI Modern SaaS Migration
+
+
+This migration moves DEML surfaces onto the grid-first Viking-UI foundation
+without changing the Cyber-Noir or Ocean Blue Serenity color primitives. New
+work must compose the package templates and semantic tokens; application-local
+layout and component styling should be retired as each route is migrated.
+
+## Target page anatomy
+
+Use the same hierarchy on every authenticated surface:
+
+```html
+<viking-app-layout>
+  <viking-page-template width="wide" [headerContent]="true">
+    <div vikingPageTemplateHeader>Page title and supporting copy</div>
+    <viking-cluster vikingPageTemplateActions justify="end">
+      <viking-button variant="outline">Secondary action</viking-button>
+      <viking-button variant="primary">Primary action</viking-button>
+    </viking-cluster>
+
+    <viking-stack vikingPageTemplateContent>
+      <viking-section-template
+        heading="Overview"
+        description="Operational summary"
+        layout="grid"
+      >
+        <viking-card>...</viking-card>
+        <viking-chart-panel>...</viking-chart-panel>
+      </viking-section-template>
+    </viking-stack>
+  </viking-page-template>
+</viking-app-layout>
+```
+
+`viking-app-layout` owns application regions, sidebars, tools, and drawers.
+`viking-page-template` owns page width, header/actions, and page rhythm.
+`viking-section-template` owns section headings and local grid composition.
+Cards, chart panels, form sections, and other content primitives own their
+interior padding and borders. Pages should not add compensating wrappers.
+
+## Migration sequence
+
+1. Inventory each route for app-local page shells, card classes, button styles,
+   raw grid/flex wrappers, and hardcoded spacing or radius values. Record the
+   matching Viking primitive before changing markup.
+2. Replace the outer shell first: `viking-app-layout`, then
+   `viking-page-template`, then its named header, action, content, and footer
+   regions. Remove page width and gutter rules now owned by the template.
+3. Convert major content blocks to `viking-section-template`. Use `layout="grid"`
+   for balanced two-column regions and nested `viking-grid columns="auto"` for
+   content-led card collections. Use `viking-stack` for vertical flow and
+   `viking-cluster` for action/filter rows.
+4. Replace visual containers and controls with `viking-card`,
+   `viking-chart-panel`, `viking-form-section`, `viking-field`, and
+   `viking-button`. Delete the superseded local border, radius, shadow,
+   padding, and hover rules instead of overriding the component.
+5. Migrate one route family at a time: application shell and overview pages,
+   operational dashboards, settings/forms, collection/detail pages, then
+   marketing and documentation surfaces. Keep each change independently
+   releasable.
+
+## Acceptance checks per route
+
+- Content aligns to the template gutter and shared column gaps at phone,
+  tablet, desktop, and 200% zoom.
+- Page title, section title, card title, body copy, and metadata have a clear
+  five-level hierarchy without page-local font sizes.
+- Interactive targets remain at least 44px on touch layouts and preserve the
+  shared focus ring.
+- Loading, empty, error, and populated states retain the same dimensions and
+  do not introduce layout shift.
+- No new app-local visual styles, hardcoded colors, one-off card/button
+  classes, or third-party UI runtime dependencies remain.
+- Viking-UI package build, tests, theme enforcement, mobile checks, and axe
+  checks pass before a migrated route is considered complete.
+
+## Compatibility policy
+
+The numbered spacing aliases remain stable for existing consumers. New and
+migrated components should use semantic roles such as
+`--viking-space-control-gap`, `--viking-space-content-gap`,
+`--viking-space-compact-gap`, `--viking-space-container-gap`,
+`--viking-layout-column-gap`,
+`--viking-card-padding`, and `--viking-page-section-gap`. This separates visual
+decisions from scale mechanics and allows later density tuning without
+rewriting page CSS.
+
+---
+
+## Appendix Y: Viking-UI Modern SaaS Style Guide
+
+
+Viking-UI is a dark-first enterprise SaaS system. Cyber-Noir surfaces establish
+depth; Ocean Blue is reserved for primary actions, selected states, links, and
+focus. Components are quiet by default and communicate hierarchy through
+spacing, one-pixel borders, stepped surfaces, and restrained elevation.
+
+## Shared anatomy
+
+- Controls are 40px high on desktop and retain a 44px touch target where touch
+  interaction is expected.
+- Buttons and inputs use an 8px radius. Cards, chart panels, tables, menus, and
+  content containers use a 12px radius. Pills use the full-radius token only
+  for badges and status chips.
+- Component gaps use 8px; content stacks use 16px; card/container padding uses
+  24px. Compact card inlay uses 16px.
+- Default surfaces use a one-pixel semantic border. Static cards use the
+  smallest neutral shadow; raised overlays use the small shadow.
+- Hover changes background or border and may lift an interactive card or
+  primary control by at most one pixel. No glow, rotation, bounce, gradient
+  sweep, or perpetual status animation is part of the base system.
+- Keyboard focus uses the Ocean Blue ring with a two-pixel offset and a soft
+  three-pixel accent halo. Focus is never represented by color alone.
+
+## Buttons
+
+Buttons share one 40px control frame, 8px radius, 14px semibold label, and 8px
+icon gap. Primary buttons use solid Ocean Blue. Outline buttons use the normal
+surface and border. Ghost and subtle buttons acquire only the shared hover
+surface; they do not gain decorative shadows.
+
+## Inputs and forms
+
+Inputs use a recessed Cyber-Noir surface, one-pixel border, and no resting
+shadow. Hover raises contrast one step. Focus changes the border to Ocean Blue
+and applies the shared focus ring. Labels, descriptions, and errors remain in
+the `viking-field` stack so spacing and accessible associations stay uniform.
+
+## Badges and status
+
+Badges are 24px high with a compact full-radius shell. Tone backgrounds are
+soft semantic tints with restrained borders. Accent badges use an Ocean Blue
+tint and blue text rather than appearing as miniature primary buttons. Status
+must always include readable text or an accessible label.
+
+## Tables
+
+Tables sit inside the same 12px content inlay as cards. Headers use 12px
+semibold text without forced uppercase. Cells use 12px vertical and 16px
+horizontal padding. Large tables maintain a readable minimum width and scroll
+horizontally inside their container on constrained screens. Row hover uses a
+six-percent Ocean Blue tint.
+
+## Charts
+
+Charts always live in `viking-chart-panel` for product dashboards. The panel
+uses 16px padding when constrained and 16px/24px/24px inlay at 640px or wider.
+Charts scale at a 16:7 ratio, use a responsive SVG view box, and remove internal
+height caps that would crop plots. Grid, axes, legends, tooltips, empty states,
+and loading states all use the shared surface and typography tokens.
+
+## Headers and sidebars
+
+Application headers use a 56px frame, centered wide container, subtle bottom
+border, and 40px navigation targets. Navigation labels use normal casing. Hover
+uses the shared hover surface; the active route uses the selected Ocean Blue
+tint and accent border without glow.
+
+Sidebars use the same surface, border, 40px item height, and 8px radius as other
+navigation. Active items use the same selected-state contract as the header.
+Health indicators are static semantic dots; movement is reserved for actual
+progress or loading states.
+
+## Layout composition
+
+Routes compose `viking-app-layout` → `viking-page-template` →
+`viking-column-layout` or `viking-grid`. Content is inlaid through
+`viking-container`, `viking-card`, `viking-table`, or `viking-chart-panel`.
+Application-local card, grid, control, and navigation visual systems are not
+part of the contract.
+
+---
+
+## Appendix Z: Integration Guides
+
+### Apache Spark Integration
+
+
+Write Spark streaming and batch DataFrames directly to DEML ingestion endpoints for unified telemetry and ML feature pipelines.
+
+## Prerequisites
+
+- Apache Spark 3.4+ (Structured Streaming or batch)
+- Network egress to `https://backend.deml.app`
+- DEML API key stored in your cluster secrets manager
+
+## Batch Write Pattern
+
+Transform your DataFrame and POST batches via a `mapPartitions` sink:
+
+```python
+import json
+import requests
+from pyspark.sql import SparkSession
+
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+
+spark = SparkSession.builder.appName("deml-ingest").getOrCreate()
+df = spark.read.parquet("s3://datalake/events/")
+
+def send_partition(rows):
+    records = [row.asDict() for row in rows]
+    if not records:
+        return
+    requests.post(
+        INGEST_URL,
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"source": "spark", "records": records},
+        timeout=60,
+    ).raise_for_status()
+
+df.foreachPartition(send_partition)
+```
+
+## Structured Streaming
+
+Stream micro-batches to DEML as they arrive:
+
+```python
+from pyspark.sql.functions import col, struct, to_json
+
+stream = (
+    spark.readStream.format("kafka")
+    .option("kafka.bootstrap.servers", "broker:9092")
+    .option("subscribe", "telemetry")
+    .load()
+)
+
+payload = stream.select(
+    to_json(struct(col("value").alias("payload"))).alias("record")
+)
+
+def write_batch(batch_df, batch_id):
+    rows = [row.record for row in batch_df.collect()]
+    if rows:
+        requests.post(
+            INGEST_URL,
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"source": "spark-stream", "batch_id": batch_id, "records": rows},
+            timeout=60,
+        ).raise_for_status()
+
+query = payload.writeStream.foreachBatch(write_batch).start()
+```
+
+## Scala Alternative
+
+```scala
+df.writeStream
+  .format("org.apache.spark.sql.kafka010.KafkaSourceProvider")
+  .option("checkpointLocation", "/checkpoints/deml")
+  .foreachBatch { (batchDF: DataFrame, batchId: Long) =>
+    val records = batchDF.collect().map(_.getAs[String]("payload"))
+    // POST records to https://backend.deml.app/api/v1/ingest
+  }
+  .start()
+```
+
+## Planned Native Spark Connector
+
+A first-class `deml` format will simplify writes:
+
+```scala
+df.writeStream
+  .format("deml")
+  .option("api_key", sys.env("DEML_API_KEY"))
+  .option("endpoint", "https://backend.deml.app/api/v1/ingest")
+  .start()
+```
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/apache-spark \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Databricks Integration
+
+
+Connect Databricks notebooks and jobs to DEML for secure telemetry ingest, model inference, and cross-platform analytics.
+
+## Prerequisites
+
+- Databricks Runtime 13.3+ (Python or Scala)
+- DEML API key
+- Outbound HTTPS to `backend.deml.app`
+
+## Store Credentials in Databricks Secrets
+
+Never hardcode API keys in notebooks. Use a Secret Scope:
+
+```bash
+databricks secrets create-scope --scope deml
+databricks secrets put --scope deml --key api-key --string-value YOUR_API_KEY
+```
+
+In a notebook:
+
+```python
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+```
+
+## Ingest from a Notebook
+
+```python
+import requests
+
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+
+df = spark.table("analytics.telemetry_events")
+records = [row.asDict() for row in df.limit(1000).collect()]
+
+response = requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"source": "databricks", "records": records},
+    timeout=60,
+)
+response.raise_for_status()
+print(f"Ingested {len(records)} records")
+```
+
+## Scheduled Job Pattern
+
+1. Create a Databricks Job with a Python task.
+2. Mount the `deml` secret scope on the cluster.
+3. Run on a schedule (e.g., every 5 minutes) to push aggregated features.
+
+```python
+# Databricks job: push hourly rollups to DEML
+rollup = spark.sql("""
+  SELECT tenant_id, AVG(latency_ms) AS avg_latency, COUNT(*) AS requests
+  FROM delta.`/mnt/telemetry/raw`
+  WHERE event_time > current_timestamp() - INTERVAL 1 HOUR
+  GROUP BY tenant_id
+""")
+
+records = rollup.collect()
+requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"source": "databricks-job", "records": [r.asDict() for r in records]},
+).raise_for_status()
+```
+
+## Real-time Inference from Databricks
+
+```python
+PREDICT_URL = "https://backend.deml.app/api/v1/predict"
+
+def predict_row(features: list[float]) -> float:
+    result = requests.post(
+        PREDICT_URL,
+        headers={"Authorization": f"Bearer {api_key}"},
+        json={"model_version": "v2", "inputs": features},
+        timeout=10,
+    )
+    result.raise_for_status()
+    return result.json()["outputs"][0]
+
+# Apply to a Spark UDF or driver-side batch calls
+scores = [predict_row(row.features) for row in df.limit(100).collect()]
+```
+
+## Unity Catalog & Multi-Tenancy
+
+Map Databricks workspace catalogs to DEML tenant UUIDs in your job metadata so analytics remain isolated per customer.
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/databricks \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Kubernetes Integration
+
+
+Integrating the DEML platform into your Kubernetes cluster lets microservices stream telemetry and request predictions through our API Gateway without leaving your cluster boundary.
+
+## Architecture Options
+
+| Pattern                        | Best for                          | Latency | Ops overhead    |
+| ------------------------------ | --------------------------------- | ------- | --------------- |
+| **Sidecar proxy**              | Per-pod inference + ingest        | Lowest  | Medium          |
+| **Cluster gateway**            | Shared ingress for many services  | Low     | Low             |
+| **CRD / Operator** _(roadmap)_ | Declarative pipeline provisioning | Low     | Lowest at scale |
+
+## Sidecar Proxy Pattern (Recommended)
+
+Deploy a lightweight sidecar alongside your application pods. The sidecar injects your API key, handles rate-limit backoff, and forwards traffic to `/api/v1/predict` and `/api/v1/ingest`.
+
+### 1. Store your API key in a Secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: deml-platform-credentials
+  namespace: production
+type: Opaque
+stringData:
+  api-key: YOUR_API_KEY
+```
+
+### 2. Configure the sidecar in your Pod spec
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ml-inference-service
+  labels:
+    app: ml-inference
+spec:
+  containers:
+    - name: app
+      image: your-registry/inference-app:latest
+      env:
+        - name: DEML_GATEWAY_URL
+          value: "http://127.0.0.1:8080"
+    - name: deml-sidecar
+      image: ghcr.io/deml/sidecar-proxy:latest
+      ports:
+        - containerPort: 8080
+      env:
+        - name: DEML_UPSTREAM_URL
+          value: "https://backend.deml.app/api/v1"
+        - name: DEML_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: deml-platform-credentials
+              key: api-key
+```
+
+Your application calls `http://127.0.0.1:8080/predict` locally; the sidecar adds authentication and forwards to DEML.
+
+### 3. Verify connectivity
+
+```bash
+kubectl exec -it ml-inference-service -c app -- \
+  curl -s http://127.0.0.1:8080/health
+```
+
+Check integration status from your cluster (optional health endpoint):
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/kubernetes \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Cluster Gateway Pattern
+
+For shared access across namespaces, expose a single internal Service that proxies to DEML:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: deml-gateway
+  namespace: platform
+spec:
+  selector:
+    app: deml-gateway
+  ports:
+    - port: 443
+      targetPort: 8443
+```
+
+Point workloads at `https://deml-gateway.platform.svc.cluster.local` and mount the API key via External Secrets or GCP Secret Manager.
+
+## Telemetry Ingest from Kubernetes
+
+Stream pod metrics, request logs, or custom events to `/api/v1/ingest`:
+
+```bash
+curl -X POST https://backend.deml.app/api/v1/ingest \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "kubernetes",
+    "cluster_id": "prod-us-east-1",
+    "records": [
+      {"pod": "inference-7f8b", "latency_ms": 42, "status": 200}
+    ]
+  }'
+```
+
+Events flow through Redpanda → telemetry workers → your analytics dashboard in real time.
+
+## Roadmap: Kubernetes Operator
+
+We are developing a native **MLPlatform CRD** so you can declare inference routes and ingestion pipelines in Git:
+
+```yaml
+apiVersion: deml.app/v1
+kind: InferenceRoute
+metadata:
+  name: sla-model
+spec:
+  modelVersion: v2
+  replicas: 3
+  tenantId: YOUR_TENANT_UUID
+```
+
+Subscribe to release notes for operator availability.
+
+### PyTorch Integration
+
+
+Use DEML as a remote data source and inference backend from PyTorch training scripts, DataLoaders, and deployment pipelines.
+
+## Prerequisites
+
+- Python 3.11+
+- PyTorch 2.x
+- A DEML API key (Settings → API Keys)
+
+## Custom DataLoader (Available Today)
+
+```python
+from __future__ import annotations
+
+import requests
+import torch
+from torch.utils.data import Dataset, DataLoader
+
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+PREDICT_URL = "https://backend.deml.app/api/v1/predict"
+
+
+class DemlRemoteDataset(Dataset):
+    def __init__(self, page_size: int = 64) -> None:
+        self.page_size = page_size
+        self._cache: list[tuple[torch.Tensor, torch.Tensor]] = []
+        self._index = 0
+        self._refresh()
+
+    def _refresh(self) -> None:
+        response = requests.post(
+            INGEST_URL,
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"batch_size": self.page_size, "format": "pytorch"},
+            timeout=30,
+        )
+        response.raise_for_status()
+        records = response.json()["records"]
+        self._cache = [
+            (torch.tensor(r["features"], dtype=torch.float32), torch.tensor(r["label"]))
+            for r in records
+        ]
+        self._index = 0
+
+    def __len__(self) -> int:
+        return len(self._cache)
+
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
+        if idx >= len(self._cache):
+            self._refresh()
+        return self._cache[idx % len(self._cache)]
+
+
+loader = DataLoader(DemlRemoteDataset(page_size=64), batch_size=32, shuffle=True)
+
+for features, labels in loader:
+    outputs = model(features)
+    loss = criterion(outputs, labels)
+    loss.backward()
+```
+
+## Remote Inference
+
+```python
+import requests
+import torch
+
+payload = {"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}
+response = requests.post(
+    PREDICT_URL,
+    headers={"Authorization": f"Bearer {API_KEY}"},
+    json=payload,
+    timeout=5,
+)
+outputs = torch.tensor(response.json()["outputs"])
+```
+
+DEML hosts tenant-namespaced PyTorch `state_dict` checkpoints on Hugging Face — no pickle, security-first.
+
+## Planned SDK
+
+```python
+from deml.pytorch import PlatformDataLoader
+
+loader = PlatformDataLoader(
+    api_key="YOUR_API_KEY",
+    batch_size=64,
+    shuffle=True,
+)
+
+for batch in loader:
+    predictions = model(batch)
+```
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/pytorch \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### AWS Redshift Integration
+
+
+Connect Amazon Redshift warehouses to DEML for scheduled analytics exports, feature-store rollups, and ML training pipelines. Redshift UNLOAD and COPY patterns push curated datasets into `/api/v1/ingest` while keeping credentials in AWS Secrets Manager or IAM roles.
+
+## Prerequisites
+
+- Amazon Redshift cluster or Redshift Serverless workgroup
+- Network egress to `https://backend.deml.app` (or VPC endpoint + NAT)
+- DEML API key stored in AWS Secrets Manager
+- Optional: S3 staging bucket for UNLOAD/COPY workflows
+
+## Architecture Options
+
+| Pattern                   | Best for                              | Latency  | Ops overhead |
+| ------------------------- | ------------------------------------- | -------- | ------------ |
+| **Scheduled UNLOAD → S3** | Nightly feature rollups, batch ingest | Minutes  | Low          |
+| **Lambda + UNLOAD**       | Event-driven exports after ETL        | Seconds  | Medium       |
+| **Redshift Data API**     | Serverless queries without JDBC       | Variable | Low          |
+| **Spectrum + Spark sink** | Lakehouse federated queries           | Minutes  | Medium       |
+
+## Scheduled UNLOAD to DEML Ingest
+
+Export aggregated metrics from Redshift to S3, then POST batches to DEML:
+
+```sql
+UNLOAD (
+  'SELECT tenant_id, metric_name, metric_value, recorded_at
+   FROM analytics.daily_rollups
+   WHERE recorded_at >= CURRENT_DATE - 1'
+)
+TO 's3://your-bucket/deml-export/'
+IAM_ROLE 'arn:aws:iam::123456789012:role/RedshiftUnloadRole'
+FORMAT AS PARQUET
+ALLOWOVERWRITE;
+```
+
+Python job (Lambda, ECS, or Databricks) reads Parquet and ingests:
+
+```python
+import json
+import boto3
+import requests
+
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+s3 = boto3.client("s3")
+
+def ingest_parquet_object(bucket: str, key: str) -> None:
+    obj = s3.get_object(Bucket=bucket, Key=key)
+    # Parse Parquet with pyarrow/polars in production
+    records = [{"source": "redshift", "payload": obj["Body"].read().decode("utf-8", errors="ignore")}]
+    requests.post(
+        INGEST_URL,
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"batch_id": key, "source": "aws-redshift", "records": records},
+        timeout=120,
+    ).raise_for_status()
+```
+
+## Redshift Data API (Serverless)
+
+Query without persistent JDBC connections and stream rows to DEML:
+
+```python
+import boto3
+import requests
+
+redshift = boto3.client("redshift-data")
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+
+response = redshift.execute_statement(
+    ClusterIdentifier="prod-analytics",
+    Database="analytics",
+    Sql="SELECT feature_a, feature_b, label FROM ml.training_features LIMIT 1000",
+)
+statement_id = response["Id"]
+
+# Poll until FINISHED, then fetch results and POST to DEML
+records = [{"feature_a": 1.0, "feature_b": 0.5, "label": 1}]  # map from GetStatementResult
+requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {API_KEY}"},
+    json={"source": "redshift-data-api", "records": records},
+    timeout=60,
+).raise_for_status()
+```
+
+## COPY from S3 After DEML Predictions
+
+Write inference results back to the warehouse for BI dashboards:
+
+```sql
+COPY analytics.model_predictions
+FROM 's3://your-bucket/deml-predictions/'
+IAM_ROLE 'arn:aws:iam::123456789012:role/RedshiftCopyRole'
+FORMAT AS JSON 'auto'
+TIMEFORMAT 'auto';
+```
+
+Fetch predictions from DEML first:
+
+```bash
+curl -X POST https://backend.deml.app/api/v1/predict \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}'
+```
+
+## Secrets Manager Pattern
+
+Store the DEML API key alongside Redshift credentials:
+
+```python
+import json
+import boto3
+
+secrets = boto3.client("secretsmanager")
+payload = secrets.get_secret_value(SecretId="deml/production/api-key")
+api_key = json.loads(payload["SecretString"])["DEML_API_KEY"]
+```
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/redshift \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+Expected response:
+
+```json
+{
+  "integration": "AWS Redshift",
+  "status": "ready",
+  "enabled": true,
+  "version": "2.0+",
+  "message": "AWS Redshift warehouse integration is active."
+}
+```
+
+## Related Guides
+
+- [Apache Spark](apache-spark.md) — lakehouse batch and streaming sinks
+- [Databricks](databricks.md) — notebook and job scheduling on AWS
+- [PyTorch](pytorch.md) — train on features exported from Redshift
+
+### TensorFlow Integration
+
+
+Stream training data from DEML directly into a `tf.data.Dataset` for batched, high-throughput TensorFlow training loops.
+
+## Prerequisites
+
+- Python 3.11+
+- TensorFlow 2.15+
+- A DEML API key (Settings → API Keys in the dashboard)
+
+## Quick Start
+
+### Install the SDK _(planned package)_
+
+```bash
+pip install deml-tensorflow
+```
+
+Until the package ships, use the REST ingest endpoint with a custom generator (see below).
+
+### Stream via `tf.data.Dataset`
+
+```python
+import json
+import tensorflow as tf
+import requests
+
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+PREDICT_URL = "https://backend.deml.app/api/v1/predict"
+
+
+def fetch_batch(batch_size: int = 32) -> list[dict]:
+    response = requests.post(
+        INGEST_URL,
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"batch_size": batch_size, "format": "tensorflow"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()["records"]
+
+
+def record_generator():
+    while True:
+        for record in fetch_batch():
+            yield record["features"], record["label"]
+
+
+def build_dataset(batch_size: int = 32) -> tf.data.Dataset:
+    dataset = tf.data.Dataset.from_generator(
+        record_generator,
+        output_signature=(
+            tf.TensorSpec(shape=(None,), dtype=tf.float32),
+            tf.TensorSpec(shape=(), dtype=tf.int32),
+        ),
+    )
+    return dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(64, activation="relu"),
+    tf.keras.layers.Dense(1, activation="sigmoid"),
+])
+
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+model.fit(build_dataset(), steps_per_epoch=100, epochs=10)
+```
+
+## Real-time Inference
+
+Call `/api/v1/predict` from TensorFlow Serving sidecars or directly in training callbacks:
+
+```python
+import requests
+
+payload = {"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}
+result = requests.post(
+    PREDICT_URL,
+    headers={"Authorization": f"Bearer {API_KEY}"},
+    json=payload,
+    timeout=5,
+)
+prediction = result.json()["outputs"]
+```
+
+## Planned SDK API
+
+When `deml-tensorflow` ships, the interface will simplify to:
+
+```python
+from deml.tensorflow import PlatformDataset
+
+dataset = PlatformDataset(
+    api_key="YOUR_API_KEY",
+    batch_size=32,
+    prefetch=True,
+)
+model.fit(dataset, epochs=10)
+```
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/tensorflow \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
 
 
 # The Whitepaper: Operational Intelligence for the Digital Battlefield
@@ -4285,16 +5466,16 @@ This architecture rests on open-source foundations, enterprise design references
 
 ## 17. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@8.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/web-components.js"
 ></script>
 ```
 

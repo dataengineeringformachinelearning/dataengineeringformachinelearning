@@ -154,8 +154,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <viking-button-wc variant="ghost" size="sm">Docs</viking-button-wc>
     <viking-button-wc variant="primary" size="sm">Launch</viking-button-wc>
   </div>
-</div>
-<p class="viking-text-muted viking-demo-caption">Real surfaces use viking-site-navbar + footer in DocLayout</p>`,
+</div>`,
           selector: "viking-site-navbar",
           tags: ["angular", "marketing"],
         },
@@ -341,8 +340,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           preview: `<div class="viking-demo-row" style="align-items:center;gap:var(--viking-space-2)">
   <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0;width:28px;height:28px"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
   <strong class="viking-heading viking-heading-sm" style="margin:0;line-height:1;display:inline-flex;align-items:center">DEML</strong>
-</div>
-<p class="viking-text-muted viking-demo-caption">Icon + wordmark share one cross-axis</p>`,
+</div>`,
           selector: "viking-brand",
         },
         snippets(
@@ -584,8 +582,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <path d="M10 50A40 40 0 0 1 90 50" fill="none" stroke="var(--viking-accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="90 126" pathLength="126"/>
   </svg>
   <strong class="viking-metric">72%</strong>
-</div>
-<p class="viking-text-muted viking-demo-caption">Capacity utilization arc</p>`,
+</div>`,
           selector: "viking-gauge-arc",
         },
         snippets(

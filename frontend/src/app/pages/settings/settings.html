@@ -1,16 +1,14 @@
-<div class="dashboard-page-container">
-  <div class="dashboard-content-area">
-    <div class="page-inner-wrapper">
-      <viking-page-header tag="Sites" title="Sites">
-        <p vikingPageHeaderExtra class="hud-subtitle viking-page-header-subtitle">
-          Add monitoring sites, connect endpoints, and embed your status widget. Analytics and
-          threats appear automatically on your dashboard.
-          <a routerLink="/account" class="inline-status-link">Account & billing</a> are managed
-          separately.
-        </p>
-      </viking-page-header>
+<viking-page-template width="wide">
+  <viking-page-header tag="Sites" title="Sites">
+    <p vikingPageHeaderExtra class="hud-subtitle viking-page-header-subtitle">
+      Add monitoring sites, connect endpoints, and embed your status widget. Analytics and
+      threats appear automatically on your dashboard.
+      <a routerLink="/account" class="inline-status-link">Account & billing</a> are managed
+      separately.
+    </p>
+  </viking-page-header>
 
-      <div class="settings-stack">
+  <div class="settings-stack">
         @if (isViewer) {
         <viking-callout
           class="alert-viewer-banner"
@@ -598,6 +596,4 @@
           }
         </viking-card>
       </div>
-    </div>
-  </div>
-</div>
+</viking-page-template>

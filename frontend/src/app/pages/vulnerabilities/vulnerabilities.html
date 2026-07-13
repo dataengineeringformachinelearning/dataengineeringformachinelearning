@@ -1,7 +1,4 @@
-<div class="dashboard-page-container">
-  <!-- Glowing atmospheric spheres -->
-  <div class="dashboard-content-area">
-    <div class="page-inner-wrapper">
+<viking-page-template width="wide">
       <!-- High Density HUD Header -->
       <viking-page-header
         tag="Security Operations"
@@ -267,8 +264,8 @@
             } @else {
             <div class="soc-card-list">
               @for (incident of activeIncidents(); track incident.id) {
-              <div
-                class="viking-card soc-card incident-card"
+              <viking-card
+                class="soc-card incident-card"
                 [class.selected]="selectedIncident()?.id === incident.id"
                 tabindex="0"
                 role="button"
@@ -298,7 +295,7 @@
                   </div>
                   <time class="soc-timestamp">{{ incident.created_at | date:'short' }}</time>
                 </div>
-              </div>
+              </viking-card>
               }
             </div>
             }
@@ -338,8 +335,8 @@
             } @else {
             <div class="soc-card-list">
               @for (playbook of playbooks(); track playbook.id) {
-              <div
-                class="viking-card soc-card playbook-card"
+              <viking-card
+                class="soc-card playbook-card"
                 [class.selected]="selectedPlaybook()?.id === playbook.id"
                 [class.inactive]="!playbook.is_active"
               >
@@ -369,7 +366,7 @@
                     {{ playbook.is_active ? 'Enabled' : 'Disabled' }}
                   </viking-checkbox>
                 </div>
-              </div>
+              </viking-card>
               }
             </div>
             }
@@ -418,6 +415,4 @@
         </div>
       </section>
       }
-    </div>
-  </div>
-</div>
+</viking-page-template>

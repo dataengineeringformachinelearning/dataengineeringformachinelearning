@@ -1,0 +1,127 @@
+// Partial of app-pages.scss — account MFA enrollment (MFA enrollment form, phone/verify/recaptcha steps)
+
+/* ── account extras ── */
+.panel-clean:not(.integrations-list) {
+  position: relative;
+  padding: var(--viking-card-padding-compact);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-md);
+  background: var(
+    --viking-surface-recipe,
+    color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%)
+  );
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
+      transparent
+    );
+    pointer-events: none;
+  }
+}
+
+.mfa-enrollment-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3, 24px);
+}
+
+.mfa-step-title {
+  margin: 0;
+  font-size: var(--viking-font-size, 16px);
+  color: var(--viking-text-muted, var(--viking-text-muted));
+}
+
+.mfa-phone-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  width: 100%;
+}
+
+.mfa-phone-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  width: 100%;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--viking-space-2, 16px);
+
+    .mfa-input-full {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+.verification-step {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-3, 24px);
+  margin-top: var(--viking-space-2, 16px);
+  padding-top: var(--viking-space-3, 24px);
+  border-top: 1px solid var(--viking-border-subtle, var(--viking-border));
+  width: 100%;
+}
+
+.mfa-verify-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-2, 16px);
+  width: 100%;
+  max-width: 28rem;
+  margin-inline: auto;
+}
+
+.mfa-feedback-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-2, 16px);
+}
+
+.mfa-recaptcha-slot {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mfa-relogin-callout {
+  margin-top: var(--viking-space-2, 16px);
+}
+
+.mfa-status-enrolled {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  align-items: stretch;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    viking-button {
+      align-self: auto;
+      flex-shrink: 0;
+    }
+  }
+}

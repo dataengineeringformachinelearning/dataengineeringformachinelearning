@@ -1,0 +1,366 @@
+// Partial of app-pages.scss — premium app polish (dashboard CSS vars, reduced motion, touch targets, viking-tabs, fallback CTA)
+
+/* ── Premium app polish (marketing parity) ── */
+
+.dashboard-page-container {
+  --viking-card-padding: var(--viking-space-3);
+  --viking-card-padding-compact: var(--viking-space-2);
+  --viking-card-content-gap: var(--viking-space-3);
+  --viking-card-content-gap-compact: var(--viking-space-2);
+  --viking-panel-padding: var(--viking-space-3);
+  --viking-panel-header-padding: var(--viking-space-3);
+  --viking-page-stack-gap: var(--viking-space-4);
+  --viking-page-section-gap: var(--viking-space-5);
+  --viking-dashboard-grid-gap: var(--viking-space-3);
+  /* Wide 3:1 chart cadence — premium analytics scale */
+  --viking-chart-ratio: 3 / 1;
+  --viking-chart-min-height: clamp(12rem, 24vw, 15rem);
+  --viking-chart-max-height: clamp(15rem, 30vw, 18rem);
+  --viking-chart-fill-min-height: clamp(13.5rem, 26vw, 16.5rem);
+  --viking-chart-fill-max-height: clamp(16rem, 30vw, 19rem);
+  --viking-chart-fill-min-height-lg: clamp(14.5rem, 28vw, 17.5rem);
+  --viking-chart-fill-max-height-lg: clamp(17rem, 32vw, 20rem);
+  --viking-chart-panel-min-height-md: 22rem;
+  --viking-chart-panel-min-height-lg: 24rem;
+  --viking-chart-panel-body-min-height-md: 16.5rem;
+  --viking-chart-panel-body-min-height-lg: 18rem;
+  --viking-chart-map-min-height: 22rem;
+  background: var(--viking-bg);
+}
+
+.dashboard-content {
+  min-height: calc(100vh - var(--viking-navbar-height, 64px));
+  overflow: visible;
+}
+
+.dashboard-content .dashboard-content-area {
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+// page-inner-wrapper for dashboard pages: canonical definition in layout-shell.scss.
+// Only additive properties needed here (flex for sidebar layout).
+.dashboard-content .page-inner-wrapper {
+  flex: 1 1 auto;
+}
+
+.inline-status-link {
+  color: var(--viking-accent-strong, var(--viking-accent));
+  font-weight: var(--viking-font-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--viking-duration-fast) var(--viking-ease-default);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--viking-accent);
+  }
+}
+
+.scope-filters,
+.tenant-selector-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-space-2);
+  width: 100%;
+  min-width: 0;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: min(100%, 28rem);
+  }
+
+  app-unified-select,
+  .selector-input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.platform-integration-tile {
+  min-height: var(--viking-touch-target-comfort, 44px);
+  box-shadow: var(--viking-shadow-xs);
+
+  &:hover {
+    transform: translateY(var(--viking-state-hover-lift));
+    border-color: var(--viking-accent-strong);
+    background: var(
+      --viking-surface-recipe-elevated,
+      var(--viking-surface-raised)
+    );
+  }
+
+  &:focus-visible {
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
+  }
+}
+
+/* Fallback platform status CTA (settings) */
+.fallback-cta-box,
+.platform-fallback-banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  margin-top: var(--viking-space-2);
+  padding-top: var(--viking-space-3);
+  border-top: 1px solid var(--viking-border-subtle);
+}
+
+.platform-fallback-banner {
+  margin-bottom: var(--viking-space-3);
+  padding: var(--viking-space-3);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border));
+  border-radius: var(--viking-radius-lg);
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 6%,
+    var(--viking-surface)
+  );
+}
+
+.platform-fallback-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--viking-space-2);
+}
+
+.platform-fallback-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.platform-fallback-fields > * {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+/* Active providers chip row (analytics) */
+.active-providers-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-1);
+  margin-block: var(--viking-space-2) var(--viking-space-1);
+}
+
+.active-providers-label {
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-xs);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+  margin-right: var(--viking-space-1);
+}
+
+.stat-value-emphasis {
+  letter-spacing: var(--viking-letter-spacing-tight);
+  font-weight: var(--viking-font-weight-bold);
+}
+
+/* Page tabs breathing room */
+.dashboard-page-container viking-tabs {
+  width: 100%;
+  min-width: 0;
+  gap: var(--viking-space-3);
+}
+
+.dashboard-page-container viking-tab-panel {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  /* Keep soft panel chrome + inner inset so content never kisses the edges */
+  padding: var(--viking-space-4) var(--viking-space-3) var(--viking-space-5);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-xl);
+  background: color-mix(in srgb, var(--viking-surface) 92%, transparent);
+  box-shadow: var(--viking-shadow-xs);
+  color: inherit;
+  line-height: inherit;
+}
+
+@media (min-width: 768px) {
+  .dashboard-page-container viking-tab-panel {
+    padding: var(--viking-space-5) var(--viking-space-4) var(--viking-space-6);
+  }
+}
+
+/* Ensure queue/detail panels fill height on tablet+ */
+@media (min-width: 760px) {
+  .triage-grid {
+    align-items: stretch;
+  }
+
+  .queue-panel,
+  .detail-panel {
+    min-height: 28rem;
+  }
+}
+
+/* Tablet and wider: restore the full matrix cell size. */
+@media (min-width: 480px) {
+  .matrix-cell {
+    width: var(--viking-space-8);
+    height: var(--viking-space-8);
+  }
+
+  .labels-row .col-label {
+    width: var(--viking-space-8);
+  }
+
+  .y-axis-label {
+    margin-right: var(--viking-space-2);
+  }
+}
+
+/* Touch-friendly queue items */
+.queue-item,
+.soc-card,
+.threat-item,
+.security-item {
+  min-height: var(--viking-touch-target-min, 44px);
+}
+
+.queue-item:focus-visible,
+.soc-card:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+/* Status public page: remove nested double-sidebar feel */
+.dashboard-page-container > .dashboard-layout > .dashboard-main {
+  min-width: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Premium polish — micro-interactions, loading states, visual refinements
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Skeleton loading shimmer — smooth pulse for content placeholders */
+@keyframes viking-skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.viking-skeleton,
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--viking-surface-alt) 25%,
+    color-mix(in srgb, var(--viking-surface-alt) 60%, var(--viking-surface)) 50%,
+    var(--viking-surface-alt) 75%
+  );
+  background-size: 200% 100%;
+  animation: viking-skeleton-shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--viking-radius-sm);
+  min-height: 1em;
+}
+
+.viking-skeleton-text {
+  height: 0.875rem;
+  width: 100%;
+  border-radius: var(--viking-radius-xs);
+}
+
+.viking-skeleton-heading {
+  height: 1.5rem;
+  width: 60%;
+  border-radius: var(--viking-radius-sm);
+}
+
+.viking-skeleton-circle {
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+/* 2. Status indicator pulse — subtle live dot for active statuses */
+@keyframes viking-status-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.status-dot-pulse,
+.viking-status-dot--live {
+  animation: viking-status-pulse 2s ease-in-out infinite;
+}
+
+/* 3. Smooth content fade-in — page load transition */
+@keyframes viking-content-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-inner-wrapper,
+.dashboard-content-area {
+  animation: viking-content-fade-in 0.3s var(--viking-ease-default) both;
+}
+
+/* 4. Card focus ring polish — consistent, beautiful focus states */
+.viking-card:focus-visible,
+.queue-item:focus-visible,
+.soc-card:focus-visible,
+.matrix-cell:focus-visible,
+.platform-integration-tile:focus-visible {
+  outline: 2px solid var(--viking-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--viking-accent) 20%, transparent);
+}
+
+/* 5. Metric value count-up feel — subtle number emphasis */
+.metric-value,
+.kpi-value,
+.health-value,
+.stat-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
+}
+
+/* Smooth reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .viking-skeleton,
+  .skeleton,
+  .status-dot-pulse,
+  .viking-status-dot--live,
+  .page-inner-wrapper,
+  .dashboard-content-area {
+    animation: none !important;
+  }
+
+  .page-inner-wrapper,
+  .dashboard-content-area {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .kpi-card,
+  .health-card,
+  .platform-integration-tile,
+  .queue-item,
+  .soc-card,
+  .matrix-cell {
+    transition: none !important;
+    transform: none !important;
+  }
+}

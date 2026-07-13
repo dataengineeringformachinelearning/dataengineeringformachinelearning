@@ -54,7 +54,7 @@ a:hover {
 
 code {
   font-family: var(--viking-font-family-mono, ui-monospace, monospace);
-  font-size: 0.9em;
+  font-size: var(--viking-font-size-xs);
   background: var(--viking-charcoal-950);
   color: var(--viking-white-pure);
   padding: 0.12em 0.42em;

@@ -30,7 +30,7 @@ Viking-UI is the single source of truth for all DEML styling. Every visual rule 
 
 | Artifact           | Path                                                                                  | Purpose                                                                                                      |
 | ------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| SCSS primitives    | `packages/viking-ui/src/styles/_variables.scss`                                       | All `--viking-*` values — edit here first                                                                    |
+| SCSS primitives    | `packages/viking-ui/src/styles/_variables.scss`                                       | All `--viking-*` values including surface recipes — edit here first |
 | Series palette     | `packages/viking-ui/src/styles/_series-colors.scss`                                   | Chart / picker series slots 1–8                                                                              |
 | Legacy aliases     | `packages/viking-ui/src/styles/_legacy-aliases.scss`                                  | `--color-primary`, `--space-*`, Django/marketing compat                                                      |
 | JSON export        | `packages/viking-ui/src/tokens/viking-tokens.json`                                    | Tooling, docs, design QA                                                                                     |
@@ -72,7 +72,7 @@ Directional references are [Material Design 3](https://m3.material.io/) for adap
 
 | Pattern                  | Viking-UI equivalent                                                                   | Notes                                                                |
 | ------------------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                                | Machined top-edge hairline, `--viking-radius-lg`, no glass blur      |
+| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                                | `--viking-shadow-sm`, `--viking-radius-lg`, no glass blur            |
 | Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)                          | Label, description, error; shake on invalid                          |
 | Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`)                 | Min 44px touch on mobile; semibold + wide tracking                   |
 | Dark-first shell         | `data-theme="dark"` default                                                            | Light mode shifts electric/crimson lightness only — no hue inversion |
@@ -181,6 +181,9 @@ These map to primitives above. **Always prefer aliases in components.**
 --viking-surface         /* card / panel */
 --viking-surface-alt     /* inset wells */
 --viking-surface-raised  /* chips, elevated controls */
+--viking-surface-muted   /* disabled / inactive surface */
+--viking-surface-control /* input / select background */
+--viking-surface-header  /* header / toolbar background */
 
 /* Text */
 --viking-text            /* primary copy */
@@ -312,6 +315,7 @@ Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics
 | `--viking-font-size-md`       | 18px | Lead paragraphs          |
 | `--viking-font-size-lg`       | 20px | Section titles           |
 | `--viking-font-size-xl`       | 24px | Page headings            |
+| `--viking-type-heading-lg`    | 24px | Alias for page headings  |
 | `--viking-font-size-2xl`      | 30px | Hero subheads            |
 | `--viking-font-size-3xl`      | 36px | Marketing hero           |
 | `--viking-font-size-4xl`      | 48px | Display (marketing only) |
@@ -367,6 +371,7 @@ Existing numbered `--viking-space-*` tokens retain their public 8px progression 
 - Prefer `var(--viking-space-1)` … `var(--viking-space-12)` (and larger documented steps). Never invent `13px` / `18px` / `27px`.
 - Outer page gutters: `--viking-page-gutter` (`space-2` → `space-4` clamp).
 - Card interior: `--viking-card-padding` (24px); compact tiles use `--viking-card-padding-compact` (16px).
+- Card content gap: `--viking-card-content-gap` (24px) — consistent between Angular and static card primitives.
 - Form field stack: `--viking-space-3` between sections; `--viking-space-1` between label and control.
 - Button groups / chips: `--viking-space-2` gap.
 - Section breaks: `--viking-page-section-gap` (64px), with 32px internal section rhythm.
@@ -411,13 +416,14 @@ Steps through `8` are consecutive **+8px**. Larger steps remain **multiples of 8
 | Token                                 | Value                               |
 | ------------------------------------- | ----------------------------------- |
 | `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`)      |
+| `--viking-container-wide-max-width`   | 1440px (`viking-page-template width="wide"`) |
 | `--viking-page-gutter`                | clamp(`space-2`, 5vw, `space-4`)    |
 | `--viking-page-gutter-lg`             | `--viking-space-5`                  |
 | `--viking-page-stack-gap`             | 32px                                |
 | `--viking-page-section-gap`           | 64px                                |
 | `--viking-card-padding`               | 24px                                |
 | `--viking-card-padding-compact`       | 16px                                |
-| `--viking-card-content-gap`           | 16px                                |
+| `--viking-card-content-gap`           | 24px                                |
 | `--viking-panel-padding`              | 24px                                |
 | `--viking-form-max-width`             | 42rem                               |
 | `--viking-form-narrow-max-width`      | 28rem                               |
@@ -562,9 +568,9 @@ If `data-theme` is omitted, `prefers-color-scheme` selects the palette.
 
 ### 8.2 Cards (`viking-card`)
 
-- Background: `--viking-surface`; border: `--viking-border`; radius: `--viking-radius-lg`.
-- Shadow: `--viking-shadow-sm`; optional top-edge metallic hairline via `::before` gradient.
-- Padding: `--viking-card-padding` (compact: `--viking-card-padding-compact`).
+- Background: `--viking-surface`; border: `--viking-border`; radius: `--viking-radius-lg` (12px).
+- Shadow: `--viking-shadow-sm` (clean drop shadow + subtle inset top highlight for machined depth).
+- Padding: `--viking-card-padding` (compact: `--viking-card-padding-compact`); content gap: `--viking-card-content-gap` (24px).
 - Interactive cards: hover border `--viking-accent-strong`, `--viking-shadow-hover`, 1px lift.
 
 ### 8.3 Icons & SVGs (`viking-icon`)
@@ -727,7 +733,9 @@ surfaces use their matching `.page-inner-wrapper`, `.viking-section`,
 these contracts with app-local wrappers or breakpoint CSS.
 
 Application routes should use `viking-app-layout` and `viking-page-template`
-for shell and page regions. Balanced dashboard and marketing content uses
+for shell and page regions. `viking-page-template` supports `width="narrow"` (42rem),
+`width="default"` (1260px), and `width="wide"` (1440px) for full-bleed dashboard surfaces.
+Balanced dashboard and marketing content uses
 `viking-column-layout` with one to four equal columns or intrinsic `auto`
 tracks. Unequal regions use `viking-grid columns="12"` with
 `viking-grid-item` mobile, tablet, and desktop spans. Content is inlaid in
@@ -876,7 +884,7 @@ All three pages use `--viking-accent` for primary CTAs, `--viking-charcoal-900` 
 
 ## 13. Maintenance
 
-1. Edit `packages/viking-ui/src/styles/_variables.scss` for primitive token changes.
+1. Edit `packages/viking-ui/src/styles/_variables.scss` for primitive token changes (single source of truth).
 2. Edit `_series-colors.scss` if the chart/picker palette changes; sync `viking-tokens.json` and `series-presets.ts`.
 3. Run `npm run build:viking-ui:package` to regenerate CSS, Web Component, utility, widget, token, and Angular package artifacts.
 4. Run `python scripts/sync_design_system.py` to propagate `viking-ui.css`, Web Components, token JSON, widgets, and fonts.
@@ -884,6 +892,8 @@ All three pages use `--viking-accent` for primary CTAs, `--viking-charcoal-900` 
 6. Update this document when tokens or component standards change.
 7. Sync marketing/backend copies in CI or publish step.
 8. Run `python scripts/sync_content.py` after editing `BOOK.md`, `WHITEPAPER.md`, or `README.md`.
+
+**Surface partials:** `packages/viking-ui/src/styles/surfaces/app-pages.scss` is composed of 8 focused partials (`_dashboard-overview.scss`, `_vulnerabilities-triage.scss`, `_siem-soc-operations.scss`, `_settings-integrations.scss`, `_account-mfa-enrollment.scss`, `_premium-app-polish.scss`, `_page-header-status-cta.scss`, `_content-aware-layouts.scss`). Add page-level styles to the appropriate partial — do not append to the monolith.
 
 ---
 

@@ -4,7 +4,7 @@
   z-index: 50;
   border-bottom: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-bg) 92%, transparent);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--viking-surface-glass-blur, 10px));
 }
 
 .docs-header-inner {
@@ -53,7 +53,7 @@
   margin-inline: auto;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
   .docs-nav {
     display: flex;
   }
@@ -102,7 +102,7 @@
   display: none;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .docs-github-label {
     display: inline;
   }
@@ -140,8 +140,8 @@
 }
 
 .theme-toggle-btn:focus-visible {
-  outline: 2px solid var(--viking-ring);
-  outline-offset: 2px;
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset, 2px);
 }
 
 html[data-theme="dark"] .theme-icon-sun {
@@ -164,7 +164,7 @@ html[data-theme="light"] .theme-icon-moon {
   z-index: 45;
   border-bottom: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-bg) 94%, transparent);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--viking-surface-glass-blur, 10px));
   --showcase-subnav-height: 52px;
   min-height: var(--showcase-subnav-height);
 }
@@ -282,7 +282,7 @@ html[data-theme="light"] .theme-icon-moon {
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   overflow: hidden;
-  background: var(--viking-charcoal-950, #0a0a0a);
+  background: var(--viking-surface-inset);
 }
 
 .code-block-tabs {
@@ -311,7 +311,7 @@ html[data-theme="light"] .theme-icon-moon {
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-medium);
   cursor: pointer;
-  min-height: 36px;
+  min-height: var(--viking-control-height-sm, 36px);
 }
 
 .code-block-tab.is-active {
@@ -320,8 +320,8 @@ html[data-theme="light"] .theme-icon-moon {
 }
 
 .code-block-tab:focus-visible {
-  outline: 2px solid var(--viking-ring);
-  outline-offset: 2px;
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset, 2px);
 }
 
 .code-block-copy {
@@ -336,7 +336,7 @@ html[data-theme="light"] .theme-icon-moon {
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-xs);
   cursor: pointer;
-  min-height: 36px;
+  min-height: var(--viking-control-height-sm, 36px);
 }
 
 .code-block-copy:hover {
@@ -400,7 +400,7 @@ html[data-theme="light"] .theme-icon-moon {
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-xs);
   cursor: pointer;
-  min-height: 32px;
+  min-height: var(--viking-control-height-sm, 36px);
 }
 
 .framework-grid {

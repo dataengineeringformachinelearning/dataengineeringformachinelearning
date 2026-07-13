@@ -153,6 +153,15 @@
   --viking-space-2-5: var(--viking-space-2);
   --viking-space-8-5: 72px;
 
+  /* ── Surface recipes — deterministic hierarchy (dark-first) ──────────────
+     Components consume these instead of raw navy steps for consistent depth. */
+  --viking-surface-recipe: var(--viking-surface);
+  --viking-surface-recipe-elevated: var(--viking-surface-raised);
+  --viking-surface-recipe-inset: var(--viking-surface-inset);
+  --viking-surface-recipe-muted: var(--viking-surface-alt);
+  --viking-surface-muted: var(--viking-surface-alt);
+  --viking-surface-control: var(--viking-surface-inset);
+
   /* ── Typography (Inter self-hosted — see _fonts.scss) ───────────────────── */
   --viking-font-family:
     "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -165,6 +174,7 @@
   --viking-font-size-3xs: 10px;
   --viking-font-size-xs: 12px;
   --viking-font-size-sm: 14px;
+  --viking-font-size-ui: 14px;
   --viking-font-size-base: 16px;
   --viking-font-size-md: 18px;
   --viking-font-size-lg: 20px;
@@ -220,9 +230,15 @@
     var(--viking-font-size-sm) / var(--viking-line-height-snug)
     var(--viking-font-family);
 
+  --viking-type-heading-lg: var(--viking-font-weight-bold)
+    var(--viking-font-size-3xl) / var(--viking-line-height-tight)
+    var(--viking-font-family);
+
   /* Semantic type roles */
   --viking-text-heading: var(--viking-text);
   --viking-text-body: var(--viking-text);
+  --viking-surface-header: var(--viking-surface-raised);
+  --viking-text-on-header: var(--viking-text);
 
   /* ── Border radius — 6–12px premium feel ─────────────────────────────────── */
   --viking-radius-xs: 4px;
@@ -344,7 +360,7 @@
   --viking-control-height-xs: 24px;
   --viking-touch-target-min: 44px;
   --viking-control-padding-x: var(--viking-space-2); /* 16px — on-grid */
-  --viking-btn-min-width: 0;
+  --viking-btn-min-width: 120px;
   --viking-select-panel-bg: var(--viking-surface-raised);
   --viking-select-half-max-width: min(100%, 24rem);
 
@@ -370,6 +386,7 @@
   /* ── Layout ────────────────────────────────────────────────────────────── */
   --viking-container-max-width: 1260px;
   --viking-container-max-width-wide: 1440px; /* dashboard/analytics pages */
+  --viking-container-wide-max-width: var(--viking-container-max-width-wide);
   --viking-container-max-width-readable: 48rem;
   --viking-navbar-height: var(--viking-space-7); /* 56px */
   --viking-sidebar-width: 256px; /* 32 × 8px — on-grid layout constant */
@@ -401,7 +418,7 @@
   --viking-section-padding-y-compact: var(--viking-space-4);
   --viking-card-padding: var(--viking-space-3);
   --viking-card-padding-compact: var(--viking-space-2);
-  --viking-card-content-gap: var(--viking-space-2);
+  --viking-card-content-gap: var(--viking-space-3);
   --viking-card-content-gap-compact: var(--viking-space-compact-gap);
   --viking-panel-padding: var(--viking-space-3);
   --viking-panel-header-padding: var(--viking-space-2) var(--viking-space-3);
@@ -526,17 +543,17 @@ html[data-theme="dark"] {
 
   --viking-border: color-mix(
     in srgb,
-    var(--viking-metallic-600) 48%,
+    var(--viking-metallic-600) 52%,
     transparent
   );
   --viking-border-strong: color-mix(
     in srgb,
-    var(--viking-metallic-400) 68%,
+    var(--viking-metallic-400) 72%,
     transparent
   );
   --viking-border-subtle: color-mix(
     in srgb,
-    var(--viking-metallic-600) 28%,
+    var(--viking-metallic-600) 26%,
     transparent
   );
   --viking-border-accent: color-mix(

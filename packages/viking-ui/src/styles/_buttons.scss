@@ -67,7 +67,7 @@
     cursor: wait;
   }
 
-  &[aria-busy="true"]:not(.viking-square):not(.viking-btn-square) {
+  &[aria-busy="true"]:not(.viking-square):not(.viking-btn-square):not(.viking-compact) {
     min-width: var(
       --viking-btn-loading-min-width,
       var(--viking-btn-min-width, 120px)

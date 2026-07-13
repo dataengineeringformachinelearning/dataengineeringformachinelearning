@@ -58,7 +58,7 @@ const isCompact = variant === 'compact';
   )}
 
   <div
-    class="component-showcase-preview viking-demo-wrapper"
+    class:list={['component-showcase-preview', 'viking-demo-wrapper', { 'component-showcase-preview--full': !isCompact }]}
     role="region"
     aria-label={`${component.name} preview`}
   >
