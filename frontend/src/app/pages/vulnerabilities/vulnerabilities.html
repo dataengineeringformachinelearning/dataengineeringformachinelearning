@@ -38,7 +38,7 @@
   </viking-metric-row>
 
   <!-- Dashboard Panel Grid -->
-  <viking-grid class="triage-grid" [columns]="12" [equalRows]="true">
+  <viking-panel-grid class="triage-grid" [columns]="12">
     <!-- Left Triage Queue Panel -->
     <viking-grid-item [tabletSpan]="12" [desktopSpan]="4">
       <viking-hud-panel class="queue-panel" icon="filter" title="Ingestion Queue">
@@ -217,7 +217,7 @@
         @ } @else {
         <div class="panel-body no-selection-body">
           <viking-chart-empty-state
-            layout="compact"
+            layout="fill"
             icon="search"
             title="Awaiting Threat Selection"
             description="Select an item from the ingestion queue to map risk matrices, analyze diagnostic payload data, and execute remediation protocols."
@@ -226,7 +226,7 @@
         }
       </section>
     </viking-grid-item>
-  </viking-grid>
+  </viking-panel-grid>
 
   <!-- SIEM / SOAR Operations -->
   <div class="soc-operations-grid">

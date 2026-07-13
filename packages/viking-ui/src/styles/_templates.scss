@@ -638,7 +638,13 @@
 
 @media (min-width: 901px) {
   .viking-app-layout--sidebar-open {
-    grid-template-columns: var(--viking-sidebar-width) minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .viking-app-layout--sidebar-toggle-only
+    > .viking-app-layout__main
+    > .viking-app-layout__header {
+    display: none;
   }
 
   .viking-app-layout__sidebar {
@@ -672,9 +678,7 @@
   }
 
   .viking-app-layout--sidebar-open.viking-app-layout--tools-open {
-    grid-template-columns: var(--viking-sidebar-width) minmax(0, 1fr) var(
-        --viking-trailing-width
-      );
+    grid-template-columns: auto minmax(0, 1fr) var(--viking-trailing-width);
   }
 
   .viking-app-layout__tools {

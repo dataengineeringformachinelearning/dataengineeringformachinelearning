@@ -22,12 +22,12 @@ license: apache-2.0
 
 ## Concept of Operations
 
-| Document                                       | Purpose                                 |
-| ---------------------------------------------- | --------------------------------------- |
-| [BOOK.md](BOOK.md)                             | Full platform architecture & operations |
-| [WHITEPAPER.md](WHITEPAPER.md)                 | Executive summary for reviewers         |
-| [BOOK.md § Appendix N](BOOK.md#appendix-n-concept-of-operations-operator-quick-reference) | On-call operational checklists |
-| [BOOK.md § Appendix U](BOOK.md#appendix-u-deml-platform-technology-stack) | Technology stack overview |
+| Document                                                                                  | Purpose                                 |
+| ----------------------------------------------------------------------------------------- | --------------------------------------- |
+| [BOOK.md](BOOK.md)                                                                        | Full platform architecture & operations |
+| [WHITEPAPER.md](WHITEPAPER.md)                                                            | Executive summary for reviewers         |
+| [BOOK.md § Appendix N](BOOK.md#appendix-n-concept-of-operations-operator-quick-reference) | On-call operational checklists          |
+| [BOOK.md § Appendix U](BOOK.md#appendix-u-deml-platform-technology-stack)                 | Technology stack overview               |
 
 ### Product surfaces (`deml.app`)
 
@@ -66,8 +66,8 @@ security model and build instructions.
 
 ## Official Integrations
 
-| Platform       | Primary endpoints                   | Guide                                                |
-| -------------- | ----------------------------------- | ---------------------------------------------------- |
+| Platform       | Primary endpoints                   | Guide                                                         |
+| -------------- | ----------------------------------- | ------------------------------------------------------------- |
 | **Kubernetes** | `/api/v1/predict`, `/api/v1/ingest` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
 | **TensorFlow** | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |
 | **PyTorch**    | `/api/v1/ingest`, `/api/v1/predict` | [BOOK.md § Appendix Z](BOOK.md#appendix-z-integration-guides) |

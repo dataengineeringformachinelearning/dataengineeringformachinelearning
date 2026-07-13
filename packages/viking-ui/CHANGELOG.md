@@ -1,5 +1,14 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 9.1.0
+
+### Minor Changes
+
+- Add semantic `viking-panel-grid` and `viking-form-grid` layout recipes so peer
+  surfaces inherit equal-height behavior and related fields inherit responsive
+  top alignment without application-specific layout fixes.
+- Componenet handling
+
 ## 9.0.0
 
 ### Major Changes

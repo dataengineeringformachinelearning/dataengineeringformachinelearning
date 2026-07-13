@@ -73,7 +73,11 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 | Series colors            | `VIKING_SERIES_PRESETS` from `series-presets.ts`                       | Never raw hex in chart code — use `--viking-series-1`…`8`   |
 | Skeleton loaders         | `viking-skeleton`, `viking-loading-overlay`, `viking-progress`         | Never generic CSS spinners                                   |
 | Feedback                 | `viking-toast`, `viking-callout`, `viking-badge`                       | Never `alert()` or ad-hoc div banners                       |
-| Page layouts             | `viking-page-shell` → `viking-section` + stack/grid/cluster            | Never rebuild package breakpoints or gutters locally          |
+| Peer surface layouts     | `viking-panel-grid`                                                     | Equal-height cards, HUD panels, and charts by construction   |
+| Form field layouts       | `viking-form-grid`                                                      | Top-align fields even when helper/error copy differs         |
+| Vertical rhythm          | `viking-stack`                                                         | Never add one-off sibling margins between content blocks     |
+| Section anatomy          | `viking-section-template`                                              | Reuse title, description, actions, divider, and body rhythm  |
+| Page layouts             | `viking-page-shell` → `viking-section` + semantic layout recipe       | Never rebuild package breakpoints or gutters locally        |
 
 **Context-aware density:** Dashboards and analytics pages use `viking-metric-card`, `viking-hud-panel`, and `viking-chart-panel` for dense data inlay. Settings and billing forms use `viking-form-section` with grouped `viking-field` stacks. Status/overview surfaces use open card layouts (`viking-card` with generous padding). Static/open sections (marketing, docs) use wider readable widths (`--viking-content-readable-max-width`). Never force a dashboard density pattern into a settings form, or vice versa.
 
@@ -89,7 +93,8 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 - **Never** add Angular Material, ng-zorro, PrimeNG, Bootstrap, shadcn runtimes, or other third-party UI kits.
 - **Never** create one-off styled buttons, inputs, modals, toasts, tables, or charts when a `viking-*` component exists.
 - **Prefer** shell primitives: `viking-app-header`, `viking-app-sidebar`, `viking-page-header`, `viking-footer`, `viking-site-navbar`, `viking-site-footer`.
-- **Compose** page layouts with `viking-page-shell`, `viking-section`, `viking-stack`, `viking-grid`, and `viking-cluster`; static surfaces use their matching package CSS classes.
+- **Compose** page layouts with `viking-page-shell`, `viking-section`, `viking-panel-grid`, `viking-form-grid`, `viking-stack`, and `viking-cluster`; use lower-level `viking-grid` only for content-led or deliberately unequal 12-track layouts. Static surfaces use their matching package CSS classes.
+- **Choose layouts by intent:** peer cards/charts/HUD panels use `viking-panel-grid`; field groups use `viking-form-grid`; consecutive blocks use `viking-stack`; repeated title/description/action/body anatomy uses `viking-section-template`. Never reproduce those contracts with app-specific classes, sibling margins, alignment overrides, or repeated header markup.
 - **Charts:** `viking-chart` (native SVG) only — no ApexCharts, Chart.js, D3 wrappers, or canvas libs. Always use `viking-chart-panel` as the chart container with `viking-chart-panel[loading]` and `viking-chart-empty-state` for all states. Import `VIKING_SERIES_PRESETS` from `series-presets.ts` for series colors — never raw hex.
 - **Icons:** `viking-icon` only — no Material Icons, Font Awesome, or Lucide runtime packages.
 - **Feedback:** `viking-toast` / `VikingToastService`, `viking-callout`, `viking-badge` — not browser `alert()` or ad-hoc banners.
@@ -144,7 +149,7 @@ import {
 
 ### Layout & aesthetic
 
-- **Grid-first composition:** All pages compose `viking-page-shell` → `viking-section` with `viking-stack`, `viking-grid`, and `viking-cluster`. Start as single-column grid (`grid-template-columns: 1fr`), scale at 768px (tablet) and 1024px (desktop). Application routes use `viking-app-layout` + `viking-page-template` (supports `width="narrow"`, `"default"`, `"wide"`).
+- **Grid-first composition:** All pages compose `viking-page-shell` → `viking-section` with semantic layout recipes. Use `viking-panel-grid` for equal-height peer surfaces, `viking-form-grid` for top-aligned fields, `viking-stack` for vertical rhythm, and `viking-section-template` for repeated section anatomy. Use lower-level `viking-grid` only for content-led or deliberately unequal 12-track regions. Start as single-column grid and scale at the canonical tablet and desktop breakpoints. Application routes use `viking-app-layout` + `viking-page-template` (supports `width="narrow"`, `"default"`, `"wide"`).
 - **Context-aware density:** Apply the right density for the context. Dashboards/analytics: `viking-metric-card`, `viking-hud-panel`, `viking-chart-panel` for dense data inlay. Settings/billing: `viking-form-section` with grouped `viking-field` stacks. Status/overview: open `viking-card` with generous padding. Static/marketing: wider readable widths (`--viking-content-readable-max-width`). Never force a dashboard density pattern into a settings form.
 - **Tactile surfaces:** subtle inset top-edge highlights, etched steel-like borders, and 1px hover lift max.
 - **Dense, breathable layout:** cards, buttons, charts, and overview panels must support Flux-like data density while using tokenized padding (`--viking-card-padding`, `--viking-panel-padding`) and exact alignment.

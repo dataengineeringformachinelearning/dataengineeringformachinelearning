@@ -75,16 +75,11 @@ html[data-theme="light"] .viking-app-sidebar-host {
   align-items: center;
   gap: var(--viking-space-1);
   border-bottom: 1px solid var(--sidebar-border);
-  cursor: pointer;
   justify-content: space-between;
   transition: var(--viking-transition-colors);
 
   .collapse-toggle-btn {
     display: none;
-  }
-
-  &:hover {
-    background: var(--sidebar-hover-bg);
   }
 
   .brand-icon {
@@ -110,24 +105,6 @@ html[data-theme="light"] .viking-app-sidebar-host {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .collapse-toggle-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--viking-space-1);
-    border-radius: var(--viking-component-radius);
-    transition: var(--viking-transition-interactive);
-
-    &:hover {
-      background: var(--sidebar-hover-bg);
-      color: var(--text-color);
-    }
   }
 }
 
@@ -220,7 +197,7 @@ html[data-theme="light"] .viking-app-sidebar-host {
     padding: var(--viking-space-3);
 
     .collapse-toggle-btn {
-      display: flex;
+      display: contents;
     }
   }
 

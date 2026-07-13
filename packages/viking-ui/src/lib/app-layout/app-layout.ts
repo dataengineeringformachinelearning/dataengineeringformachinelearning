@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   afterNextRender,
   computed,
   contentChildren,
@@ -228,7 +229,7 @@ export class VikingAppLayout {
         ?.label() ?? this.drawerLabel(),
   );
 
-  constructor() {
+  constructor(destroyRef: DestroyRef) {
     effect(() => {
       const activeId = this.activeDrawerId();
       for (const drawer of this.drawers()) {
@@ -236,12 +237,20 @@ export class VikingAppLayout {
       }
     });
     afterNextRender(() => {
-      if (
-        this.autoOpenSidebar() &&
-        window.matchMedia("(min-width: 901px)").matches
-      ) {
-        this.sidebarOpen.set(true);
-      }
+      const desktopQuery = window.matchMedia("(min-width: 901px)");
+      const syncSidebarForViewport = (
+        event: MediaQueryList | MediaQueryListEvent,
+      ): void => {
+        if (this.autoOpenSidebar()) {
+          this.sidebarOpen.set(event.matches);
+        }
+      };
+
+      syncSidebarForViewport(desktopQuery);
+      desktopQuery.addEventListener("change", syncSidebarForViewport);
+      destroyRef.onDestroy(() => {
+        desktopQuery.removeEventListener("change", syncSidebarForViewport);
+      });
     });
   }
 
@@ -257,6 +266,12 @@ export class VikingAppLayout {
         : "",
       this.hasSplitPanel()
         ? `viking-app-layout--split-panel-${this.splitPanelSize()}`
+        : "",
+      this.hasSidebar() &&
+      this.sidebarCollapsible() &&
+      !this.headerContent() &&
+      !(this.toolsVisible() && this.toolsCollapsible())
+        ? "viking-app-layout--sidebar-toggle-only"
         : "",
       this.splitPanelOpen() ? "viking-app-layout--split-panel-open" : "",
       this.activeDrawerId() ? "viking-app-layout--drawer-open" : "",

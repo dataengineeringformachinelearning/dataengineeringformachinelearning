@@ -1,599 +1,594 @@
 <viking-page-template width="wide">
   <viking-page-header tag="Sites" title="Sites">
     <p vikingPageHeaderExtra class="hud-subtitle viking-page-header-subtitle">
-      Add monitoring sites, connect endpoints, and embed your status widget. Analytics and
-      threats appear automatically on your dashboard.
+      Add monitoring sites, connect endpoints, and embed your status widget. Analytics and threats
+      appear automatically on your dashboard.
       <a routerLink="/account" class="inline-status-link">Account & billing</a> are managed
       separately.
     </p>
   </viking-page-header>
 
   <div class="settings-stack">
-        @if (isViewer) {
-        <viking-callout
-          class="alert-viewer-banner"
-          tone="warning"
-          heading="Read-Only Access"
-          icon="lock"
+    @if (isViewer) {
+    <viking-callout
+      class="alert-viewer-banner"
+      tone="warning"
+      heading="Read-Only Access"
+      icon="lock"
+    >
+      Your user profile is assigned the <strong>Viewer</strong> role. You cannot perform
+      administrative modifications to status pages, monitored endpoints, incident reports, or
+      integrations.
+    </viking-callout>
+    } @else if (!authService.mfaVerifiedInSession()) {
+    <viking-callout
+      [tone]="authService.mfaEnrolled() ? 'warning' : 'info'"
+      [heading]="authService.mfaEnrolled() ? 'MFA session required' : 'MFA required to save'"
+      icon="shield"
+    >
+      @if (authService.mfaEnrolled()) { MFA is enrolled, but this browser session is not yet marked
+      as SMS-verified. Site forms stay locked until verification is detected.
+      <div class="settings-mfa-actions">
+        <viking-button
+          variant="outline"
+          type="button"
+          size="sm"
+          icon="refresh"
+          [loading]="isRefreshingMfa()"
+          [disabled]="isRefreshingMfa()"
+          (pressed)="refreshMfaSession()"
         >
-          Your user profile is assigned the <strong>Viewer</strong> role. You cannot perform
-          administrative modifications to status pages, monitored endpoints, incident reports, or
-          integrations.
-        </viking-callout>
-        } @else if (!authService.mfaVerifiedInSession()) {
-        <viking-callout
-          [tone]="authService.mfaEnrolled() ? 'warning' : 'info'"
-          [heading]="authService.mfaEnrolled() ? 'MFA session required' : 'MFA required to save'"
-          icon="shield"
+          Refresh MFA status
+        </viking-button>
+        <a routerLink="/login" class="inline-status-link">Sign out and sign back in with SMS</a>
+      </div>
+      } @else { Creating or updating sites requires
+      <strong>multi-factor authentication</strong>. Enroll SMS MFA on your
+      <a routerLink="/account" class="inline-status-link">Account</a> page, then sign out and sign
+      back in so your session includes MFA verification. }
+    </viking-callout>
+    }
+
+    <viking-card class="status-panel-outlined platform-integrations-panel">
+      <viking-card-header>
+        <viking-card-title icon="globe">Platform Integrations</viking-card-title>
+      </viking-card-header>
+      <p class="embed-desc">
+        First-class ingestion paths for enterprise ML infrastructure. Each platform exposes
+        health-check endpoints and documented integration guides.
+      </p>
+      <div class="platform-integrations-grid">
+        @for (item of platformIntegrations; track item.icon) {
+        <a
+          class="platform-integration-tile"
+          [href]="item.guide"
+          target="_blank"
+          rel="noopener noreferrer"
+          [attr.aria-label]="item.name + ' integration guide'"
         >
-          @if (authService.mfaEnrolled()) { MFA is enrolled, but this browser session is not yet
-          marked as SMS-verified. Site forms stay locked until verification is detected.
-          <div class="settings-mfa-actions">
-            <viking-button
-              variant="outline"
-              type="button"
-              size="sm"
-              icon="refresh"
-              [loading]="isRefreshingMfa()"
-              [disabled]="isRefreshingMfa()"
-              (pressed)="refreshMfaSession()"
-            >
-              Refresh MFA status
-            </viking-button>
-            <a routerLink="/login" class="inline-status-link">Sign out and sign back in with SMS</a>
-          </div>
-          } @else { Creating or updating sites requires
-          <strong>multi-factor authentication</strong>. Enroll SMS MFA on your
-          <a routerLink="/account" class="inline-status-link">Account</a> page, then sign out and
-          sign back in so your session includes MFA verification. }
-        </viking-callout>
+          <viking-icon [name]="item.icon" [size]="28" variant="filled" />
+          <span class="platform-integration-name">{{ item.name }}</span>
+        </a>
         }
+      </div>
+    </viking-card>
 
-        <viking-card
-          class="status-panel-outlined platform-integrations-panel"
+    <viking-card class="status-panel-outlined">
+      <viking-card-header>
+        @if (selectedPage()) {
+        <viking-card-title icon="pencil">{{ selectedPage()!.title }}</viking-card-title>
+        } @if (selectedPage()) {
+        <viking-button
+          variant="ghost"
+          type="button"
+          [square]="true"
+          icon="trash"
+          label="Delete status page"
+          (pressed)="deleteStatusPage(selectedPage()!.id)"
+          class="delete-page-btn"
+          [disabled]="!canMutateSites"
+        />
+        } @if (!selectedPage()) {
+        <viking-card-title icon="plus">Create Status Page</viking-card-title>
+        }
+      </viking-card-header>
+      <!-- New Page Form -->
+      @if (!selectedPage()) {
+      <div class="form-col">
+        <p class="embed-desc">
+          Create a new status page to start monitoring your services. Refer to the
+          <a routerLink="/status/platform-status" class="inline-status-link"
+            >Platform Status Page</a
+          >
+          as a live example of layout, services, and incident configurations.
+        </p>
+        <viking-field label="Title" class="full-width">
+          <viking-input
+            [(ngModel)]="newPageTitle"
+            placeholder="e.g. My API Status"
+            [disabled]="!canMutateSites"
+          />
+        </viking-field>
+        <viking-field label="Slug" class="full-width">
+          <viking-input
+            [(ngModel)]="newPageSlug"
+            placeholder="e.g. my-api"
+            [disabled]="!canMutateSites"
+          />
+        </viking-field>
+        <viking-button
+          variant="primary"
+          type="button"
+          (pressed)="createStatusPage()"
+          [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || !canMutateSites"
+          [loading]="isCreatingPage()"
+          icon="plus"
+          class="create-page-btn"
         >
-          <viking-card-header>
-            <viking-card-title icon="globe">Platform Integrations</viking-card-title>
-          </viking-card-header>
-          <p class="embed-desc">
-            First-class ingestion paths for enterprise ML infrastructure. Each platform exposes
-            health-check endpoints and documented integration guides.
-          </p>
-          <div class="platform-integrations-grid">
-            @for (item of platformIntegrations; track item.icon) {
-            <a
-              class="platform-integration-tile"
-              [href]="item.guide"
-              target="_blank"
-              rel="noopener noreferrer"
-              [attr.aria-label]="item.name + ' integration guide'"
-            >
-              <viking-icon [name]="item.icon" [size]="28" variant="filled" />
-              <span class="platform-integration-name">{{ item.name }}</span>
-            </a>
-            }
-          </div>
-        </viking-card>
+          Create Page
+        </viking-button>
+      </div>
+      }
 
-        <viking-card class="status-panel-outlined">
-          <viking-card-header>
-            @if (selectedPage()) {
-            <viking-card-title icon="pencil">{{ selectedPage()!.title }}</viking-card-title>
-            } @if (selectedPage()) {
-            <viking-button
-              variant="ghost"
-              type="button"
-              [square]="true"
-              icon="trash"
-              label="Delete status page"
-              (pressed)="deleteStatusPage(selectedPage()!.id)"
-              class="delete-page-btn"
-              [disabled]="!canMutateSites"
-            />
-            } @if (!selectedPage()) {
-            <viking-card-title icon="plus">Create Status Page</viking-card-title>
-            }
-          </viking-card-header>
-          <!-- New Page Form -->
-          @if (!selectedPage()) {
-          <div class="form-col">
-            <p class="embed-desc">
-              Create a new status page to start monitoring your services. Refer to the
-              <a routerLink="/status/platform-status" class="inline-status-link"
-                >Platform Status Page</a
+      <!-- Existing Page View -->
+      @if (selectedPage()) {
+      <div>
+        @if (selectedPage()?.slug === 'platform-status') {
+        <div class="platform-fallback-banner" role="status">
+          <div class="platform-fallback-row">
+            <viking-app-icon name="info" [ariaHidden]="true" />
+            <div>
+              <strong>Platform Status Fallback:</strong>
+              <span class="embed-desc">
+                You are currently viewing the system-wide Platform Status page configuration as a
+                fallback because you have not created your own custom status page yet.
+              </span>
+            </div>
+          </div>
+          <div class="fallback-cta-box">
+            <h3 class="section-heading">Create Your Own Custom Status Page</h3>
+            <div class="platform-fallback-fields">
+              <viking-field label="Title">
+                <viking-input
+                  [(ngModel)]="newPageTitle"
+                  placeholder="e.g. My API Status"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+              <viking-field label="Slug">
+                <viking-input
+                  [(ngModel)]="newPageSlug"
+                  placeholder="e.g. my-api"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+              <viking-button
+                variant="primary"
+                type="button"
+                (pressed)="createStatusPage()"
+                [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || !canMutateSites"
+                [loading]="isCreatingPage()"
+                icon="plus"
               >
-              as a live example of layout, services, and incident configurations.
+                Create Custom Page
+              </viking-button>
+            </div>
+          </div>
+        </div>
+        }
+        <!-- Page Settings Section -->
+        <div class="panel-section">
+          <h3 class="section-heading"><viking-app-icon name="settings" /> Page Settings</h3>
+          <div class="settings-form-panel">
+            <div class="form-row">
+              <viking-field label="Title">
+                <viking-input
+                  [(ngModel)]="editTitle"
+                  placeholder="e.g. My API Status"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+              <viking-field label="Slug">
+                <viking-input
+                  [(ngModel)]="editSlug"
+                  placeholder="e.g. my-api"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+            </div>
+            <viking-field label="Description" class="full-width">
+              <viking-textarea
+                [(ngModel)]="editDescription"
+                [rows]="2"
+                placeholder="Description of this status page..."
+                [disabled]="!canMutateSites"
+              />
+            </viking-field>
+            <div class="settings-actions">
+              <viking-checkbox [(ngModel)]="editIsPublished" [disabled]="!canMutateSites">
+                Publish Status Page (makes it visible in the public Explore directory)
+              </viking-checkbox>
+              <viking-button
+                variant="primary"
+                type="button"
+                class="save-settings-btn"
+                (pressed)="updateStatusPage()"
+                [disabled]="!editTitle || !editSlug || isUpdatingPage() || !canMutateSites"
+                [loading]="isUpdatingPage()"
+              >
+                @if (!isUpdatingPage()) {
+                <viking-app-icon name="save" />
+                } Save Settings
+              </viking-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry Tracking IDs Section -->
+        <div class="panel-section">
+          <h3 class="section-heading">
+            <viking-app-icon name="analytics" /> Telemetry Tracking IDs
+          </h3>
+          <div class="settings-form-panel">
+            <p class="embed-desc">
+              Enter IDs for this status page only. GA4 OAuth sync uses each page’s Google Analytics
+              measurement ID (G-…) plus monitored service hostnames—never every property on the
+              Google account. Scripts are also injected on the public status page for visitor
+              telemetry.
             </p>
-            <viking-field label="Title" class="full-width">
-              <viking-input
-                [(ngModel)]="newPageTitle"
-                placeholder="e.g. My API Status"
-                [disabled]="!canMutateSites"
-              />
-            </viking-field>
-            <viking-field label="Slug" class="full-width">
-              <viking-input
-                [(ngModel)]="newPageSlug"
-                placeholder="e.g. my-api"
-                [disabled]="!canMutateSites"
-              />
-            </viking-field>
+            <viking-form-grid [columns]="3">
+              <viking-field
+                label="Google Analytics ID"
+                description="Measurement ID for this site’s host only (not all GA properties)"
+              >
+                <viking-input
+                  [(ngModel)]="editGoogleAnalyticsId"
+                  placeholder="e.g. G-XXXXXXX"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+              <viking-field label="Microsoft Clarity ID">
+                <viking-input
+                  [(ngModel)]="editMicrosoftClarityId"
+                  placeholder="e.g. xxxxxxxx"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+              <viking-field label="Cloudflare Analytics ID">
+                <viking-input
+                  [(ngModel)]="editCloudflareAnalyticsId"
+                  placeholder="e.g. xxxxxxxx"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+            </viking-form-grid>
+            <div class="settings-actions">
+              <viking-button
+                variant="primary"
+                type="button"
+                class="save-settings-btn"
+                (pressed)="updateStatusPage()"
+                [disabled]="!editTitle || !editSlug || isUpdatingPage() || !canMutateSites"
+                [loading]="isUpdatingPage()"
+              >
+                @if (!isUpdatingPage()) {
+                <viking-app-icon name="save" />
+                } Save Tracking IDs
+              </viking-button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="section-heading"><viking-app-icon name="dns" /> Monitored Services</h3>
+          <div class="service-form-panel">
+            <div class="service-inputs-row">
+              <viking-field label="Service Name">
+                <viking-input
+                  [(ngModel)]="newServiceName"
+                  placeholder="e.g. Auth API"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+              <viking-field label="Health Check URL">
+                <viking-input
+                  [(ngModel)]="newServiceUrl"
+                  placeholder="https://api.example.com/health"
+                  icon="globe"
+                  [disabled]="!canMutateSites"
+                />
+              </viking-field>
+            </div>
             <viking-button
               variant="primary"
               type="button"
-              (pressed)="createStatusPage()"
-              [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || !canMutateSites"
-              [loading]="isCreatingPage()"
+              class="add-service-btn"
               icon="plus"
-              class="create-page-btn"
+              (pressed)="addService()"
+              [disabled]="!newServiceName || !newServiceUrl || isAddingService() || !canMutateSites"
+              [loading]="isAddingService()"
             >
-              Create Page
+              Add Service
             </viking-button>
           </div>
-          }
-
-          <!-- Existing Page View -->
-          @if (selectedPage()) {
-          <div>
-            @if (selectedPage()?.slug === 'platform-status') {
-            <div class="platform-fallback-banner" role="status">
-              <div class="platform-fallback-row">
-                <viking-app-icon name="info" [ariaHidden]="true" />
-                <div>
-                  <strong>Platform Status Fallback:</strong>
-                  <span class="embed-desc">
-                    You are currently viewing the system-wide Platform Status page configuration as
-                    a fallback because you have not created your own custom status page yet.
-                  </span>
-                </div>
+          <div class="data-list-outlined">
+            @for (service of services(); track service) {
+            <div class="data-item-row">
+              <div class="data-info">
+                <span class="data-title">{{ service.name }}</span>
+                <span class="data-subtitle">{{ service.url }}</span>
               </div>
-              <div class="fallback-cta-box">
-                <h3 class="section-heading">Create Your Own Custom Status Page</h3>
-                <div class="platform-fallback-fields">
-                  <viking-field label="Title">
-                    <viking-input
-                      [(ngModel)]="newPageTitle"
-                      placeholder="e.g. My API Status"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                  <viking-field label="Slug">
-                    <viking-input
-                      [(ngModel)]="newPageSlug"
-                      placeholder="e.g. my-api"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                  <viking-button
-                    variant="primary"
-                    type="button"
-                    (pressed)="createStatusPage()"
-                    [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || !canMutateSites"
-                    [loading]="isCreatingPage()"
-                    icon="plus"
-                  >
-                    Create Custom Page
-                  </viking-button>
-                </div>
-              </div>
+              <viking-button
+                variant="ghost"
+                type="button"
+                [square]="true"
+                icon="trash"
+                label="Delete service"
+                (pressed)="deleteService(service.id)"
+                [disabled]="!canMutateSites"
+              />
+            </div>
+            } @if (services().length === 0) {
+            <div class="empty-data-text">
+              <viking-app-icon name="monitor_heart" hostClass="empty-icon" />
+              <p class="empty-title">No Services Monitored</p>
+              <p class="empty-subtitle">
+                Add a service above to begin uptime and health monitoring.
+              </p>
             </div>
             }
-            <!-- Page Settings Section -->
-            <div class="panel-section">
-              <h3 class="section-heading"><viking-app-icon name="settings" /> Page Settings</h3>
-              <div class="settings-form-panel">
-                <div class="form-row">
-                  <viking-field label="Title">
-                    <viking-input
-                      [(ngModel)]="editTitle"
-                      placeholder="e.g. My API Status"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                  <viking-field label="Slug">
-                    <viking-input
-                      [(ngModel)]="editSlug"
-                      placeholder="e.g. my-api"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                </div>
-                <viking-field label="Description" class="full-width">
-                  <viking-textarea
-                    [(ngModel)]="editDescription"
-                    [rows]="2"
-                    placeholder="Description of this status page..."
-                    [disabled]="!canMutateSites"
-                  />
-                </viking-field>
-                <div class="settings-actions">
-                  <viking-checkbox [(ngModel)]="editIsPublished" [disabled]="!canMutateSites">
-                    Publish Status Page (makes it visible in the public Explore directory)
-                  </viking-checkbox>
-                  <viking-button
-                    variant="primary"
-                    type="button"
-                    class="save-settings-btn"
-                    (pressed)="updateStatusPage()"
-                    [disabled]="!editTitle || !editSlug || isUpdatingPage() || !canMutateSites"
-                    [loading]="isUpdatingPage()"
-                  >
-                    @if (!isUpdatingPage()) {
-                    <viking-app-icon name="save" />
-                    } Save Settings
-                  </viking-button>
-                </div>
+          </div>
+        </div>
+        <div class="panel-section">
+          <h3 class="section-heading"><viking-app-icon name="error_outline" /> Report Incident</h3>
+          <div class="incident-form">
+            <viking-field label="Incident Title" class="full-width">
+              <viking-input
+                [(ngModel)]="newIncidentTitle"
+                placeholder="e.g. API Degraded Performance"
+                [disabled]="!canMutateSites"
+              />
+            </viking-field>
+            <viking-field label="Message / Update" class="full-width">
+              <viking-textarea
+                [(ngModel)]="newIncidentMessage"
+                [rows]="2"
+                placeholder="Describe what is happening and what actions are being taken..."
+                [disabled]="!canMutateSites"
+              />
+            </viking-field>
+            <div class="form-row-actions">
+              <div class="select-wrapper">
+                <app-unified-select
+                  id="incident-status"
+                  [options]="incidentStatusOptions"
+                  [value]="newIncidentStatus"
+                  (valueChange)="newIncidentStatus = $event"
+                  [disabled]="!canMutateSites"
+                ></app-unified-select>
               </div>
-            </div>
-
-            <!-- Telemetry Tracking IDs Section -->
-            <div class="panel-section">
-              <h3 class="section-heading">
-                <viking-app-icon name="analytics" /> Telemetry Tracking IDs
-              </h3>
-              <div class="settings-form-panel">
-                <p class="embed-desc">
-                  Enter IDs for this status page only. GA4 OAuth sync uses each page’s Google
-                  Analytics measurement ID (G-…) plus monitored service hostnames—never every
-                  property on the Google account. Scripts are also injected on the public status
-                  page for visitor telemetry.
-                </p>
-                <div class="form-row">
-                  <viking-field
-                    label="Google Analytics ID"
-                    description="Measurement ID for this site’s host only (not all GA properties)"
-                  >
-                    <viking-input
-                      [(ngModel)]="editGoogleAnalyticsId"
-                      placeholder="e.g. G-XXXXXXX"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                  <viking-field label="Microsoft Clarity ID">
-                    <viking-input
-                      [(ngModel)]="editMicrosoftClarityId"
-                      placeholder="e.g. xxxxxxxx"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                  <viking-field label="Cloudflare Analytics ID">
-                    <viking-input
-                      [(ngModel)]="editCloudflareAnalyticsId"
-                      placeholder="e.g. xxxxxxxx"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                </div>
-                <div class="settings-actions">
-                  <viking-button
-                    variant="primary"
-                    type="button"
-                    class="save-settings-btn"
-                    (pressed)="updateStatusPage()"
-                    [disabled]="!editTitle || !editSlug || isUpdatingPage() || !canMutateSites"
-                    [loading]="isUpdatingPage()"
-                  >
-                    @if (!isUpdatingPage()) {
-                    <viking-app-icon name="save" />
-                    } Save Tracking IDs
-                  </viking-button>
-                </div>
-              </div>
-            </div>
-
-            <div class="panel-section">
-              <h3 class="section-heading"><viking-app-icon name="dns" /> Monitored Services</h3>
-              <div class="service-form-panel">
-                <div class="service-inputs-row">
-                  <viking-field label="Service Name">
-                    <viking-input
-                      [(ngModel)]="newServiceName"
-                      placeholder="e.g. Auth API"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                  <viking-field label="Health Check URL">
-                    <viking-input
-                      [(ngModel)]="newServiceUrl"
-                      placeholder="https://api.example.com/health"
-                      icon="globe"
-                      [disabled]="!canMutateSites"
-                    />
-                  </viking-field>
-                </div>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  class="add-service-btn"
-                  icon="plus"
-                  (pressed)="addService()"
-                  [disabled]="!newServiceName || !newServiceUrl || isAddingService() || !canMutateSites"
-                  [loading]="isAddingService()"
-                >
-                  Add Service
-                </viking-button>
-              </div>
-              <div class="data-list-outlined">
-                @for (service of services(); track service) {
-                <div class="data-item-row">
-                  <div class="data-info">
-                    <span class="data-title">{{ service.name }}</span>
-                    <span class="data-subtitle">{{ service.url }}</span>
-                  </div>
-                  <viking-button
-                    variant="ghost"
-                    type="button"
-                    [square]="true"
-                    icon="trash"
-                    label="Delete service"
-                    (pressed)="deleteService(service.id)"
-                    [disabled]="!canMutateSites"
-                  />
-                </div>
-                } @if (services().length === 0) {
-                <div class="empty-data-text">
-                  <viking-app-icon name="monitor_heart" hostClass="empty-icon" />
-                  <p class="empty-title">No Services Monitored</p>
-                  <p class="empty-subtitle">
-                    Add a service above to begin uptime and health monitoring.
-                  </p>
-                </div>
-                }
-              </div>
-            </div>
-            <div class="panel-section">
-              <h3 class="section-heading">
-                <viking-app-icon name="error_outline" /> Report Incident
-              </h3>
-              <div class="incident-form">
-                <viking-field label="Incident Title" class="full-width">
-                  <viking-input
-                    [(ngModel)]="newIncidentTitle"
-                    placeholder="e.g. API Degraded Performance"
-                    [disabled]="!canMutateSites"
-                  />
-                </viking-field>
-                <viking-field label="Message / Update" class="full-width">
-                  <viking-textarea
-                    [(ngModel)]="newIncidentMessage"
-                    [rows]="2"
-                    placeholder="Describe what is happening and what actions are being taken..."
-                    [disabled]="!canMutateSites"
-                  />
-                </viking-field>
-                <div class="form-row-actions">
-                  <div class="select-wrapper">
-                    <app-unified-select
-                      id="incident-status"
-                      [options]="incidentStatusOptions"
-                      [value]="newIncidentStatus"
-                      (valueChange)="newIncidentStatus = $event"
-                      [disabled]="!canMutateSites"
-                    ></app-unified-select>
-                  </div>
-                  <viking-button
-                    variant="primary"
-                    type="button"
-                    class="post-incident-btn"
-                    icon="bell"
-                    (pressed)="addIncident()"
-                    [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident() || !canMutateSites"
-                    [loading]="isAddingIncident()"
-                  >
-                    Post Incident
-                  </viking-button>
-                </div>
-              </div>
-              <div class="data-list-outlined">
-                @for (incident of incidents(); track incident) {
-                <div class="data-item-row">
-                  <div class="data-info">
-                    <span class="data-title">{{ incident.title }}</span>
-                    <span class="data-subtitle"
-                      >{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span
-                    >
-                  </div>
-                  <viking-button
-                    variant="ghost"
-                    type="button"
-                    [square]="true"
-                    icon="trash"
-                    label="Delete incident"
-                    (pressed)="deleteIncident(incident.id)"
-                    [disabled]="!canMutateSites"
-                  />
-                </div>
-                } @if (incidents().length === 0) {
-                <div class="empty-data-text">
-                  <viking-app-icon name="check_circle" hostClass="empty-icon" />
-                  <p class="empty-title">No Incidents Reported</p>
-                  <p class="empty-subtitle">
-                    All systems operational. Post an incident above if service degradation occurs.
-                  </p>
-                </div>
-                }
-              </div>
-            </div>
-            <div class="panel-section">
-              <h3 class="section-heading"><viking-app-icon name="code" /> Embeddable Widget</h3>
-              <p class="embed-desc">Copy and paste one of these options onto your website.</p>
-              <div class="code-block-container">
-                <p class="embed-desc">Option A: script served by this site (default)</p>
-                <div class="code-block-outlined">
-                  <code>{{ getWidgetCode() }}</code>
-                </div>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  [icon]="copied() ? 'check' : 'copy'"
-                  (pressed)="copyWidgetCode()"
-                >
-                  {{ copied() ? 'Copied' : 'Copy' }}
-                </viking-button>
-              </div>
-              <div class="code-block-container">
-                <p class="embed-desc">Option B: jsDelivr CDN (no npm install)</p>
-                <div class="code-block-outlined">
-                  <code>{{ getWidgetCdnCode() }}</code>
-                </div>
-              </div>
-            </div>
-            <div class="panel-section">
-              <h3 class="section-heading">
-                <viking-app-icon name="analytics" /> Threat Intel & API Integrations
-              </h3>
-              <p class="embed-desc">
-                Link your analytics providers to securely sync geolocation and visitor access
-                telemetry. This data feeds directly into the threat intelligence and ML anomaly
-                detection models to monitor traffic access patterns.
-              </p>
-              <div class="integrations-list">
-                <div class="integration-item">
-                  <div class="integration-info">
-                    <strong class="integration-name">Google Analytics</strong>
-                    <span class="integration-status">
-                      @if (integrations().find(i => i.provider === 'google' && i.active)) {
-                      Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                      'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected }
-                    </span>
-                  </div>
-                  <div class="integration-action">
-                    @if (integrations().find(i => i.provider === 'google' && i.active)) {
-                    <viking-button
-                      variant="danger"
-                      type="button"
-                      (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
-                      [disabled]="!canMutateSites"
-                    >
-                      Disconnect
-                    </viking-button>
-                    } @else {
-                    <viking-button
-                      variant="primary"
-                      type="button"
-                      (pressed)="connectGoogleAnalytics()"
-                      [disabled]="isConnectingGoogle() || !canMutateSites"
-                      [loading]="isConnectingGoogle()"
-                    >
-                      Connect GA4 API
-                    </viking-button>
-                    }
-                  </div>
-                </div>
-                <div class="integration-item clarity-item">
-                  <div class="integration-header">
-                    <div class="integration-info">
-                      <strong class="integration-name">Microsoft Clarity</strong>
-                      <span class="integration-status">
-                        @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                        Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                        'microsoft')?.last_sync | date:'medium') || 'Never' }} } @else { Not
-                        Connected }
-                      </span>
-                    </div>
-                    @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                    <div class="integration-action">
-                      <viking-button
-                        variant="danger"
-                        type="button"
-                        (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
-                        [disabled]="!canMutateSites"
-                      >
-                        Disconnect
-                      </viking-button>
-                    </div>
-                    }
-                  </div>
-                  @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                  <div class="clarity-form-row">
-                    <div class="inputs-group">
-                      <viking-field label="Clarity Project ID">
-                        <viking-input
-                          [(ngModel)]="clarityProjectId"
-                          placeholder="Project ID"
-                          [disabled]="!canMutateSites"
-                        />
-                      </viking-field>
-                      <viking-field label="API Token / Key">
-                        <viking-input
-                          [(ngModel)]="clarityApiKey"
-                          type="password"
-                          placeholder="Clarity API Key"
-                          [disabled]="!canMutateSites"
-                        />
-                      </viking-field>
-                    </div>
-                    <viking-button
-                      variant="primary"
-                      type="button"
-                      (pressed)="connectMicrosoftClarity()"
-                      [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity() || !canMutateSites"
-                      [loading]="isConnectingClarity()"
-                    >
-                      Connect API
-                    </viking-button>
-                  </div>
-                  }
-                </div>
-                <div class="integration-item cloudflare-item">
-                  <div class="integration-header">
-                    <div class="integration-info">
-                      <strong class="integration-name">Cloudflare Analytics</strong>
-                      <span class="integration-status">
-                        @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                        Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                        'cloudflare')?.last_sync | date:'medium') || 'Never' }} } @else { Not
-                        Connected }
-                      </span>
-                    </div>
-                    @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                    <div class="integration-action">
-                      <viking-button
-                        variant="danger"
-                        type="button"
-                        (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
-                        [disabled]="!canMutateSites"
-                      >
-                        Disconnect
-                      </viking-button>
-                    </div>
-                    }
-                  </div>
-                  @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                  <div class="cloudflare-form-row">
-                    <div class="inputs-group">
-                      <viking-field label="Cloudflare Account ID">
-                        <viking-input
-                          [(ngModel)]="cloudflareProjectId"
-                          placeholder="Account ID"
-                          [disabled]="!canMutateSites"
-                        />
-                      </viking-field>
-                      <viking-field label="API Token / Key">
-                        <viking-input
-                          [(ngModel)]="cloudflareApiKey"
-                          type="password"
-                          placeholder="Cloudflare API Token"
-                          [disabled]="!canMutateSites"
-                        />
-                      </viking-field>
-                    </div>
-                    <viking-button
-                      variant="primary"
-                      type="button"
-                      (pressed)="connectCloudflare()"
-                      [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare() || !canMutateSites"
-                      [loading]="isConnectingCloudflare()"
-                    >
-                      Connect API
-                    </viking-button>
-                  </div>
-                  }
-                </div>
-              </div>
+              <viking-button
+                variant="primary"
+                type="button"
+                class="post-incident-btn"
+                icon="bell"
+                (pressed)="addIncident()"
+                [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident() || !canMutateSites"
+                [loading]="isAddingIncident()"
+              >
+                Post Incident
+              </viking-button>
             </div>
           </div>
-          }
-        </viking-card>
+          <div class="data-list-outlined">
+            @for (incident of incidents(); track incident) {
+            <div class="data-item-row">
+              <div class="data-info">
+                <span class="data-title">{{ incident.title }}</span>
+                <span class="data-subtitle"
+                  >{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span
+                >
+              </div>
+              <viking-button
+                variant="ghost"
+                type="button"
+                [square]="true"
+                icon="trash"
+                label="Delete incident"
+                (pressed)="deleteIncident(incident.id)"
+                [disabled]="!canMutateSites"
+              />
+            </div>
+            } @if (incidents().length === 0) {
+            <div class="empty-data-text">
+              <viking-app-icon name="check_circle" hostClass="empty-icon" />
+              <p class="empty-title">No Incidents Reported</p>
+              <p class="empty-subtitle">
+                All systems operational. Post an incident above if service degradation occurs.
+              </p>
+            </div>
+            }
+          </div>
+        </div>
+        <div class="panel-section">
+          <h3 class="section-heading"><viking-app-icon name="code" /> Embeddable Widget</h3>
+          <p class="embed-desc">Copy and paste one of these options onto your website.</p>
+          <div class="code-block-container">
+            <p class="embed-desc">Option A: script served by this site (default)</p>
+            <div class="code-block-outlined">
+              <code>{{ getWidgetCode() }}</code>
+            </div>
+            <viking-button
+              variant="primary"
+              type="button"
+              [icon]="copied() ? 'check' : 'copy'"
+              (pressed)="copyWidgetCode()"
+            >
+              {{ copied() ? 'Copied' : 'Copy' }}
+            </viking-button>
+          </div>
+          <div class="code-block-container">
+            <p class="embed-desc">Option B: jsDelivr CDN (no npm install)</p>
+            <div class="code-block-outlined">
+              <code>{{ getWidgetCdnCode() }}</code>
+            </div>
+          </div>
+        </div>
+        <div class="panel-section">
+          <h3 class="section-heading">
+            <viking-app-icon name="analytics" /> Threat Intel & API Integrations
+          </h3>
+          <p class="embed-desc">
+            Link your analytics providers to securely sync geolocation and visitor access telemetry.
+            This data feeds directly into the threat intelligence and ML anomaly detection models to
+            monitor traffic access patterns.
+          </p>
+          <div class="integrations-list">
+            <div class="integration-item">
+              <div class="integration-info">
+                <strong class="integration-name">Google Analytics</strong>
+                <span class="integration-status">
+                  @if (integrations().find(i => i.provider === 'google' && i.active)) { Connected
+                  &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                  'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected }
+                </span>
+              </div>
+              <div class="integration-action">
+                @if (integrations().find(i => i.provider === 'google' && i.active)) {
+                <viking-button
+                  variant="danger"
+                  type="button"
+                  (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
+                  [disabled]="!canMutateSites"
+                >
+                  Disconnect
+                </viking-button>
+                } @else {
+                <viking-button
+                  variant="primary"
+                  type="button"
+                  (pressed)="connectGoogleAnalytics()"
+                  [disabled]="isConnectingGoogle() || !canMutateSites"
+                  [loading]="isConnectingGoogle()"
+                >
+                  Connect GA4 API
+                </viking-button>
+                }
+              </div>
+            </div>
+            <div class="integration-item clarity-item">
+              <div class="integration-header">
+                <div class="integration-info">
+                  <strong class="integration-name">Microsoft Clarity</strong>
+                  <span class="integration-status">
+                    @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                    Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                    'microsoft')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected }
+                  </span>
+                </div>
+                @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                <div class="integration-action">
+                  <viking-button
+                    variant="danger"
+                    type="button"
+                    (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                    [disabled]="!canMutateSites"
+                  >
+                    Disconnect
+                  </viking-button>
+                </div>
+                }
+              </div>
+              @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
+              <div class="clarity-form-row">
+                <div class="inputs-group">
+                  <viking-field label="Clarity Project ID">
+                    <viking-input
+                      [(ngModel)]="clarityProjectId"
+                      placeholder="Project ID"
+                      [disabled]="!canMutateSites"
+                    />
+                  </viking-field>
+                  <viking-field label="API Token / Key">
+                    <viking-input
+                      [(ngModel)]="clarityApiKey"
+                      type="password"
+                      placeholder="Clarity API Key"
+                      [disabled]="!canMutateSites"
+                    />
+                  </viking-field>
+                </div>
+                <viking-button
+                  variant="primary"
+                  type="button"
+                  (pressed)="connectMicrosoftClarity()"
+                  [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity() || !canMutateSites"
+                  [loading]="isConnectingClarity()"
+                >
+                  Connect API
+                </viking-button>
+              </div>
+              }
+            </div>
+            <div class="integration-item cloudflare-item">
+              <div class="integration-header">
+                <div class="integration-info">
+                  <strong class="integration-name">Cloudflare Analytics</strong>
+                  <span class="integration-status">
+                    @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                    Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                    'cloudflare')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected
+                    }
+                  </span>
+                </div>
+                @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                <div class="integration-action">
+                  <viking-button
+                    variant="danger"
+                    type="button"
+                    (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
+                    [disabled]="!canMutateSites"
+                  >
+                    Disconnect
+                  </viking-button>
+                </div>
+                }
+              </div>
+              @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+              <div class="cloudflare-form-row">
+                <div class="inputs-group">
+                  <viking-field label="Cloudflare Account ID">
+                    <viking-input
+                      [(ngModel)]="cloudflareProjectId"
+                      placeholder="Account ID"
+                      [disabled]="!canMutateSites"
+                    />
+                  </viking-field>
+                  <viking-field label="API Token / Key">
+                    <viking-input
+                      [(ngModel)]="cloudflareApiKey"
+                      type="password"
+                      placeholder="Cloudflare API Token"
+                      [disabled]="!canMutateSites"
+                    />
+                  </viking-field>
+                </div>
+                <viking-button
+                  variant="primary"
+                  type="button"
+                  (pressed)="connectCloudflare()"
+                  [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare() || !canMutateSites"
+                  [loading]="isConnectingCloudflare()"
+                >
+                  Connect API
+                </viking-button>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
       </div>
+      }
+    </viking-card>
+  </div>
 </viking-page-template>

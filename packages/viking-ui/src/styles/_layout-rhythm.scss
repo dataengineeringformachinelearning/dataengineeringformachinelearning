@@ -83,6 +83,8 @@
     .viking-card,
     viking-metric-card,
     .viking-metric-card,
+    viking-chart-panel,
+    .viking-chart-panel,
     .viking-panel-card,
     .viking-hud-panel
   ),
@@ -92,6 +94,8 @@
     .viking-card,
     viking-metric-card,
     .viking-metric-card,
+    viking-chart-panel,
+    .viking-chart-panel,
     .viking-panel-card,
     .viking-hud-panel
   ) {
@@ -104,6 +108,30 @@
   > :where(viking-card, .viking-card, viking-metric-card, .viking-metric-card)
   > :where(.viking-card-footer, viking-card-footer) {
   margin-block-start: auto;
+}
+
+/* Angular grids compose through viking-grid-item hosts. Stretch both the host
+   and its surface child so equal-row cards stay equal through that wrapper. */
+.viking-grid--equal-rows > :where(viking-grid-item, .viking-grid-item) {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.viking-grid--equal-rows
+  > :where(viking-grid-item, .viking-grid-item)
+  > :where(
+    viking-card,
+    .viking-card,
+    viking-metric-card,
+    .viking-metric-card,
+    viking-chart-panel,
+    .viking-chart-panel,
+    .viking-panel-card,
+    .viking-hud-panel
+  ) {
+  align-self: stretch;
+  height: 100%;
 }
 
 .viking-grid--tight {
@@ -193,6 +221,17 @@
 
 .viking-column-layout--equal-rows > * {
   height: 100%;
+}
+
+/* Form fields align from the top so optional helper and error copy never
+   pushes neighboring controls onto mismatched baselines. */
+.viking-form-grid {
+  align-items: start;
+}
+
+.viking-form-grid > * {
+  align-self: start;
+  width: 100%;
 }
 
 .viking-column-layout--tight {

@@ -26,6 +26,7 @@ import {
   VikingCard,
   VikingCardHeader,
   VikingCardTitle,
+  VikingStack,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
@@ -61,6 +62,7 @@ import {
     VikingCard,
     VikingCardHeader,
     VikingCardTitle,
+    VikingStack,
     VikingAppIcon,
     FormsModule,
     RouterModule,

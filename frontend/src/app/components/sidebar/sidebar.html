@@ -7,23 +7,17 @@
     @if (!isCollapsed()) {
     <div class="resize-handle" (mousedown)="startResize($event)"></div>
     }
-    <div
-      class="sidebar-brand"
-      (click)="toggleCollapse()"
-      tabindex="0"
-      role="button"
-      aria-label="Toggle collapse"
-      (keydown.enter)="toggleCollapse()"
-      (keydown.space)="$event.preventDefault(); toggleCollapse()"
-    >
+    <div class="sidebar-brand">
       <deml-brand-logo hostClass="brand-icon" [size]="24" />
       <h2 class="brand-title">DEML</h2>
-      <div class="collapse-toggle-btn" aria-hidden="true">
-        <viking-app-icon
-          [name]="isCollapsed() ? 'chevron_right' : 'chevron_left'"
-          [ariaHidden]="true"
-        />
-      </div>
+      <viking-button
+        class="collapse-toggle-btn"
+        variant="ghost"
+        [square]="true"
+        [icon]="isCollapsed() ? 'chevron-right' : 'chevron-left'"
+        [label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+        (pressed)="toggleCollapse()"
+      />
     </div>
 
     <div class="sidebar-scroll-container">

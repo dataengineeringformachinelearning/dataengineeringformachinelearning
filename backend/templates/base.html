@@ -99,6 +99,9 @@
       crossorigin
     />
 
+    <!-- Vendor styles load first so Viking-UI remains the visual authority. -->
+    {% block vendor_styles %}{% endblock %}
+
     <!-- Viking-UI design system (synced from packages/viking-ui/dist) -->
     <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
     {% block extra_styles %}{% endblock %}

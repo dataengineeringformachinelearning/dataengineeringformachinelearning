@@ -1,15 +1,54 @@
+@property --viking-whitepaper-trace-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .viking-whitepaper-cta {
   position: relative;
-  max-width: 720px;
+  isolation: isolate;
+  width: min(100%, var(--viking-content-readable-max-width));
   margin: 0 auto;
   padding: var(--viking-space-4) var(--viking-space-3);
   border-radius: var(--viking-radius-xl);
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--viking-accent) 22%, transparent);
-  background: color-mix(in srgb, var(--viking-accent) 6%, var(--viking-surface));
+  border: var(--viking-space-px) solid
+    color-mix(in srgb, var(--viking-accent) 44%, var(--viking-border-strong));
+  background: var(--viking-surface-recipe-elevated);
   text-align: center;
-  box-shadow: var(--viking-shadow-sm);
-  transition: var(--viking-transition-colors);
+  box-shadow: var(--viking-shadow-md);
+  transition: var(--viking-transition-interactive);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: var(--viking-space-px);
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--viking-whitepaper-trace-angle),
+      transparent 0 76%,
+      color-mix(in srgb, var(--viking-accent) 42%, transparent) 84%,
+      var(--viking-accent) 92%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(var(--viking-black) 0 0) content-box,
+      linear-gradient(var(--viking-black) 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: vikingWhitepaperBorderTrace
+      calc(var(--viking-duration-slow) * 18) linear infinite;
+  }
+
+  &:hover,
+  &:focus-within {
+    border-color: var(--viking-accent-strong);
+    box-shadow: var(--viking-shadow-lg);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
 
   @media (min-width: 768px) {
     padding: var(--viking-space-5) var(--viking-space-4);
@@ -19,8 +58,9 @@
 .viking-whitepaper-cta-bg {
   position: absolute;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.58;
 }
 
 .viking-whitepaper-polars-grid {
@@ -55,18 +95,42 @@
   }
 }
 
-.viking-whitepaper-polars-bar-72 { --viking-bar-height: 72; }
-.viking-whitepaper-polars-bar-45 { --viking-bar-height: 45; }
-.viking-whitepaper-polars-bar-88 { --viking-bar-height: 88; }
-.viking-whitepaper-polars-bar-56 { --viking-bar-height: 56; }
-.viking-whitepaper-polars-bar-91 { --viking-bar-height: 91; }
-.viking-whitepaper-polars-bar-38 { --viking-bar-height: 38; }
-.viking-whitepaper-polars-bar-67 { --viking-bar-height: 67; }
-.viking-whitepaper-polars-bar-82 { --viking-bar-height: 82; }
-.viking-whitepaper-polars-bar-49 { --viking-bar-height: 49; }
-.viking-whitepaper-polars-bar-76 { --viking-bar-height: 76; }
-.viking-whitepaper-polars-bar-58 { --viking-bar-height: 58; }
-.viking-whitepaper-polars-bar-94 { --viking-bar-height: 94; }
+.viking-whitepaper-polars-bar-72 {
+  --viking-bar-height: 72;
+}
+.viking-whitepaper-polars-bar-45 {
+  --viking-bar-height: 45;
+}
+.viking-whitepaper-polars-bar-88 {
+  --viking-bar-height: 88;
+}
+.viking-whitepaper-polars-bar-56 {
+  --viking-bar-height: 56;
+}
+.viking-whitepaper-polars-bar-91 {
+  --viking-bar-height: 91;
+}
+.viking-whitepaper-polars-bar-38 {
+  --viking-bar-height: 38;
+}
+.viking-whitepaper-polars-bar-67 {
+  --viking-bar-height: 67;
+}
+.viking-whitepaper-polars-bar-82 {
+  --viking-bar-height: 82;
+}
+.viking-whitepaper-polars-bar-49 {
+  --viking-bar-height: 49;
+}
+.viking-whitepaper-polars-bar-76 {
+  --viking-bar-height: 76;
+}
+.viking-whitepaper-polars-bar-58 {
+  --viking-bar-height: 58;
+}
+.viking-whitepaper-polars-bar-94 {
+  --viking-bar-height: 94;
+}
 
 @keyframes vikingWhitepaperBarPulse {
   0%,
@@ -80,7 +144,22 @@
   }
 }
 
+@keyframes vikingWhitepaperBorderTrace {
+  to {
+    --viking-whitepaper-trace-angle: 360deg;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .viking-whitepaper-cta {
+    transform: none;
+  }
+
+  .viking-whitepaper-cta::after {
+    --viking-whitepaper-trace-angle: 45deg;
+    animation: none;
+  }
+
   .viking-whitepaper-polars-bar {
     animation: none;
     opacity: 0.5;
@@ -98,7 +177,7 @@
 
 .viking-whitepaper-cta-content {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,6 +185,14 @@
 }
 
 .viking-whitepaper-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--viking-control-height-xs);
+  padding: var(--viking-space-0-5) var(--viking-space-1);
+  border: var(--viking-space-px) solid
+    color-mix(in srgb, var(--viking-accent) 52%, var(--viking-border));
+  border-radius: var(--viking-radius-pill);
+  background: var(--viking-accent-soft);
   font-size: var(--viking-font-size-ui);
   font-weight: var(--viking-font-weight-bold);
   letter-spacing: var(--viking-letter-spacing-caps);

@@ -1,59 +1,57 @@
 <viking-page-template width="wide">
-      <viking-page-header tag="Status Directory" title="Explore Public Statuses">
-        <p vikingPageHeaderExtra class="hud-subtitle viking-page-header-subtitle">
-          Browse status cards published by users on the platform. Refer to the
-          <a routerLink="/status/platform-status" class="inline-status-link"
-            >Platform Status Page</a
-          >
-          to see an example of real-time service health tracking.
-        </p>
-      </viking-page-header>
+  <viking-page-header tag="Status Directory" title="Explore Public Statuses">
+    <p vikingPageHeaderExtra class="hud-subtitle viking-page-header-subtitle">
+      Browse status cards published by users on the platform. Refer to the
+      <a routerLink="/status/platform-status" class="inline-status-link">Platform Status Page</a>
+      to see an example of real-time service health tracking.
+    </p>
+  </viking-page-header>
 
-      <!-- Always stacked (single column) for dense status cards.
+  <!-- Always stacked (single column) for dense status cards.
            These cards have too much information (metrics + uptime + status) to render side-by-side. -->
-      <div class="status-directory-grid">
-        @for (page of displayPages(); track page) {
-        <viking-explore-card
-          [title]="page.title"
-          [description]="page.description || 'Monitoring core services'"
-          [href]="getPageUrl(page)"
-          [proVerified]="!!page.is_pro_verified"
-          [status]="getPageStatus(page)"
-          [statusLabel]="getPageStatusLabel(page)"
-          [metrics]="exploreMetrics(page)"
-          [uptimeHistory]="exploreUptimeHistory(page)"
-          [uptimePercentage]="overallUptime(page)"
-          [uptimeSummary]="uptimeSummary(page)"
-        />
-        } @if (loadFailed()) {
-        <div class="status-error-state status-directory-card" role="alert">
-          <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />
-          <h2 class="error-title">Unable to Connect</h2>
-          <p class="error-subtitle">
-            We couldn't reach the status service. Verify the backend is running, then retry.
-          </p>
-          <viking-button
-            variant="primary"
-            type="button"
-            class="retry-btn"
-            icon="refresh"
-            [loading]="isRetrying()"
-            [disabled]="isRetrying()"
-            (pressed)="retryLoad()"
-          >
-            Retry Connection
-          </viking-button>
-        </div>
-        } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
-        <app-status-cta
-          class="status-directory-card"
-          badgeIcon="explore"
-          badgeText="Explore Directory"
-          title="No Public Status Pages"
-          subtitle="Users haven't published any status pages yet. Create and publish one in the management console!"
-          mockupVariant="explore"
-        >
-        </app-status-cta>
-        }
-      </div>
+  <div class="status-directory-grid">
+    @for (page of displayPages(); track page) {
+    <viking-explore-card
+      [title]="page.title"
+      [description]="page.description || 'Monitoring core services'"
+      [href]="getPageUrl(page)"
+      [proVerified]="!!page.is_pro_verified"
+      [status]="getPageStatus(page)"
+      [statusLabel]="getPageStatusLabel(page)"
+      [metrics]="exploreMetrics(page)"
+      [uptimeHistory]="exploreUptimeHistory(page)"
+      [uptimePercentage]="overallUptime(page)"
+      [uptimeSummary]="uptimeSummary(page)"
+    />
+    } @if (loadFailed()) {
+    <div class="status-error-state status-directory-card" role="alert">
+      <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />
+      <h2 class="error-title">Unable to Connect</h2>
+      <p class="error-subtitle">
+        We couldn't reach the status service. Verify the backend is running, then retry.
+      </p>
+      <viking-button
+        variant="primary"
+        type="button"
+        class="retry-btn"
+        icon="refresh"
+        [loading]="isRetrying()"
+        [disabled]="isRetrying()"
+        (pressed)="retryLoad()"
+      >
+        Retry Connection
+      </viking-button>
+    </div>
+    } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
+    <app-status-cta
+      class="status-directory-card"
+      badgeIcon="explore"
+      badgeText="Explore Directory"
+      title="No Public Status Pages"
+      subtitle="Users haven't published any status pages yet. Create and publish one in the management console!"
+      mockupVariant="explore"
+    >
+    </app-status-cta>
+    }
+  </div>
 </viking-page-template>

@@ -10,115 +10,116 @@
   />
 
   <viking-section>
-    <header class="metrics-overview-header">
-      <h2 class="section-title-premium">
-        <viking-app-icon name="download" />
-        Exports
-      </h2>
-      <p class="section-description-premium">Signed downloads · CSV · JSON · Parquet · PDF</p>
-    </header>
-
-    <viking-form-section heading="Generate" icon="download" layout="inline">
-      <div class="viking-cluster">
-        <app-unified-select
-          id="exportKindSelect"
-          label="Kind"
-          width="half"
-          [options]="exportKindOptions"
-          [value]="exportKind"
-          (valueChange)="exportKind = $event"
-        />
-        <app-unified-select
-          id="exportFormatSelect"
-          label="Format"
-          width="half"
-          [options]="exportFormatOptions"
-          [value]="exportFormat"
-          (valueChange)="exportFormat = $event"
-        />
-        <viking-field label="Days">
-          <viking-input
-            type="number"
-            name="exportDays"
-            [ngModel]="exportDaysLabel"
-            (ngModelChange)="onExportDaysChange($event)"
-            autocomplete="off"
+    <viking-section-template
+      class="analytics-export-card"
+      heading="Exports"
+      icon="download"
+      description="Signed downloads · CSV · JSON · Parquet · PDF"
+    >
+      <viking-form-section heading="Generate" icon="download" layout="inline">
+        <div class="viking-cluster">
+          <app-unified-select
+            id="exportKindSelect"
+            label="Kind"
+            width="half"
+            [options]="exportKindOptions"
+            [value]="exportKind"
+            (valueChange)="exportKind = $event"
           />
-        </viking-field>
-      </div>
-      <div vikingFormActions class="viking-cluster">
-        <viking-button
-          variant="primary"
-          type="button"
-          [compact]="true"
-          [loading]="exportBusy"
-          [disabled]="exportBusy"
-          (pressed)="requestExport()"
-        >
-          Generate
-        </viking-button>
-        <viking-button
-          variant="ghost"
-          type="button"
-          [compact]="true"
-          [disabled]="exportBusy"
-          (pressed)="loadExports()"
-        >
-          Refresh
-        </viking-button>
-      </div>
-      @if (exportMessage) {
-      <p vikingFormFooter class="section-description-premium" role="status">{{ exportMessage }}</p>
-      }
-    </viking-form-section>
+          <app-unified-select
+            id="exportFormatSelect"
+            label="Format"
+            width="half"
+            [options]="exportFormatOptions"
+            [value]="exportFormat"
+            (valueChange)="exportFormat = $event"
+          />
+          <viking-field label="Days">
+            <viking-input
+              type="number"
+              name="exportDays"
+              [ngModel]="exportDaysLabel"
+              (ngModelChange)="onExportDaysChange($event)"
+              autocomplete="off"
+            />
+          </viking-field>
+        </div>
+        <div vikingFormActions class="viking-cluster">
+          <viking-button
+            variant="primary"
+            type="button"
+            [compact]="true"
+            [loading]="exportBusy"
+            [disabled]="exportBusy"
+            (pressed)="requestExport()"
+          >
+            Generate
+          </viking-button>
+          <viking-button
+            variant="ghost"
+            type="button"
+            [compact]="true"
+            [disabled]="exportBusy"
+            (pressed)="loadExports()"
+          >
+            Refresh
+          </viking-button>
+        </div>
+        @if (exportMessage) {
+        <p vikingFormFooter class="section-description-premium" role="status">
+          {{ exportMessage }}
+        </p>
+        }
+      </viking-form-section>
 
-    @if (exportsList.length) {
-    <viking-container padding="none" aria-label="Generated exports">
-      <div class="viking-table-wrap">
-        <table class="viking-table">
-          <thead>
-            <tr>
-              <th scope="col">Kind</th>
-              <th scope="col">Format</th>
-              <th scope="col">Status</th>
-              <th scope="col">Size</th>
-              <th scope="col">Created</th>
-              <th scope="col">
-                <span class="sr-only">Download</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (job of exportsList; track job.id) {
-            <tr>
-              <td>{{ job.kind }}</td>
-              <td>{{ job.format }}</td>
-              <td>
-                <viking-badge>{{ job.status }}</viking-badge>
-              </td>
-              <td>{{ job.byte_size ? (job.byte_size + ' B') : '—' }}</td>
-              <td>{{ job.created_at | date: 'short' }}</td>
-              <td>
-                @if (job.download_ready) {
-                <viking-button
-                  variant="ghost"
-                  type="button"
-                  [compact]="true"
-                  (pressed)="downloadExport(job.id)"
-                >
-                  Download
-                </viking-button>
-                } @else {
-                <span class="section-description-premium">{{ job.error || 'Pending' }}</span>
-                }
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </viking-container>
-    }
+      @if (exportsList.length) {
+      <viking-container padding="none" aria-label="Generated exports">
+        <div class="viking-table-wrap">
+          <table class="viking-table">
+            <thead>
+              <tr>
+                <th scope="col">Kind</th>
+                <th scope="col">Format</th>
+                <th scope="col">Status</th>
+                <th scope="col">Size</th>
+                <th scope="col">Created</th>
+                <th scope="col">
+                  <span class="sr-only">Download</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (job of exportsList; track job.id) {
+              <tr>
+                <td>{{ job.kind }}</td>
+                <td>{{ job.format }}</td>
+                <td>
+                  <viking-badge>{{ job.status }}</viking-badge>
+                </td>
+                <td>{{ job.byte_size ? (job.byte_size + ' B') : '—' }}</td>
+                <td>{{ job.created_at | date: 'short' }}</td>
+                <td>
+                  @if (job.download_ready) {
+                  <viking-button
+                    variant="ghost"
+                    type="button"
+                    [compact]="true"
+                    (pressed)="downloadExport(job.id)"
+                  >
+                    Download
+                  </viking-button>
+                  } @else {
+                  <span class="section-description-premium">{{ job.error || 'Pending' }}</span>
+                  }
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </viking-container>
+      }
+    </viking-section-template>
   </viking-section>
 
   <viking-section>
@@ -131,7 +132,7 @@
         Aggregate performance and security telemetry across all nodes.
       </p>
     </header>
-    <viking-column-layout [columns]="2" [equalRows]="true">
+    <viking-panel-grid class="analytics-gauge-grid" [columns]="2">
       <!-- THREAT GAUGE -->
       <viking-card class="gauge-card">
         <div class="gauge-card-header">
@@ -271,7 +272,7 @@
           <span>System resilience index</span>
         </div>
       </viking-card>
-    </viking-column-layout>
+    </viking-panel-grid>
   </viking-section>
 
   <viking-section>
@@ -297,7 +298,7 @@
       ></app-unified-select>
     </div>
     }
-    <viking-column-layout [columns]="2" [equalRows]="true">
+    <viking-panel-grid [columns]="2">
       <viking-metric-card
         label="API usage (last minute)"
         [value]="formatCount(apiUsageCurrent) + ' / ' + formatCount(apiUsageQuota)"
@@ -350,7 +351,7 @@
         icon="cookie"
         tone="success"
       />
-    </viking-column-layout>
+    </viking-panel-grid>
 
     <!-- ACTIVE PROVIDERS CHIPS -->
     @if (activeProviders.length > 0) {
@@ -403,126 +404,128 @@
       </p>
     </header>
 
-    <!-- Full Width Origin Map -->
-    <viking-chart-panel size="medium" body="origin-map">
-      <viking-chart-card-header
-        title="Geographic Origins"
-        [hasData]="originMapData.length > 0"
-        [value]="originMapData.length + ' Regions'"
-        [trend]="originTrend"
-        emptyLabel="Awaiting signal"
-      />
-      <div
-        id="originMap"
-        class="origin-map-canvas viking-map-ready"
-        aria-label="Geographic origin map"
-      ></div>
-      @if (originMapData.length === 0) {
-      <viking-chart-empty-state
-        layout="overlay"
-        icon="globe"
-        title="No Geographic Data"
-        description="Regional traffic origins will appear once requests are received from connected endpoints."
-      />
-      }
-    </viking-chart-panel>
+    <viking-stack class="analytics-traffic-stack" spacing="compact">
+      <!-- Full Width Origin Map -->
+      <viking-chart-panel size="medium" body="origin-map">
+        <viking-chart-card-header
+          title="Geographic Origins"
+          [hasData]="originMapData.length > 0"
+          [value]="originMapData.length + ' Regions'"
+          [trend]="originTrend"
+          emptyLabel="Awaiting signal"
+        />
+        <div
+          id="originMap"
+          class="origin-map-canvas viking-map-ready"
+          aria-label="Geographic origin map"
+        ></div>
+        @if (originMapData.length === 0) {
+        <viking-chart-empty-state
+          layout="overlay"
+          icon="globe"
+          title="No Geographic Data"
+          description="Regional traffic origins will appear once requests are received from connected endpoints."
+        />
+        }
+      </viking-chart-panel>
 
-    <viking-grid [columns]="12" [equalRows]="true">
-      <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
-        <viking-chart-panel>
-          <viking-chart-card-header
-            title="Top Regions"
-            [hasData]="hasTopRegionsData()"
-            [value]="(topRegionsSeries()[0]?.data?.length || 0) + ' Regions'"
-            [trend]="originTrend"
-            emptyLabel="No regions yet"
-          />
-          @if (hasTopRegionsData()) {
-          <viking-chart
-            kind="bar"
-            [series]="topRegionsSeries()"
-            [categories]="topRegionsCategories()"
-            label="Top Regions"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else {
-          <viking-chart-empty-state
-            icon="globe"
-            title="No Regional Data"
-            description="Top traffic regions will populate as geographic telemetry is collected."
-          />
-          }
-        </viking-chart-panel>
-      </viking-grid-item>
+      <viking-panel-grid [columns]="12">
+        <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
+          <viking-chart-panel>
+            <viking-chart-card-header
+              title="Top Regions"
+              [hasData]="hasTopRegionsData()"
+              [value]="(topRegionsSeries()[0]?.data?.length || 0) + ' Regions'"
+              [trend]="originTrend"
+              emptyLabel="No regions yet"
+            />
+            @if (hasTopRegionsData()) {
+            <viking-chart
+              kind="bar"
+              [series]="topRegionsSeries()"
+              [categories]="topRegionsCategories()"
+              label="Top Regions"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else {
+            <viking-chart-empty-state
+              icon="globe"
+              title="No Regional Data"
+              description="Top traffic regions will populate as geographic telemetry is collected."
+            />
+            }
+          </viking-chart-panel>
+        </viking-grid-item>
 
-      <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
-        <viking-chart-panel>
-          <viking-chart-card-header
-            title="Request Frequency"
-            [hasData]="hasTrafficGroupedData() || hasFrequencyData()"
-            [value]="formatCount(totalRequests) + ' Req'"
-            [trend]="frequencyTrend"
-            emptyLabel="Awaiting signal"
-          />
-          @if (hasTrafficGroupedData()) {
-          <viking-chart
-            kind="grouped-bar"
-            [series]="trafficGroupedSeries()"
-            [categories]="frequencyCategories()"
-            label="Request frequency vs latency"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else if (hasFrequencyData()) {
-          <viking-chart
-            kind="line"
-            [series]="frequencySeries()"
-            [categories]="frequencyCategories()"
-            label="Request Frequency"
-            [showArea]="true"
-            curve="smooth"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else {
-          <viking-chart-empty-state
-            icon="globe"
-            title="No Telemetry Signal"
-            description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
-          />
-          }
-        </viking-chart-panel>
-      </viking-grid-item>
+        <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
+          <viking-chart-panel>
+            <viking-chart-card-header
+              title="Request Frequency"
+              [hasData]="hasTrafficGroupedData() || hasFrequencyData()"
+              [value]="formatCount(totalRequests) + ' Req'"
+              [trend]="frequencyTrend"
+              emptyLabel="Awaiting signal"
+            />
+            @if (hasTrafficGroupedData()) {
+            <viking-chart
+              kind="grouped-bar"
+              [series]="trafficGroupedSeries()"
+              [categories]="frequencyCategories()"
+              label="Request frequency vs latency"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else if (hasFrequencyData()) {
+            <viking-chart
+              kind="line"
+              [series]="frequencySeries()"
+              [categories]="frequencyCategories()"
+              label="Request Frequency"
+              [showArea]="true"
+              curve="smooth"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else {
+            <viking-chart-empty-state
+              icon="globe"
+              title="No Telemetry Signal"
+              description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
+            />
+            }
+          </viking-chart-panel>
+        </viking-grid-item>
 
-      <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
-        <viking-chart-panel>
-          <viking-chart-card-header
-            title="Request Counts per Endpoint"
-            [hasData]="hasEndpointData()"
-            [value]="(endpointSeries()[0]?.data?.length || 0) + ' APIs'"
-            [trend]="endpointTrend"
-            emptyLabel="No endpoints yet"
-          />
-          @if (hasEndpointData()) {
-          <viking-chart
-            kind="bar"
-            [series]="endpointSeries()"
-            [categories]="endpointCategories()"
-            label="Request Counts per Endpoint"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else {
-          <viking-chart-empty-state
-            icon="globe"
-            title="No Endpoint Data"
-            description="Per-endpoint request counts will appear once traffic is routed through monitored APIs."
-          />
-          }
-        </viking-chart-panel>
-      </viking-grid-item>
-    </viking-grid>
+        <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
+          <viking-chart-panel>
+            <viking-chart-card-header
+              title="Request Counts per Endpoint"
+              [hasData]="hasEndpointData()"
+              [value]="(endpointSeries()[0]?.data?.length || 0) + ' APIs'"
+              [trend]="endpointTrend"
+              emptyLabel="No endpoints yet"
+            />
+            @if (hasEndpointData()) {
+            <viking-chart
+              kind="bar"
+              [series]="endpointSeries()"
+              [categories]="endpointCategories()"
+              label="Request Counts per Endpoint"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else {
+            <viking-chart-empty-state
+              icon="globe"
+              title="No Endpoint Data"
+              description="Per-endpoint request counts will appear once traffic is routed through monitored APIs."
+            />
+            }
+          </viking-chart-panel>
+        </viking-grid-item>
+      </viking-panel-grid>
+    </viking-stack>
   </viking-section>
 
   <viking-section>
@@ -535,7 +538,7 @@
         Threat events, anomalies, and HTTP status distribution.
       </p>
     </header>
-    <viking-grid [columns]="12" [equalRows]="true">
+    <viking-panel-grid [columns]="12">
       <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
         <viking-chart-panel>
           <viking-chart-card-header
@@ -629,6 +632,6 @@
           }
         </viking-chart-panel>
       </viking-grid-item>
-    </viking-grid>
+    </viking-panel-grid>
   </viking-section>
 </viking-page-template>

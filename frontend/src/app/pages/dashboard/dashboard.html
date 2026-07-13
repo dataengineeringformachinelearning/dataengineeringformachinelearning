@@ -43,11 +43,11 @@
     </viking-tab>
 
     <viking-tab-panel value="overview">
-      <viking-section>
+      <viking-section class="viking-section--compact">
         <!-- KPI Row -->
-        <viking-grid [columns]="2" [equalRows]="true">
+        <viking-grid [columns]="2" spacing="tight">
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="health-card kpi-card">
+            <viking-card class="health-card kpi-card" [compact]="true">
               <div class="health-ring" [attr.data-status]="healthLabel()">
                 <viking-ring-gauge [value]="healthScore()" [status]="healthLabel()" />
                 <div class="health-center">
@@ -62,7 +62,7 @@
           </viking-grid-item>
 
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="kpi-card" [class.alert]="threatLevel > 50">
+            <viking-card class="kpi-card" [compact]="true" [class.alert]="threatLevel > 50">
               <div class="kpi-card-header">
                 <span class="kpi-icon-badge" aria-hidden="true">
                   <viking-app-icon name="security" />
@@ -90,7 +90,7 @@
           </viking-grid-item>
 
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="kpi-card">
+            <viking-card class="kpi-card" [compact]="true">
               <div class="kpi-card-header">
                 <span class="kpi-icon-badge" aria-hidden="true">
                   <viking-app-icon name="trending-up" />
@@ -107,7 +107,7 @@
           </viking-grid-item>
 
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="kpi-card" [class.alert]="openVulnCount() > 0">
+            <viking-card class="kpi-card" [compact]="true" [class.alert]="openVulnCount() > 0">
               <div class="kpi-card-header">
                 <span class="kpi-icon-badge" aria-hidden="true">
                   <viking-app-icon name="bug_report" />
@@ -124,7 +124,7 @@
           </viking-grid-item>
 
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="kpi-card">
+            <viking-card class="kpi-card" [compact]="true">
               <div class="kpi-card-header">
                 <span class="kpi-icon-badge" aria-hidden="true">
                   <viking-app-icon name="speed" />
@@ -152,7 +152,7 @@
           </viking-grid-item>
 
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="kpi-card" [class.alert]="activeIncidents > 0">
+            <viking-card class="kpi-card" [compact]="true" [class.alert]="activeIncidents > 0">
               <div class="kpi-card-header">
                 <span class="kpi-icon-badge" aria-hidden="true">
                   <viking-app-icon name="report" />
@@ -170,9 +170,9 @@
         </viking-grid>
       </viking-section>
 
-      <viking-section>
+      <viking-section class="viking-section--compact">
         <!-- Threats & Performance -->
-        <viking-grid [columns]="2" [equalRows]="true">
+        <viking-panel-grid [columns]="2">
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
             <viking-card class="overview-panel">
               <div class="panel-header">
@@ -269,7 +269,7 @@
               </div>
             </viking-card>
           </viking-grid-item>
-        </viking-grid>
+        </viking-panel-grid>
       </viking-section>
     </viking-tab-panel>
 
@@ -284,7 +284,7 @@
           <viking-metric-card label="P99 Latency" [value]="(p99Latency | number:'1.0-0') + ' ms'" />
         </viking-metric-row>
 
-        <viking-grid [columns]="2">
+        <viking-panel-grid [columns]="2">
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
             <viking-chart-panel>
               <viking-chart-card-header
@@ -367,7 +367,7 @@
               }
             </viking-chart-panel>
           </viking-grid-item>
-        </viking-grid>
+        </viking-panel-grid>
       </viking-section>
     </viking-tab-panel>
 
@@ -379,7 +379,7 @@
           <viking-metric-card label="Threat Level" [value]="(threatLevel | number:'1.0-0') + '%'" />
         </viking-metric-row>
 
-        <viking-grid [columns]="2">
+        <viking-panel-grid [columns]="2">
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
             <viking-card class="security-panel">
               <div class="panel-header">
@@ -457,7 +457,7 @@
               </div>
             </viking-card>
           </viking-grid-item>
-        </viking-grid>
+        </viking-panel-grid>
       </viking-section>
     </viking-tab-panel>
   </viking-tabs>

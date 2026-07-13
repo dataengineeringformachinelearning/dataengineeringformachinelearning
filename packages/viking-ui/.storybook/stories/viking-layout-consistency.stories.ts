@@ -36,8 +36,8 @@ const renderConsistency = () => `
               <p class="viking-section__description">Field groups share one intrinsic responsive contract.</p>
             </div>
           </header>
-          <div class="viking-form-field-stack viking-form-field-stack--2 viking-form-field-stack--default">
-            <viking-field label="Monitor name"><viking-input value="Projection freshness"></viking-input></viking-field>
+          <div class="viking-column-layout viking-form-grid viking-column-layout--2">
+            <viking-field label="Monitor name" description="A descriptive label visible to operators"><viking-input value="Projection freshness"></viking-input></viking-field>
             <viking-field label="Environment"><viking-select value="production"></viking-select></viking-field>
           </div>
         </section>

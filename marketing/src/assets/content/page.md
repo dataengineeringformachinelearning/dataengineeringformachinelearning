@@ -2589,11 +2589,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.0.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/web-components.js"
 ></script>
 ```
 
@@ -4265,10 +4265,29 @@ progress or loading states.
 ## Layout composition
 
 Routes compose `viking-app-layout` → `viking-page-template` →
-`viking-column-layout` or `viking-grid`. Content is inlaid through
-`viking-container`, `viking-card`, `viking-table`, or `viking-chart-panel`.
-Application-local card, grid, control, and navigation visual systems are not
-part of the contract.
+the semantic layout recipe that matches the content. `viking-panel-grid` owns
+equal-height peer cards, HUD panels, and charts; `viking-form-grid` owns
+top-aligned responsive field groups; `viking-stack` owns vertical rhythm;
+`viking-section-template` owns repeated heading, description, action, and body
+anatomy. Use the lower-level `viking-grid` only for content-led layouts where
+equal rows are not a requirement, and use its 12-track mode with
+`viking-grid-item` for deliberately unequal regions.
+
+| Layout intent                                                      | Canonical Viking-UI recipe         | Invariant supplied by the recipe                                   |
+| ------------------------------------------------------------------ | ---------------------------------- | ------------------------------------------------------------------ |
+| Peer cards, charts, HUD panels, or status surfaces                 | `viking-panel-grid`                | Mobile-first columns, shared gaps, and equal-height rows           |
+| Related form fields with different label, helper, or error lengths | `viking-form-grid`                 | Top-aligned controls and responsive field columns                  |
+| Consecutive blocks that need vertical separation                   | `viking-stack`                     | Tokenized cross-block rhythm without sibling margins               |
+| Titled content region with optional actions                        | `viking-section-template`          | Consistent heading, description, action, divider, and body anatomy |
+| Deliberately unequal 12-track regions                              | `viking-grid` + `viking-grid-item` | Explicit tablet and desktop spans                                  |
+
+Content is inlaid through `viking-container`, `viking-card`, `viking-table`, or
+`viking-chart-panel`. Application templates must not recreate these invariants
+with one-off classes, sibling margins, `align-items` overrides, minimum heights,
+or repeated header markup. When a recurring layout defect appears on more than
+one route, the missing behavior is added to the Viking-UI recipe first and the
+routes are migrated to consume it. Application-local card, grid, form, control,
+and navigation visual systems are not part of the contract.
 
 ---
 
