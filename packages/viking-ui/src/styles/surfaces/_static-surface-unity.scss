@@ -1,0 +1,152 @@
+/* Shared public-surface anatomy for marketing, documentation, backend, and
+ * Viking-UI docs. Keep these pages deliberately similar and left aligned. */
+
+.viking-unified-hero {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  gap: var(--viking-space-6) !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: var(--viking-space-6) 0 var(--viking-space-8) !important;
+  border: 0 !important;
+  border-bottom: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-subtle) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  text-align: left !important;
+}
+
+.viking-unified-hero::before,
+.viking-unified-hero::after {
+  display: none !important;
+}
+
+.viking-unified-hero-copy {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start !important;
+  justify-content: center;
+  gap: var(--viking-space-3) !important;
+  width: 100% !important;
+  max-width: var(--viking-content-readable-max-width) !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+.viking-unified-hero-copy::before,
+.viking-unified-hero-copy::after {
+  display: none !important;
+}
+
+.viking-unified-hero-badge {
+  display: inline-flex !important;
+  align-items: center;
+  align-self: flex-start !important;
+  justify-content: flex-start !important;
+  gap: var(--viking-space-1);
+  width: fit-content !important;
+  margin: 0 !important;
+  padding: var(--viking-space-1) var(--viking-space-2) !important;
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border-strong) !important;
+  border-radius: var(--viking-radius-pill) !important;
+  background: var(--viking-surface-recipe) !important;
+  box-shadow: var(--viking-shadow-xs) !important;
+}
+
+.viking-unified-hero-title {
+  max-width: var(--viking-content-readable-max-width) !important;
+  margin: 0 !important;
+  color: var(--viking-text) !important;
+  font-family: var(--viking-font-family) !important;
+  font-size: clamp(
+    var(--viking-font-size-3xl),
+    5vw,
+    var(--viking-font-size-5xl)
+  ) !important;
+  font-weight: var(--viking-font-weight-extrabold) !important;
+  line-height: var(--viking-line-height-none) !important;
+  letter-spacing: var(--viking-letter-spacing-tight) !important;
+  text-align: left !important;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.viking-unified-hero-lead {
+  max-width: var(--viking-content-readable-max-width) !important;
+  margin: 0 !important;
+  color: var(--viking-text-muted) !important;
+  font-size: var(--viking-font-size-base) !important;
+  line-height: var(--viking-line-height-relaxed) !important;
+  text-align: left !important;
+  text-wrap: pretty;
+}
+
+.viking-unified-hero-actions {
+  justify-content: flex-start !important;
+  margin: 0 !important;
+}
+
+.viking-unified-hero-panel {
+  width: 100% !important;
+  min-width: 0;
+  margin: 0 !important;
+  justify-self: stretch !important;
+  text-align: left !important;
+  transform: none !important;
+  perspective: none !important;
+  border-radius: var(--viking-card-radius) !important;
+}
+
+.viking-unified-section-header {
+  align-items: flex-start !important;
+  justify-items: start !important;
+  width: 100%;
+  max-width: var(--viking-content-readable-max-width) !important;
+  margin-inline: 0 !important;
+  text-align: left !important;
+}
+
+.viking-unified-section-header > * {
+  text-align: left !important;
+}
+
+.viking-unified-hero .backend-metric-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.viking-unified-hero .backend-hero-cta {
+  justify-content: flex-start;
+  margin-inline: 0;
+}
+
+.viking-unified-hero + .docs-outline,
+.viking-unified-hero ~ .docs-outline {
+  justify-content: flex-start;
+}
+
+@media (min-width: 768px) {
+  .viking-unified-hero .backend-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .backend-feature-showcase {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .backend-feature-showcase > .viking-unified-section-header,
+  .backend-feature-showcase > .viking-feature-panel:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .viking-unified-hero {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+  }
+}
