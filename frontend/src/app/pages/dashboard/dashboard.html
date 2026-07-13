@@ -45,7 +45,7 @@
     <viking-tab-panel value="overview">
       <viking-section>
         <!-- KPI Row -->
-        <viking-grid [columns]="3">
+        <viking-grid [columns]="2" [equalRows]="true">
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
             <viking-card class="health-card kpi-card">
               <div class="health-ring" [attr.data-status]="healthLabel()">
@@ -172,7 +172,7 @@
 
       <viking-section>
         <!-- Threats & Performance -->
-        <viking-grid [columns]="2">
+        <viking-grid [columns]="2" [equalRows]="true">
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
             <viking-card class="overview-panel">
               <div class="panel-header">
@@ -188,7 +188,9 @@
               </div>
               <div class="panel-body">
                 @if (vulnService.isLoading()) {
-                <div class="panel-loading"><span class="spinner" aria-hidden="true"></span> Scanning...</div>
+                <div class="panel-loading">
+                  <span class="spinner" aria-hidden="true"></span> Scanning...
+                </div>
                 } @else if (recentThreats().length === 0) {
                 <viking-chart-empty-state
                   layout="inline"
@@ -201,7 +203,9 @@
                 <div class="threat-list" role="list">
                   @for (threat of recentThreats(); track trackThreat($index, threat)) {
                   <div class="threat-item" role="listitem">
-                    <span class="severity-pill" [class]="severityClass(threat.severity)">{{ threat.severity }}</span>
+                    <span class="severity-pill" [class]="severityClass(threat.severity)"
+                      >{{ threat.severity }}</span
+                    >
                     <div class="threat-info">
                       <strong>{{ threat.title }}</strong>
                       <span>{{ threat.status }}</span>
@@ -272,7 +276,10 @@
     <viking-tab-panel value="performance">
       <viking-section>
         <viking-metric-row>
-          <viking-metric-card label="Network Stability" [value]="(stabilityLevel | number:'1.0-0') + '%'" />
+          <viking-metric-card
+            label="Network Stability"
+            [value]="(stabilityLevel | number:'1.0-0') + '%'"
+          />
           <viking-metric-card label="SLA Forecast" [value]="(slaLevel | number:'1.0-0') + '%'" />
           <viking-metric-card label="P99 Latency" [value]="(p99Latency | number:'1.0-0') + ' ms'" />
         </viking-metric-row>
@@ -317,9 +324,20 @@
                 emptyLabel="No data yet"
               />
               @if (hasThreatDonutData()) {
-              <viking-chart kind="donut" [segments]="threatDonutSegments()" label="Threat Severity Distribution" [fill]="true" />
+              <viking-chart
+                kind="donut"
+                [segments]="threatDonutSegments()"
+                label="Threat Severity Distribution"
+                [fill]="true"
+              />
               } @else {
-              <viking-chart-empty-state layout="fill" tone="secure" icon="check-circle" title="No Threat Data" description="Threat severity distribution will appear when events are detected." />
+              <viking-chart-empty-state
+                layout="fill"
+                tone="secure"
+                icon="check-circle"
+                title="No Threat Data"
+                description="Threat severity distribution will appear when events are detected."
+              />
               }
             </viking-chart-panel>
           </viking-grid-item>
@@ -332,9 +350,20 @@
                 emptyLabel="No data yet"
               />
               @if (hasSecurityAlertData()) {
-              <viking-chart kind="bar" [series]="securityAlertSeries()" label="Security Anomalies (24h)" [fill]="true" />
+              <viking-chart
+                kind="bar"
+                [series]="securityAlertSeries()"
+                label="Security Anomalies (24h)"
+                [fill]="true"
+              />
               } @else {
-              <viking-chart-empty-state layout="fill" tone="secure" icon="search" title="No Anomalies" description="No anomalous security signals detected in the last 24 hours." />
+              <viking-chart-empty-state
+                layout="fill"
+                tone="secure"
+                icon="search"
+                title="No Anomalies"
+                description="No anomalous security signals detected in the last 24 hours."
+              />
               }
             </viking-chart-panel>
           </viking-grid-item>
@@ -368,7 +397,9 @@
               </div>
               <div class="panel-body">
                 @if (vulnService.isLoading()) {
-                <div class="panel-loading"><span class="spinner" aria-hidden="true"></span> Ingesting threat feed...</div>
+                <div class="panel-loading">
+                  <span class="spinner" aria-hidden="true"></span> Ingesting threat feed...
+                </div>
                 } @else if (recentThreats().length === 0) {
                 <viking-chart-empty-state
                   layout="inline"
@@ -382,7 +413,9 @@
                   @for (threat of vulnService.vulnerabilities(); track threat.id) {
                   <div class="security-item" role="listitem">
                     <div class="security-item-header">
-                      <span class="severity-pill" [class]="severityClass(threat.severity)">{{ threat.severity }}</span>
+                      <span class="severity-pill" [class]="severityClass(threat.severity)"
+                        >{{ threat.severity }}</span
+                      >
                       <span class="status-pill">{{ threat.status }}</span>
                     </div>
                     <strong>{{ threat.title }}</strong>

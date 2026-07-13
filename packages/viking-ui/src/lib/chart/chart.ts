@@ -1,10 +1,14 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   effect,
   input,
+  OnDestroy,
   signal,
+  viewChild,
 } from "@angular/core";
 import {
   VikingChartCurve,
@@ -238,6 +242,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         </p>
       }
       <div
+        #chartViewport
         class="viking-chart-viewport"
         [class.viking-chart-zoomable]="
           zoomable() && !isSparkline() && kind() !== 'donut'
@@ -251,10 +256,8 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         (pointercancel)="onPanEnd(); onPointerLeave()"
       >
         <svg
-          [attr.viewBox]="'0 0 ' + width + ' ' + height()"
-          [attr.preserveAspectRatio]="
-            kind() === 'donut' ? 'xMidYMid meet' : 'none'
-          "
+          [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+          [attr.preserveAspectRatio]="preserveAspectRatio()"
           shape-rendering="geometricPrecision"
           role="img"
           [attr.aria-label]="label() || 'Chart'"
@@ -271,13 +274,13 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
             @if (donutSlices().length > 0) {
               <circle
                 class="viking-chart-donut-hole"
-                [attr.cx]="width / 2"
+                [attr.cx]="width() / 2"
                 [attr.cy]="plotCy()"
                 [attr.r]="donutInnerRadius()"
               />
               <text
                 class="viking-chart-donut-total"
-                [attr.x]="width / 2"
+                [attr.x]="width() / 2"
                 [attr.y]="plotCy()"
                 text-anchor="middle"
                 dominant-baseline="central"
@@ -292,7 +295,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
                   [attr.x]="resolvedGutter().left"
                   [attr.y]="plotTop()"
                   [attr.width]="
-                    width - resolvedGutter().left - resolvedGutter().right
+                    width() - resolvedGutter().left - resolvedGutter().right
                   "
                   [attr.height]="plotBottom() - plotTop()"
                 />
@@ -303,7 +306,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
                 <line
                   class="viking-chart-grid"
                   [attr.x1]="resolvedGutter().left"
-                  [attr.x2]="width - resolvedGutter().right"
+                  [attr.x2]="width() - resolvedGutter().right"
                   [attr.y1]="line"
                   [attr.y2]="line"
                 ></line>
@@ -311,7 +314,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
               <line
                 class="viking-chart-axis-line"
                 [attr.x1]="resolvedGutter().left"
-                [attr.x2]="width - resolvedGutter().right"
+                [attr.x2]="width() - resolvedGutter().right"
                 [attr.y1]="plotBottom()"
                 [attr.y2]="plotBottom()"
               ></line>
@@ -512,7 +515,10 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         );
         max-height: none;
         height: 100%;
-        --viking-chart-axis-size: 13px;
+        --viking-chart-axis-size: var(
+          --viking-chart-text-size,
+          var(--viking-font-size-base)
+        );
       }
       .viking-chart-sparkline {
         width: 5rem;
@@ -626,8 +632,8 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart-axis-x {
         fill: var(--viking-chart-axis-color, var(--viking-text-muted));
         font-size: max(
-          var(--viking-chart-label-size, 10px),
-          var(--viking-chart-axis-size, 11px)
+          var(--viking-chart-label-size, var(--viking-font-size-base)),
+          var(--viking-chart-axis-size, var(--viking-font-size-base))
         );
         font-family: var(--viking-font-family);
         font-weight: var(--viking-font-weight-medium);
@@ -677,13 +683,13 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       .viking-chart-donut-total {
         fill: var(--viking-text);
-        font-size: max(12px, min(16px, 3.5cqw));
+        font-size: var(--viking-chart-text-size, var(--viking-font-size-base));
         font-weight: 700;
         font-family: var(--viking-font-family);
         font-variant-numeric: tabular-nums;
       }
       .viking-chart-fill .viking-chart-donut-total {
-        font-size: max(16px, min(24px, 5cqw));
+        font-size: var(--viking-chart-text-size, var(--viking-font-size-base));
       }
       .viking-chart-legend {
         display: flex;
@@ -763,8 +769,36 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
     `,
   ],
 })
-export class VikingChart {
+export class VikingChart implements AfterViewInit, OnDestroy {
   protected readonly chartId = `vc-${Math.random().toString(36).slice(2, 9)}`;
+  private readonly viewportRef =
+    viewChild.required<ElementRef<HTMLDivElement>>("chartViewport");
+  private readonly viewportWidth = signal(WIDTH);
+  private readonly viewportHeight = signal(0);
+  private resizeObserver?: ResizeObserver;
+
+  ngAfterViewInit(): void {
+    const viewport = this.viewportRef().nativeElement;
+    const updateViewport = (): void => {
+      const bounds = viewport.getBoundingClientRect();
+      if (bounds.width > 0) {
+        this.viewportWidth.set(Math.round(bounds.width));
+      }
+      if (bounds.height > 0) {
+        this.viewportHeight.set(Math.round(bounds.height));
+      }
+    };
+
+    updateViewport();
+    if (typeof ResizeObserver !== "undefined") {
+      this.resizeObserver = new ResizeObserver(updateViewport);
+      this.resizeObserver.observe(viewport);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+  }
 
   readonly kind = input<VikingChartKind>("line");
   readonly series = input<VikingChartSeries[]>([{ name: "Series", data: [] }]);
@@ -911,7 +945,7 @@ export class VikingChart {
       return;
     }
     const plotWidth =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const relX = Math.min(
       Math.max(0, event.clientX - rect.left - this.resolvedGutter().left),
       plotWidth,
@@ -951,7 +985,7 @@ export class VikingChart {
     this.activeTooltip.set(null);
   };
 
-  protected readonly width = WIDTH;
+  protected readonly width = computed(() => this.viewportWidth());
 
   protected readonly isSparkline = computed(() => this.kind() === "sparkline");
 
@@ -984,12 +1018,16 @@ export class VikingChart {
   });
 
   protected readonly height = computed(() => {
+    const measuredHeight = this.viewportHeight();
+    if (measuredHeight > 0) {
+      return measuredHeight;
+    }
     if (this.isSparkline()) {
       return HEIGHT_SPARKLINE;
     }
     if (this.fill()) {
       if (this.kind() === "donut") {
-        return WIDTH;
+        return HEIGHT_FILL;
       }
       if (this.isLineKind()) {
         return HEIGHT_FILL_LINE;
@@ -999,7 +1037,7 @@ export class VikingChart {
     return this.compact() ? HEIGHT_COMPACT : HEIGHT_DEFAULT;
   });
 
-  protected readonly preserveAspectRatio = computed(() => "xMidYMid meet");
+  protected readonly preserveAspectRatio = computed(() => "none");
 
   protected readonly plotBottom = computed(
     () => this.height() - this.resolvedGutter().bottom,
@@ -1010,7 +1048,7 @@ export class VikingChart {
   protected readonly donutInnerRadius = computed(() => {
     const plotH = this.plotBottom() - this.plotTop();
     const plotW =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const outer = Math.min(plotW, plotH) / 2 - 6;
     return outer * 0.58;
   });
@@ -1126,7 +1164,7 @@ export class VikingChart {
 
     const cats = this.effectiveCategories();
     const plotWidth =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     // Cleaner density: fewer labels on mobile-ish, premium well-spaced aesthetic
     const maxLabels = this.fill() ? 7 : 5;
     const labelMax = this.fill() ? LABEL_MAX_FILL : LABEL_MAX_DEFAULT;
@@ -1182,7 +1220,7 @@ export class VikingChart {
     const top = this.plotTop();
     const plotHeight = bottom - top;
     const plotWidth =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const buildPath =
       this.curve() === "smooth" ? buildSmoothPath : buildLinearPath;
 
@@ -1195,7 +1233,7 @@ export class VikingChart {
         return { x, y };
       });
       const line = buildPath(points);
-      const area = `${line} L${WIDTH - this.resolvedGutter().right},${bottom} L${this.resolvedGutter().left},${bottom} Z`;
+      const area = `${line} L${this.width() - this.resolvedGutter().right},${bottom} L${this.resolvedGutter().left},${bottom} Z`;
       return { name: item.name, tone: item.tone ?? "accent", line, area };
     });
   });
@@ -1212,7 +1250,7 @@ export class VikingChart {
     const top = this.plotTop();
     const plotHeight = bottom - top;
     const plotWidth =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
 
     return this.effectiveSeries().flatMap((item) =>
       item.data.map((value, index) => {
@@ -1248,7 +1286,7 @@ export class VikingChart {
     const top = this.plotTop();
     const plotHeight = bottom - top;
     const plotWidth =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const widthPercent = this.barWidth();
     const slotWidth = plotWidth / primary.data.length;
     const barWidth = resolveBarWidth(
@@ -1296,7 +1334,7 @@ export class VikingChart {
     const top = this.plotTop();
     const plotHeight = bottom - top;
     const plotWidth =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const groupWidth = plotWidth / count;
     const widthPercent = this.barWidth();
     const groupBarWidth = resolveBarWidth(groupWidth, count, widthPercent);
@@ -1348,7 +1386,7 @@ export class VikingChart {
     const top = this.plotTop();
     const plotHeight = bottom - top;
     const plotWidth =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const widthPercent = this.barWidth();
     const slotWidth = plotWidth / count;
     const barWidth = resolveBarWidth(slotWidth, count, widthPercent);
@@ -1393,11 +1431,11 @@ export class VikingChart {
       return [];
     }
 
-    const cx = WIDTH / 2;
+    const cx = this.width() / 2;
     const cy = this.plotCy();
     const plotH = this.plotBottom() - this.plotTop();
     const plotW =
-      WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+      this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const outer = Math.min(plotW, plotH) / 2 - 6;
     const inner = outer * 0.58;
     let cursor = -Math.PI / 2;

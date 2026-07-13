@@ -611,7 +611,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         zoomControl: false,
         attributionControl: false,
         worldCopyJump: true,
-        preferCanvas: true,
+        preferCanvas: false,
       }).setView([20, 0], 2);
 
       const tileUrl = this.isDarkMode
@@ -654,17 +654,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }, 50);
   }
 
-  /** Resolve a CSS color token for Leaflet (canvas can't use var()). */
+  /** Resolve the computed Viking series color used by Leaflet's SVG overlay. */
   private resolveMapAccent(): string {
-    if (typeof window === 'undefined') {
-      return '#2176ff';
-    }
     const styles = getComputedStyle(document.documentElement);
     return (
+      styles.getPropertyValue('--viking-series-1').trim() ||
       styles.getPropertyValue('--viking-accent').trim() ||
       styles.getPropertyValue('--viking-teal-500').trim() ||
-      styles.getPropertyValue('--color-primary').trim() ||
-      '#2176ff'
+      styles.color
     );
   }
 
@@ -689,7 +686,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       const count = Number(loc.count ?? 0) || 1;
       const label = String(loc.origin ?? loc.region ?? loc.country ?? loc.name ?? 'Origin');
       points.push([lat, lng]);
-      L.circleMarker([lat, lng], {
+      const marker = L.circleMarker([lat, lng], {
+        pane: 'overlayPane',
         radius: Math.max(7, Math.min(22, 6 + Math.sqrt(count) * 2.5)),
         color: accent,
         fillColor: accent,
@@ -702,6 +700,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           sticky: true,
         })
         .addTo(this.map!);
+      marker.bringToFront();
     });
 
     if (points.length > 1) {

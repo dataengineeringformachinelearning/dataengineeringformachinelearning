@@ -223,11 +223,19 @@ export class MetricCardComponent {
     return tone === "default" ? "muted" : tone;
   });
 
-  protected readonly hostClass = computed(() => ({
-    "viking-metric-card metric-card col-span-6 col-span-md-6": true,
-    [`viking-metric-card-${this.resolvedTone()}`]:
-      this.resolvedTone() !== "default",
-  }));
+  protected readonly hostClass = computed(() =>
+    [
+      "viking-metric-card",
+      "metric-card",
+      "col-span-6",
+      "col-span-md-6",
+      this.resolvedTone() === "default"
+        ? ""
+        : `viking-metric-card-${this.resolvedTone()}`,
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
 
   protected readonly ariaLabel = computed(() => {
     const label = this.label();

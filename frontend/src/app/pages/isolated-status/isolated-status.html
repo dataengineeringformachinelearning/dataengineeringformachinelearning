@@ -118,13 +118,15 @@
               />
             </div>
 
-            <viking-chart
-              kind="line"
-              [series]="availabilitySeries(page)"
-              [showArea]="true"
-              [fill]="true"
-              label="Availability and service-level history"
-            />
+            <viking-chart-panel size="medium">
+              <viking-chart
+                kind="line"
+                [series]="availabilitySeries(page)"
+                [showArea]="true"
+                [fill]="true"
+                label="Availability and service-level history"
+              />
+            </viking-chart-panel>
           </section>
 
           <section class="viking-status-section-block" aria-labelledby="intelligence-heading">

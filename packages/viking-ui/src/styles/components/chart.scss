@@ -56,7 +56,7 @@ viking-chart {
 .viking-chart-axis-y,
 .viking-chart-axis-x {
   fill: var(--viking-chart-axis-color, var(--viking-text-muted));
-  font-size: var(--viking-chart-axis-size-mobile, 12px);
+  font-size: var(--viking-chart-axis-size-mobile, var(--viking-font-size-base));
   font-family: var(--viking-font-family);
   font-weight: var(--viking-font-weight-medium);
   letter-spacing: 0.01em;
@@ -134,14 +134,14 @@ viking-chart {
 
 .viking-chart-donut-total {
   fill: var(--viking-text);
-  font-size: max(12px, min(16px, 3.5cqw));
+  font-size: var(--viking-chart-text-size, var(--viking-font-size-base));
   font-weight: 700;
   font-family: var(--viking-font-family);
   font-variant-numeric: tabular-nums lining-nums;
 }
 
 .viking-chart-fill .viking-chart-donut-total {
-  font-size: max(15px, min(22px, 4.5cqw));
+  font-size: var(--viking-chart-text-size, var(--viking-font-size-base));
 }
 
 /* Legend — small circular indicators */
@@ -151,7 +151,7 @@ viking-chart {
   justify-content: center;
   gap: var(--viking-space-1) var(--viking-space-2);
   margin: var(--viking-chart-legend-margin, var(--viking-space-3) 0 0);
-  font-size: 10px;
+  font-size: var(--viking-chart-legend-size, var(--viking-font-size-base));
   color: var(--viking-text-muted);
   padding-inline: var(--viking-space-1);
 }
@@ -198,7 +198,7 @@ viking-chart {
   border-radius: var(--viking-chart-tooltip-radius, var(--viking-radius));
   box-shadow: var(--viking-shadow-sm);
   backdrop-filter: none;
-  font-size: 11px;
+  font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-base));
   color: var(--viking-chart-tooltip-text, var(--viking-text));
   white-space: nowrap;
 }
@@ -210,7 +210,7 @@ viking-chart {
 .viking-chart-tooltip .tt-label {
   font-weight: var(--viking-font-weight-medium);
   color: var(--viking-text-muted);
-  font-size: 10px;
+  font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-base));
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -248,12 +248,12 @@ viking-chart {
   outline-offset: 2px;
 }
 
-@media (min-width: 641px) {
+@media (min-width: 768px) {
   .viking-chart-axis-y,
   .viking-chart-axis-x {
     font-size: max(
-      var(--viking-chart-label-size, 10px),
-      var(--viking-chart-axis-size, 11px)
+      var(--viking-chart-label-size, var(--viking-font-size-base)),
+      var(--viking-chart-axis-size, var(--viking-font-size-base))
     );
   }
 

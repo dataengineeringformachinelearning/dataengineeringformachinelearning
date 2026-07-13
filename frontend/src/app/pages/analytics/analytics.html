@@ -131,7 +131,7 @@
         Aggregate performance and security telemetry across all nodes.
       </p>
     </header>
-    <viking-column-layout [columns]="3">
+    <viking-column-layout [columns]="2" [equalRows]="true">
       <!-- THREAT GAUGE -->
       <viking-card class="gauge-card">
         <div class="gauge-card-header">
@@ -297,7 +297,7 @@
       ></app-unified-select>
     </div>
     }
-    <viking-column-layout [columns]="4">
+    <viking-column-layout [columns]="2" [equalRows]="true">
       <viking-metric-card
         label="API usage (last minute)"
         [value]="formatCount(apiUsageCurrent) + ' / ' + formatCount(apiUsageQuota)"

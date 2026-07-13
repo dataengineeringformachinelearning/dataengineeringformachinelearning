@@ -7,6 +7,16 @@
   align-items: stretch;
 }
 
+.triage-grid > viking-grid-item {
+  display: grid;
+  min-width: 0;
+}
+
+.triage-grid > viking-grid-item > .queue-panel,
+.triage-grid > viking-grid-item > .detail-panel {
+  height: 100%;
+}
+
 .queue-panel {
   display: flex;
   flex-direction: column;

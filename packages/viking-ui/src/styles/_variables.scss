@@ -445,9 +445,10 @@
   --viking-z-tooltip: 1200;
 
   /* ── Chart — clean minimal SVG analytics (3:1, soft grid, cursor) ─ */
-  --viking-chart-axis-size: 11px;
-  --viking-chart-axis-size-mobile: 12px;
-  --viking-chart-label-size: 10px;
+  --viking-chart-text-size: var(--viking-font-size-base);
+  --viking-chart-axis-size: var(--viking-chart-text-size);
+  --viking-chart-axis-size-mobile: var(--viking-chart-text-size);
+  --viking-chart-label-size: var(--viking-chart-text-size);
   /* Internal breathing (gutters + viewport padding) */
   --viking-chart-gutter-default: 16px 24px 48px 48px; /* top right bottom left — 8px grid */
   --viking-chart-gutter-fill: 8px 16px 32px 32px;
@@ -489,7 +490,7 @@
   --viking-chart-legend-margin: var(--viking-space-3) 0 0;
   --viking-chart-legend-margin-fill: var(--viking-space-4) 0 0;
   --viking-chart-swatch-size: 8px;
-  --viking-chart-legend-size: var(--viking-font-size-xs);
+  --viking-chart-legend-size: var(--viking-chart-text-size);
   /* Tooltip */
   --viking-chart-tooltip-bg: color-mix(
     in srgb,
@@ -502,7 +503,7 @@
     transparent
   );
   --viking-chart-tooltip-text: var(--viking-text);
-  --viking-chart-tooltip-size: var(--viking-font-size-xs);
+  --viking-chart-tooltip-size: var(--viking-chart-text-size);
   --viking-chart-tooltip-padding: 6px 10px;
   --viking-chart-tooltip-radius: var(--viking-radius);
   /* Empty / loading */

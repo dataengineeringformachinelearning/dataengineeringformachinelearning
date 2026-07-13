@@ -69,14 +69,13 @@ export type VikingChartPanelBody = "default" | "origin-map";
         overflow: hidden;
         padding: var(--viking-space-content-gap);
         box-sizing: border-box;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         min-width: 0;
       }
 
       @container viking-chart-panel (min-width: 40rem) {
         .viking-chart-panel-body {
-          padding: var(--viking-space-content-gap)
-            var(--viking-space-container-gap) var(--viking-space-container-gap);
+          padding: var(--viking-space-container-gap);
         }
       }
 
