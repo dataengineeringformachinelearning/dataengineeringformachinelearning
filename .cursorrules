@@ -1,0 +1,319 @@
+# DEML — Cursor Agent Rules (Viking-UI Quality)
+
+You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must follow the final Viking-UI aesthetic: **grid-first modern enterprise SaaS** — Cyber-Noir dark surfaces, Ocean Blue Serenity accents, precision-engineered component anatomy, dense breathable data layouts, restrained dark-first surfaces, and WCAG 2.1 AA by construction. The system should feel calm, precise, premium, and deliberately unsurprising across every product surface.
+
+## Rule hierarchy (read in order)
+
+1. **This file** (`.cursorrules`) — mandatory UI/component behavior for Cursor agents
+2. **[THEME.md](THEME.md)** — canonical token matrix, composable component standards
+3. **[AGENTS.md](AGENTS.md)** — platform architecture, security, automation invariants
+4. **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** — Viking-UI kit narrative, build, publish
+
+Before editing HTML, CSS/SCSS, Tailwind config, or Angular templates: **read THEME.md** for the surfaces you touch.
+
+---
+
+## Styling ownership law (hard gate)
+
+`packages/viking-ui/` is the single source of truth for all DEML styling and UI components. It is the only place where CSS, SCSS, design tokens, static CSS bundles, Web Components, Angular wrappers, icons, and visual utilities may be authored. Application and site surfaces consume Viking-UI; they do not own styling.
+
+- **Do not create or modify custom SCSS/CSS outside `packages/viking-ui/`.** This includes Angular component styles, Astro `<style>` blocks, global app stylesheets, widget-local CSS, Tailwind utility styling, and one-off visual classes.
+- **Do not add new styles in `frontend/`, `marketing/`, `viking-ui-docs/`, or `backend/`.** Existing files in those surfaces may only import, load, or receive synced artifacts from the Viking-UI package/build pipeline. If a visual rule is missing, move the rule into `packages/viking-ui/` first.
+- **Do not add inline `style=""` attributes** unless the value is non-visual runtime geometry that cannot be represented by a Viking-UI prop or class. If the value affects color, spacing, layout, typography, borders, shadows, motion, or sizing, move it to Viking-UI.
+- **Do not introduce new non-Viking visual class systems** in `frontend/`, `marketing/`, `viking-ui-docs/`, Django templates, or static widget consumers. Markup may use `viking-*` elements/classes and semantic content classes only when those classes are styled by the Viking-UI bundle.
+- **If a component or pattern is missing, add it to Viking-UI first.** Create framework-neutral Web Components in `packages/viking-ui/src/web/`, Angular wrappers in `packages/viking-ui/src/lib/` when needed, and shared surface styles under `packages/viking-ui/src/styles/`. Decompose monolithic surface files into focused partials (`_alerts.scss`, `_severity-pills.scss`, etc.) loaded by a single `@use` index — never grow a single surface file past ~300 lines.
+- **Consume Viking-UI through published/public entrypoints only.** Apps must use the npm package or workspace alias (`@dataengineeringformachinelearning/viking-ui` and documented subpaths); browser/static consumers should use the built package artifacts and jsDelivr CDN where possible.
+- **After changing Viking-UI styles or components, rebuild and sync** with `npm run build:viking-ui:package` and `python scripts/sync_design_system.py` so all consuming surfaces receive the same artifacts. Never commit Viking-UI style changes without verifying the downstream surfaces build cleanly.
+- **Uniformity sweeps:** Before shipping, grep all consuming surfaces for orphaned app-local styles, raw hex, ad-hoc breakpoints, or `<div class="card">` / `<div class="alert">` outliers. Run `node scripts/enforce-theme.js` — zero violations means zero violations. Any outlier is a blocking defect.
+
+Consuming apps may compose UI, bind data, pass props/attributes, and choose existing Viking-UI variants. They may not define the visual implementation.
+
+---
+
+## Final aesthetic standard
+
+Viking-UI must read as **grid-first modern enterprise SaaS** — calm, precise, premium, and deliberately unsurprising. Implemented only through `packages/viking-ui/`.
+
+- **Aerospace-command precision:** premium engineering feel, exact alignment, low-noise hierarchy, and deterministic rhythm. Surfaces feel engineered, durable, and expensive — never startup-neutral or whimsical.
+- **Geometric severity, not fantasy:** austere geometry, cold materiality, and sparse restraint. Severe silhouettes and structural accents only — never themed illustration, faux-medieval ornament, glassmorphism, neon cyberpunk, or decorative storytelling.
+- **Dark-first command surfaces:** deep navy/charcoal backgrounds, machined metallic borders, restrained electric-teal for command/confirmation, rich crimson for escalation and danger. No gradient orbs, neon glow, mesh backgrounds, or decorative clutter on base surfaces.
+- **Boring consistency:** templates, grids, and semantic tokens make every route feel like one coherent enterprise product. Zero visual drift under pressure.
+- **Quiet surface depth:** crisp one-pixel borders, stepped surfaces (`--viking-navy-*` scale via `--viking-charcoal-*` aliases), and soft low-elevation shadows distinguish hierarchy through token stepping, never stacked opacity.
+
+**Directional references** (inform contracts, never import runtimes):
+- [Material Design 3](https://m3.material.io/) — adaptive foundations, accessible state clarity.
+- [Flux UI](https://fluxui.dev/) — composable layouts, dense but breathable data surfaces.
+- [Spartan](https://spartan.ng/) — clean Angular primitive language, accessible composition, SSR-safe behavior.
+- [shadcn/ui](https://ui.shadcn.com/) — explicit component anatomy, composable blocks.
+- [Cloudscape](https://cloudscape.design/) — AWS-scale operational density, fluid responsive layouts.
+- [Trust Controls](https://www.trustcontrols.ai/) — evidence-minded security governance UX.
+
+**Implementation boundary:** every style, token, wrapper, Web Component, chart treatment, or visual utility belongs in `packages/viking-ui/`; app folders only consume the result.
+
+Translate the aesthetic into concrete UI: machined metallic borders, dark steel surfaces, electric-teal command accents, crimson escalation, compact telemetry panels, native SVG charts with generous inlay spacing, readable tables/forms, and strategic geometric dividers. Data dominates ornament. Context determines density — dashboards use metric-card/chart-panel inlay, settings use form-section/field stacks, static sections use wider readable widths. Never force one density pattern into another context.
+
+DEML brand artwork is the narrow static-asset exception: logos, favicons, application icons, and social previews use `--viking-brand-navy` (`#070C20`) and `--viking-brand-blue` (`#0078FF`). Do not use those literals as app-local product styling; product UI continues through semantic Viking-UI tokens.
+
+---
+
+## Composable primitive quality (structure, not palette)
+
+Viking-UI follows a **composable primitive** model: install behavior in Angular, style from package-owned tokens/components, and avoid app-local styling entirely.
+
+| Pattern                  | Viking-UI equivalent                                                   | You must                                                     |
+| ------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Card surfaces            | `viking-card`, `viking-metric-card`, `viking-hud-panel`                | Use these — never raw `<div class="card">`                   |
+| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)          | Compose every input through `viking-field`                   |
+| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Never hand-roll button styles                                |
+| Dark-first shell         | `data-theme="dark"` default                                            | Preserve dark-first; light mode shifts lightness only        |
+| Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Never remove `:focus-visible` for aesthetics                 |
+| Settings / billing forms | `viking-form-section` + grouped `viking-field`                         | Section rhythm: `--viking-space-3` / `--viking-font-size-lg` |
+| Charts                   | `viking-chart` + `viking-chart-panel` (native SVG, zero deps)          | Never canvas, D3, Chart.js, or ApexCharts wrappers           |
+| Chart inlay              | `viking-chart-panel[loading]`, `viking-chart-empty-state`              | Loading/empty states are mandatory — no bare SVG              |
+| Series colors            | `VIKING_SERIES_PRESETS` from `series-presets.ts`                       | Never raw hex in chart code — use `--viking-series-1`…`8`   |
+| Skeleton loaders         | `viking-skeleton`, `viking-loading-overlay`, `viking-progress`         | Never generic CSS spinners                                   |
+| Feedback                 | `viking-toast`, `viking-callout`, `viking-badge`                       | Never `alert()` or ad-hoc div banners                       |
+| Page layouts             | `viking-page-shell` → `viking-section` + stack/grid/cluster            | Never rebuild package breakpoints or gutters locally          |
+
+**Context-aware density:** Dashboards and analytics pages use `viking-metric-card`, `viking-hud-panel`, and `viking-chart-panel` for dense data inlay. Settings and billing forms use `viking-form-section` with grouped `viking-field` stacks. Status/overview surfaces use open card layouts (`viking-card` with generous padding). Static/open sections (marketing, docs) use wider readable widths (`--viking-content-readable-max-width`). Never force a dashboard density pattern into a settings form, or vice versa.
+
+**Intentional palette:** **deep navy/charcoal surfaces, dark steel metallic borders, restrained electric-teal/crimson accents** — grid-first modern enterprise SaaS, not startup-neutral.
+
+---
+
+## Viking-UI component law (non-negotiable)
+
+### Angular (`deml.app`, `viking-ui`, `viking-ui-showcase`)
+
+- **Always** import and use components from `@dataengineeringformachinelearning/viking-ui`.
+- **Never** add Angular Material, ng-zorro, PrimeNG, Bootstrap, shadcn runtimes, or other third-party UI kits.
+- **Never** create one-off styled buttons, inputs, modals, toasts, tables, or charts when a `viking-*` component exists.
+- **Prefer** shell primitives: `viking-app-header`, `viking-app-sidebar`, `viking-page-header`, `viking-footer`, `viking-site-navbar`, `viking-site-footer`.
+- **Compose** page layouts with `viking-page-shell`, `viking-section`, `viking-stack`, `viking-grid`, and `viking-cluster`; static surfaces use their matching package CSS classes.
+- **Charts:** `viking-chart` (native SVG) only — no ApexCharts, Chart.js, D3 wrappers, or canvas libs. Always use `viking-chart-panel` as the chart container with `viking-chart-panel[loading]` and `viking-chart-empty-state` for all states. Import `VIKING_SERIES_PRESETS` from `series-presets.ts` for series colors — never raw hex.
+- **Icons:** `viking-icon` only — no Material Icons, Font Awesome, or Lucide runtime packages.
+- **Feedback:** `viking-toast` / `VikingToastService`, `viking-callout`, `viking-badge` — not browser `alert()` or ad-hoc banners.
+- **Loading:** `viking-skeleton`, `viking-loading-overlay`, `viking-progress` — not generic spinners or CSS-only loaders.
+- **Framework-neutral shared UI** (styles, primitives, services, utilities) belongs in `packages/viking-ui/` first.
+- `packages/viking-ui/` is the single home for all Viking-UI code, including token SCSS, static CSS bundles, Web Components, Angular-free utility exports, package metadata, and all Angular wrapper components.
+- Do not add `styleUrl`, `styleUrls`, inline `styles`, or component-local SCSS to Angular app components. If a visual rule is needed, create or extend a Viking-UI component. Angular component files must not contain any visual styling — all rules belong in the Viking-UI package.
+- Never import from retired frontend-local library paths or from `packages/viking-ui/src/...` in app/runtime code. Consume public entrypoints through the npm package or workspace alias: package root or `/angular` for Angular, `/web-components.js` for custom elements, `/icons` and `/site-drakkar` for static-site utilities, `/tokens.json` for design tooling.
+
+```typescript
+import {
+  VikingButton,
+  VikingCard,
+  VikingField,
+  VikingInput,
+} from "@dataengineeringformachinelearning/viking-ui";
+```
+
+### Non-Angular (marketing Astro, Django templates, Swagger)
+
+- Load synced CSS: `design-tokens.css` + `viking-ui.css` (from `scripts/sync_design_system.py`).
+- Use `@dataengineeringformachinelearning/viking-ui/icons`, `@dataengineeringformachinelearning/viking-ui/site-drakkar`, `@dataengineeringformachinelearning/viking-ui/tokens.json`, and `@dataengineeringformachinelearning/viking-ui/manifest` for build-time/static-site data. Do not pull the Angular barrel into Astro prerender paths.
+- Prefer jsDelivr CDN URLs for package-hosted static artifacts when a surface can safely consume CDN assets; otherwise use synced artifacts generated from `packages/viking-ui/`.
+- Use semantic HTML plus documented `viking-*` components/classes from the synced Viking-UI bundle — no local `<style>` blocks, inline styles, one-off palettes, or platform-specific CSS.
+- Mirror composable field ergonomics with tokenized form markup; do not embed React/Vue widget runtimes.
+
+---
+
+## THEME.md token law (zero hardcoded styles)
+
+### Always use tokens
+
+- **Colors:** `--viking-*` semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`, `--viking-text-muted`, …). Every color resolves to a token — the only permitted hex literals live in `_variables.scss` and `_series-colors.scss`.
+- **Spacing:** `--viking-space-*` on the **8px primary grid** (`--viking-space-unit`). Use integer steps only; `--viking-space-0-5` (4px) is the sole tight exception. Never invent raw px gaps.
+- **Typography:** `--viking-font-family`, `--viking-font-size-*`, `--viking-font-weight-*`, `--viking-letter-spacing-*`, `--viking-line-height-*`
+- **Radius:** `--viking-radius-*` (max 16px except pills). Cards: `--viking-radius-lg` (12px). Buttons: `--viking-radius` (8px).
+- **Shadows:** `--viking-shadow-*` with machined top-edge highlights. Hierarchy through token stepping, never stacked opacity.
+- **Motion:** `--viking-duration-*`, `--viking-ease-*`, respect `prefers-reduced-motion`
+- **Charts:** `--viking-series-1` … `--viking-series-8` or `tone` props — import `VIKING_SERIES_PRESETS` from `series-presets.ts`. Never raw hex in chart code.
+- **Breakpoints:** `--viking-bp-*` only (`sm: 600px`, `md: 768px`, `sidebar: 901px`, `lg: 1024px`, `xl: 1440px`, `2xl: 1920px`). Never invent ad-hoc pixel values.
+
+### Never
+
+- Hardcode hex/rgb/hsl (`#2176FF`, `#fff`, `rgb(17,17,17)`) in components, templates, or inline styles
+- Load Inter from Google Fonts CDN — use self-hosted `_fonts.scss`
+- Add gradient orbs, mesh backgrounds, neon glow, glassmorphism, or decorative clutter on base layouts
+- Use emojis in product UI (exception: 🇺🇸 on approved badges only)
+- Use `.viking-font-display` on body copy — CES/marketing display labels only
+- Exceed `--viking-container-max-width` (1260px) without `.page-inner-wrapper` intent
+- Register customer domains in static CSS/CORS — database-driven per AGENTS.md
+- Use ad-hoc breakpoint pixel values (e.g., `560px`, `640px`, `820px`, `960px`, `980px`) — use `--viking-bp-*` tokens only
+
+### Layout & aesthetic
+
+- **Grid-first composition:** All pages compose `viking-page-shell` → `viking-section` with `viking-stack`, `viking-grid`, and `viking-cluster`. Start as single-column grid (`grid-template-columns: 1fr`), scale at 768px (tablet) and 1024px (desktop). Application routes use `viking-app-layout` + `viking-page-template` (supports `width="narrow"`, `"default"`, `"wide"`).
+- **Context-aware density:** Apply the right density for the context. Dashboards/analytics: `viking-metric-card`, `viking-hud-panel`, `viking-chart-panel` for dense data inlay. Settings/billing: `viking-form-section` with grouped `viking-field` stacks. Status/overview: open `viking-card` with generous padding. Static/marketing: wider readable widths (`--viking-content-readable-max-width`). Never force a dashboard density pattern into a settings form.
+- **Tactile surfaces:** subtle inset top-edge highlights, etched steel-like borders, and 1px hover lift max.
+- **Dense, breathable layout:** cards, buttons, charts, and overview panels must support Flux-like data density while using tokenized padding (`--viking-card-padding`, `--viking-panel-padding`) and exact alignment.
+- **Primitive clarity:** favor spartan.ng-style clean composition and predictable controls; do not solve missing primitives with app-local CSS.
+- **Mobile-first:** 44px touch targets, `--viking-space-2` gutters scaling to `--viking-space-3`.
+- **Status:** never color alone — pair tone with `viking-icon`, label, or pattern.
+
+---
+
+## Premium polish standards (locked)
+
+Every surface must match the **marketing site polish bar** — use it as the visual benchmark before shipping UI.
+
+**Visual benchmark:** [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/) (`marketing/src/pages/index.astro`, `marketing/src/styles/landing.scss`). Match its breathing room, section hierarchy, machined card surfaces, and restrained teal/crimson accents. If deml.app, backend, docs, or showcase feels flatter, less disciplined, or less legible than marketing, it is not done.
+
+### Tokens only — spacing, color, wrappers
+
+| Concern               | Required tokens / wrappers                                                                                                                                                                 | Never                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| **Spacing**           | `--viking-space-*`, `--viking-page-gutter` / `--viking-page-gutter-lg`, `--viking-page-stack-gap`, `--viking-page-section-gap`, `--viking-card-padding`, `--viking-panel-padding`          | Raw `px` gaps (`12px`, `20px`, `32px`) unless mapped 1:1 to a token                             |
+| **Colors**            | `--viking-bg`, `--viking-surface`, `--viking-surface-recipe`, `--viking-text*`, `--viking-accent*`, `--viking-border` / `-subtle` / `-strong`, `--viking-success` / `-warning` / `-danger` | Hex, `rgb()`, `rgba()`, washed opacity stacks, legacy `--color-*` without `--viking-*` fallback |
+| **Shell wrappers**    | `.page-inner-wrapper`, `viking-page-header`, `viking-card` (+ `viking-card-header` / `-footer` when structured), `viking-metric-card`, `viking-hud-panel`, `viking-form-section`           | Raw `<div class="card">`, hand-rolled panel shells, duplicate per-page card SCSS                |
+| **Typography rhythm** | `--viking-font-size-*`, `--viking-line-height-*`, `--viking-letter-spacing-*`                                                                                                              | Ad-hoc `font-size: 1.1rem` without a token alias                                                |
+| **Breakpoints**       | `--viking-bp-sm` (600px), `--viking-bp-md` (768px), `--viking-bp-sidebar` (901px), `--viking-bp-lg` (1024px), `--viking-bp-xl` (1440px), `--viking-bp-2xl` (1920px)                     | Ad-hoc pixel values (`560px`, `640px`, `820px`, `960px`, `980px`)                               |
+
+### Minimum padding, margins, and max-widths
+
+Enforce these floors on every page — no Spartan drift, no cramped KPI rows:
+
+- **Page shell:** content lives in `.page-inner-wrapper` capped at `--viking-container-max-width` (1260px) with `--viking-page-gutter` (mobile) → `--viking-page-gutter-lg` (tablet+).
+- **Section rhythm:** `--viking-page-section-gap` or `--viking-space-7` between major blocks; `--viking-space-3` between related subsections; use `.metrics-overview-header` + `.section-title-premium` patterns from `page-shell.scss`.
+- **Card interiors:** minimum `--viking-card-padding` (`--viking-space-3`); compact metrics use `--viking-card-padding-compact` (`--viking-space-2`) — never below `--viking-space-2`.
+- **Form stacks:** `viking-field` gaps and `viking-form-section` spacing at `--viking-space-2` minimum; billing/settings sections at `--viking-font-size-lg` titles with `--viking-space-3` vertical rhythm.
+- **Readable copy width:** long prose/subtitles cap at `--viking-content-readable-max-width` (~48rem).
+- **Touch targets:** interactive controls ≥ 44px height on mobile (`--viking-control-height` / `--viking-space-5` minimum).
+- **Responsive grids:** use tokenized gaps (`--grid-gap`, `--viking-space-2`–`--viking-space-3`); collapse single-column on mobile before squeezing padding.
+- **Dense card width:** metric, KPI, status, forecast, and gauge collections cap at two equal columns (6/12 each), stretch cards to equal height, and preserve single-line compact labels/values with accessible ellipsis only when space is genuinely constrained. Never create four-across 3/12 dense-card rows.
+- **Chart inlay:** all charts use `viking-chart-panel` with `--viking-chart-panel-min-height-*` sizing, generous `--viking-chart-gutter-default` (12/20/36/44) padding, and `viking-chart-empty-state` / `viking-chart-panel[loading]` for all states. Series tones map to `--viking-series-1`…`8` tokens — never raw hex in chart code. Import `VIKING_SERIES_PRESETS` from `series-presets.ts`.
+
+### Context-aware component application
+
+Apply the right density for the context. Never force one density pattern into another:
+
+| Context               | Primary components                                         | Density pattern                          |
+| --------------------- | ---------------------------------------------------------- | ---------------------------------------- |
+| **Dashboards**        | `viking-metric-card`, `viking-hud-panel`, `viking-chart-panel` | Dense data inlay, two-column max, equal height |
+| **Settings / billing**| `viking-form-section`, grouped `viking-field` stacks       | Comfortable field rhythm, 42rem max width |
+| **Status / overview** | `viking-card` with generous padding                        | Open cards, readable hierarchy           |
+| **Security / govern** | `viking-card`, evidence-minded controls                    | Auditable, clear provenance, structured  |
+| **Static / marketing**| `.page-inner-wrapper`, readable prose                      | Wide readable widths, generous spacing   |
+
+### Component wrapper law (Angular + static)
+
+- Wrap every content block in a **`viking-*` primitive** before adding page-specific SCSS.
+- Prefer **`--viking-surface-recipe`** + machined top hairline (`page-shell.scss` / `viking-card`) over flat `--viking-surface` fills.
+- Charts, empty states, and loaders: `viking-chart-panel`, `viking-chart-empty-state`, `viking-skeleton` — not bespoke div shells.
+- **No monolith surface files:** decompose `app-pages.scss` into focused partials (`_alerts.scss`, `_severity-pills.scss`, `_spinner.scss`, `_dashboard-overview.scss`, etc.) loaded by a single `@use` index. Never grow a single surface file past ~300 lines.
+- **DI in library components:** use constructor parameter injection — never field-level `inject()` in `@dataengineeringformachinelearning/viking-ui` (causes NG0203 in cross-package production bundles).
+
+### Polish parity checklist (compare to marketing)
+
+Before merge, confirm the touched surface matches marketing benchmark quality:
+
+1. Generous vertical rhythm between hero → sections → cards (no edge-to-edge text blocks).
+2. Metallic borders visible but restrained (`--viking-border`, not faint `rgba()` washes).
+3. Accent color used sparingely — teal primary, crimson secondary; no neon or gradient orbs.
+4. Hierarchy reads in one glance: page header → section title → metric/card → detail.
+5. Charts use `viking-chart-panel` with loading/empty states and series token mapping.
+6. Context matches density — dashboard in settings form or settings form in dashboard is wrong.
+7. `node scripts/enforce-theme.js` and `node scripts/check_mobile_first.js` pass with zero violations.
+
+---
+
+## Static CSS build pipeline (single owner)
+
+| Role                    | Path                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| **Canonical SCSS**      | `packages/viking-ui/src/styles/` (tokens, components, navbar, bundle)            |
+| **Surface partials**    | `packages/viking-ui/src/styles/surfaces/` (focused `_*.scss` files, ~300 line max)|
+| **Static CSS build**    | `packages/viking-ui/scripts/build-css.mjs` → `packages/viking-ui/dist/`          |
+| **Web/utility build**   | `packages/viking-ui/scripts/build-elements.mjs` → Web Components + utility JS    |
+| **Fan-out to surfaces** | `python scripts/sync_design_system.py` (marketing, backend, frontend `/assets/`) |
+| **CDN/static delivery** | jsDelivr for published package artifacts where possible                          |
+
+**Do not** recreate `packages/deml-design-system` or `frontend/src/design-system/` mirrors. Railway/Docker frontend builds compile live SCSS from viking-ui only — no monorepo-root paths.
+
+---
+
+## Pre-ship UI checklist
+
+1. All interactive UI uses `viking-*` components (or tokenized static markup on non-Angular surfaces).
+2. No hardcoded colors, spacing, or font sizes outside `--viking-*` tokens.
+3. Padding, gutters, and max-widths meet **Premium polish standards** — parity with marketing benchmark.
+4. Charts use `viking-chart-panel` with loading/empty states and `VIKING_SERIES_PRESETS` color mapping.
+5. Context matches density — dashboard components in settings forms (or vice versa) is a blocking defect.
+6. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
+7. Token changes start in `packages/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui:package` + `python scripts/sync_design_system.py`.
+8. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.31**, and **README.md** together.
+9. `npm run test:viking-ui` and app `npm test` pass for touched surfaces (charts, auth, forms, icons).
+10. `node scripts/enforce-theme.js` reports zero violations before merge.
+11. No orphaned app-local styles, raw hex, ad-hoc breakpoints, or `<div class="card">` / `<div class="alert">` outliers in consuming surfaces.
+
+---
+
+## Automated enforcement (run before commit)
+
+| Gate                         | Command                                 | Blocks                                                                            |
+| ---------------------------- | --------------------------------------- | --------------------------------------------------------------------------------- |
+| Theme tokens / no hardcoding | `node scripts/enforce-theme.js`         | Off-palette hex, legacy Lab Coat vars, Material classes, generic `.card`/`.btn-*` |
+| Accessibility                | `node scripts/run_axe.js`               | WCAG 2.1 AA violations on HTML/Astro                                              |
+| Mobile-first layout          | `node scripts/check_mobile_first.js`    | Missing `.page-inner-wrapper`, sub-44px touch targets                             |
+| Lint                         | `cd frontend && npm run lint`           | ESLint / angular-eslint                                                           |
+| Viking-UI tests              | `cd frontend && npm run test:viking-ui` | Regressions in charts, forms, icons, auth panel                                   |
+| Full quality                 | `uvx pre-commit run --all-files`        | All pre-commit hooks                                                              |
+
+Apply safe theme auto-fixes: `node scripts/enforce-theme.js --apply`
+
+---
+
+## Testing requirements (key surfaces)
+
+Every change to these areas **must** include or update Vitest coverage:
+
+| Surface    | Location                                                   | What to test                                                                            |
+| ---------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Charts     | `packages/viking-ui/src/lib/chart/`                        | SVG path generation, bar/line/donut kinds, zoom/pan window math (`chart-zoom.spec.ts`)  |
+| Auth flows | `src/app/services/auth.service.spec.ts`, `lib/auth-panel/` | Login/logout/checkAuth signals, OAuth panel a11y, social button emits                   |
+| Forms      | `lib/field/`, `lib/input/`, `lib/form-section/`            | CVA/ngModel, required/error states, section layout classes                              |
+| Icons      | `lib/core/icons.ts`, `lib/icon/`                           | Registry resolution, Material aliases, size presets, semantic color tokens, brand marks |
+
+Run library tests: `npm run test:viking-ui` (uses `vitest.viking-ui.config.ts` — real templates, not stubbed).
+
+---
+
+## Performance & minimalism (Starship-grade)
+
+Build like reusable flight hardware — every line earns its mass:
+
+- **OnPush + signals** on all Viking-UI components; avoid mutable state and unnecessary re-renders.
+- **Zero-dep charts/icons** — native SVG only; no canvas, D3, Chart.js, or icon font runtimes.
+- **Pure helpers** — extract testable math (chart zoom, icon resolution) into standalone modules; keep components thin.
+- **No speculative abstractions** — one composable primitive beats three wrapper layers.
+- **Lazy by default** — route-level code splitting in the app; no eager imports of showcase-only components.
+- **Token-only styling** — CSS variables compile once; no runtime theme engines or CSS-in-JS.
+- **Reusable first** — all shared UI logic and thin Angular wrappers live together in `packages/viking-ui/`.
+
+---
+
+## Hard rejections (never ship)
+
+- Third-party UI kits (Material, Bootstrap, PrimeNG, shadcn runtimes, Font Awesome, Lucide runtime packages).
+- Hardcoded hex/rgb/hsl in templates, SCSS, or inline styles (except `_variables.scss` / `_series-colors.scss`).
+- Hand-rolled buttons, inputs, modals, toasts, tables, or charts when `viking-*` exists.
+- `alert()`, generic spinners, color-only status, gradient orbs, neon glow, glassmorphism, decorative clutter on base layouts.
+- Google Fonts CDN for Inter — use self-hosted `_fonts.scss`.
+- Ad-hoc breakpoint pixel values (560px, 640px, 820px, 960px, 980px) — use `--viking-bp-*` tokens only.
+- `styleUrl`, `styleUrls`, or inline `styles` on Angular component files — all visual rules belong in Viking-UI.
+- `<div class="card">`, `<div class="alert">`, or other generic class wrappers when `viking-card`, `viking-callout`, etc. exist.
+- Monolith surface SCSS files (single file > ~300 lines) — decompose into focused partials.
+- Pickle for ML models; hardcoded tenant domains in CORS; `"platform"` string FKs in workers.
+
+---
+
+## Platform invariants (from AGENTS.md — do not break)
+
+- Event Projections: Outbox, idempotency, versioned events
+- Symmetrical multi-tenant workers: `Tenant.objects.all()` — no hardcoded Tenant0 exceptions
+- UUID PKs everywhere; no pickle for ML models
+- Dynamic CORS via database registration
+- Run `uvx pre-commit run --all-files` before committing
+
+When architectural UI patterns change, update **BOOK.md** first, then sync via `scripts/sync_content.py`.
