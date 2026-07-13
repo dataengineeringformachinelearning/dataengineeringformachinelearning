@@ -17,59 +17,61 @@
 {% block content %}
 <main class="page-inner-wrapper backend-landing-shell" id="main-content" tabindex="-1">
   <!-- Hero: Live Metrics Dashboard -->
-  <section class="backend-hero" aria-labelledby="backend-hero-title">
-    <div class="backend-hero-header">
-      <span class="viking-badge viking-badge-success backend-status-badge">
+  <section class="backend-hero viking-unified-hero" aria-labelledby="backend-hero-title">
+    <div class="backend-hero-header viking-unified-hero-copy">
+      <span class="viking-badge viking-badge-success backend-status-badge viking-unified-hero-badge">
         <span class="backend-status-dot" aria-hidden="true"></span>
         Backend operational
       </span>
 
-      <h1 class="viking-heading viking-heading-xl viking-font-display" id="backend-hero-title">
-        Data Engineering<br />for Machine Learning
+      <h1 class="viking-heading viking-heading-xl viking-unified-hero-title" id="backend-hero-title">
+        Data Engineering for Machine Learning
       </h1>
-      <p class="viking-text-muted backend-hero-lead">
+      <p class="viking-text-muted backend-hero-lead viking-unified-hero-lead">
         Core REST API &amp; services orchestrator. This system manages user accounts,
         coordinates model training schedules, and computes SLA predictions.
       </p>
     </div>
 
-    <!-- Live Metrics Visualization -->
-    <div class="backend-hero-metrics" aria-label="Live operational metrics">
-      <div class="backend-metric-grid">
-        <div class="viking-card viking-metric-card">
-          <span class="viking-metric-value">99.97%</span>
-          <span class="viking-metric-label">Uptime</span>
-        </div>
-        <div class="viking-card viking-metric-card">
-          <span class="viking-metric-value">42ms</span>
-          <span class="viking-metric-label">P99 Latency</span>
-        </div>
-        <div class="viking-card viking-metric-card">
-          <span class="viking-metric-value">8.2K</span>
-          <span class="viking-metric-label">Events/sec</span>
-        </div>
-        <div class="viking-card viking-metric-card">
-          <span class="viking-metric-value">847</span>
-          <span class="viking-metric-label">Blocked Threats</span>
+    <div class="viking-card viking-unified-hero-panel">
+      <!-- Live Metrics Visualization -->
+      <div class="backend-hero-metrics" aria-label="Live operational metrics">
+        <div class="backend-metric-grid">
+          <div class="viking-card viking-metric-card">
+            <span class="viking-metric-value">99.97%</span>
+            <span class="viking-metric-label">Uptime</span>
+          </div>
+          <div class="viking-card viking-metric-card">
+            <span class="viking-metric-value">42ms</span>
+            <span class="viking-metric-label">P99 Latency</span>
+          </div>
+          <div class="viking-card viking-metric-card">
+            <span class="viking-metric-value">8.2K</span>
+            <span class="viking-metric-label">Events/sec</span>
+          </div>
+          <div class="viking-card viking-metric-card">
+            <span class="viking-metric-value">847</span>
+            <span class="viking-metric-label">Blocked Threats</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="viking-cta-row backend-hero-cta">
-      <a href="/api/v1/docs" class="viking-btn viking-btn-primary" id="explore-docs-btn">
-        <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
-        <span>Swagger Docs</span>
-      </a>
-      <a href="{{ frontend_url }}/explore" class="viking-btn viking-btn-outline">
-        <span data-viking-icon="globe" data-viking-icon-size="16" aria-hidden="true"></span>
-        <span>Explore App</span>
-      </a>
+      <div class="viking-cta-row backend-hero-cta viking-unified-hero-actions">
+        <a href="/api/v1/docs" class="viking-btn viking-btn-primary" id="explore-docs-btn">
+          <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
+          <span>Swagger Docs</span>
+        </a>
+        <a href="{{ frontend_url }}/explore" class="viking-btn viking-btn-outline">
+          <span data-viking-icon="globe" data-viking-icon-size="16" aria-hidden="true"></span>
+          <span>Explore App</span>
+        </a>
+      </div>
     </div>
   </section>
 
   <!-- Feature Showcase: Inlaid Cards -->
   <section class="backend-feature-showcase" aria-labelledby="backend-features-heading">
-    <h2 class="viking-label" id="backend-features-heading">Platform capabilities</h2>
+    <h2 class="viking-label viking-unified-section-header" id="backend-features-heading">Platform capabilities</h2>
 
     <div class="viking-card viking-feature-panel" aria-label="Django REST API">
       <span
@@ -129,7 +131,7 @@
 
   <!-- Live Status Preview -->
   <section class="backend-status-preview" aria-labelledby="status-preview-title">
-    <div class="backend-status-preview-header">
+    <div class="backend-status-preview-header viking-unified-section-header">
       <span class="section-tag">LIVE STATUS</span>
       <h2 id="status-preview-title">Operational Telemetry Feed</h2>
     </div>

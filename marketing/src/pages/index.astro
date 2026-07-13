@@ -144,16 +144,16 @@ const integrations = [
 
     <!-- Hero: split layout with mock dashboard -->
     <section
-      class="hero-showcase viking-column-layout viking-column-layout--2 viking-column-layout--loose"
+      class="hero-showcase viking-unified-hero"
       aria-labelledby="main-title"
     >
-      <div class="hero-copy">
-        <div class="hero-badge">
+      <div class="hero-copy viking-unified-hero-copy">
+        <div class="hero-badge viking-unified-hero-badge">
           <span class="badge-dot pulse-dot"></span>
           <span class="badge-text">Field Grade · Version {version}</span>
         </div>
-        <h1 class="title" id="main-title">Operational intelligence for resilient AI systems</h1>
-        <p class="subtitle">
+        <h1 class="title viking-unified-hero-title" id="main-title">Operational intelligence for resilient AI systems</h1>
+        <p class="subtitle viking-unified-hero-lead">
           DEML fuses data engineering, AI engineering, and intelligence-driven cybersecurity defense
           into one multi-tenant operational fabric. Ingest telemetry at scale, forecast SLA breach
           before it manifests, and federate threat indicators with production-grade reliability.
@@ -176,7 +176,7 @@ const integrations = [
             <span>Symmetric tenant doctrine</span>
           </div>
         </div>
-        <div class="cta-group">
+        <div class="cta-group viking-unified-hero-actions">
           <a href="/documentation" class="cta-button viking-btn viking-btn-primary">
             <span class="cta-content">
               <VikingIcon name="rocket_launch" size={20} class="cta-icon" />
@@ -192,12 +192,12 @@ const integrations = [
         </div>
       </div>
 
-      <PageMockup variant="security-ops" />
+      <PageMockup variant="security-ops" class="viking-unified-hero-panel" />
     </section>
 
     <!-- Quick start -->
     <section class="quick-start-band" aria-labelledby="quick-start-title">
-      <header class="quick-start-header">
+      <header class="quick-start-header viking-unified-section-header">
         <span class="section-tag">DEPLOYMENT SEQUENCE</span>
         <h2 id="quick-start-title">Operational Onboarding in Four Steps</h2>
         <p>Connect, observe, and act. The platform sustains projections, enrichment, and threat scoring autonomously.</p>

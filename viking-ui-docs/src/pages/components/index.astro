@@ -10,23 +10,23 @@ import { SHOWCASE_CATEGORIES, COMPONENT_COUNT } from '../../lib/component-regist
   description="Interactive gallery of Viking-UI primitives with multi-framework code snippets."
 >
   <div class="page-inner-wrapper showcase-page">
-    <header class="showcase-hero">
-      <div class="showcase-hero-copy">
-        <div class="showcase-hero-badge">
+    <header class="showcase-hero viking-unified-hero">
+      <div class="showcase-hero-copy viking-unified-hero-copy">
+        <div class="showcase-hero-badge viking-unified-hero-badge">
           <span class="showcase-hero-badge-dot pulse-dot" aria-hidden="true"></span>
           <span class="section-tag">Component gallery</span>
         </div>
-        <h1 class="showcase-hero-title">Precision-built primitives</h1>
-        <p class="showcase-hero-lead">
+        <h1 class="showcase-hero-title viking-unified-hero-title">Precision-built primitives</h1>
+        <p class="showcase-hero-lead viking-unified-hero-lead">
           Live previews and copy-ready snippets for Angular, Astro, Django, and Web Components.
           <strong id="component-search-count">{COMPONENT_COUNT} components</strong> — each with a dedicated detail page and API reference.
         </p>
-        <div class="showcase-hero-actions">
+        <div class="showcase-hero-actions viking-unified-hero-actions">
           <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
           <viking-button-wc variant="outline" href="/architecture">Architecture</viking-button-wc>
         </div>
       </div>
-      <div class="showcase-hero-panel viking-card" aria-label="Live component preview">
+      <div class="showcase-hero-panel viking-card viking-unified-hero-panel" aria-label="Live component preview">
         <span class="viking-label">Live preview</span>
         <div class="showcase-hero-preview-grid">
           <div class="showcase-hero-preview-row">
@@ -86,7 +86,7 @@ import { SHOWCASE_CATEGORIES, COMPONENT_COUNT } from '../../lib/component-regist
         data-category-id={category.id}
         aria-labelledby={`${category.id}-heading`}
       >
-        <header class="showcase-section-header">
+        <header class="showcase-section-header viking-unified-section-header">
           <span class="section-tag">{category.label}</span>
           <h2 class="showcase-section-title" id={`${category.id}-heading`}>
             {category.label}

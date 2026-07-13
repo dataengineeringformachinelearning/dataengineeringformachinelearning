@@ -173,18 +173,19 @@ const platformOpsCards = [
     <div class="dashboard-content-area">
       <div class="page-inner-wrapper">
         <div class="docs-page-stack">
-        <header class="docs-hero docs-hero-with-mockup">
-          <div class="docs-hero-copy">
-            <div class="u-style-58adc5">
+        <header class="docs-hero docs-hero-with-mockup viking-unified-hero">
+          <div class="docs-hero-copy viking-unified-hero-copy">
+            <div class="u-style-58adc5 viking-unified-hero-badge">
               <span class="badge-dot pulse-dot" aria-hidden="true"></span>
               <span class="u-style-486a44">Developer Portal · Secured</span>
             </div>
-            <h1 class="docs-title">Hardened ML Pipeline Integration</h1>
-            <p class="docs-subtitle">
+            <h1 class="docs-title viking-unified-hero-title">Hardened ML Pipeline Integration</h1>
+            <p class="docs-subtitle viking-unified-hero-lead">
               One API key. Zero-trust authentication on every call. Stream telemetry, execute inference,
               and monitor threat posture — through the same gateway your production stack already trusts.
             </p>
-            <DocsCtaGroup>
+            <div class="viking-unified-hero-actions">
+              <DocsCtaGroup>
               <DocsCta
                 href={FRONTEND_URL + '/login'}
                 authenticatedHref={FRONTEND_URL + '/dashboard'}
@@ -197,9 +198,10 @@ const platformOpsCards = [
               <DocsCta href="#quick-start" variant="secondary" icon="play_circle">
                 Quick Start Guide
               </DocsCta>
-            </DocsCtaGroup>
+              </DocsCtaGroup>
+            </div>
           </div>
-          <PageMockup variant="analytics" class="docs-hero-mockup" />
+          <PageMockup variant="analytics" class="docs-hero-mockup viking-unified-hero-panel" />
         </header>
 
         <nav class="docs-outline no-print" aria-label="Documentation outline">
