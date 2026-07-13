@@ -173,7 +173,11 @@
   letter-spacing: 0.02em;
   position: relative;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--viking-accent) 28%, var(--viking-border));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 28%,
+    var(--viking-border)
+  );
   box-shadow: var(--viking-shadow-sm);
 
   &::before {
@@ -451,7 +455,11 @@
   gap: var(--viking-space-2);
   padding: var(--viking-card-padding);
   border-radius: var(--viking-radius-lg);
-  background: color-mix(in srgb, var(--viking-accent) 6%, var(--viking-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 6%,
+    var(--viking-surface)
+  );
   border: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
   position: relative;
   overflow: hidden;
@@ -774,7 +782,11 @@
   border-radius: var(--viking-radius-lg);
   padding: var(--viking-card-padding-compact, var(--viking-space-3));
   position: relative;
-  border-color: color-mix(in srgb, var(--viking-accent) 12%, var(--viking-border));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 12%,
+    var(--viking-border)
+  );
   box-shadow: var(--viking-shadow-sm);
 
   .metric-label {
@@ -1165,7 +1177,11 @@
   align-items: flex-start;
   padding: 40px;
   border-radius: var(--viking-radius-xl, 16px);
-  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 8%,
+    var(--viking-surface)
+  );
   border: 1px solid color-mix(in srgb, var(--viking-accent) 20%, transparent);
 
   @media (min-width: 768px) {
@@ -1356,10 +1372,7 @@
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, var(--viking-metric-card-min-width)), 1fr)
-  );
+  grid-template-columns: 1fr;
   width: 100%;
 }
 
@@ -1400,15 +1413,16 @@
 }
 
 .quick-start-steps,
-.security-pillars-grid,
 .pricing-cards-container {
   grid-template-columns: repeat(
     auto-fit,
-    minmax(
-      min(100%, calc(var(--viking-space-16) + var(--viking-space-4))),
-      1fr
-    )
+    minmax(min(100%, calc(var(--viking-space-16) + var(--viking-space-4))), 1fr)
   );
+  gap: var(--viking-space-3);
+}
+
+.security-pillars-grid {
+  grid-template-columns: 1fr;
   gap: var(--viking-space-3);
 }
 
@@ -1528,10 +1542,7 @@
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(
-      min(100%, calc(var(--viking-space-16) + var(--viking-space-4))),
-      1fr
-    )
+    minmax(min(100%, calc(var(--viking-space-16) + var(--viking-space-4))), 1fr)
   );
   gap: var(--viking-space-3);
   width: 100%;
@@ -1553,6 +1564,11 @@
 
   .hero-stat-pill {
     width: auto;
+  }
+
+  .hero-stats,
+  .security-pillars-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero-copy .cta-group {

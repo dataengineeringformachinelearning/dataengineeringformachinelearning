@@ -1,0 +1,32 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="720" fill="#070C20"/>
+  <g fill="#0078FF">
+    <text x="88" y="112" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4">VIKING-UI / COMPONENT LIBRARY</text>
+    <text x="88" y="202" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="800">Precision-built primitives</text>
+    <text x="88" y="252" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="500">Live previews and copy-ready patterns for every DEML surface.</text>
+  </g>
+  <g stroke="#0078FF" stroke-width="3">
+    <rect x="88" y="326" width="336" height="278" rx="16"/>
+    <rect x="472" y="326" width="336" height="278" rx="16"/>
+    <rect x="856" y="326" width="336" height="278" rx="16"/>
+    <rect x="120" y="370" width="168" height="50" rx="10" fill="#0078FF"/>
+    <rect x="120" y="454" width="272" height="58" rx="10"/>
+    <rect x="504" y="370" width="104" height="32" rx="16"/>
+    <rect x="624" y="370" width="104" height="32" rx="16"/>
+    <path d="M504 474H776"/>
+    <path d="M504 512H704"/>
+    <path d="M504 550H744"/>
+    <rect x="888" y="370" width="272" height="176" rx="12"/>
+    <path d="M916 500L964 458L1014 476L1070 410L1132 438"/>
+    <circle cx="964" cy="458" r="7" fill="#0078FF"/>
+    <circle cx="1070" cy="410" r="7" fill="#0078FF"/>
+  </g>
+  <g fill="#0078FF" font-family="Inter, Arial, sans-serif" font-weight="700">
+    <text x="162" y="403" font-size="18">DEPLOY</text>
+    <text x="120" y="572" font-size="16" letter-spacing="2">BUTTON + INPUT</text>
+    <text x="504" y="572" font-size="16" letter-spacing="2">BADGES + STATUS</text>
+    <text x="888" y="572" font-size="16" letter-spacing="2">NATIVE SVG CHART</text>
+  </g>
+  <path d="M88 646H1192" stroke="#0078FF" stroke-width="2"/>
+  <text x="88" y="682" fill="#0078FF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="2">ANGULAR · ASTRO · DJANGO · WEB COMPONENTS</text>
+</svg>

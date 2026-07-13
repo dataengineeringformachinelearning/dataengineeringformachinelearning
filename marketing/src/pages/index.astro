@@ -38,9 +38,9 @@ const capabilities = [
       'See performance, availability, and emerging risk in one live operational view. Fast updates turn subtle drift into an early warning before customers feel the impact.',
     icon: 'analytics',
     metrics: [
-      { label: 'P99 Latency', value: '42ms', trend: 'down' },
-      { label: 'Uptime', value: '99.97%', trend: 'stable' },
-      { label: 'Requests/min', value: '12.4K', trend: 'up' },
+      { label: 'P99 Latency · 24h', value: 'Live', trend: 'down', metric: 'p99Value' },
+      { label: 'Uptime · 30d', value: 'Live', trend: 'stable', metric: 'uptimeValue' },
+      { label: 'Requests · 24h', value: 'Live', trend: 'up', metric: 'requestsValue' },
     ],
     link: {
       href: '/documentation',
@@ -57,9 +57,9 @@ const capabilities = [
       'ML models score anomalies at ingress. Semgrep and Trivy findings consolidate into a unified triage board; high-confidence indicators serialize to STIX 2.1 for downstream SOAR and TAXII federation.',
     icon: 'security',
     metrics: [
-      { label: 'Threat Score', value: '12%', trend: 'down' },
-      { label: 'Open CVEs', value: '3', trend: 'down' },
-      { label: 'Blocked', value: '847', trend: 'up' },
+      { label: 'Threats Detected · 24h', value: 'Live', trend: 'down', metric: 'threatsValue' },
+      { label: 'Threat Model', value: 'Active', trend: 'stable', metric: null },
+      { label: 'Public Scope', value: 'Tenant0', trend: 'stable', metric: null },
     ],
     link: {
       href: FRONTEND_URL + '/login',
@@ -76,9 +76,9 @@ const capabilities = [
       'Every operational change is durable, replayable, and reflected across live views without losing history. The same reliable path protects every customer workspace.',
     icon: 'layers',
     metrics: [
-      { label: 'Events/sec', value: '8.2K', trend: 'up' },
-      { label: 'DLQ Rate', value: '0.01%', trend: 'down' },
-      { label: 'Tenants', value: 'Symmetrical', trend: 'stable' },
+      { label: 'Observed Requests · 24h', value: 'Live', trend: 'up', metric: 'requestsValue' },
+      { label: 'Outbox Delivery', value: 'Durable', trend: 'stable', metric: null },
+      { label: 'Tenants', value: 'Symmetrical', trend: 'stable', metric: null },
     ],
     link: {
       href: FRONTEND_URL + '/status/platform-status',
@@ -158,14 +158,14 @@ const integrations = [
           into one multi-tenant operational fabric. Ingest telemetry at scale, forecast SLA breach
           before it manifests, and federate threat indicators with production-grade reliability.
         </p>
-        <div class="hero-stats" aria-label="Platform highlights">
+        <div class="hero-stats viking-column-layout viking-column-layout--2" aria-label="Platform highlights">
           <div class="hero-stat-pill">
             <VikingIcon name="shield" size={20} />
-            <span>847 threats interdicted</span>
+            <span data-platform-metric="threats">Live threat telemetry</span>
           </div>
           <div class="hero-stat-pill">
             <VikingIcon name="speed" size={20} />
-            <span>42ms P99 command loop</span>
+            <span data-platform-metric="p99">Live P99 command loop</span>
           </div>
           <div class="hero-stat-pill">
             <VikingIcon name="verified_user" size={20} />
@@ -265,7 +265,7 @@ const integrations = [
               {cap.metrics.map((m) => (
                 <div class="visual-metric">
                   <span class="metric-label">{m.label}</span>
-                  <span class="metric-value">{m.value}</span>
+                  <span class="metric-value" data-platform-metric={m.metric}>{m.value}</span>
                   <span class={`metric-trend trend-${m.trend}`} aria-hidden="true">
                     {m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '—'}
                   </span>
@@ -325,7 +325,7 @@ const integrations = [
         </p>
       </header>
       <ul
-        class="security-pillars-grid viking-column-layout viking-column-layout--auto viking-column-layout--item-compact"
+        class="security-pillars-grid viking-column-layout viking-column-layout--2"
       >
         {securityPillars.map((pillar) => (
           <li class="security-pillar viking-card">
@@ -425,3 +425,44 @@ const integrations = [
     </section>
   </div>
 </Layout>
+
+<script define:vars={{ BACKEND_URL }}>
+  const hydratePlatformMetrics = async () => {
+    const metricNodes = document.querySelectorAll('[data-platform-metric]');
+
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/v1/system-status/status_pages/slug/platform-status`,
+        { headers: { Accept: 'application/json' } },
+      );
+      if (!response.ok) throw new Error(`Platform metrics request failed: ${response.status}`);
+
+      const metrics = await response.json();
+      metricNodes.forEach((node) => {
+        const metric = node.getAttribute('data-platform-metric');
+        if (metric === 'p99' && Number.isFinite(metrics.p99_latency)) {
+          node.textContent = `${Math.round(metrics.p99_latency)}ms P99 command loop · 24h`;
+        }
+        if (metric === 'threats' && Number.isFinite(metrics.threats_detected_24h)) {
+          node.textContent = `${metrics.threats_detected_24h.toLocaleString()} threats detected · 24h`;
+        }
+        if (metric === 'p99Value' && Number.isFinite(metrics.p99_latency)) {
+          node.textContent = `${Math.round(metrics.p99_latency)}ms`;
+        }
+        if (metric === 'uptimeValue' && Number.isFinite(metrics.overall_uptime)) {
+          node.textContent = `${metrics.overall_uptime.toFixed(2)}%`;
+        }
+        if (metric === 'requestsValue' && Number.isFinite(metrics.total_requests)) {
+          node.textContent = metrics.total_requests.toLocaleString();
+        }
+        if (metric === 'threatsValue' && Number.isFinite(metrics.threats_detected_24h)) {
+          node.textContent = metrics.threats_detected_24h.toLocaleString();
+        }
+      });
+    } catch (error) {
+      console.warn('Live Tenant0 metrics are temporarily unavailable.', error);
+    }
+  };
+
+  void hydratePlatformMetrics();
+</script>

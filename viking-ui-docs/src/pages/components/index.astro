@@ -19,7 +19,10 @@ import { SHOWCASE_CATEGORIES, COMPONENT_COUNT } from '../../lib/component-regist
         <h1 class="showcase-hero-title viking-unified-hero-title">Precision-built primitives</h1>
         <p class="showcase-hero-lead viking-unified-hero-lead">
           Live previews and copy-ready snippets for Angular, Astro, Django, and Web Components.
-          <strong id="component-search-count">{COMPONENT_COUNT} components</strong> — each with a dedicated detail page and API reference.
+        </p>
+        <p class="showcase-hero-meta viking-text-muted">
+          <strong id="component-search-count">{COMPONENT_COUNT} components</strong>
+          <span>Each includes a dedicated detail page and API reference.</span>
         </p>
         <div class="showcase-hero-actions viking-unified-hero-actions">
           <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
@@ -27,7 +30,10 @@ import { SHOWCASE_CATEGORIES, COMPONENT_COUNT } from '../../lib/component-regist
         </div>
       </div>
       <div class="showcase-hero-panel viking-card viking-unified-hero-panel" aria-label="Live component preview">
-        <span class="viking-label">Live preview</span>
+        <div class="showcase-hero-preview-heading">
+          <span class="viking-label">Live preview</span>
+          <viking-badge-wc tone="accent">Interactive</viking-badge-wc>
+        </div>
         <div class="showcase-hero-preview-grid">
           <div class="showcase-hero-preview-row">
             <viking-button-wc variant="primary">Deploy</viking-button-wc>

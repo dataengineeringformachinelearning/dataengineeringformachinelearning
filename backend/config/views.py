@@ -1,12 +1,33 @@
+import logging
 import mimetypes
 
 from django.conf import settings
+from django.db import DatabaseError
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render
+
+logger = logging.getLogger(__name__)
 
 
 def home(request: HttpRequest) -> HttpResponse:
   frontend_url = settings.FRONTEND_URL.rstrip("/")
+  platform_metrics = None
+  try:
+    from monitor.models import StatusPage
+    from monitor.services.metrics import MetricsService
+
+    platform_page = (
+      StatusPage.objects.filter(slug="platform-status").prefetch_related("services").first()
+    )
+    if platform_page is not None:
+      platform_metrics = MetricsService.for_urls(
+        list(platform_page.services.values_list("url", flat=True)),
+        user=None,
+        is_platform=True,
+      )
+  except DatabaseError:
+    logger.warning("Platform metrics unavailable while rendering the backend landing page")
+
   return render(
     request,
     "home.html",
@@ -14,6 +35,7 @@ def home(request: HttpRequest) -> HttpResponse:
       "debug": settings.DEBUG,
       "frontend_url": frontend_url,
       "marketing_url": settings.MARKETING_URL.rstrip("/"),
+      "platform_metrics": platform_metrics,
     },
   )
 

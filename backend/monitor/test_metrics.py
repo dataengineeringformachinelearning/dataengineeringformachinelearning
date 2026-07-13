@@ -28,6 +28,7 @@ def test_metrics_prefers_aggregated_rollups() -> None:
     p99_latency_ms=120.0,
     avg_latency_ms=50.0,
     error_rate_percent=1.0,
+    threats_detected=7,
   )
 
   Endpoints.objects.create(
@@ -53,6 +54,7 @@ def test_metrics_prefers_aggregated_rollups() -> None:
 
   assert metrics.total_requests == 102
   assert metrics.p99_latency == 200.0  # max(agg p99, raw p99)
+  assert metrics.threats_detected_24h == 7
   assert metrics.cumulative_sla == 50.0
 
 
@@ -68,8 +70,10 @@ def test_metrics_platform_scope() -> None:
     p99_latency_ms=45.0,
     avg_latency_ms=30.0,
     error_rate_percent=0.0,
+    threats_detected=3,
   )
 
   metrics = MetricsService.for_urls([url], user=None, is_platform=True)
   assert metrics.total_requests == 50
   assert metrics.p99_latency == 45.0
+  assert metrics.threats_detected_24h == 3
