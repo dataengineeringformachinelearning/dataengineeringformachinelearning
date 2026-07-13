@@ -79,6 +79,7 @@ def test_list_status_pages(client: Client) -> None:
   data = response.json()
   assert len(data) == 1
   assert data[0]["slug"] == "platform-status"
+  assert data[0]["threats_detected_24h"] == 0
 
 
 @pytest.mark.django_db

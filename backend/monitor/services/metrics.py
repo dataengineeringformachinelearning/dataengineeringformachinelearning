@@ -28,6 +28,7 @@ class PageMetrics:
   uptime_history: list[UptimeDay] = field(default_factory=list)
   p99_latency: float = 0.0
   total_requests: int = 0
+  threats_detected_24h: int = 0
 
 
 class MetricsService:
@@ -58,7 +59,9 @@ class MetricsService:
     cumulative_sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
 
     history, overall_uptime = MetricsService._uptime_history_30d(endpoint_qs)
-    p99, total_requests = MetricsService._metrics_24h(urls, user=user, is_platform=is_platform)
+    p99, total_requests, threats_detected = MetricsService._metrics_24h(
+      urls, user=user, is_platform=is_platform
+    )
 
     return PageMetrics(
       cumulative_sla=cumulative_sla,
@@ -66,6 +69,7 @@ class MetricsService:
       uptime_history=history,
       p99_latency=p99,
       total_requests=total_requests,
+      threats_detected_24h=threats_detected,
     )
 
   @staticmethod
@@ -116,7 +120,7 @@ class MetricsService:
     *,
     user: User | None,
     is_platform: bool,
-  ) -> tuple[float, int]:
+  ) -> tuple[float, int, int]:
     now = timezone.now()
     last_24h = now - dt.timedelta(hours=24)
 
@@ -150,6 +154,7 @@ class MetricsService:
     ).exclude(status_code=0)
     raw_count = raw_qs.count()
     total_requests = sum(a.total_requests for a in aggregated) + raw_count
+    threats_detected = sum(a.threats_detected for a in aggregated)
 
     agg_p99 = max((a.p99_latency_ms for a in aggregated), default=0.0)
     latencies = list(raw_qs.values_list("response_time", flat=True).order_by("-last_tested")[:5000])
@@ -160,7 +165,7 @@ class MetricsService:
         idx = min(int(len(ms_list) * 0.99), len(ms_list) - 1)
         raw_p99 = ms_list[idx]
 
-    return round(max(agg_p99, raw_p99), 2), total_requests
+    return round(max(agg_p99, raw_p99), 2), total_requests, threats_detected
 
   @staticmethod
   def _archive_metrics_30d(

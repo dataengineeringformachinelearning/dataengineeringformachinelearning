@@ -29,6 +29,7 @@ export interface StatusPageData {
   uptime_history?: { status: string; uptime: number }[];
   p99_latency?: number;
   total_requests?: number;
+  threats_detected_24h?: number;
 }
 
 export interface MonitoredServiceData {

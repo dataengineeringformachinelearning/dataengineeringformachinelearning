@@ -38,20 +38,20 @@
       <div class="backend-hero-metrics" aria-label="Live operational metrics">
         <div class="backend-metric-grid">
           <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">99.97%</span>
-            <span class="viking-metric-label">Uptime</span>
+            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.overall_uptime|floatformat:2 }}%{% else %}—{% endif %}</span>
+            <span class="viking-metric-label">Uptime · 30d</span>
           </div>
           <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">42ms</span>
-            <span class="viking-metric-label">P99 Latency</span>
+            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.p99_latency|floatformat:0 }}ms{% else %}—{% endif %}</span>
+            <span class="viking-metric-label">P99 Latency · 24h</span>
           </div>
           <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">8.2K</span>
-            <span class="viking-metric-label">Events/sec</span>
+            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.total_requests }}{% else %}—{% endif %}</span>
+            <span class="viking-metric-label">Requests · 24h</span>
           </div>
           <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">847</span>
-            <span class="viking-metric-label">Blocked Threats</span>
+            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.threats_detected_24h }}{% else %}—{% endif %}</span>
+            <span class="viking-metric-label">Threats Detected · 24h</span>
           </div>
         </div>
       </div>
@@ -138,16 +138,16 @@
     <div class="viking-card" aria-label="Live metrics display">
       <div class="backend-status-metrics">
         <div class="backend-status-metric">
-          <span class="viking-metric-value backend-status-value">99.97%</span>
-          <span class="viking-metric-label">Availability</span>
+          <span class="viking-metric-value backend-status-value">{% if platform_metrics %}{{ platform_metrics.overall_uptime|floatformat:2 }}%{% else %}—{% endif %}</span>
+          <span class="viking-metric-label">Availability · 30d</span>
         </div>
         <div class="backend-status-metric">
-          <span class="viking-metric-value backend-status-value">12.4K</span>
-          <span class="viking-metric-label">Requests/min</span>
+          <span class="viking-metric-value backend-status-value">{% if platform_metrics %}{{ platform_metrics.total_requests }}{% else %}—{% endif %}</span>
+          <span class="viking-metric-label">Requests · 24h</span>
         </div>
         <div class="backend-status-metric">
-          <span class="viking-metric-value backend-status-value">847</span>
-          <span class="viking-metric-label">Blocked Threats</span>
+          <span class="viking-metric-value backend-status-value">{% if platform_metrics %}{{ platform_metrics.threats_detected_24h }}{% else %}—{% endif %}</span>
+          <span class="viking-metric-label">Threats Detected · 24h</span>
         </div>
       </div>
       <div class="backend-status-sparkline" aria-hidden="true">

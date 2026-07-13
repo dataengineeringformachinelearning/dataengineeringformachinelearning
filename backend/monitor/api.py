@@ -93,6 +93,7 @@ class StatusPageOut(Schema):
   uptime_history: list[UptimeDaySchema] | None = None
   p99_latency: float | None = None
   total_requests: int | None = None
+  threats_detected_24h: int | None = None
 
 
 @router.get("/health")
@@ -186,6 +187,7 @@ def _build_status_page_out(p: StatusPage) -> StatusPageOut:
     ],
     p99_latency=metrics.p99_latency,
     total_requests=metrics.total_requests,
+    threats_detected_24h=metrics.threats_detected_24h,
   )
 
 
