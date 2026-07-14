@@ -20,6 +20,7 @@ import {
   VikingButton,
   VikingChartSeries,
   VikingField,
+  VikingFormGrid,
   VikingFormSection,
   VikingGaugeArc,
   VikingInput,
@@ -80,6 +81,18 @@ type BenchmarkSummary = {
   created_at: string;
 };
 
+type BenchmarkRollup = {
+  score_percent: number | null;
+  accuracy_percent: number | null;
+  mae: number | null;
+  rmse: number | null;
+  dataset_size: number;
+  models_evaluated: number;
+  measured_models: number;
+  evaluation_status: 'measured' | 'insufficient_data';
+  created_at: string | null;
+};
+
 @Component({
   selector: 'app-analytics',
   standalone: true,
@@ -91,6 +104,7 @@ type BenchmarkSummary = {
     VikingBadge,
     VikingButton,
     VikingField,
+    VikingFormGrid,
     VikingFormSection,
     VikingInput,
     VikingGaugeArc,
@@ -153,6 +167,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public honeypotScore = 0;
   public latestBenchmarkScore: number | null = null;
   public latestBenchmark: BenchmarkSummary | null = null;
+  public benchmarkSummary: BenchmarkRollup | null = null;
+  public platformBenchmarkSummary: BenchmarkRollup | null = null;
 
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
   frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
@@ -295,7 +311,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.http.get<any>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
-          const { ces, user_metrics } = response.data;
+          const { benchmarking, ces, user_metrics } = response.data;
 
           if (user_metrics?.available_sites) {
             this.availableSites = user_metrics.available_sites;
@@ -314,6 +330,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.honeypotScore = response.data?.honeypot_score || 0;
           this.latestBenchmarkScore = ces?.latest_benchmark_score ?? null;
           this.latestBenchmark = ces?.latest_benchmark ?? null;
+          this.benchmarkSummary = benchmarking?.current_scope ?? null;
+          this.platformBenchmarkSummary = benchmarking?.platform_reference ?? null;
 
           this.p99Latency = user_metrics?.p99_latency_ms || 0;
           this.uptimePercent = user_metrics?.uptime_percent || 0;
@@ -596,6 +614,22 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   public formatPercent(value: number): string {
     return `${Math.round(value)}%`;
+  }
+
+  public formatOptionalPercent(value: number | null | undefined): string {
+    return value === null || value === undefined ? 'Awaiting run' : `${value.toFixed(1)}%`;
+  }
+
+  public formatBenchmarkError(value: number | null | undefined): string {
+    return value === null || value === undefined ? 'Awaiting run' : value.toFixed(4);
+  }
+
+  public benchmarkScoreSublabel(): string {
+    const reference = this.platformBenchmarkSummary?.score_percent;
+    if (reference === null || reference === undefined) {
+      return 'Runs with daily model training';
+    }
+    return `Platform reference ${reference.toFixed(1)}%`;
   }
 
   private initMap(): void {

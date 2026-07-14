@@ -1,11 +1,14 @@
 import datetime
 import math
+from types import SimpleNamespace
+from unittest.mock import patch
 
 import pytest
 from account.platform import ensure_platform_status_page
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import Client
-from monitor.models import BenchmarkRun, Endpoints, MonitoredService, StatusPage
+from monitor.models import BenchmarkRun, Endpoints, MonitoredService, StatusPage, UserProfile
 
 from ml.ml_services import _benchmark_sla_model, _benchmark_threat_model
 from ml.models import ThreatReport, TrainingRun
@@ -227,3 +230,28 @@ def test_public_benchmark_feed_exposes_platform_scope_only(client: Client) -> No
   payload = response.json()
   assert len(payload) == 1
   assert payload[0]["model_type"] == "sla"
+
+
+@pytest.mark.django_db
+def test_daily_training_command_benchmarks_each_account_and_platform() -> None:
+  user = User.objects.create_user(username="scheduled-benchmark", password="password")
+  UserProfile.objects.get_or_create(user=user)
+
+  with (
+    patch("ml.management.commands.train_all_models.train_tenant_sla", return_value=None),
+    patch(
+      "ml.management.commands.train_all_models.train_threat_model",
+      return_value=SimpleNamespace(anomaly_score=0.25),
+    ),
+    patch(
+      "ml.management.commands.train_all_models.train_spiking_temporal_forecaster",
+      return_value=None,
+    ),
+    patch("ml.management.commands.train_all_models.run_benchmark_suite") as benchmark_suite,
+    patch("ml.ml_services.train_ces_model", return_value={"status": "trained"}),
+  ):
+    benchmark_suite.return_value = {"sla": {}, "threat": {}}
+    call_command("train_all_models")
+
+  benchmark_suite.assert_any_call(user=user, is_platform=False)
+  benchmark_suite.assert_any_call(is_platform=True)

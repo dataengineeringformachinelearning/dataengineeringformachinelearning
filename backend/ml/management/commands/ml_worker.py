@@ -128,6 +128,13 @@ class Command(BaseCommand):
                 f"Trained Spiking Temporal Forecaster (4th model) for '{user.username}'"
               )
             )
+
+          benchmark_results = run_benchmark_suite(user=user, is_platform=False)
+          self.stdout.write(
+            self.style.SUCCESS(
+              f"Benchmarked '{user.username}': {len(benchmark_results)} model types evaluated"
+            )
+          )
         except Exception as e:
           self.stderr.write(self.style.ERROR(f"Failed to train user '{user.username}': {e}"))
 
@@ -161,7 +168,11 @@ class Command(BaseCommand):
   def train_single(self, account_id):
     from account.context import resolve_scope_from_account_id
     from django.db import close_old_connections
-    from ml.ml_services import train_spiking_temporal_forecaster, train_threat_model
+    from ml.ml_services import (
+      run_benchmark_suite,
+      train_spiking_temporal_forecaster,
+      train_threat_model,
+    )
 
     close_old_connections()
     try:
@@ -197,6 +208,10 @@ class Command(BaseCommand):
             f"(Forecast: {spiking_run.average_sla:.2f}%)"
           )
         )
+      benchmark_results = run_benchmark_suite(user=user, is_platform=is_platform)
+      self.stdout.write(
+        self.style.SUCCESS(f"Benchmarked '{label}': {len(benchmark_results)} model types evaluated")
+      )
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"Failed to train account: {e}"))
     finally:

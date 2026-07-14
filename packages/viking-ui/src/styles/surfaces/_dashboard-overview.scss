@@ -226,6 +226,13 @@ viking-card.kpi-card {
   }
 }
 
+viking-card.health-card.kpi-card {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--viking-space-3);
+}
+
 .kpi-card-header {
   display: flex;
   align-items: center;
@@ -428,9 +435,19 @@ viking-card.overview-panel {
   display: flex;
   align-items: center;
   gap: var(--viking-space-1);
+  min-width: 0;
+  flex: 1 1 auto;
+
+  viking-app-icon,
+  viking-icon {
+    width: var(--viking-space-3);
+    height: var(--viking-space-3);
+    color: var(--viking-accent-strong);
+  }
 
   h2 {
     margin: 0;
+    min-width: 0;
   }
 }
 

@@ -26,6 +26,7 @@ from ml.ml_services import (
 from monitor.models import (
   AggregatedAnalytics,
   AnalyticsIntegration,
+  BenchmarkRun,
   CookieConsent,
   Endpoints,
   Incident,
@@ -60,7 +61,8 @@ class OverviewService:
     if account_id and not is_platform and str(account_id) != str(profile.account_id):
       raise PermissionError("Access denied to this account")
 
-    ces = OverviewService._global_ces(last_24h)
+    platform_benchmark = OverviewService._benchmark_summary(user=None, is_platform=True)
+    ces = OverviewService._global_ces(last_24h, platform_benchmark=platform_benchmark)
 
     if is_platform:
       user_pages = StatusPage.objects.filter(is_platform=True)
@@ -174,8 +176,18 @@ class OverviewService:
 
     quota, usage = OverviewService._rate_limit_usage(profile)
 
+    current_benchmark = (
+      platform_benchmark
+      if is_platform
+      else OverviewService._benchmark_summary(user=user, is_platform=False)
+    )
+
     return {
       "ces": ces,
+      "benchmarking": {
+        "current_scope": current_benchmark,
+        "platform_reference": platform_benchmark,
+      },
       "user_metrics": {
         "p99_latency_ms": metrics["p99_latency"],
         "average_latency_ms": metrics["average_latency_ms"],
@@ -201,7 +213,7 @@ class OverviewService:
     }
 
   @staticmethod
-  def _global_ces(last_24h) -> dict[str, float]:
+  def _global_ces(last_24h, *, platform_benchmark: dict[str, Any] | None = None) -> dict[str, Any]:
     global_analytics = list(
       AggregatedAnalytics.objects.filter(
         is_platform=True, user__isnull=True, timestamp__gte=last_24h, bucket_size="1h"
@@ -264,11 +276,9 @@ class OverviewService:
     )
     honeypot_score = min(100, (total_hits / max(1, unique_ips * 10)) * 100) if unique_ips > 0 else 0
 
-    # Latest benchmark score
-    from monitor.models import BenchmarkRun
-
-    latest_benchmark = BenchmarkRun.objects.filter(is_platform=True).order_by("-created_at").first()
-    latest_benchmark_score = latest_benchmark.benchmark_score * 100.0 if latest_benchmark else None
+    benchmark = platform_benchmark or OverviewService._benchmark_summary(
+      user=None, is_platform=True
+    )
 
     return {
       "level": round(ces_level, 2),
@@ -277,28 +287,68 @@ class OverviewService:
       "stability": round(ces_stability, 2),
       "spiking_temporal_forecast": round(temporal_score, 2),  # fourth model output
       "honeypot_score": round(honeypot_score, 2),
-      "latest_benchmark_score": (
-        round(latest_benchmark_score, 2) if latest_benchmark_score is not None else None
-      ),
-      "latest_benchmark": (
-        {
-          "model_type": latest_benchmark.model_type,
-          "mae": round(latest_benchmark.mae, 4),
-          "rmse": round(latest_benchmark.rmse, 4),
-          "accuracy_percent": (
-            round(latest_benchmark.accuracy * 100.0, 2)
-            if latest_benchmark.accuracy is not None
-            else None
-          ),
-          "dataset_size": latest_benchmark.dataset_size,
-          "evaluation_status": (
-            "measured" if latest_benchmark.dataset_size > 0 else "insufficient_data"
-          ),
-          "created_at": latest_benchmark.created_at.isoformat(),
-        }
-        if latest_benchmark
-        else None
-      ),
+      "latest_benchmark_score": benchmark["score_percent"],
+      "latest_benchmark": benchmark["latest"],
+    }
+
+  @staticmethod
+  def _benchmark_summary(*, user: User | None, is_platform: bool) -> dict[str, Any]:
+    """Summarize the newest result per model for one isolated account scope."""
+    filters: dict[str, Any] = {"is_platform": is_platform}
+    if is_platform:
+      filters["user__isnull"] = True
+    else:
+      filters["user"] = user
+
+    recent = list(BenchmarkRun.objects.filter(**filters).order_by("-created_at")[:50])
+    latest_by_model: dict[str, BenchmarkRun] = {}
+    for run in recent:
+      latest_by_model.setdefault(run.model_type, run)
+
+    model_runs = list(latest_by_model.values())
+    measured = [run for run in model_runs if run.dataset_size > 0]
+    observation_count = sum(run.dataset_size for run in measured)
+
+    def weighted_average(attribute: str, *, percentage: bool = False) -> float | None:
+      eligible = [
+        run for run in measured if getattr(run, attribute) is not None and run.dataset_size > 0
+      ]
+      total_weight = sum(run.dataset_size for run in eligible)
+      if total_weight == 0:
+        return None
+      value = sum(float(getattr(run, attribute)) * run.dataset_size for run in eligible)
+      value /= total_weight
+      if percentage:
+        value *= 100.0
+      return round(value, 2 if percentage else 4)
+
+    def serialize(run: BenchmarkRun) -> dict[str, Any]:
+      return {
+        "model_type": run.model_type,
+        "mae": round(run.mae, 4),
+        "rmse": round(run.rmse, 4),
+        "accuracy_percent": (round(run.accuracy * 100.0, 2) if run.accuracy is not None else None),
+        "dataset_size": run.dataset_size,
+        "evaluation_status": "measured" if run.dataset_size > 0 else "insufficient_data",
+        "created_at": run.created_at.isoformat(),
+      }
+
+    latest = recent[0] if recent else None
+    return {
+      "scope": "platform" if is_platform else "account",
+      "score_percent": weighted_average("benchmark_score", percentage=True),
+      "accuracy_percent": weighted_average("accuracy", percentage=True),
+      "mae": weighted_average("mae"),
+      "rmse": weighted_average("rmse"),
+      "dataset_size": observation_count,
+      "models_evaluated": len(model_runs),
+      "measured_models": len(measured),
+      "evaluation_status": "measured" if measured else "insufficient_data",
+      "created_at": max((run.created_at for run in model_runs), default=None).isoformat()
+      if model_runs
+      else None,
+      "latest": serialize(latest) if latest else None,
+      "models": [serialize(run) for run in model_runs],
     }
 
   @staticmethod

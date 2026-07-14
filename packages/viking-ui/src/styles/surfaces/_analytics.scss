@@ -37,3 +37,12 @@
 .dashboard-page-container .analytics-gauge-grid .gauge-center-text .value {
   font-size: var(--viking-font-size-xl);
 }
+
+.analytics-export-card viking-form-grid,
+.analytics-export-card .viking-form-grid {
+  width: 100%;
+}
+
+.analytics-export-card .section-description-premium {
+  margin: 0;
+}

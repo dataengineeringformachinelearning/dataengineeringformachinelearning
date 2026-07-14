@@ -29,7 +29,6 @@ import {
   VikingTabs,
   VikingTab,
   VikingTabPanel,
-  VikingGrid,
   VikingGridItem,
   VikingPanelGrid,
   VikingChartPanel,
@@ -59,6 +58,16 @@ import {
 
 type DashboardTab = 'overview' | 'performance' | 'security';
 
+type BenchmarkSummary = {
+  score_percent: number | null;
+  accuracy_percent: number | null;
+  rmse: number | null;
+  dataset_size: number;
+  models_evaluated: number;
+  evaluation_status: 'measured' | 'insufficient_data';
+  created_at: string | null;
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -80,7 +89,6 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     VikingTabs,
     VikingTab,
     VikingTabPanel,
-    VikingGrid,
     VikingGridItem,
     VikingPanelGrid,
     VikingChartPanel,
@@ -125,6 +133,7 @@ export class Dashboard implements OnInit, OnDestroy {
   totalRequests = 0;
   activeIncidents = 0;
   uniqueVisitors = 0;
+  benchmarkSummary: BenchmarkSummary | null = null;
 
   selectedTenantId: string | null = null;
   selectedSite: string | null = null;
@@ -332,7 +341,7 @@ export class Dashboard implements OnInit, OnDestroy {
     this.http.get<any>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
-          const { ces, user_metrics } = response.data;
+          const { benchmarking, ces, user_metrics } = response.data;
           this.cesLevel = ces?.level || 0;
           this.threatLevel = ces?.threat || 0;
           this.slaLevel = ces?.sla || 0;
@@ -343,6 +352,7 @@ export class Dashboard implements OnInit, OnDestroy {
           this.totalRequests = user_metrics?.total_requests_24h || 0;
           this.activeIncidents = user_metrics?.active_incidents || 0;
           this.uniqueVisitors = user_metrics?.unique_visitors || 0;
+          this.benchmarkSummary = benchmarking?.current_scope ?? null;
 
           if (user_metrics?.available_sites) {
             this.siteOptions = [
@@ -416,6 +426,22 @@ export class Dashboard implements OnInit, OnDestroy {
   getGaugeStroke(value: number, circumference: number): string {
     const dash = (value / 100) * circumference;
     return `${dash} ${circumference}`;
+  }
+
+  benchmarkScoreLabel(): string {
+    const score = this.benchmarkSummary?.score_percent;
+    return score === null || score === undefined ? 'Awaiting run' : `${score.toFixed(0)}%`;
+  }
+
+  benchmarkSampleLabel(): string {
+    return (this.benchmarkSummary?.dataset_size ?? 0).toLocaleString();
+  }
+
+  benchmarkSublabel(): string {
+    const samples = this.benchmarkSummary?.dataset_size ?? 0;
+    return samples > 0
+      ? `${samples.toLocaleString()} validation samples`
+      : 'Runs with daily model training';
   }
 
   severityClass(severity: string): string {
