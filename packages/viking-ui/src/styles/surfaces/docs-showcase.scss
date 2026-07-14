@@ -404,7 +404,7 @@
   font-size: var(--viking-font-size-lg);
 }
 
-/* ── Component grid — full-width 12/12 cards, centered demos (premium single column) ── */
+/* ── Component grid — one column by default, two compact peers on desktop ── */
 .showcase-component-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1996,6 +1996,13 @@ viking-card-wc.landing-doctrine-card > * {
   gap: var(--viking-space-3);
 }
 
+@media (min-width: 1024px) {
+  .showcase-component-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+}
+
 .landing-doctrine-grid {
   grid-template-columns: repeat(
     auto-fit,
@@ -2011,6 +2018,11 @@ viking-card-wc.landing-doctrine-card > * {
   min-width: 0;
   gap: var(--viking-space-3);
   padding: var(--viking-card-padding);
+}
+
+.component-showcase-card[hidden],
+.showcase-section[hidden] {
+  display: none;
 }
 
 .component-showcase-preview,

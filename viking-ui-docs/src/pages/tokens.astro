@@ -89,7 +89,13 @@ import { TOKEN_GROUPS, SEMANTIC_TOKENS } from '../lib/tokens-data';
                 <tr data-token-row data-token-name={token.name}>
                   {(group.id === 'color' || group.id === 'series') && (
                     <td>
-                      <span class="token-swatch" style={`background: ${token.value}`} aria-hidden="true"></span>
+                      <input
+                        class="token-swatch"
+                        type="color"
+                        value={token.value}
+                        aria-label={`${token.name} color swatch`}
+                        disabled
+                      />
                     </td>
                   )}
                   <td><code>{token.name}</code></td>

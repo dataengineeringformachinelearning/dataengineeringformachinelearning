@@ -2,7 +2,7 @@ import { ErrorHandler, Injectable, Injector, PLATFORM_ID, inject } from '@angula
 import { TelemetryService, TelemetryPayload } from '../services/telemetry.service';
 import { isPlatformBrowser } from '@angular/common';
 import { VikingToastService } from '@dataengineeringformachinelearning/viking-ui';
-import * as Sentry from '@sentry/angular';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
@@ -21,7 +21,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     };
 
     telemetryService.reportEndpointStatus(payload);
-    Sentry.captureException(error);
+    void this.captureInMonitoring(error);
     console.error('GlobalErrorHandler caught an error:', error);
 
     if (isPlatformBrowser(this.platformId)) {
@@ -33,6 +33,22 @@ export class GlobalErrorHandler implements ErrorHandler {
           duration: 6000,
         });
       });
+    }
+  }
+
+  private async captureInMonitoring(error: unknown): Promise<void> {
+    if (!environment.sentryDsn || !isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    try {
+      const { captureMonitoringException } = await import('../monitoring/monitoring.facade');
+      await captureMonitoringException(error, {
+        dsn: environment.sentryDsn,
+        environment: environment.production ? 'production' : 'development',
+      });
+    } catch {
+      // Error reporting must never create a second application failure.
     }
   }
 }

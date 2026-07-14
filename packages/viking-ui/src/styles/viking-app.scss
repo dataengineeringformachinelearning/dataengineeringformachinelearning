@@ -1,0 +1,11 @@
+/*! Viking-UI Application Bundle
+ *  Canonical Angular application styles without marketing, docs, backend, or
+ *  Swagger surface rules. Generated artifacts remain owned by Viking-UI. */
+@use "fonts";
+@use "typography";
+@use "viking-ui" as *;
+@use "static-primitives";
+@use "input" as *;
+@use "drakkar-buttons" as *;
+@use "components/a11y" as *;
+@use "surfaces/app-pages" as *;

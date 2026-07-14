@@ -100,8 +100,9 @@ const encryptBytes = (plaintext, context, options = {}) => {
       : Math.floor(Date.now() / 1000);
   const messageId = options.messageId || (0, crypto_1.randomUUID)();
   const nonce = options.nonce || (0, crypto_1.randomBytes)(12);
-  if (nonce.length !== 12)
+  if (nonce.length !== 12) {
     throw new Error("internode AES-GCM nonce must be 12 bytes");
+  }
   const key = keyring.keys.get(keyring.activeKid);
   if (!key) throw new Error("internode encryption active key is unavailable");
   const cipher = (0, crypto_1.createCipheriv)("aes-256-gcm", key, nonce);

@@ -67,6 +67,12 @@ describe("buildSuiteSearchItems", () => {
     expect(items.find((item) => item.title === "Components")?.href).toBe(
       "https://ui.dataengineeringformachinelearning.com/components",
     );
+    expect(items.find((item) => item.title === "Documentation")?.href).toBe(
+      "https://dataengineeringformachinelearning.com/documentation",
+    );
+    expect(items.find((item) => item.title === "Whitepaper")?.href).toBe(
+      "https://dataengineeringformachinelearning.com/whitepaper",
+    );
   });
 
   it("includes Settings shortcut for app context", () => {

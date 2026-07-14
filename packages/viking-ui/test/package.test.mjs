@@ -20,6 +20,16 @@ test("package exposes versioned public artifacts", () => {
   assert.equal(packageJson.publishConfig?.access, "public");
   assert.equal(packageJson.exports["./css"], "./dist/viking-ui.css");
   assert.equal(
+    packageJson.exports["./viking-app.css"],
+    "./dist/viking-app.css",
+  );
+  assert.equal(packageJson.exports["./css/app.css"], "./dist/viking-app.css");
+  assert.equal(
+    packageJson.exports["./dist/viking-app.css"],
+    "./dist/viking-app.css",
+  );
+  assert.equal(packageJson.sideEffects.includes("./dist/viking-app.css"), true);
+  assert.equal(
     packageJson.exports["./elements.js"],
     "./dist/viking-ui-elements.js",
   );
@@ -48,6 +58,7 @@ test("build writes the framework-neutral distribution files", () => {
   const expectedFiles = [
     "index.js",
     "index.d.ts",
+    "viking-app.css",
     "viking-ui.css",
     "design-tokens.css",
     "viking-components.css",
@@ -80,6 +91,7 @@ test("npm pack includes runtime distribution artifacts", () => {
   for (const artifact of [
     "dist/fesm2022/dataengineeringformachinelearning-viking-ui.mjs",
     "dist/types/dataengineeringformachinelearning-viking-ui.d.ts",
+    "dist/viking-app.css",
     "dist/viking-ui.css",
     "dist/web-components.js",
     "dist/viking-ui-elements.js",

@@ -15,7 +15,6 @@ export const NAV_LINKS = [
   { href: "/", label: "Overview" },
   { href: "/components", label: "Components" },
   { href: "/playground", label: "Playground" },
-  { href: "/storybook/", label: "Storybook" },
   { href: "/#cdn-usage", label: "CDN" },
   { href: "/architecture", label: "Architecture" },
   { href: "/tokens", label: "Tokens" },
@@ -44,11 +43,6 @@ export const DOCS_PAGE_SEARCH_ITEMS = [
     title: "Playground",
     href: "/playground",
     snippet: "Live Web Component sandbox",
-  },
-  {
-    title: "Storybook",
-    href: "/storybook/",
-    snippet: "Published component stories and accessibility controls",
   },
   {
     title: "Architecture",

@@ -25,12 +25,14 @@ import {
   sliceChartData,
   zoomChartWindow,
 } from "./chart-zoom";
+import { vikingUid } from "../../core/uid";
 
 interface ChartPath {
   name: string;
   tone: VikingTone;
   line: string;
   area: string;
+  gradientId: string;
 }
 
 interface ChartPoint {
@@ -72,9 +74,13 @@ interface ChartTooltip {
   y: number;
   /** SVG plot X for the hover cursor (data-aligned). */
   cursorX: number;
+  cursorWidth: number;
   label: string;
-  value: string;
-  seriesName?: string;
+  values: {
+    name: string;
+    value: string;
+    tone: VikingTone;
+  }[];
 }
 
 interface Gutter {
@@ -83,6 +89,8 @@ interface Gutter {
   bottom: number;
   left: number;
 }
+
+export type VikingChartScaleStart = "auto" | "min" | "zero";
 
 const TONE_VARS: Record<VikingTone, string> = {
   accent: "var(--viking-accent)",
@@ -106,6 +114,8 @@ const SINGLE_BAR_WIDTH = 72;
 const BAR_MIN_VISIBLE_HEIGHT_DEFAULT = 3;
 const LABEL_MAX_DEFAULT = 8; /* fewer for cleaner mobile readability */
 const LABEL_MAX_FILL = 14;
+const TOOLTIP_MAX_WIDTH = 176;
+const TOOLTIP_ROW_HEIGHT = 24;
 
 const resolveBarWidth = (
   slotWidth: number,
@@ -201,9 +211,17 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
     const previous = points[index - 1] ?? current;
     const after = points[index + 2] ?? next;
     const cp1x = current.x + (next.x - previous.x) / 6;
-    const cp1y = current.y + (next.y - previous.y) / 6;
+    const segmentMinY = Math.min(current.y, next.y);
+    const segmentMaxY = Math.max(current.y, next.y);
+    const cp1y = Math.min(
+      segmentMaxY,
+      Math.max(segmentMinY, current.y + (next.y - previous.y) / 6),
+    );
     const cp2x = next.x - (after.x - current.x) / 6;
-    const cp2y = next.y - (after.y - current.y) / 6;
+    const cp2y = Math.min(
+      segmentMaxY,
+      Math.max(segmentMinY, next.y - (after.y - current.y) / 6),
+    );
     path += ` C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${next.x.toFixed(1)},${next.y.toFixed(1)}`;
   }
   return path;
@@ -226,10 +244,6 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       [class.viking-chart-compact]="compact() && !fill()"
       [class.viking-chart-sparkline]="isSparkline()"
       [class.viking-chart-has-legend]="legendVisible()"
-      [attr.aria-labelledby]="label() ? 'viking-chart-label-' + chartId : null"
-      [attr.aria-describedby]="
-        summary() ? 'viking-chart-summary-' + chartId : null
-      "
     >
       @if (label()) {
         <figcaption class="sr-only" [id]="'viking-chart-label-' + chartId">
@@ -247,7 +261,15 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         [class.viking-chart-zoomable]="
           zoomable() && !isSparkline() && kind() !== 'donut'
         "
+        [attr.tabindex]="isZoomInteractive() ? 0 : null"
+        [attr.aria-label]="
+          isZoomInteractive()
+            ? (label() || 'Chart') +
+              '. Use plus and minus to zoom, arrow keys to pan, and Home to reset.'
+            : null
+        "
         (wheel)="onWheel($event)"
+        (keydown)="onKeydown($event)"
         (dblclick)="resetZoom()"
         (pointerdown)="onPanStart($event)"
         (pointermove)="onPanMove($event); onPointerMove($event)"
@@ -259,9 +281,15 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
           [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
           [attr.preserveAspectRatio]="preserveAspectRatio()"
           shape-rendering="geometricPrecision"
+          focusable="false"
           role="img"
-          [attr.aria-label]="label() || 'Chart'"
-          aria-hidden="true"
+          [attr.aria-label]="label() ? null : 'Chart'"
+          [attr.aria-labelledby]="
+            label() ? 'viking-chart-label-' + chartId : null
+          "
+          [attr.aria-describedby]="
+            summary() ? 'viking-chart-summary-' + chartId : null
+          "
         >
           @if (kind() === "donut") {
             @for (slice of donutSlices(); track slice.label) {
@@ -290,7 +318,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
             }
           } @else {
             <defs>
-              <clipPath id="viking-plot-clip">
+              <clipPath [attr.id]="plotClipId">
                 <rect
                   [attr.x]="resolvedGutter().left"
                   [attr.y]="plotTop()"
@@ -300,6 +328,20 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
                   [attr.height]="plotBottom() - plotTop()"
                 />
               </clipPath>
+              @for (path of paths(); track path.gradientId) {
+                <linearGradient
+                  class="viking-chart-area-gradient"
+                  [attr.id]="path.gradientId"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                  [style.color]="toneVar(path.tone)"
+                >
+                  <stop class="viking-chart-area-stop-start" offset="0%" />
+                  <stop class="viking-chart-area-stop-end" offset="100%" />
+                </linearGradient>
+              }
             </defs>
             @if (!isSparkline()) {
               @for (line of gridLines(); track line) {
@@ -349,13 +391,23 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
                 ></line>
               }
               @if (activeTooltip(); as tip) {
-                <line
-                  class="viking-chart-cursor"
-                  [attr.x1]="tip.cursorX"
-                  [attr.x2]="tip.cursorX"
-                  [attr.y1]="plotTop()"
-                  [attr.y2]="plotBottom()"
-                />
+                @if (tip.cursorWidth > 0) {
+                  <rect
+                    class="viking-chart-cursor-area"
+                    [attr.x]="tip.cursorX"
+                    [attr.y]="plotTop()"
+                    [attr.width]="tip.cursorWidth"
+                    [attr.height]="plotBottom() - plotTop()"
+                  />
+                } @else {
+                  <line
+                    class="viking-chart-cursor"
+                    [attr.x1]="tip.cursorX"
+                    [attr.x2]="tip.cursorX"
+                    [attr.y1]="plotTop()"
+                    [attr.y2]="plotBottom()"
+                  />
+                }
               }
             }
             @if (isBarKind()) {
@@ -375,13 +427,13 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
                 />
               }
             } @else {
-              <g clip-path="url(#viking-plot-clip)">
+              <g [attr.clip-path]="plotClipUrl">
                 @for (path of paths(); track path.name) {
                   @if (renderArea()) {
                     <path
                       class="viking-chart-area"
                       [attr.d]="path.area"
-                      [style.fill]="toneVar(path.tone)"
+                      [style.fill]="'url(#' + path.gradientId + ')'"
                     ></path>
                   }
                   <path
@@ -424,10 +476,17 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
             [style.left.px]="tip.x"
             [style.top.px]="tip.y"
           >
-            @if (tip.seriesName) {
-              <div class="tt-label">{{ tip.seriesName }}</div>
+            <div class="tt-label">{{ tip.label }}</div>
+            @for (item of tip.values; track item.name) {
+              <div class="tt-series-value">
+                <span
+                  class="viking-chart-swatch"
+                  [style.background]="toneVar(item.tone)"
+                ></span>
+                <span>{{ item.name }}</span>
+                <strong>{{ item.value }}</strong>
+              </div>
             }
-            <div class="tt-value">{{ tip.label }}: {{ tip.value }}</div>
           </div>
         }
       </div>
@@ -467,14 +526,10 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         width: 100%;
       }
       :host(.viking-chart-fill-host) {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 auto;
-        min-height: var(
-          --viking-chart-fill-min-height,
-          clamp(18rem, 36vw, 20rem)
-        );
-        height: 100%;
+        display: block;
+        flex: 0 0 auto;
+        min-height: 0;
+        height: auto;
       }
       :host(.viking-chart-sparkline-host) {
         display: inline-block;
@@ -491,6 +546,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         overflow: visible;
         width: 100%;
         max-width: 100%;
+        box-sizing: border-box;
         container-type: inline-size;
         padding: var(--viking-chart-padding, var(--viking-space-1) 0);
         border: none;
@@ -498,23 +554,19 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         box-shadow: none;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
-        aspect-ratio: var(--viking-chart-ratio, 16 / 7);
-        min-height: var(--viking-chart-min-height, clamp(12rem, 26vw, 15rem));
-        max-height: var(--viking-chart-max-height, clamp(15rem, 32vw, 18rem));
-        height: auto;
+        height: var(--viking-chart-plot-height);
+        min-height: var(--viking-chart-plot-height);
+        max-height: var(--viking-chart-plot-height);
       }
       .viking-chart-fill {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
         display: flex;
         flex-direction: column;
         align-items: stretch;
         justify-content: center;
-        min-height: var(
-          --viking-chart-fill-min-height,
-          clamp(13.5rem, 28vw, 16.5rem)
-        );
-        max-height: none;
-        height: 100%;
+        height: var(--viking-chart-plot-height);
+        min-height: var(--viking-chart-plot-height);
+        max-height: var(--viking-chart-plot-height);
         --viking-chart-axis-size: var(
           --viking-chart-text-size,
           var(--viking-font-size-base)
@@ -542,11 +594,13 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart-viewport {
         position: relative;
         width: 100%;
-        flex: 1 1 auto;
+        flex: 1 1 0;
         display: flex;
         align-items: center;
         justify-content: center;
         min-height: 0;
+        overflow: visible;
+        box-sizing: border-box;
       }
       .viking-chart-viewport.viking-chart-zoomable {
         cursor: grab;
@@ -589,15 +643,13 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) svg {
         height: 100%;
         min-height: 0;
-        max-height: none;
-        aspect-ratio: inherit;
+        max-height: 100%;
       }
       .viking-chart-fill svg {
         width: 100%;
         height: 100%;
         min-height: 0;
-        max-height: none;
-        aspect-ratio: auto;
+        max-height: 100%;
       }
       .viking-chart-fill:not(.viking-chart-has-legend) svg {
         aspect-ratio: auto;
@@ -639,6 +691,12 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         font-weight: var(--viking-font-weight-medium);
         font-variant-numeric: tabular-nums;
       }
+      .viking-chart-axis-x {
+        font-weight: var(--viking-font-weight-regular);
+      }
+      .viking-chart-axis-y {
+        font-weight: var(--viking-font-weight-medium);
+      }
       .viking-chart-cursor {
         stroke: var(
           --viking-chart-cursor-stroke,
@@ -646,6 +704,11 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         );
         stroke-width: var(--viking-chart-cursor-width, 1);
         stroke-dasharray: var(--viking-chart-cursor-dash, 3 3);
+        pointer-events: none;
+      }
+      .viking-chart-cursor-area {
+        fill: color-mix(in srgb, var(--viking-text) 6%, transparent);
+        stroke: none;
         pointer-events: none;
       }
       .viking-chart-line {
@@ -659,17 +722,23 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         stroke-width: var(--viking-chart-line-width-fill, 2);
       }
       .viking-chart-area {
-        opacity: var(--viking-chart-area-opacity, 0.2);
+        opacity: 1;
         stroke: none;
       }
-      .viking-chart-fill .viking-chart-area {
-        opacity: 0.22;
+      .viking-chart-area-stop-start,
+      .viking-chart-area-stop-end {
+        stop-color: currentColor;
+      }
+      .viking-chart-area-stop-start {
+        stop-opacity: var(--viking-chart-area-opacity-start);
+      }
+      .viking-chart-area-stop-end {
+        stop-opacity: var(--viking-chart-area-opacity-end);
       }
       .viking-chart-point {
         stroke: var(--viking-chart-point-stroke, var(--viking-surface));
         stroke-width: 2;
         vector-effect: non-scaling-stroke;
-        r: var(--viking-chart-point-radius, 3);
       }
       .viking-chart-bar {
         opacity: 0.92;
@@ -746,7 +815,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
           );
         border-radius: var(--viking-chart-tooltip-radius, var(--viking-radius));
         box-shadow: var(--viking-shadow-sm);
-        backdrop-filter: blur(8px);
+        backdrop-filter: none;
         font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-xs));
         color: var(--viking-chart-tooltip-text, var(--viking-text));
         white-space: nowrap;
@@ -754,6 +823,17 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       .viking-chart-tooltip.visible {
         display: flex;
+      }
+      .tt-series-value {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: var(--viking-space-1);
+        font-size: var(--viking-font-size-xs);
+      }
+      .tt-series-value strong {
+        font-weight: var(--viking-font-weight-semibold);
+        font-variant-numeric: tabular-nums lining-nums;
       }
       .sr-only {
         position: absolute !important;
@@ -770,7 +850,9 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
   ],
 })
 export class VikingChart implements AfterViewInit, OnDestroy {
-  protected readonly chartId = `vc-${Math.random().toString(36).slice(2, 9)}`;
+  protected readonly chartId = vikingUid("viking-chart");
+  protected readonly plotClipId = `${this.chartId}-plot-clip`;
+  protected readonly plotClipUrl = `url(#${this.plotClipId})`;
   private readonly viewportRef =
     viewChild.required<ElementRef<HTMLDivElement>>("chartViewport");
   private readonly viewportWidth = signal(WIDTH);
@@ -779,19 +861,24 @@ export class VikingChart implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const viewport = this.viewportRef().nativeElement;
-    const updateViewport = (): void => {
-      const bounds = viewport.getBoundingClientRect();
-      if (bounds.width > 0) {
-        this.viewportWidth.set(Math.round(bounds.width));
+    const updateViewport = (
+      bounds?: Pick<DOMRectReadOnly, "width" | "height">,
+    ): void => {
+      const measured = bounds ?? viewport.getBoundingClientRect();
+      if (measured.width > 0) {
+        this.viewportWidth.set(Math.round(measured.width));
       }
-      if (bounds.height > 0) {
-        this.viewportHeight.set(Math.round(bounds.height));
+      if (measured.height > 0) {
+        this.viewportHeight.set(Math.round(measured.height));
       }
     };
 
     updateViewport();
     if (typeof ResizeObserver !== "undefined") {
-      this.resizeObserver = new ResizeObserver(updateViewport);
+      this.resizeObserver = new ResizeObserver((entries) => {
+        const entry = entries[0];
+        updateViewport(entry?.contentRect);
+      });
       this.resizeObserver.observe(viewport);
     }
   }
@@ -810,14 +897,15 @@ export class VikingChart implements AfterViewInit, OnDestroy {
   readonly fill = input<boolean>(false);
   readonly curve = input<VikingChartCurve>("smooth");
   readonly showPoints = input<boolean>(false);
-  readonly pointRadius = input<number>(4);
-  readonly barWidth = input<number>(85);
-  readonly barRadius = input<number>(3);
+  readonly pointRadius = input<number>(5);
+  readonly barWidth = input<number | undefined>(undefined);
+  readonly barRadius = input<number>(2);
   readonly barMinHeight = input<number>(BAR_MIN_VISIBLE_HEIGHT_DEFAULT);
   readonly gutter = input<number | string | undefined>(undefined);
   readonly tickCount = input<number>(3); /* cleaner, less crowded on mobile */
   readonly showLegend = input<boolean | undefined>(undefined);
   readonly summary = input<string>("");
+  readonly scaleStart = input<VikingChartScaleStart>("auto");
   /** Enable wheel zoom + drag pan on line/bar charts (premium clean interaction). */
   readonly zoomable = input<boolean>(false);
 
@@ -893,6 +981,39 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     );
   };
 
+  protected onKeydown = (event: KeyboardEvent): void => {
+    if (!this.isZoomInteractive()) {
+      return;
+    }
+    const count = this.series()[0]?.data.length ?? 0;
+    if (count <= 3) {
+      return;
+    }
+    const current = this.zoomWindow() ?? fullChartWindow(count);
+
+    if (event.key === "+" || event.key === "=") {
+      event.preventDefault();
+      this.zoomWindow.set(zoomChartWindow(current, count, 0.5, -100));
+      return;
+    }
+    if (event.key === "-") {
+      event.preventDefault();
+      this.zoomWindow.set(zoomChartWindow(current, count, 0.5, 100));
+      return;
+    }
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      event.preventDefault();
+      this.zoomWindow.set(
+        panChartWindow(current, count, event.key === "ArrowLeft" ? 1 : -1),
+      );
+      return;
+    }
+    if (event.key === "Home") {
+      event.preventDefault();
+      this.resetZoom();
+    }
+  };
+
   protected onPanStart = (event: PointerEvent): void => {
     if (
       !this.zoomable() ||
@@ -934,8 +1055,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
   protected readonly activeTooltip = signal<ChartTooltip | null>(null);
 
   protected onPointerMove = (event: PointerEvent): void => {
-    if (this.isSparkline() || this.kind() === "donut" || this.isBarKind()) {
-      // For bars/donut rely on legend or caller-provided details; keep simple
+    if (this.isSparkline() || this.kind() === "donut") {
       return;
     }
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
@@ -950,9 +1070,10 @@ export class VikingChart implements AfterViewInit, OnDestroy {
       Math.max(0, event.clientX - rect.left - this.resolvedGutter().left),
       plotWidth,
     );
-    const idx = Math.round(
-      (relX / Math.max(1, plotWidth)) * (series[0].data.length - 1),
-    );
+    const count = series[0].data.length;
+    const idx = this.isBarKind()
+      ? Math.floor((relX / Math.max(1, plotWidth)) * count)
+      : Math.round((relX / Math.max(1, plotWidth)) * (count - 1));
     const clamped = Math.max(0, Math.min(series[0].data.length - 1, idx));
 
     const primary = series[0];
@@ -966,18 +1087,34 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     const bottom = this.plotBottom();
     const top = this.plotTop();
     const plotHeight = bottom - top;
-    const x =
-      this.resolvedGutter().left +
-      (clamped / Math.max(1, primary.data.length - 1)) * plotWidth;
-    const y = bottom - ((val - min) / range) * plotHeight;
+    const slotWidth = this.isBarKind() ? plotWidth / count : 0;
+    const cursorX = this.isBarKind()
+      ? this.resolvedGutter().left + clamped * slotWidth
+      : this.xPosition(clamped, count, plotWidth);
+    const dataX = this.isBarKind() ? cursorX + slotWidth / 2 : cursorX;
+    const dataY = this.isBarKind()
+      ? top + 8
+      : bottom - ((val - min) / range) * plotHeight;
+    const values = series.map((item) => ({
+      name: item.name,
+      value: formatTick(item.data[clamped] ?? 0),
+      tone: item.tone ?? "accent",
+    }));
+    const tooltipWidth = Math.min(
+      TOOLTIP_MAX_WIDTH,
+      Math.max(0, rect.width - 16),
+    );
+    const tooltipHeight = 32 + values.length * TOOLTIP_ROW_HEIGHT;
+    const maxX = Math.max(8, rect.width - tooltipWidth - 8);
+    const maxY = Math.max(8, rect.height - tooltipHeight - 8);
 
     this.activeTooltip.set({
-      x: x + 8,
-      y: Math.max(12, y - 28),
-      cursorX: x,
+      x: Math.min(maxX, Math.max(8, dataX + 8)),
+      y: Math.min(maxY, Math.max(8, dataY - 28)),
+      cursorX,
+      cursorWidth: slotWidth,
       label: xLabel,
-      value: formatTick(val),
-      seriesName: primary.name,
+      values,
     });
   };
 
@@ -989,12 +1126,13 @@ export class VikingChart implements AfterViewInit, OnDestroy {
 
   protected readonly isSparkline = computed(() => this.kind() === "sparkline");
 
+  protected readonly isZoomInteractive = computed(
+    () => this.zoomable() && !this.isSparkline() && this.kind() !== "donut",
+  );
+
   protected readonly resolvedGutter = computed(() => {
     if (this.gutter() !== undefined && this.gutter() !== null) {
       return parseGutter(this.gutter(), this.isSparkline());
-    }
-    if (this.fill() && !this.isSparkline()) {
-      return { top: 8, right: 12, bottom: 28, left: 36 };
     }
     return parseGutter(undefined, this.isSparkline());
   });
@@ -1037,7 +1175,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     return this.compact() ? HEIGHT_COMPACT : HEIGHT_DEFAULT;
   });
 
-  protected readonly preserveAspectRatio = computed(() => "none");
+  protected readonly preserveAspectRatio = computed(() => "xMidYMid meet");
 
   protected readonly plotBottom = computed(
     () => this.height() - this.resolvedGutter().bottom,
@@ -1061,6 +1199,20 @@ export class VikingChart implements AfterViewInit, OnDestroy {
   protected readonly isLineKind = computed(() => {
     const kind = this.kind();
     return kind === "line" || kind === "area";
+  });
+
+  private readonly resolvedBarWidth = computed(() => {
+    const explicit = this.barWidth();
+    if (explicit !== undefined) {
+      return explicit;
+    }
+    if (this.kind() === "grouped-bar") {
+      return 80;
+    }
+    if (this.kind() === "stacked-bar") {
+      return 65;
+    }
+    return 85;
   });
 
   protected readonly renderArea = computed(
@@ -1105,8 +1257,20 @@ export class VikingChart implements AfterViewInit, OnDestroy {
       return { min: dataMin - padding, max: dataMax + padding };
     }
 
-    // 0 baseline + modest headroom (~12–15%) so plots read wide and open
-    // instead of glued to the top edge or overly zoomed into a tight band.
+    const useZeroBaseline =
+      this.scaleStart() === "zero" ||
+      (this.scaleStart() === "auto" && this.isBarKind());
+
+    if (!useZeroBaseline) {
+      if (dataMax === dataMin) {
+        const padding = Math.max(Math.abs(dataMax) * 0.05, 0.5);
+        return { min: dataMin - padding, max: dataMax + padding };
+      }
+      const padding = Math.max((dataMax - dataMin) * 0.08, 0.5);
+      return { min: dataMin - padding, max: dataMax + padding };
+    }
+
+    // Bars default to a zero baseline so magnitude comparisons remain honest.
     const min = Math.min(0, dataMin);
     let max = Math.max(0, dataMax);
     if (max === min) {
@@ -1172,11 +1336,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     const labels: AxisLabel[] = [];
 
     for (let index = 0; index < count; index += step) {
-      const x =
-        this.resolvedGutter().left +
-        (count === 1
-          ? plotWidth / 2
-          : (index / Math.max(1, count - 1)) * plotWidth);
+      const x = this.xPosition(index, count, plotWidth);
       const text = cats[index]
         ? truncateLabel(cats[index], labelMax)
         : `${index + 1}`;
@@ -1185,9 +1345,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
 
     if ((count - 1) % step !== 0 && count > 1) {
       const last = count - 1;
-      const x =
-        this.resolvedGutter().left +
-        (last / Math.max(1, count - 1)) * plotWidth;
+      const x = this.xPosition(last, count, plotWidth);
       const text = cats[last]
         ? truncateLabel(cats[last], labelMax)
         : `${last + 1}`;
@@ -1198,6 +1356,23 @@ export class VikingChart implements AfterViewInit, OnDestroy {
 
     return labels;
   });
+
+  private readonly xPosition = (
+    index: number,
+    count: number,
+    plotWidth: number,
+  ): number => {
+    const left = this.resolvedGutter().left;
+    if (this.isBarKind()) {
+      return left + ((index + 0.5) / Math.max(1, count)) * plotWidth;
+    }
+    return (
+      left +
+      (count === 1
+        ? plotWidth / 2
+        : (index / Math.max(1, count - 1)) * plotWidth)
+    );
+  };
 
   protected readonly xTickMarks = computed<TickMark[]>(() => {
     const bottom = this.plotBottom();
@@ -1224,17 +1399,25 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     const buildPath =
       this.curve() === "smooth" ? buildSmoothPath : buildLinearPath;
 
-    return this.effectiveSeries().map((item) => {
+    return this.effectiveSeries().map((item, seriesIndex) => {
       const points = item.data.map((value, index) => {
-        const x =
-          this.resolvedGutter().left +
-          (index / Math.max(1, item.data.length - 1)) * plotWidth;
+        const x = this.xPosition(index, item.data.length, plotWidth);
         const y = bottom - ((value - min) / range) * plotHeight;
         return { x, y };
       });
       const line = buildPath(points);
-      const area = `${line} L${this.width() - this.resolvedGutter().right},${bottom} L${this.resolvedGutter().left},${bottom} Z`;
-      return { name: item.name, tone: item.tone ?? "accent", line, area };
+      const firstX = points[0]?.x ?? this.resolvedGutter().left;
+      const lastX = points.at(-1)?.x ?? firstX;
+      const area = line
+        ? `${line} L${lastX},${bottom} L${firstX},${bottom} Z`
+        : "";
+      return {
+        name: item.name,
+        tone: item.tone ?? "accent",
+        line,
+        area,
+        gradientId: `${this.chartId}-area-gradient-${seriesIndex}`,
+      };
     });
   });
 
@@ -1254,9 +1437,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
 
     return this.effectiveSeries().flatMap((item) =>
       item.data.map((value, index) => {
-        const x =
-          this.resolvedGutter().left +
-          (index / Math.max(1, item.data.length - 1)) * plotWidth;
+        const x = this.xPosition(index, item.data.length, plotWidth);
         const y = bottom - ((value - min) / range) * plotHeight;
         return { x, y, tone: item.tone ?? "accent" };
       }),
@@ -1287,7 +1468,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     const plotHeight = bottom - top;
     const plotWidth =
       this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
-    const widthPercent = this.barWidth();
+    const widthPercent = this.resolvedBarWidth();
     const slotWidth = plotWidth / primary.data.length;
     const barWidth = resolveBarWidth(
       slotWidth,
@@ -1336,7 +1517,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     const plotWidth =
       this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
     const groupWidth = plotWidth / count;
-    const widthPercent = this.barWidth();
+    const widthPercent = this.resolvedBarWidth();
     const groupBarWidth = resolveBarWidth(groupWidth, count, widthPercent);
     const barWidth = Math.max(3, groupBarWidth / series.length);
     const rects: BarRect[] = [];
@@ -1387,7 +1568,7 @@ export class VikingChart implements AfterViewInit, OnDestroy {
     const plotHeight = bottom - top;
     const plotWidth =
       this.width() - this.resolvedGutter().left - this.resolvedGutter().right;
-    const widthPercent = this.barWidth();
+    const widthPercent = this.resolvedBarWidth();
     const slotWidth = plotWidth / count;
     const barWidth = resolveBarWidth(slotWidth, count, widthPercent);
     const rects: BarRect[] = [];

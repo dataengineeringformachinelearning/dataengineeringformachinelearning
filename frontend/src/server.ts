@@ -38,7 +38,7 @@ const withAuthStatusHeaders = (response: Response): Response => {
   const headers = new Headers(response.headers);
   headers.delete('x-frame-options');
   headers.set('Content-Security-Policy', AUTH_STATUS_CSP);
-  headers.set('Cache-Control', 'no-store');
+  headers.set('Cache-Control', 'no-store, no-transform');
   headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   headers.set('X-Content-Type-Options', 'nosniff');
   return new Response(response.body, {
@@ -53,7 +53,7 @@ const sendAuthStatusFallback = (res: express.Response, body: string): void => {
   res.removeHeader('X-Frame-Options');
   res
     .set('Content-Security-Policy', AUTH_STATUS_CSP)
-    .set('Cache-Control', 'no-store')
+    .set('Cache-Control', 'no-store, no-transform')
     .set('Referrer-Policy', 'strict-origin-when-cross-origin')
     .set('X-Content-Type-Options', 'nosniff')
     .send(body);

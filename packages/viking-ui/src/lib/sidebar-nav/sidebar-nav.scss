@@ -57,7 +57,11 @@
     &.viking-sidebar-nav-link-active {
       background: var(--sidebar-active-bg);
       border-color: var(--viking-border-accent);
-      color: var(--sidebar-active-border);
+      color: var(--viking-text-link);
+
+      .viking-sidebar-nav-label {
+        color: var(--viking-text-link);
+      }
     }
 
     viking-icon,
@@ -203,8 +207,12 @@
   &.viking-sidebar-nav-tree-item-active {
     background: var(--sidebar-active-bg);
     border-color: var(--viking-border-accent);
-    color: var(--sidebar-active-border);
+    color: var(--viking-text-link);
     font-weight: var(--viking-font-weight-semibold);
+
+    .viking-sidebar-nav-tree-label {
+      color: var(--viking-text-link);
+    }
   }
 
   &.viking-sidebar-nav-tree-item-empty {

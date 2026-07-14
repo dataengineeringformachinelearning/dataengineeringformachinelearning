@@ -2600,11 +2600,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/web-components.js"
 ></script>
 ```
 
@@ -2746,8 +2746,8 @@ The DEML Platform orchestrates several asynchronous background workers. These wo
 
 ### 1. Telemetry Worker (`telemetry_worker.py`)
 
-- **Stream Processing (Continuous)**: Consumes `frontend-events` and `user-issues` through independent consumers and projects into Firestore or Django-owned business records.
-- **Projection Reliability (Continuous)**: Validates versioned idempotency keys, rejects key reuse with changed payloads, and commits failed `frontend-events` records only after Redpanda acknowledges the `frontend-events-dlq` write. Replay-group lag is materialized as the Tenant0 `Event Projections DLQ` synthetic component every 60 seconds. Operators inspect a bounded batch with `python manage.py replay_projection_dlq --dry-run` and replay repaired/transient failures with `python manage.py replay_projection_dlq --max-records 100`; stable keys keep reprocessing idempotent.
+- **Stream Processing (Continuous)**: Consumes `frontend-events`, `user-issues`, and business `app-events` through independent consumers and projects into Firestore or Django-owned business records.
+- **Projection Reliability (Continuous)**: Validates versioned idempotency keys, rejects key reuse with changed payloads, and commits failed `frontend-events` records only after Redpanda acknowledges the `frontend-events-dlq` write. Malformed business events are likewise committed only after an acknowledged `app-events-dlq` write, so poison records cannot be silently discarded or pin the consumer indefinitely. Replay-group lag for frontend projections is materialized as the Tenant0 `Event Projections DLQ` synthetic component every 60 seconds. Operators inspect a bounded frontend batch with `python manage.py replay_projection_dlq --dry-run` and replay repaired/transient projection failures with `python manage.py replay_projection_dlq --max-records 100`; stable keys keep reprocessing idempotent. Business-event DLQ records remain source-specific and require schema remediation before controlled republish to `app-events`.
 - **No embedded scheduling**: aggregation, probes, and Lighthouse triggers originate from the durable Rust scheduler/probe roles.
 
 ### 2. Consolidated Background Workers (`deml_workers_start.py`)
@@ -2801,8 +2801,6 @@ This document outlines the dependencies and libraries used in this project.
 
 #### Dependencies
 
-- `@angular/animations`: ^22.0.0
-- `@angular/cdk`: ^22.0.2
 - `@angular/common`: ^22.0.0
 - `@angular/compiler`: ^22.0.0
 - `@angular/core`: ^22.0.0
@@ -2811,38 +2809,39 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/platform-server`: ^22.0.0
 - `@angular/router`: ^22.0.0
 - `@angular/ssr`: ^22.0.0
-- `algoliasearch`: ^5.52.0
+- `@dataengineeringformachinelearning/viking-ui`: ^9.2.0
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `express`: ^5.1.0
 - `firebase`: ^12.14.0
-- `marked`: ^17.0.6
-- `ngx-markdown`: ^21.2.0
-- `prismjs`: ^1.30.0
+- `leaflet`: ^1.9.4
 - `rxjs`: ~7.8.0
 - `tslib`: ^2.3.0
 - `zone.js`: ^0.16.2
 
 #### Dev Dependencies
 
-- `@analogjs/vitest-angular`: ^2.6.0
+- `@analogjs/vite-plugin-angular`: ^2.6.2
+- `@analogjs/vitest-angular`: ^2.6.1
 - `@angular/build`: ^22.0.0
 - `@angular/cli`: ^22.0.0
 - `@angular/compiler-cli`: ^22.0.0
-- `@angular/material`: ^22.0.2
 - `@angular/platform-browser-dynamic`: ^22.0.0
-- `@dotenvx/dotenvx`: ^1.71.0
 - `@eslint/js`: ^10.0.1
-- `angular-eslint`: 21.3.1
+- `@openapitools/openapi-generator-cli`: ^2.39.0
+- `@types/express`: ^5.0.1
+- `@types/leaflet`: ^1.9.21
+- `@types/node`: ^20.17.19
+- `@typescript-eslint/utils`: ^8.56.1
+- `angular-eslint`: 22.0.0
+- `cypress`: ^15.0.0
 - `eslint`: ^10.0.3
-- `eslint-config-prettier`: ^10.1.8
-- `eslint-plugin-prettier`: ^5.5.5
-- `globals`: ^17.4.0
 - `jsdom`: ^28.0.0
-- `prettier`: ^3.8.2
+- `lucide`: ^1.23.0
+- `ng-packagr`: ^22.0.0
 - `typescript`: ~6.0.3
 - `typescript-eslint`: 8.56.1
-- `vitest`: ^4.0.8
+- `vitest`: ^4.1.9
 
 ---
 
@@ -3051,7 +3050,7 @@ Angular ← onSnapshot ← Firestore
 
 - Events carry `version: "1.0"` and a validated, path-safe `idempotency_key` (16–128 characters).
 - Worker is the **only** authoritative writer of stats projections.
-- Projection failures are committed only after an acknowledged write to `frontend-events-dlq`; a failed DLQ publish leaves the source batch uncommitted for retry.
+- Projection failures are committed only after an acknowledged write to `frontend-events-dlq`; malformed business events follow the same acknowledgement-before-commit rule on `app-events-dlq`. A failed DLQ publish leaves the corresponding source batch uncommitted for retry.
 - Redpanda message values are ciphertext on the wire and at broker rest; idempotency keys remain visible only when deliberately carried as broker headers for routing/deduplication.
 
 ### 4.2 API / integration commands
@@ -3149,20 +3148,20 @@ Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-de
 - [ ] `platform-status` loads for anonymous users
 - [ ] Sentry error rate baseline
 - [ ] Cloud Run CPU/memory on `deml-backend`, `deml-telemetry-worker`
-- [ ] DLQ topic depth (`frontend-events-dlq`)
+- [ ] DLQ topic depth (`frontend-events-dlq` and `app-events-dlq`)
 - [ ] `platform-status` → **Event Projections DLQ** is Operational (replay-group lag is zero)
 - [ ] Outbox unpublished row count (Postgres)
 - [ ] CES gauges responding (ClickHouse path)
 
 ## 11. Contingency quick reference
 
-| Failure                     | First response                                                                                                                             |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Stale realtime stats        | Restart telemetry worker + outbox relay                                                                                                    |
-| Function publish errors     | Check Redpanda public endpoint; confirm fallback events in Firestore                                                                       |
-| DLQ growth                  | Run `python manage.py replay_projection_dlq --dry-run`; fix the transient/code cause, then replay a bounded batch with `--max-records 100` |
-| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Cloud Run backend                                                                         |
-| Firestore permission denied | Redeploy `firestore.rules` via Firebase workflow                                                                                           |
+| Failure                     | First response                                                                                                                                                                                                                                                          |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stale realtime stats        | Restart telemetry worker + outbox relay                                                                                                                                                                                                                                 |
+| Function publish errors     | Check Redpanda public endpoint; confirm fallback events in Firestore                                                                                                                                                                                                    |
+| DLQ growth                  | For `frontend-events-dlq`, run `python manage.py replay_projection_dlq --dry-run`, fix the cause, then replay a bounded batch with `--max-records 100`. For `app-events-dlq`, remediate the schema/decryption cause and perform a controlled republish to `app-events`. |
+| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Cloud Run backend                                                                                                                                                                                                      |
+| Firestore permission denied | Redeploy `firestore.rules` via Firebase workflow                                                                                                                                                                                                                        |
 
 ## 12. Related documents
 

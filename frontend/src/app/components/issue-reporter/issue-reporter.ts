@@ -1,4 +1,4 @@
-import { Component, signal, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -23,6 +23,7 @@ import { API_ENDPOINTS } from '../../core/constants/api.constants';
     VikingButton,
   ],
   templateUrl: './issue-reporter.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IssueReporter {
   isOpen = signal(false);

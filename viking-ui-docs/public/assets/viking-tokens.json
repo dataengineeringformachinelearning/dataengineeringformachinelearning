@@ -317,7 +317,8 @@
     "hoverLift": "-1px maximum"
   },
   "chart": {
-    "ratio": "16 / 7",
+    "ratio": "2 / 1",
+    "plotHeight": "clamp(var(--viking-space-20), 46cqi, var(--viking-space-24))",
     "panelPaddingCompact": "16px",
     "panelPaddingDefault": "16px 24px 24px",
     "responsive": true
@@ -355,6 +356,7 @@
   "zIndex": {
     "overlay": 1000,
     "toast": 1100,
-    "tooltip": 1200
+    "tooltip": 1200,
+    "externalChallenge": 2147483647
   }
 }

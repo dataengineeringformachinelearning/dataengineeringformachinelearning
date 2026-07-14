@@ -190,21 +190,20 @@ export const buildSuiteSearchItems = (
   urls: SiteUrls,
   options?: { docsOrigin?: string; authenticated?: boolean },
 ): SuiteSearchItem[] => {
-  const paletteContext = context === "docs" ? "marketing" : context;
   const authenticated = options?.authenticated ?? context === "app";
 
   const items: SuiteSearchItem[] = [
     ...SITE_NAV_LINKS.filter((link) => !link.requireAuth || authenticated).map(
-      (link) => navItem(link, paletteContext, urls),
+      (link) => navItem(link, context, urls),
     ),
     ...SITE_FOOTER_COLUMNS.flatMap((column) =>
       column.links
         .filter((link) => !link.requireAuth || authenticated)
-        .map((link) => footerItem(link, column.title, paletteContext, urls)),
+        .map((link) => footerItem(link, column.title, context, urls)),
     ),
     ...SUITE_SEARCH_EXTRAS.map((extra) => ({
       ...extra,
-      href: resolveExtraHref(extra, paletteContext, urls),
+      href: resolveExtraHref(extra, context, urls),
     })),
   ];
 

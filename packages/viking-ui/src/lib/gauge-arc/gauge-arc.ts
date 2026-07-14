@@ -14,7 +14,9 @@ import {
     "aria-hidden": "true",
     "[class.viking-gauge-arc-amber]": "tone() === 'amber'",
     "[class.viking-gauge-arc-danger]": "tone() === 'danger'",
+    "[class.viking-gauge-arc-info]": "tone() === 'info'",
     "[class.viking-gauge-arc-primary]": "tone() === 'primary'",
+    "[class.viking-gauge-arc-success]": "tone() === 'success'",
   },
   template: `
     <svg class="viking-gauge-arc-svg" viewBox="0 0 100 60" fill="none">
@@ -65,8 +67,16 @@ import {
         color: var(--viking-danger);
       }
 
+      :host(.viking-gauge-arc-info) {
+        color: var(--viking-info);
+      }
+
       :host(.viking-gauge-arc-primary) {
         color: var(--viking-accent);
+      }
+
+      :host(.viking-gauge-arc-success) {
+        color: var(--viking-success);
       }
     `,
   ],
@@ -75,7 +85,9 @@ export class VikingGaugeArc {
   readonly value = input.required<number>();
   readonly max = input<number>(100);
   readonly circumference = input<number>(125.66);
-  readonly tone = input<"accent" | "amber" | "danger" | "primary">("accent");
+  readonly tone = input<
+    "accent" | "amber" | "danger" | "info" | "primary" | "success"
+  >("accent");
 
   protected readonly strokeDasharray = computed(() => {
     const pct = Math.max(0, Math.min(1, this.value() / this.max()));

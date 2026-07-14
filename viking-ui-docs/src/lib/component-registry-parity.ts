@@ -150,7 +150,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Marketing-grade navbar with search, theme toggle, and CTA slots.",
           preview: `<div class="viking-card viking-card-compact">
   <div class="viking-demo-row">
-    <strong class="viking-heading viking-heading-sm" style="margin:0;line-height:1.2">DEML</strong>
+    <strong class="viking-heading viking-heading-sm">DEML</strong>
     <viking-button-wc variant="ghost" size="sm">Docs</viking-button-wc>
     <viking-button-wc variant="primary" size="sm">Launch</viking-button-wc>
   </div>
@@ -220,9 +220,9 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Spinner",
           description:
             "Indeterminate loading indicator with reduced-motion respect.",
-          preview: `<div class="viking-demo-row" style="align-items:center">
+          preview: `<div class="viking-demo-row">
   <span class="viking-spinner-static" role="status" aria-label="Loading"></span>
-  <span class="viking-text-muted" style="margin:0;line-height:1.2">Relaying Outbox events…</span>
+  <span class="viking-text-muted">Relaying Outbox events…</span>
 </div>`,
           selector: "viking-spinner",
         },
@@ -279,10 +279,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Keyboard hint",
           description:
             "Styled kbd element for shortcuts — pairs with search palette footer.",
-          preview: `<div class="viking-demo-row" style="align-items:center">
+          preview: `<div class="viking-demo-row">
   <span class="viking-kbd-static">⌘</span>
   <span class="viking-kbd-static">K</span>
-  <span class="viking-text-muted" style="margin:0;line-height:1">Open command palette</span>
+  <span class="viking-text-muted">Open command palette</span>
 </div>`,
           selector: "viking-kbd",
         },
@@ -337,9 +337,9 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           id: "brand",
           name: "Brand mark",
           description: "Logo lockup with wordmark for navbars and auth panels.",
-          preview: `<div class="viking-demo-row" style="align-items:center;gap:var(--viking-space-2)">
-  <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0;width:28px;height:28px"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
-  <strong class="viking-heading viking-heading-sm" style="margin:0;line-height:1;display:inline-flex;align-items:center">DEML</strong>
+          preview: `<div class="viking-demo-row">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
+  <strong class="viking-heading viking-heading-sm">DEML</strong>
 </div>`,
           selector: "viking-brand",
         },
@@ -662,12 +662,12 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Status metric row",
           description:
             "Horizontal KPI strip with icon, title, subtitle, and value — spans full card width.",
-          preview: `<div class="viking-status-metric-row" style="width:100%">
-  <div class="stat-info" style="display:flex;align-items:center;gap:var(--viking-space-2)">
+          preview: `<div class="viking-status-metric-row">
+  <div class="stat-info viking-demo-stat-info">
     <span data-viking-icon="server" data-viking-icon-size="22" aria-hidden="true"></span>
     <div>
-      <span class="viking-label" style="display:block;text-transform:uppercase">Cumulative SLA</span>
-      <span class="viking-text-muted" style="display:block;font-size:var(--viking-font-size-3xs)">Based on real telemetry</span>
+      <span class="viking-label">Cumulative SLA</span>
+      <span class="viking-text-muted viking-demo-caption">Based on real telemetry</span>
     </div>
   </div>
   <strong class="viking-metric">99.97%</strong>

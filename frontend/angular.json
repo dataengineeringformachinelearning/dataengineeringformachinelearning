@@ -30,7 +30,8 @@
               {
                 "glob": "**/*",
                 "input": "public",
-                "output": "/"
+                "output": "/",
+                "ignore": ["assets/viking-app.css"]
               },
               {
                 "glob": "**/*",
@@ -41,22 +42,7 @@
             "loader": {
               ".md": "text"
             },
-            "styles": [
-              "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
-              "leaflet/dist/leaflet.css",
-              "prismjs/themes/prism-okaidia.css"
-            ],
-            "scripts": [
-              "prismjs/prism.js",
-              "prismjs/components/prism-bash.min.js",
-              "prismjs/components/prism-docker.min.js",
-              "prismjs/components/prism-python.min.js",
-              "prismjs/components/prism-scss.min.js",
-              "prismjs/components/prism-typescript.min.js",
-              "prismjs/components/prism-nginx.min.js",
-              "prismjs/components/prism-javascript.min.js",
-              "prismjs/components/prism-css.min.js"
-            ],
+            "styles": ["public/assets/viking-app.css", "leaflet/dist/leaflet.css"],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "prerender": false,
@@ -87,8 +73,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "4MB",
-                  "maximumError": "5MB"
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "1.75MB"
                 },
                 {
                   "type": "anyComponentStyle",

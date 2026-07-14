@@ -7,6 +7,8 @@ export type ApiProperty = {
   description: string;
 };
 
+export type ApiMethod = Pick<ApiProperty, "name" | "description">;
+
 export type ComponentApi = {
   /** Angular signal inputs */
   inputs?: ApiProperty[];
@@ -18,6 +20,8 @@ export type ComponentApi = {
   cssClasses?: ApiProperty[];
   /** Events dispatched by Web Components */
   events?: ApiProperty[];
+  /** Public methods exposed by Web Components */
+  methods?: ApiMethod[];
 };
 
 /** Consistent API patterns applied across all Viking-UI components. */

@@ -151,8 +151,6 @@
   background-color: transparent;
   border: 1px solid
     var(--viking-border, var(--border, var(--viking-charcoal-700)));
-  cursor: pointer;
-  transition: var(--viking-transition-colors);
   font-size: var(--viking-font-size);
   font-weight: 500;
   color: var(
@@ -163,36 +161,8 @@
   text-align: center;
 }
 
-.viking-usa-badge:focus-visible,
-.usa-badge:focus-visible {
-  outline: var(--viking-ring-width, 2px) solid
-    var(--viking-ring, var(--focus-ring-color, var(--viking-teal-400)));
-  outline-offset: var(--viking-ring-offset, 2px);
-}
-
-.viking-usa-badge:hover,
-.usa-badge:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--viking-surface, var(--card-bg, var(--viking-charcoal-950))) 95%,
-    var(--viking-accent, var(--color-primary, var(--viking-teal-600))) 5%
-  );
-  border-color: var(
-    --viking-border-strong,
-    var(--viking-border, var(--border, var(--viking-charcoal-700)))
-  );
-  color: var(--viking-text, var(--text-color, var(--viking-metallic-100)));
-  box-shadow: var(--viking-shadow-sm);
-}
-
 .viking-usa-badge-icon,
 .usa-badge-icon {
   font-size: 1.1em;
   line-height: 1;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.viking-usa-badge:hover .viking-usa-badge-icon,
-.usa-badge:hover .usa-badge-icon {
-  transform: scale(1.15) rotate(-5deg);
 }

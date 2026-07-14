@@ -41,10 +41,10 @@ if (useSsl) {
   const encodedCa = process.env.REDPANDA_SSL_CA_B64;
   kafkaConfig.ssl = {
     rejectUnauthorized: true,
-    ...(encodedCa
-      ? { ca: [Buffer.from(encodedCa, "base64").toString("utf8")] }
-      : {}),
   };
+  if (encodedCa) {
+    kafkaConfig.ssl.ca = [Buffer.from(encodedCa, "base64").toString("utf8")];
+  }
 }
 // SASL is independent of TLS: SASL_PLAINTEXT (no SSL) and SASL_SSL are both valid.
 // Apply SASL whenever credentials are present so authenticated publish works with or

@@ -1,0 +1,76 @@
+/* Canonical layout helpers for live examples in the Viking-UI docs. */
+
+.component-showcase-preview
+  .viking-demo-row-stack
+  > :where(.viking-heading, .viking-text, .viking-text-muted) {
+  margin: 0;
+}
+
+.component-showcase-preview .viking-demo-form-stack {
+  gap: var(--viking-space-3);
+}
+
+.viking-demo-stat-info {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-2);
+  min-width: 0;
+}
+
+.viking-demo-caption {
+  display: block;
+  margin: 0;
+  font-size: var(--viking-font-size-3xs);
+}
+
+.viking-demo-panel-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+}
+
+.viking-demo-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--viking-space-2);
+  width: 100%;
+  padding-bottom: var(--viking-space-2);
+  border-bottom: var(--viking-border-width) solid
+    var(--viking-border-subtle);
+}
+
+.viking-demo-panel-header .viking-heading {
+  margin: 0;
+}
+
+.viking-demo-panel-header .viking-text-muted {
+  margin: var(--viking-space-1) 0 0;
+}
+
+.viking-demo-timeline-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--viking-space-2);
+  width: 100%;
+  min-width: 0;
+}
+
+.viking-demo-timeline-legend {
+  color: var(--viking-text-subtle);
+  font-size: var(--viking-font-size-2xs);
+}
+
+.viking-demo-block-full {
+  display: block;
+  width: 100%;
+}
+
+.viking-demo-mb-2 {
+  margin-bottom: var(--viking-space-2);
+}
+
+.showcase-auth-panel > :where(.viking-heading, .viking-text-muted) {
+  margin: 0;
+}

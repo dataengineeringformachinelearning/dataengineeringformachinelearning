@@ -6,6 +6,7 @@ import {
   computed,
   afterNextRender,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
   PLATFORM_ID,
   OnInit,
   OnDestroy,
@@ -109,6 +110,7 @@ type BenchmarkSummary = {
     VikingSectionTemplate,
   ],
   templateUrl: './analytics.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
@@ -156,7 +158,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
   statusSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Count', []));
   statusStackedSeries = signal<VikingChartSeries[]>([]);
-  trafficGroupedSeries = signal<VikingChartSeries[]>([]);
   endpointSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Calls', []));
   topRegionsSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Requests', [], 'warning'));
   threatSeveritySegments = signal<VikingDonutSegment[]>([]);
@@ -181,11 +182,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   hasStatusStackedData = computed(() =>
     hasChartValues(this.statusStackedSeries().flatMap(series => series.data)),
   );
-  hasTrafficGroupedData = computed(
-    () =>
-      this.trafficGroupedSeries().length > 1 &&
-      hasChartValues(this.trafficGroupedSeries().flatMap(series => series.data)),
-  );
   hasEndpointData = computed(() =>
     hasChartValues(this.endpointSeries().flatMap(series => series.data)),
   );
@@ -201,6 +197,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public map: L.Map | undefined;
   private intervalId: ReturnType<typeof setInterval> | undefined;
   private exportPollId: ReturnType<typeof setInterval> | undefined;
+  private readonly onVisibilityChange = (): void => {
+    if (document.hidden) {
+      this.stopAnalyticsPolling();
+      return;
+    }
+
+    this.loadAnalyticsData();
+    this.startAnalyticsPolling();
+  };
 
   public tenantOptions: SelectOption[] = [];
 
@@ -375,18 +380,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ),
           );
 
-          const freqData = reqFreq.map((d: { requests: number }) => d.requests ?? 0);
-          const latData = timeSeries.map((d: { latency: number }) => d.latency ?? 0);
-          const groupedLen = Math.min(freqData.length, latData.length);
-          if (groupedLen >= 2) {
-            this.trafficGroupedSeries.set([
-              { name: 'Requests', data: freqData.slice(0, groupedLen), tone: 'accent' },
-              { name: 'Latency (ms)', data: latData.slice(0, groupedLen), tone: 'info' },
-            ]);
-          } else {
-            this.trafficGroupedSeries.set([]);
-          }
-
           const statuses = user_metrics?.http_statuses || [];
           this.statusCategories.set(
             statuses.map((d: { status?: string | number; code?: string | number }) =>
@@ -475,16 +468,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     if (this.isBrowser) {
       this.loadTenants();
       this.loadExports();
-
-      this.intervalId = setInterval(() => {
-        this.loadAnalyticsData();
-      }, 60000);
+      document.addEventListener('visibilitychange', this.onVisibilityChange);
+      this.startAnalyticsPolling();
     }
   }
 
   ngOnDestroy() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    this.stopAnalyticsPolling();
+    if (this.isBrowser) {
+      document.removeEventListener('visibilitychange', this.onVisibilityChange);
     }
     if (this.exportPollId) {
       clearInterval(this.exportPollId);
@@ -514,6 +506,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       error: () => {
         // Storage may be offline in some envs; keep page usable.
         this.exportsList = [];
+        this.cdr.markForCheck();
       },
     });
   }
@@ -534,12 +527,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           const jobId = job?.id ?? 'unknown';
           this.exportMessage = `Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`;
           this.loadExports();
+          this.cdr.markForCheck();
         },
         error: err => {
           this.exportBusy = false;
           const detail =
             err?.error?.detail || err?.error?.message || err?.message || 'Export failed';
           this.exportMessage = String(detail);
+          this.cdr.markForCheck();
         },
       });
   }
@@ -558,13 +553,30 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             window.open(downloadUrl, '_blank', 'noopener,noreferrer');
           } else {
             this.exportMessage = 'Download URL not available';
+            this.cdr.markForCheck();
           }
         },
         error: err => {
           const detail = err?.error?.detail || err?.error?.message || 'Download unavailable';
           this.exportMessage = String(detail);
+          this.cdr.markForCheck();
         },
       });
+  }
+
+  private startAnalyticsPolling(): void {
+    if (this.intervalId || document.hidden) {
+      return;
+    }
+    this.intervalId = setInterval(() => this.loadAnalyticsData(), 60000);
+  }
+
+  private stopAnalyticsPolling(): void {
+    if (!this.intervalId) {
+      return;
+    }
+    clearInterval(this.intervalId);
+    this.intervalId = undefined;
   }
 
   public onTenantChange(tenantId: string): void {

@@ -48,6 +48,7 @@ const SCAN_ROOTS = [
   "frontend/src",
   "packages/viking-ui/src",
   "marketing/src",
+  "viking-ui-docs/src",
   "marketing/public/assets/widgets",
   "backend/templates",
   "backend/static",
@@ -1044,6 +1045,21 @@ const scanInlineStyles = (content, filePath) => {
   if (!/\.(html|astro|ts)$/i.test(filePath)) {
     return;
   }
+
+  if (relativePath(filePath).startsWith("viking-ui-docs/src/")) {
+    const inlineStyle = /\bstyle\s*=/gi;
+    let inlineMatch;
+    while ((inlineMatch = inlineStyle.exec(content)) !== null) {
+      addFinding(
+        "inline-style",
+        filePath,
+        "Docs must consume package-owned Viking-UI classes instead of inline visual styles",
+        lineNumberAt(content, inlineMatch.index),
+      );
+    }
+    return;
+  }
+
   const styleAttr = /style=["'][^"']*(#[0-9a-fA-F]{3,8}|rgb\s*\()/gi;
   let match;
   while ((match = styleAttr.exec(content)) !== null) {
@@ -1100,6 +1116,11 @@ const scanCards = (content, filePath) => {
   const genericCard = /class=(["'])([^"']*)\1/gi;
   let match;
   while ((match = genericCard.exec(content)) !== null) {
+    const lineStart = content.lastIndexOf("\n", match.index) + 1;
+    const linePrefix = content.slice(lineStart, match.index);
+    if (/&lt;[^&]*$/.test(linePrefix)) {
+      continue;
+    }
     const classList = match[2].split(/\s+/);
     if (
       classList.includes("card") &&

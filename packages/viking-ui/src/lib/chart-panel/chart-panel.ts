@@ -64,7 +64,7 @@ export type VikingChartPanelBody = "default" | "origin-map";
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        justify-content: center;
+        justify-content: flex-start;
         position: relative;
         overflow: hidden;
         padding: var(--viking-space-content-gap);
@@ -79,7 +79,14 @@ export type VikingChartPanelBody = "default" | "origin-map";
         }
       }
 
-      .viking-chart-panel-body > viking-chart,
+      .viking-chart-panel-body > viking-chart {
+        flex: 0 0 auto;
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        align-self: stretch;
+      }
+
       .viking-chart-panel-body > viking-chart-empty-state {
         flex: 1 1 auto;
         width: 100%;

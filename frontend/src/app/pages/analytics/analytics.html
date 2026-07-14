@@ -132,7 +132,7 @@
         Aggregate performance and security telemetry across all nodes.
       </p>
     </header>
-    <viking-panel-grid class="analytics-gauge-grid" [columns]="2">
+    <viking-panel-grid class="analytics-gauge-grid" [columns]="3" spacing="tight">
       <!-- THREAT GAUGE -->
       <viking-card class="gauge-card">
         <div class="gauge-card-header">
@@ -417,6 +417,7 @@
         <div
           id="originMap"
           class="origin-map-canvas viking-map-ready"
+          role="region"
           aria-label="Geographic origin map"
         ></div>
         @if (originMapData.length === 0) {
@@ -462,21 +463,12 @@
           <viking-chart-panel>
             <viking-chart-card-header
               title="Request Frequency"
-              [hasData]="hasTrafficGroupedData() || hasFrequencyData()"
+              [hasData]="hasFrequencyData()"
               [value]="formatCount(totalRequests) + ' Req'"
               [trend]="frequencyTrend"
               emptyLabel="Awaiting signal"
             />
-            @if (hasTrafficGroupedData()) {
-            <viking-chart
-              kind="grouped-bar"
-              [series]="trafficGroupedSeries()"
-              [categories]="frequencyCategories()"
-              label="Request frequency vs latency"
-              [fill]="true"
-              [zoomable]="true"
-            />
-            } @else if (hasFrequencyData()) {
+            @if (hasFrequencyData()) {
             <viking-chart
               kind="line"
               [series]="frequencySeries()"

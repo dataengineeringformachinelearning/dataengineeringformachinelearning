@@ -99,7 +99,7 @@ export type AnnouncementCardTone = "info" | "warning";
       }
 
       .viking-announcement-card-tone {
-        color: var(--viking-info);
+        color: var(--viking-text-link);
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-caps);
         text-transform: uppercase;
