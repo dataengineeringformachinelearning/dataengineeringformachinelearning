@@ -9,6 +9,13 @@ export default defineConfig({
         '../packages/viking-ui/src/public-api.ts',
       ),
     },
+    dedupe: [
+      '@angular/common',
+      '@angular/core',
+      '@angular/forms',
+      '@angular/platform-browser',
+      '@angular/router',
+    ],
   },
   esbuild: {
     tsconfigRaw: {

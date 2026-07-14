@@ -333,7 +333,10 @@ test("dashboard overview keeps compact KPI rhythm and balanced status panels", (
     "_dashboard-overview.scss",
   );
 
-  assert.match(dashboard, /<viking-grid \[columns\]="2" spacing="tight">/);
+  assert.match(
+    dashboard,
+    /<viking-panel-grid \[columns\]="2" spacing="tight">/,
+  );
   assert.match(
     dashboard,
     /<viking-card class="health-card kpi-card" \[compact\]="true">/,
