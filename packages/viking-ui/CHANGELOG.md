@@ -1,5 +1,12 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 9.3.1
+
+### Patch Changes
+
+- Ship the expanded `viking-gauge-arc` `info` and `success` tone contract in the
+  published Angular runtime and type declarations.
+
 ## 9.3.0
 
 ### Minor Changes
