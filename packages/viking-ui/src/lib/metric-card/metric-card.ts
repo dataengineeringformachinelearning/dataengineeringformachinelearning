@@ -57,7 +57,7 @@ export class VikingMetricRow {}
         position: relative;
         display: flex;
         align-items: flex-start;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: var(--viking-space-3);
         width: 100%;
         min-width: 0;
@@ -126,14 +126,24 @@ export class VikingMetricRow {}
       }
 
       .viking-metric-card-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--viking-space-5);
+        height: var(--viking-space-5);
+        padding: var(--viking-space-1);
+        border: var(--viking-border-width) var(--viking-border-style)
+          var(--viking-border-subtle);
+        border-radius: var(--viking-radius-lg);
+        background: var(--viking-accent-soft);
         color: var(--viking-text-muted);
+        box-sizing: border-box;
+        flex: 0 0 var(--viking-space-5);
       }
 
       .viking-metric-card-copy {
         display: grid;
-        gap: var(
-          --viking-space-1
-        ); /* Better vertical rhythm between label/value/sublabel */
+        gap: var(--viking-space-1);
         min-width: 0;
         flex: 1 1 auto;
       }
@@ -146,7 +156,7 @@ export class VikingMetricRow {}
         letter-spacing: var(--viking-letter-spacing-caps);
         line-height: var(--viking-line-height-snug);
         text-transform: uppercase;
-        margin-bottom: var(--viking-space-0-5);
+        margin: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -169,7 +179,7 @@ export class VikingMetricRow {}
         color: var(--viking-text-subtle);
         font-size: var(--viking-font-size-xs);
         line-height: var(--viking-line-height-snug);
-        margin-top: var(--viking-space-0-5);
+        margin: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

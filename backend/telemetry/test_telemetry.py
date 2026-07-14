@@ -307,6 +307,10 @@ def test_analytics_overview_hybrid_query(client) -> None:
     "evaluation_status": "measured",
     "created_at": res_data["data"]["ces"]["latest_benchmark"]["created_at"],
   }
+  assert res_data["data"]["benchmarking"]["current_scope"]["evaluation_status"] == (
+    "insufficient_data"
+  )
+  assert res_data["data"]["benchmarking"]["platform_reference"]["score_percent"] == 0.0
   metrics = res_data["data"]["user_metrics"]
 
   assert metrics["total_requests_24h"] == 101
@@ -315,3 +319,56 @@ def test_analytics_overview_hybrid_query(client) -> None:
   assert len(metrics["uptime_series"]) == 24
   assert all("uptime" in point for point in metrics["uptime_series"])
   assert len(metrics["security_alerts"]) == 24
+
+
+@pytest.mark.django_db
+def test_benchmark_summary_uses_latest_model_runs_and_weighted_evidence() -> None:
+  from django.contrib.auth.models import User
+  from monitor.models import BenchmarkRun
+
+  from telemetry.services.overview import OverviewService
+
+  user = User.objects.create_user(username="benchmark-summary", password="password")
+  BenchmarkRun.objects.create(
+    user=user,
+    is_platform=False,
+    model_type="sla",
+    mae=0.9,
+    rmse=0.9,
+    accuracy=0.1,
+    training_duration_seconds=1.0,
+    dataset_size=10,
+    benchmark_score=0.1,
+  )
+  BenchmarkRun.objects.create(
+    user=user,
+    is_platform=False,
+    model_type="sla",
+    mae=0.1,
+    rmse=0.2,
+    accuracy=0.75,
+    training_duration_seconds=1.0,
+    dataset_size=3,
+    benchmark_score=0.8,
+  )
+  BenchmarkRun.objects.create(
+    user=user,
+    is_platform=False,
+    model_type="threat",
+    mae=0.3,
+    rmse=0.4,
+    accuracy=0.5,
+    training_duration_seconds=1.0,
+    dataset_size=1,
+    benchmark_score=0.6,
+  )
+
+  summary = OverviewService._benchmark_summary(user=user, is_platform=False)
+
+  assert summary["score_percent"] == 75.0
+  assert summary["accuracy_percent"] == 68.75
+  assert summary["mae"] == 0.15
+  assert summary["rmse"] == 0.25
+  assert summary["dataset_size"] == 4
+  assert summary["models_evaluated"] == 2
+  assert summary["measured_models"] == 2

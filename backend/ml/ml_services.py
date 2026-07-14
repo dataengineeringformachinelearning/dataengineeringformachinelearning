@@ -1181,7 +1181,7 @@ def _extract_honeypot_features(interactions: Any) -> list[float]:
 
 def run_benchmark_suite(
   is_platform: bool = False, user: Any = None, model_type: str = "all"
-) -> dict:
+) -> dict[str, dict[str, Any]]:
   """Run ML model benchmark suite and return performance metrics.
 
   Creates BenchmarkRun record and optionally publishes to UI/marketing.
@@ -1213,7 +1213,7 @@ def run_benchmark_suite(
       "accuracy": accuracy,
       "benchmark_score": benchmark_score,
       "evaluation_status": "measured" if dataset_size > 0 else "insufficient_data",
-      "benchmark_id": benchmark.id,
+      "benchmark_id": str(benchmark.id),
     }
 
   if model_type in ("all", "threat"):
@@ -1237,11 +1237,11 @@ def run_benchmark_suite(
       "accuracy": accuracy,
       "benchmark_score": benchmark_score,
       "evaluation_status": "measured" if dataset_size > 0 else "insufficient_data",
-      "benchmark_id": benchmark.id,
+      "benchmark_id": str(benchmark.id),
     }
 
   # Publish benchmark results to projections
-  _publish_benchmark_to_ui(results)
+  _publish_benchmark_to_ui(results, user=user, is_platform=is_platform)
 
   return results
 
@@ -1311,7 +1311,9 @@ def _benchmark_threat_model(
   return mae, rmse, accuracy, len(report_rows)
 
 
-def _publish_benchmark_to_ui(results: dict) -> None:
+def _publish_benchmark_to_ui(
+  results: dict[str, dict[str, Any]], *, user: Any = None, is_platform: bool
+) -> None:
   """Publish benchmark results to Firestore projections for UI display."""
   from django.conf import settings
 
@@ -1322,9 +1324,14 @@ def _publish_benchmark_to_ui(results: dict) -> None:
     from google.cloud import firestore
 
     client = firestore.Client(project=settings.FIRESTORE_PROJECT_ID)
-    # Write to a dedicated benchmarks collection
+    profile = getattr(user, "profile", None)
+    account_id = str(profile.account_id) if profile and profile.account_id else None
+    # Keep every projection explicitly scoped so tenant results cannot be
+    # mistaken for the public platform reference.
     client.collection("ml_benchmarks").add(
       {
+        "account_id": account_id,
+        "is_platform": is_platform,
         "results": results,
         "timestamp": timezone.now().isoformat(),
         "model_version": "1.0",

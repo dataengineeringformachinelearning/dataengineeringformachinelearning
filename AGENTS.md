@@ -190,7 +190,7 @@ This document defines the core roles and collaboration rules for our development
 
 ### Viking-UI Uniformity Law
 
-All DEML surfaces share one design system: **grid-first modern enterprise SaaS** with Cyber-Noir dark surfaces, Ocean Blue Serenity accents, and precision-engineered component anatomy. **[.cursorrules](.cursorrules)** is the Cursor agent entry point; **[THEME.md](THEME.md)** is the canonical token matrix; **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** documents the kit. The package is published as `@dataengineeringformachinelearning/viking-ui` (currently **v9.2.0**).
+All DEML surfaces share one design system: **grid-first modern enterprise SaaS** with Cyber-Noir dark surfaces, Ocean Blue Serenity accents, and precision-engineered component anatomy. **[.cursorrules](.cursorrules)** is the Cursor agent entry point; **[THEME.md](THEME.md)** is the canonical token matrix; **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** documents the kit. The package is published as `@dataengineeringformachinelearning/viking-ui` (currently **v9.3.0**).
 
 - **Single source of truth, no exceptions:** `packages/viking-ui/` owns all CSS/SCSS, design tokens, static CSS bundles, Web Components, Angular wrappers, icons, component logic, and visual utilities. No other app or surface owns styling.
 - **No new app-local styles:** Do not add new styling in `frontend/`, `marketing/`, `viking-ui-docs/`, or `backend/` (including Angular component styles, Astro `<style>` blocks, Django/static CSS, Tailwind utility systems, inline visual styles, or one-off visual classes). If a visual rule or component is missing, add it to `packages/viking-ui/` first, then consume it.

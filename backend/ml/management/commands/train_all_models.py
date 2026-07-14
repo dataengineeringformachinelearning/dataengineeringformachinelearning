@@ -1,6 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from ml.ml_services import train_spiking_temporal_forecaster, train_tenant_sla, train_threat_model
+from ml.ml_services import (
+  run_benchmark_suite,
+  train_spiking_temporal_forecaster,
+  train_tenant_sla,
+  train_threat_model,
+)
 
 User = get_user_model()
 
@@ -40,6 +45,16 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"  - Threat training failed: {e}"))
 
+      try:
+        benchmark_results = run_benchmark_suite(user=user, is_platform=False)
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"  - Benchmarks completed: {len(benchmark_results)} model types evaluated"
+          )
+        )
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"  - Benchmarking failed: {e}"))
+
     self.stdout.write("Training platform scope models...")
     try:
       run = train_tenant_sla(None, is_platform=True)
@@ -53,6 +68,12 @@ class Command(BaseCommand):
       self.stdout.write(
         self.style.SUCCESS(
           f"  - Platform threat model trained: anomaly score = {report.anomaly_score * 100:.1f}%"
+        )
+      )
+      benchmark_results = run_benchmark_suite(is_platform=True)
+      self.stdout.write(
+        self.style.SUCCESS(
+          f"  - Platform benchmarks completed: {len(benchmark_results)} model types evaluated"
         )
       )
     except Exception as e:

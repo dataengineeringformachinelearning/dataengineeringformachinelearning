@@ -17,11 +17,11 @@
       description="Signed downloads · CSV · JSON · Parquet · PDF"
     >
       <viking-form-section heading="Generate" icon="download" layout="inline">
-        <div class="viking-cluster">
+        <viking-form-grid [columns]="3">
           <app-unified-select
             id="exportKindSelect"
             label="Kind"
-            width="half"
+            width="full"
             [options]="exportKindOptions"
             [value]="exportKind"
             (valueChange)="exportKind = $event"
@@ -29,7 +29,7 @@
           <app-unified-select
             id="exportFormatSelect"
             label="Format"
-            width="half"
+            width="full"
             [options]="exportFormatOptions"
             [value]="exportFormat"
             (valueChange)="exportFormat = $event"
@@ -43,7 +43,7 @@
               autocomplete="off"
             />
           </viking-field>
-        </div>
+        </viking-form-grid>
         <div vikingFormActions class="viking-cluster">
           <viking-button
             variant="primary"
@@ -120,6 +120,46 @@
       </viking-container>
       }
     </viking-section-template>
+  </viking-section>
+
+  <viking-section>
+    <header class="metrics-overview-header">
+      <h2 class="section-title-premium">
+        <viking-app-icon name="model_training" />
+        Model Benchmarking
+      </h2>
+      <p class="section-description-premium">
+        Validation evidence for the selected workspace, compared with the platform reference.
+      </p>
+    </header>
+    <viking-panel-grid [columns]="2">
+      <viking-metric-card
+        label="Benchmark score"
+        [value]="formatOptionalPercent(benchmarkSummary?.score_percent)"
+        [sublabel]="benchmarkScoreSublabel()"
+        icon="speed"
+        tone="info"
+      />
+      <viking-metric-card
+        label="Weighted accuracy"
+        [value]="formatOptionalPercent(benchmarkSummary?.accuracy_percent)"
+        sublabel="Classification agreement across measured models"
+        icon="check-circle"
+        tone="success"
+      />
+      <viking-metric-card
+        label="Root mean square error"
+        [value]="formatBenchmarkError(benchmarkSummary?.rmse)"
+        sublabel="Lower values indicate tighter predictive fit"
+        icon="analytics"
+      />
+      <viking-metric-card
+        label="Validation observations"
+        [value]="formatCount(benchmarkSummary?.dataset_size || 0)"
+        [sublabel]="(benchmarkSummary?.models_evaluated || 0) + ' model types evaluated'"
+        icon="storage"
+      />
+    </viking-panel-grid>
   </viking-section>
 
   <viking-section>

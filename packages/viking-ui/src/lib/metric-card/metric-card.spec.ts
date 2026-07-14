@@ -10,6 +10,7 @@ import { MetricCardComponent, VikingMetricRow } from "./metric-card";
         label="Cumulative SLA"
         value="100.00%"
         sublabel="Based on real telemetry"
+        icon="speed"
       />
       <viking-metric-card label="P99 Latency" value="108ms" />
     </viking-metric-row>
@@ -37,5 +38,16 @@ describe("Viking metric card layout", () => {
       expect(card.classList.contains("col-span-md-6")).toBe(true);
       expect(card.classList.contains("col-span-4")).toBe(false);
     }
+  });
+
+  it("renders one aligned icon and copy group for metric anatomy", () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+    const card = fixture.nativeElement.querySelector(
+      "viking-metric-card",
+    ) as HTMLElement;
+
+    expect(card.querySelector(".viking-metric-card-icon")).not.toBeNull();
+    expect(card.querySelector(".viking-metric-card-copy")).not.toBeNull();
   });
 });
