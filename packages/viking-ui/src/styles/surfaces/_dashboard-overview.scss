@@ -98,46 +98,32 @@
   }
 }
 
-viking-card.health-card {
+viking-card.health-card.kpi-card {
   grid-area: health;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--viking-space-2);
   text-align: left;
 }
 
-.health-ring {
+.health-gauge {
   position: relative;
-  flex: 0 0 var(--viking-space-10);
-  width: var(--viking-space-10);
-  aspect-ratio: 1;
+  flex: 0 0 var(--viking-space-16);
+  width: var(--viking-space-16);
+  max-width: 100%;
   margin: 0;
-
-  &[data-status="Healthy"] viking-ring-gauge {
-    color: var(--viking-success);
-  }
-
-  &[data-status="Critical"] viking-ring-gauge {
-    color: var(--viking-danger);
-  }
-
-  &[data-status="At Risk"] viking-ring-gauge {
-    color: var(--viking-warning);
-  }
-
-  &[data-status="Watch"] viking-ring-gauge {
-    color: var(--viking-info);
-  }
 }
 
-.health-center {
+.health-gauge-center {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: var(--viking-space-1);
 }
 
 .health-value {
@@ -365,6 +351,7 @@ viking-card.overview-panel {
     flex-direction: column;
     min-height: 0;
     padding-top: var(--viking-space-3);
+    gap: var(--viking-space-3);
   }
 
   .snapshot-stats {
@@ -374,9 +361,9 @@ viking-card.overview-panel {
   }
 
   .mini-chart {
-    flex: 1 1 auto;
-    min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
-    max-height: var(--viking-chart-fill-max-height, clamp(20rem, 42vw, 22rem));
+    flex: 0 0 auto;
+    min-height: 0;
+    max-height: none;
     padding-top: var(--viking-space-2);
   }
 
@@ -606,15 +593,15 @@ viking-card.overview-panel {
 }
 
 .mini-chart {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
-  max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+  min-height: 0;
+  max-height: none;
 
   viking-chart {
     display: flex;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     width: 100%;
     min-height: 0;
   }
@@ -684,23 +671,20 @@ viking-card.overview-panel {
 }
 
 .chart-container {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  min-height: var(--viking-chart-panel-body-min-height-md, 18rem);
-  max-height: var(--viking-chart-fill-max-height, clamp(17rem, 34vw, 20rem));
+  min-height: 0;
+  max-height: none;
 
   &.short {
-    min-height: var(
-      --viking-chart-fill-min-height,
-      clamp(15rem, 30vw, 17.5rem)
-    );
-    max-height: var(--viking-chart-fill-max-height, clamp(16rem, 32vw, 19rem));
+    min-height: 0;
+    max-height: none;
   }
 
   viking-chart {
     display: flex;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     width: 100%;
     min-height: 0;
   }

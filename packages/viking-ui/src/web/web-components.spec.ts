@@ -250,6 +250,8 @@ describe("Viking Web Components v2", () => {
     ) as { title: string }[];
     expect(anonymousItems.map((item) => item.title)).not.toContain("Dashboard");
     expect(footer.textContent).not.toContain("Dashboard");
+    expect(footer.querySelectorAll("h2.footer-column-title")).toHaveLength(4);
+    expect(footer.querySelector("h3.footer-column-title")).toBeNull();
 
     window.dispatchEvent(
       new CustomEvent("deml:auth-state", {

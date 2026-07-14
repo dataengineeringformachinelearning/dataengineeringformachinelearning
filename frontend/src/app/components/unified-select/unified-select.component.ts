@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   VikingField,
@@ -17,54 +17,33 @@ export interface SelectOption {
   standalone: true,
   imports: [FormsModule, VikingField, VikingSelect],
   host: {
-    class: 'app-unified-select',
-    '[class.unified-select-full]': "width === 'full'",
-    '[class.unified-select-half]': "width === 'half'",
+    '[attr.id]': 'id()',
   },
   template: `
-    <viking-field [label]="label ?? ''">
+    <viking-field [label]="label() ?? ''">
       <viking-select
-        [options]="vikingOptions"
-        [ngModel]="value"
+        [options]="vikingOptions()"
+        [ngModel]="value()"
         (ngModelChange)="valueChange.emit($event)"
-        [disabled]="disabled"
-        [width]="width"
+        [disabled]="disabled()"
+        [width]="width()"
+        [label]="label() ?? ''"
         placeholder="Select an option"
       />
     </viking-field>
   `,
-  styles: [
-    `
-      :host {
-        display: block;
-        min-width: 0;
-      }
-
-      :host(.unified-select-full) {
-        width: 100%;
-      }
-
-      :host(.unified-select-half) {
-        width: 100%;
-        max-width: 320px; /* grid-snapped explicit max ~40*8 */
-      }
-
-      :host ::ng-deep viking-field {
-        width: 100%;
-      }
-    `,
-  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnifiedSelect {
-  @Input() id = `unified-select-${Math.random().toString(36).substring(2, 9)}`;
-  @Input() label?: string;
-  @Input() options: SelectOption[] = [];
-  @Input() value: string | null = null;
-  @Input() disabled = false;
-  @Input() width: VikingSelectWidth = 'half';
-  @Output() valueChange = new EventEmitter<string>();
+  readonly id = input<string | null>(null);
+  readonly label = input<string | undefined>();
+  readonly options = input<SelectOption[]>([]);
+  readonly value = input<string | null>(null);
+  readonly disabled = input(false);
+  readonly width = input<VikingSelectWidth>('half');
+  readonly valueChange = output<string>();
 
-  protected get vikingOptions(): VikingSelectOption[] {
-    return this.options.map(opt => ({ label: opt.label, value: opt.value }));
-  }
+  protected readonly vikingOptions = computed<VikingSelectOption[]>(() =>
+    this.options().map(option => ({ label: option.label, value: option.value })),
+  );
 }

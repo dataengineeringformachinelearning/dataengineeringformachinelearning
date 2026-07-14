@@ -82,18 +82,16 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         <span class="uptime-history-value">{{ headerValue() }}</span>
       </div>
     }
-    <div class="uptime-history-bar" role="img" [attr.aria-label]="ariaLabel()">
+    <div class="uptime-history-bar" role="list" [attr.aria-label]="ariaLabel()">
       @for (segment of historySegments(); track $index) {
         <span
           class="uptime-history-segment"
+          role="listitem"
           tabindex="0"
-          [attr.aria-label]="segmentTitle(segment)"
           [attr.data-tooltip]="segmentTitle(segment)"
         >
-          <viking-uptime-bar
-            [status]="resolveStatus(segment)"
-            [title]="segmentTitle(segment)"
-          />
+          <span class="visually-hidden">{{ segmentTitle(segment) }}</span>
+          <viking-uptime-bar [status]="resolveStatus(segment)" />
         </span>
       }
     </div>
@@ -227,7 +225,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         justify-content: space-between;
         gap: var(--viking-space-3);
         font-size: var(--viking-font-size-2xs);
-        color: var(--viking-text-subtle);
+        color: var(--viking-text-muted);
         padding-top: var(--viking-space-0-5);
       }
     `,

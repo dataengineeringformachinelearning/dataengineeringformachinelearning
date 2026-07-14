@@ -71,11 +71,13 @@ mkdirSync(outDir, { recursive: true });
 const tokensCss = compile("tokens-export.scss");
 const componentsCss = compile("components-bundle.scss");
 const demlComponentsCss = compile("deml-components.scss");
+const appCss = compile("viking-app.scss", "compressed");
 const bundleCss = compile("viking-ui-bundle.scss", "compressed");
 
 writeFileSync(path.join(outDir, "design-tokens.css"), tokensCss);
 writeFileSync(path.join(outDir, "viking-components.css"), componentsCss);
 writeFileSync(path.join(outDir, "deml-components.css"), demlComponentsCss);
+writeFileSync(path.join(outDir, "viking-app.css"), appCss);
 writeFileSync(path.join(outDir, "viking-ui.css"), bundleCss);
 copyFileSync(tokensJson, path.join(outDir, "viking-tokens.json"));
 

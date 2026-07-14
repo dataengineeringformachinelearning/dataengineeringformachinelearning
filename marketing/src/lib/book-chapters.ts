@@ -103,6 +103,7 @@ export function loadBookChapters(markdownPath?: string): BookChapter[] {
       shortTitle: "Cover",
     },
   ];
+  const slugCounts = new Map<string, number>([["cover", 1]]);
 
   rawChunks.forEach((chunk, chunkIndex) => {
     const trimmed = chunk.trim();
@@ -112,9 +113,12 @@ export function loadBookChapters(markdownPath?: string): BookChapter[] {
       ? firstLine.replace("## ", "").trim()
       : "Introduction";
     const meta = getChapterMeta(title, chunkIndex + 1);
+    const baseSlug = slugifyChapterTitle(title);
+    const occurrence = (slugCounts.get(baseSlug) ?? 0) + 1;
+    slugCounts.set(baseSlug, occurrence);
 
     chapters.push({
-      slug: slugifyChapterTitle(title),
+      slug: occurrence === 1 ? baseSlug : `${baseSlug}-${occurrence}`,
       title,
       html: String(marked.parse(trimmed)),
       index: chapters.length,

@@ -245,15 +245,15 @@ app-status-cta.isolated-status-cta {
   }
 }
 
-/* Status page charts — same 3:1 premium scale */
+/* Status charts use the same bounded plot viewport as every app surface. */
 .isolated-status-page viking-chart,
 .isolated-status-page .viking-chart {
   width: 100%;
   min-width: 0;
-  aspect-ratio: auto;
-  min-height: var(--viking-chart-fill-min-height);
-  max-height: none;
-  overflow: hidden;
+  height: var(--viking-chart-plot-height);
+  min-height: var(--viking-chart-plot-height);
+  max-height: var(--viking-chart-plot-height);
+  overflow: visible;
 }
 
 .dashboard-page-container .section-tag,
@@ -266,7 +266,7 @@ app-status-cta.isolated-status-cta {
   border: 1px solid
     color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border));
   background: color-mix(in srgb, var(--viking-accent) 10%, transparent);
-  color: var(--viking-accent-strong, var(--viking-accent));
+  color: var(--viking-text-link);
   font-family: var(--viking-font-family);
   font-size: var(--viking-font-size-2xs);
   font-weight: var(--viking-font-weight-bold);
@@ -551,17 +551,23 @@ app-status-cta.isolated-status-cta {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: center;
+  justify-content: flex-start;
   padding: var(--viking-space-3) var(--viking-space-4) var(--viking-space-4);
   min-width: 0;
   overflow: hidden;
 }
 
 .dashboard-page-container .viking-chart-panel-body > viking-chart,
-.dashboard-page-container .viking-chart-panel-body > viking-chart-empty-state,
 .dashboard-page-container .card-body-clean > viking-chart,
+.dashboard-page-container .chart-container > viking-chart {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.dashboard-page-container .viking-chart-panel-body > viking-chart-empty-state,
 .dashboard-page-container .card-body-clean > viking-chart-empty-state,
-.dashboard-page-container .chart-container > viking-chart,
 .dashboard-page-container .chart-container > viking-chart-empty-state {
   flex: 1 1 auto;
   width: 100%;
@@ -573,42 +579,11 @@ app-status-cta.isolated-status-cta {
 .dashboard-page-container .chart-container,
 .dashboard-page-container .chart-container-medium,
 .dashboard-page-container .chart-container-large {
-  min-height: var(--viking-chart-panel-body-min-height-md);
+  min-height: 0;
   max-height: none;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-/* Performance tab short cards */
-.dashboard-page-container .chart-container.short {
-  min-height: clamp(17rem, 30vw, 20rem);
-  max-height: none;
-}
-
-/* Full-width latency strip — wide 3:1, not towering */
-.dashboard-page-container .dashboard-grid-single .chart-container-medium,
-.dashboard-page-container .dashboard-grid-single .chart-container-large,
-.dashboard-page-container .dashboard-grid-single .chart-container {
-  min-height: clamp(12.5rem, 24vw, 15rem);
-  max-height: none;
-}
-
-.dashboard-page-container .dashboard-grid-single viking-chart-panel {
-  --viking-chart-panel-min-height-md: 19rem;
-  --viking-chart-panel-min-height-lg: 19rem;
-  --viking-chart-panel-body-min-height-md: clamp(12.5rem, 24vw, 15rem);
-  --viking-chart-panel-body-min-height-lg: clamp(12.5rem, 24vw, 15rem);
-  --viking-chart-fill-min-height: clamp(11.5rem, 22vw, 14.5rem);
-  --viking-chart-fill-max-height: clamp(14rem, 26vw, 16.5rem);
-}
-
-/* 2/3-up analytics cards — same medium scale as anomalies card */
-.dashboard-page-container .dashboard-grid-responsive viking-chart-panel {
-  --viking-chart-panel-min-height-md: 25rem;
-  --viking-chart-panel-body-min-height-md: clamp(17rem, 30vw, 20rem);
-  --viking-chart-fill-min-height: clamp(16rem, 28vw, 19rem);
-  --viking-chart-fill-max-height: clamp(19rem, 32vw, 21rem);
+  justify-content: flex-start;
 }
 
 .dashboard-page-container

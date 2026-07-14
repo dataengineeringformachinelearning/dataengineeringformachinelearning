@@ -175,7 +175,7 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Uptime bar",
         description:
           "Single uptime segment — compose into viking-uptime-history for full timelines.",
-        preview: `<div class="viking-uptime-demo" role="img" aria-label="Uptime segment" style="width:100%">
+        preview: `<div class="viking-uptime-demo" role="img" aria-label="Uptime segment">
   <div class="viking-uptime-segments">
     <span class="viking-uptime-seg viking-uptime-up" title="Operational"></span>
     <span class="viking-uptime-seg viking-uptime-up" title="Operational"></span>
@@ -200,8 +200,8 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Uptime history",
         description:
           "Full-width 30-day uptime timeline with labeled header and date legend.",
-        preview: `<div class="viking-uptime-demo" style="width:100%">
-  <div style="display:flex;justify-content:space-between;width:100%">
+        preview: `<div class="viking-uptime-demo">
+  <div class="viking-demo-timeline-row">
     <span class="viking-label">Uptime</span>
     <span class="viking-text-muted">99.97% — No current issues</span>
   </div>
@@ -237,7 +237,7 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <span class="viking-uptime-seg viking-uptime-up"></span>
     <span class="viking-uptime-seg viking-uptime-up"></span>
   </div>
-  <div style="display:flex;justify-content:space-between;width:100%;font-size:var(--viking-font-size-2xs);color:var(--viking-text-subtle)">
+  <div class="viking-demo-timeline-row viking-demo-timeline-legend">
     <span>30 days ago</span>
     <span>Today</span>
   </div>
@@ -257,16 +257,16 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Status panel",
         description:
           "Service/component status card with header badge, metrics slot, and uptime timeline.",
-        preview: `<div class="viking-card" style="width:100%;display:flex;flex-direction:column;gap:var(--viking-space-3)">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;padding-bottom:var(--viking-space-2);border-bottom:1px solid var(--viking-border-subtle)">
+        preview: `<div class="viking-card viking-demo-full viking-demo-panel-stack">
+  <div class="viking-demo-panel-header">
     <div>
-      <h3 class="viking-heading viking-heading-sm" style="margin:0">API Layer</h3>
-      <p class="viking-text-muted" style="margin:var(--viking-space-1) 0 0">Core ingestion endpoints</p>
+      <h3 class="viking-heading viking-heading-sm">API Layer</h3>
+      <p class="viking-text-muted">Core ingestion endpoints</p>
     </div>
     <viking-status-pill-wc tone="success" dot>Operational</viking-status-pill-wc>
   </div>
-  <div class="viking-uptime-demo" style="width:100%">
-    <div style="display:flex;justify-content:space-between;width:100%">
+  <div class="viking-uptime-demo">
+    <div class="viking-demo-timeline-row">
       <span class="viking-label">Uptime</span>
       <span class="viking-text-muted">100% — No current issues</span>
     </div>
@@ -303,7 +303,7 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       <span class="viking-uptime-seg viking-uptime-up"></span>
       <span class="viking-uptime-seg viking-uptime-up"></span>
     </div>
-    <div style="display:flex;justify-content:space-between;width:100%;font-size:var(--viking-font-size-2xs);color:var(--viking-text-subtle)">
+    <div class="viking-demo-timeline-row viking-demo-timeline-legend">
       <span>30 days ago</span>
       <span>Today</span>
     </div>
@@ -325,12 +325,12 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Status card",
         description:
           "Status page shell with title, operational badge, and full-width metric slots.",
-        preview: `<viking-status-card-wc title="Platform Status" subtitle="Real-time telemetry and ML forecasting" status="Operational" status-tone="success" status-dot style="width:100%;display:block">
-  <div class="viking-status-metric-row" style="width:100%;margin-bottom:var(--viking-space-2)">
+        preview: `<viking-status-card-wc class="viking-demo-block-full" title="Platform Status" subtitle="Real-time telemetry and ML forecasting" status="Operational" status-tone="success" status-dot>
+  <div class="viking-status-metric-row viking-demo-mb-2">
     <span class="viking-label">Cumulative SLA</span>
     <strong class="viking-metric">99.97%</strong>
   </div>
-  <div class="viking-uptime-demo" style="width:100%">
+  <div class="viking-uptime-demo">
     <div class="viking-uptime-segments" role="img" aria-label="Uptime history">
       <span class="viking-uptime-seg viking-uptime-up"></span>
       <span class="viking-uptime-seg viking-uptime-up"></span>

@@ -1,11 +1,5 @@
-import {
-  APP_INITIALIZER,
-  ApplicationConfig,
-  provideBrowserGlobalErrorListeners,
-  ErrorHandler,
-} from '@angular/core';
-import { Router, provideRouter, withInMemoryScrolling } from '@angular/router';
-import * as Sentry from '@sentry/angular';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, ErrorHandler } from '@angular/core';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import {
   provideClientHydration,
   withEventReplay,
@@ -37,15 +31,5 @@ export const appConfig: ApplicationConfig = {
       ]),
     ),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
-    {
-      provide: Sentry.TraceService,
-      deps: [Router],
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => () => {},
-      deps: [Sentry.TraceService],
-      multi: true,
-    },
   ],
 };

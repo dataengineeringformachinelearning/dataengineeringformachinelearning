@@ -56,12 +56,12 @@ Every production transport is cryptographically authenticated: HTTPS/HSTS at pub
 
 ### 2.4 Operational modes
 
-| Mode              | Trigger                         | Behavior                                                                            |
-| ----------------- | ------------------------------- | ----------------------------------------------------------------------------------- |
-| Normal            | All services healthy            | Commands → Redpanda → role-specific consumers; leased relay wakes on Outbox inserts |
-| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers           |
-| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts     |
-| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions               |
+| Mode              | Trigger                         | Behavior                                                                                                              |
+| ----------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Normal            | All services healthy            | Commands → Redpanda → role-specific consumers; leased relay wakes on Outbox inserts                                   |
+| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers                                             |
+| Degraded (worker) | Consumer failure                | Source-specific quarantine in `frontend-events-dlq` or `app-events-dlq`; Postgres outbox backlog until relay restarts |
+| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions                                                 |
 
 ### 2.5 Maintenance cadence (summary)
 
@@ -80,7 +80,7 @@ _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strate
 
 **Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and durable Postgres-backed schedule buckets provide a repeatable rhythm for model retraining, key-policy checks, retention, and dependency maintenance without restart-driven duplicates.
 
-**Survivability** allows essential services to persist during attack, compromise, and recovery. The Event Projections architecture decouples command ingress from transactional persistence via a transactional Outbox and idempotent consumers; failed messages route to `frontend-events-dlq`, and the Firebase Functions gateway falls back to Firestore when Redpanda is unreachable. UUID-scoped multi-tenancy, distroless least-privilege containers, and zero-downtime Cloud Run rolling deploys constrain lateral movement and support graceful degradation. Explicit degraded operational modes (broker, worker, maintenance) defined in Section 2.4 enable operators to sustain read-path availability through Firestore subscriptions while isolating and restoring backend components.
+**Survivability** allows essential services to persist during attack, compromise, and recovery. The Event Projections architecture decouples command ingress from transactional persistence via a transactional Outbox and idempotent consumers; failed frontend projections route to `frontend-events-dlq`, malformed business events route to `app-events-dlq`, and neither source offset advances until Redpanda acknowledges its quarantine write. The Firebase Functions gateway falls back to Firestore when Redpanda is unreachable. UUID-scoped multi-tenancy, distroless least-privilege containers, and zero-downtime Cloud Run rolling deploys constrain lateral movement and support graceful degradation. Explicit degraded operational modes (broker, worker, maintenance) defined in Section 2.4 enable operators to sustain read-path availability through Firestore subscriptions while isolating and restoring backend components.
 
 ## 4. High-Throughput Ingestion Architecture
 
@@ -88,7 +88,7 @@ The platform implements an **Event Projections** architecture for client telemet
 
 - **Commands** (event ingestion): Client events flow through a Firebase Cloud Functions gateway (`ingestEvent` callable). The function attempts to publish to Redpanda (`frontend-events` topic, with `version` and `idempotency_key`) and falls back to Firestore. Django ingestion paths use a **Transactional Outbox** (events written atomically to a Postgres `OutboxEvent` table).
 - **Data plane**: Role-selected Rust services lease and relay Outbox rows, claim durable schedules, execute bounded service probes, and normalize high-volume `app-events` into Postgres. Independent failure domains prevent telemetry or probe pressure from stalling user-facing projections.
-- **Projections**: The Django `telemetry_worker` consumes control-plane topics independently (idempotent processing using stable keys, with DLQ to `frontend-events-dlq`) and persists business read models to Firestore (named `deml` DB).
+- **Projections**: The Django `telemetry_worker` consumes control-plane topics independently (idempotent frontend processing using stable keys, with source-specific quarantine in `frontend-events-dlq` and `app-events-dlq`) and persists business read models to Firestore (named `deml` DB).
 - **Queries** (real-time views): The Angular frontend subscribes directly (via `onSnapshot`) to the projected state in Firestore for materialized, query-optimized views such as `users/{uid}/data/stats`.
 
 ```mermaid
@@ -343,16 +343,16 @@ This architecture rests on open-source foundations, enterprise design references
 
 ## 17. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/web-components.js"
 ></script>
 ```
 

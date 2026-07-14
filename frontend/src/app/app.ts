@@ -39,7 +39,7 @@ import { SessionStateService } from './services/session-state.service';
     CommandPalette,
   ],
   templateUrl: './app.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
   protected readonly title = signal('frontend');
@@ -78,29 +78,22 @@ export class App implements OnInit {
         // Isolated public status pages (/status/:slug) stay full-bleed without app chrome sidebar.
         const isStandaloneStatus = url.startsWith('/status/') && url !== '/status';
         this.isDashboardPage.set(isDashboard && !isStandaloneStatus);
-
-        if (isPlatformBrowser(this.platformId)) {
-          setTimeout(() => {
-            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) mainContent.scrollTop = 0;
-
-            const dashboardContent = document.querySelector('.dashboard-content');
-            if (dashboardContent) dashboardContent.scrollTop = 0;
-          }, 50);
-        }
       });
 
     if (isPlatformBrowser(this.platformId) && !this.isAuthStatusPage()) {
       this.sessionState.init();
-      this.authService.checkAuth().then(() => {
-        this.sessionState.syncAuthState();
-      });
+      void this.initializeAuthentication();
       this.checkResetToken();
       this.registerServiceWorker();
+    }
+  }
+
+  private async initializeAuthentication(): Promise<void> {
+    try {
+      await this.authService.checkAuth();
+      this.sessionState.syncAuthState();
+    } catch (error: unknown) {
+      console.error('Authentication initialization failed:', error);
     }
   }
 

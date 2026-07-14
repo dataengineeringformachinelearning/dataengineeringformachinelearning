@@ -144,7 +144,7 @@ import {
           var(--viking-accent) 10%,
           var(--viking-surface)
         );
-        color: var(--viking-accent-strong);
+        color: var(--viking-text-link);
         font-size: var(--viking-font-size-xs);
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-caps);

@@ -386,10 +386,24 @@ html[data-theme="light"] .theme-icon-moon {
 }
 
 .token-swatch {
+  appearance: none;
   width: 2rem;
   height: 2rem;
+  padding: 0;
   border-radius: var(--viking-radius-sm);
   border: 1px solid var(--viking-border);
+  background: transparent;
+  opacity: 1;
+}
+
+.token-swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.token-swatch::-webkit-color-swatch,
+.token-swatch::-moz-color-swatch {
+  border: 0;
+  border-radius: calc(var(--viking-radius-sm) - var(--viking-border-width));
 }
 
 .token-copy-btn {

@@ -47,8 +47,8 @@ const btnSnippets = (label = "Launch sequence"): ComponentSnippet => ({
   django: `<button type="button" class="viking-btn viking-btn-primary">${label}</button>
 <button type="button" class="viking-btn viking-btn-secondary">Secondary</button>
 <button type="button" class="viking-btn viking-btn-outline">Outline</button>`,
-  javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/web-components.js"><\/script>
+  javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/web-components.js"><\/script>
 
 <viking-button-wc variant="primary">${label}</viking-button-wc>`,
 });
@@ -141,9 +141,9 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         description:
           "Heading, text, and label primitives with tokenized rhythm.",
         preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
-  <h2 class="viking-heading" style="margin:0">Operational intelligence</h2>
-  <p class="viking-text" style="margin:0">Precision-engineered telemetry for contested ML infrastructure.</p>
-  <p class="viking-text-muted" style="margin:0">Sub-50ms ClickHouse rollups · symmetrical tenant isolation</p>
+  <h2 class="viking-heading">Operational intelligence</h2>
+  <p class="viking-text">Precision-engineered telemetry for contested ML infrastructure.</p>
+  <p class="viking-text-muted">Sub-50ms ClickHouse rollups · symmetrical tenant isolation</p>
   <span class="viking-label">Section label</span>
 </div>`,
         snippets: {
@@ -512,7 +512,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         id: "chart",
         name: "Chart",
         description:
-          "Flux-style zero-dependency SVG — wide 3:1 plots, soft grids, hover cursor, circular legend dots, tabular numerals.",
+          "Flux-style zero-dependency SVG — bounded 2:1 plots, soft grids, hover cursor, circular legend dots, tabular numerals.",
         preview: `<div class="showcase-chart-demo" aria-label="Sample line chart">
   <svg viewBox="0 0 320 120" role="img" aria-label="Telemetry trend">
     <polyline class="showcase-chart-line" points="0,90 40,70 80,75 120,45 160,50 200,30 240,35 280,20 320,25" />
@@ -696,8 +696,8 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
 {% load static %}
 <script src="{% static 'viking-ui-elements.js' %}" type="module"></script>
 <script src="/static/widgets/command-palette.js" defer></script>`,
-          javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.1.0/dist/web-components.js"><\/script>
+          javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.2.0/dist/web-components.js"><\/script>
 
 <button type="button" onclick="DemlWidgets.openSearch()">Search</button>
 <viking-suite-command-palette global-shortcut></viking-suite-command-palette>
@@ -877,9 +877,9 @@ palette.openPalette();
           "Firebase OAuth shell with social providers and email fallback.",
         preview: `<div class="showcase-auth-panel viking-demo-full" role="region" aria-labelledby="auth-panel-demo-title">
   <div class="viking-auth-tag-demo"><span class="viking-auth-tag-dot" aria-hidden="true"></span>Access Portal</div>
-  <h3 id="auth-panel-demo-title" class="viking-heading viking-heading-sm" style="margin:0">Sign In</h3>
-  <p class="viking-text-muted" style="margin:0">Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING).</p>
-  <form class="viking-demo-full viking-demo-row viking-demo-row-stack" autocomplete="on" style="gap:var(--viking-space-3)">
+  <h3 id="auth-panel-demo-title" class="viking-heading viking-heading-sm">Sign In</h3>
+  <p class="viking-text-muted">Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING).</p>
+  <form class="viking-demo-full viking-demo-row viking-demo-row-stack viking-demo-form-stack" autocomplete="on">
     <div class="viking-field">
       <label class="viking-field-label" for="auth-email-demo">Email Address</label>
       <div class="viking-input-shell">
@@ -893,7 +893,7 @@ palette.openPalette();
       </div>
     </div>
   </form>
-  <div class="viking-demo-full viking-demo-row viking-demo-row-stack" style="gap:var(--viking-space-2)">
+  <div class="viking-demo-full viking-demo-row viking-demo-row-stack">
     <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Don't have an account? Sign Up</button>
     <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Sign In with Phone Number</button>
     <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Forgot password?</button>

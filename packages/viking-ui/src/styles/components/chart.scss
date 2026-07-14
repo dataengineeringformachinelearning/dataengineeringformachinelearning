@@ -1,12 +1,13 @@
 /* ==========================================================================
    Viking-UI Chart System — clean minimal SVG analytics language
-   Wide 3:1 plots, soft grids, hover cursor, circular legend dots,
+   Bounded 2:1 plots, soft grids, hover cursor, circular legend dots,
    tabular numerals, dark-mode first. Token-driven throughout.
    ========================================================================== */
 
 .viking-chart,
 viking-chart {
   container-type: inline-size;
+  min-width: 0;
   border: none;
   box-shadow: none;
   background: transparent;
@@ -16,21 +17,20 @@ viking-chart {
 .viking-chart-viewport {
   position: relative;
   width: 100%;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 0;
-  padding: var(--viking-chart-padding, var(--viking-space-1) 0);
+  overflow: visible;
+  padding: 0;
+  box-sizing: border-box;
   border: none;
   background: transparent;
 }
 
 .viking-chart-fill .viking-chart-viewport {
-  padding: var(
-    --viking-chart-padding-fill,
-    var(--viking-space-2) var(--viking-space-1)
-  );
+  padding: 0;
 }
 
 /* Subtle dashed horizontal grid */
@@ -58,9 +58,16 @@ viking-chart {
   fill: var(--viking-chart-axis-color, var(--viking-text-muted));
   font-size: var(--viking-chart-axis-size-mobile, var(--viking-font-size-base));
   font-family: var(--viking-font-family);
-  font-weight: var(--viking-font-weight-medium);
   letter-spacing: 0.01em;
   font-variant-numeric: tabular-nums lining-nums;
+}
+
+.viking-chart-axis-x {
+  font-weight: var(--viking-font-weight-regular);
+}
+
+.viking-chart-axis-y {
+  font-weight: var(--viking-font-weight-medium);
 }
 
 /* Hover cursor (vertical guide) */
@@ -71,6 +78,12 @@ viking-chart {
   );
   stroke-width: var(--viking-chart-cursor-width, 1);
   stroke-dasharray: var(--viking-chart-cursor-dash, 3 3);
+  pointer-events: none;
+}
+
+.viking-chart-cursor-area {
+  fill: color-mix(in srgb, var(--viking-text) 6%, transparent);
+  stroke: none;
   pointer-events: none;
 }
 
@@ -89,13 +102,22 @@ viking-chart {
 
 /* Soft semi-transparent area fill */
 .viking-chart-area {
-  opacity: var(--viking-chart-area-opacity, 0.2);
+  opacity: 1;
   stroke: none;
   fill-opacity: 1;
 }
 
-.viking-chart-fill .viking-chart-area {
-  opacity: 0.22;
+.viking-chart-area-stop-start,
+.viking-chart-area-stop-end {
+  stop-color: currentColor;
+}
+
+.viking-chart-area-stop-start {
+  stop-opacity: var(--viking-chart-area-opacity-start);
+}
+
+.viking-chart-area-stop-end {
+  stop-opacity: var(--viking-chart-area-opacity-end);
 }
 
 .viking-chart-sparkline .viking-chart-area {
@@ -118,8 +140,6 @@ viking-chart {
 /* Bars — soft rounded tops */
 .viking-chart-bar {
   opacity: 0.92;
-  rx: var(--viking-chart-bar-radius, 4px);
-  ry: var(--viking-chart-bar-radius, 4px);
 }
 
 /* Donut */
@@ -221,6 +241,19 @@ viking-chart {
   font-feature-settings: "tnum";
 }
 
+.viking-chart-tooltip .tt-series-value {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--viking-space-1);
+  font-size: var(--viking-font-size-xs);
+}
+
+.viking-chart-tooltip .tt-series-value strong {
+  font-weight: var(--viking-font-weight-semibold);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 /* Zoom reset — restrained */
 .viking-chart-zoom-reset {
   position: absolute;
@@ -284,6 +317,25 @@ viking-chart {
   display: none;
 }
 
+/* Flux-like fixed plot containment: the viewport owns one bounded block size.
+   Grid stretching can add panel breathing room but can never stretch the SVG. */
+.viking-chart:not(.viking-chart-sparkline) {
+  height: var(--viking-chart-plot-height);
+  min-height: var(--viking-chart-plot-height);
+  max-height: var(--viking-chart-plot-height);
+}
+
+.viking-chart:not(.viking-chart-sparkline) svg {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+}
+
+.viking-chart-fill {
+  flex: 0 0 auto;
+}
+
 /* Chart panels: a consistent grid-aligned analytics container. */
 .viking-chart-panel,
 viking-chart-panel {
@@ -319,7 +371,8 @@ viking-chart-panel {
 .viking-chart-panel-body viking-chart,
 .viking-chart-panel-body .viking-chart {
   width: 100%;
-  min-height: inherit;
+  min-height: 0;
+  flex: 0 0 auto;
   border: none;
   box-shadow: none;
   background: transparent;

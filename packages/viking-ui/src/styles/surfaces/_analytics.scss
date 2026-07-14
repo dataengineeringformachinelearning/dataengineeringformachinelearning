@@ -3,6 +3,7 @@
 .dashboard-page-container .analytics-gauge-grid {
   --viking-card-padding: var(--viking-card-padding-compact);
   --viking-card-content-gap: var(--viking-space-2);
+  --viking-grid-gap: var(--viking-space-2);
 }
 
 .dashboard-page-container .analytics-gauge-grid .gauge-card {
@@ -10,14 +11,29 @@
 }
 
 .dashboard-page-container .analytics-gauge-grid .gauge-card-header {
-  margin-bottom: var(--viking-space-2);
+  margin-bottom: var(--viking-space-1);
 }
 
 .dashboard-page-container .analytics-gauge-grid .gauge-wrapper {
-  max-width: var(--viking-space-20);
+  max-width: var(--viking-space-14);
 }
 
 .dashboard-page-container .analytics-gauge-grid .gauge-card-footer {
-  margin-top: var(--viking-space-2);
+  margin-top: var(--viking-space-1);
   padding-top: var(--viking-space-1);
+  font-size: var(--viking-font-size-xs);
+  line-height: var(--viking-line-height-snug);
+}
+
+.dashboard-page-container .analytics-gauge-grid .gauge-card-header h3 {
+  font-size: var(--viking-font-size-sm);
+}
+
+.dashboard-page-container .analytics-gauge-grid .gauge-center-text .unit {
+  margin-bottom: var(--viking-space-0-5);
+  font-size: var(--viking-font-size-xs);
+}
+
+.dashboard-page-container .analytics-gauge-grid .gauge-center-text .value {
+  font-size: var(--viking-font-size-xl);
 }

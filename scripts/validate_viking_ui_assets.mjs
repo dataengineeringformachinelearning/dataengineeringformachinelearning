@@ -40,6 +40,7 @@ const packageArtifacts = [
   "design-tokens.css",
   "viking-components.css",
   "deml-components.css",
+  "viking-app.css",
   "viking-ui.css",
   "viking-ui-elements.js",
   "viking-tokens.json",
@@ -54,6 +55,7 @@ for (const artifact of packageArtifacts) {
 }
 
 const staticMirrors = [
+  ["viking-app.css", "frontend/public/assets/viking-app.css"],
   ["viking-ui.css", "backend/static/viking-ui.css"],
   ["viking-ui.css", "marketing/public/assets/viking-ui.css"],
   ["viking-ui.css", "viking-ui-docs/public/assets/viking-ui.css"],
@@ -89,23 +91,15 @@ for (const [artifact, mirror] of optionalDocsMirrors) {
 }
 
 const frontendAngularJson = readText("frontend/angular.json");
-if (
-  !frontendAngularJson.includes("public/assets/viking-ui.css") &&
-  !frontendAngularJson.includes(
-    "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
-  ) &&
-  !frontendAngularJson.includes(
-    "@dataengineeringformachinelearning/viking-ui/dist/viking-ui.css",
-  )
-) {
+if (!frontendAngularJson.includes("public/assets/viking-app.css")) {
   failures.push(
-    "frontend/angular.json must load the full Viking-UI bundle globally (public asset or package CSS import).",
+    "frontend/angular.json must load the package-generated Viking-UI application bundle.",
   );
 }
 
 requireSameFile(
-  path.join("packages", "viking-ui", "dist", "viking-ui.css"),
-  "frontend/public/assets/viking-ui.css",
+  path.join("packages", "viking-ui", "dist", "viking-app.css"),
+  "frontend/public/assets/viking-app.css",
 );
 
 const sourceImportChecks = [
@@ -167,6 +161,9 @@ if (marketingElementsScripts.length !== 1) {
 
 const packageJson = JSON.parse(readText("packages/viking-ui/package.json"));
 const requiredExports = [
+  "./viking-app.css",
+  "./css/app.css",
+  "./dist/viking-app.css",
   "./viking-ui.css",
   "./design-tokens.css",
   "./components.css",
@@ -183,6 +180,12 @@ for (const exportPath of requiredExports) {
       `packages/viking-ui/package.json is missing export ${exportPath}`,
     );
   }
+}
+
+if (!packageJson.sideEffects?.includes("./dist/viking-app.css")) {
+  failures.push(
+    "packages/viking-ui/package.json must preserve the viking-app.css side effect.",
+  );
 }
 
 const singleBundleLayouts = [

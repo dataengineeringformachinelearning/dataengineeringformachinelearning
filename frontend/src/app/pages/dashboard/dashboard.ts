@@ -20,7 +20,7 @@ import {
   VikingButton,
   VikingBadge,
   VikingChartSeries,
-  VikingRingGauge,
+  VikingGaugeArc,
   VikingChartEmptyState,
   VikingPageHeader,
   VikingPageTemplate,
@@ -71,7 +71,7 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     VikingChart,
     VikingButton,
     VikingBadge,
-    VikingRingGauge,
+    VikingGaugeArc,
     VikingChartEmptyState,
     VikingPageHeader,
     VikingPageTemplate,
@@ -169,6 +169,14 @@ export class Dashboard implements OnInit, OnDestroy {
     if (score >= 65) return 'Watch';
     if (score >= 40) return 'At Risk';
     return 'Critical';
+  });
+
+  healthGaugeTone = computed<'amber' | 'danger' | 'info' | 'success'>(() => {
+    const label = this.healthLabel();
+    if (label === 'At Risk') return 'amber';
+    if (label === 'Critical') return 'danger';
+    if (label === 'Watch') return 'info';
+    return 'success';
   });
 
   // Fourth model: Spiking Temporal Forecast (from backend overview telemetry)

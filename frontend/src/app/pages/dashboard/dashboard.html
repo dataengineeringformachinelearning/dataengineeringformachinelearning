@@ -48,9 +48,9 @@
         <viking-grid [columns]="2" spacing="tight">
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
             <viking-card class="health-card kpi-card" [compact]="true">
-              <div class="health-ring" [attr.data-status]="healthLabel()">
-                <viking-ring-gauge [value]="healthScore()" [status]="healthLabel()" />
-                <div class="health-center">
+              <div class="health-gauge">
+                <viking-gauge-arc [value]="healthScore()" [tone]="healthGaugeTone()" />
+                <div class="health-gauge-center">
                   <span class="health-value">{{ healthScore() }}</span>
                   <span class="health-label">{{ healthLabel() }}</span>
                 </div>

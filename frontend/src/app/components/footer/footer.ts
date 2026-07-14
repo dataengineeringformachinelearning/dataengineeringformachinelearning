@@ -3,8 +3,6 @@ import { VikingSiteFooter } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 
-const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'] as const;
-
 @Component({
   selector: 'app-footer',
   imports: [VikingSiteFooter],
@@ -14,7 +12,6 @@ const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'] as const;
       [urls]="siteUrls"
       [isAuthenticated]="authService.isAuthenticated()"
       (bugReport)="openBugReporter($event)"
-      (usaBadgeHover)="fireConfetti($event)"
       (marketingNavigate)="navigateToMarketing($event)"
     />
   `,
@@ -35,39 +32,5 @@ export class Footer {
 
   navigateToMarketing(targetUrl: string): void {
     void this.authService.navigateToMarketingSite(targetUrl);
-  }
-
-  async fireConfetti(event: Event): Promise<void> {
-    const sourceEvent =
-      event instanceof CustomEvent && event.detail instanceof Event ? event.detail : event;
-    const target =
-      sourceEvent.currentTarget instanceof HTMLElement &&
-      sourceEvent.currentTarget.matches('.usa-badge')
-        ? sourceEvent.currentTarget
-        : sourceEvent.target instanceof HTMLElement
-          ? sourceEvent.target.closest<HTMLElement>('.usa-badge')
-          : event.target instanceof HTMLElement
-            ? event.target.querySelector<HTMLElement>('.usa-badge')
-            : null;
-    if (!target) {
-      return;
-    }
-    const rect = target.getBoundingClientRect();
-    const x = (rect.left + rect.width / 2) / window.innerWidth;
-    const y = (rect.top + rect.height / 2) / window.innerHeight;
-
-    try {
-      const confettiModule = await import('canvas-confetti');
-      confettiModule.default({
-        particleCount: 50,
-        spread: 60,
-        origin: { x, y },
-        colors: [...USA_CONFETTI_COLORS],
-        disableForReducedMotion: true,
-        zIndex: 9999,
-      });
-    } catch {
-      /* celebratory enhancement only */
-    }
   }
 }

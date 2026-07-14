@@ -60,6 +60,15 @@ class ButtonPressHost {
   pressed = 0;
 }
 
+@Component({
+  imports: [VikingButton],
+  template: `
+    <viking-button href="/status">View system status</viking-button>
+    <viking-button>Refresh telemetry</viking-button>
+  `,
+})
+class ButtonContentHost {}
+
 describe("viking-ui", () => {
   const render = async <T>(
     component: new () => T,
@@ -127,6 +136,25 @@ describe("viking-ui", () => {
     ) as HTMLAnchorElement;
     expect(anchor.getAttribute("rel")).toBe("noopener noreferrer");
     expect(fixture.nativeElement.querySelector("button")).toBeNull();
+  });
+
+  it("preserves projected visible and accessible text in link and button branches", async (): Promise<void> => {
+    const fixture = await render(ButtonContentHost);
+    const anchor = fixture.nativeElement.querySelector(
+      "a.viking-btn",
+    ) as HTMLAnchorElement;
+    const button = fixture.nativeElement.querySelector(
+      "button.viking-btn",
+    ) as HTMLButtonElement;
+
+    expect(anchor.textContent?.trim()).toBe("View system status");
+    expect(anchor.querySelector(".viking-btn-label")?.textContent?.trim()).toBe(
+      "View system status",
+    );
+    expect(button.textContent?.trim()).toBe("Refresh telemetry");
+    expect(button.querySelector(".viking-btn-label")?.textContent?.trim()).toBe(
+      "Refresh telemetry",
+    );
   });
 
   it("applies tone classes on badges", async (): Promise<void> => {

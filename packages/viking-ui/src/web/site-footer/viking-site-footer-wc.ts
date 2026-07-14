@@ -142,7 +142,7 @@ export class VikingSiteFooterWc extends VikingReactiveElement<FooterProps> {
 
       return `
       <div class="footer-column">
-        <h3 class="footer-column-title">${escapeHtml(column.title)}</h3>
+        <h2 class="footer-column-title">${escapeHtml(column.title)}</h2>
         <ul class="footer-list">
           ${items}
         </ul>
@@ -162,9 +162,6 @@ export class VikingSiteFooterWc extends VikingReactiveElement<FooterProps> {
               <span
                 class="usa-badge"
                 id="usa-badge"
-                role="button"
-                tabindex="0"
-                aria-label="Made in the U.S.A."
               >
                 <span class="usa-badge-icon" aria-hidden="true">🇺🇸</span>
                 <span>Made in the U.S.A</span>
@@ -184,34 +181,6 @@ export class VikingSiteFooterWc extends VikingReactiveElement<FooterProps> {
         </div>
       </footer>
     `;
-    this.bindUsaBadge();
-  }
-
-  private readonly emitUsaBadgeHover = (event: Event): void => {
-    if (event.type === "keydown") {
-      const key = (event as KeyboardEvent).key;
-      if (key !== "Enter" && key !== " ") {
-        return;
-      }
-      event.preventDefault();
-    }
-    this.dispatchEvent(
-      new CustomEvent("usaBadgeHover", {
-        bubbles: true,
-        composed: true,
-        detail: event,
-      }),
-    );
-  };
-
-  private bindUsaBadge(): void {
-    const badge = this.querySelector<HTMLElement>("#usa-badge");
-    if (!badge) {
-      return;
-    }
-    badge.addEventListener("mouseenter", this.emitUsaBadgeHover);
-    badge.addEventListener("focus", this.emitUsaBadgeHover);
-    badge.addEventListener("keydown", this.emitUsaBadgeHover);
   }
 }
 

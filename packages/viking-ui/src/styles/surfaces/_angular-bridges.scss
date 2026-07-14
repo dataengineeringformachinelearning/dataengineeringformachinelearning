@@ -1,0 +1,238 @@
+// Thin application-host bridges. Visual behavior remains owned by Viking-UI;
+// Angular wrappers only bind data and compose package primitives.
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+app-unified-select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+app-unified-select viking-field {
+  width: 100%;
+}
+
+/* Angular application bootstrap shell. */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.global-auth-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--viking-z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--viking-bg);
+  transition: background-color var(--viking-duration) var(--viking-ease-default);
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, var(--viking-space-24));
+  max-width: calc(100% - var(--viking-space-4));
+  padding: var(--viking-card-padding);
+  text-align: center;
+  background: var(--viking-surface);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-md);
+}
+
+.loader-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--viking-space-7);
+  height: var(--viking-space-7);
+  margin-bottom: var(--viking-space-3);
+  padding: var(--viking-space-1);
+  overflow: visible;
+  color: var(--viking-accent);
+  font-size: var(--viking-font-size-3xl);
+  line-height: var(--viking-line-height-none);
+  box-sizing: content-box;
+}
+
+.premium-spinner {
+  width: var(--viking-space-6);
+  height: var(--viking-space-6);
+  margin-bottom: var(--viking-space-3);
+  border: var(--viking-space-0-5) solid var(--viking-border);
+  border-top-color: var(--viking-accent);
+  border-radius: var(--viking-radius-full);
+  animation: viking-spin calc(var(--viking-duration-slower) * 2) linear infinite;
+}
+
+.loader-text {
+  margin: 0;
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-base);
+  font-weight: var(--viking-font-weight-medium);
+  letter-spacing: var(--viking-letter-spacing-normal);
+}
+
+/* Firebase challenge UI must sit above application overlays. */
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
+
+.grecaptcha-bubble-holder,
+div.grecaptcha-bubble-holder,
+#recaptcha-container,
+#firebase-recaptcha-container,
+iframe[src*="recaptcha"],
+iframe[src*="google.com/recaptcha"],
+body > div[style*="z-index"]:has(iframe[src*="recaptcha"]),
+body > div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]),
+body > div:has(iframe[src*="recaptcha"]),
+body > div:has(iframe[src*="google.com/recaptcha"]),
+body > div:has(iframe[title*="recaptcha"]),
+body > div:has(iframe[title*="reCAPTCHA"]),
+div[style*="z-index"]:has(iframe[src*="recaptcha"]),
+div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
+  z-index: var(--viking-z-external-challenge) !important;
+}
+
+/* App utility classes retained as package-owned bridge contracts. */
+.full-width {
+  width: 100%;
+}
+
+.api-key-reveal {
+  padding: var(--viking-space-2);
+  background: var(--viking-success-soft);
+  border: var(--viking-border-width) var(--viking-border-style)
+    var(--viking-success);
+  border-radius: var(--viking-radius-md);
+}
+
+.danger-zone-card {
+  border-color: var(--viking-danger);
+}
+
+.loading-state {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: var(--viking-space-3);
+}
+
+.filter-group-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-1);
+  width: 100%;
+  margin-bottom: var(--viking-space-3);
+}
+
+@media (min-width: 768px) {
+  .filter-group-mobile {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--viking-space-2);
+  }
+}
+
+/* Success and not-found routes share one compact centered status recipe. */
+.not-found-container,
+.success-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(
+    100vh - var(--viking-navbar-height) - var(--viking-space-16)
+  );
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.not-found-container .page-inner-wrapper,
+.success-container .page-inner-wrapper {
+  align-items: center;
+  justify-content: center;
+}
+
+.not-found-card,
+.success-card {
+  width: 100%;
+  max-width: var(--viking-form-narrow-max-width);
+  text-align: center;
+}
+
+.error-code {
+  margin-bottom: var(--viking-space-3);
+  color: var(--viking-accent);
+  font-size: var(--viking-font-size-6xl);
+  font-weight: var(--viking-font-weight-extrabold);
+  line-height: var(--viking-line-height-none);
+  letter-spacing: var(--viking-letter-spacing-tight);
+}
+
+.error-title,
+.success-title {
+  margin: 0 0 var(--viking-space-2);
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-2xl);
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-tight);
+}
+
+.error-message,
+.success-message {
+  margin: 0 0 var(--viking-space-4);
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-md);
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.syncing-state,
+.success-state,
+.error-state,
+.action-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.success-icon {
+  margin-bottom: var(--viking-space-3);
+  color: var(--viking-success);
+  font-size: var(--viking-font-size-5xl);
+  font-weight: var(--viking-font-weight-bold);
+  line-height: var(--viking-line-height-none);
+  letter-spacing: var(--viking-letter-spacing-tight);
+}
+
+.syncing-state .spinner {
+  width: var(--viking-space-6);
+  height: var(--viking-space-6);
+  margin-bottom: var(--viking-space-3);
+  border: var(--viking-space-0-5) solid var(--viking-border);
+  border-left-color: var(--viking-success);
+  border-radius: var(--viking-radius-full);
+  animation: viking-spin calc(var(--viking-duration-slower) * 2) linear infinite;
+}
+
+.action-box .home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}

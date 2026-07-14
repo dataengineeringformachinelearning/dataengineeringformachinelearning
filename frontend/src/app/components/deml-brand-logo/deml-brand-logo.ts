@@ -11,19 +11,6 @@ import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
     '[class]': 'hostClass()',
   },
   template: `<viking-icon name="drakkar" [size]="size()" color="accent" />`,
-  styles: [
-    `
-      :host {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        line-height: 1;
-        vertical-align: middle;
-        color: var(--viking-accent, var(--color-primary));
-      }
-    `,
-  ],
 })
 export class DemlBrandLogo {
   readonly hostClass = input<string>('brand-icon navbar-logo');

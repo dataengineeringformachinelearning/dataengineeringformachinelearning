@@ -18,17 +18,6 @@ import { mapMaterialIcon } from '../../core/viking-icon-map';
       <viking-icon [name]="resolvedName()" [size]="sizeValue()" [spin]="spin()" />
     }
   `,
-  styles: [
-    `
-      :host {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        vertical-align: middle;
-        line-height: 1;
-      }
-    `,
-  ],
 })
 export class VikingAppIcon {
   readonly name = input.required<string>();

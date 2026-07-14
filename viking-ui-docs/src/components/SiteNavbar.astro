@@ -8,7 +8,8 @@ import {
 } from '@dataengineeringformachinelearning/viking-ui/site-drakkar';
 const urls = { app: SITE.app, marketing: SITE.marketing, backend: 'https://backend.deml.app' };
 const navLinks = SITE_NAV_LINKS;
-const brandHref = resolveBrandHref('marketing', urls);
+const context = 'docs';
+const brandHref = resolveBrandHref(context, urls);
 const FRONTEND_URL = SITE.app;
 const MARKETING_URL = SITE.marketing;
 const BACKEND_URL = 'https://backend.deml.app';
@@ -17,6 +18,7 @@ const returnUrl = SITE.url;
 
 <script define:vars={{ FRONTEND_URL, BACKEND_URL, MARKETING_URL, returnUrl }}>
   window.__DEML = {
+    ...(window.__DEML || {}),
     FRONTEND_URL,
     BACKEND_URL,
     MARKETING_URL,
@@ -41,7 +43,7 @@ const returnUrl = SITE.url;
     <nav class="navbar-center desktop-nav" aria-label="Main navigation">
       {navLinks.map((link) => (
       <a
-        href={resolveNavHref(link, 'marketing', urls)}
+        href={resolveNavHref(link, context, urls)}
         class="nav-btn"
         data-nav-id={link.id}
         {...(link.requireAuth ? { 'data-require-auth': 'true', hidden: true } : {})}
@@ -93,7 +95,7 @@ const returnUrl = SITE.url;
   <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" hidden>
     {navLinks.map((link) => (
       <a
-        href={resolveNavHref(link, 'marketing', urls)}
+        href={resolveNavHref(link, context, urls)}
         class="mobile-nav-btn"
         data-nav-id={link.id}
         {...(link.requireAuth ? { 'data-require-auth': 'true', hidden: true } : {})}

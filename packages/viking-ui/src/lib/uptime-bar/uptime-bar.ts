@@ -21,7 +21,9 @@ export type VikingUptimeStatus =
     "[class.viking-uptime-major]": "status() === 'major_outage'",
     "[class.viking-uptime-nodata]": "status() === 'no_data'",
     "[attr.title]": "title()",
+    "[attr.role]": "title() ? 'img' : null",
     "[attr.aria-label]": "title() || null",
+    "[attr.aria-hidden]": "title() ? null : 'true'",
   },
   template: "",
   styles: [

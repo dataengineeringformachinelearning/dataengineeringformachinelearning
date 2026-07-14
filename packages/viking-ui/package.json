@@ -1,6 +1,6 @@
 {
   "name": "@dataengineeringformachinelearning/viking-ui",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "description": "Universal Viking-UI design system for Astro, Angular, and Django.",
   "license": "Apache-2.0",
   "type": "module",
@@ -32,6 +32,7 @@
     "./dist/index.d.ts": "./dist/types/dataengineeringformachinelearning-viking-ui.d.ts",
     "./dist/icons.js": "./dist/icons.js",
     "./dist/site-drakkar.js": "./dist/site-drakkar.js",
+    "./dist/viking-app.css": "./dist/viking-app.css",
     "./dist/viking-ui.css": "./dist/viking-ui.css",
     "./dist/viking-ui-elements.js": "./dist/viking-ui-elements.js",
     "./dist/web-components.js": "./dist/web-components.js",
@@ -62,6 +63,7 @@
     "./widget": "./dist/widget.js",
     "./widget.js": "./dist/widget.js",
     "./css": "./dist/viking-ui.css",
+    "./css/app.css": "./dist/viking-app.css",
     "./css/index.css": "./dist/viking-ui.css",
     "./css/viking-ui.css": "./dist/viking-ui.css",
     "./css/design-tokens.css": "./dist/design-tokens.css",
@@ -81,6 +83,7 @@
     "./components.css": "./dist/viking-components.css",
     "./deml-components.css": "./dist/deml-components.css",
     "./viking-ui.css": "./dist/viking-ui.css",
+    "./viking-app.css": "./dist/viking-app.css",
     "./package.json": "./package.json"
   },
   "files": [
@@ -113,6 +116,7 @@
     "./dist/web-components.js",
     "./dist/widget.js",
     "./dist/viking-ui.css",
+    "./dist/viking-app.css",
     "./dist/design-tokens.css",
     "./dist/viking-components.css",
     "./dist/deml-components.css"

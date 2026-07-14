@@ -34,7 +34,7 @@ import {
       >
         @for (column of columns(); track column.title) {
           <div class="footer-column">
-            <h3 class="footer-column-title">{{ column.title }}</h3>
+            <h2 class="footer-column-title">{{ column.title }}</h2>
             <ul class="footer-list">
               @for (link of column.links; track link.label) {
                 <li>
@@ -78,18 +78,7 @@ import {
 
       <ng-container vikingFooterBottom>
         <div class="footer-badges-top">
-          <span
-            class="usa-badge viking-usa-badge"
-            id="usa-badge"
-            (mouseenter)="usaBadgeHover.emit($event)"
-            (focusin)="usaBadgeHover.emit($event)"
-            (click)="usaBadgeHover.emit($event)"
-            (keydown.enter)="onUsaBadgeKeydown($event)"
-            (keydown.space)="onUsaBadgeKeydown($event)"
-            role="button"
-            tabindex="0"
-            aria-label="Celebrate Made in the U.S.A"
-          >
+          <span class="usa-badge viking-usa-badge" id="usa-badge">
             <span
               class="usa-badge-icon viking-usa-badge-icon"
               aria-hidden="true"
@@ -125,7 +114,6 @@ export class VikingSiteFooter {
 
   readonly cookieSettings = output<Event>();
   readonly bugReport = output<Event>();
-  readonly usaBadgeHover = output<Event>();
   readonly marketingNavigate = output<string>();
 
   protected readonly columns = computed(() =>
@@ -174,10 +162,5 @@ export class VikingSiteFooter {
     }
     event.preventDefault();
     this.marketingNavigate.emit(href);
-  }
-
-  protected onUsaBadgeKeydown(event: Event): void {
-    event.preventDefault();
-    this.usaBadgeHover.emit(event);
   }
 }

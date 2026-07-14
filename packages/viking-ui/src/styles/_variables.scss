@@ -289,7 +289,12 @@
   --viking-surface-inset: var(--viking-navy-850);
 
   /* ── Chart scale — responsive dashboard inlay ─────────────────────────── */
-  --viking-chart-ratio: 16 / 7;
+  --viking-chart-ratio: 2 / 1;
+  --viking-chart-plot-height: clamp(
+    var(--viking-space-20),
+    46cqi,
+    var(--viking-space-24)
+  );
   --viking-chart-min-height: clamp(12rem, 26vw, 20rem);
   --viking-chart-max-height: none;
   --viking-chart-fill-min-height: clamp(13rem, 28vw, 21rem);
@@ -443,9 +448,10 @@
   --viking-z-overlay: 1000;
   --viking-z-toast: 1100;
   --viking-z-tooltip: 1200;
+  --viking-z-external-challenge: 2147483647;
 
-  /* ── Chart — clean minimal SVG analytics (3:1, soft grid, cursor) ─ */
-  --viking-chart-text-size: var(--viking-font-size-base);
+  /* ── Chart — clean minimal SVG analytics (2:1, soft grid, cursor) ─ */
+  --viking-chart-text-size: var(--viking-font-size-xs);
   --viking-chart-axis-size: var(--viking-chart-text-size);
   --viking-chart-axis-size-mobile: var(--viking-chart-text-size);
   --viking-chart-label-size: var(--viking-chart-text-size);
@@ -457,14 +463,14 @@
   /* Grid & axes */
   --viking-chart-grid-stroke: color-mix(
     in srgb,
-    var(--viking-text-muted) 16%,
+    var(--viking-text-muted) 15%,
     transparent
   );
   --viking-chart-grid-width: 1;
   --viking-chart-grid-dash: 4 4;
   --viking-chart-axis-stroke: color-mix(
     in srgb,
-    var(--viking-text-muted) 28%,
+    var(--viking-text-muted) 40%,
     transparent
   );
   --viking-chart-axis-width: 1;
@@ -476,14 +482,16 @@
     transparent
   );
   --viking-chart-cursor-width: 1;
-  --viking-chart-cursor-dash: 3 3;
+  --viking-chart-cursor-dash: 4 4;
   /* Lines, areas, points, bars */
   --viking-chart-line-width: 2;
   --viking-chart-line-width-fill: 2;
   --viking-chart-area-opacity: 0.2;
-  --viking-chart-point-radius: 3;
+  --viking-chart-area-opacity-start: 0.48;
+  --viking-chart-area-opacity-end: 0;
+  --viking-chart-point-radius: 5;
   --viking-chart-point-stroke: var(--viking-surface);
-  --viking-chart-bar-radius: 4px;
+  --viking-chart-bar-radius: 2px;
   --viking-chart-bar-min-height: 3px;
   /* Legend */
   --viking-chart-legend-gap: var(--viking-space-2) var(--viking-space-3);

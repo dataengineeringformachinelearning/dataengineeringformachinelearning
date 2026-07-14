@@ -233,7 +233,7 @@ test("account API key form uses shared stack rhythm before provisioned credentia
   );
 });
 
-test("analytics uses compact two-up gauges, even chart rhythm, and a templated export flow", () => {
+test("analytics uses compact three-up gauges, even chart rhythm, and a templated export flow", () => {
   const analytics = readFileSync(
     path.resolve(
       packageDir,
@@ -261,7 +261,7 @@ test("analytics uses compact two-up gauges, even chart rhythm, and a templated e
   );
   assert.match(
     analytics,
-    /<viking-panel-grid class="analytics-gauge-grid" \[columns\]="2">[\s\S]*?<h3>System Threat<\/h3>[\s\S]*?<h3>Network Stability<\/h3>/,
+    /<viking-panel-grid class="analytics-gauge-grid" \[columns\]="3" spacing="tight">[\s\S]*?<h3>System Threat<\/h3>[\s\S]*?<h3>Network Stability<\/h3>/,
   );
   assert.match(
     analytics,
@@ -273,8 +273,9 @@ test("analytics uses compact two-up gauges, even chart rhythm, and a templated e
   );
   assert.match(
     analyticsStyles,
-    /\.analytics-gauge-grid \.gauge-wrapper\s*\{\s*max-width:\s*var\(--viking-space-20\);/,
+    /\.analytics-gauge-grid \.gauge-wrapper\s*\{\s*max-width:\s*var\(--viking-space-14\);/,
   );
+  assert.doesNotMatch(analytics, /Request frequency vs latency/);
   assert.doesNotMatch(
     analyticsStyles,
     /\.analytics-export-card \.metrics-overview-header/,
@@ -344,11 +345,15 @@ test("dashboard overview keeps compact KPI rhythm and balanced status panels", (
   );
   assert.match(
     overview,
-    /viking-card\.health-card\s*\{[\s\S]*flex-direction:\s*row;[\s\S]*gap:\s*var\(--viking-space-2\);/,
+    /viking-card\.health-card\.kpi-card\s*\{[\s\S]*flex-direction:\s*row;[\s\S]*align-items:\s*center;[\s\S]*gap:\s*var\(--viking-space-2\);/,
   );
   assert.match(
     overview,
-    /\.health-ring\s*\{[\s\S]*width:\s*var\(--viking-space-10\);/,
+    /\.health-gauge\s*\{[\s\S]*width:\s*var\(--viking-space-16\);/,
+  );
+  assert.match(
+    dashboard,
+    /<viking-gauge-arc \[value\]="healthScore\(\)" \[tone\]="healthGaugeTone\(\)" \/>/,
   );
   assert.match(
     overview,

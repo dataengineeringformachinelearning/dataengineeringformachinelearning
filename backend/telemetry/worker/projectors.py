@@ -27,12 +27,44 @@ from telemetry.event_contract import (
 
 logger = logging.getLogger(__name__)
 MAX_PROJECTION_ATTEMPTS: Final[int] = 5
+APP_EVENTS_DLQ_TOPIC: Final[str] = "app-events-dlq"
 
 
 def _write(stream: Any, message: str) -> None:
   """Write to a Django command stream when one is available."""
   if stream is not None:
     stream.write(message)
+
+
+def _active_endpoint_count_for_firebase_uid(uid: str) -> int:
+  """Return active endpoints for exactly one provisioned account scope.
+
+  Firebase identities are provisioned with their UID as ``User.username`` and a
+  UUID-backed ``UserProfile.account_id``. Requiring that profile prevents an
+  unknown UID from falling back to an unscoped query. The reserved synthetic
+  identity exercises the Tenant0 projection path and therefore reads only
+  platform-owned rows.
+  """
+  from telemetry.worker.synthetic import SYNTHETIC_HEALTH_UID
+
+  if uid == SYNTHETIC_HEALTH_UID:
+    return Endpoints.objects.filter(
+      user__isnull=True,
+      is_platform=True,
+      is_active=True,
+    ).count()
+
+  from monitor.models import UserProfile
+
+  profile = UserProfile.objects.select_related("user").filter(user__username=uid).first()
+  if profile is None or not profile.account_id:
+    raise ValueError("Firebase UID is not provisioned to an account")
+
+  return Endpoints.objects.filter(
+    user_id=profile.user_id,
+    is_platform=False,
+    is_active=True,
+  ).count()
 
 
 def _project_frontend_event(
@@ -77,7 +109,7 @@ def _project_frontend_event(
     }
 
     if action == "get_stats":
-      active_count = Endpoints.objects.filter(is_active=True).count()
+      active_count = _active_endpoint_count_for_firebase_uid(uid)
       result_data["active_endpoints"] = active_count
       result_data["message"] = "Real-time stats updated from Django worker."
       # Echo probe_nonce for the synthetic health check to verify exact projection round-trip.
@@ -389,39 +421,84 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
     if tp.topic == "app-events":
       data_list = []
       threat_data_list = []
+      dlq_published = 0
+      batch_safe_to_commit = True
       for msg in messages:
+        plaintext = msg.value
         try:
-          payload = json.loads(decode_kafka_value(msg.value, tp.topic))
+          plaintext = decode_kafka_value(msg.value, tp.topic)
+          payload = json.loads(plaintext)
+          if not isinstance(payload, dict):
+            raise ValueError("app event must be a JSON object")
           if "source" in payload and payload["source"].endswith("_threat_intel"):
             threat_data_list.append(payload)
           else:
             data_list.append(payload)
-        except Exception as e:
-          stderr.write(style.ERROR(f"Failed to parse msg: {e}"))
-
-      if not data_list and not threat_data_list:
-        continue
-
-      success = False
-      while not success:
-        try:
-          if data_list:
-            await save_to_db(pl.DataFrame(data_list))
-          if threat_data_list:
-            await save_threat_intel_to_db(threat_data_list)
-          success = True
-          await consumer.commit()
-          stdout.write(
-            style.SUCCESS(
-              f"Processed batch of {len(data_list)} telemetry and {len(threat_data_list)} threat messages"
+        except Exception as exc:
+          stderr.write(style.ERROR(f"Failed to parse app-event msg: {exc}"))
+          try:
+            dlq_producer = await get_kafka_producer()
+            await send_kafka_value(
+              dlq_producer,
+              APP_EVENTS_DLQ_TOPIC,
+              plaintext,
+              key=msg.key,
+              headers=[
+                ("x-deml-error", str(exc)[:500].encode("utf-8")),
+                ("x-deml-source-topic", b"app-events"),
+              ],
             )
-          )
-        except Exception as e:
-          stderr.write(style.ERROR(f"Database insertion failed: {e}"))
-          stderr.write(style.WARNING("Backing off for 5 seconds before retrying..."))
-          import asyncio
+            dlq_published += 1
+            log_event(
+              logger,
+              logging.ERROR,
+              "app_event_dlq_published",
+              error=str(exc)[:500],
+              partition=getattr(msg, "partition", None),
+              offset=getattr(msg, "offset", None),
+            )
+          except Exception as dlq_error:
+            batch_safe_to_commit = False
+            stderr.write(style.ERROR(f"Failed to publish app-event DLQ record: {dlq_error}"))
+            log_event(
+              logger,
+              logging.CRITICAL,
+              "app_event_dlq_publish_failed",
+              processing_error=str(exc)[:500],
+              dlq_error=str(dlq_error)[:500],
+              partition=getattr(msg, "partition", None),
+              offset=getattr(msg, "offset", None),
+            )
 
-          await asyncio.sleep(5)
+      if not batch_safe_to_commit:
+        return False
+
+      if data_list or threat_data_list:
+        success = False
+        while not success:
+          try:
+            if data_list:
+              await save_to_db(pl.DataFrame(data_list))
+            if threat_data_list:
+              await save_threat_intel_to_db(threat_data_list)
+            success = True
+          except Exception as exc:
+            stderr.write(style.ERROR(f"Database insertion failed: {exc}"))
+            stderr.write(style.WARNING("Backing off for 5 seconds before retrying..."))
+            import asyncio
+
+            await asyncio.sleep(5)
+
+      # Advance past malformed records only after every poison record is durably
+      # acknowledged by the DLQ and every valid record has been persisted.
+      await consumer.commit()
+      stdout.write(
+        style.SUCCESS(
+          "Processed and committed app-events batch "
+          f"(telemetry={len(data_list)}, threats={len(threat_data_list)}, "
+          f"dlq={dlq_published})"
+        )
+      )
 
     elif tp.topic == "user-issues":
       for msg in messages:

@@ -5,6 +5,7 @@ import {
   input,
   output,
 } from "@angular/core";
+import { NgTemplateOutlet } from "@angular/common";
 import { VikingIcon } from "../icon/icon";
 import { VikingIconName } from "../../core/icons";
 import { VikingSize } from "../../core/types";
@@ -25,7 +26,7 @@ export type VikingButtonVariant =
  */
 @Component({
   selector: "viking-button",
-  imports: [VikingIcon],
+  imports: [NgTemplateOutlet, VikingIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     "[class.viking-full]": "fullWidth()",
@@ -33,6 +34,27 @@ export type VikingButtonVariant =
     "[attr.aria-busy]": "loading() ? 'true' : null",
   },
   template: `
+    <ng-template #controlContent>
+      @if (loading()) {
+        <span class="viking-btn-spinner" aria-hidden="true"></span>
+      } @else if (icon()) {
+        <viking-icon [name]="icon()!" [size]="iconSize()" />
+      }
+      <span class="viking-btn-label">
+        @if (label()) {
+          {{ label() }}
+        } @else {
+          <ng-content />
+        }
+      </span>
+      @if (!loading() && iconTrailing()) {
+        <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
+      }
+      @if (kbd()) {
+        <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
+      }
+    </ng-template>
+
     @if (href()) {
       <a
         class="viking-btn"
@@ -45,24 +67,7 @@ export type VikingButtonVariant =
         [attr.tabindex]="!isInteractive() ? -1 : null"
         (click)="onClick($event)"
       >
-        @if (loading()) {
-          <span class="viking-btn-spinner" aria-hidden="true"></span>
-        } @else if (icon()) {
-          <viking-icon [name]="icon()!" [size]="iconSize()" />
-        }
-        <span class="viking-btn-label">
-          @if (label()) {
-            {{ label() }}
-          } @else {
-            <ng-content />
-          }
-        </span>
-        @if (!loading() && iconTrailing()) {
-          <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
-        }
-        @if (kbd()) {
-          <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
-        }
+        <ng-container [ngTemplateOutlet]="controlContent" />
       </a>
     } @else {
       <button
@@ -74,24 +79,7 @@ export type VikingButtonVariant =
         [attr.aria-busy]="loading() ? 'true' : null"
         (click)="onClick($event)"
       >
-        @if (loading()) {
-          <span class="viking-btn-spinner" aria-hidden="true"></span>
-        } @else if (icon()) {
-          <viking-icon [name]="icon()!" [size]="iconSize()" />
-        }
-        <span class="viking-btn-label">
-          @if (label()) {
-            {{ label() }}
-          } @else {
-            <ng-content />
-          }
-        </span>
-        @if (!loading() && iconTrailing()) {
-          <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
-        }
-        @if (kbd()) {
-          <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
-        }
+        <ng-container [ngTemplateOutlet]="controlContent" />
       </button>
     }
   `,

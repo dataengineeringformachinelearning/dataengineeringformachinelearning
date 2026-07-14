@@ -12,18 +12,13 @@
   --viking-page-stack-gap: var(--viking-space-4);
   --viking-page-section-gap: var(--viking-space-5);
   --viking-dashboard-grid-gap: var(--viking-space-3);
-  /* Wide 3:1 chart cadence — premium analytics scale */
-  --viking-chart-ratio: 3 / 1;
-  --viking-chart-min-height: clamp(12rem, 24vw, 15rem);
-  --viking-chart-max-height: clamp(15rem, 30vw, 18rem);
-  --viking-chart-fill-min-height: clamp(13.5rem, 26vw, 16.5rem);
-  --viking-chart-fill-max-height: clamp(16rem, 30vw, 19rem);
-  --viking-chart-fill-min-height-lg: clamp(14.5rem, 28vw, 17.5rem);
-  --viking-chart-fill-max-height-lg: clamp(17rem, 32vw, 20rem);
-  --viking-chart-panel-min-height-md: 22rem;
-  --viking-chart-panel-min-height-lg: 24rem;
-  --viking-chart-panel-body-min-height-md: 16.5rem;
-  --viking-chart-panel-body-min-height-lg: 18rem;
+  /* One bounded Flux-like viewport contract; charts cannot grow with grid rows. */
+  --viking-chart-ratio: 2 / 1;
+  --viking-chart-plot-height: clamp(
+    var(--viking-space-20),
+    46cqi,
+    var(--viking-space-24)
+  );
   --viking-chart-map-min-height: 22rem;
   background: var(--viking-bg);
 }
@@ -287,7 +282,8 @@
 
 /* 2. Status indicator pulse — subtle live dot for active statuses */
 @keyframes viking-status-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -325,7 +321,8 @@
 .platform-integration-tile:focus-visible {
   outline: 2px solid var(--viking-accent);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--viking-accent) 20%, transparent);
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, var(--viking-accent) 20%, transparent);
 }
 
 /* 5. Metric value count-up feel — subtle number emphasis */

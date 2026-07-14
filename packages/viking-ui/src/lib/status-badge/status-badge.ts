@@ -97,6 +97,7 @@ const normalizeStatusVariant = (value: string): StatusBadgeVariant => {
         min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
+        color: var(--viking-text);
       }
 
       :host(.viking-status-badge-operational) {

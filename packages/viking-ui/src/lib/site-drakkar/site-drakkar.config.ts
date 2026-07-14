@@ -223,14 +223,21 @@ export const bugReportHref = (urls: SiteUrls): string =>
 export const cookieSettingsHref = (urls: SiteUrls): string =>
   `${joinBase(urls.marketing, "/")}?${COOKIE_SETTINGS_QUERY}`;
 
-const resolveMarketingContentHref = (href: string, urls: SiteUrls): string => {
+const resolveMarketingContentHref = (
+  href: string,
+  context: SiteDrakkarContext,
+  urls: SiteUrls,
+): string => {
   if (isAbsoluteUrl(href)) {
     return href;
   }
   if (href.startsWith("mailto:")) {
     return href;
   }
-  return href.startsWith("/") ? href : joinBase(urls.marketing, href);
+  if (context === "marketing" && href.startsWith("/")) {
+    return href;
+  }
+  return joinBase(urls.marketing, href);
 };
 
 const resolvePlatformHref = (
@@ -255,7 +262,7 @@ export const resolveNavHref = (
   if (context === "app") {
     return link.appHref;
   }
-  return resolveMarketingContentHref(link.marketingHref, urls);
+  return resolveMarketingContentHref(link.marketingHref, context, urls);
 };
 
 export const resolveFooterHref = (
@@ -275,7 +282,7 @@ export const resolveFooterHref = (
   if (context === "app") {
     return link.appHref;
   }
-  return resolveMarketingContentHref(link.marketingHref, urls);
+  return resolveMarketingContentHref(link.marketingHref, context, urls);
 };
 
 export const resolveBrandHref = (

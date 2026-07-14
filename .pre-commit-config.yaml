@@ -137,7 +137,7 @@ repos:
     hooks:
       - id: prettier
         files: \.(js|ts|css|html|json|md|mjs)$
-        exclude: ^(frontend/(public/llms-full\.txt|public/llms\.txt)|marketing/(public/llms-full\.txt|public/llms\.txt|src/assets/content/page\.md)|(.*/)?(design-tokens|deml-components|viking-components|viking-ui)\.css|(?:frontend/(?:src|public)/assets|marketing/public/assets|backend/static|viking-ui-docs/public/assets)/viking-ui-elements\.js|(?:frontend/(?:src|public)/assets|marketing/public/assets|backend/static|viking-ui-docs/public/assets)/widgets/.*\.js|marketing/public/assets/content/search-index\.json)$
+        exclude: ^(frontend/(public/llms-full\.txt|public/llms\.txt)|marketing/(public/llms-full\.txt|public/llms\.txt|src/assets/content/page\.md)|(.*/)?(design-tokens|deml-components|viking-components|viking-ui|viking-app)\.css|(?:frontend/(?:src|public)/assets|marketing/public/assets|backend/static|viking-ui-docs/public/assets)/viking-ui-elements\.js|(?:frontend/(?:src|public)/assets|marketing/public/assets|backend/static|viking-ui-docs/public/assets)/widgets/.*\.js|marketing/public/assets/content/search-index\.json)$
         additional_dependencies:
           - prettier@3.8.2
 
