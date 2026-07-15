@@ -4,7 +4,7 @@ opentelemetry-distro
 opentelemetry-instrumentation-django
 opentelemetry-exporter-otlp
 # ClickHouse IO uses Polars + ADBC (adbc-driver-postgresql / connectorx), not clickhouse-connect.
-Django==5.2.15
+Django==6.0.7
 django-migration-linter==6.0.0
 django-cors-headers==4.6.0
 # Production ASGI: Daphne only (Channels/WebSockets). Do not add Gunicorn — it is unused.
