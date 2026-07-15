@@ -49,7 +49,7 @@
 
   const DEFAULT_STATUS_APP = 'https://deml.app';
   const VIKING_UI_CSS_CDN =
-    'https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.4.0/dist/viking-ui.css';
+    'https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.5.0/dist/viking-ui.css';
   const PLATFORM_WIDGET_STYLES = `
     :host {
       color-scheme: dark;

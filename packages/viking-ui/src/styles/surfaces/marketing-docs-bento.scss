@@ -213,7 +213,7 @@
   }
 
   .integration-cards {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -235,6 +235,18 @@
   min-height: 100%;
   color: var(--viking-text);
   text-decoration: none;
+}
+
+.integration-card > .viking-icon-heading {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+  margin-bottom: var(--viking-space-1);
+}
+
+.integration-card > .viking-icon-heading + p {
+  margin-top: 0;
+  padding-left: 0;
 }
 
 .docs-quick-start-card {

@@ -7,7 +7,11 @@ import { siteEnv } from '../../lib/site-env';
 
 const notes = await getBlueNotes();
 const featuredNotes = notes.filter(note => note.data.featured);
-const otherNotes = notes.filter(note => !note.data.featured);
+const leadNote = featuredNotes[0] ?? notes[0];
+const spotlightNotes = featuredNotes.filter(note => note.id !== leadNote?.id).slice(0, 3);
+const spotlightIds = new Set(spotlightNotes.map(note => note.id));
+const archiveNotes = notes.filter(note => note.id !== leadNote?.id && !spotlightIds.has(note.id));
+const categoryCount = new Set(notes.flatMap(note => note.data.categories)).size;
 const pageTitle = 'Blue Notes — DEML Platform Changes';
 const pageDescription =
   'A chronological field log of DEML platform releases, architectural changes, reliability work, and new operator capabilities.';
@@ -42,104 +46,136 @@ const pageJsonLd = [
   <div class="dashboard-content-area">
   <div class="page-inner-wrapper blue-notes-wrapper">
 
-    <!-- Hero Header -->
-    <header class="blog-hero" aria-label="Featured updates">
-      <div class="blue-notes-kicker">
-        <VikingIcon name="insights" size={20} color="accent" />
-        <span>DEML Field Log</span>
+    <header class="blog-command-hero">
+      <div class="blog-command-copy">
+        <div class="blue-notes-kicker">
+          <VikingIcon name="insights" size={20} color="accent" />
+          <span>DEML Field Log · Built in public</span>
+        </div>
+        <h1><span>Blue Notes</span>Engineering, in the open.</h1>
+        <p>
+          The operating record behind DEML: releases, architecture decisions, reliability work,
+          and the details that turn a platform into durable infrastructure.
+        </p>
+        <div class="blog-command-actions">
+          <a class="viking-btn viking-btn-primary" href="#latest-dispatch">Read the latest</a>
+          <a class="viking-btn viking-btn-outline" href="/blog/rss.xml">
+            <VikingIcon name="send" size={18} /> Follow via RSS
+          </a>
+        </div>
       </div>
-      <h1>Blue Notes</h1>
-      <p>
-        Platform milestones, architectural decisions, and operator capabilities — written in real time as features ship.
-      </p>
+      <dl class="blog-command-ledger" aria-label="Blue Notes archive summary">
+        <div>
+          <dt>Shipped dispatches</dt>
+          <dd>{String(notes.length).padStart(2, '0')}</dd>
+        </div>
+        <div>
+          <dt>Engineering disciplines</dt>
+          <dd>{String(categoryCount).padStart(2, '0')}</dd>
+        </div>
+        <div>
+          <dt>Latest transmission</dt>
+          <dd>
+            {leadNote ? (
+              <time datetime={leadNote.data.publishedAt.toISOString()}>
+                {formatBlueNoteDate(leadNote.data.publishedAt)}
+              </time>
+            ) : 'Archive pending'}
+          </dd>
+        </div>
+      </dl>
     </header>
 
-    <!-- Hero Slider for Featured Notes -->
-    {featuredNotes.length > 0 && (
-    <section class="blog-slider-section" aria-label="Featured notes carousel">
-      <div class="blog-slider">
-        <div class="blog-slider-track" id="blog-slider-track">
-          {featuredNotes.map((note, idx) => (
-            <article class="blog-slider-slide" key={idx} aria-label={`Featured: ${note.data.title}`}>
-              <a href={blueNoteHref(note)} class="blog-slider-link viking-card">
-                <div class="blog-slider-content">
-                  <span class="viking-badge viking-badge-accent">{note.data.note}</span>
-                  <time datetime={note.data.publishedAt.toISOString()}>
-                    {formatBlueNoteDate(note.data.publishedAt)}
-                  </time>
-                  <h2 class="blog-slider-title">{note.data.title}</h2>
-                  <p class="blog-slider-summary">{note.data.summary}</p>
-                  <ul class="blog-slider-categories" aria-label="Categories">
-                    {note.data.categories.map(category => <li>{category}</li>)}
-                  </ul>
-                </div>
-              </a>
-            </article>
-          ))}
-        </div>
-        <div class="blog-slider-nav">
-          <button
-            type="button"
-            class="viking-btn viking-btn-outline viking-btn-sm"
-            id="blog-slider-prev"
-            aria-label="Previous featured note"
-          >
-            <VikingIcon name="chevron-left" size={18} />
-          </button>
-          <div class="blog-slider-dots" id="blog-slider-dots">
-            {featuredNotes.map((_, idx) => (
-              <button
-                type="button"
-                class={"blog-slider-dot" + (idx === 0 ? " blog-slider-dot-active" : "")}
-                aria-label={`Go to slide ${idx + 1}`}
-                data-slide={idx}
-              ></button>
-            ))}
+    {leadNote && (
+      <section class="blog-lead-section" id="latest-dispatch" aria-labelledby="latest-dispatch-title">
+        <header class="blog-section-heading">
+          <div>
+            <span class="section-tag">Latest dispatch</span>
+            <h2 id="latest-dispatch-title">From the engineering floor</h2>
           </div>
-          <button
-            type="button"
-            class="viking-btn viking-btn-outline viking-btn-sm"
-            id="blog-slider-next"
-            aria-label="Next featured note"
-          >
-            <VikingIcon name="chevron-right" size={18} />
-          </button>
-        </div>
-      </div>
-    </section>
+          <span class="blog-section-rule" aria-hidden="true"></span>
+        </header>
+        <article class="viking-card blog-lead-card">
+          <span class="blog-lead-index" aria-hidden="true">01</span>
+          <div class="blog-lead-copy">
+            <div class="blog-note-meta">
+              <span class="viking-badge viking-badge-accent">{leadNote.data.note}</span>
+              <time datetime={leadNote.data.publishedAt.toISOString()}>
+                {formatBlueNoteDate(leadNote.data.publishedAt)}
+              </time>
+            </div>
+            <h2><a href={blueNoteHref(leadNote)}>{leadNote.data.title}</a></h2>
+            <p>{leadNote.data.summary}</p>
+            <footer class="blog-card-footer">
+              <ul class="blog-category-list" aria-label="Categories">
+                {leadNote.data.categories.map(category => <li>{category}</li>)}
+              </ul>
+              <a class="blog-read-cue" href={blueNoteHref(leadNote)} aria-label={`Read ${leadNote.data.title}`}>
+                Open dispatch <VikingIcon name="chevron_right" size={18} />
+              </a>
+            </footer>
+          </div>
+        </article>
+      </section>
     )}
 
-    <!-- Archive Section -->
-    <section class="blue-notes-archive" aria-labelledby="notes-archive-title">
-      <div class="blue-notes-section-heading">
-        <div>
-          <span class="section-tag">Chronological archive</span>
-          <h2 id="notes-archive-title">Changes over time</h2>
-        </div>
-        <p>Newest first. Every note is sourced from a shipped platform milestone.</p>
-      </div>
-
-      <ol class="blue-notes-timeline">
-        {otherNotes.map(note => (
-          <li>
-            <article class="viking-card blue-note-card">
-              <div class="blue-note-timeline-marker" aria-hidden="true"></div>
-              <div class="blue-note-card-meta">
-                <span>{note.data.note}</span>
+    {spotlightNotes.length > 0 && (
+      <section class="blog-spotlight-section" aria-labelledby="spotlight-title">
+        <header class="blog-section-heading">
+          <div>
+            <span class="section-tag">Selected signals</span>
+            <h2 id="spotlight-title">Worth a closer read</h2>
+          </div>
+          <span class="blog-section-rule" aria-hidden="true"></span>
+        </header>
+        <div class="blog-spotlight-grid">
+          {spotlightNotes.map((note, index) => (
+            <article class="viking-card blog-spotlight-card">
+              <div class="blog-note-meta">
+                <span>{String(index + 2).padStart(2, '0')} / {note.data.note}</span>
                 <time datetime={note.data.publishedAt.toISOString()}>
                   {formatBlueNoteDate(note.data.publishedAt)}
                 </time>
               </div>
               <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
               <p>{note.data.summary}</p>
-              <div class="blue-note-card-footer">
-                <ul class="blue-note-categories" aria-label="Categories">
-                  {note.data.categories.map(category => <li>{category}</li>)}
-                </ul>
-                <a class="blue-note-read-link" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
-                  Read note <VikingIcon name="chevron_right" size={18} />
-                </a>
+              <a class="blog-read-cue" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
+                Read the note <VikingIcon name="chevron_right" size={18} />
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="blog-archive-section" aria-labelledby="notes-archive-title">
+      <header class="blog-section-heading">
+        <div>
+          <span class="section-tag">Chronological archive</span>
+          <h2 id="notes-archive-title">Every shipped change</h2>
+        </div>
+        <p>Newest first. No launch theater—just the implementation record.</p>
+      </header>
+      <ol class="blog-archive-list">
+        {archiveNotes.map(note => (
+          <li>
+            <article class="blog-archive-row">
+              <span class="blog-archive-index" aria-hidden="true">
+                {String(notes.findIndex(candidate => candidate.id === note.id) + 1).padStart(2, '0')}
+              </span>
+              <div class="blog-note-meta">
+                <span>{note.data.note}</span>
+                <time datetime={note.data.publishedAt.toISOString()}>
+                  {formatBlueNoteDate(note.data.publishedAt)}
+                </time>
               </div>
+              <div class="blog-archive-copy">
+                <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
+                <p>{note.data.summary}</p>
+              </div>
+              <a class="blog-archive-arrow" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
+                <VikingIcon name="arrow_forward" size={20} />
+              </a>
             </article>
           </li>
         ))}
@@ -166,5 +202,4 @@ const pageJsonLd = [
   </div>
   </div>
   </div>
-  <script is:inline src="/assets/widgets/blog-slider.js" defer></script>
 </Layout>

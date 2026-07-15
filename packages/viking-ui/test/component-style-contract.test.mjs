@@ -226,6 +226,45 @@ test("the docs gallery gives every preview the full twelve-column canvas", () =>
   );
 });
 
+test("marketing editorial and integration cards keep their shared spacing contracts", () => {
+  const bundle = readPackageFile("src", "styles", "viking-ui-bundle.scss");
+  const blogIndex = readPackageFile(
+    "src",
+    "styles",
+    "surfaces",
+    "marketing-blue-notes-index.scss",
+  );
+  const blogLedger = readPackageFile(
+    "src",
+    "styles",
+    "surfaces",
+    "marketing-blue-notes-ledger.scss",
+  );
+  const docsBento = readPackageFile(
+    "src",
+    "styles",
+    "surfaces",
+    "marketing-docs-bento.scss",
+  );
+
+  assert.match(bundle, /@use 'surfaces\/marketing-blue-notes-index' as \*/);
+  assert.match(blogIndex, /\.blog-command-hero\s*\{/);
+  assert.match(blogLedger, /\.blog-lead-card\s*\{/);
+  assert.match(blogLedger, /\.blog-archive-row\s*\{/);
+  assert.match(
+    docsBento,
+    /\.integration-card > \.viking-icon-heading\s*\{[^}]*flex-direction:\s*column;[^}]*gap:\s*var\(--viking-space-3\);/s,
+  );
+  assert.match(
+    docsBento,
+    /\.integration-card > \.viking-icon-heading \+ p\s*\{[^}]*padding-left:\s*0;/s,
+  );
+  assert.match(
+    docsBento,
+    /\.integration-cards\s*\{\s*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/,
+  );
+});
+
 test("navigation polish avoids flashy base-state effects", () => {
   const header = readPackageFile("src", "lib", "app-header", "app-header.scss");
   const sidebar = readPackageFile(
