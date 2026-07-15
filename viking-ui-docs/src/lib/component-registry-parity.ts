@@ -148,12 +148,14 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Site navbar",
           description:
             "Marketing-grade navbar with search, theme toggle, and CTA slots.",
-          preview: `<div class="viking-card viking-card-compact">
-  <div class="viking-demo-row">
-    <strong class="viking-heading viking-heading-sm">DEML</strong>
-    <viking-button-wc variant="ghost" size="sm">Docs</viking-button-wc>
-    <viking-button-wc variant="primary" size="sm">Launch</viking-button-wc>
-  </div>
+          preview: `<div class="viking-demo-full viking-demo-shell-preview">
+  <viking-site-navbar
+    context="docs"
+    app-url="https://deml.app"
+    marketing-url="https://dataengineeringformachinelearning.com"
+    backend-url="https://backend.deml.app"
+    show-search
+  ></viking-site-navbar>
 </div>`,
           selector: "viking-site-navbar",
           tags: ["angular", "marketing"],
@@ -507,19 +509,17 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         {
           id: "otp-input",
           name: "OTP input",
-          description: "One-time passcode digit boxes with auto-advance focus.",
-          preview: `<div class="viking-otp-static" role="group" aria-label="Verification code">
-  <input type="text" name="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1 of verification code" />
-  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 2 of verification code" />
-  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 3 of verification code" />
-  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 4 of verification code" />
+          description:
+            "Single-field one-time passcode entry with atomic SMS and password-manager autofill.",
+          preview: `<div class="viking-otp-static">
+  <input class="viking-otp-input-static" type="text" name="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" value="204918" aria-label="One-time passcode" />
 </div>`,
           selector: "viking-otp-input",
           tags: ["angular"],
         },
         snippets(
           `<viking-otp-input [(value)]="code" [length]="6" />`,
-          `<div class="viking-otp-static" role="group" aria-label="Verification code">...</div>`,
+          `<input class="viking-otp-input-static" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="One-time passcode" />`,
           `{# OTP via viking-otp-input in Angular auth flows #}`,
           `// viking-otp-input is Angular-only`,
         ),

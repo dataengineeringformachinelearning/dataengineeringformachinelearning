@@ -34,6 +34,7 @@ import {
   VikingChartPanel,
   VikingChartCardHeader,
   VikingSection,
+  VikingSpinner,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
@@ -94,6 +95,7 @@ type BenchmarkSummary = {
     VikingChartPanel,
     VikingChartCardHeader,
     VikingSection,
+    VikingSpinner,
   ],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

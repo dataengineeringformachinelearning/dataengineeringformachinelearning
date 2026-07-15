@@ -1316,6 +1316,20 @@ Instead of embedding heavy security scanning tools directly into the main Django
 
 The ingestion pipeline in the core backend (`backend/telemetry/vulnerability_ledger.py`) exposes a unified `/api/telemetry/technology` endpoint capable of receiving both infrastructure signatures and application dependency manifests. To achieve maximum throughput, the backend processes these payloads in batches using the high-performance `Polars` DataFrame library. Once the raw telemetry is normalized, the backend securely delegates all scanning logic to the isolated `scanner` microservice. This microservice dynamically queries the National Vulnerability Database (NVD) REST API and OSV.dev REST API to extract exact CVEs and CVSS metrics, seamlessly bridging the gap between hardware/infrastructure reporting and modern application lockfile scanning.
 
+Public web surfaces add a third, evidence-bounded discovery stream. For every verified `ValidatedSite`, the Rust scheduler publishes a daily `enrich_web_technologies` task and the consolidated Django worker calls [Firecrawl](https://www.firecrawl.dev/) only for that account's approved public origins. Firecrawl renders JavaScript and returns a structured list of observable technologies—frameworks, CMS products, web servers, analytics providers, CDNs, and exposed version strings—together with the page evidence and a confidence score. DEML treats these results as untrusted observations rather than vulnerability facts: names are normalized, exact duplicates collapse inside the account boundary, and only evidence-bearing candidates enter the existing CPE 2.3 and CVE comparison path. Private, loopback, link-local, metadata-service, credential-bearing, and cross-domain targets are rejected before any request is submitted. The connector is disabled unless its server-side secret and explicit feature flag are present; no Firecrawl credential reaches a browser or Firestore projection.
+
+The transactional result is materialized in the dedicated `web_technology_observations` table. Each row records the native account UUID, verified site, source URL, technology name and version, confidence, evidence, matched CPE, CVE identifiers, and first/last-seen timestamps. This preserves provenance and makes the dashboard read path independent of Firecrawl availability. A scan failure never deletes the last known inventory and never manufactures a vulnerability. Successful scans emit a versioned transactional Outbox event so Redpanda consumers can project a compact summary without coupling Firecrawl to the UI. Tenant0 follows the same loop through its verified public domains; customer rows remain scoped to their owning `UserProfile.account_id`.
+
+```text
+Rust scheduler → internal-tasks: enrich_web_technologies
+  → verified public ValidatedSite origins
+  → Firecrawl structured technology evidence
+  → normalize/deduplicate technology + version
+  → scanner service → Rust CPE lookup → NVD/OSV CVEs
+  → PostgreSQL WebTechnologyObservation + OutboxEvent
+  → Redpanda projection / security dashboard
+```
+
 Finally, the fully enriched vulnerability ledger is written to `ClickHouse` via the `ADBC` driver for fast, analytical querying, while critical vulnerabilities are selectively synchronized into the operational Django database to alert administrators via the real-time Security dashboard.
 
 ---
@@ -1424,7 +1438,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [Appendix Z](#appendix-z-integration-guides)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Firecrawl](https://www.firecrawl.dev/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
 - **Documentation & code maps**: [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning), [Appendix Q: Glossary](#appendix-q-deml-glossary), [Appendix M: Billing](#appendix-m-billing--subscriptions-operator-reference)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
@@ -2600,11 +2614,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.3.1/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.4.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.3.1/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.4.0/dist/web-components.js"
 ></script>
 ```
 
@@ -2809,7 +2823,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/platform-server`: ^22.0.0
 - `@angular/router`: ^22.0.0
 - `@angular/ssr`: ^22.0.0
-- `@dataengineeringformachinelearning/viking-ui`: ^9.2.0
+- `@dataengineeringformachinelearning/viking-ui`: ^9.4.0
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `express`: ^5.1.0

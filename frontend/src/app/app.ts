@@ -16,8 +16,11 @@ import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
 import { PageMetaService } from './services/page-meta.service';
 
-import { VikingAppLayout, VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
-import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
+import {
+  VikingAppLayout,
+  VikingSpinner,
+  VikingToaster,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
 import { CommandPalette } from './components/command-palette/command-palette';
@@ -31,7 +34,7 @@ import { SessionStateService } from './services/session-state.service';
     Sidebar,
     Footer,
     IssueReporter,
-    DemlBrandLogo,
+    VikingSpinner,
     VikingToaster,
     VikingAppLayout,
     ConfirmDialog,

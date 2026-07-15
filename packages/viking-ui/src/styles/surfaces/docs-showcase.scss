@@ -404,7 +404,7 @@
   font-size: var(--viking-font-size-lg);
 }
 
-/* ── Component grid — one column by default, two compact peers on desktop ── */
+/* ── Component grid — every specimen receives the full 12-column canvas ── */
 .showcase-component-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1996,13 +1996,6 @@ viking-card-wc.landing-doctrine-card > * {
   gap: var(--viking-space-3);
 }
 
-@media (min-width: 1024px) {
-  .showcase-component-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
-  }
-}
-
 .landing-doctrine-grid {
   grid-template-columns: repeat(
     auto-fit,
@@ -2037,6 +2030,23 @@ viking-card-wc.landing-doctrine-card > * {
 .component-showcase-preview > *,
 .viking-demo-wrapper > * {
   margin-inline: auto;
+}
+
+/* Shell specimens use the same production Web Components as the live sites. */
+.component-showcase-preview .viking-demo-shell-preview {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.component-showcase-preview .viking-demo-shell-preview > viking-site-navbar,
+.component-showcase-preview .viking-demo-shell-preview > viking-site-footer {
+  display: block;
+  width: 100%;
+}
+
+.component-showcase-preview .viking-demo-shell-preview .navbar {
+  position: static;
 }
 
 .component-showcase-code pre,

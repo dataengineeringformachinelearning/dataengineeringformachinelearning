@@ -757,6 +757,60 @@ class ValidatedSite(models.Model):
     return f"{self.domain} ({self.user.username})"
 
 
+class WebTechnologyObservation(models.Model):
+  """Evidence-backed public web technology matched against CPE/CVE data."""
+
+  class Source(models.TextChoices):
+    FIRECRAWL = "firecrawl", "Firecrawl"
+    WAPPALYZER = "wappalyzer", "Wappalyzer"
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  account_id = models.UUIDField(db_index=True)
+  user = models.ForeignKey(
+    User,
+    on_delete=models.CASCADE,
+    related_name="web_technology_observations",
+    null=True,
+    blank=True,
+  )
+  is_platform = models.BooleanField(default=False, db_index=True)
+  validated_site = models.ForeignKey(
+    ValidatedSite,
+    on_delete=models.CASCADE,
+    related_name="technology_observations",
+  )
+  source = models.CharField(max_length=32, choices=Source.choices)
+  source_url = models.URLField(max_length=2048)
+  technology_name = models.CharField(max_length=255)
+  normalized_name = models.CharField(max_length=255)
+  version = models.CharField(max_length=128, blank=True, default="")
+  confidence = models.FloatField(default=0.0)
+  evidence = models.JSONField(default=list, blank=True)
+  cpe_2_3 = models.CharField(max_length=1024, blank=True, default="")
+  cve_ids = models.JSONField(default=list, blank=True)
+  first_seen_at = models.DateTimeField(auto_now_add=True)
+  last_seen_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "web_technology_observations"
+    ordering = ["normalized_name", "version"]
+    constraints = [
+      models.UniqueConstraint(
+        fields=["validated_site", "source", "normalized_name", "version"],
+        name="unique_site_technology_version",
+      )
+    ]
+    indexes = [
+      models.Index(fields=["account_id", "-last_seen_at"], name="web_tech_account_seen_idx"),
+      models.Index(fields=["user", "is_platform", "-last_seen_at"], name="web_tech_scope_seen_idx"),
+      models.Index(fields=["cpe_2_3"], name="web_tech_cpe_idx"),
+    ]
+
+  def __str__(self) -> str:
+    version = f" {self.version}" if self.version else ""
+    return f"{self.technology_name}{version} on {self.validated_site.domain}"
+
+
 class IncidentCase(models.Model):
   STATUS_CHOICES = [
     ("Open", "Open"),

@@ -3,8 +3,7 @@
 } @else if (!authService.isInitialized()) {
 <div class="global-auth-loader" id="main-content" tabindex="-1" role="status" aria-live="polite">
   <div class="loader-content">
-    <deml-brand-logo hostClass="brand-icon loader-logo" />
-    <div class="premium-spinner" aria-hidden="true"></div>
+    <viking-spinner [size]="80" [branded]="true" label="Securing your session" />
     <p class="loader-text">Securing your session...</p>
   </div>
 </div>

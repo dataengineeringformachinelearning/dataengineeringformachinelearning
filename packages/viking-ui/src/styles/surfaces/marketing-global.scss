@@ -298,8 +298,9 @@ main.main {
   display: inline-block;
   width: 16px;
   height: 16px;
+  aspect-ratio: 1;
   border: 2px solid color-mix(in srgb, var(--viking-white) 30%, transparent);
-  border-radius: 50%;
+  border-radius: var(--viking-radius-pill);
   border-top-color: currentColor;
   animation: spin 0.8s linear infinite;
   vertical-align: middle;

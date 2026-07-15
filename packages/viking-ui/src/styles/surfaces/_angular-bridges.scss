@@ -43,6 +43,7 @@ app-unified-select viking-field {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--viking-space-3);
   width: min(100%, var(--viking-space-24));
   max-width: calc(100% - var(--viking-space-4));
   padding: var(--viking-card-padding);
@@ -52,31 +53,6 @@ app-unified-select viking-field {
     var(--viking-border);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-md);
-}
-
-.loader-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--viking-space-7);
-  height: var(--viking-space-7);
-  margin-bottom: var(--viking-space-3);
-  padding: var(--viking-space-1);
-  overflow: visible;
-  color: var(--viking-accent);
-  font-size: var(--viking-font-size-3xl);
-  line-height: var(--viking-line-height-none);
-  box-sizing: content-box;
-}
-
-.premium-spinner {
-  width: var(--viking-space-6);
-  height: var(--viking-space-6);
-  margin-bottom: var(--viking-space-3);
-  border: var(--viking-space-0-5) solid var(--viking-border);
-  border-top-color: var(--viking-accent);
-  border-radius: var(--viking-radius-full);
-  animation: viking-spin calc(var(--viking-duration-slower) * 2) linear infinite;
 }
 
 .loader-text {
@@ -218,16 +194,6 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
   font-weight: var(--viking-font-weight-bold);
   line-height: var(--viking-line-height-none);
   letter-spacing: var(--viking-letter-spacing-tight);
-}
-
-.syncing-state .spinner {
-  width: var(--viking-space-6);
-  height: var(--viking-space-6);
-  margin-bottom: var(--viking-space-3);
-  border: var(--viking-space-0-5) solid var(--viking-border);
-  border-left-color: var(--viking-success);
-  border-radius: var(--viking-radius-full);
-  animation: viking-spin calc(var(--viking-duration-slower) * 2) linear infinite;
 }
 
 .action-box .home-btn {

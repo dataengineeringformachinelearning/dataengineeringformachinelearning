@@ -86,6 +86,11 @@ const CRON_TASKS: &[CronTask] = &[
         offset_seconds: 7_200,
     },
     CronTask {
+        name: "enrich_web_technologies",
+        interval_seconds: DAY,
+        offset_seconds: 7_350,
+    },
+    CronTask {
         name: "reconcile_accounts",
         interval_seconds: DAY,
         offset_seconds: 7_500,

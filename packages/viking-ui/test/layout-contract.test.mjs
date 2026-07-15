@@ -332,6 +332,13 @@ test("dashboard overview keeps compact KPI rhythm and balanced status panels", (
     "surfaces",
     "_dashboard-overview.scss",
   );
+  const layoutShell = readPackageFile("src", "styles", "layout-shell.scss");
+
+  assert.match(
+    layoutShell,
+    /\.viking-section\s*\{\s*display:\s*block;/,
+    "Custom section elements must be block-level so vertical padding creates row spacing",
+  );
 
   assert.match(
     dashboard,

@@ -123,13 +123,8 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Labeled OTP fieldset for MFA and phone verification with error states.",
           preview: `<fieldset class="viking-field">
   <legend class="viking-field-label" id="verify-code-legend">Verification Code</legend>
-  <div class="viking-otp-static" role="group" aria-labelledby="verify-code-legend">
-    <input type="text" name="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1 of verification code" />
-    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 2 of verification code" />
-    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 3 of verification code" />
-    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 4 of verification code" />
-    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 5 of verification code" />
-    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 6 of verification code" />
+  <div class="viking-otp-static">
+    <input class="viking-otp-input-static" type="text" name="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" value="204918" aria-labelledby="verify-code-legend" />
   </div>
   <p class="viking-text-muted">Enter the 6-digit code we sent to your phone.</p>
 </fieldset>`,
@@ -377,22 +372,15 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Site footer",
           description:
             "Marketing-grade footer with directory columns and compliance links.",
-          preview: `<footer class="viking-card viking-card-compact">
-  <div class="viking-demo-row viking-demo-row-top viking-demo-row-wrap viking-demo-row-gap-lg">
-    <div>
-      <span class="viking-label">Product</span>
-      <p class="viking-text-muted">Platform</p>
-      <p class="viking-text-muted">Integrations</p>
-    </div>
-    <div>
-      <span class="viking-label">Resources</span>
-      <p class="viking-text-muted">Documentation</p>
-      <p class="viking-text-muted">Whitepaper</p>
-    </div>
-  </div>
-  <hr class="viking-separator-static" />
-  <p class="viking-text-muted">© 2026 Data Engineering for AI Engineering and Cybersecurity</p>
-</footer>`,
+          preview: `<div class="viking-demo-full viking-demo-shell-preview">
+  <viking-site-footer
+    context="docs"
+    app-url="https://deml.app"
+    marketing-url="https://dataengineeringformachinelearning.com"
+    backend-url="https://backend.deml.app"
+    year="2026"
+  ></viking-site-footer>
+</div>`,
           selector: "viking-site-footer",
           tags: ["angular", "marketing"],
           related: ["footer", "site-navbar"],

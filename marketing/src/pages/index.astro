@@ -161,19 +161,19 @@ const integrations = [
         <div class="hero-stats viking-column-layout viking-column-layout--2" aria-label="Platform highlights">
           <div class="hero-stat-pill">
             <VikingIcon name="shield" size={20} />
-            <span data-platform-metric="threats">Live threat telemetry</span>
+            <span data-platform-metric="threats">Threats · live</span>
           </div>
           <div class="hero-stat-pill">
             <VikingIcon name="speed" size={20} />
-            <span data-platform-metric="p99">Live P99 command loop</span>
+            <span data-platform-metric="p99">P99 · live</span>
           </div>
           <div class="hero-stat-pill">
             <VikingIcon name="verified_user" size={20} />
-            <span>Zero-trust by default</span>
+            <span>Zero-trust · enforced</span>
           </div>
           <div class="hero-stat-pill">
             <VikingIcon name="hub" size={20} />
-            <span>Symmetric tenant doctrine</span>
+            <span>Tenant symmetry · enforced</span>
           </div>
         </div>
         <div class="cta-group viking-unified-hero-actions">
@@ -441,10 +441,10 @@ const integrations = [
       metricNodes.forEach((node) => {
         const metric = node.getAttribute('data-platform-metric');
         if (metric === 'p99' && Number.isFinite(metrics.p99_latency)) {
-          node.textContent = `${Math.round(metrics.p99_latency)}ms P99 command loop · 24h`;
+          node.textContent = `${Math.round(metrics.p99_latency)}ms P99 · 24h`;
         }
         if (metric === 'threats' && Number.isFinite(metrics.threats_detected_24h)) {
-          node.textContent = `${metrics.threats_detected_24h.toLocaleString()} threats detected · 24h`;
+          node.textContent = `${metrics.threats_detected_24h.toLocaleString()} threats · 24h`;
         }
         if (metric === 'p99Value' && Number.isFinite(metrics.p99_latency)) {
           node.textContent = `${Math.round(metrics.p99_latency)}ms`;

@@ -18,6 +18,7 @@ import {
   VikingPagination,
   VikingProgress,
   VikingSelect,
+  VikingSpinner,
   VikingSwitch,
   VikingToastService,
   VikingSelectOption,
@@ -428,6 +429,26 @@ describe("viking-ui", () => {
     const svg = fixture.nativeElement.querySelector("svg") as SVGSVGElement;
     expect(svg.innerHTML).toContain("circle");
     expect(svg.getAttribute("stroke")).toBe("currentColor");
+  });
+
+  it("renders a circular branded spinner with the DEML wordmark", async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingSpinner);
+    fixture.componentRef.setInput("size", 80);
+    fixture.componentRef.setInput("branded", true);
+    fixture.componentRef.setInput("label", "Securing your session");
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const svg = host.querySelector(".viking-spinner-svg") as SVGSVGElement;
+    const wordmark = host.querySelector(
+      ".viking-spinner-wordmark",
+    ) as HTMLElement;
+
+    expect(host.classList.contains("viking-spinner-branded")).toBe(true);
+    expect(host.getAttribute("aria-label")).toBe("Securing your session");
+    expect(svg.getAttribute("width")).toBe("80");
+    expect(svg.querySelectorAll("circle").length).toBe(2);
+    expect(wordmark.textContent).toBe("DEML");
   });
 
   it("renders form section headings and layout classes", async (): Promise<void> => {
