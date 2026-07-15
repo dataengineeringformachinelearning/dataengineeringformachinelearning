@@ -133,7 +133,15 @@ if not firebase_admin._apps:
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-from utils.env import configure_database_url, get_bool, get_csv, get_str, validate_production_config
+from utils.env import (
+  configure_database_url,
+  get_bool,
+  get_csv,
+  get_float,
+  get_int,
+  get_str,
+  validate_production_config,
+)
 from utils.tls import materialize_tls_file
 
 # Fail fast on Railway/production if SECRET_KEY, DEBUG, or DATABASE_URL are insecure.
@@ -308,11 +316,17 @@ BACKEND_URL = get_str("BACKEND_URL")
 MARKETING_URL: Final[str] = get_str("MARKETING_URL")
 
 # Internal service URLs (env-driven; see BOOK.md Appendix C)
-from utils.env import cpe_guesser_url, scanner_service_url, tor_proxy_url
+from utils.env import cpe_guesser_url, firecrawl_api_url, scanner_service_url, tor_proxy_url
 
 SCANNER_SERVICE_URL = scanner_service_url()
 CPE_GUESSER_URL = cpe_guesser_url()
 TOR_PROXY_URL = tor_proxy_url()
+FIRECRAWL_API_URL: Final[str] = firecrawl_api_url()
+FIRECRAWL_API_KEY: Final[str] = get_str("FIRECRAWL_API_KEY")
+FIRECRAWL_ENABLED: Final[bool] = get_bool("FIRECRAWL_ENABLED", default=False)
+FIRECRAWL_TIMEOUT_SECONDS: Final[int] = get_int("FIRECRAWL_TIMEOUT_SECONDS", 45)
+FIRECRAWL_MIN_CONFIDENCE: Final[float] = get_float("FIRECRAWL_MIN_CONFIDENCE", 0.55)
+FIRECRAWL_MAX_SITES_PER_RUN: Final[int] = get_int("FIRECRAWL_MAX_SITES_PER_RUN", 100)
 
 # Stripe Settings
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")

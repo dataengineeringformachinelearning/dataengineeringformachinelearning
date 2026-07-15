@@ -135,6 +135,9 @@ services:
       - TOR_PROXY_URL=socks5h://tor-proxy:9050
       - SCANNER_SERVICE_URL=http://scanner:8000
       - CPE_GUESSER_URL=http://cpe-guesser:8080/unique
+      - FIRECRAWL_ENABLED=${FIRECRAWL_ENABLED:-false}
+      - FIRECRAWL_API_URL=${FIRECRAWL_API_URL:-https://api.firecrawl.dev}
+      - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY:-}
       - STRUCTURED_LOGS=true
       - PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0
       - RUSTFS_ENDPOINT=${RUSTFS_ENDPOINT:-http://rustfs:9000}

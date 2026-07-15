@@ -16,7 +16,7 @@ from monitor.access import (
   forbid_platform_page,
   is_valid_slug,
 )
-from monitor.models import Endpoints, MonitoredService, StatusPage
+from monitor.models import Endpoints, MonitoredService, StatusPage, WebTechnologyObservation
 from monitor.services.metrics import MetricsService
 
 router = Router()
@@ -34,6 +34,20 @@ class EndpointOut(Schema):
   response_time: str
   ip_address: str | None
   is_active: bool
+
+
+class WebTechnologyOut(Schema):
+  id: str
+  domain: str
+  source: str
+  source_url: str
+  technology_name: str
+  version: str
+  confidence: float
+  evidence: list[str]
+  cpe_2_3: str
+  cve_ids: list[str]
+  last_seen_at: datetime.datetime
 
 
 @router.get("/endpoints", response=list[EndpointOut])
@@ -59,6 +73,33 @@ def get_all_endpoints(request):
       }
     )
   return data
+
+
+@router.get("/web-technologies", response=list[WebTechnologyOut])
+def list_web_technologies(request) -> list[dict[str, object]]:
+  """Return the authenticated account's evidence-backed public technology inventory."""
+  user = require_auth(request)
+  observations = (
+    WebTechnologyObservation.objects.filter(user=user, is_platform=False)
+    .select_related("validated_site")
+    .order_by("-last_seen_at")[:500]
+  )
+  return [
+    {
+      "id": str(observation.id),
+      "domain": observation.validated_site.domain,
+      "source": observation.source,
+      "source_url": observation.source_url,
+      "technology_name": observation.technology_name,
+      "version": observation.version,
+      "confidence": observation.confidence,
+      "evidence": observation.evidence,
+      "cpe_2_3": observation.cpe_2_3,
+      "cve_ids": observation.cve_ids,
+      "last_seen_at": observation.last_seen_at,
+    }
+    for observation in observations
+  ]
 
 
 class StatusPageIn(Schema):

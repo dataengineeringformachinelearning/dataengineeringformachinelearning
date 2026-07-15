@@ -61,6 +61,7 @@ ALLOWED_TASKS: frozenset[str] = frozenset(
     "generate_export",
     "ingest_taxii",
     "run_lighthouse_scans",
+    "enrich_web_technologies",
     "rotate_keys_if_due",
     "scan_dark_web",
   }

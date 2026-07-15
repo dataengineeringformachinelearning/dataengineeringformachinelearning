@@ -464,6 +464,7 @@ export const VIKING_BUTTON_STYLES = `
   flex: 0 0 auto;
   width: var(--viking-icon-size-sm, 18px);
   height: var(--viking-icon-size-sm, 18px);
+  aspect-ratio: 1;
   border: 2px solid currentColor;
   border-right-color: transparent;
   border-radius: var(--viking-radius-pill);
@@ -598,9 +599,10 @@ input:disabled {
 .viking-input-spinner {
   width: 1rem;
   height: 1rem;
+  aspect-ratio: 1;
   border: 2px solid var(--viking-text-muted);
   border-right-color: transparent;
-  border-radius: 50%;
+  border-radius: var(--viking-radius-pill);
   animation: viking-spin 0.8s linear infinite;
   flex-shrink: 0;
 }

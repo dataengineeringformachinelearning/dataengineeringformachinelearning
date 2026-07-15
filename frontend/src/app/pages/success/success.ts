@@ -12,13 +12,14 @@ import {
   VikingButton,
   VikingCard,
   VikingHeading,
+  VikingSpinner,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 
 @Component({
   selector: 'app-success',
   standalone: true,
-  imports: [VikingButton, VikingCard, VikingHeading, VikingAppIcon],
+  imports: [VikingButton, VikingCard, VikingHeading, VikingSpinner, VikingAppIcon],
   templateUrl: './success.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

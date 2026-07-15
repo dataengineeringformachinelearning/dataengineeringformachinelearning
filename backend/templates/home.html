@@ -25,35 +25,59 @@
       </span>
 
       <h1 class="viking-heading viking-heading-xl viking-unified-hero-title" id="backend-hero-title">
-        Data Engineering for Machine Learning
+        DEML Backend API
       </h1>
       <p class="viking-text-muted backend-hero-lead viking-unified-hero-lead">
-        Core REST API &amp; services orchestrator. This system manages user accounts,
-        coordinates model training schedules, and computes SLA predictions.
+        The secure control plane for Data Engineering for Machine Learning. Manage
+        accounts, coordinate model training, compute SLA predictions, and inspect
+        platform telemetry.
       </p>
     </div>
 
     <div class="viking-card viking-unified-hero-panel">
-      <!-- Live Metrics Visualization -->
-      <div class="backend-hero-metrics" aria-label="Live operational metrics">
-        <div class="backend-metric-grid">
-          <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.overall_uptime|floatformat:2 }}%{% else %}—{% endif %}</span>
-            <span class="viking-metric-label">Uptime · 30d</span>
-          </div>
-          <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.p99_latency|floatformat:0 }}ms{% else %}—{% endif %}</span>
-            <span class="viking-metric-label">P99 Latency · 24h</span>
-          </div>
-          <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.total_requests }}{% else %}—{% endif %}</span>
-            <span class="viking-metric-label">Requests · 24h</span>
-          </div>
-          <div class="viking-card viking-metric-card">
-            <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.threats_detected_24h }}{% else %}—{% endif %}</span>
-            <span class="viking-metric-label">Threats Detected · 24h</span>
-          </div>
+      <div class="backend-health-header">
+        <div>
+          <h2 class="viking-heading viking-heading-sm" id="backend-health-heading">
+            Live platform health
+          </h2>
+          <p class="viking-text-muted backend-health-summary">
+            Read-only operational telemetry from rolling reporting windows.
+          </p>
         </div>
+        <span class="viking-badge viking-badge-success">Live</span>
+      </div>
+
+      <div class="backend-hero-metrics" aria-labelledby="backend-health-heading">
+        <dl class="backend-metric-grid">
+          <div class="viking-card backend-health-metric">
+            <dt class="viking-metric-label">Uptime</dt>
+            <dd class="backend-health-measure">
+              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.overall_uptime|floatformat:2 }}%{% else %}—{% endif %}</span>
+              <span class="backend-health-period">Last 30 days</span>
+            </dd>
+          </div>
+          <div class="viking-card backend-health-metric">
+            <dt class="viking-metric-label">P99 latency</dt>
+            <dd class="backend-health-measure">
+              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.p99_latency|floatformat:0 }}ms{% else %}—{% endif %}</span>
+              <span class="backend-health-period">Last 24 hours</span>
+            </dd>
+          </div>
+          <div class="viking-card backend-health-metric">
+            <dt class="viking-metric-label">Requests</dt>
+            <dd class="backend-health-measure">
+              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.total_requests }}{% else %}—{% endif %}</span>
+              <span class="backend-health-period">Last 24 hours</span>
+            </dd>
+          </div>
+          <div class="viking-card backend-health-metric">
+            <dt class="viking-metric-label">Threats detected</dt>
+            <dd class="backend-health-measure">
+              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.threats_detected_24h }}{% else %}—{% endif %}</span>
+              <span class="backend-health-period">Last 24 hours</span>
+            </dd>
+          </div>
+        </dl>
       </div>
 
       <div class="viking-cta-row backend-hero-cta viking-unified-hero-actions">

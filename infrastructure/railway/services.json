@@ -71,10 +71,16 @@
         "DEML_NODE_ID",
         "PYTHON_EMBEDDED_SCHEDULERS_ENABLED",
         "CPE_GUESSER_URL",
+        "SCANNER_SERVICE_URL",
         "STRUCTURED_LOGS"
       ],
       "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET"],
-      "envDefaults": { "PYTHON_EMBEDDED_SCHEDULERS_ENABLED": "0" }
+      "envDefaults": {
+        "PYTHON_EMBEDDED_SCHEDULERS_ENABLED": "0",
+        "FIRECRAWL_ENABLED": "false",
+        "FIRECRAWL_API_URL": "https://api.firecrawl.dev"
+      },
+      "notes": "Set FIRECRAWL_API_KEY as an encrypted Railway secret and FIRECRAWL_ENABLED=true to enable verified-site technology enrichment."
     },
     "deml-telemetry-worker": {
       "class": "django-worker",

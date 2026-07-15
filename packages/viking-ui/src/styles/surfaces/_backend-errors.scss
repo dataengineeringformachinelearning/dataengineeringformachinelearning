@@ -1,0 +1,50 @@
+/* Backend error surfaces — package-owned static layout. */
+
+body.backend-404 main.main {
+  min-height: calc(100vh - var(--viking-navbar-height, 64px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.backend-404 .backend-error-card {
+  max-width: var(--viking-form-max-width, 720px);
+  margin-inline: auto;
+  text-align: center;
+}
+
+body.backend-404 .backend-error-logo {
+  max-width: 100px;
+  width: 100%;
+  margin: 0 auto var(--viking-space-3);
+  filter: drop-shadow(
+    0 4px 12px color-mix(in srgb, var(--viking-black) 15%, transparent)
+  );
+}
+
+body.backend-404 .backend-error-card .viking-heading-xl {
+  text-transform: uppercase;
+}
+
+body.backend-404 .backend-error-card .viking-text-muted {
+  margin-inline: auto;
+}
+
+body.backend-404 .viking-cta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  margin-top: var(--viking-space-3);
+  width: 100%;
+  max-width: min(100%, 28rem);
+  margin-inline: auto;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: none;
+    width: auto;
+  }
+}

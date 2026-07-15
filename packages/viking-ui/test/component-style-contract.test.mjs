@@ -98,6 +98,8 @@ test("the application bundle keeps Angular surfaces complete without static-site
     readPackageFile("src", "tokens", "viking-tokens.json"),
   );
 
+  assert.match(applicationBundle, /@use "components\/badges" as \*/);
+  assert.match(applicationBundle, /@use "components\/icon-inline" as \*/);
   assert.match(applicationBundle, /@use "surfaces\/app-pages" as \*/);
   assert.doesNotMatch(
     applicationBundle,
@@ -138,7 +140,75 @@ test("the application bundle keeps Angular surfaces complete without static-site
   assert.equal(tokens.zIndex.externalChallenge, 2147483647);
 });
 
-test("the docs gallery stays compact at desktop widths", () => {
+test("canonical pill radii do not cycle through legacy aliases", () => {
+  const coreStyles = readPackageFile("src", "styles", "viking-ui.scss");
+  const variables = readPackageFile("src", "styles", "_variables.scss");
+  const legacyAliases = readPackageFile(
+    "src",
+    "styles",
+    "_legacy-aliases.scss",
+  );
+
+  assert.match(variables, /--viking-radius-pill:\s*999px/);
+  assert.match(
+    legacyAliases,
+    /--border-radius-pill:\s*var\(--viking-radius-pill\)/,
+  );
+  assert.doesNotMatch(
+    coreStyles,
+    /--viking-radius-pill:\s*var\(--border-radius-pill/,
+  );
+});
+
+test("loading indicators stay circular and the full-page loader uses the branded spinner", () => {
+  const spinner = readPackageFile(
+    "src",
+    "styles",
+    "components",
+    "spinner.scss",
+  );
+  const buttons = readPackageFile("src", "styles", "_buttons.scss");
+  const staticPrimitives = readPackageFile(
+    "src",
+    "styles",
+    "_static-primitives.scss",
+  );
+  const appTemplate = readFileSync(
+    path.resolve(packageDir, "..", "..", "frontend", "src", "app", "app.html"),
+    "utf8",
+  );
+  const frontendSource = [
+    "app.html",
+    "pages/dashboard/dashboard.html",
+    "pages/vulnerabilities/vulnerabilities.html",
+    "pages/success/success.html",
+  ]
+    .map((file) =>
+      readFileSync(
+        path.resolve(packageDir, "..", "..", "frontend", "src", "app", file),
+        "utf8",
+      ),
+    )
+    .join("\n");
+
+  assert.match(spinner, /viking-spinner\s*\{[\s\S]*aspect-ratio:\s*1;/);
+  assert.match(
+    spinner,
+    /\.viking-spinner-wordmark\s*\{[\s\S]*font-family:\s*var\(--viking-font-family\);/,
+  );
+  assert.match(buttons, /\.viking-btn-spinner\s*\{[\s\S]*aspect-ratio:\s*1;/);
+  assert.match(
+    staticPrimitives,
+    /\.viking-spinner-static\s*\{[\s\S]*aspect-ratio:\s*1\s*\/\s*1;/,
+  );
+  assert.match(
+    appTemplate,
+    /<viking-spinner \[size\]="80" \[branded\]="true" label="Securing your session" \/>/,
+  );
+  assert.doesNotMatch(frontendSource, /class="(?:spinner|premium-spinner)"/);
+});
+
+test("the docs gallery gives every preview the full twelve-column canvas", () => {
   const docsShowcase = readPackageFile(
     "src",
     "styles",
@@ -148,7 +218,11 @@ test("the docs gallery stays compact at desktop widths", () => {
 
   assert.match(
     docsShowcase,
-    /@media \(min-width: 1024px\)[\s\S]*?\.showcase-component-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/,
+    /\.showcase-component-grid\s*\{[\s\S]*?grid-template-columns:\s*1fr/,
+  );
+  assert.doesNotMatch(
+    docsShowcase,
+    /\.showcase-component-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,/,
   );
 });
 

@@ -166,10 +166,11 @@
   height: 1.125rem;
   min-width: 1.125rem;
   min-height: 1.125rem;
+  aspect-ratio: 1;
   border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
   border-top-color: currentColor;
   border-right-color: color-mix(in srgb, currentColor 28%, transparent);
-  border-radius: 999px !important;
+  border-radius: var(--viking-radius-pill) !important;
   animation: viking-spin 0.75s linear infinite;
   transform-origin: center;
   background: transparent;

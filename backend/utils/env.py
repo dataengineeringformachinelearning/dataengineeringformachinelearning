@@ -41,6 +41,17 @@ def get_int(name: str, default: int) -> int:
     return default
 
 
+def get_float(name: str, default: float) -> float:
+  """Parse a floating-point env var with fallback."""
+  raw = os.getenv(name)
+  if raw is None or not raw.strip():
+    return default
+  try:
+    return float(raw.strip())
+  except ValueError:
+    return default
+
+
 def get_csv(name: str) -> list[str]:
   """Split a comma-separated env var into a cleaned list."""
   raw = get_str(name)
@@ -167,6 +178,7 @@ def validate_encrypted_transport_config() -> None:
     "OTEL_EXPORTER_OTLP_ENDPOINT",
     "SCANNER_SERVICE_URL",
     "CPE_GUESSER_URL",
+    "FIRECRAWL_API_URL",
   ):
     value = get_str(name)
     if value and not value.lower().startswith("https://"):
@@ -188,6 +200,11 @@ def cpe_guesser_url() -> str:
   """Rust CPE lookup service URL."""
   default = "" if is_production() else "http://localhost:8080/unique"
   return get_str("CPE_GUESSER_URL", default)
+
+
+def firecrawl_api_url() -> str:
+  """Managed or self-hosted Firecrawl API base URL."""
+  return get_str("FIRECRAWL_API_URL", "https://api.firecrawl.dev")
 
 
 def clickhouse_uri() -> str:

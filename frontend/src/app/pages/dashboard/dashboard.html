@@ -192,7 +192,7 @@
               <div class="panel-body">
                 @if (vulnService.isLoading()) {
                 <div class="panel-loading">
-                  <span class="spinner" aria-hidden="true"></span> Scanning...
+                  <viking-spinner [size]="20" label="Scanning threats" /> Scanning...
                 </div>
                 } @else if (recentThreats().length === 0) {
                 <viking-chart-empty-state
@@ -419,7 +419,8 @@
               <div class="panel-body">
                 @if (vulnService.isLoading()) {
                 <div class="panel-loading">
-                  <span class="spinner" aria-hidden="true"></span> Ingesting threat feed...
+                  <viking-spinner [size]="20" label="Ingesting threat feed" /> Ingesting threat
+                  feed...
                 </div>
                 } @else if (recentThreats().length === 0) {
                 <viking-chart-empty-state

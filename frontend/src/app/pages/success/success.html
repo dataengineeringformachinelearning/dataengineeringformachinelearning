@@ -4,7 +4,7 @@
       <viking-card class="success-card" id="success-card">
         @if (isSyncing) {
         <div class="syncing-state">
-          <div class="spinner" role="status" aria-label="Loading"></div>
+          <viking-spinner [size]="48" label="Verifying subscription" />
           <viking-heading [level]="1" size="xl" class="success-title"
             >Verifying Subscription...</viking-heading
           >

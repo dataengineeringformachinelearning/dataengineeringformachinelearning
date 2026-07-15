@@ -70,7 +70,7 @@
         <div class="queue-list">
           @if (vulnService.isLoading()) {
           <div class="loader-state">
-            <span class="spinner" aria-hidden="true"></span>
+            <viking-spinner [size]="32" label="Ingesting vulnerability feed" />
             <p>Ingesting feed...</p>
           </div>
           } @else if (filteredVulnerabilities().length === 0) {
@@ -250,7 +250,7 @@
       <div class="soc-panel-body panel-body">
         @if (vulnService.incidentsLoading()) {
         <div class="soc-empty-state">
-          <span class="spinner" aria-hidden="true"></span>
+          <viking-spinner [size]="32" label="Loading incident cases" />
           <p>Loading incident cases…</p>
         </div>
         } @else if (activeIncidents().length === 0) {
@@ -322,7 +322,7 @@
       <div class="soc-panel-body panel-body">
         @if (vulnService.playbooksLoading()) {
         <div class="soc-empty-state">
-          <span class="spinner" aria-hidden="true"></span>
+          <viking-spinner [size]="32" label="Loading playbooks" />
           <p>Loading playbooks…</p>
         </div>
         } @else if (playbooks().length === 0) {

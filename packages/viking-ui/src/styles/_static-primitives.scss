@@ -892,18 +892,26 @@
 
 .viking-otp-static {
   display: flex;
-  gap: var(--viking-space-1);
+  justify-content: center;
+  width: 100%;
 }
 
-.viking-otp-static input {
-  width: 2.5rem;
-  height: 2.5rem;
+.viking-otp-input-static {
+  width: min(100%, var(--viking-content-readable-max-width));
+  min-width: 0;
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  box-sizing: border-box;
   text-align: center;
-  border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius);
-  background: var(--viking-surface);
+  border: 1px solid var(--viking-border-strong);
+  border-radius: var(--viking-radius-md);
+  background: var(--viking-surface-recipe-muted);
   color: var(--viking-text);
   font-size: var(--viking-font-size-lg);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--viking-shadow-xs);
 }
 
 .viking-file-upload-static {
@@ -1014,6 +1022,9 @@
 
 .viking-menubar-static {
   display: inline-flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
   gap: var(--viking-space-0-5);
   padding: var(--viking-space-0-5);
   border: 1px solid var(--viking-border);

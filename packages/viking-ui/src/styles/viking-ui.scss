@@ -14,6 +14,7 @@
 @use "static-navbar";
 @use "components/footer";
 @use "components/chart";
+@use "components/spinner";
 @use "components/page-mockup";
 
 @include theme.emit-density-contexts;
@@ -105,15 +106,6 @@
     var(--viking-charcoal-900)
   );
   --viking-on-danger: var(--viking-white-pure);
-
-  /* Shape */
-  --viking-radius-xs: 4px;
-  --viking-radius-sm: 6px;
-  --viking-radius: var(--border-radius-md, 8px);
-  --viking-radius-md: 10px;
-  --viking-radius-lg: var(--border-radius-lg, 12px);
-  --viking-radius-xl: 16px;
-  --viking-radius-pill: var(--border-radius-pill, 999px);
 
   /* ── Angular-compat fallbacks ───────────────────────────────────────────
      These provide bridges for legacy Angular component styles that still

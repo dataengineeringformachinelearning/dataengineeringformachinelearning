@@ -25,6 +25,7 @@ import {
   VikingChartEmptyState,
   VikingToggle,
   VikingToggleGroup,
+  VikingSpinner,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type { VikingTone } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
@@ -65,6 +66,7 @@ import {
     VikingChartEmptyState,
     VikingToggle,
     VikingToggleGroup,
+    VikingSpinner,
     FormsModule,
     UnifiedSelect,
   ],
