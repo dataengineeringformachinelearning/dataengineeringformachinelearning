@@ -1,0 +1,178 @@
+@use "../theme" as theme;
+
+// Blue Notes index — editorial release ledger for the public engineering record.
+.blue-notes-wrapper {
+  gap: var(--viking-space-9);
+}
+
+.blog-command-hero {
+  position: relative;
+  display: grid;
+  gap: var(--viking-space-6);
+  overflow: hidden;
+  padding: var(--viking-space-4);
+  border: var(--viking-space-px) solid var(--viking-border-strong);
+  border-radius: var(--viking-radius-2xl);
+  background: var(--viking-surface-recipe);
+  box-shadow: var(--viking-shadow-md);
+}
+
+.blog-command-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--viking-space-0-5);
+  background: var(--viking-accent);
+}
+
+.blog-command-copy {
+  display: grid;
+  align-content: center;
+  gap: var(--viking-space-3);
+  min-width: 0;
+}
+
+.blog-command-copy h1 {
+  display: grid;
+  gap: var(--viking-space-1);
+  max-width: var(--viking-content-readable-max-width);
+  margin: 0;
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-3xl);
+  line-height: var(--viking-line-height-tight);
+  letter-spacing: var(--viking-letter-spacing-tighter);
+}
+
+.blog-command-copy h1 span {
+  color: var(--viking-accent);
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+.blog-command-copy > p {
+  max-width: var(--viking-content-readable-max-width);
+  margin: 0;
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-md);
+  line-height: var(--viking-line-height-relaxed);
+  text-wrap: pretty;
+}
+
+.blog-command-actions,
+.blog-card-footer,
+.blog-note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-2);
+}
+
+.blog-command-ledger {
+  display: grid;
+  align-self: stretch;
+  margin: 0;
+  border: var(--viking-space-px) solid var(--viking-border);
+  border-radius: var(--viking-radius-xl);
+  background: var(--viking-surface-alt);
+}
+
+.blog-command-ledger > div {
+  display: grid;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-3);
+  border-bottom: var(--viking-space-px) solid var(--viking-border);
+}
+
+.blog-command-ledger > div:last-child {
+  border-bottom: 0;
+}
+
+.blog-command-ledger dt,
+.blog-note-meta {
+  color: var(--viking-text-muted);
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-xs);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.blog-command-ledger dd {
+  margin: 0;
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-xl);
+  font-weight: var(--viking-font-weight-bold);
+  line-height: var(--viking-line-height-tight);
+}
+
+.blog-command-ledger time {
+  font-size: var(--viking-font-size);
+}
+
+.blog-lead-section,
+.blog-spotlight-section,
+.blog-archive-section {
+  display: grid;
+  gap: var(--viking-space-4);
+}
+
+.blog-section-heading {
+  display: grid;
+  gap: var(--viking-space-2);
+}
+
+.blog-section-heading > div {
+  display: grid;
+  gap: var(--viking-space-1);
+}
+
+.blog-section-heading h2,
+.blog-section-heading p {
+  margin: 0;
+}
+
+.blog-section-heading h2 {
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-2xl);
+  line-height: var(--viking-line-height-tight);
+  letter-spacing: var(--viking-letter-spacing-tight);
+}
+
+.blog-section-heading p {
+  max-width: var(--viking-content-readable-max-width);
+  color: var(--viking-text-muted);
+}
+
+.blog-section-rule {
+  align-self: center;
+  height: var(--viking-space-px);
+  background: var(--viking-border-strong);
+}
+
+@include theme.respond-up(md) {
+  .blog-command-hero {
+    grid-template-columns: minmax(0, 3fr) minmax(var(--viking-space-20), 2fr);
+    padding: var(--viking-space-7);
+  }
+
+  .blog-command-copy h1 {
+    font-size: var(--viking-font-size-5xl);
+  }
+
+  .blog-section-heading {
+    grid-template-columns: auto minmax(var(--viking-space-8), 1fr);
+    align-items: end;
+  }
+
+  .blog-section-heading:has(> p) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .blog-section-heading > p {
+    justify-self: end;
+    text-align: right;
+  }
+
+}
