@@ -468,12 +468,59 @@ class AggregatedAnalytics(models.Model):
     return f"Analytics {self.bucket_size} @ {self.timestamp} ({scope})"
 
 
+class LighthouseScan(models.Model):
+  """Durable, page-scoped Lighthouse quality projection."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  status_page = models.ForeignKey(
+    StatusPage, on_delete=models.CASCADE, related_name="lighthouse_scans"
+  )
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="lighthouse_scans", null=True, blank=True
+  )
+  account_id = models.UUIDField()
+  is_platform = models.BooleanField(default=False)
+  url = models.URLField(max_length=2048)
+  scanned_at = models.DateTimeField()
+  performance = models.FloatField(default=0.0)
+  accessibility = models.FloatField(default=0.0)
+  best_practices = models.FloatField(default=0.0)
+  seo = models.FloatField(default=0.0)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "lighthouse_scans"
+    ordering = ["-scanned_at"]
+    constraints = [
+      models.UniqueConstraint(
+        fields=["status_page", "url", "scanned_at"], name="unique_lighthouse_site_bucket"
+      ),
+      models.CheckConstraint(
+        condition=(
+          models.Q(is_platform=True, user__isnull=True)
+          | models.Q(is_platform=False, user__isnull=False)
+        ),
+        name="lighthouse_scope_isolation",
+      ),
+    ]
+    indexes = [
+      models.Index(
+        fields=["account_id", "url", "-scanned_at"], name="lh_scan_account_site_time_idx"
+      ),
+      models.Index(fields=["user", "is_platform", "-scanned_at"], name="lh_scan_scope_time_idx"),
+      models.Index(fields=["scanned_at"], name="lh_scan_scanned_at_idx"),
+    ]
+
+  def __str__(self) -> str:
+    return f"Lighthouse {self.url} @ {self.scanned_at}"
+
+
 class ReportArchive(models.Model):
   """Materialized daily rollups for fast report generation (Neon-optimized).
 
   Stores pre-computed daily summaries to accelerate report generation.
-  Uses time-based partitioning for efficient querying in Neon serverless.
-  Retains 90 days of history; older data archived to ClickHouse.
+  Indexed daily rows retain 90 days of queryable report history.
   """
 
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -523,6 +570,49 @@ class ReportArchive(models.Model):
   def __str__(self) -> str:
     scope = "platform" if self.is_platform else (self.user_id or "unknown")
     return f"Report {self.report_date} ({scope})"
+
+
+class StatusPageUptimeDaily(models.Model):
+  """Materialized daily synthetic-probe availability for one status page.
+
+  Account-level analytics rollups intentionally do not carry a status-page or
+  monitored-service dimension. This projection preserves that dimension so the
+  public 30-day uptime path can read at most 30 compact rows without scanning
+  high-frequency probe observations or mixing unrelated account telemetry.
+  """
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  status_page = models.ForeignKey(
+    StatusPage, on_delete=models.CASCADE, related_name="uptime_daily_rollups"
+  )
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="status_page_uptime_daily", null=True, blank=True
+  )
+  is_platform = models.BooleanField(default=False, db_index=True)
+  report_date = models.DateField(db_index=True)
+  total_checks = models.BigIntegerField(default=0)
+  successful_checks = models.BigIntegerField(default=0)
+  uptime_percent = models.FloatField(default=100.0)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "status_page_uptime_daily"
+    ordering = ["report_date"]
+    constraints = [
+      models.UniqueConstraint(
+        fields=["status_page", "report_date"], name="unique_status_page_uptime_day"
+      )
+    ]
+    indexes = [
+      models.Index(fields=["status_page", "report_date"], name="status_uptime_page_date_idx"),
+      models.Index(
+        fields=["user", "is_platform", "report_date"], name="status_uptime_scope_date_idx"
+      ),
+    ]
+
+  def __str__(self) -> str:
+    return f"{self.status_page.slug} uptime @ {self.report_date}"
 
 
 class SearchQuery(models.Model):
@@ -667,6 +757,7 @@ class HealthProbeObservation(models.Model):
   class Meta:
     db_table = "health_probe_observations"
     indexes = [
+      models.Index(fields=["observed_at"], name="health_probe_observed_at_idx"),
       models.Index(
         fields=["monitored_service", "observed_at"], name="health_prob_monitor_538bc5_idx"
       ),
@@ -969,10 +1060,12 @@ class ExportJob(models.Model):
   byte_size = models.BigIntegerField(default=0)
   checksum_sha256 = models.CharField(max_length=64, blank=True, default="")
   error = models.TextField(blank=True, default="")
+  attempts = models.PositiveSmallIntegerField(default=0)
   created_at = models.DateTimeField(auto_now_add=True)
   started_at = models.DateTimeField(null=True, blank=True)
   completed_at = models.DateTimeField(null=True, blank=True)
   expires_at = models.DateTimeField(null=True, blank=True)
+  next_attempt_at = models.DateTimeField(null=True, blank=True)
 
   class Meta:
     db_table = "export_jobs"
@@ -981,6 +1074,7 @@ class ExportJob(models.Model):
       models.Index(fields=["user", "status", "-created_at"], name="export_jobs_user_status_idx"),
       models.Index(fields=["account_id", "-created_at"], name="export_jobs_account_idx"),
       models.Index(fields=["status", "expires_at"], name="export_jobs_expiry_idx"),
+      models.Index(fields=["status", "next_attempt_at"], name="export_jobs_retry_idx"),
     ]
 
   def __str__(self) -> str:

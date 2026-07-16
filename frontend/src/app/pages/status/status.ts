@@ -112,9 +112,11 @@ export class Status implements OnInit {
   }
 
   statusVariant(status?: string | null): 'operational' | 'degraded' | 'outage' | 'maintenance' {
-    const value = (status || 'Operational').toLowerCase();
-    if (value === 'outage' || value === 'major outage' || value === 'down') return 'outage';
-    if (value === 'degraded' || value === 'partial outage') return 'degraded';
+    const value = (status || 'Operational').toLowerCase().replace(/[\s-]+/g, '_');
+    if (value === 'outage' || value === 'major_outage' || value === 'down') return 'outage';
+    if (value === 'degraded' || value === 'partial_outage' || value === 'partial') {
+      return 'degraded';
+    }
     if (value === 'maintenance') return 'maintenance';
     return 'operational';
   }
@@ -168,29 +170,33 @@ export class Status implements OnInit {
 
   dashboardHistory = (
     page: StatusPageData,
-    service?: Pick<MonitoredServiceData, 'name'>,
+    _service?: Pick<MonitoredServiceData, 'name'>,
   ): UptimeHistoryDataPoint[] => {
     const source = page.uptime_history ?? [];
     if (source.length > 0) {
-      return source.map((day, index) => {
-        const date = new Date('2026-06-08T00:00:00Z');
-        date.setUTCDate(date.getUTCDate() + index);
-        const status = this.statusVariant(day.status);
+      return source.map(day => {
+        const status = `${day.status}`.toLowerCase().replace(/[\s-]+/g, '_');
         return {
-          date: date.toISOString().slice(0, 10),
-          status: status === 'outage' ? 'down' : status === 'degraded' ? 'partial' : 'up',
+          date: day.date,
+          status:
+            status === 'no_data'
+              ? 'no_data'
+              : status === 'outage' || status === 'major_outage' || status === 'down'
+                ? 'down'
+                : status === 'degraded' || status === 'partial_outage' || status === 'partial'
+                  ? 'partial'
+                  : 'up',
         };
       });
     }
 
     return Array.from({ length: 30 }, (_, index) => {
-      const date = new Date('2026-06-08T00:00:00Z');
-      date.setUTCDate(date.getUTCDate() + index);
-      const serviceKey = service?.name ?? page.title;
-      const degradedIndex = serviceKey.length % 19;
+      const date = new Date();
+      date.setUTCHours(0, 0, 0, 0);
+      date.setUTCDate(date.getUTCDate() - 29 + index);
       return {
         date: date.toISOString().slice(0, 10),
-        status: index === degradedIndex ? 'partial' : 'up',
+        status: 'no_data',
       };
     });
   };

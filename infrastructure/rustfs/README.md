@@ -61,7 +61,8 @@ Python clients use `backend/utils/object_storage.py` (boto3).
 ## Security
 
 - Never put root keys in the frontend.
-- Presigned URLs for downloads (short TTL); owner checks live in Django `ExportJob` rows.
+- Browser downloads use short-lived Django-signed proxy URLs; owner checks live in Django
+  `ExportJob` rows and RustFS remains on private service DNS.
 - Object keys: `accounts/{account_id}/exports/{job_id}/{filename}` — UUID isolation.
 - Change all default credentials before any non-local use.
 - Project is young relative to MinIO; pin image tags and re-test S3 features after upgrades.

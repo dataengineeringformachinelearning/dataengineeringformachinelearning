@@ -253,6 +253,76 @@
         "title": "EndpointOut",
         "type": "object"
       },
+      "WebTechnologyOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "technology_name": {
+            "title": "Technology Name",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "cpe_2_3": {
+            "title": "Cpe 2 3",
+            "type": "string"
+          },
+          "cve_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cve Ids",
+            "type": "array"
+          },
+          "last_seen_at": {
+            "format": "date-time",
+            "title": "Last Seen At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "domain",
+          "source",
+          "source_url",
+          "technology_name",
+          "version",
+          "confidence",
+          "evidence",
+          "cpe_2_3",
+          "cve_ids",
+          "last_seen_at"
+        ],
+        "title": "WebTechnologyOut",
+        "type": "object"
+      },
       "StatusPageOut": {
         "properties": {
           "id": {
@@ -386,6 +456,17 @@
               }
             ],
             "title": "Total Requests"
+          },
+          "threats_detected_24h": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threats Detected 24H"
           }
         },
         "required": ["id", "title", "slug", "description", "is_published", "created_at"],
@@ -394,16 +475,28 @@
       },
       "UptimeDaySchema": {
         "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
           "status": {
             "title": "Status",
             "type": "string"
           },
           "uptime": {
-            "title": "Uptime",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uptime"
           }
         },
-        "required": ["status", "uptime"],
+        "required": ["date", "status", "uptime"],
         "title": "UptimeDaySchema",
         "type": "object"
       },
@@ -610,6 +703,49 @@
         "title": "IncidentIn",
         "type": "object"
       },
+      "BenchmarkOut": {
+        "properties": {
+          "model_type": {
+            "title": "Model Type",
+            "type": "string"
+          },
+          "mae": {
+            "title": "Mae",
+            "type": "number"
+          },
+          "rmse": {
+            "title": "Rmse",
+            "type": "number"
+          },
+          "accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accuracy"
+          },
+          "benchmark_score": {
+            "title": "Benchmark Score",
+            "type": "number"
+          },
+          "dataset_size": {
+            "title": "Dataset Size",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": ["model_type", "mae", "rmse", "benchmark_score", "dataset_size", "created_at"],
+        "title": "BenchmarkOut",
+        "type": "object"
+      },
       "IntegrationOut": {
         "properties": {
           "id": {
@@ -729,6 +865,56 @@
         },
         "required": ["status"],
         "title": "TrainOut",
+        "type": "object"
+      },
+      "TemporalForecastOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "spiking_temporal_forecast": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spiking Temporal Forecast"
+          },
+          "uses_norse": {
+            "default": false,
+            "title": "Uses Norse",
+            "type": "boolean"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "required": ["status"],
+        "title": "TemporalForecastOut",
         "type": "object"
       },
       "ThreatReportOut": {
@@ -969,6 +1155,41 @@
         },
         "required": ["status", "overall_score", "criteria"],
         "title": "SOCStatusOut",
+        "type": "object"
+      },
+      "SearchQueryOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "threat_score": {
+            "title": "Threat Score",
+            "type": "number"
+          },
+          "evaluated_at": {
+            "format": "date-time",
+            "title": "Evaluated At",
+            "type": "string"
+          }
+        },
+        "required": ["status", "query", "threat_score", "evaluated_at"],
+        "title": "SearchQueryOut",
+        "type": "object"
+      },
+      "SearchQueryIn": {
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": ["query"],
+        "title": "SearchQueryIn",
         "type": "object"
       },
       "TelemetryPayload": {
@@ -1294,6 +1515,157 @@
         "title": "PlaybookExecuteOut",
         "type": "object"
       },
+      "ExportJobOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "format": {
+            "title": "Format",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "byte_size": {
+            "title": "Byte Size",
+            "type": "integer"
+          },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "next_attempt_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Attempt At"
+          },
+          "retrying": {
+            "title": "Retrying",
+            "type": "boolean"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "download_ready": {
+            "title": "Download Ready",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "format",
+          "status",
+          "byte_size",
+          "content_type",
+          "error",
+          "attempts",
+          "retrying",
+          "created_at",
+          "download_ready"
+        ],
+        "title": "ExportJobOut",
+        "type": "object"
+      },
+      "ExportCreateIn": {
+        "properties": {
+          "kind": {
+            "default": "analytics",
+            "title": "Kind",
+            "type": "string"
+          },
+          "format": {
+            "default": "csv",
+            "title": "Format",
+            "type": "string"
+          },
+          "days": {
+            "default": 7,
+            "title": "Days",
+            "type": "integer"
+          },
+          "site_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Site Url"
+          }
+        },
+        "title": "ExportCreateIn",
+        "type": "object"
+      },
+      "ExportDownloadOut": {
+        "properties": {
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "filename_hint": {
+            "title": "Filename Hint",
+            "type": "string"
+          }
+        },
+        "required": ["url", "expires_in", "content_type", "filename_hint"],
+        "title": "ExportDownloadOut",
+        "type": "object"
+      },
       "SuccessSchema": {
         "properties": {
           "status": {
@@ -1336,6 +1708,33 @@
         },
         "required": ["status"],
         "title": "SuccessSchema",
+        "type": "object"
+      },
+      "DeleteAccountOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "completed": {
+            "default": false,
+            "title": "Completed",
+            "type": "boolean"
+          }
+        },
+        "required": ["status"],
+        "title": "DeleteAccountOut",
         "type": "object"
       },
       "APIKeyGenerateOut": {
@@ -1410,15 +1809,181 @@
         "title": "HandoffGenerateOut",
         "type": "object"
       },
+      "HandoffGenerateIn": {
+        "properties": {
+          "code_challenge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code Challenge"
+          },
+          "client_name": {
+            "default": "web",
+            "title": "Client Name",
+            "type": "string"
+          }
+        },
+        "title": "HandoffGenerateIn",
+        "type": "object"
+      },
+      "DesktopAuthOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "user": {
+            "title": "User",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "desktop_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Desktop Token"
+          }
+        },
+        "required": ["status", "user", "email", "user_id", "role"],
+        "title": "DesktopAuthOut",
+        "type": "object"
+      },
       "HandoffVerifyIn": {
         "properties": {
           "token": {
             "title": "Token",
             "type": "string"
+          },
+          "code_verifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code Verifier"
           }
         },
         "required": ["token"],
         "title": "HandoffVerifyIn",
+        "type": "object"
+      },
+      "DesktopSessionIn": {
+        "properties": {
+          "desktop_token": {
+            "title": "Desktop Token",
+            "type": "string"
+          }
+        },
+        "required": ["desktop_token"],
+        "title": "DesktopSessionIn",
+        "type": "object"
+      },
+      "SessionRegisterOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          }
+        },
+        "required": ["status", "session_id"],
+        "title": "SessionRegisterOut",
+        "type": "object"
+      },
+      "SessionRegisterIn": {
+        "properties": {
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "user_agent": {
+            "default": "",
+            "title": "User Agent",
+            "type": "string"
+          }
+        },
+        "required": ["session_id"],
+        "title": "SessionRegisterIn",
+        "type": "object"
+      },
+      "SessionOut": {
+        "properties": {
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "user_agent": {
+            "default": "",
+            "title": "User Agent",
+            "type": "string"
+          },
+          "ip": {
+            "default": "",
+            "title": "Ip",
+            "type": "string"
+          },
+          "created_at": {
+            "default": 0,
+            "title": "Created At",
+            "type": "integer"
+          },
+          "last_seen": {
+            "default": 0,
+            "title": "Last Seen",
+            "type": "integer"
+          }
+        },
+        "required": ["session_id"],
+        "title": "SessionOut",
+        "type": "object"
+      },
+      "LogoutIn": {
+        "properties": {
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          },
+          "revoke_all": {
+            "default": false,
+            "title": "Revoke All",
+            "type": "boolean"
+          }
+        },
+        "title": "LogoutIn",
         "type": "object"
       },
       "IssueReportPayload": {

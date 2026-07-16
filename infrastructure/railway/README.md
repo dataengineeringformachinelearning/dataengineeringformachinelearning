@@ -119,6 +119,8 @@ Role-specific:
 | `CPE_GUESSER_URL`                      | backend, workers, scanner → deml-cpe                   |
 | `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` | deml-workers, deml-telemetry-worker                    |
 | `NORMALIZER_GROUP_ID`                  | deml-normalizer (default in catalog)                   |
+| `CLICKHOUSE_HOST/PORT/USER/PASSWORD`   | backend and Django workers (HTTP archival writers)     |
+| `CLICKHOUSE_URI`                       | optional single-URI override for Django writers        |
 | `CLICKHOUSE_URL`                       | **deml-scheduler** (weekly native retention; required) |
 
 `DEML_ROLE` is set by each Rust service’s `startCommand` in `railway.json` — do not run a bare `deml-daemon` image without a role.

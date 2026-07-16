@@ -51,4 +51,23 @@ describe("Viking uptime history accessibility", () => {
     expect(bar.getAttribute("aria-label")).toBe("July 13 — 100% uptime");
     expect(bar.hasAttribute("aria-hidden")).toBe(false);
   });
+
+  it("announces an explicit no-data segment without claiming 100% uptime", async (): Promise<void> => {
+    const fixture = TestBed.createComponent(UptimeHistoryComponent);
+    fixture.componentRef.setInput("segments", [
+      {
+        date: "2026-07-14",
+        status: "no_data",
+        uptime: null,
+      },
+    ]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const item = fixture.nativeElement.querySelector(
+      ".uptime-history-segment",
+    ) as HTMLElement;
+    expect(item.textContent?.trim()).toBe("2026-07-14: No data");
+    expect(item.getAttribute("data-tooltip")).toBe("2026-07-14: No data");
+  });
 });

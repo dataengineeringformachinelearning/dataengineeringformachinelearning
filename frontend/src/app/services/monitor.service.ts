@@ -26,7 +26,7 @@ export interface StatusPageData {
   is_pro_verified?: boolean;
   cumulative_sla?: number;
   overall_uptime?: number;
-  uptime_history?: { status: string; uptime: number }[];
+  uptime_history?: { date: string; status: string; uptime: number | null }[];
   p99_latency?: number;
   total_requests?: number;
   threats_detected_24h?: number;

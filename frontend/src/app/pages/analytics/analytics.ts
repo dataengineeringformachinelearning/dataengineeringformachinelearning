@@ -65,10 +65,37 @@ export type ExportJobRow = {
   byte_size: number;
   content_type: string;
   error: string;
+  attempts: number;
+  next_attempt_at?: string | null;
+  retrying: boolean;
   created_at: string;
   completed_at?: string | null;
   expires_at?: string | null;
   download_ready: boolean;
+};
+
+export type ExportRequestPayload = {
+  kind: string;
+  format: string;
+  days: number;
+  site_url?: string;
+};
+
+export const isExportPending = (job: ExportJobRow): boolean =>
+  job.status === 'queued' || job.status === 'running' || job.retrying === true;
+
+export const buildExportRequestPayload = (
+  kind: string,
+  format: string,
+  days: number,
+  selectedSite: string | null,
+): ExportRequestPayload => {
+  const payload: ExportRequestPayload = { kind, format, days };
+  const supportsSite = kind === 'analytics' || kind === 'lighthouse';
+  if (supportsSite && selectedSite && selectedSite !== 'All') {
+    payload.site_url = selectedSite;
+  }
+  return payload;
 };
 
 type BenchmarkSummary = {
@@ -510,9 +537,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       next: rows => {
         this.exportsList = Array.isArray(rows) ? rows : [];
         this.cdr.markForCheck();
-        const pending = this.exportsList.some(
-          j => (j?.status ?? '') === 'queued' || (j?.status ?? '') === 'running',
-        );
+        const pending = this.exportsList.some(isExportPending);
         if (pending && !this.exportPollId) {
           this.exportPollId = setInterval(() => this.loadExports(), 4000);
         }
@@ -532,29 +557,27 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public requestExport(): void {
     this.exportBusy = true;
     this.exportMessage = '';
-    this.http
-      .post<ExportJobRow>(API_ENDPOINTS.EXPORTS.CREATE, {
-        kind: this.exportKind,
-        format: this.exportFormat,
-        days: this.exportDays,
-        site_url: this.selectedSite && this.selectedSite !== 'All' ? this.selectedSite : null,
-      })
-      .subscribe({
-        next: job => {
-          this.exportBusy = false;
-          const jobId = job?.id ?? 'unknown';
-          this.exportMessage = `Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`;
-          this.loadExports();
-          this.cdr.markForCheck();
-        },
-        error: err => {
-          this.exportBusy = false;
-          const detail =
-            err?.error?.detail || err?.error?.message || err?.message || 'Export failed';
-          this.exportMessage = String(detail);
-          this.cdr.markForCheck();
-        },
-      });
+    const payload = buildExportRequestPayload(
+      this.exportKind,
+      this.exportFormat,
+      this.exportDays,
+      this.selectedSite,
+    );
+    this.http.post<ExportJobRow>(API_ENDPOINTS.EXPORTS.CREATE, payload).subscribe({
+      next: job => {
+        this.exportBusy = false;
+        const jobId = job?.id ?? 'unknown';
+        this.exportMessage = `Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`;
+        this.loadExports();
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.exportBusy = false;
+        const detail = err?.error?.detail || err?.error?.message || err?.message || 'Export failed';
+        this.exportMessage = String(detail);
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   public downloadExport(jobId: string): void {
@@ -568,7 +591,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         next: body => {
           const downloadUrl = body?.url;
           if (downloadUrl && this.isBrowser) {
-            window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+            window.location.assign(downloadUrl);
           } else {
             this.exportMessage = 'Download URL not available';
             this.cdr.markForCheck();

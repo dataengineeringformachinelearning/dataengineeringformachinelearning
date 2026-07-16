@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -11,6 +12,7 @@ from utils.object_storage import (
   ObjectStorageNotConfiguredError,
   export_object_key,
   generate_presigned_get,
+  get_object_stream,
   is_configured,
   put_bytes,
 )
@@ -100,9 +102,50 @@ def test_generate_presigned_get(settings: Any) -> None:
 
 
 @pytest.mark.django_db
+def test_get_object_stream_uses_private_storage_client(settings: Any) -> None:
+  settings.RUSTFS_ENDPOINT = "http://rustfs:9000"
+  settings.RUSTFS_ACCESS_KEY = "key"
+  settings.RUSTFS_SECRET_KEY = "secret"  # pragma: allowlist secret
+  settings.RUSTFS_BUCKET = "deml-exports"
+  settings.RUSTFS_REGION = "us-east-1"
+  settings.RUSTFS_ADDRESSING_STYLE = "path"
+
+  body = io.BytesIO(b"report")
+  mock_client = MagicMock()
+  mock_client.get_object.return_value = {
+    "Body": body,
+    "ContentType": "application/pdf",
+    "ContentLength": 6,
+  }
+  with patch("utils.object_storage.boto3.client", return_value=mock_client):
+    stored = get_object_stream(key="accounts/a/exports/j/r.pdf")
+
+  assert stored.body is body
+  assert stored.content_type == "application/pdf"
+  assert stored.content_length == 6
+  mock_client.get_object.assert_called_once_with(
+    Bucket="deml-exports",
+    Key="accounts/a/exports/j/r.pdf",
+  )
+
+
+@pytest.mark.django_db
 def test_client_requires_config(settings: Any) -> None:
   settings.RUSTFS_ENDPOINT = ""
   settings.RUSTFS_ACCESS_KEY = ""
   settings.RUSTFS_SECRET_KEY = ""
   with pytest.raises(ObjectStorageNotConfiguredError):
     put_bytes(key="k", body=b"x", content_type="text/plain")
+
+
+@pytest.mark.django_db
+def test_client_requires_ssl_flag_to_match_endpoint(settings: Any) -> None:
+  from utils import object_storage
+
+  settings.RUSTFS_ENDPOINT = "http://rustfs.internal:9000"
+  settings.RUSTFS_ACCESS_KEY = "key"
+  settings.RUSTFS_SECRET_KEY = "secret"  # pragma: allowlist secret
+  settings.RUSTFS_USE_SSL = True
+
+  with pytest.raises(ObjectStorageNotConfiguredError, match="must match"):
+    object_storage._client()

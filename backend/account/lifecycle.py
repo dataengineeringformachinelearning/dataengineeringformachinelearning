@@ -18,6 +18,7 @@ DELETION_STEPS = (
   "stripe_cancel",
   "revoke_api_keys",
   "firebase_delete",
+  "export_artifacts_delete",
   "postgres_delete",
   "audit",
 )
@@ -268,6 +269,89 @@ def delete_firebase_user(firebase_uid: str) -> None:
     raise
 
 
+@transaction.atomic
+def delete_export_artifacts_for_user(user: User) -> int:
+  """Delete every private export object before its metadata can cascade.
+
+  RustFS ``DeleteObject`` is idempotent, so a process crash or transaction
+  rollback after remote acknowledgement is safe to retry. Metadata changes and
+  the final user cascade commit together; a retry may repeat an acknowledged
+  delete, but it cannot lose the durable reference before the account is gone.
+  """
+  from monitor.models import ExportJob
+  from utils.object_storage import delete_object
+
+  deleted = 0
+  # Lock every job in one statement. A generator could leave later rows
+  # claimable while earlier objects are being removed.
+  exports = list(
+    ExportJob.objects.select_for_update()
+    .filter(user=user)
+    .only("id", "account_id", "object_key", "storage_uri", "status")
+    .order_by("created_at", "id")
+  )
+  if any(export.status == ExportJob.Status.RUNNING for export in exports):
+    raise RuntimeError("An export is still running; account deletion will retry after it finishes")
+
+  cancelable_ids = [
+    export.id
+    for export in exports
+    if export.status
+    in {
+      ExportJob.Status.QUEUED,
+      ExportJob.Status.FAILED,
+    }
+  ]
+  if cancelable_ids:
+    ExportJob.objects.filter(id__in=cancelable_ids).update(
+      status=ExportJob.Status.EXPIRED,
+      next_attempt_at=None,
+    )
+
+  for export in exports:
+    key = export.object_key.strip()
+    storage_uri = export.storage_uri.strip()
+    if not key:
+      if storage_uri:
+        raise RuntimeError(f"Export {export.id} has a storage URI but no durable object key")
+      continue
+
+    expected_prefix = f"accounts/{export.account_id}/exports/{export.id}/"
+    if not key.startswith(expected_prefix):
+      raise RuntimeError(f"Export {export.id} has an invalid account-scoped object key")
+
+    bucket: str | None = None
+    if storage_uri:
+      parsed = urlparse(storage_uri)
+      uri_key = parsed.path.lstrip("/")
+      if parsed.scheme != "s3" or not parsed.netloc or uri_key != key:
+        raise RuntimeError(f"Export {export.id} has inconsistent object storage metadata")
+      bucket = parsed.netloc
+
+    delete_object(key=key, bucket=bucket)
+    cleared = ExportJob.objects.filter(
+      id=export.id,
+      user=user,
+      object_key=key,
+      storage_uri=storage_uri,
+    ).update(object_key="", storage_uri="")
+    if cleared == 0:
+      remaining = (
+        ExportJob.objects.filter(id=export.id, user=user)
+        .values_list("object_key", "storage_uri")
+        .first()
+      )
+      if remaining and any(remaining):
+        raise RuntimeError(f"Export {export.id} changed during artifact deletion")
+    else:
+      deleted += 1
+
+  if ExportJob.objects.filter(user=user).exclude(object_key="", storage_uri="").exists():
+    raise RuntimeError("Export artifacts were created or changed during account deletion")
+
+  return deleted
+
+
 def execute_deletion_job(job: Any) -> bool:
   """Run the deletion saga for a queued job. Returns True when Postgres user is gone."""
   from monitor.models import APIKey, AuditLog, UserLifecycleJob
@@ -309,12 +393,26 @@ def execute_deletion_job(job: Any) -> bool:
       _mark_step(job, "firebase_delete")
 
     if "postgres_delete" not in (job.steps_completed or []):
-      user.delete()
-      job.user_id = None
-      steps = list(job.steps_completed or [])
-      steps.append("postgres_delete")
-      job.steps_completed = steps
-      job.save(update_fields=["user", "steps_completed", "updated_at"])
+      # Export creation takes this same user-row lock. Holding it through the
+      # final object sweep and user cascade closes the only race that could
+      # otherwise create an object after cleanup and orphan it in RustFS.
+      with transaction.atomic():
+        locked_user = User.objects.select_for_update().get(pk=user.pk)
+        deleted_exports = delete_export_artifacts_for_user(locked_user)
+        logger.info(
+          "lifecycle: deleted %s export artifact(s) for account %s",
+          deleted_exports,
+          job.account_id,
+        )
+        _mark_step(job, "export_artifacts_delete")
+
+        locked_user.delete()
+        job.user_id = None
+        steps = list(job.steps_completed or [])
+        if "postgres_delete" not in steps:
+          steps.append("postgres_delete")
+        job.steps_completed = steps
+        job.save(update_fields=["user", "steps_completed", "updated_at"])
 
     if "audit" not in (job.steps_completed or []):
       AuditLog.objects.create(

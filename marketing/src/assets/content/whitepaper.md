@@ -243,18 +243,25 @@ Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cl
 
 **Neon (PostgreSQL) - Hot data:**
 
-- Raw endpoint telemetry, audit logs, cookie consent: **30 days** (auto-purged)
+- Raw endpoint telemetry, health-probe observations, ingest receipts, audit logs, cookie consent, and PII-bearing search queries: **30 days** (repair-first, fail-closed pruning)
+- Page/URL/hour `LighthouseScan` quality projections: **30 days**
 - Hourly `AggregatedAnalytics`: **30 days** (after daily rollups)
-- `ThreatIntelligence`, `ReportArchive`: **90 days** (security + reports)
+- `ThreatIntelligence`, `ReportArchive`, and `StatusPageUptimeDaily`: **90 days** (security, reports, and fast uptime history)
+- `HoneypotInteraction`: **90 days**; `BenchmarkRun`: **365 days**
+- RustFS export artifacts: **14 days**; expired export metadata: **90 days**
 - Business objects (`BugReport`, `ThreatReport`, API keys): **Indefinite** (system of record)
 
 **ClickHouse - Cold storage:**
 
-- `audit_archive`, `security_events`, telemetry: **180-730 days** (archival)
+- `audit_archive`, `security_events`, and vulnerability evidence: **180/365/730 days** (MergeTree TTLs plus visible scheduled cleanup)
 - OTEL traces/metrics: **TTL via MergeTree** (365+ days)
 
 - `ReportArchive` materialized daily for fast 90-day report queries
-- Older analytics available via ClickHouse long-term storage
+- Report exports are generated from the 90-day Postgres rollup window; ClickHouse retention applies only to explicitly archived security and OTEL datasets
+
+Retention never races materialization: the scheduler reconciles 31 days of hourly work to protect the rolling 30-day cutoff, repairs the 29 completed report/uptime days displayed beside today, requires current-version hourly coverage for endpoint and consent scopes at the deletion boundary, and archives audit batches to ClickHouse before deleting the acknowledged Postgres IDs. Any missing coverage, ClickHouse schema problem, or upload failure aborts the destructive phase. Existing ClickHouse volumes receive explicit TTL upgrades, not just fresh-table declarations. The public status query always returns 30 dated slots from `StatusPageUptimeDaily`, using isolated raw probes for today/repair gaps and legacy endpoint evidence for pre-probe history; pre-creation and truly unobserved days carry nullable uptime and remain neutral rather than being counted as successful uptime.
+
+The read architecture deliberately separates dimensions. Dashboard KPIs use hourly `AggregatedAnalytics`; downloadable analytics reports use daily `ReportArchive` with freshness-aware hourly fallback; Lighthouse reports use page/URL/hour `LighthouseScan`; public uptime uses `StatusPageUptimeDaily` keyed by page and date. Component status/SLA reads are batched for the whole page. Exports are durable queued jobs, drained every minute with bounded exponential retry, retry-visible clients, private signed proxy downloads, and full retained-range threat/vulnerability iteration. Account deletion locks report work and removes RustFS artifacts before metadata cascades. This keeps dashboard reads off transactional joins while preserving accurate site-specific reports through a tenant-scoped 30-day raw fallback.
 
 **Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([BOOK.md § Appendix M](BOOK.md#appendix-m-billing--subscriptions-operator-reference)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 

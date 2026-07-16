@@ -126,13 +126,15 @@ export class StatusCard implements OnInit, OnChanges {
 
   get latencyChartSeries(): VikingChartSeries[] {
     const history = this.page?.uptime_history ?? [];
-    const values = history.map(day => day.uptime ?? 100);
+    const values = history
+      .filter(day => day.status !== 'no_data' && day.uptime !== null)
+      .map(day => day.uptime as number);
     if (values.length === 0) {
       return [
         {
           name: 'Availability',
           tone: 'accent',
-          data: [100, 100, 100, 100, 100, 100, 100],
+          data: [],
         },
       ];
     }

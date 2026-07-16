@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-import polars as pl
+from utils.clickhouse import insert_json_each_row
 from utils.env import clickhouse_uri
 
 logger = logging.getLogger(__name__)
@@ -36,23 +37,21 @@ def write_security_event(
       "account_id": account_id or "",
       "user_id": user_id or 0,
       "correlation_id": correlation_id or "",
-      "raw_json": raw or {},
+      "raw_json_text": json.dumps(raw or {}, sort_keys=True, default=str, separators=(",", ":")),
     }
-    df = pl.DataFrame([row])
-    df.write_database(
-      table_name="security_events",
-      connection=CLICKHOUSE_URI,
-      if_table_exists="append",
-      engine="adbc",
-    )
+    insert_json_each_row("security_events", [row], uri=CLICKHOUSE_URI)
   except Exception as exc:
     logger.debug("security_events write skipped: %s", exc)
 
 
-def archive_audit_logs(logs: list[Any]) -> None:
-  """Archive audit logs to ClickHouse before Postgres purge."""
+def archive_audit_logs(logs: list[Any]) -> bool:
+  """Archive audit logs to ClickHouse before Postgres purge.
+
+  The caller must only delete the corresponding PostgreSQL IDs when this
+  function returns ``True``.
+  """
   if not logs:
-    return
+    return True
   try:
     rows = [
       {
@@ -62,16 +61,15 @@ def archive_audit_logs(logs: list[Any]) -> None:
         "resource_id": log.resource_id or "",
         "user_id": log.user_id or 0,
         "ip_address": str(log.ip_address or ""),
-        "details": log.details or {},
+        "user_agent": log.user_agent or "",
+        "details_json": json.dumps(
+          log.details or {}, sort_keys=True, default=str, separators=(",", ":")
+        ),
       }
       for log in logs
     ]
-    df = pl.DataFrame(rows)
-    df.write_database(
-      table_name="audit_archive",
-      connection=CLICKHOUSE_URI,
-      if_table_exists="append",
-      engine="adbc",
-    )
+    insert_json_each_row("audit_archive", rows, uri=CLICKHOUSE_URI)
+    return True
   except Exception as exc:
     logger.warning("Audit archive to ClickHouse failed: %s", exc)
+    return False
