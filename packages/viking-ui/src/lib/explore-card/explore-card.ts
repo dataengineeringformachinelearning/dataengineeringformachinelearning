@@ -67,13 +67,15 @@ const segmentToDataPoint = (
   return {
     date: segment.date ?? date.toISOString().slice(0, 10),
     status:
-      status === "outage" || status === "major_outage" || status === "down"
-        ? "down"
-        : status === "degraded" ||
-            status === "partial" ||
-            status === "partial_outage"
-          ? "partial"
-          : "up",
+      status === "no_data"
+        ? "no_data"
+        : status === "outage" || status === "major_outage" || status === "down"
+          ? "down"
+          : status === "degraded" ||
+              status === "partial" ||
+              status === "partial_outage"
+            ? "partial"
+            : "up",
   };
 };
 

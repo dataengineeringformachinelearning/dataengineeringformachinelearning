@@ -197,7 +197,12 @@ async def run_task_consumer() -> None:
     )
 
   @sync_to_async
-  def dispatch(run_id: str, task_name: str, triggered_at: str) -> None:
+  def dispatch(
+    run_id: str,
+    task_name: str,
+    triggered_at: str,
+    scheduled_for: str,
+  ) -> None:
     from django.db import close_old_connections
     from django.utils import timezone
     from monitor.models import ScheduledTaskRun
@@ -205,10 +210,14 @@ async def run_task_consumer() -> None:
     close_old_connections()
     try:
       logger.info("task_consumer: executing %s (triggered_at=%s)", task_name, triggered_at)
-      call_command(task_name)
+      if task_name == "aggregate_analytics":
+        call_command(task_name, scheduled_for=scheduled_for)
+      else:
+        call_command(task_name)
       ScheduledTaskRun.objects.filter(id=run_id).update(
         state=ScheduledTaskRun.State.COMPLETED,
         completed_at=timezone.now(),
+        claimed_by=None,
         lease_expires_at=None,
         last_error="",
       )
@@ -216,6 +225,7 @@ async def run_task_consumer() -> None:
     except Exception as exc:
       ScheduledTaskRun.objects.filter(id=run_id).update(
         state=ScheduledTaskRun.State.FAILED,
+        claimed_by=None,
         lease_expires_at=timezone.now() + datetime.timedelta(seconds=30),
         last_error=str(exc)[:1000],
       )
@@ -243,6 +253,7 @@ async def run_task_consumer() -> None:
             task_name: str | None = payload.get("task")
             run_id: str | None = payload.get("run_id")
             triggered_at: str = payload.get("triggered_at", "unknown")
+            scheduled_for: str = payload.get("scheduled_for", triggered_at)
 
             if not task_name or not run_id:
               logger.warning("task_consumer: message missing task or run_id — dead-lettering")
@@ -280,7 +291,7 @@ async def run_task_consumer() -> None:
               continue
 
             try:
-              await dispatch(run_id, task_name, triggered_at)
+              await dispatch(run_id, task_name, triggered_at, scheduled_for)
             finally:
               # Success is durable before acknowledgement. Failure is also durable;
               # the Rust scheduler will republish the same run after its retry lease.

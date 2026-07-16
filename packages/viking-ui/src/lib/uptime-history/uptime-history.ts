@@ -11,13 +11,13 @@ import {
 
 export type VikingUptimeSegment = {
   status: string | VikingUptimeStatus;
-  uptime?: number;
+  uptime?: number | null;
   date?: string;
 };
 
 export type UptimeHistoryDataPoint = {
   date: string;
-  status: "up" | "down" | "partial";
+  status: "up" | "down" | "partial" | "no_data";
 };
 
 const normalizeUptimeStatus = (raw: string): VikingUptimeStatus => {
@@ -39,16 +39,20 @@ const formatStatus = (raw: string): string => {
 };
 
 const segmentTitle = (segment: VikingUptimeSegment): string => {
-  if (segment.date) {
-    if (segment.uptime !== undefined) {
-      return `${segment.date}: ${formatStatus(segment.status)} (${segment.uptime}%)`;
-    }
-    return `${segment.date}: ${formatStatus(segment.status)}`;
+  const status = formatStatus(segment.status);
+  if (normalizeUptimeStatus(segment.status) === "no_data") {
+    return segment.date ? `${segment.date}: ${status}` : status;
   }
-  if (segment.uptime !== undefined) {
+  if (segment.date) {
+    if (segment.uptime !== undefined && segment.uptime !== null) {
+      return `${segment.date}: ${status} (${segment.uptime}%)`;
+    }
+    return `${segment.date}: ${status}`;
+  }
+  if (segment.uptime !== undefined && segment.uptime !== null) {
     return `${segment.uptime}% uptime`;
   }
-  return segment.status;
+  return status;
 };
 
 /**

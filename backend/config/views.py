@@ -20,11 +20,7 @@ def home(request: HttpRequest) -> HttpResponse:
       StatusPage.objects.filter(slug="platform-status").prefetch_related("services").first()
     )
     if platform_page is not None:
-      platform_metrics = MetricsService.for_urls(
-        list(platform_page.services.values_list("url", flat=True)),
-        user=None,
-        is_platform=True,
-      )
+      platform_metrics = MetricsService.for_status_page(platform_page)
   except DatabaseError:
     logger.warning("Platform metrics unavailable while rendering the backend landing page")
 

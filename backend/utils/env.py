@@ -9,7 +9,7 @@ production URLs, broker hosts, or secrets in application code.
 from __future__ import annotations
 
 import os
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 # Insecure Django default — must never ship to production unchanged.
 _INSECURE_SECRET_KEY = (
@@ -208,11 +208,20 @@ def firecrawl_api_url() -> str:
 
 
 def clickhouse_uri() -> str:
-  """ClickHouse connection URI for OLAP tooling."""
-  return get_str(
-    "CLICKHOUSE_URI",
-    "clickhouse://default:@clickhouse:8123/default",
-  )
+  """ClickHouse URI from an explicit URI or the canonical split env contract."""
+  explicit_uri = get_str("CLICKHOUSE_URI")
+  if explicit_uri:
+    return explicit_uri
+
+  host = get_str("CLICKHOUSE_HOST")
+  if host:
+    port = get_int("CLICKHOUSE_PORT", 8123)
+    username = quote(get_str("CLICKHOUSE_USER", "default"), safe="")
+    password = quote(get_str("CLICKHOUSE_PASSWORD"), safe="")
+    database = quote(get_str("CLICKHOUSE_DB", "default"), safe="")
+    return f"clickhouse://{username}:{password}@{host}:{port}/{database}"
+
+  return "clickhouse://default:@clickhouse:8123/default"
 
 
 def rustfs_endpoint() -> str:

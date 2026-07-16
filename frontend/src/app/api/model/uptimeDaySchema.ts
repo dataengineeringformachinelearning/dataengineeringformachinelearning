@@ -9,6 +9,7 @@
  */
 
 export interface UptimeDaySchema {
+  date: string;
   status: string;
-  uptime: number;
+  uptime: number | null;
 }

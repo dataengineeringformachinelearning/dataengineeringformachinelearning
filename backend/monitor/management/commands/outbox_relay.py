@@ -1,7 +1,6 @@
 import asyncio
 import json
 import logging
-from datetime import timedelta
 
 from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
@@ -22,7 +21,7 @@ class Command(BaseCommand):
       "--max-age-hours",
       type=int,
       default=24,
-      help="Ignore events older than this many hours.",
+      help="Deprecated compatibility option; pending events never age out before delivery/DLQ.",
     )
     parser.add_argument(
       "--batch-size",
@@ -70,11 +69,13 @@ class Command(BaseCommand):
       await asyncio.sleep(poll_interval)
 
   async def run_once(self, max_age_hours: int, batch_size: int):
-    cutoff = timezone.now() - timedelta(hours=max_age_hours)
+    del max_age_hours
     events = await sync_to_async(list)(
-      OutboxEvent.objects.filter(is_published=False, created_at__gte=cutoff).order_by("created_at")[
-        :batch_size
-      ]
+      OutboxEvent.objects.filter(
+        is_published=False,
+        dlq_at__isnull=True,
+        attempts__lt=5,
+      ).order_by("created_at")[:batch_size]
     )
 
     if not events:
@@ -120,7 +121,11 @@ class Command(BaseCommand):
         failed += 1
         event.attempts += 1
         event.last_error = str(e)[:1000]
-        await sync_to_async(event.save)(update_fields=["attempts", "last_error"])
+        update_fields = ["attempts", "last_error"]
+        if event.attempts >= 5:
+          event.dlq_at = timezone.now()
+          update_fields.append("dlq_at")
+        await sync_to_async(event.save)(update_fields=update_fields)
         log_event(
           logger,
           logging.ERROR,

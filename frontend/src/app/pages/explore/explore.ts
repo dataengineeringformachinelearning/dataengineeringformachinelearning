@@ -157,18 +157,18 @@ export class Explore implements OnInit {
   exploreUptimeHistory(page: StatusPageData): ExploreCardUptimePoint[] {
     const history = page.uptime_history ?? [];
     if (history.length > 0) {
-      return history.map((day, index) => {
-        const date = new Date('2026-06-08T00:00:00Z');
-        date.setUTCDate(date.getUTCDate() + index);
-        const status = `${day.status}`.toLowerCase().replace(/\s+/g, '_');
+      return history.map(day => {
+        const status = `${day.status}`.toLowerCase().replace(/[\s-]+/g, '_');
         return {
-          date: date.toISOString().slice(0, 10),
+          date: day.date,
           status:
-            status === 'outage' || status === 'major_outage' || status === 'down'
-              ? 'down'
-              : status === 'degraded' || status === 'partial_outage'
-                ? 'partial'
-                : 'up',
+            status === 'no_data'
+              ? 'no_data'
+              : status === 'outage' || status === 'major_outage' || status === 'down'
+                ? 'down'
+                : status === 'degraded' || status === 'partial_outage'
+                  ? 'partial'
+                  : 'up',
         };
       });
     }

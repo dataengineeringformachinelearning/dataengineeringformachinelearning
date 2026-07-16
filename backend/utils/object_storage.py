@@ -1,15 +1,18 @@
 """S3-compatible object storage client for DEML export artifacts (RustFS).
 
-Analytics facts remain in ClickHouse / Postgres. This module only stores
-generated report bytes (PDF, CSV, Parquet, JSON) and issues short-lived
-presigned download URLs.
+Analytics facts remain in ClickHouse / Postgres. This module only stores and
+streams generated report bytes (PDF, CSV, Parquet, JSON). The application uses
+signed proxy URLs for browser downloads; presigning remains available for
+private operational smoke tests.
 """
 
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Final
+from urllib.parse import urlparse
 
 import boto3
 from botocore.client import BaseClient
@@ -26,6 +29,15 @@ class ObjectStorageNotConfiguredError(RuntimeError):
   """Raised when RUSTFS_* settings are missing or incomplete."""
 
 
+@dataclass(frozen=True)
+class StoredObject:
+  """Streaming object response returned by the private RustFS client."""
+
+  body: Any
+  content_type: str
+  content_length: int
+
+
 @lru_cache(maxsize=1)
 def _client() -> BaseClient:
   endpoint = (getattr(settings, "RUSTFS_ENDPOINT", "") or "").strip()
@@ -36,8 +48,16 @@ def _client() -> BaseClient:
     raise ObjectStorageNotConfiguredError(
       "RUSTFS_ENDPOINT, RUSTFS_ACCESS_KEY, and RUSTFS_SECRET_KEY must be set"
     )
+  parsed_endpoint = urlparse(endpoint)
+  if parsed_endpoint.scheme not in {"http", "https"} or not parsed_endpoint.hostname:
+    raise ObjectStorageNotConfiguredError("RUSTFS_ENDPOINT must be an absolute HTTP(S) URL")
+  use_ssl = bool(getattr(settings, "RUSTFS_USE_SSL", False))
+  if (parsed_endpoint.scheme == "https") != use_ssl:
+    raise ObjectStorageNotConfiguredError("RUSTFS_USE_SSL must match the RUSTFS_ENDPOINT scheme")
 
   addressing = (getattr(settings, "RUSTFS_ADDRESSING_STYLE", "") or "path").strip()
+  if addressing not in {"path", "virtual"}:
+    raise ObjectStorageNotConfiguredError("RUSTFS_ADDRESSING_STYLE must be 'path' or 'virtual'")
   return boto3.client(
     "s3",
     endpoint_url=endpoint,
@@ -62,7 +82,13 @@ def is_configured() -> bool:
   endpoint = (getattr(settings, "RUSTFS_ENDPOINT", "") or "").strip()
   access_key = (getattr(settings, "RUSTFS_ACCESS_KEY", "") or "").strip()
   secret_key = (getattr(settings, "RUSTFS_SECRET_KEY", "") or "").strip()
-  return bool(endpoint and access_key and secret_key)
+  if not (endpoint and access_key and secret_key):
+    return False
+  try:
+    _client()
+  except ObjectStorageNotConfiguredError:
+    return False
+  return True
 
 
 def export_object_key(*, account_id: str, job_id: str, filename: str) -> str:
@@ -113,6 +139,18 @@ def generate_presigned_get(
     "get_object",
     Params={"Bucket": name, "Key": key},
     ExpiresIn=max(60, min(expires_in, 86400)),
+  )
+
+
+def get_object_stream(*, key: str, bucket: str | None = None) -> StoredObject:
+  """Open an object for streaming through an authenticated application endpoint."""
+  client = _client()
+  name = bucket or exports_bucket()
+  response = client.get_object(Bucket=name, Key=key)
+  return StoredObject(
+    body=response["Body"],
+    content_type=str(response.get("ContentType") or "application/octet-stream"),
+    content_length=max(0, int(response.get("ContentLength") or 0)),
   )
 
 

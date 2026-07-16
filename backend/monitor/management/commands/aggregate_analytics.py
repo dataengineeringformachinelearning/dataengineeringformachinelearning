@@ -1,10 +1,13 @@
 import logging
+import math
 from datetime import timedelta
+from typing import Any
 
 from django.contrib.auth import get_user_model
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Avg, Count, Q
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 from monitor.models import (
   AggregatedAnalytics,
@@ -22,7 +25,22 @@ User = get_user_model()
 class Command(BaseCommand):
   help = "Aggregates analytical data into the AggregatedAnalytics table"
 
-  def _aggregate_scope(self, *, user=None, is_platform: bool, hour_start, hour_end):
+  def add_arguments(self, parser: Any) -> None:
+    parser.add_argument(
+      "--scheduled-for",
+      type=str,
+      default="",
+      help="UTC scheduler bucket used for deterministic delayed/retried aggregation",
+    )
+
+  def _aggregate_scope(
+    self,
+    *,
+    user: Any = None,
+    is_platform: bool,
+    hour_start: Any,
+    hour_end: Any,
+  ) -> None:
     if is_platform:
       endpoint_filter = Q(is_platform=True, user__isnull=True)
       threat_filter = Q(is_platform=True, user__isnull=True)
@@ -44,12 +62,12 @@ class Command(BaseCommand):
     avg_resp = endpoints_data.aggregate(Avg("response_time"))["response_time__avg"]
     avg_latency_ms = float(avg_resp.total_seconds() * 1000) if avg_resp else 0.0
 
-    raw_latencies = list(
-      endpoints_data.values_list("response_time", flat=True).order_by("response_time")[:5000]
-    )
-    if raw_latencies:
-      p99_idx = max(0, int(len(raw_latencies) * 0.99) - 1)
-      p99_latency_ms = round(raw_latencies[p99_idx].total_seconds() * 1000, 2)
+    if total_requests > 0:
+      p99_idx = max(0, math.ceil(total_requests * 0.99) - 1)
+      p99_latency = endpoints_data.order_by("response_time").values_list(
+        "response_time", flat=True
+      )[p99_idx]
+      p99_latency_ms = round(p99_latency.total_seconds() * 1000, 2)
     else:
       p99_latency_ms = 0.0
 
@@ -67,18 +85,30 @@ class Command(BaseCommand):
     vulnerability_count = vuln_qs.count()
     threats_detected = threat_intel_count + vulnerability_count
 
-    active_incidents = Incident.objects.filter(
-      incident_filter, status__in=["Investigating", "Identified", "Monitoring"]
-    ).count()
+    active_statuses = ["Investigating", "Identified", "Monitoring"]
+    active_incidents = (
+      Incident.objects.filter(
+        incident_filter,
+        created_at__lt=hour_end,
+      )
+      .filter(Q(status__in=active_statuses) | Q(status="Resolved", updated_at__gte=hour_end))
+      .count()
+    )
 
     cookies_data = CookieConsent.objects.filter(
       cookie_filter, created_at__gte=hour_start, created_at__lt=hour_end
     )
+    cookie_count = cookies_data.count()
     cookie_consents_analytical = cookies_data.filter(analytical=True).count()
     cookie_consents_marketing = cookies_data.filter(marketing=True).count()
 
     unique_visitors_endpoints = endpoints_data.values("ip_address").distinct().count()
-    unique_visitors = max(unique_visitors_endpoints, cookies_data.count())
+    unique_visitors = max(unique_visitors_endpoints, cookie_count)
+
+    if (
+      total_requests == 0 and threats_detected == 0 and active_incidents == 0 and cookie_count == 0
+    ):
+      return
 
     widget_interactions = 0
     for ep in endpoints_data.exclude(telemetry_context__isnull=True):
@@ -100,17 +130,10 @@ class Command(BaseCommand):
     )
 
     metadata = {
+      "aggregation_version": 2,
       "http_statuses": {str(s["status_code"]): s["count"] for s in statuses_agg},
       "top_traffic_origins": {o["location"]: o["count"] for o in origin_agg},
     }
-
-    if (
-      total_requests == 0
-      and threats_detected == 0
-      and active_incidents == 0
-      and cookies_data.count() == 0
-    ):
-      return
 
     lookup = {"timestamp": hour_start, "bucket_size": "1h", "is_platform": is_platform}
     if is_platform:
@@ -135,14 +158,68 @@ class Command(BaseCommand):
       },
     )
 
-  def handle(self, *args, **options):
+  def handle(self, *args: Any, **options: Any) -> None:
     self.stdout.write("Starting analytics aggregation with user isolation...")
-    now = timezone.now()
+    scheduled_for_raw = str(options.get("scheduled_for") or "").strip()
+    scheduled_for = parse_datetime(scheduled_for_raw) if scheduled_for_raw else None
+    if scheduled_for_raw and scheduled_for is None:
+      raise CommandError("--scheduled-for must be an ISO-8601 datetime")
+    if scheduled_for is not None and timezone.is_naive(scheduled_for):
+      scheduled_for = timezone.make_aware(scheduled_for)
+    reference = scheduled_for or timezone.now()
 
-    hour_start = now.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
+    hour_start = reference.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
     hour_end = hour_start + timedelta(hours=1)
 
-    for user in User.objects.filter(profile__isnull=False).select_related("profile"):
+    # Historical reconciliation must scale with active scopes, not total tenant
+    # count. Every account with evidence in the hour still traverses the exact
+    # same isolated aggregation path.
+    candidate_user_ids: set[Any] = set(
+      Endpoints.objects.filter(
+        user__isnull=False,
+        is_platform=False,
+        last_tested__gte=hour_start,
+        last_tested__lt=hour_end,
+      ).values_list("user_id", flat=True)
+    )
+    candidate_user_ids.update(
+      ThreatIntelligence.objects.filter(
+        user__isnull=False,
+        is_platform=False,
+        timestamp__gte=hour_start,
+        timestamp__lt=hour_end,
+      ).values_list("user_id", flat=True)
+    )
+    candidate_user_ids.update(
+      Vulnerability.objects.filter(
+        user__isnull=False,
+        created_at__gte=hour_start,
+        created_at__lt=hour_end,
+      ).values_list("user_id", flat=True)
+    )
+    candidate_user_ids.update(
+      CookieConsent.objects.filter(
+        user__isnull=False,
+        is_platform=False,
+        created_at__gte=hour_start,
+        created_at__lt=hour_end,
+      ).values_list("user_id", flat=True)
+    )
+    candidate_user_ids.update(
+      Incident.objects.filter(
+        status_page__user__isnull=False,
+        created_at__lt=hour_end,
+      )
+      .filter(
+        Q(status__in=["Investigating", "Identified", "Monitoring"])
+        | Q(status="Resolved", updated_at__gte=hour_end)
+      )
+      .values_list("status_page__user_id", flat=True)
+    )
+
+    for user in User.objects.filter(
+      id__in=candidate_user_ids, profile__isnull=False
+    ).select_related("profile"):
       self._aggregate_scope(user=user, is_platform=False, hour_start=hour_start, hour_end=hour_end)
 
     self._aggregate_scope(user=None, is_platform=True, hour_start=hour_start, hour_end=hour_end)

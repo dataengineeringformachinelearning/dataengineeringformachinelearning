@@ -1410,7 +1410,7 @@ Deep within my Django backend architecture, I deploy a fleet of long-lived, asyn
 
 - **Hourly:** `deml-scheduler` materializes unique threat-intelligence task buckets; `deml-workers` fetches, parses, and integrates the newest Indicators of Compromise without relying on an in-memory timer.
 - **Daily:** The same durable schedule path executes `train_all_models`, securely aggregating anonymized operational data across all tenants to retrain SLA forecasts and the global PyTorch threat model (`platform_threat_model.pt`).
-- **Daily (30-Day Retention):** A durable `db_cleanup` run purges expired raw `Endpoints`, `AuditLog`, and `CookieConsent` rows, removes legacy duplicate intelligence, and archives published Outbox rows. Long-term OLAP telemetry remains in ClickHouse under its TTL policy.
+- **Daily (Tiered Retention):** A durable `db_cleanup` run repairs daily projections, verifies current-version hourly coverage, archives expired audit batches to ClickHouse, then prunes only acknowledged or safely materialized source rows. Central policy covers raw telemetry, probes, receipts, consent, outbox/DLQ state, search/honeypot evidence, benchmark history, reports, uptime, and scheduler history. Long-term OLAP evidence remains in ClickHouse under its TTL policy.
 - **Daily (Billing & Accounts):** A durable `sync_subscriptions` run reconciles Stripe state. Account deletion remains on-demand through the lifecycle queue; there is no dormant-account purge.
 - **Daily (DEK Compliance):** `rotate_keys_if_due` checks the active Data Encryption Key lifecycle and invokes the existing re-enveloping workflow only when rotation is required.
 
@@ -1456,7 +1456,7 @@ Rust scheduler → internal-tasks: enrich_web_technologies
   → Redpanda projection / security dashboard
 ```
 
-Finally, the fully enriched vulnerability ledger is written to `ClickHouse` via the `ADBC` driver for fast, analytical querying, while critical vulnerabilities are selectively synchronized into the operational Django database to alert administrators via the real-time Security dashboard.
+Finally, the fully enriched vulnerability ledger is written to ClickHouse through its authenticated HTTP `JSONEachRow` interface for fast analytical querying, while critical vulnerabilities are selectively synchronized into the operational Django database to alert administrators via the real-time Security dashboard. Fresh volumes receive the canonical MergeTree schema from the image; runtime idempotent schema upgrades keep persistent volumes compatible.
 
 ---
 
@@ -2332,6 +2332,7 @@ This appendix is the **single source of truth** for all scheduled maintenance: b
 - `rotate_keys_if_due` (daily) — KMS operations
 - `ingest_taxii` (hourly) — STIX/TAXII parsing
 - `run_lighthouse_scans` (6-hourly) — Lighthouse audits
+- `generate_export` (every minute) — Durable export queue drain, bounded retry, and RustFS artifact expiry
 
 Daily security jobs are **staggered** in the durable schedule registry to avoid thundering-herd load on Postgres and Stripe. Python workers execute claimed commands but do not independently schedule them.
 
@@ -2341,17 +2342,29 @@ Owned exclusively by the Rust scheduler (`deml-daemon`). Policy constants define
 
 **Neon (PostgreSQL):**
 
-| Data Class                                 | Retention  | Action                            |
-| ------------------------------------------ | ---------- | --------------------------------- |
-| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted, archived to ClickHouse   |
-| `AuditLog`                                 | 30 days    | Deleted, archived to ClickHouse   |
-| `CookieConsent`                            | 30 days    | Deleted                           |
-| `OutboxEvent` (published)                  | 30 days    | Deleted                           |
-| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted                           |
-| `ThreatIntelligence`                       | 90 days    | Deleted, duplicates purged        |
-| `AggregatedAnalytics` (hourly)             | 30 days    | Deleted after daily rollups       |
-| `ReportArchive` (daily rollups)            | 90 days    | Materialized; older in ClickHouse |
-| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record          |
+| Data Class                                 | Retention  | Action                                                          |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------- |
+| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted only after versioned hourly and daily coverage exists   |
+| `HealthProbeObservation` (raw probes)      | 30 days    | Deleted only after page-scoped daily uptime repair              |
+| `LighthouseScan` (site quality)            | 30 days    | Dedicated page/URL/hour projection, then deleted                |
+| `TelemetryIngestReceipt`                   | 30 days    | Deleted after replay window                                     |
+| `AuditLog`                                 | 30 days    | Archived to ClickHouse, then exact acknowledged IDs are deleted |
+| `CookieConsent`                            | 30 days    | Deleted only after versioned hourly coverage exists             |
+| `OutboxEvent` (published)                  | 30 days    | Deleted                                                         |
+| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted seven days after `dlq_at`, not original creation        |
+| `ThreatIntelligence`                       | 90 days    | Deleted, duplicates purged                                      |
+| `SearchQuery`                              | 30 days    | PII-bearing query evidence deleted                              |
+| `HoneypotInteraction`                      | 90 days    | Security interaction evidence deleted                           |
+| `BenchmarkRun`                             | 365 days   | Annual model-comparison evidence deleted                        |
+| `AggregatedAnalytics` (hourly)             | 30 days    | Deleted after daily rollups                                     |
+| `ReportArchive` (daily rollups)            | 90 days    | Materialized; then deleted                                      |
+| `StatusPageUptimeDaily` (daily rollups)    | 90 days    | Fast status-page uptime reads                                   |
+| RustFS export artifacts                    | 14 days    | Object deleted; job marked expired                              |
+| `ExportJob` terminal metadata              | 90 days    | Expired and terminal-failed rows deleted after object cleanup   |
+| `ScheduledTaskRun`                         | 90 days    | Completed/terminal-failure history pruned                       |
+| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record                                        |
+
+Cleanup is deliberately **repair-first and fail-closed**. Before raw telemetry is removed, the scheduler rebuilds the retained daily report and page-uptime projections and verifies that each endpoint- or consent-backed scope in the rolling cutoff boundary has an `AggregatedAnalytics` row carrying the current aggregation version. Scheduler reconciliation creates 31 days of hourly work so that boundary is repairable before the 30-day source policy is enforced; evidence already older than policy is not allowed to deadlock pruning forever. Missing boundary coverage aborts pruning. Audit rows are uploaded to ClickHouse in bounded batches and Postgres deletes only the exact IDs acknowledged by ClickHouse; an archive or schema failure leaves the source rows intact. This ordering makes pruning safe during scheduler, worker, database, or ClickHouse outages.
 
 **ClickHouse (Archival):**
 
@@ -2362,6 +2375,8 @@ Owned exclusively by the Rust scheduler (`deml-daemon`). Policy constants define
 | `asset_vulnerability_ledger` | 730 days  | `cleanup_clickhouse` purge |
 | OTEL traces/metrics          | 730+ days | TTL via MergeTree          |
 
+The ClickHouse image creates these archival tables with matching MergeTree TTLs on fresh volumes. Runtime maintenance also issues idempotent `CREATE TABLE IF NOT EXISTS`, `ALTER ... ADD COLUMN IF NOT EXISTS`, and explicit `ALTER ... MODIFY TTL` statements so existing persistent volumes converge before writers or cleanup run. The legacy vulnerability timestamp column receives a deterministic migration anchor rather than `now()`, preventing every old row from being assigned a misleading fresh age. Schema and delete failures are surfaced instead of being treated as successful maintenance.
+
 **Dragonfly/Redis (Rate Limiting):**
 
 | Data Class      | Retention  | Action                       |
@@ -2369,11 +2384,11 @@ Owned exclusively by the Rust scheduler (`deml-daemon`). Policy constants define
 | Rate limit keys | 60 seconds | Auto-expire (sliding window) |
 | IP blocklist    | 24 hours   | TTL via `setex`              |
 
-**GCS Object Storage:**
+**RustFS Object Storage:**
 
-| Data Class       | Retention | Action                   |
-| ---------------- | --------- | ------------------------ |
-| Export artifacts | 30 days   | Terraform lifecycle rule |
+| Data Class       | Retention | Action                                                            |
+| ---------------- | --------- | ----------------------------------------------------------------- |
+| Export artifacts | 14 days   | Application deletes object, then retains job metadata for 90 days |
 
 ### Billing & Account Lifecycle
 
@@ -2382,7 +2397,7 @@ Owned exclusively by the Rust scheduler (`deml-daemon`). Policy constants define
 | `sync_subscriptions`                 | Scheduled | Daily (security_worker) | Stripe sweep: upgrades active subs, downgrades lapsed Pro users; preserves manual Pro grants (`tier=Pro`, no `stripe_customer_id`) |
 | Stripe webhooks                      | Real-time | On event                | `checkout.session.completed`, `customer.subscription.updated/deleted`                                                              |
 | `POST /api/v1/billing/sync`          | On-demand | User-initiated          | Manual subscription reconciliation                                                                                                 |
-| `DELETE /api/v1/auth/delete-account` | On-demand | User-initiated          | Django `CASCADE` deletes tenant data; Firebase identity removed client-side                                                        |
+| `DELETE /api/v1/auth/delete-account` | On-demand | User-initiated          | Saga cancels identity/access, locks report jobs, deletes RustFS artifacts, then performs the Postgres cascade and audit            |
 
 There is **no** scheduled purge of dormant accounts or orphaned Stripe customers.
 
@@ -2866,7 +2881,7 @@ Production services deploy on Railway using per-service manifests under `infrast
 
 ### Database ingestion, retention, and scheduler efficiency
 
-Telemetry enters through `/api/v1/ingest`, Firebase `ingestEvent`, and OpenTelemetry collectors. Commands land in Postgres via transactional Outbox; `deml-relay` wakes on commit and uses bounded polling as a fallback. `telemetry_worker` projects idempotently into Firestore and enrichment tables. Retention constants live in `backend/utils/retention.py`: raw telemetry and audit logs purge at **30 days**; published outbox rows at 30 days; DLQ candidates at 7 days; DEK rotation triggers at 30 days. `deml-scheduler` creates durable, unique UTC task buckets for threat intelligence, cleanup, subscriptions, OSINT, and daily ML training; `deml-workers` executes those whitelisted commands. Email dispatches route through Resend with queued outbox semantics — no fire-and-forget sends from request threads.
+Telemetry enters through `/api/v1/ingest`, Firebase `ingestEvent`, and OpenTelemetry collectors. Commands land in Postgres via transactional Outbox; `deml-relay` wakes on commit and uses bounded polling as a fallback. `telemetry_worker` projects idempotently into Firestore and enrichment tables. Retention constants live in `backend/utils/retention.py`: raw telemetry and audit logs are eligible at **30 days**, published outbox rows at 30 days, and exhausted Outbox DLQ rows seven days after their explicit `dlq_at` admission timestamp. The destructive pass first repairs page/day and account/hour projections, checks aggregate version coverage, and requires ClickHouse acknowledgement for audit batches. `deml-scheduler` creates durable, unique UTC task buckets for analytics, reports, exports, threat intelligence, cleanup, subscriptions, OSINT, and daily ML training; `deml-workers` executes the whitelisted Python commands. Email and export dispatches use durable queues—no fire-and-forget request threads.
 
 ### Multi-tenant security and regulatory alignment
 
@@ -2906,7 +2921,7 @@ To minimize deployment footprint, operational complexity, and resource overhead,
 
 ### 4. Rust Outbox Relay (`DEML_ROLE=relay`)
 
-- **Event Publishing**: Atomically leases unpublished `OutboxEvent` rows with `FOR UPDATE SKIP LOCKED`, publishes concurrently with stable event IDs, and releases or completes each lease. Published rows are purged by `db_cleanup` after 30 days; exhausted retries are retained as explicit DLQ candidates for seven days.
+- **Event Publishing**: Atomically leases unpublished `OutboxEvent` rows with `FOR UPDATE SKIP LOCKED`, publishes concurrently with stable event IDs, and releases or completes each lease. Published rows are purged by `db_cleanup` after 30 days; exhausted retries receive `dlq_at` and remain for seven full days from DLQ admission.
 
 ## Appendix I: API Rate Limiting, Tiered Pricing, and Usage Analytics
 
@@ -3021,8 +3036,6 @@ This document outlines the dependencies and libraries used in this project.
 - `requests[socks]`
 - `resend`==2.4.0
 - `aiohttp`==3.9.5
-- `adbc-driver-postgresql`
-- `connectorx`
 - `liboqs-python`==0.15.0
 - `huggingface-hub`>=0.23.0
 - `channels`>=4.0.0
@@ -3344,17 +3357,17 @@ Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-de
 ## Architecture
 
 ```text
-  Angular ──POST /api/v1/exports──► deml-backend (Django Ninja)
+  Angular ──POST /api/v1/exports/──► deml-backend (Django Ninja)
                                           │
-                                          │ ExportJob (queued)  [next]
+                                          │ ExportJob (queued)
                                           ▼
-                                    deml-workers
+                              durable scheduler → deml-workers
                                Polars + CH/PG → render
                                           │
                           put_bytes ──────► deml-rustfs (S3 API :9000)
                           storage_uri ────► ExportJob ready
                                           │
-  Angular ◄── presigned GET (TTL) ──────── deml-backend
+  Angular ◄── signed proxy GET (TTL) ───── deml-backend ──private read──► RustFS
 ```
 
 ### Object key layout
@@ -3424,21 +3437,34 @@ Service name: **`deml-rustfs`**
 ## Security invariants
 
 - Owner/RBAC checks on every export create/list/download (app layer).
-- Short-lived **presigned GET** (default 15 minutes in client helpers).
+- Short-lived Django-signed **backend proxy GET** (default 15 minutes), so private Railway DNS
+  and RustFS root credentials are never exposed to the browser.
 - No frontend access to root keys.
 - Prefix isolation by `account_id` UUID.
-- Retention: expire objects + mark jobs expired (worker task — follow-up).
+- At most three active exports and twenty creations per user per hour; quota evaluation and creation
+  share a per-user database lock, and generation never starts an unbounded request thread.
+- The every-minute `generate_export` task reclaims stale jobs, retries transient failures at most
+  five times with exponential backoff, deletes expired objects, and prunes terminal metadata after
+  the audit window.
+- CSV string cells with spreadsheet formula prefixes are neutralized before rendering; signed
+  downloads validate job ID, object key, checksum, expiry, and token age before streaming.
+- Account deletion takes the same user/job locks, waits for active generation, deletes every
+  acknowledged object before its metadata can cascade, and resumes safely after partial cleanup.
 
 ## Implemented surfaces
 
-| Piece   | Location                                                                   |
-| ------- | -------------------------------------------------------------------------- |
-| Model   | `monitor.ExportJob` + migration `0043_export_job`                          |
-| API     | `GET/POST /api/v1/exports`, `GET /api/v1/exports/{id}`, `GET .../download` |
-| Service | `monitor/services/exports.py` (CSV/JSON/Parquet/PDF)                       |
-| Command | `python manage.py generate_export` (+ optional `--job-id`)                 |
-| Workers | `generate_export` in `ALLOWED_TASKS`                                       |
-| UI      | Analytics page exports panel                                               |
+| Piece   | Location                                                                    |
+| ------- | --------------------------------------------------------------------------- |
+| Model   | `ExportJob`, `ReportArchive`, `LighthouseScan` (`0043`, `0049`, `0051`)     |
+| API     | `GET/POST /api/v1/exports/`, `GET /api/v1/exports/{id}`, `GET .../download` |
+| Service | `monitor/services/exports.py` (CSV/JSON/Parquet/PDF)                        |
+| Command | `python manage.py generate_export` (+ optional `--job-id`)                  |
+| Workers | `generate_export` in `ALLOWED_TASKS`                                        |
+| UI      | Analytics page exports panel                                                |
+
+Analytics exports query `ReportArchive` first for the 90-day daily reporting window, compare its source bucket count/update watermark, merge hourly `AggregatedAnalytics` when a current, missed, or delayed bucket is fresher, and emit explicit `no_data` rows for every requested date. A selected site is dimensionally narrower than the account rollup, so site reports use the isolated retained raw endpoint window and are capped at 30 days. Lighthouse reports read the dedicated page/URL/hour `LighthouseScan` projection and support the same site filter. Threat and vulnerability exports iterate the full selected retained range in bounded database chunks rather than silently stopping at 5,000 rows; PDF output paginates its visible tabular rendering.
+
+The dashboard and public status paths use separate projections because they have different dimensions. Account/platform KPI cards read `AggregatedAnalytics` for completed hourly buckets and only touch raw data for the current partial hour. Reports read `ReportArchive` or `LighthouseScan`. Public uptime reads `StatusPageUptimeDaily`, keyed by status page and date, with raw probes used only for today or a missing repair bucket and isolated legacy endpoint rows seeding pre-probe history. Component SLA/current-state queries are batched across the page rather than scanning raw rows once per service. The response always contains 30 dated, ordered slots with nullable uptime: operational/outage colors appear when checks exist, while days before page creation or without checks remain an explicit neutral `no_data` state rather than being misreported as 100% uptime.
 
 ## Risk note
 
@@ -3800,8 +3826,11 @@ the repository; only one runtime may own each loop in production.
 
 ## Required rollout order
 
-1. Deploy the Django migration and verify `python manage.py migrate` completes
-   (`monitor.0041_rust_data_plane`, `monitor.0042_alter_outboxevent_available_at`).
+1. Deploy the Django migrations and verify `python manage.py migrate` completes. Existing Rust
+   data-plane installs require `0041`/`0042`; this retention/report release must also reach
+   `0048_status_page_uptime_daily`, `0049_export_job_retries`,
+   `0050_health_probe_observed_at_concurrent_index`, and `0051_lighthouse_scan` before workers or
+   the scheduler run the new queries.
 2. Start `deml-relay`; stop `relay_start.py` and any Python `outbox_relay` process.
 3. Start `deml-normalizer`, then confirm new endpoint telemetry is published to `telemetry-raw` and the `telemetry-raw-dlq` depth remains zero.
 4. Start `deml-probe`; keep `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0` on the telemetry worker.
@@ -3821,7 +3850,7 @@ Every role exposes `/health` and `/ready` on `PORT` (default `8080`). Readiness 
 
 ## Delivery and failure semantics
 
-The relay provides at-least-once delivery. A crash after Redpanda acknowledgement but before the Postgres completion update can republish an event; consumers must deduplicate by `x-deml-event-id` or their domain idempotency key. Failed publishes use exponential backoff and become explicit DLQ candidates after the configured maximum attempts.
+The relay provides at-least-once delivery. A crash after Redpanda acknowledgement but before the Postgres completion update can republish an event; consumers must deduplicate by `x-deml-event-id` or their domain idempotency key. Failed publishes use exponential backoff and become explicit DLQ candidates after the configured maximum attempts. The guarded Python rollback relay does not age pending rows out of its query: a row remains eligible until it is acknowledged or explicitly admitted to the DLQ, so an old outage cannot create permanently orphaned outbox work.
 
 The scheduler never treats an in-memory timer as durable state. Replicas materialize the same UTC bucket, the database unique constraint elects one logical run, and a lease elects one publisher. `deml-workers` moves the run through `published → running → completed`; command failures become `failed` and are republished with the same run ID after the retry lease.
 
@@ -3842,26 +3871,29 @@ claims at most 20 due rows with `FOR UPDATE SKIP LOCKED`. Native maintenance is
 executed in-process. Ecosystem tasks are encrypted and published to
 `internal-tasks`, where `deml-workers` accepts only its command allowlist.
 
-| Task                   | Cadence / UTC offset | Owner          | Result                                                                           |
-| ---------------------- | -------------------- | -------------- | -------------------------------------------------------------------------------- |
-| `aggregate_analytics`  | hourly + 5m          | Python trigger | refreshes analytical rollups                                                     |
-| `fetch_threat_intel`   | hourly + 10m         | Python trigger | external threat enrichment                                                       |
-| `ingest_taxii`         | hourly + 12m30s      | Python trigger | STIX/TAXII ingestion                                                             |
-| `run_lighthouse_scans` | 6-hourly + 15m       | Python trigger | accessibility/performance scan                                                   |
-| `archive_reports`      | daily + 30m          | Rust native    | upserts yesterday's user and Tenant0 report rows symmetrically                   |
-| `rotate_keys_if_due`   | daily + 20m          | Python trigger | KMS policy work                                                                  |
-| `train_all_models`     | daily + 1h           | Python trigger | tenant-scoped PyTorch training                                                   |
-| `scan_dark_web`        | daily + 1h15m        | Python trigger | OSINT/Tor workflow                                                               |
-| `sync_subscriptions`   | daily + 2h           | Python trigger | Stripe reconciliation                                                            |
-| `reconcile_accounts`   | daily + 2h5m         | Python trigger | identity/account reconciliation                                                  |
-| `db_cleanup`           | daily + 3h           | Rust native    | 30-day raw/hourly/published retention, 7-day outbox DLQ, 90-day threat retention |
-| `cleanup_clickhouse`   | weekly + 3h20m       | Rust native    | 180/365/730-day archive retention                                                |
-| `optimize_database`    | daily + 4h           | Rust native    | `VACUUM ANALYZE` on core tables                                                  |
+| Task                   | Cadence / UTC offset | Owner          | Result                                                                          |
+| ---------------------- | -------------------- | -------------- | ------------------------------------------------------------------------------- |
+| `aggregate_analytics`  | hourly + 5m          | Python trigger | refreshes analytical rollups                                                    |
+| `generate_export`      | minutely + 30s       | Python trigger | drains durable report jobs, retries failures, and expires private artifacts     |
+| `fetch_threat_intel`   | hourly + 10m         | Python trigger | external threat enrichment                                                      |
+| `ingest_taxii`         | hourly + 12m30s      | Python trigger | STIX/TAXII ingestion                                                            |
+| `run_lighthouse_scans` | 6-hourly + 15m       | Python trigger | page/URL-scoped accessibility/performance projection                            |
+| `archive_reports`      | daily + 30m          | Rust native    | repairs 29 completed days of user/Tenant0 reports and page uptime               |
+| `rotate_keys_if_due`   | daily + 20m          | Python trigger | KMS policy work                                                                 |
+| `train_all_models`     | daily + 1h           | Python trigger | tenant-scoped PyTorch training                                                  |
+| `scan_dark_web`        | daily + 1h15m        | Python trigger | OSINT/Tor workflow                                                              |
+| `sync_subscriptions`   | daily + 2h           | Python trigger | Stripe reconciliation                                                           |
+| `reconcile_accounts`   | daily + 2h5m         | Python trigger | identity/account reconciliation                                                 |
+| `db_cleanup`           | daily + 3h           | Rust native    | repair-first raw pruning, acknowledged audit archive, and centralized retention |
+| `cleanup_clickhouse`   | weekly + 3h20m       | Rust native    | 180/365/730-day archive retention                                               |
+| `optimize_database`    | daily + 4h           | Rust native    | `VACUUM ANALYZE` on core tables                                                 |
 
 Native task errors are recorded on `scheduled_task_runs`, release the lease with
 a bounded retry delay, and never transition to `completed`. `CLICKHOUSE_URL` is
 therefore mandatory on `deml-scheduler`; missing configuration makes the weekly
 cleanup fail visibly instead of silently succeeding.
+
+Scheduler startup and hourly reconciliation materialize 31 days of analytics buckets—the 30-day retained source window plus one cleanup-boundary day—while each regular poll also ensures the latest three hourly buckets so an outage heals without a restart. A completed bucket is requeued when endpoint or cookie-consent evidence lacks a matching aggregation-version-2 scope. Daily repair intentionally covers the 29 completed days shown beside today; it never overwrites the oldest complete archive with a partially retained `today-30` day. Work is claimed one row at a time, native leases heartbeat while running, failed native maintenance backs off long enough for the catch-up queue to drain, and state-plus-owner compare-and-set updates prevent a late publisher acknowledgement from overwriting worker `running` or `completed` progress.
 
 ## Rollback
 
@@ -5379,18 +5411,25 @@ Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cl
 
 **Neon (PostgreSQL) - Hot data:**
 
-- Raw endpoint telemetry, audit logs, cookie consent: **30 days** (auto-purged)
+- Raw endpoint telemetry, health-probe observations, ingest receipts, audit logs, cookie consent, and PII-bearing search queries: **30 days** (repair-first, fail-closed pruning)
+- Page/URL/hour `LighthouseScan` quality projections: **30 days**
 - Hourly `AggregatedAnalytics`: **30 days** (after daily rollups)
-- `ThreatIntelligence`, `ReportArchive`: **90 days** (security + reports)
+- `ThreatIntelligence`, `ReportArchive`, and `StatusPageUptimeDaily`: **90 days** (security, reports, and fast uptime history)
+- `HoneypotInteraction`: **90 days**; `BenchmarkRun`: **365 days**
+- RustFS export artifacts: **14 days**; expired export metadata: **90 days**
 - Business objects (`BugReport`, `ThreatReport`, API keys): **Indefinite** (system of record)
 
 **ClickHouse - Cold storage:**
 
-- `audit_archive`, `security_events`, telemetry: **180-730 days** (archival)
+- `audit_archive`, `security_events`, and vulnerability evidence: **180/365/730 days** (MergeTree TTLs plus visible scheduled cleanup)
 - OTEL traces/metrics: **TTL via MergeTree** (365+ days)
 
 - `ReportArchive` materialized daily for fast 90-day report queries
-- Older analytics available via ClickHouse long-term storage
+- Report exports are generated from the 90-day Postgres rollup window; ClickHouse retention applies only to explicitly archived security and OTEL datasets
+
+Retention never races materialization: the scheduler reconciles 31 days of hourly work to protect the rolling 30-day cutoff, repairs the 29 completed report/uptime days displayed beside today, requires current-version hourly coverage for endpoint and consent scopes at the deletion boundary, and archives audit batches to ClickHouse before deleting the acknowledged Postgres IDs. Any missing coverage, ClickHouse schema problem, or upload failure aborts the destructive phase. Existing ClickHouse volumes receive explicit TTL upgrades, not just fresh-table declarations. The public status query always returns 30 dated slots from `StatusPageUptimeDaily`, using isolated raw probes for today/repair gaps and legacy endpoint evidence for pre-probe history; pre-creation and truly unobserved days carry nullable uptime and remain neutral rather than being counted as successful uptime.
+
+The read architecture deliberately separates dimensions. Dashboard KPIs use hourly `AggregatedAnalytics`; downloadable analytics reports use daily `ReportArchive` with freshness-aware hourly fallback; Lighthouse reports use page/URL/hour `LighthouseScan`; public uptime uses `StatusPageUptimeDaily` keyed by page and date. Component status/SLA reads are batched for the whole page. Exports are durable queued jobs, drained every minute with bounded exponential retry, retry-visible clients, private signed proxy downloads, and full retained-range threat/vulnerability iteration. Account deletion locks report work and removes RustFS artifacts before metadata cascades. This keeps dashboard reads off transactional joins while preserving accurate site-specific reports through a tenant-scoped 30-day raw fallback.
 
 **Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([BOOK.md § Appendix M](BOOK.md#appendix-m-billing--subscriptions-operator-reference)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 

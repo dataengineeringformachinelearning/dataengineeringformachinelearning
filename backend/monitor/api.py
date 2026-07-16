@@ -113,8 +113,9 @@ class StatusPageIn(Schema):
 
 
 class UptimeDaySchema(Schema):
+  date: datetime.date
   status: str
-  uptime: float
+  uptime: float | None
 
 
 class StatusPageOut(Schema):
@@ -203,12 +204,7 @@ def _build_status_page_out(p: StatusPage) -> StatusPageOut:
   """Project status page + rollup metrics (AggregatedAnalytics first for 24h)."""
   from monitor.subscription import owner_has_pro_subscription
 
-  urls = list(p.services.values_list("url", flat=True))
-  metrics = MetricsService.for_urls(
-    urls,
-    user=p.user,
-    is_platform=p.is_platform or p.slug == "platform-status",
-  )
+  metrics = MetricsService.for_status_page(p)
   return StatusPageOut(
     id=str(p.id),
     title=p.title,
@@ -224,7 +220,8 @@ def _build_status_page_out(p: StatusPage) -> StatusPageOut:
     cumulative_sla=metrics.cumulative_sla,
     overall_uptime=metrics.overall_uptime,
     uptime_history=[
-      UptimeDaySchema(status=day.status, uptime=day.uptime) for day in metrics.uptime_history
+      UptimeDaySchema(date=day.date, status=day.status, uptime=day.uptime)
+      for day in metrics.uptime_history
     ],
     p99_latency=metrics.p99_latency,
     total_requests=metrics.total_requests,
@@ -358,32 +355,14 @@ def list_services(request, page_id: str):
     from utils.service_urls import ensure_platform_monitored_services
 
     ensure_platform_monitored_services()
-  services = page.services.order_by("name")
-  from utils.service_urls import endpoint_storage_url, metrics_url_for_service
+  services = list(page.services.order_by("name"))
+  snapshots = MetricsService.for_services(services, page=page)
 
   out = []
   for s in services:
-    metrics_url = metrics_url_for_service(s.url, is_platform=is_platform)
-    lookup_urls = list(
-      {
-        metrics_url,
-        endpoint_storage_url(metrics_url, is_platform=is_platform),
-        endpoint_storage_url(s.url, is_platform=is_platform),
-      }
-    )
-    endpoint_qs = Endpoints.objects.filter(url__in=lookup_urls).exclude(status_code=0)
-    if is_platform:
-      endpoint_qs = endpoint_qs.filter(is_platform=True, user__isnull=True)
-    elif page.user_id:
-      endpoint_qs = endpoint_qs.filter(user=page.user, is_platform=False)
-    latest_log = endpoint_qs.order_by("-last_tested").first()
-    status = "Operational"
-    if latest_log and (not latest_log.is_active or latest_log.status_code >= 500):
-      status = "Outage"
-
-    sla = MetricsService.for_urls(
-      [metrics_url], user=page.user, is_platform=is_platform
-    ).cumulative_sla
+    snapshot = snapshots.get(s.id)
+    status = snapshot.status if snapshot else "Operational"
+    sla = snapshot.sla if snapshot else 100.0
 
     out.append(
       MonitoredServiceOut(

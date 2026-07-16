@@ -1,11 +1,12 @@
 """Centralized data-retention policy constants for scheduled cleanup tasks.
 
 Neon (PostgreSQL) retention:
-- Raw telemetry: 30 days (cleanup_clickhouse archives to ClickHouse before purge)
+- Raw telemetry: 30 days (purged only after compact daily/hourly projections exist)
 - AggregatedAnalytics hourly: 30 days (after daily rollups materialized)
 - AuditLog: 30 days (archived to ClickHouse before purge)
 - CookieConsent: 30 days (compliance-driven cleanup)
-- ReportArchive daily: 90 days (queryable reports; older in ClickHouse)
+- LighthouseScan: 30 days (site-scoped quality history)
+- ReportArchive daily: 90 days (queryable report window)
 - ThreatIntelligence: 90 days (security data with deduplication)
 
 ClickHouse archival:
@@ -20,8 +21,16 @@ Dragonfly/Redis:
 
 from __future__ import annotations
 
+from typing import Final
+
 # Raw telemetry, audit logs, and cookie consent records in Postgres.
 RAW_TELEMETRY_RETENTION_DAYS = 30
+
+# Page-scoped Lighthouse quality history backs dashboard and export reads.
+LIGHTHOUSE_SCAN_RETENTION_DAYS: Final[int] = 30
+
+# Kafka-position idempotency receipts outlive the broker replay window.
+TELEMETRY_INGEST_RECEIPT_RETENTION_DAYS = 30
 
 # Published outbox rows are kept briefly for audit, then purged.
 OUTBOX_PUBLISHED_RETENTION_DAYS = 30
@@ -34,11 +43,27 @@ DEK_ROTATION_MAX_AGE_DAYS = 30
 
 # Report archive retention - materialized daily rollups in Neon serverless.
 # Supports 90 days of queryable historical data via ReportArchive.
-# Beyond 90 days, analytics are available via ClickHouse long-term storage.
 REPORT_ARCHIVE_RETENTION_DAYS = 90
+
+# Page-scoped uptime projections outlive their 30-day public display window.
+STATUS_PAGE_UPTIME_RETENTION_DAYS = 90
+
+# Durable scheduler history is operational evidence, not an indefinite ledger.
+SCHEDULED_TASK_RUN_RETENTION_DAYS = 90
+
+# Generated report bytes expire quickly; compact job metadata remains for audit.
+EXPORT_ARTIFACT_RETENTION_DAYS = 14
+EXPORT_JOB_RETENTION_DAYS = 90
 
 # Threat intelligence retention - deduplicated, short-term for active threats.
 THREAT_INTELLIGENCE_RETENTION_DAYS = 90
+
+# PII-bearing search and honeypot evidence follow their active analysis windows.
+SEARCH_QUERY_RETENTION_DAYS = 30
+HONEYPOT_INTERACTION_RETENTION_DAYS = 90
+
+# Model evaluation evidence supports annual trend comparisons without growing forever.
+BENCHMARK_RUN_RETENTION_DAYS = 365
 
 # ClickHouse archival retention periods.
 CH_AUDIT_ARCHIVE_RETENTION_DAYS = 180
