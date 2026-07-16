@@ -28,6 +28,7 @@ import type {
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
+import { toUptimeHistoryDataPoints } from '../../core/utils/uptime.utils';
 @Component({
   selector: 'app-explore',
   standalone: true,
@@ -157,20 +158,7 @@ export class Explore implements OnInit {
   exploreUptimeHistory(page: StatusPageData): ExploreCardUptimePoint[] {
     const history = page.uptime_history ?? [];
     if (history.length > 0) {
-      return history.map(day => {
-        const status = `${day.status}`.toLowerCase().replace(/[\s-]+/g, '_');
-        return {
-          date: day.date,
-          status:
-            status === 'no_data'
-              ? 'no_data'
-              : status === 'outage' || status === 'major_outage' || status === 'down'
-                ? 'down'
-                : status === 'degraded' || status === 'partial_outage'
-                  ? 'partial'
-                  : 'up',
-        };
-      });
+      return toUptimeHistoryDataPoints(history);
     }
 
     return Array.from({ length: 30 }, (_, index) => {

@@ -36,6 +36,7 @@ import { RouterModule, Router } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { SanityService } from '../../services/sanity.service';
 import { formatServiceName } from '../../core/utils/formatter.utils';
+import { toUptimeHistoryDataPoints } from '../../core/utils/uptime.utils';
 
 import { timeout } from 'rxjs';
 
@@ -174,31 +175,20 @@ export class Status implements OnInit {
   ): UptimeHistoryDataPoint[] => {
     const source = page.uptime_history ?? [];
     if (source.length > 0) {
-      return source.map(day => {
-        const status = `${day.status}`.toLowerCase().replace(/[\s-]+/g, '_');
-        return {
-          date: day.date,
-          status:
-            status === 'no_data'
-              ? 'no_data'
-              : status === 'outage' || status === 'major_outage' || status === 'down'
-                ? 'down'
-                : status === 'degraded' || status === 'partial_outage' || status === 'partial'
-                  ? 'partial'
-                  : 'up',
-        };
-      });
+      return toUptimeHistoryDataPoints(source);
     }
 
-    return Array.from({ length: 30 }, (_, index) => {
-      const date = new Date();
-      date.setUTCHours(0, 0, 0, 0);
-      date.setUTCDate(date.getUTCDate() - 29 + index);
-      return {
-        date: date.toISOString().slice(0, 10),
-        status: 'no_data',
-      };
-    });
+    return toUptimeHistoryDataPoints(
+      Array.from({ length: 30 }, (_, index) => {
+        const date = new Date();
+        date.setUTCHours(0, 0, 0, 0);
+        date.setUTCDate(date.getUTCDate() - 29 + index);
+        return {
+          date: date.toISOString().slice(0, 10),
+          status: 'no_data',
+        };
+      }),
+    );
   };
 
   dashboardServices = (page: StatusPageData): StatusDashboardService[] => {

@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 9.6.0
+
+### Minor Changes
+
+- Update types
+
 ## 9.5.0
 
 ### Minor Changes
