@@ -65,6 +65,7 @@ const staticMirrors = [
     "viking-ui-elements.js",
     "viking-ui-docs/public/assets/viking-ui-elements.js",
   ],
+  ["viking-tokens.json", "backend/static/viking-tokens.json"],
   ["viking-tokens.json", "viking-ui-docs/public/assets/viking-tokens.json"],
 ];
 

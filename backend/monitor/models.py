@@ -843,6 +843,9 @@ class ValidatedSite(models.Model):
   class Meta:
     db_table = "validated_sites"
     unique_together = ("user", "domain")
+    indexes = [
+      models.Index(fields=["domain"], name="validated_site_domain_idx"),
+    ]
 
   def __str__(self):
     return f"{self.domain} ({self.user.username})"

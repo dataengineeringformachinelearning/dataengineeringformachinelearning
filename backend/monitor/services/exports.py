@@ -40,6 +40,7 @@ from monitor.models import (
   ThreatIntelligence,
   Vulnerability,
 )
+from monitor.services.pdf_report import render_pdf_report
 
 logger = logging.getLogger(__name__)
 
@@ -349,78 +350,14 @@ def _to_parquet(rows: list[dict[str, Any]]) -> bytes:
   return sink.getvalue()
 
 
-def _to_pdf(rows: list[dict[str, Any]], *, title: str) -> bytes:
-  """Minimal multi-page text PDF (no third-party PDF runtime)."""
-  lines = [title, f"Generated: {timezone.now().isoformat()}", f"Rows: {len(rows)}", ""]
-  if not rows:
-    lines.append("No data for selected range.")
-  else:
-    headers = list(rows[0].keys())
-    lines.append(" | ".join(headers))
-    lines.append("-" * min(100, max(20, len(lines[-1]))))
-    for row in rows[:1000]:
-      lines.append(" | ".join(str(row.get(h, ""))[:40] for h in headers))
-    if len(rows) > 1000:
-      lines.append(f"... truncated {len(rows) - 1000} additional rows")
-
-  # Escape PDF string specials
-  def esc(text: str) -> str:
-    return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-
-  lines_per_page = 48
-  pages = [lines[index : index + lines_per_page] for index in range(0, len(lines), lines_per_page)]
-  pages = pages or [["No data for selected range."]]
-  page_ids = [3 + (index * 2) for index in range(len(pages))]
-  content_ids = [page_id + 1 for page_id in page_ids]
-  font_id = 3 + (len(pages) * 2)
-
-  objects: list[bytes] = [
-    b"1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj\n",
-    (
-      f"2 0 obj<< /Type /Pages /Kids [{' '.join(f'{page_id} 0 R' for page_id in page_ids)}] "
-      f"/Count {len(pages)} >>endobj\n"
-    ).encode(),
-  ]
-  for page_number, page_lines in enumerate(pages):
-    page_id = page_ids[page_number]
-    content_id = content_ids[page_number]
-    content_cmds: list[str] = ["BT", "/F1 10 Tf", "50 750 Td", "14 TL"]
-    for line_number, line in enumerate(page_lines):
-      if line_number > 0:
-        content_cmds.append("T*")
-      content_cmds.append(f"({esc(line[:110])}) Tj")
-    content_cmds.append("ET")
-    stream = "\n".join(content_cmds).encode("latin-1", errors="replace")
-    objects.append(
-      (
-        f"{page_id} 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
-        f"/Contents {content_id} 0 R /Resources << /Font << /F1 {font_id} 0 R >> >> "
-        ">>endobj\n"
-      ).encode()
-    )
-    objects.append(
-      f"{content_id} 0 obj<< /Length {len(stream)} >>stream\n".encode()
-      + stream
-      + b"\nendstream\nendobj\n"
-    )
-  objects.append(
-    f"{font_id} 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj\n".encode()
-  )
-
-  out = bytearray(b"%PDF-1.4\n")
-  offsets = [0]
-  for obj in objects:
-    offsets.append(len(out))
-    out.extend(obj)
-  xref_pos = len(out)
-  out.extend(f"xref\n0 {len(offsets)}\n".encode())
-  out.extend(b"0000000000 65535 f \n")
-  for off in offsets[1:]:
-    out.extend(f"{off:010d} 00000 n \n".encode())
-  out.extend(
-    f"trailer<< /Size {len(offsets)} /Root 1 0 R >>\nstartxref\n{xref_pos}\n%%EOF\n".encode()
-  )
-  return bytes(out)
+def _to_pdf(
+  rows: list[dict[str, Any]],
+  *,
+  title: str,
+  metadata: dict[str, str] | None = None,
+) -> bytes:
+  """Render a themed, searchable DEML report without a third-party PDF runtime."""
+  return render_pdf_report(rows, title=title, metadata=metadata)
 
 
 def render_export_bytes(job: ExportJob, rows: list[dict[str, Any]]) -> tuple[bytes, str, str]:
@@ -432,8 +369,15 @@ def render_export_bytes(job: ExportJob, rows: list[dict[str, Any]]) -> tuple[byt
   if job.format == ExportJob.Format.PARQUET:
     return _to_parquet(rows), CONTENT_TYPES[ExportJob.Format.PARQUET], f"{base}.parquet"
   if job.format == ExportJob.Format.PDF:
+    params = job.params if isinstance(job.params, dict) else {}
+    days = max(1, min(int(params.get("days") or 7), REPORT_ARCHIVE_RETENTION_DAYS))
+    scope = str(params.get("site_url") or "").strip() or "All monitored sites"
     return (
-      _to_pdf(rows, title=f"DEML {job.kind} export"),
+      _to_pdf(
+        rows,
+        title=f"{str(job.get_kind_display()).title()} Report",
+        metadata={"Reporting window": f"{days} days", "Scope": scope},
+      ),
       CONTENT_TYPES[ExportJob.Format.PDF],
       f"{base}.pdf",
     )

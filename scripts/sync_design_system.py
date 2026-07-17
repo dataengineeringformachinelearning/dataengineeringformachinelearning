@@ -65,6 +65,7 @@ def sync_design_system() -> None:
   ]
 
   tokens_json_targets = [
+    os.path.join(root_dir, "backend", "static", "viking-tokens.json"),
     os.path.join(docs_static_dir, "viking-tokens.json"),
     os.path.join(root_dir, "viking-ui-docs", "public", "assets", "viking-tokens.json"),
   ]
