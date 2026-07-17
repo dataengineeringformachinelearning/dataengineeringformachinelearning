@@ -29,10 +29,10 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js 22 for the Functions runtime
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "npm"
@@ -46,7 +46,7 @@ jobs:
 
       - name: Authenticate to Google Cloud / Firebase
         id: auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
           create_credentials_file: true
@@ -136,6 +136,40 @@ jobs:
             --base-image=us-east4-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22 \
             "${env_args[@]}" \
             --quiet
+
+      - name: Verify deployed callable function
+        shell: bash
+        run: |
+          read -r latest_created latest_ready < <(
+            gcloud run services describe ingestevent \
+              --region=us-east4 \
+              --project=demldotcom \
+              --format="value(status.latestCreatedRevisionName,status.latestReadyRevisionName)"
+          )
+          test -n "${latest_created}"
+          test "${latest_created}" = "${latest_ready}"
+
+          service_url=$(
+            gcloud run services describe ingestevent \
+              --region=us-east4 \
+              --project=demldotcom \
+              --format="value(status.url)"
+          )
+          response_file=$(mktemp)
+          status=$(curl --silent --show-error \
+            --output "${response_file}" \
+            --write-out "%{http_code}" \
+            --request POST \
+            --header "Content-Type: application/json" \
+            --data '{"data":{}}' \
+            "${service_url}")
+          test "${status}" = "401"
+          node -e '
+            const fs = require("node:fs");
+            const response = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            if (response.error?.status !== "UNAUTHENTICATED") process.exit(1);
+          ' "${response_file}"
+          echo "Verified ready revision ${latest_ready} and callable authentication boundary"
 
       - name: Deployment summary
         run: |
