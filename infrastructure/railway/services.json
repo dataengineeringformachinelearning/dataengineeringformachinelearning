@@ -88,6 +88,12 @@
         "CLICKHOUSE_PORT",
         "CLICKHOUSE_USER",
         "CLICKHOUSE_PASSWORD",
+        "HF_TOKEN",
+        "HF_REPO_ID",
+        "HF_MODEL_PUBLISH_REQUIRED",
+        "FIREBASE_PROJECT_ID",
+        "FIREBASE_SERVICE_ACCOUNT_JSON",
+        "FIRESTORE_BENCHMARK_PUBLISH_REQUIRED",
         "RUSTFS_ENDPOINT",
         "RUSTFS_ACCESS_KEY",
         "RUSTFS_SECRET_KEY",
@@ -100,6 +106,8 @@
       "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET"],
       "envDefaults": {
         "PYTHON_EMBEDDED_SCHEDULERS_ENABLED": "0",
+        "HF_MODEL_PUBLISH_REQUIRED": "true",
+        "FIRESTORE_BENCHMARK_PUBLISH_REQUIRED": "true",
         "FIRECRAWL_ENABLED": "false",
         "FIRECRAWL_API_URL": "https://api.firecrawl.dev"
       },

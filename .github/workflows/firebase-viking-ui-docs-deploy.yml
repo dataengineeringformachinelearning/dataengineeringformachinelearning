@@ -1,22 +1,15 @@
-# Deploy Viking-UI documentation site to Firebase Hosting on merge to main.
+# Manual fallback deployment for the Viking-UI documentation site.
 # Serves the Viking-UI component library docs at ui.dataengineeringformachinelearning.com
 # (configure custom domain in Firebase console after first deploy).
 
 name: Deploy Viking-UI Docs
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'packages/viking-ui/src/**'
-      - 'viking-ui-docs/**'
-      - 'packages/viking-ui/**'
-      - 'scripts/**'
-      - 'firebase.json'
-      - '.firebaserc'
-      - '.github/workflows/firebase-viking-ui-docs-deploy.yml'
   workflow_dispatch:
+
+concurrency:
+  group: viking-ui-showcase-production
+  cancel-in-progress: false
 
 jobs:
   build_and_deploy:
@@ -28,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
           cache-dependency-path: viking-ui-docs/package-lock.json
 
@@ -50,15 +43,15 @@ jobs:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI }}
           create_credentials_file: true
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      - name: Verify lockfile-pinned Firebase CLI
+        run: npx --no-install firebase --version
 
       - name: Deploy Viking-UI docs hosting target
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
         run: |
           set +e
-          OUTPUT=$(firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive 2>&1)
+          OUTPUT=$(npx --no-install firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive 2>&1)
           STATUS=$?
           echo "$OUTPUT"
           if [ "$STATUS" -eq 0 ]; then

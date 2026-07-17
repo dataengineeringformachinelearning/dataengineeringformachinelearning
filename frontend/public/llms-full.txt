@@ -2403,19 +2403,21 @@ There is **no** scheduled purge of dormant accounts or orphaned Stripe customers
 
 ### GitHub Actions (Repository Maintenance)
 
-| Workflow                      | Cadence                         | Purpose                              |
-| ----------------------------- | ------------------------------- | ------------------------------------ |
-| `renovate.yml`                | Weekly (Sun 00:00 UTC)          | Dependency update PRs                |
-| `30-60-90-automation.yml`     | Monthly (1st)                   | Semgrep SAST, `npm audit`, `uv lock` |
-| `30-60-90-automation.yml`     | Quarterly (Jan/Apr/Jul/Oct 1st) | Frontend build audit, `ruff check`   |
-| `ci-tests.yml`                | Push/PR to `main`               | Backend pytest + frontend vitest     |
-| `huggingface-space.yml`       | Push to `main`                  | HF Space model artifact sync         |
-| `purge-cloudflare-cache.yml`  | On deploy                       | CDN cache invalidation               |
-| `firebase-backend-deploy.yml` | Push to `main`                  | Cloud Functions + Firestore rules    |
-| `firebase-hosting-*.yml`      | Push/PR to `main`               | Marketing site deploy                |
+| Workflow                          | Cadence                         | Purpose                                |
+| --------------------------------- | ------------------------------- | -------------------------------------- |
+| `renovate.yml`                    | Weekly (Sun 00:00 UTC)          | Dependency update PRs                  |
+| `30-60-90-automation.yml`         | Monthly (1st)                   | Semgrep SAST and dependency audit      |
+| `30-60-90-automation.yml`         | Even months (1st)               | Production and model health checks     |
+| `30-60-90-automation.yml`         | Quarterly (Jan/Apr/Jul/Oct 1st) | Frontend build audit, `ruff check`     |
+| `ci-tests.yml`                    | Push/PR to `main`               | Backend pytest + frontend vitest       |
+| `huggingface-space.yml`           | Push to `main`                  | Optional frontend mirror to HF Space   |
+| `purge-cloudflare-cache.yml`      | On deploy                       | CDN cache invalidation                 |
+| `firebase-backend-deploy.yml`     | Push to `main`                  | Cloud Functions + Firestore rules      |
+| `firebase-hosting-*.yml`          | Push/PR to `main`               | Marketing site deploy                  |
+| `production-deployment-smoke.yml` | Every six hours + manual        | Public surfaces and HF model freshness |
 
 > [!NOTE]
-> Daily ML training and threat-intel fetch run in **Django workers**, not GitHub Actions. There is no `daily-automation.yml` workflow.
+> Daily ML training and threat-intel fetch run in **Django workers**, not GitHub Actions. The Rust scheduler publishes the durable `train_all_models` trigger, `deml-workers` executes it, and `HfApi` publishes model state dictionaries when the required Railway `HF_TOKEN` and `HF_REPO_ID` variables are present. There is no `daily-automation.yml` model-publishing workflow.
 
 ## Appendix E: Contributing Guidelines & Getting Started
 

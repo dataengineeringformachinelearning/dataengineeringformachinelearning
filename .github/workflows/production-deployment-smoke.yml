@@ -1,0 +1,47 @@
+name: Production Deployment Smoke
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment-smoke
+  cancel-in-progress: true
+
+jobs:
+  verify-production:
+    name: Verify public surfaces and model freshness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up locked Python workspace
+        uses: astral-sh/setup-uv@v6
+
+      - name: Verify production HTTP surfaces
+        env:
+          PRODUCTION_URLS: >-
+            https://dataengineeringformachinelearning.com/
+            https://deml.app/
+            https://backend.deml.app/api/v1/system-status/health
+            https://deml-ui.web.app/
+        run: |
+          for url in $PRODUCTION_URLS; do
+            echo "Checking ${url}"
+            curl --fail --location --silent --show-error \
+              --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
+              --output /dev/null "$url"
+          done
+
+      - name: Verify Hugging Face model freshness
+        env:
+          HF_MODEL_REPO_ID: ${{ vars.HF_MODEL_REPO_ID }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          test -n "$HF_MODEL_REPO_ID" || { echo "HF_MODEL_REPO_ID is not configured" >&2; exit 1; }
+          uv run --locked python scripts/verify_huggingface_models.py "$HF_MODEL_REPO_ID" --max-age-hours 36

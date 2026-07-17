@@ -38,6 +38,49 @@ from ml.models import ThreatReport, TrainingRun
 
 MODEL_TYPE_SLA: Final[str] = TrainingRun.MODEL_TYPE_SLA
 MODEL_TYPE_SPIKING: Final[str] = TrainingRun.MODEL_TYPE_SPIKING
+TRUE_VALUES: Final[frozenset[str]] = frozenset({"1", "true", "yes", "on"})
+
+
+def _publish_model_artifact(
+  path_or_fileobj: str,
+  *,
+  path_in_repo: str,
+  model_label: str,
+) -> bool:
+  """Publish one state-dict artifact and surface configuration or transport failures."""
+  hf_token = os.environ.get("HF_TOKEN", "").strip()
+  hf_repo = os.environ.get("HF_REPO_ID", "").strip()
+  publishing_required = (
+    os.environ.get("HF_MODEL_PUBLISH_REQUIRED", "false").strip().lower() in TRUE_VALUES
+  )
+
+  if bool(hf_token) != bool(hf_repo):
+    raise RuntimeError("Hugging Face model publishing requires both HF_TOKEN and HF_REPO_ID")
+
+  if not hf_token:
+    message = "Hugging Face model publishing is not configured"
+    if publishing_required:
+      raise RuntimeError(message)
+    logger.warning("%s; trained %s locally only", message, model_label)
+    return False
+
+  try:
+    from huggingface_hub import HfApi
+
+    api = HfApi(token=hf_token)
+    api.upload_file(
+      path_or_fileobj=path_or_fileobj,
+      path_in_repo=path_in_repo,
+      repo_id=hf_repo,
+      repo_type="model",
+      commit_message=f"Publish model artifact: {path_in_repo}",
+    )
+  except Exception as exc:
+    logger.exception("Failed to publish %s to Hugging Face", model_label)
+    raise RuntimeError(f"Failed to publish {model_label} to Hugging Face") from exc
+
+  logger.info("Published %s to Hugging Face path %s", model_label, path_in_repo)
+  return True
 
 
 # Lazy import SearchQuery to avoid circular dependency at model load time
@@ -417,6 +460,10 @@ else:
       self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
+      if x.dim() == 3:
+        # Forecast once per sequence from its most recent observation so the
+        # output contract matches one target per training window.
+        x = x[:, -1, :]
       x = torch.relu(self.fc1(x))
       x = self.sigmoid(self.fc2(x))
       return x
@@ -521,31 +568,21 @@ def train_tenant_sla(user: Any = None, *, is_platform: bool = False) -> Training
   import os
   import tempfile
 
-  hf_token = os.environ.get("HF_TOKEN")
-  hf_repo = os.environ.get("HF_REPO_ID")
-  if hf_token and hf_repo:
-    try:
-      from huggingface_hub import HfApi
-
-      identifier = "platform" if is_platform else getattr(user, "username", "default")
-      safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
-      model_name = f"{safe_identifier}_sla_model.pt"
-      # Use a secure named temp file; delete=False so HF can stream it before cleanup
-      with tempfile.NamedTemporaryFile(suffix=".pt", delete=False) as tmp:
-        torch.save(best_estimator.model.state_dict(), tmp.name)
-        tmp_path = tmp.name
-      try:
-        api = HfApi(token=hf_token)
-        api.upload_file(
-          path_or_fileobj=tmp_path,
-          path_in_repo=f"sla_models/{model_name}",
-          repo_id=hf_repo,
-          repo_type="model",
-        )
-      finally:
-        os.unlink(tmp_path)
-    except Exception as e:
-      logger.error("Failed to push SLA model to Hugging Face: %s", e)
+  identifier = "platform" if is_platform else getattr(user, "username", "default")
+  safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
+  model_name = f"{safe_identifier}_sla_model.pt"
+  # Use a secure named temp file; delete=False so HF can stream it before cleanup.
+  with tempfile.NamedTemporaryFile(suffix=".pt", delete=False) as tmp:
+    torch.save(best_estimator.model.state_dict(), tmp.name)
+    tmp_path = tmp.name
+  try:
+    _publish_model_artifact(
+      tmp_path,
+      path_in_repo=f"sla_models/{model_name}",
+      model_label=f"tenant {safe_identifier} SLA model",
+    )
+  finally:
+    os.unlink(tmp_path)
 
   run = TrainingRun.objects.create(
     user=None if is_platform else user,
@@ -629,32 +666,24 @@ def train_platform_threat_model() -> dict:
     loss.backward()
     optimizer.step()
 
-  import os
-
   model_path = get_platform_model_path()
   # Save securely using torch.save
   torch.save(model.state_dict(), model_path)
 
-  hf_token = os.environ.get("HF_TOKEN")
-  hf_repo = os.environ.get("HF_REPO_ID")
-  if hf_token and hf_repo:
-    try:
-      from huggingface_hub import HfApi
-
-      api = HfApi(token=hf_token)
-      api.upload_file(
-        path_or_fileobj=model_path,
-        path_in_repo="threat_models/platform_threat_model.pt",
-        repo_id=hf_repo,
-        repo_type="model",
-      )
-    except Exception as e:
-      logger.error("Failed to push Platform Threat model to Hugging Face: %s", e)
+  published = _publish_model_artifact(
+    model_path,
+    path_in_repo="threat_models/platform_threat_model.pt",
+    model_label="platform threat model",
+  )
 
   return {
     "global_failure_rate": global_failure_rate,
     "global_suspicious_ratio": global_suspicious_ratio,
-    "status": "Platform model trained and published successfully",
+    "status": (
+      "Platform model trained and published successfully"
+      if published
+      else "Platform model trained locally; Hugging Face publishing is disabled"
+    ),
   }
 
 
@@ -866,28 +895,22 @@ def train_ces_model() -> dict:
     loss.backward()
     optimizer.step()
 
-  import os
-
   model_path = get_ces_model_path()
   torch.save(model.state_dict(), model_path)
 
-  hf_token = os.environ.get("HF_TOKEN")
-  hf_repo = os.environ.get("HF_REPO_ID")
-  if hf_token and hf_repo:
-    try:
-      from huggingface_hub import HfApi
+  published = _publish_model_artifact(
+    model_path,
+    path_in_repo="ces_models/platform_ces_model.pt",
+    model_label="platform CES model",
+  )
 
-      api = HfApi(token=hf_token)
-      api.upload_file(
-        path_or_fileobj=model_path,
-        path_in_repo="ces_models/platform_ces_model.pt",
-        repo_id=hf_repo,
-        repo_type="model",
-      )
-    except Exception as e:
-      logger.error("Failed to push CES model to Hugging Face: %s", e)
-
-  return {"status": "CES model trained and published successfully"}
+  return {
+    "status": (
+      "CES model trained and published successfully"
+      if published
+      else "CES model trained locally; Hugging Face publishing is disabled"
+    )
+  }
 
 
 # Fourth model: Spiking Temporal Forecaster
@@ -1020,34 +1043,16 @@ def train_spiking_temporal_forecaster(
   model_path = get_spiking_model_path(user=user, is_platform=is_platform)
   torch.save(model.state_dict(), model_path)
 
-  # HF push (simplified, similar to others)
-  hf_token = os.environ.get("HF_TOKEN")
-  hf_repo = os.environ.get("HF_REPO_ID")
-  if hf_token and hf_repo:
-    try:
-      import hashlib
-      import tempfile
+  import hashlib
 
-      from huggingface_hub import HfApi
-
-      identifier = "platform" if is_platform else getattr(user, "username", "default")
-      safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
-      model_name = f"{safe_identifier}_spiking_temporal_forecaster.pt"
-      with tempfile.NamedTemporaryFile(suffix=".pt", delete=False) as tmp:
-        torch.save(model.state_dict(), tmp.name)
-        tmp_path = tmp.name
-      try:
-        api = HfApi(token=hf_token)
-        api.upload_file(
-          path_or_fileobj=tmp_path,
-          path_in_repo=f"temporal_models/{model_name}",
-          repo_id=hf_repo,
-          repo_type="model",
-        )
-      finally:
-        os.unlink(tmp_path)
-    except Exception as e:
-      logger.error("Failed to push Spiking Temporal model to HF: %s", e)
+  identifier = "platform" if is_platform else getattr(user, "username", "default")
+  safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
+  model_name = f"{safe_identifier}_spiking_temporal_forecaster.pt"
+  _publish_model_artifact(
+    model_path,
+    path_in_repo=f"temporal_models/{model_name}",
+    model_label=f"tenant {safe_identifier} spiking temporal model",
+  )
 
   avg_pred = float(outputs.mean().item()) * 100.0 if outputs is not None else 50.0
   run = TrainingRun.objects.create(
@@ -1315,15 +1320,10 @@ def _publish_benchmark_to_ui(
   results: dict[str, dict[str, Any]], *, user: Any = None, is_platform: bool
 ) -> None:
   """Publish benchmark results to Firestore projections for UI display."""
-  from django.conf import settings
-
-  if not settings.FIRESTORE_PROJECT_ID:
-    return
-
   try:
-    from google.cloud import firestore
+    from firebase_admin import firestore
 
-    client = firestore.Client(project=settings.FIRESTORE_PROJECT_ID)
+    client = firestore.client(database_id="deml")
     profile = getattr(user, "profile", None)
     account_id = str(profile.account_id) if profile and profile.account_id else None
     # Keep every projection explicitly scoped so tenant results cannot be
@@ -1339,6 +1339,11 @@ def _publish_benchmark_to_ui(
     )
   except Exception as e:
     logger.warning("Failed to publish benchmark to Firestore: %s", e)
+    publishing_required = (
+      os.environ.get("FIRESTORE_BENCHMARK_PUBLISH_REQUIRED", "false").strip().lower() in TRUE_VALUES
+    )
+    if publishing_required:
+      raise RuntimeError("Failed to publish ML benchmark projection to Firestore") from e
 
 
 def evaluate_search_query_threat(query: str) -> float:

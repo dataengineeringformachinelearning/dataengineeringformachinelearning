@@ -1,47 +1,75 @@
-name: Sync to Hugging Face Space
+name: Sync frontend mirror to Hugging Face Space
 
 on:
   push:
     branches:
       - main
     paths:
+      - "README.md"
       - "WHITEPAPER.md"
+      - "BOOK.md"
+      - "THEME.md"
       - "frontend/**"
+      - ".github/workflows/huggingface-space.yml"
   workflow_dispatch:
+
+concurrency:
+  group: hugging-face-space-production
+  cancel-in-progress: true
 
 jobs:
   sync-to-hub:
+    name: Upload frontend mirror with Hugging Face Xet
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository and Git LFS assets
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           lfs: true
 
-      # We assume the user has a static HTML Hugging Face space for hosting the whitepaper/platform UI.
-      # If so, this pushes the repository to HF Spaces on every commit to main.
-      - name: Push to Hugging Face Hub
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Validate Hugging Face credentials
         env:
+          HF_SPACE_REPO: ${{ secrets.HF_SPACE_REPO }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          test -n "$HF_TOKEN" || { echo "HF_TOKEN is not configured" >&2; exit 1; }
+          test -n "$HF_SPACE_REPO" || { echo "HF_SPACE_REPO is not configured" >&2; exit 1; }
+          uvx --from huggingface_hub==1.23.0 hf auth whoami --format json >/dev/null
 
-          if [ -n "$HF_TOKEN" ] && [ -n "${{ secrets.HF_SPACE_REPO }}" ]; then
-            # Hugging Face rejects raw binary blobs in Git history.
-            # Root .gitattributes enforces Git LFS for woff2/png/mp4; sync_fonts.py
-            # copies canonical Inter files from viking-ui before deploy.
-            git checkout --orphan hf-deploy
+      - name: Upload frontend mirror to Hugging Face Hub
+        env:
+          HF_SPACE_REPO: ${{ secrets.HF_SPACE_REPO }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          uvx --from huggingface_hub==1.23.0 hf upload "$HF_SPACE_REPO" . . \
+            --repo-type space \
+            --token "$HF_TOKEN" \
+            --include "README.md" \
+            --include "WHITEPAPER.md" \
+            --include "BOOK.md" \
+            --include "THEME.md" \
+            --include "frontend/**" \
+            --exclude "frontend/node_modules/**" \
+            --exclude "frontend/.angular/**" \
+            --exclude "frontend/coverage/**" \
+            --exclude "frontend/dist/**" \
+            --delete "*" \
+            --commit-message "Sync frontend mirror from GitHub" \
+            --commit-description "Source commit: ${GITHUB_SHA}"
 
-            # Ensure fonts are synced from the canonical viking-ui source before push
-            python3 scripts/sync_fonts.py 2>/dev/null || true
-
-            git add .gitattributes
-            git add .
-            git commit -m "Deploy to Hugging Face Spaces"
-
-            git remote add hf "https://user:$HF_TOKEN@huggingface.co/spaces/${{ secrets.HF_SPACE_REPO }}"
-            git push --force hf hf-deploy:main
-          else
-            echo "HF_TOKEN or HF_SPACE_REPO is not set. Skipping Hugging Face push."
+      - name: Report Space runtime state
+        env:
+          HF_SPACE_REPO: ${{ secrets.HF_SPACE_REPO }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          runtime_stage="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer ${HF_TOKEN}" \
+            "https://huggingface.co/api/spaces/${HF_SPACE_REPO}" | jq -r '.runtime.stage // "UNKNOWN"')"
+          echo "Hugging Face Space runtime stage: ${runtime_stage}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$runtime_stage" = "CONFIG_ERROR" ]; then
+            echo "::warning::The Space source is synchronized, but Hugging Face reports a runtime configuration or account-credit error."
           fi

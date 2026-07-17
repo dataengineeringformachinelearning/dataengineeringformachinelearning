@@ -13,31 +13,36 @@ on:
     branches:
       - main
     paths:
-      - 'functions/**'
-      - 'firestore.rules'
-      - 'firebase.json'
-      - '.github/workflows/firebase-backend-deploy.yml'
+      - "functions/**"
+      - "package.json"
+      - "package-lock.json"
+      - "firestore.rules"
+      - "firebase.json"
+      - ".github/workflows/firebase-backend-deploy.yml"
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: firebase-backend-production
+      cancel-in-progress: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 22 (required by functions)
+      - name: Setup Node.js 22 for the Functions runtime
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: 'functions/package-lock.json'
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
 
-      - name: Install dependencies & build Functions
+      - name: Install, test, and build Functions
         run: |
-          cd functions
-          npm ci
-          npm run build
+          npm ci --legacy-peer-deps --workspace functions
+          npm test --workspace functions
+          npm run build --workspace functions
 
       - name: Authenticate to Google Cloud / Firebase
         id: auth
@@ -46,8 +51,8 @@ jobs:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
           create_credentials_file: true
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      - name: Verify lockfile-pinned Firebase CLI
+        run: npx --no-install firebase --version
 
       - name: Configure public Redpanda SASL listener for ingestEvent (fast direct path)
         # For the lowest-latency Event Projections path (no polling), the Cloud Function
@@ -74,6 +79,19 @@ jobs:
           DEML_INTERNODE_ACTIVE_KID: ${{ secrets.DEML_INTERNODE_ACTIVE_KID }}
         run: |
           if [ -n "$REDPANDA_PUBLIC_BROKERS" ]; then
+            missing=0
+            for name in \
+              REDPANDA_PUBLIC_SASL_USERNAME \
+              REDPANDA_PUBLIC_SASL_PASSWORD \
+              REDPANDA_PUBLIC_TLS_CA_B64 \
+              DEML_INTERNODE_KEYS \
+              DEML_INTERNODE_ACTIVE_KID; do
+              if [ -z "${!name}" ]; then
+                echo "${name} must be configured when REDPANDA_PUBLIC_BROKERS is set" >&2
+                missing=1
+              fi
+            done
+            test "$missing" -eq 0
             {
               echo "REDPANDA_BROKERS=${REDPANDA_PUBLIC_BROKERS}"
               echo "REDPANDA_SASL_USERNAME=${REDPANDA_PUBLIC_SASL_USERNAME}"
@@ -92,7 +110,7 @@ jobs:
 
       - name: Deploy Functions and Firestore (rules + indexes)
         run: |
-          firebase deploy --only functions,firestore --project demldotcom --non-interactive
+          npx --no-install firebase deploy --only functions,firestore --project demldotcom --non-interactive
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
 
@@ -100,7 +118,7 @@ jobs:
         run: |
           echo "✅ Firebase Functions and Firestore rules deployed to project: demldotcom"
           echo "   - Functions: ingestEvent (and any other)"
-          echo "   - Firestore: rules from firestore.rules (for deml named DB + users data)"
+          echo "   - Firestore: rules from firestore.rules for the named deml database"
           echo "   - To enable fast direct Redpanda publish from Functions: set the REDPANDA_PUBLIC_* GitHub secrets and re-run this workflow"
 
   purge-cloudflare-cache:

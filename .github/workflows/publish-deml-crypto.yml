@@ -1,5 +1,5 @@
 # Publish deml-crypto to PyPI
-# Uses PyPI Trusted Publishing (OpenID Connect) - no token required
+# Uses the repository-scoped PyPI API token until per-workflow Trusted Publishers are configured.
 name: Publish deml-crypto to PyPI
 
 on:
@@ -7,19 +7,23 @@ on:
     branches:
       - main
     paths:
-      - 'packages/deml-crypto/**'
-      - 'packages/deml-crypto/pyproject.toml'
+      - "packages/deml-crypto/**"
+      - "packages/deml-crypto/pyproject.toml"
+      - ".github/workflows/publish-deml-crypto.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
-  id-token: write
+
+concurrency:
+  group: publish-deml-crypto
+  cancel-in-progress: false
 
 jobs:
   publish:
     name: Build and publish deml-crypto to PyPI
     runs-on: ubuntu-latest
-    environment: pypi
+    environment: pypi-crypto
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,17 +31,23 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install build tools
-        run: pip install build
+        run: pip install build twine
 
       - name: Build package
         run: |
           cd "packages/deml-crypto"
           python -m build
 
+      - name: Validate package metadata
+        run: twine check packages/deml-crypto/dist/*
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
           packages-dir: "packages/deml-crypto/dist"
+          skip-existing: true
