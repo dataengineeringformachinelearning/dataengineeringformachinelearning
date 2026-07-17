@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "24.15.0"
+          node-version: "22"
           cache: npm
       - uses: astral-sh/setup-uv@v6
       - name: Security Scan (Semgrep)
@@ -62,8 +62,10 @@ jobs:
             https://deml-ui.web.app/
         run: |
           for url in $PRODUCTION_URLS; do
+            echo "Checking ${url}"
             curl --fail --location --silent --show-error \
               --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
+              --user-agent "Mozilla/5.0 (compatible; DEML-Deployment-Monitor/1.0)" \
               --output /dev/null "$url"
           done
       - name: Verify Hugging Face model freshness
@@ -82,12 +84,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "24.15.0"
+          node-version: "22"
           cache: npm
       - uses: astral-sh/setup-uv@v6
       - name: Frontend Performance Audit
         run: |
           npm ci --legacy-peer-deps
+          npm run build:viking-ui:package
           npm run build --workspace frontend
       - name: Backend Static Analysis
         run: uvx ruff check backend

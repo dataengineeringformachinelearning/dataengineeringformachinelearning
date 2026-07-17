@@ -10,6 +10,7 @@ on:
       - "BOOK.md"
       - "THEME.md"
       - "frontend/**"
+      - "scripts/sync_huggingface_space.py"
       - ".github/workflows/huggingface-space.yml"
   workflow_dispatch:
 
@@ -45,21 +46,8 @@ jobs:
           HF_SPACE_REPO: ${{ secrets.HF_SPACE_REPO }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          uvx --from huggingface_hub==1.23.0 hf upload "$HF_SPACE_REPO" . . \
-            --repo-type space \
-            --token "$HF_TOKEN" \
-            --include "README.md" \
-            --include "WHITEPAPER.md" \
-            --include "BOOK.md" \
-            --include "THEME.md" \
-            --include "frontend/**" \
-            --exclude "frontend/node_modules/**" \
-            --exclude "frontend/.angular/**" \
-            --exclude "frontend/coverage/**" \
-            --exclude "frontend/dist/**" \
-            --delete "*" \
-            --commit-message "Sync frontend mirror from GitHub" \
-            --commit-description "Source commit: ${GITHUB_SHA}"
+          uv run --no-project --with huggingface_hub==1.23.0 \
+            python scripts/sync_huggingface_space.py
 
       - name: Report Space runtime state
         env:
