@@ -49,12 +49,10 @@ const admin = __importStar(require("firebase-admin"));
 const firestore_1 = require("firebase-admin/firestore");
 const https_1 = require("firebase-functions/v2/https");
 const firebase_functions_1 = require("firebase-functions");
-const firebase_functions_2 = require("firebase-functions");
 const kafkajs_1 = require("kafkajs");
 const event_contract_1 = require("./event_contract");
 const internode_encryption_1 = require("./internode_encryption");
 admin.initializeApp();
-const fcfg = (0, firebase_functions_1.config)();
 // Initialize Kafka/Redpanda client
 // For fastest Event Projections (no polling):
 //   - Point Firebase Functions at the PUBLIC SASL-authenticated Redpanda listener
@@ -67,9 +65,7 @@ const directKafkaEnabled = Boolean(configuredKafkaBrokers);
 const isCloudRuntime = Boolean(
   process.env.K_SERVICE || process.env.GCLOUD_PROJECT,
 );
-const useSsl =
-  process.env.REDPANDA_SSL === "true" ||
-  (fcfg.redpanda && fcfg.redpanda.ssl === "true");
+const useSsl = process.env.REDPANDA_SSL === "true";
 if (isCloudRuntime && directKafkaEnabled && !useSsl) {
   throw new Error("Production Redpanda transport requires REDPANDA_SSL=true");
 }
@@ -90,12 +86,8 @@ if (useSsl) {
 // Apply SASL whenever credentials are present so authenticated publish works with or
 // without TLS. (Previously SASL was only set inside the ssl block, so a plaintext SASL
 // connection silently sent no credentials.)
-const saslUser =
-  process.env.REDPANDA_SASL_USERNAME ||
-  (fcfg.redpanda && fcfg.redpanda.sasl_username);
-const saslPass =
-  process.env.REDPANDA_SASL_PASSWORD ||
-  (fcfg.redpanda && fcfg.redpanda.sasl_password);
+const saslUser = process.env.REDPANDA_SASL_USERNAME;
+const saslPass = process.env.REDPANDA_SASL_PASSWORD;
 if (isCloudRuntime && directKafkaEnabled && (!saslUser || !saslPass)) {
   throw new Error("Production Redpanda transport requires SASL credentials");
 }
@@ -113,13 +105,13 @@ const producer = kafka.producer();
  * Using a cold-start pattern.
  */
 let isProducerConnected = false;
-async function getProducer() {
+const getProducer = async () => {
   if (!isProducerConnected) {
     await producer.connect();
     isProducerConnected = true;
   }
   return producer;
-}
+};
 /**
  * Generic event ingestion gateway (client commands).
  * Natively validates the Auth token and pushes the event to Redpanda
@@ -143,7 +135,7 @@ exports.ingestEvent = (0, https_1.onCall)(
     }
     const uid = request.auth.uid;
     const data = request.data;
-    firebase_functions_2.logger.info("UID DEBUG:", { uid, type: typeof uid });
+    firebase_functions_1.logger.info("UID DEBUG:", { uid, type: typeof uid });
     const eventPayload = data;
     // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
@@ -204,7 +196,7 @@ exports.ingestEvent = (0, https_1.onCall)(
         message: "Event successfully queued to Redpanda.",
       };
     } catch (error) {
-      firebase_functions_2.logger.error(
+      firebase_functions_1.logger.error(
         "Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:",
         error,
       );
@@ -226,7 +218,7 @@ exports.ingestEvent = (0, https_1.onCall)(
           message: "Event accepted (queued via resilient fallback).",
         };
       } catch (fsError) {
-        firebase_functions_2.logger.error(
+        firebase_functions_1.logger.error(
           "Failed to write fallback event to Firestore inbox:",
           fsError,
         );

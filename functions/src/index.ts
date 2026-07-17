@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { config as functionsConfig } from "firebase-functions";
 import { logger } from "firebase-functions";
 import { Kafka } from "kafkajs";
 
@@ -12,8 +11,6 @@ import {
 import { encryptKafkaValue } from "./internode_encryption";
 
 admin.initializeApp();
-
-const fcfg = functionsConfig();
 
 // Initialize Kafka/Redpanda client
 // For fastest Event Projections (no polling):
@@ -27,9 +24,7 @@ const directKafkaEnabled = Boolean(configuredKafkaBrokers);
 const isCloudRuntime = Boolean(
   process.env.K_SERVICE || process.env.GCLOUD_PROJECT,
 );
-const useSsl =
-  process.env.REDPANDA_SSL === "true" ||
-  (fcfg.redpanda && fcfg.redpanda.ssl === "true");
+const useSsl = process.env.REDPANDA_SSL === "true";
 if (isCloudRuntime && directKafkaEnabled && !useSsl) {
   throw new Error("Production Redpanda transport requires REDPANDA_SSL=true");
 }
@@ -50,12 +45,8 @@ if (useSsl) {
 // Apply SASL whenever credentials are present so authenticated publish works with or
 // without TLS. (Previously SASL was only set inside the ssl block, so a plaintext SASL
 // connection silently sent no credentials.)
-const saslUser =
-  process.env.REDPANDA_SASL_USERNAME ||
-  (fcfg.redpanda && fcfg.redpanda.sasl_username);
-const saslPass =
-  process.env.REDPANDA_SASL_PASSWORD ||
-  (fcfg.redpanda && fcfg.redpanda.sasl_password);
+const saslUser = process.env.REDPANDA_SASL_USERNAME;
+const saslPass = process.env.REDPANDA_SASL_PASSWORD;
 if (isCloudRuntime && directKafkaEnabled && (!saslUser || !saslPass)) {
   throw new Error("Production Redpanda transport requires SASL credentials");
 }
@@ -75,13 +66,13 @@ const producer = kafka.producer();
  * Using a cold-start pattern.
  */
 let isProducerConnected = false;
-async function getProducer() {
+const getProducer = async () => {
   if (!isProducerConnected) {
     await producer.connect();
     isProducerConnected = true;
   }
   return producer;
-}
+};
 
 /**
  * Generic event ingestion gateway (client commands).
