@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'packages/viking-ui/**'
-      - 'viking-ui-docs/**'
-      - '.changeset/**'
-      - 'package-lock.json'
-      - 'package.json'
-      - '.github/workflows/publish-viking-ui.yml'
+      - "packages/viking-ui/**"
+      - "viking-ui-docs/**"
+      - ".changeset/**"
+      - "package-lock.json"
+      - "package.json"
+      - ".github/workflows/publish-viking-ui.yml"
   workflow_dispatch:
     inputs:
       force_publish:
@@ -26,7 +26,7 @@ permissions:
   deployments: write
 
 concurrency:
-  group: viking-ui-release-${{ github.ref }}
+  group: viking-ui-showcase-production
   cancel-in-progress: false
 
 jobs:
@@ -38,17 +38,17 @@ jobs:
       FIREBASE_SERVICE_ACCOUNT_DEML_UI: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - name: Verify Viking-UI version contract
         run: npm run check:viking-ui:version
@@ -148,7 +148,7 @@ jobs:
       - name: Authenticate to Firebase
         if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
         id: firebase-auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI }}
           create_credentials_file: true
@@ -158,8 +158,7 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.firebase-auth.outputs.credentials_file_path }}
         run: |
-          npm install -g firebase-tools
-          firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive
+          npx --no-install firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive
 
       - name: Skip showcase deploy
         if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI == ''

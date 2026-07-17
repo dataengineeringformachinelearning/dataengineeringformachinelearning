@@ -384,6 +384,7 @@
 .viking-table td {
   padding: var(--viking-table-cell-padding-y) var(--viking-table-cell-padding-x);
   text-align: left;
+  vertical-align: middle;
   border-bottom: 1px solid var(--viking-border);
 }
 

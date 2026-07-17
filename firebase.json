@@ -5,9 +5,12 @@
       "runtime": "nodejs22"
     }
   ],
-  "firestore": {
-    "rules": "firestore.rules"
-  },
+  "firestore": [
+    {
+      "database": "deml",
+      "rules": "firestore.rules"
+    }
+  ],
   "hosting": [
     {
       "target": "marketing",

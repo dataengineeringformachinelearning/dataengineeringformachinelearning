@@ -127,13 +127,23 @@ Role-specific:
 
 ### Hugging Face Model Publishing
 
-ML workers publish trained models to Hugging Face when both `HF_TOKEN` and `HF_REPO_ID` are set. Required repository secrets:
+`deml-workers` publishes trained models to Hugging Face when both `HF_TOKEN` and
+`HF_REPO_ID` are set. These are required encrypted Railway service variables;
+`HF_MODEL_PUBLISH_REQUIRED=true` makes missing configuration or upload failures
+fail the durable `train_all_models` task instead of reporting a false success.
+The worker also requires `FIREBASE_PROJECT_ID` and
+`FIREBASE_SERVICE_ACCOUNT_JSON` so benchmark projections are written to the
+named `deml` Firestore database after each training cycle.
+`FIRESTORE_BENCHMARK_PUBLISH_REQUIRED=true` makes projection failures fail the
+durable task instead of being reduced to warnings.
+The separate GitHub Actions secrets only mirror the frontend to a Hugging Face
+Space.
 
-| Secret          | Description                                |
-| --------------- | ------------------------------------------ |
-| `HF_TOKEN`      | Hugging Face API token with write access   |
-| `HF_REPO_ID`    | Repository ID (e.g., `organization/model`) |
-| `HF_SPACE_REPO` | Space repo for whitepaper hosting (deploy) |
+| Secret          | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| `HF_TOKEN`      | Hugging Face API token with write access                     |
+| `HF_REPO_ID`    | Repository ID (e.g., `organization/model`)                   |
+| `HF_SPACE_REPO` | GitHub Actions secret for the optional frontend Space mirror |
 
 Models are published via `huggingface_hub.HfApi` using PyTorch `state_dict` only (no pickle for security). Tenant models are namespaced with hashed tenant slugs.
 

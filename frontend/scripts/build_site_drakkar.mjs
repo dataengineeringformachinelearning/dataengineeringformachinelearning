@@ -206,7 +206,7 @@ const navbarRightWc = (
         </viking-button-wc>
       </div>
 
-      <div class="desktop-auth">
+      <div class="desktop-auth" role="group" aria-label="Account actions">
         <viking-button-wc variant="primary" class="auth-btn" href="${loginHrefDesktop}" id="auth-btn-desktop">
           <span id="auth-icon-desktop" data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
           <span id="auth-text-desktop">Sign In</span>
@@ -241,7 +241,7 @@ const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" ro
         </viking-button-wc>
       </div>
 
-      <div class="desktop-auth">
+      <div class="desktop-auth" role="group" aria-label="Account actions">
         <viking-button-wc variant="primary" class="auth-btn" href={${loginHrefExpr}} id="auth-btn-desktop">
           <span id="auth-icon-desktop" data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
           <span id="auth-text-desktop">Sign In</span>

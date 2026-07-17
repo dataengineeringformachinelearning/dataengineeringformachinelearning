@@ -7,11 +7,27 @@ import pytest
 from account.platform import ensure_platform_status_page
 from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import Client
 from monitor.models import BenchmarkRun, Endpoints, MonitoredService, StatusPage, UserProfile
 
-from ml.ml_services import _benchmark_sla_model, _benchmark_threat_model
+from ml.ml_services import (
+  SpikingTemporalForecaster,
+  _benchmark_sla_model,
+  _benchmark_threat_model,
+  _publish_benchmark_to_ui,
+  _publish_model_artifact,
+)
 from ml.models import ThreatReport, TrainingRun
+
+
+def test_spiking_temporal_forecaster_returns_one_prediction_per_sequence() -> None:
+  torch = pytest.importorskip("torch")
+  model = SpikingTemporalForecaster()
+
+  predictions = model(torch.zeros((4, 8, model.FEATURE_DIM), dtype=torch.float32))
+
+  assert predictions.shape == (4, 1)
 
 
 @pytest.mark.django_db
@@ -238,6 +254,10 @@ def test_daily_training_command_benchmarks_each_account_and_platform() -> None:
   UserProfile.objects.get_or_create(user=user)
 
   with (
+    patch(
+      "ml.management.commands.train_all_models.train_platform_threat_model",
+      return_value={"status": "trained"},
+    ),
     patch("ml.management.commands.train_all_models.train_tenant_sla", return_value=None),
     patch(
       "ml.management.commands.train_all_models.train_threat_model",
@@ -255,3 +275,102 @@ def test_daily_training_command_benchmarks_each_account_and_platform() -> None:
 
   benchmark_suite.assert_any_call(user=user, is_platform=False)
   benchmark_suite.assert_any_call(is_platform=True)
+
+
+def test_required_hugging_face_publish_config_cannot_be_silently_skipped(
+  monkeypatch: pytest.MonkeyPatch,
+) -> None:
+  monkeypatch.setenv("HF_MODEL_PUBLISH_REQUIRED", "true")
+  monkeypatch.delenv("HF_TOKEN", raising=False)
+  monkeypatch.delenv("HF_REPO_ID", raising=False)
+
+  with pytest.raises(RuntimeError, match="not configured"):
+    _publish_model_artifact(
+      "/tmp/model.pt",
+      path_in_repo="models/model.pt",
+      model_label="test model",
+    )
+
+
+def test_hugging_face_upload_failure_is_propagated(monkeypatch: pytest.MonkeyPatch) -> None:
+  monkeypatch.setenv("HF_MODEL_PUBLISH_REQUIRED", "true")
+  monkeypatch.setenv("HF_TOKEN", "test-token")
+  monkeypatch.setenv("HF_REPO_ID", "test-owner/test-models")
+
+  with patch("huggingface_hub.HfApi") as api_class:
+    api_class.return_value.upload_file.side_effect = RuntimeError("Hub unavailable")
+    with pytest.raises(RuntimeError, match="Failed to publish test model"):
+      _publish_model_artifact(
+        "/tmp/model.pt",
+        path_in_repo="models/model.pt",
+        model_label="test model",
+      )
+
+
+def test_hugging_face_commit_message_does_not_expose_model_label(
+  monkeypatch: pytest.MonkeyPatch,
+) -> None:
+  monkeypatch.setenv("HF_TOKEN", "test-token")
+  monkeypatch.setenv("HF_REPO_ID", "test-owner/test-models")
+
+  with patch("huggingface_hub.HfApi") as api_class:
+    _publish_model_artifact(
+      "/tmp/model.pt",
+      path_in_repo="sla_models/hashed-tenant.pt",
+      model_label="private-username SLA model",
+    )
+
+  upload_call = api_class.return_value.upload_file.call_args.kwargs
+  assert upload_call["commit_message"] == ("Publish model artifact: sla_models/hashed-tenant.pt")
+  assert "private-username" not in upload_call["commit_message"]
+
+
+def test_benchmark_projection_uses_named_firestore_database() -> None:
+  with patch("firebase_admin.firestore.client") as firestore_client:
+    _publish_benchmark_to_ui({}, is_platform=True)
+
+  firestore_client.assert_called_once_with(database_id="deml")
+  firestore_client.return_value.collection.assert_called_once_with("ml_benchmarks")
+
+
+def test_required_benchmark_projection_failure_is_propagated(
+  monkeypatch: pytest.MonkeyPatch,
+) -> None:
+  monkeypatch.setenv("FIRESTORE_BENCHMARK_PUBLISH_REQUIRED", "true")
+
+  with (
+    patch("firebase_admin.firestore.client", side_effect=RuntimeError("Firestore unavailable")),
+    pytest.raises(RuntimeError, match="Failed to publish ML benchmark projection"),
+  ):
+    _publish_benchmark_to_ui({}, is_platform=True)
+
+
+@pytest.mark.django_db
+def test_daily_training_command_propagates_partial_failures() -> None:
+  with (
+    patch(
+      "ml.management.commands.train_all_models.train_platform_threat_model",
+      return_value={"status": "trained"},
+    ),
+    patch(
+      "ml.management.commands.train_all_models.train_tenant_sla",
+      side_effect=RuntimeError("publish failed"),
+    ),
+    patch(
+      "ml.management.commands.train_all_models.train_threat_model",
+      return_value=SimpleNamespace(anomaly_score=0.25),
+    ) as threat_model,
+    patch(
+      "ml.management.commands.train_all_models.train_spiking_temporal_forecaster",
+      return_value=None,
+    ),
+    patch(
+      "ml.management.commands.train_all_models.run_benchmark_suite", return_value={}
+    ) as benchmark_suite,
+    patch("ml.ml_services.train_ces_model", return_value={"status": "trained"}),
+    pytest.raises(CommandError, match="1 failed step"),
+  ):
+    call_command("train_all_models")
+
+  threat_model.assert_called_once_with(None, is_platform=True)
+  benchmark_suite.assert_called_once_with(is_platform=True)

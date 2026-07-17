@@ -117,7 +117,7 @@ import {
             </div>
           }
 
-          <div class="desktop-auth">
+          <div class="desktop-auth" role="group" aria-label="Account actions">
             @if (!isAuthenticated()) {
               <viking-button
                 variant="primary"

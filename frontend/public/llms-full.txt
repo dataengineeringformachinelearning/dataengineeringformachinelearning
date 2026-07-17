@@ -2403,19 +2403,21 @@ There is **no** scheduled purge of dormant accounts or orphaned Stripe customers
 
 ### GitHub Actions (Repository Maintenance)
 
-| Workflow                      | Cadence                         | Purpose                              |
-| ----------------------------- | ------------------------------- | ------------------------------------ |
-| `renovate.yml`                | Weekly (Sun 00:00 UTC)          | Dependency update PRs                |
-| `30-60-90-automation.yml`     | Monthly (1st)                   | Semgrep SAST, `npm audit`, `uv lock` |
-| `30-60-90-automation.yml`     | Quarterly (Jan/Apr/Jul/Oct 1st) | Frontend build audit, `ruff check`   |
-| `ci-tests.yml`                | Push/PR to `main`               | Backend pytest + frontend vitest     |
-| `huggingface-space.yml`       | Push to `main`                  | HF Space model artifact sync         |
-| `purge-cloudflare-cache.yml`  | On deploy                       | CDN cache invalidation               |
-| `firebase-backend-deploy.yml` | Push to `main`                  | Cloud Functions + Firestore rules    |
-| `firebase-hosting-*.yml`      | Push/PR to `main`               | Marketing site deploy                |
+| Workflow                          | Cadence                         | Purpose                                |
+| --------------------------------- | ------------------------------- | -------------------------------------- |
+| `renovate.yml`                    | Weekly (Sun 00:00 UTC)          | Dependency update PRs                  |
+| `30-60-90-automation.yml`         | Monthly (1st)                   | Semgrep SAST and dependency audit      |
+| `30-60-90-automation.yml`         | Even months (1st)               | Production and model health checks     |
+| `30-60-90-automation.yml`         | Quarterly (Jan/Apr/Jul/Oct 1st) | Frontend build audit, `ruff check`     |
+| `ci-tests.yml`                    | Push/PR to `main`               | Backend pytest + frontend vitest       |
+| `huggingface-space.yml`           | Push to `main`                  | Optional frontend mirror to HF Space   |
+| `purge-cloudflare-cache.yml`      | On deploy                       | CDN cache invalidation                 |
+| `firebase-backend-deploy.yml`     | Push to `main`                  | Cloud Functions + Firestore rules      |
+| `firebase-hosting-*.yml`          | Push/PR to `main`               | Marketing site deploy                  |
+| `production-deployment-smoke.yml` | Every six hours + manual        | Public surfaces and HF model freshness |
 
 > [!NOTE]
-> Daily ML training and threat-intel fetch run in **Django workers**, not GitHub Actions. There is no `daily-automation.yml` workflow.
+> Daily ML training and threat-intel fetch run in **Django workers**, not GitHub Actions. The Rust scheduler publishes the durable `train_all_models` trigger, `deml-workers` executes it, and `HfApi` publishes model state dictionaries when the required Railway `HF_TOKEN` and `HF_REPO_ID` variables are present. There is no `daily-automation.yml` model-publishing workflow.
 
 ## Appendix E: Contributing Guidelines & Getting Started
 
@@ -2755,11 +2757,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js"
 ></script>
 ```
 
@@ -2964,7 +2966,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/platform-server`: ^22.0.0
 - `@angular/router`: ^22.0.0
 - `@angular/ssr`: ^22.0.0
-- `@dataengineeringformachinelearning/viking-ui`: ^9.5.0
+- `@dataengineeringformachinelearning/viking-ui`: ^9.7.0
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `express`: ^5.1.0
@@ -5518,16 +5520,16 @@ This architecture rests on open-source foundations, enterprise design references
 
 ## 17. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js"
 ></script>
 ```
 

@@ -1,7 +1,10 @@
+from typing import Any
+
 from django.contrib.auth import get_user_model
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from ml.ml_services import (
   run_benchmark_suite,
+  train_platform_threat_model,
   train_spiking_temporal_forecaster,
   train_tenant_sla,
   train_threat_model,
@@ -17,8 +20,17 @@ class Command(BaseCommand):
     "Spiking model uses Norse if available for temporal data."
   )
 
-  def handle(self, *args, **options):
+  def handle(self, *args: Any, **options: Any) -> None:
+    failures: list[str] = []
     self.stdout.write("Starting SLA and Threat forecast model training for all users...")
+    self.stdout.write("Retraining shared platform threat weights...")
+    try:
+      threat_training = train_platform_threat_model()
+      self.stdout.write(self.style.SUCCESS(f"  - {threat_training['status']}"))
+    except Exception as e:
+      failures.append(f"Platform threat weight training: {e}")
+      self.stderr.write(self.style.ERROR(f"  - Platform threat weight training failed: {e}"))
+
     for user in User.objects.filter(profile__isnull=False).select_related("profile"):
       self.stdout.write(f"Training models for user '{user.username}'...")
       try:
@@ -32,6 +44,7 @@ class Command(BaseCommand):
         else:
           self.stdout.write("  - SLA training skipped (no telemetry data)")
       except Exception as e:
+        failures.append(f"SLA training for {user.username}: {e}")
         self.stderr.write(self.style.ERROR(f"  - SLA training failed: {e}"))
 
       self.stdout.write(f"Training threat model for user '{user.username}'...")
@@ -43,6 +56,7 @@ class Command(BaseCommand):
           )
         )
       except Exception as e:
+        failures.append(f"Threat training for {user.username}: {e}")
         self.stderr.write(self.style.ERROR(f"  - Threat training failed: {e}"))
 
       try:
@@ -53,6 +67,7 @@ class Command(BaseCommand):
           )
         )
       except Exception as e:
+        failures.append(f"Benchmarking for {user.username}: {e}")
         self.stderr.write(self.style.ERROR(f"  - Benchmarking failed: {e}"))
 
     self.stdout.write("Training platform scope models...")
@@ -64,12 +79,22 @@ class Command(BaseCommand):
             f"  - Platform SLA forecast trained: average predicted SLA = {run.average_sla:.2f}%"
           )
         )
+    except Exception as e:
+      failures.append(f"Platform SLA training: {e}")
+      self.stderr.write(self.style.ERROR(f"  - Platform SLA training failed: {e}"))
+
+    try:
       report = train_threat_model(None, is_platform=True)
       self.stdout.write(
         self.style.SUCCESS(
           f"  - Platform threat model trained: anomaly score = {report.anomaly_score * 100:.1f}%"
         )
       )
+    except Exception as e:
+      failures.append(f"Platform threat reporting: {e}")
+      self.stderr.write(self.style.ERROR(f"  - Platform threat reporting failed: {e}"))
+
+    try:
       benchmark_results = run_benchmark_suite(is_platform=True)
       self.stdout.write(
         self.style.SUCCESS(
@@ -77,7 +102,8 @@ class Command(BaseCommand):
         )
       )
     except Exception as e:
-      self.stderr.write(self.style.ERROR(f"  - Platform training failed: {e}"))
+      failures.append(f"Platform benchmarking: {e}")
+      self.stderr.write(self.style.ERROR(f"  - Platform benchmarking failed: {e}"))
 
     self.stdout.write("Training global CES model...")
     try:
@@ -88,6 +114,7 @@ class Command(BaseCommand):
         self.style.SUCCESS(f"  - CES model trained successfully: {ces_run['status']}")
       )
     except Exception as e:
+      failures.append(f"CES model training: {e}")
       self.stderr.write(self.style.ERROR(f"  - CES model training failed: {e}"))
 
     self.stdout.write("Training Spiking Temporal Forecaster (fourth model)...")
@@ -102,6 +129,7 @@ class Command(BaseCommand):
       else:
         self.stdout.write("  - Spiking training skipped (no data or Norse unavailable)")
     except Exception as e:
+      failures.append(f"Spiking temporal model training: {e}")
       self.stderr.write(self.style.ERROR(f"  - Spiking Temporal model training failed: {e}"))
 
     for user in User.objects.filter(profile__isnull=False).select_related("profile"):
@@ -114,7 +142,12 @@ class Command(BaseCommand):
             )
           )
       except Exception as e:
+        failures.append(f"Spiking temporal training for {user.username}: {e}")
         self.stderr.write(self.style.ERROR(f"  - Spiking training for user failed: {e}"))
+
+    if failures:
+      summary = "; ".join(failures)
+      raise CommandError(f"Model training completed with {len(failures)} failed step(s): {summary}")
 
     self.stdout.write(
       self.style.SUCCESS("All models (including fourth Spiking Temporal) trained successfully.")

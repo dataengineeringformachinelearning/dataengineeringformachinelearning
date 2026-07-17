@@ -47,8 +47,8 @@ const btnSnippets = (label = "Launch sequence"): ComponentSnippet => ({
   django: `<button type="button" class="viking-btn viking-btn-primary">${label}</button>
 <button type="button" class="viking-btn viking-btn-secondary">Secondary</button>
 <button type="button" class="viking-btn viking-btn-outline">Outline</button>`,
-  javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/web-components.js"><\/script>
+  javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js"><\/script>
 
 <viking-button-wc variant="primary">${label}</viking-button-wc>`,
 });
@@ -700,8 +700,8 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
 {% load static %}
 <script src="{% static 'viking-ui-elements.js' %}" type="module"></script>
 <script src="/static/widgets/command-palette.js" defer></script>`,
-          javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.6.0/dist/web-components.js"><\/script>
+          javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js"><\/script>
 
 <button type="button" onclick="DemlWidgets.openSearch()">Search</button>
 <viking-suite-command-palette global-shortcut></viking-suite-command-palette>

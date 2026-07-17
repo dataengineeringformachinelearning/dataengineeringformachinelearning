@@ -99,18 +99,17 @@
                 <td>{{ job.byte_size ? (job.byte_size + ' B') : '—' }}</td>
                 <td>{{ job.created_at | date: 'short' }}</td>
                 <td>
-                  @if (job.download_ready) {
+                  @let action = getExportActionPresentation(job);
                   <viking-button
-                    variant="ghost"
+                    [variant]="action.variant"
                     type="button"
                     [compact]="true"
+                    [loading]="action.loading"
+                    [disabled]="action.disabled"
                     (pressed)="downloadExport(job.id)"
                   >
-                    Download
+                    {{ action.label }}
                   </viking-button>
-                  } @else {
-                  <span class="section-description-premium">{{ job.error || 'Pending' }}</span>
-                  }
                 </td>
               </tr>
               }

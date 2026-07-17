@@ -30,6 +30,8 @@ const noteIndex = notes.findIndex(candidate => candidate.id === note.id);
 const newerNote = noteIndex > 0 ? notes[noteIndex - 1] : undefined;
 const olderNote = noteIndex >= 0 ? notes[noteIndex + 1] : undefined;
 const { Content, headings } = await render(note);
+const outlineHeadings = headings.filter(heading => heading.depth === 2);
+const hasOutline = outlineHeadings.length > 0;
 const { MARKETING_URL } = siteEnv();
 const noteUrl = canonicalHref(blueNoteHref(note), MARKETING_URL);
 const pageTitle = `${note.data.title} — DEML Blue Notes`;
@@ -72,12 +74,17 @@ const jsonLd = blogPostingJsonLd(
           </ul>
         </header>
 
-        <div class="blue-note-article-layout">
-          {headings.length > 0 && (
+        <div
+          class:list={[
+            'blue-note-article-layout',
+            { 'blue-note-article-layout--with-outline': hasOutline },
+          ]}
+        >
+          {hasOutline && (
             <aside class="blue-note-outline no-print">
               <span class="blue-note-outline-label">In this note</span>
               <nav aria-label="On this page">
-                {headings.filter(heading => heading.depth === 2).map(heading => (
+                {outlineHeadings.map(heading => (
                   <a href={`#${heading.slug}`}>{heading.text}</a>
                 ))}
               </nav>

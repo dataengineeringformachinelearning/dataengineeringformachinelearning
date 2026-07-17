@@ -1,0 +1,61 @@
+name: Production Deployment Smoke
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment-smoke
+  cancel-in-progress: true
+
+jobs:
+  verify-production:
+    name: Verify public surfaces and model freshness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up locked Python workspace
+        uses: astral-sh/setup-uv@v6
+
+      - name: Verify production HTTP surfaces
+        env:
+          ORIGIN_URLS: >-
+            https://demldotcom.web.app/
+            https://deml-ui.web.app/
+          EDGE_URLS: >-
+            https://dataengineeringformachinelearning.com/
+            https://deml.app/
+            https://backend.deml.app/api/v1/system-status/health
+        run: |
+          for url in $ORIGIN_URLS; do
+            echo "Checking deployment origin ${url}"
+            curl --fail --location --silent --show-error \
+              --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
+              --user-agent "Mozilla/5.0 (compatible; DEML-Deployment-Monitor/1.0)" \
+              --output /dev/null "$url"
+          done
+          for url in $EDGE_URLS; do
+            echo "Checking protected edge ${url}"
+            status="$(curl --location --silent --show-error \
+              --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
+              --user-agent "Mozilla/5.0 (compatible; DEML-Deployment-Monitor/1.0)" \
+              --output /dev/null --write-out '%{http_code}' "$url")"
+            case "$status" in
+              2??|3??|403) ;;
+              *) echo "Unexpected HTTP ${status} from ${url}" >&2; exit 1 ;;
+            esac
+          done
+
+      - name: Verify Hugging Face model freshness
+        env:
+          HF_MODEL_REPO_ID: ${{ vars.HF_MODEL_REPO_ID }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          test -n "$HF_MODEL_REPO_ID" || { echo "HF_MODEL_REPO_ID is not configured" >&2; exit 1; }
+          uv run --locked python scripts/verify_huggingface_models.py "$HF_MODEL_REPO_ID" --max-age-hours 36

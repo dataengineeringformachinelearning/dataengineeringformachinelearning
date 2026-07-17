@@ -1,18 +1,11 @@
 name: Viking-UI Storybook Visual Regression
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "packages/viking-ui/**"
-      - ".github/workflows/chromatic.yml"
   pull_request:
     paths:
       - "packages/viking-ui/**"
       - ".github/workflows/chromatic.yml"
   workflow_dispatch:
-
 
 jobs:
   chromatic-viking-ui:
@@ -20,14 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
 
       - name: Install workspace dependencies

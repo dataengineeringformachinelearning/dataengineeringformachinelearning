@@ -27,9 +27,9 @@ html[data-theme="light"] .viking-app-sidebar-host {
   border-bottom: var(--viking-border-width) var(--viking-border-style)
     var(--sidebar-border);
   flex-shrink: 0;
-  height: auto;
-  position: sticky;
-  top: var(--viking-navbar-height, var(--navbar-height, 64px));
+  height: 100%;
+  min-height: 0;
+  position: relative;
   z-index: 40;
   transition: width var(--viking-duration) var(--viking-ease-default);
   overflow: hidden;
@@ -188,9 +188,8 @@ html[data-theme="light"] .viking-app-sidebar-host {
   .dashboard-sidebar {
     border-right: 1px solid var(--sidebar-border);
     border-bottom: none;
-    height: calc(100vh - var(--viking-navbar-height, 64px));
-    position: sticky;
-    top: var(--viking-navbar-height, 64px);
+    height: 100%;
+    position: relative;
   }
 
   .sidebar-brand {

@@ -8,22 +8,29 @@ on:
     branches:
       - main
     paths:
-      - 'marketing/**'
-      - 'firebase.json'
-      - '.github/workflows/firebase-hosting-merge.yml'
+      - "marketing/**"
+      - "packages/viking-ui/**"
+      - "package.json"
+      - "package-lock.json"
+      - "firebase.json"
+      - ".github/workflows/firebase-hosting-merge.yml"
   workflow_dispatch:
+
+concurrency:
+  group: firebase-marketing-production
+  cancel-in-progress: false
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: "24.15.0"
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -40,20 +47,20 @@ jobs:
 
       - name: Authenticate to Google Cloud / Firebase
         id: auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
           create_credentials_file: true
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      - name: Verify lockfile-pinned Firebase CLI
+        run: npx --no-install firebase --version
 
       - name: Deploy marketing hosting target
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
         run: |
           set +e
-          OUTPUT=$(firebase deploy --only hosting:marketing --project demldotcom --non-interactive 2>&1)
+          OUTPUT=$(npx --no-install firebase deploy --only hosting:marketing --project demldotcom --non-interactive 2>&1)
           STATUS=$?
           echo "$OUTPUT"
           if [ "$STATUS" -eq 0 ]; then

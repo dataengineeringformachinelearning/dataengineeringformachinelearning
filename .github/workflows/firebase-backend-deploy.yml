@@ -1,59 +1,67 @@
-# Deploy Firebase Backend components (Cloud Functions + Firestore rules)
-# This covers the CQRS / event ingestion path (ingestEvent function + Firestore "deml" DB rules).
+# Deploy Firebase Backend components (Cloud Run function + Firestore rules)
+# This covers the CQRS / event ingestion path (ingestEvent + Firestore "deml" DB rules).
 #
 # Triggers on changes to functions code, firestore rules, or firebase config on main.
 # Also supports manual dispatch.
 #
 # Uses the same FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM secret as the hosting workflows.
 
-name: Deploy Firebase Backend (Functions + Firestore)
+name: Deploy Firebase Backend (Cloud Run + Firestore)
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'functions/**'
-      - 'firestore.rules'
-      - 'firebase.json'
-      - '.github/workflows/firebase-backend-deploy.yml'
+      - "functions/**"
+      - "package.json"
+      - "package-lock.json"
+      - "firestore.rules"
+      - "firebase.json"
+      - ".github/workflows/firebase-backend-deploy.yml"
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: firebase-backend-production
+      cancel-in-progress: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Setup Node.js 22 (required by functions)
-        uses: actions/setup-node@v4
+      - name: Setup Node.js 22 for the Functions runtime
+        uses: actions/setup-node@v7
         with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: 'functions/package-lock.json'
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
 
-      - name: Install dependencies & build Functions
+      - name: Install, test, and build Functions
         run: |
-          cd functions
-          npm ci
-          npm run build
+          npm ci --legacy-peer-deps --workspace functions
+          npm test --workspace functions
+          npm run build --workspace functions
 
       - name: Authenticate to Google Cloud / Firebase
         id: auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
           create_credentials_file: true
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      - name: Setup Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Verify lockfile-pinned Firebase CLI
+        run: npx --no-install firebase --version
 
       - name: Configure public Redpanda SASL listener for ingestEvent (fast direct path)
         # For the lowest-latency Event Projections path (no polling), the Cloud Function
         # publishes directly to the public Redpanda listener exposed via a Railway TCP
         # Proxy. ingestEvent is a 2nd-gen (Cloud Run) function, so runtime config must be
-        # provided as environment variables (process.env) via a functions/.env file —
+        # provided as environment variables (process.env) via a temporary env file —
         # the legacy `firebase functions:config:set` (gen1) does not apply to v2 functions.
         #
         # Set these GitHub repo secrets:
@@ -74,6 +82,19 @@ jobs:
           DEML_INTERNODE_ACTIVE_KID: ${{ secrets.DEML_INTERNODE_ACTIVE_KID }}
         run: |
           if [ -n "$REDPANDA_PUBLIC_BROKERS" ]; then
+            missing=0
+            for name in \
+              REDPANDA_PUBLIC_SASL_USERNAME \
+              REDPANDA_PUBLIC_SASL_PASSWORD \
+              REDPANDA_PUBLIC_TLS_CA_B64 \
+              DEML_INTERNODE_KEYS \
+              DEML_INTERNODE_ACTIVE_KID; do
+              if [ -z "${!name}" ]; then
+                echo "${name} must be configured when REDPANDA_PUBLIC_BROKERS is set" >&2
+                missing=1
+              fi
+            done
+            test "$missing" -eq 0
             {
               echo "REDPANDA_BROKERS=${REDPANDA_PUBLIC_BROKERS}"
               echo "REDPANDA_SASL_USERNAME=${REDPANDA_PUBLIC_SASL_USERNAME}"
@@ -84,23 +105,77 @@ jobs:
               echo "DEML_INTERNODE_ACTIVE_KID=${DEML_INTERNODE_ACTIVE_KID}"
               echo "DEML_INTERNODE_KEYS=${DEML_INTERNODE_KEYS}"
               echo "DEML_NODE_ID=deml-firebase-ingest"
-            } > functions/.env
-            echo "Wrote functions/.env (verified TLS, SASL, and internode encryption enabled)"
+            } > "${RUNNER_TEMP}/ingestevent.env"
+            echo "Wrote the temporary runtime environment file (verified TLS, SASL, and internode encryption enabled)"
           else
             echo "REDPANDA_PUBLIC_BROKERS not configured; ingestEvent will use Firestore inbox fallback"
           fi
 
-      - name: Deploy Functions and Firestore (rules + indexes)
-        run: |
-          firebase deploy --only functions,firestore --project demldotcom --non-interactive
+      - name: Deploy Firestore rules and indexes
+        run: npx --no-install firebase deploy --only firestore --project demldotcom --non-interactive
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
 
+      - name: Deploy migrated ingestEvent Cloud Run function
+        shell: bash
+        run: |
+          runtime_env="${RUNNER_TEMP}/ingestevent.env"
+          if [[ -f "${runtime_env}" ]]; then
+            env_args=(--env-vars-file="${runtime_env}")
+          else
+            env_args=(--clear-env-vars)
+          fi
+
+          gcloud run deploy ingestevent \
+            --source=functions \
+            --function=ingestEvent \
+            --region=us-east4 \
+            --project=demldotcom \
+            --service-account=demldotcom@appspot.gserviceaccount.com \
+            --build-service-account=projects/demldotcom/serviceAccounts/870072971206-compute@developer.gserviceaccount.com \
+            --base-image=us-east4-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22 \
+            "${env_args[@]}" \
+            --quiet
+
+      - name: Verify deployed callable function
+        shell: bash
+        run: |
+          read -r latest_created latest_ready < <(
+            gcloud run services describe ingestevent \
+              --region=us-east4 \
+              --project=demldotcom \
+              --format="value(status.latestCreatedRevisionName,status.latestReadyRevisionName)"
+          )
+          test -n "${latest_created}"
+          test "${latest_created}" = "${latest_ready}"
+
+          service_url=$(
+            gcloud run services describe ingestevent \
+              --region=us-east4 \
+              --project=demldotcom \
+              --format="value(status.url)"
+          )
+          response_file=$(mktemp)
+          status=$(curl --silent --show-error \
+            --output "${response_file}" \
+            --write-out "%{http_code}" \
+            --request POST \
+            --header "Content-Type: application/json" \
+            --data '{"data":{}}' \
+            "${service_url}")
+          test "${status}" = "401"
+          node -e '
+            const fs = require("node:fs");
+            const response = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            if (response.error?.status !== "UNAUTHENTICATED") process.exit(1);
+          ' "${response_file}"
+          echo "Verified ready revision ${latest_ready} and callable authentication boundary"
+
       - name: Deployment summary
         run: |
-          echo "✅ Firebase Functions and Firestore rules deployed to project: demldotcom"
-          echo "   - Functions: ingestEvent (and any other)"
-          echo "   - Firestore: rules from firestore.rules (for deml named DB + users data)"
+          echo "✅ Cloud Run function and Firestore rules deployed to project: demldotcom"
+          echo "   - Cloud Run function: ingestEvent"
+          echo "   - Firestore: rules from firestore.rules for the named deml database"
           echo "   - To enable fast direct Redpanda publish from Functions: set the REDPANDA_PUBLIC_* GitHub secrets and re-run this workflow"
 
   purge-cloudflare-cache:
