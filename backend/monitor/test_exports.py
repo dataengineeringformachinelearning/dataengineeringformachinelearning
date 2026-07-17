@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 from datetime import timedelta
 from typing import Any
 from unittest.mock import patch
@@ -36,6 +37,7 @@ from monitor.services.exports import (
   process_queued_exports,
   render_export_bytes,
 )
+from monitor.services.pdf_report import _column_widths
 
 User = get_user_model()
 
@@ -66,6 +68,16 @@ def test_render_csv_and_pdf(export_user: Any) -> None:
   assert pdf_body.startswith(b"%PDF")
   assert pdf_ctype == "application/pdf"
   assert pdf_name.endswith(".pdf")
+  assert b"/MediaBox [0 0 792 612]" in pdf_body
+  assert b"/Lang (en-US)" in pdf_body
+  assert b"/MarkInfo << /Marked true >>" in pdf_body
+  assert b"/StructTreeRoot" in pdf_body
+  assert b"/S /H1" in pdf_body
+  assert b"/S /Table" in pdf_body
+  assert b"/Title (Analytics Report)" in pdf_body
+  assert b"(DEML)" in pdf_body
+  assert b"(REPORT DATA)" in pdf_body
+  assert b"(DEML / CONFIDENTIAL OPERATIONAL REPORT)" in pdf_body
 
 
 @pytest.mark.django_db
@@ -275,9 +287,48 @@ def test_pdf_report_paginates_visible_rows(export_user: Any) -> None:
   )
   rows = [{"day": index, "requests": index * 10} for index in range(60)]
 
-  body, _content_type, _name = render_export_bytes(job, rows)
+  with patch("monitor.services.pdf_report._column_widths", wraps=_column_widths) as column_widths:
+    body, _content_type, _name = render_export_bytes(job, rows)
 
-  assert b"/Count 2" in body
+  page_count_match = re.search(rb"/Count (\d+)", body)
+  assert page_count_match is not None
+  page_count = int(page_count_match.group(1))
+  assert page_count >= 2
+  assert body.count(b"(REPORT DATA)") == page_count
+  column_widths.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_pdf_report_renders_themed_empty_state(export_user: Any) -> None:
+  job = ExportJob(
+    user=export_user,
+    account_id=export_user.profile.account_id,
+    kind=ExportJob.Kind.ANALYTICS,
+    format=ExportJob.Format.PDF,
+  )
+
+  body, _content_type, _name = render_export_bytes(job, [])
+
+  assert b"/Count 1" in body
+  assert b"(No data for selected range)" in body
+
+
+@pytest.mark.django_db
+def test_pdf_report_preserves_winansi_location_text(export_user: Any) -> None:
+  job = ExportJob(
+    user=export_user,
+    account_id=export_user.profile.account_id,
+    kind=ExportJob.Kind.THREAT,
+    format=ExportJob.Format.PDF,
+  )
+
+  body, _content_type, _name = render_export_bytes(
+    job,
+    [{"location": "São José", "analyst": "Zoë"}],
+  )
+
+  assert "São José".encode("cp1252") in body
+  assert "Zoë".encode("cp1252") in body
 
 
 def test_csv_neutralizes_spreadsheet_formulas() -> None:
