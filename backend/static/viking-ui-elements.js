@@ -1880,7 +1880,7 @@ a.status-pill {
           <span>${o(n.label)}</span>
         </a>
       `}).join("")}renderAuthDesktop(t,i,r){return`
-      <div class="desktop-auth">
+      <div class="desktop-auth" role="group" aria-label="Account actions">
         <viking-button-wc
           variant="primary"
           class="auth-btn"

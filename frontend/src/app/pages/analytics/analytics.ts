@@ -84,6 +84,40 @@ export type ExportRequestPayload = {
 export const isExportPending = (job: ExportJobRow): boolean =>
   job.status === 'queued' || job.status === 'running' || job.retrying === true;
 
+export type ExportActionPresentation = {
+  label: 'Download' | 'Processing' | 'Unavailable' | 'Pending';
+  variant: 'primary' | 'ghost';
+  loading: boolean;
+  disabled: boolean;
+};
+
+export const getExportActionPresentation = (job: ExportJobRow): ExportActionPresentation => {
+  if (job.download_ready) {
+    return {
+      label: 'Download',
+      variant: 'primary',
+      loading: false,
+      disabled: false,
+    };
+  }
+
+  if (isExportPending(job)) {
+    return {
+      label: 'Processing',
+      variant: 'ghost',
+      loading: true,
+      disabled: true,
+    };
+  }
+
+  return {
+    label: job.error ? 'Unavailable' : 'Pending',
+    variant: 'ghost',
+    loading: false,
+    disabled: true,
+  };
+};
+
 export const buildExportRequestPayload = (
   kind: string,
   format: string,
@@ -154,6 +188,7 @@ type BenchmarkRollup = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
+  public readonly getExportActionPresentation = getExportActionPresentation;
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);

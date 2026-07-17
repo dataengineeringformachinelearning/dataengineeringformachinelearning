@@ -183,7 +183,7 @@ export class VikingSiteNavbarWc extends HTMLElement {
   ): string {
     const href = authenticated ? dashboardHref : signInHref;
     return `
-      <div class="desktop-auth">
+      <div class="desktop-auth" role="group" aria-label="Account actions">
         <viking-button-wc
           variant="primary"
           class="auth-btn"

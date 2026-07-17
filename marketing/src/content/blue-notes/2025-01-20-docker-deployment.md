@@ -1,6 +1,6 @@
 ---
 title: "Containerized Deployment: Docker and Railway Production Mesh"
-summary: "Production-ready containerization with distroless images, multi-service Railay topology, and health-check-driven deployment orchestration."
+summary: "Production-ready containerization with distroless images, multi-service Railway topology, and health-check-driven deployment orchestration."
 publishedAt: 2025-01-20
 note: Platform Note 003
 categories:

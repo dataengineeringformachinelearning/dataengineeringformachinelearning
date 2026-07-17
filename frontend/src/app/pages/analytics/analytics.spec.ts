@@ -1,4 +1,9 @@
-import { buildExportRequestPayload, ExportJobRow, isExportPending } from './analytics';
+import {
+  buildExportRequestPayload,
+  ExportJobRow,
+  getExportActionPresentation,
+  isExportPending,
+} from './analytics';
 
 const exportJob = (overrides: Partial<ExportJobRow> = {}): ExportJobRow => ({
   id: 'f849c45d-2288-4673-82bc-a09a83710f4f',
@@ -80,5 +85,41 @@ describe('analytics export contract', () => {
     expect(isExportPending(exportJob({ status: 'queued' }))).toBe(true);
     expect(isExportPending(exportJob({ status: 'running' }))).toBe(true);
     expect(isExportPending(exportJob({ status: 'ready' }))).toBe(false);
+  });
+
+  it('keeps one action footprint while an export moves from processing to ready', () => {
+    expect(getExportActionPresentation(exportJob({ status: 'running' }))).toEqual({
+      label: 'Processing',
+      variant: 'ghost',
+      loading: true,
+      disabled: true,
+    });
+    expect(
+      getExportActionPresentation(
+        exportJob({
+          status: 'ready',
+          byte_size: 551,
+          download_ready: true,
+        }),
+      ),
+    ).toEqual({
+      label: 'Download',
+      variant: 'primary',
+      loading: false,
+      disabled: false,
+    });
+  });
+
+  it('uses a disabled ghost action when export generation cannot continue', () => {
+    expect(
+      getExportActionPresentation(
+        exportJob({ status: 'failed', error: 'Storage unavailable', retrying: false }),
+      ),
+    ).toEqual({
+      label: 'Unavailable',
+      variant: 'ghost',
+      loading: false,
+      disabled: true,
+    });
   });
 });

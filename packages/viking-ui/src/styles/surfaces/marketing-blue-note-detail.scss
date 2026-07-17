@@ -44,6 +44,7 @@
 }
 
 .blue-note-prose {
+  width: 100%;
   max-width: var(--viking-content-readable-max-width);
   margin-inline: auto;
 }
@@ -158,7 +159,7 @@
     left: calc((var(--viking-space-5) + var(--viking-space-0-5)) * -1);
   }
 
-  .blue-note-article-layout {
+  .blue-note-article-layout--with-outline {
     grid-template-columns: var(--viking-space-24) minmax(0, 1fr);
   }
 

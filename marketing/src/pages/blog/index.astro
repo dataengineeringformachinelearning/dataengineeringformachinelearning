@@ -7,7 +7,7 @@ import { siteEnv } from '../../lib/site-env';
 
 const notes = await getBlueNotes();
 const featuredNotes = notes.filter(note => note.data.featured);
-const leadNote = featuredNotes[0] ?? notes[0];
+const leadNote = notes[0];
 const spotlightNotes = featuredNotes.filter(note => note.id !== leadNote?.id).slice(0, 3);
 const spotlightIds = new Set(spotlightNotes.map(note => note.id));
 const archiveNotes = notes.filter(note => note.id !== leadNote?.id && !spotlightIds.has(note.id));
@@ -107,7 +107,7 @@ const pageJsonLd = [
             <h2><a href={blueNoteHref(leadNote)}>{leadNote.data.title}</a></h2>
             <p>{leadNote.data.summary}</p>
             <footer class="blog-card-footer">
-              <ul class="blog-category-list" aria-label="Categories">
+              <ul class="blue-note-categories" aria-label="Categories">
                 {leadNote.data.categories.map(category => <li>{category}</li>)}
               </ul>
               <a class="blog-read-cue" href={blueNoteHref(leadNote)} aria-label={`Read ${leadNote.data.title}`}>

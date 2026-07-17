@@ -74,6 +74,33 @@ test("major component categories consume the shared SaaS contracts", () => {
   assert.match(chart, /xMidYMid meet/);
 });
 
+test("desktop account actions use one semantic group and the navbar gap", () => {
+  const navbarStyles = readPackageFile("src", "styles", "static-navbar.scss");
+  const angularNavbar = readPackageFile(
+    "src",
+    "lib",
+    "site-drakkar",
+    "site-navbar.ts",
+  );
+  const webNavbar = readPackageFile(
+    "src",
+    "web",
+    "site-navbar",
+    "viking-site-navbar-wc.ts",
+  );
+
+  assert.match(
+    navbarStyles,
+    /\.desktop-auth\s*\{[\s\S]*?gap:\s*var\(--viking-space-2, 16px\);/,
+  );
+  for (const navbar of [angularNavbar, webNavbar]) {
+    assert.match(
+      navbar,
+      /class="desktop-auth" role="group" aria-label="Account actions"/,
+    );
+  }
+});
+
 test("the application bundle keeps Angular surfaces complete without static-site weight", () => {
   const applicationBundle = readPackageFile("src", "styles", "viking-app.scss");
   const applicationPages = readPackageFile(
@@ -262,6 +289,46 @@ test("marketing editorial and integration cards keep their shared spacing contra
   assert.match(
     docsBento,
     /\.integration-cards\s*\{\s*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/,
+  );
+});
+
+test("Blue Note categories and optional outlines keep stable layout contracts", () => {
+  const blueNoteStyles = readPackageFile(
+    "src",
+    "styles",
+    "surfaces",
+    "marketing-blue-notes.scss",
+  );
+  const detailStyles = readPackageFile(
+    "src",
+    "styles",
+    "surfaces",
+    "marketing-blue-note-detail.scss",
+  );
+  const marketingRoot = path.resolve(packageDir, "..", "..", "marketing");
+  const indexTemplate = readFileSync(
+    path.join(marketingRoot, "src", "pages", "blog", "index.astro"),
+    "utf8",
+  );
+  const detailTemplate = readFileSync(
+    path.join(marketingRoot, "src", "pages", "blog", "[slug].astro"),
+    "utf8",
+  );
+
+  assert.match(indexTemplate, /class="blue-note-categories"/);
+  assert.match(
+    blueNoteStyles,
+    /\.blue-note-categories li\s*\{[^}]*display:\s*inline-flex;[^}]*margin:\s*0;[^}]*line-height:\s*var\(--viking-line-height-snug\);/s,
+  );
+  assert.match(detailTemplate, /const outlineHeadings = headings\.filter/);
+  assert.match(detailTemplate, /blue-note-article-layout--with-outline/);
+  assert.match(
+    detailStyles,
+    /\.blue-note-prose\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*var\(--viking-content-readable-max-width\);/s,
+  );
+  assert.match(
+    detailStyles,
+    /\.blue-note-article-layout--with-outline\s*\{[^}]*grid-template-columns:\s*var\(--viking-space-24\) minmax\(0, 1fr\);/s,
   );
 });
 

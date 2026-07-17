@@ -80,23 +80,6 @@
   border-top: var(--viking-space-px) solid var(--viking-border);
 }
 
-.blog-category-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--viking-space-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.blog-category-list li {
-  padding: var(--viking-space-0-5) var(--viking-space-1);
-  border: var(--viking-space-px) solid var(--viking-border);
-  border-radius: var(--viking-radius-pill);
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-xs);
-}
-
 .blog-read-cue,
 .blog-archive-arrow {
   display: inline-flex;
