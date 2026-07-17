@@ -1,12 +1,12 @@
-# Deploy Firebase Backend components (Cloud Functions + Firestore rules)
-# This covers the CQRS / event ingestion path (ingestEvent function + Firestore "deml" DB rules).
+# Deploy Firebase Backend components (Cloud Run function + Firestore rules)
+# This covers the CQRS / event ingestion path (ingestEvent + Firestore "deml" DB rules).
 #
 # Triggers on changes to functions code, firestore rules, or firebase config on main.
 # Also supports manual dispatch.
 #
 # Uses the same FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM secret as the hosting workflows.
 
-name: Deploy Firebase Backend (Functions + Firestore)
+name: Deploy Firebase Backend (Cloud Run + Firestore)
 
 on:
   push:
@@ -51,6 +51,9 @@ jobs:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
           create_credentials_file: true
 
+      - name: Setup Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v3
+
       - name: Verify lockfile-pinned Firebase CLI
         run: npx --no-install firebase --version
 
@@ -58,7 +61,7 @@ jobs:
         # For the lowest-latency Event Projections path (no polling), the Cloud Function
         # publishes directly to the public Redpanda listener exposed via a Railway TCP
         # Proxy. ingestEvent is a 2nd-gen (Cloud Run) function, so runtime config must be
-        # provided as environment variables (process.env) via a functions/.env file —
+        # provided as environment variables (process.env) via a temporary env file —
         # the legacy `firebase functions:config:set` (gen1) does not apply to v2 functions.
         #
         # Set these GitHub repo secrets:
@@ -102,22 +105,42 @@ jobs:
               echo "DEML_INTERNODE_ACTIVE_KID=${DEML_INTERNODE_ACTIVE_KID}"
               echo "DEML_INTERNODE_KEYS=${DEML_INTERNODE_KEYS}"
               echo "DEML_NODE_ID=deml-firebase-ingest"
-            } > functions/.env
-            echo "Wrote functions/.env (verified TLS, SASL, and internode encryption enabled)"
+            } > "${RUNNER_TEMP}/ingestevent.env"
+            echo "Wrote the temporary runtime environment file (verified TLS, SASL, and internode encryption enabled)"
           else
             echo "REDPANDA_PUBLIC_BROKERS not configured; ingestEvent will use Firestore inbox fallback"
           fi
 
-      - name: Deploy Functions and Firestore (rules + indexes)
-        run: |
-          npx --no-install firebase deploy --only functions,firestore --project demldotcom --non-interactive
+      - name: Deploy Firestore rules and indexes
+        run: npx --no-install firebase deploy --only firestore --project demldotcom --non-interactive
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
 
+      - name: Deploy migrated ingestEvent Cloud Run function
+        shell: bash
+        run: |
+          runtime_env="${RUNNER_TEMP}/ingestevent.env"
+          if [[ -f "${runtime_env}" ]]; then
+            env_args=(--env-vars-file="${runtime_env}")
+          else
+            env_args=(--clear-env-vars)
+          fi
+
+          gcloud run deploy ingestevent \
+            --source=functions \
+            --function=ingestEvent \
+            --region=us-east4 \
+            --project=demldotcom \
+            --service-account=demldotcom@appspot.gserviceaccount.com \
+            --build-service-account=projects/demldotcom/serviceAccounts/870072971206-compute@developer.gserviceaccount.com \
+            --base-image=us-east4-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22 \
+            "${env_args[@]}" \
+            --quiet
+
       - name: Deployment summary
         run: |
-          echo "✅ Firebase Functions and Firestore rules deployed to project: demldotcom"
-          echo "   - Functions: ingestEvent (and any other)"
+          echo "✅ Cloud Run function and Firestore rules deployed to project: demldotcom"
+          echo "   - Cloud Run function: ingestEvent"
           echo "   - Firestore: rules from firestore.rules for the named deml database"
           echo "   - To enable fast direct Redpanda publish from Functions: set the REDPANDA_PUBLIC_* GitHub secrets and re-run this workflow"
 
