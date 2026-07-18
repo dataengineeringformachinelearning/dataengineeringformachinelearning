@@ -1,7 +1,5 @@
 from collections.abc import Callable
 
-from django.conf import settings
-from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse
 
 # Shared third-party allowlists for HTML CSP (keep in sync with firebase.json + frontend/nginx.conf).
@@ -51,26 +49,6 @@ _CSP_FRAME_SRC = (
 )
 
 
-def _get_dynamic_csp_domains() -> list[str]:
-  """
-  Fetch verified domains from ValidatedSite to allow telemetry connections/assets.
-  Caches the list for 1 hour to prevent DB overhead on every request.
-  """
-  cache_key = "csp_allowed_domains"
-  domains = cache.get(cache_key)
-  if domains is None:
-    try:
-      from monitor.models import ValidatedSite
-
-      domains = list(
-        ValidatedSite.objects.filter(is_verified=True).values_list("domain", flat=True)
-      )
-      cache.set(cache_key, domains, timeout=3600)
-    except Exception:
-      domains = []
-  return domains
-
-
 class ContentSecurityPolicyMiddleware:
   def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]):
     self.get_response = get_response
@@ -81,13 +59,6 @@ class ContentSecurityPolicyMiddleware:
     # Inject security headers on text/html responses
     content_type = response.get("Content-Type", "")
     if "text/html" in content_type:
-      dynamic_domains = _get_dynamic_csp_domains()
-      schemes = ("https",) if not settings.DEBUG else ("https", "http")
-      extra_connect = " ".join(
-        f"{scheme}://{domain}" for domain in dynamic_domains for scheme in schemes
-      )
-      extra_img = extra_connect
-
       csp_policy = (
         "default-src 'self'; "
         "worker-src 'self' blob:; "
@@ -96,8 +67,8 @@ class ContentSecurityPolicyMiddleware:
         "https://fonts.googleapis.com https://deml.app https://*.deml.app "
         "https://ui.dataengineeringformachinelearning.com https://*.ui.dataengineeringformachinelearning.com; "
         "font-src 'self' data: https://fonts.gstatic.com; "
-        f"connect-src {_CSP_CONNECT_SRC} {extra_connect}; "
-        f"img-src {_CSP_IMG_SRC} {extra_img}; "
+        f"connect-src {_CSP_CONNECT_SRC}; "
+        f"img-src {_CSP_IMG_SRC}; "
         f"frame-src {_CSP_FRAME_SRC}; "
         "upgrade-insecure-requests; block-all-mixed-content;"
       )

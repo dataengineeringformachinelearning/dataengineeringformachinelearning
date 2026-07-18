@@ -1,389 +1,60 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Canonical Railway production topology for DEML. Agents: treat this as source of truth for service names, Dockerfiles, roles, and required env. Live apply via scripts/railway_audit.py.",
+  "description": "Transitional DEML user-plane topology. FORJD owns every data-plane workload.",
   "project": "deml",
   "environment": "production",
-  "githubRepo": "dataengineeringformachinelearning/dataengineeringformachinelearning",
-  "branch": "main",
-  "retired": ["deml-daemon", "deml-cpe-guesser"],
+  "retired": [
+    "deml-workers",
+    "deml-telemetry-worker",
+    "deml-relay",
+    "deml-scheduler",
+    "deml-probe",
+    "deml-normalizer",
+    "deml-ingest",
+    "deml-cpe",
+    "deml-scanner",
+    "deml-queue",
+    "deml-clickhouse",
+    "deml-rustfs",
+    "deml-tor-proxy"
+  ],
   "services": {
     "deml-backend": {
-      "class": "django-api",
+      "class": "django-user-control-plane",
       "configDir": "infrastructure/railway/backend",
       "dockerfile": "backend/Dockerfile",
-      "startCommand": "python start.py",
-      "healthcheckPath": "/api/v1/system-status/health",
       "requiredEnv": [
         "DATABASE_URL",
-        "REDIS_URL",
-        "REDIS_SSL_CA_B64",
         "SECRET_KEY",
-        "REDPANDA_BROKERS",
-        "REDPANDA_SECURITY_PROTOCOL",
-        "REDPANDA_SSL_CA_B64",
-        "REDPANDA_SSL_CERT_B64",
-        "REDPANDA_SSL_KEY_B64",
-        "DEML_TRANSPORT_SECURITY",
-        "DEML_INTERNODE_ENCRYPTION",
-        "DEML_INTERNODE_ACTIVE_KID",
-        "DEML_INTERNODE_KEYS",
-        "DEML_NODE_ID",
-        "BACKEND_URL",
-        "CPE_GUESSER_URL",
-        "CLICKHOUSE_HOST",
-        "CLICKHOUSE_PORT",
-        "CLICKHOUSE_USER",
-        "CLICKHOUSE_PASSWORD",
-        "RUSTFS_ENDPOINT",
-        "RUSTFS_ACCESS_KEY",
-        "RUSTFS_SECRET_KEY",
-        "RUSTFS_BUCKET",
-        "RUSTFS_REGION",
-        "RUSTFS_USE_SSL",
-        "RUSTFS_ADDRESSING_STYLE",
-        "STRUCTURED_LOGS"
-      ],
-      "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET", "BACKEND_INTERNAL_URL"],
-      "notes": "Control plane. Run migrations here first."
-    },
-    "deml-frontend": {
-      "class": "frontend",
-      "configDir": "infrastructure/railway/frontend",
-      "dockerfile": "frontend/Dockerfile",
-      "requiredEnv": ["BACKEND_URL", "FRONTEND_URL"],
-      "forbiddenEnv": [
-        "DEML_ROLE",
-        "DATABASE_URL",
-        "REDIS_URL",
-        "REDIS_SSL_CA_B64",
-        "SECRET_KEY",
-        "INTERNAL_SECRET"
-      ],
-      "notes": "Public SSR only — no Django secrets."
-    },
-    "deml-workers": {
-      "class": "django-worker",
-      "configDir": "infrastructure/railway/workers",
-      "dockerfile": "backend/Dockerfile",
-      "startCommand": "sh -c 'export PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0; exec python deml_workers_start.py'",
-      "requiredEnv": [
-        "DATABASE_URL",
-        "REDIS_URL",
-        "REDIS_SSL_CA_B64",
-        "SECRET_KEY",
-        "REDPANDA_BROKERS",
-        "REDPANDA_SECURITY_PROTOCOL",
-        "REDPANDA_SSL_CA_B64",
-        "REDPANDA_SSL_CERT_B64",
-        "REDPANDA_SSL_KEY_B64",
-        "DEML_TRANSPORT_SECURITY",
-        "DEML_INTERNODE_ENCRYPTION",
-        "DEML_INTERNODE_ACTIVE_KID",
-        "DEML_INTERNODE_KEYS",
-        "DEML_NODE_ID",
-        "PYTHON_EMBEDDED_SCHEDULERS_ENABLED",
-        "CPE_GUESSER_URL",
-        "SCANNER_SERVICE_URL",
-        "CLICKHOUSE_HOST",
-        "CLICKHOUSE_PORT",
-        "CLICKHOUSE_USER",
-        "CLICKHOUSE_PASSWORD",
-        "HF_TOKEN",
-        "HF_REPO_ID",
-        "HF_MODEL_PUBLISH_REQUIRED",
         "FIREBASE_PROJECT_ID",
         "FIREBASE_SERVICE_ACCOUNT_JSON",
-        "FIRESTORE_BENCHMARK_PUBLISH_REQUIRED",
-        "RUSTFS_ENDPOINT",
-        "RUSTFS_ACCESS_KEY",
-        "RUSTFS_SECRET_KEY",
-        "RUSTFS_BUCKET",
-        "RUSTFS_REGION",
-        "RUSTFS_USE_SSL",
-        "RUSTFS_ADDRESSING_STYLE",
-        "STRUCTURED_LOGS"
-      ],
-      "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET"],
-      "envDefaults": {
-        "PYTHON_EMBEDDED_SCHEDULERS_ENABLED": "0",
-        "HF_MODEL_PUBLISH_REQUIRED": "true",
-        "FIRESTORE_BENCHMARK_PUBLISH_REQUIRED": "true",
-        "FIRECRAWL_ENABLED": "false",
-        "FIRECRAWL_API_URL": "https://api.firecrawl.dev"
-      },
-      "notes": "Set FIRECRAWL_API_KEY as an encrypted Railway secret and FIRECRAWL_ENABLED=true to enable verified-site technology enrichment."
-    },
-    "deml-telemetry-worker": {
-      "class": "django-worker",
-      "configDir": "infrastructure/railway/telemetry-worker",
-      "dockerfile": "backend/Dockerfile",
-      "startCommand": "sh -c 'export PYTHON_EMBEDDED_SCHEDULERS_ENABLED=0; exec python manage.py telemetry_worker'",
-      "requiredEnv": [
-        "DATABASE_URL",
-        "REDIS_URL",
-        "SECRET_KEY",
-        "REDPANDA_BROKERS",
-        "REDPANDA_SECURITY_PROTOCOL",
-        "REDPANDA_SSL_CA_B64",
-        "REDPANDA_SSL_CERT_B64",
-        "REDPANDA_SSL_KEY_B64",
-        "DEML_TRANSPORT_SECURITY",
-        "DEML_INTERNODE_ENCRYPTION",
-        "DEML_INTERNODE_ACTIVE_KID",
-        "DEML_INTERNODE_KEYS",
-        "DEML_NODE_ID",
-        "PYTHON_EMBEDDED_SCHEDULERS_ENABLED",
-        "CLICKHOUSE_HOST",
-        "CLICKHOUSE_PORT",
-        "CLICKHOUSE_USER",
-        "CLICKHOUSE_PASSWORD",
-        "STRUCTURED_LOGS"
-      ],
-      "forbiddenEnv": ["DEML_ROLE", "INTERNAL_SECRET"],
-      "envDefaults": { "PYTHON_EMBEDDED_SCHEDULERS_ENABLED": "0" }
-    },
-    "deml-relay": {
-      "class": "rust-data-plane",
-      "configDir": "infrastructure/railway/relay",
-      "dockerfile": "rust/deml-daemon/Dockerfile",
-      "role": "relay",
-      "startCommand": "sh -c 'export DEML_ROLE=relay PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
-      "healthcheckPath": "/ready",
-      "requiredEnv": [
-        "DEML_ROLE",
-        "DATABASE_URL",
-        "REDPANDA_BROKERS",
-        "REDPANDA_SECURITY_PROTOCOL",
-        "REDPANDA_SSL_CA_B64",
-        "REDPANDA_SSL_CERT_B64",
-        "REDPANDA_SSL_KEY_B64",
-        "DEML_TRANSPORT_SECURITY",
-        "DEML_INTERNODE_ENCRYPTION",
-        "DEML_INTERNODE_ACTIVE_KID",
-        "DEML_INTERNODE_KEYS",
-        "DEML_NODE_ID",
-        "STRUCTURED_LOGS"
+        "FORJD_API_URL",
+        "FORJD_SERVICE_TOKEN",
+        "FORJD_TENANT_ID"
       ],
       "forbiddenEnv": [
-        "SECRET_KEY",
-        "INTERNAL_SECRET",
-        "FIREBASE_SERVICE_ACCOUNT_JSON"
-      ],
-      "envDefaults": {
-        "DEML_ROLE": "relay",
-        "DEML_TRANSPORT_SECURITY": "required",
-        "DEML_INTERNODE_ENCRYPTION": "required",
-        "REDPANDA_SECURITY_PROTOCOL": "SSL",
-        "STRUCTURED_LOGS": "true"
-      }
-    },
-    "deml-scheduler": {
-      "class": "rust-data-plane",
-      "configDir": "infrastructure/railway/scheduler",
-      "dockerfile": "rust/deml-daemon/Dockerfile",
-      "role": "scheduler",
-      "startCommand": "sh -c 'export DEML_ROLE=scheduler PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
-      "healthcheckPath": "/ready",
-      "requiredEnv": [
         "DEML_ROLE",
-        "DATABASE_URL",
         "REDPANDA_BROKERS",
-        "REDPANDA_SECURITY_PROTOCOL",
-        "REDPANDA_SSL_CA_B64",
-        "REDPANDA_SSL_CERT_B64",
-        "REDPANDA_SSL_KEY_B64",
-        "DEML_TRANSPORT_SECURITY",
-        "DEML_INTERNODE_ENCRYPTION",
-        "DEML_INTERNODE_ACTIVE_KID",
-        "DEML_INTERNODE_KEYS",
-        "DEML_NODE_ID",
-        "STRUCTURED_LOGS",
-        "CLICKHOUSE_URL"
-      ],
-      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": {
-        "DEML_ROLE": "scheduler",
-        "DEML_TRANSPORT_SECURITY": "required",
-        "DEML_INTERNODE_ENCRYPTION": "required",
-        "REDPANDA_SECURITY_PROTOCOL": "SSL",
-        "STRUCTURED_LOGS": "true"
-      }
+        "CLICKHOUSE_HOST",
+        "RUSTFS_ENDPOINT",
+        "CPE_GUESSER_URL",
+        "SCANNER_SERVICE_URL",
+        "FORJD_TOKEN_URL",
+        "FORJD_SERVICE_ACCOUNT_ID",
+        "FORJD_SERVICE_ACCOUNT_SECRET",
+        "FORJD_SERVICE_ACCOUNT_AUDIENCE"
+      ]
     },
-    "deml-probe": {
-      "class": "rust-data-plane",
-      "configDir": "infrastructure/railway/probe",
-      "dockerfile": "rust/deml-daemon/Dockerfile",
-      "role": "probe",
-      "startCommand": "sh -c 'export DEML_ROLE=probe PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
-      "healthcheckPath": "/ready",
-      "requiredEnv": [
-        "DEML_ROLE",
-        "DATABASE_URL",
-        "DEML_TRANSPORT_SECURITY",
-        "STRUCTURED_LOGS"
-      ],
-      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": {
-        "DEML_ROLE": "probe",
-        "DEML_TRANSPORT_SECURITY": "required",
-        "STRUCTURED_LOGS": "true"
-      }
-    },
-    "deml-normalizer": {
-      "class": "rust-data-plane",
-      "configDir": "infrastructure/railway/normalizer",
-      "dockerfile": "rust/deml-daemon/Dockerfile",
-      "role": "normalizer",
-      "startCommand": "sh -c 'export DEML_ROLE=normalizer PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
-      "healthcheckPath": "/ready",
-      "requiredEnv": [
-        "DEML_ROLE",
-        "DATABASE_URL",
-        "REDPANDA_BROKERS",
-        "REDPANDA_SECURITY_PROTOCOL",
-        "REDPANDA_SSL_CA_B64",
-        "REDPANDA_SSL_CERT_B64",
-        "REDPANDA_SSL_KEY_B64",
-        "DEML_TRANSPORT_SECURITY",
-        "DEML_INTERNODE_ENCRYPTION",
-        "DEML_INTERNODE_ACTIVE_KID",
-        "DEML_INTERNODE_KEYS",
-        "DEML_NODE_ID",
-        "STRUCTURED_LOGS"
-      ],
-      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": {
-        "DEML_ROLE": "normalizer",
-        "DEML_TRANSPORT_SECURITY": "required",
-        "DEML_INTERNODE_ENCRYPTION": "required",
-        "REDPANDA_SECURITY_PROTOCOL": "SSL",
-        "STRUCTURED_LOGS": "true",
-        "NORMALIZER_GROUP_ID": "deml-rust-telemetry-normalizer-v1"
-      }
-    },
-    "deml-ingest": {
-      "class": "rust-data-plane",
-      "configDir": "infrastructure/railway/ingest",
-      "dockerfile": "rust/deml-daemon/Dockerfile",
-      "role": "ingest",
-      "startCommand": "sh -c 'export DEML_ROLE=ingest PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
-      "healthcheckPath": "/ready",
-      "requiredEnv": [
-        "DEML_ROLE",
-        "DATABASE_URL",
-        "DEML_TRANSPORT_SECURITY",
-        "REDIS_URL",
-        "REDIS_SSL_CA_B64",
-        "STRUCTURED_LOGS"
-      ],
-      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": {
-        "DEML_ROLE": "ingest",
-        "DEML_TRANSPORT_SECURITY": "required",
-        "STRUCTURED_LOGS": "true"
-      }
-    },
-    "deml-cpe": {
-      "class": "rust-data-plane",
-      "configDir": "infrastructure/railway/cpe",
-      "dockerfile": "rust/deml-daemon/Dockerfile",
-      "role": "cpe",
-      "startCommand": "sh -c 'export DEML_ROLE=cpe PORT=\"${PORT:-8080}\"; exec /usr/local/bin/deml-daemon'",
-      "healthcheckPath": "/ready",
-      "requiredEnv": [
-        "DEML_ROLE",
-        "DATABASE_URL",
-        "DEML_TRANSPORT_SECURITY",
-        "CPE_REDIS_URL",
-        "REDIS_SSL_CA_B64",
-        "STRUCTURED_LOGS"
-      ],
-      "forbiddenEnv": ["SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": {
-        "DEML_ROLE": "cpe",
-        "DEML_TRANSPORT_SECURITY": "required",
-        "STRUCTURED_LOGS": "true"
-      }
-    },
-    "deml-scanner": {
-      "class": "infra-app",
-      "configDir": "infrastructure/railway/scanner",
-      "dockerfile": "infrastructure/scanner/Dockerfile",
-      "healthcheckPath": "/health",
-      "requiredEnv": ["CPE_GUESSER_URL"],
-      "forbiddenEnv": ["DEML_ROLE", "SECRET_KEY", "INTERNAL_SECRET"],
-      "envDefaults": {}
-    },
-    "deml-queue": {
-      "class": "infra",
-      "configDir": "infrastructure/railway/queue",
-      "dockerfile": "infrastructure/queue/Dockerfile",
-      "requiredEnv": [
-        "REDPANDA_TLS_CERT_B64",
-        "REDPANDA_TLS_KEY_B64",
-        "REDPANDA_TLS_CA_B64",
-        "REDPANDA_SASL_USERNAME",
-        "REDPANDA_SASL_PASSWORD"
-      ],
-      "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"],
-      "notes": "Redpanda. Prefer minimal env; public host/port for external clients only."
+    "deml-frontend": {
+      "class": "learning-frontend",
+      "configDir": "infrastructure/railway/frontend",
+      "dockerfile": "frontend/Dockerfile",
+      "requiredEnv": ["BACKEND_URL", "FRONTEND_URL"]
     },
     "deml-dragonfly": {
-      "class": "infra",
+      "class": "user-session-cache",
       "configDir": "infrastructure/railway/dragonfly",
-      "dockerfile": "infrastructure/dragonfly/Dockerfile",
-      "requiredEnv": [
-        "DRAGONFLY_TLS_CERT_B64",
-        "DRAGONFLY_TLS_KEY_B64",
-        "DRAGONFLY_PASSWORD"
-      ],
-      "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"]
-    },
-    "deml-clickhouse": {
-      "class": "infra",
-      "configDir": "infrastructure/railway/clickhouse",
-      "dockerfile": "infrastructure/clickhouse/Dockerfile",
-      "requiredEnv": [],
-      "forbiddenEnv": ["DEML_ROLE", "SECRET_KEY"]
-    },
-    "deml-tor-proxy": {
-      "class": "infra",
-      "configDir": "infrastructure/railway/tor-proxy",
-      "dockerfile": "infrastructure/tor-proxy/Dockerfile",
-      "requiredEnv": [],
-      "forbiddenEnv": ["DEML_ROLE", "DATABASE_URL", "SECRET_KEY"]
-    },
-    "deml-rustfs": {
-      "class": "infra",
-      "configDir": "infrastructure/railway/rustfs",
-      "dockerfile": "infrastructure/rustfs/Dockerfile",
-      "healthcheckPath": "/health",
-      "requiredEnv": ["RUSTFS_ACCESS_KEY", "RUSTFS_SECRET_KEY"],
-      "forbiddenEnv": [
-        "DEML_ROLE",
-        "DATABASE_URL",
-        "SECRET_KEY",
-        "INTERNAL_SECRET"
-      ],
-      "envDefaults": {
-        "RUSTFS_CONSOLE_ENABLE": "false",
-        "RUSTFS_ADDRESS": "0.0.0.0:9000",
-        "RUSTFS_CONSOLE_ADDRESS": "0.0.0.0:9001"
-      },
-      "notes": "S3-compatible report object store (RustFS). Mount durable volume at /data. Backend/workers use RUSTFS_ENDPOINT over private DNS."
+      "requiredEnv": []
     }
-  },
-  "crossServiceDefaults": {
-    "CPE_GUESSER_URL": "https://deml-cpe-production.up.railway.app/unique",
-    "STRUCTURED_LOGS": "true"
-  },
-  "agentCommands": {
-    "list": "railway service list",
-    "status": "railway service status --service <name>",
-    "logs": "railway logs --service <name>",
-    "audit": "python scripts/railway_audit.py",
-    "auditApply": "python scripts/railway_audit.py --apply",
-    "deployRust": "railway up --service deml-<role> --detach --ci",
-    "migrate": "cd backend && railway run --service deml-backend -- .venv/bin/python manage.py migrate"
   }
 }

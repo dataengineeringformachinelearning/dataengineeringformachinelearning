@@ -1,49 +1,27 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "DEML Public Ingestion & Inference API",
+    "title": "DEML Learning Platform API",
     "version": "2.0.0",
-    "description": "Data Engineering for AI Engineering and Cybersecurity (DEML) public integration endpoints.\n\n**Sandbox Demo Key**: For public demonstration and sandbox testing, authorize using the token `deml_swagger_api_key` (Bearer authentication in the top-right 'Authorize' button). This maps requests to a scoped, unprivileged demo operator user."
+    "description": "Identity, account, billing, learning interactions, and sealed FORJD handoff."
   },
   "paths": {
-    "/api/v1/ingest": {
-      "post": {
-        "operationId": "integrations_api_ingest_data",
-        "summary": "High-Throughput Data Ingestion",
+    "/api/v1/health": {
+      "get": {
+        "operationId": "config_api_api_health",
+        "summary": "Api Health",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IngestResponse"
-                }
-              }
-            }
+            "description": "OK"
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IngestPayload"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "IntegrationAPIKeyAuth": []
-          }
-        ]
+        }
       }
     },
-    "/api/v1/ingest/security-alert": {
-      "post": {
-        "operationId": "integrations_api_ingest_security_alert",
-        "summary": "EDR / SIEM Alert Ingestion",
+    "/api/v1/auth/register": {
+      "get": {
+        "operationId": "config_api_auth_api_register_health",
+        "summary": "Api Register Health",
         "parameters": [],
         "responses": {
           "200": {
@@ -51,34 +29,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SecurityAlertResponse"
+                  "$ref": "#/components/schemas/SuccessSchema"
                 }
               }
             }
           }
         },
-        "description": "Normalize CrowdStrike/SentinelOne-style alerts into the SOC pipeline.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SecurityAlertPayload"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "IntegrationAPIKeyAuth": []
-          }
-        ]
+        "description": "Health probe for monitors; user registration is handled client-side via Firebase."
       }
     },
-    "/api/v1/predict": {
-      "post": {
-        "operationId": "integrations_api_predict",
-        "summary": "Real-time Model Inference",
+    "/api/v1/auth/user": {
+      "get": {
+        "operationId": "config_api_auth_api_user",
+        "summary": "Api User",
         "parameters": [],
         "responses": {
           "200": {
@@ -86,33 +49,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PredictResponse"
+                  "$ref": "#/components/schemas/SuccessSchema"
                 }
               }
             }
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PredictPayload"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "IntegrationAPIKeyAuth": []
-          }
-        ]
+        }
       }
     },
-    "/api/v1/predict/llm": {
-      "post": {
-        "operationId": "integrations_api_predict_llm",
-        "summary": "LLM Inference with Prompt Injection Detection",
+    "/api/v1/auth/delete-account": {
+      "delete": {
+        "operationId": "config_api_auth_api_delete_account",
+        "summary": "Api Delete Account",
         "parameters": [],
         "responses": {
           "200": {
@@ -120,7 +68,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LLMPredictResponse"
+                  "$ref": "#/components/schemas/DeleteAccountOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/api-keys/generate": {
+      "post": {
+        "operationId": "config_api_auth_generate_api_key",
+        "summary": "Generate API Key",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIKeyGenerateOut"
                 }
               }
             }
@@ -130,1542 +97,457 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LLMPredictPayload"
+                "$ref": "#/components/schemas/APIKeyGenerateIn"
               }
             }
           },
           "required": true
-        },
-        "security": [
-          {
-            "IntegrationAPIKeyAuth": []
+        }
+      }
+    },
+    "/api/v1/auth/api-keys": {
+      "get": {
+        "operationId": "config_api_auth_list_api_keys",
+        "summary": "List API Keys",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/APIKeyOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
           }
-        ]
+        }
+      }
+    },
+    "/api/v1/auth/api-keys/{key_id}": {
+      "delete": {
+        "operationId": "config_api_auth_delete_api_key",
+        "summary": "Revoke API Key",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key_id",
+            "schema": {
+              "title": "Key Id",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/handoff/generate": {
+      "post": {
+        "operationId": "config_api_auth_generate_handoff_token",
+        "summary": "Generate cross-domain handoff token",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoffGenerateOut"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoffGenerateIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/auth/handoff/verify": {
+      "post": {
+        "operationId": "config_api_auth_verify_handoff_token",
+        "summary": "Verify one-time handoff token",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesktopAuthOut"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoffVerifyIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/auth/desktop/session": {
+      "post": {
+        "operationId": "config_api_auth_validate_desktop_session",
+        "summary": "Validate a native desktop session",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesktopAuthOut"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DesktopSessionIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/auth/sessions": {
+      "post": {
+        "operationId": "config_api_auth_register_session_endpoint",
+        "summary": "Register browser session",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRegisterOut"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionRegisterIn"
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "get": {
+        "operationId": "config_api_auth_list_sessions_endpoint",
+        "summary": "List active sessions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/sessions/{session_id}": {
+      "delete": {
+        "operationId": "config_api_auth_revoke_session_endpoint",
+        "summary": "Revoke session",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "config_api_auth_logout_session_endpoint",
+        "summary": "Sign out server session",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/users/consent": {
+      "post": {
+        "operationId": "monitor_api_record_consent",
+        "summary": "Record Consent",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/users/newsletter": {
+      "post": {
+        "operationId": "monitor_api_subscribe",
+        "summary": "Subscribe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewsletterIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/agent/report-issue": {
+      "post": {
+        "operationId": "agent_api_report_issue",
+        "summary": "Report Issue",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Interactions"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueReportPayload"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/billing/create-checkout-session": {
+      "post": {
+        "operationId": "billing_api_create_checkout_session",
+        "summary": "Create Checkout Session",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Billing"]
+      }
+    },
+    "/api/v1/billing/webhook": {
+      "post": {
+        "operationId": "billing_api_stripe_webhook",
+        "summary": "Stripe Webhook",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Billing"]
+      }
+    },
+    "/api/v1/billing/sync": {
+      "post": {
+        "operationId": "billing_api_sync_subscription",
+        "summary": "Sync Subscription",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Billing"]
+      }
+    },
+    "/api/v1/billing/cancel-subscription": {
+      "post": {
+        "operationId": "billing_api_cancel_subscription",
+        "summary": "Cancel Subscription",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Billing"]
+      }
+    },
+    "/api/v1/billing/resume-subscription": {
+      "post": {
+        "operationId": "billing_api_resume_subscription",
+        "summary": "Resume Subscription",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["Billing"]
+      }
+    },
+    "/api/v1/forjd/health": {
+      "get": {
+        "operationId": "forjd_api_health",
+        "summary": "Health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["FORJD"]
+      }
+    },
+    "/api/v1/forjd/ingest": {
+      "post": {
+        "operationId": "forjd_api_ingest",
+        "summary": "Ingest",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["FORJD"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SealedEvent"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/forjd/ingest/events:batch": {
+      "post": {
+        "operationId": "forjd_api_ingest_batch",
+        "summary": "Ingest Batch",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": ["FORJD"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SealedEventBatch"
+              }
+            }
+          },
+          "required": true
+        }
       }
     }
   },
   "components": {
     "schemas": {
-      "LatestRunOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "message": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Message"
-          },
-          "average_sla": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Average Sla"
-          },
-          "loss": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Loss"
-          },
-          "created_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Created At"
-          }
-        },
-        "required": ["status"],
-        "title": "LatestRunOut",
-        "type": "object"
-      },
-      "EndpointOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "last_tested": {
-            "format": "date-time",
-            "title": "Last Tested",
-            "type": "string"
-          },
-          "status_code": {
-            "title": "Status Code",
-            "type": "integer"
-          },
-          "response_time": {
-            "title": "Response Time",
-            "type": "string"
-          },
-          "ip_address": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ip Address"
-          },
-          "is_active": {
-            "title": "Is Active",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "url",
-          "last_tested",
-          "status_code",
-          "response_time",
-          "ip_address",
-          "is_active"
-        ],
-        "title": "EndpointOut",
-        "type": "object"
-      },
-      "WebTechnologyOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "domain": {
-            "title": "Domain",
-            "type": "string"
-          },
-          "source": {
-            "title": "Source",
-            "type": "string"
-          },
-          "source_url": {
-            "title": "Source Url",
-            "type": "string"
-          },
-          "technology_name": {
-            "title": "Technology Name",
-            "type": "string"
-          },
-          "version": {
-            "title": "Version",
-            "type": "string"
-          },
-          "confidence": {
-            "title": "Confidence",
-            "type": "number"
-          },
-          "evidence": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Evidence",
-            "type": "array"
-          },
-          "cpe_2_3": {
-            "title": "Cpe 2 3",
-            "type": "string"
-          },
-          "cve_ids": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Cve Ids",
-            "type": "array"
-          },
-          "last_seen_at": {
-            "format": "date-time",
-            "title": "Last Seen At",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "domain",
-          "source",
-          "source_url",
-          "technology_name",
-          "version",
-          "confidence",
-          "evidence",
-          "cpe_2_3",
-          "cve_ids",
-          "last_seen_at"
-        ],
-        "title": "WebTechnologyOut",
-        "type": "object"
-      },
-      "StatusPageOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "slug": {
-            "title": "Slug",
-            "type": "string"
-          },
-          "description": {
-            "title": "Description",
-            "type": "string"
-          },
-          "is_published": {
-            "title": "Is Published",
-            "type": "boolean"
-          },
-          "google_analytics_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Google Analytics Id"
-          },
-          "microsoft_clarity_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Microsoft Clarity Id"
-          },
-          "cloudflare_analytics_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cloudflare Analytics Id"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "user_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "User Id"
-          },
-          "is_pro_verified": {
-            "default": false,
-            "title": "Is Pro Verified",
-            "type": "boolean"
-          },
-          "cumulative_sla": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cumulative Sla"
-          },
-          "overall_uptime": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Overall Uptime"
-          },
-          "uptime_history": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/UptimeDaySchema"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Uptime History"
-          },
-          "p99_latency": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "P99 Latency"
-          },
-          "total_requests": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Total Requests"
-          },
-          "threats_detected_24h": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Threats Detected 24H"
-          }
-        },
-        "required": ["id", "title", "slug", "description", "is_published", "created_at"],
-        "title": "StatusPageOut",
-        "type": "object"
-      },
-      "UptimeDaySchema": {
-        "properties": {
-          "date": {
-            "format": "date",
-            "title": "Date",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "uptime": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Uptime"
-          }
-        },
-        "required": ["date", "status", "uptime"],
-        "title": "UptimeDaySchema",
-        "type": "object"
-      },
-      "StatusPageIn": {
-        "properties": {
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "slug": {
-            "title": "Slug",
-            "type": "string"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": "",
-            "title": "Description"
-          },
-          "is_published": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": false,
-            "title": "Is Published"
-          },
-          "google_analytics_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Google Analytics Id"
-          },
-          "microsoft_clarity_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Microsoft Clarity Id"
-          },
-          "cloudflare_analytics_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cloudflare Analytics Id"
-          }
-        },
-        "required": ["title", "slug"],
-        "title": "StatusPageIn",
-        "type": "object"
-      },
-      "MonitoredServiceOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "status_page_id": {
-            "title": "Status Page Id",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "status": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": "Operational",
-            "title": "Status"
-          },
-          "sla": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": 100.0,
-            "title": "Sla"
-          }
-        },
-        "required": ["id", "name", "url", "status_page_id", "created_at"],
-        "title": "MonitoredServiceOut",
-        "type": "object"
-      },
-      "MonitoredServiceIn": {
-        "properties": {
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "url": {
-            "title": "Url",
-            "type": "string"
-          }
-        },
-        "required": ["name", "url"],
-        "title": "MonitoredServiceIn",
-        "type": "object"
-      },
-      "IncidentOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "updated_at": {
-            "format": "date-time",
-            "title": "Updated At",
-            "type": "string"
-          },
-          "status_page_id": {
-            "title": "Status Page Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "title",
-          "message",
-          "status",
-          "created_at",
-          "updated_at",
-          "status_page_id"
-        ],
-        "title": "IncidentOut",
-        "type": "object"
-      },
-      "IncidentIn": {
-        "properties": {
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          }
-        },
-        "required": ["title", "message", "status"],
-        "title": "IncidentIn",
-        "type": "object"
-      },
-      "BenchmarkOut": {
-        "properties": {
-          "model_type": {
-            "title": "Model Type",
-            "type": "string"
-          },
-          "mae": {
-            "title": "Mae",
-            "type": "number"
-          },
-          "rmse": {
-            "title": "Rmse",
-            "type": "number"
-          },
-          "accuracy": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Accuracy"
-          },
-          "benchmark_score": {
-            "title": "Benchmark Score",
-            "type": "number"
-          },
-          "dataset_size": {
-            "title": "Dataset Size",
-            "type": "integer"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          }
-        },
-        "required": ["model_type", "mae", "rmse", "benchmark_score", "dataset_size", "created_at"],
-        "title": "BenchmarkOut",
-        "type": "object"
-      },
-      "IntegrationOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "provider": {
-            "title": "Provider",
-            "type": "string"
-          },
-          "active": {
-            "title": "Active",
-            "type": "boolean"
-          },
-          "last_sync": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Sync"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          }
-        },
-        "required": ["id", "provider", "active", "created_at"],
-        "title": "IntegrationOut",
-        "type": "object"
-      },
-      "ClarityIn": {
-        "properties": {
-          "project_id": {
-            "title": "Project Id",
-            "type": "string"
-          },
-          "api_key": {
-            "title": "Api Key",
-            "type": "string"
-          }
-        },
-        "required": ["project_id", "api_key"],
-        "title": "ClarityIn",
-        "type": "object"
-      },
-      "CloudflareIn": {
-        "properties": {
-          "project_id": {
-            "title": "Project Id",
-            "type": "string"
-          },
-          "api_key": {
-            "title": "Api Key",
-            "type": "string"
-          }
-        },
-        "required": ["project_id", "api_key"],
-        "title": "CloudflareIn",
-        "type": "object"
-      },
-      "TrainOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "message": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Message"
-          },
-          "average_sla": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Average Sla"
-          },
-          "loss": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Loss"
-          },
-          "run_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Run Id"
-          }
-        },
-        "required": ["status"],
-        "title": "TrainOut",
-        "type": "object"
-      },
-      "TemporalForecastOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "message": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Message"
-          },
-          "spiking_temporal_forecast": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Spiking Temporal Forecast"
-          },
-          "uses_norse": {
-            "default": false,
-            "title": "Uses Norse",
-            "type": "boolean"
-          },
-          "created_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Created At"
-          }
-        },
-        "required": ["status"],
-        "title": "TemporalForecastOut",
-        "type": "object"
-      },
-      "ThreatReportOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "anomaly_score": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Anomaly Score"
-          },
-          "top_location": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Top Location"
-          },
-          "location_weight": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Location Weight"
-          },
-          "suspicious_ratio": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Suspicious Ratio"
-          },
-          "created_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Created At"
-          },
-          "message": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Message"
-          }
-        },
-        "required": ["status"],
-        "title": "ThreatReportOut",
-        "type": "object"
-      },
-      "STIXBundleOut": {
-        "properties": {
-          "type": {
-            "title": "Type",
-            "type": "string"
-          },
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "objects": {
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "title": "Objects",
-            "type": "array"
-          }
-        },
-        "required": ["type", "id", "objects"],
-        "title": "STIXBundleOut",
-        "type": "object"
-      },
-      "ISACSubmissionOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          },
-          "submission_id": {
-            "title": "Submission Id",
-            "type": "string"
-          },
-          "mode": {
-            "title": "Mode",
-            "type": "string"
-          },
-          "sent_payload": {
-            "additionalProperties": true,
-            "title": "Sent Payload",
-            "type": "object"
-          },
-          "logs": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Logs",
-            "type": "array"
-          }
-        },
-        "required": ["status", "message", "submission_id", "mode", "sent_payload", "logs"],
-        "title": "ISACSubmissionOut",
-        "type": "object"
-      },
-      "ISACSubmissionIn": {
-        "properties": {
-          "destination": {
-            "title": "Destination",
-            "type": "string"
-          },
-          "status_page_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Status Page Id"
-          }
-        },
-        "required": ["destination"],
-        "title": "ISACSubmissionIn",
-        "type": "object"
-      },
-      "E2EEncryptionOut": {
-        "properties": {
-          "transit": {
-            "title": "Transit",
-            "type": "string"
-          },
-          "rest": {
-            "title": "Rest",
-            "type": "string"
-          },
-          "clientPayload": {
-            "title": "Clientpayload",
-            "type": "string"
-          },
-          "rotationDaysRemaining": {
-            "title": "Rotationdaysremaining",
-            "type": "integer"
-          }
-        },
-        "required": ["transit", "rest", "clientPayload", "rotationDaysRemaining"],
-        "title": "E2EEncryptionOut",
-        "type": "object"
-      },
-      "SOCCriteria": {
-        "properties": {
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "category": {
-            "title": "Category",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "description": {
-            "title": "Description",
-            "type": "string"
-          },
-          "details": {
-            "title": "Details",
-            "type": "string"
-          }
-        },
-        "required": ["name", "category", "status", "description", "details"],
-        "title": "SOCCriteria",
-        "type": "object"
-      },
-      "SOCStatusOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "overall_score": {
-            "title": "Overall Score",
-            "type": "number"
-          },
-          "criteria": {
-            "items": {
-              "$ref": "#/components/schemas/SOCCriteria"
-            },
-            "title": "Criteria",
-            "type": "array"
-          },
-          "e2e_encryption": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/E2EEncryptionOut"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "required": ["status", "overall_score", "criteria"],
-        "title": "SOCStatusOut",
-        "type": "object"
-      },
-      "SearchQueryOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "query": {
-            "title": "Query",
-            "type": "string"
-          },
-          "threat_score": {
-            "title": "Threat Score",
-            "type": "number"
-          },
-          "evaluated_at": {
-            "format": "date-time",
-            "title": "Evaluated At",
-            "type": "string"
-          }
-        },
-        "required": ["status", "query", "threat_score", "evaluated_at"],
-        "title": "SearchQueryOut",
-        "type": "object"
-      },
-      "SearchQueryIn": {
-        "properties": {
-          "query": {
-            "title": "Query",
-            "type": "string"
-          }
-        },
-        "required": ["query"],
-        "title": "SearchQueryIn",
-        "type": "object"
-      },
-      "TelemetryPayload": {
-        "properties": {
-          "account_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Id"
-          },
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "status_code": {
-            "title": "Status Code",
-            "type": "integer"
-          },
-          "response_time_ms": {
-            "title": "Response Time Ms",
-            "type": "number"
-          },
-          "ip_address": {
-            "title": "Ip Address",
-            "type": "string"
-          },
-          "is_active": {
-            "title": "Is Active",
-            "type": "boolean"
-          },
-          "telemetry_context": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Telemetry Context"
-          }
-        },
-        "required": ["url", "status_code", "response_time_ms", "ip_address", "is_active"],
-        "title": "TelemetryPayload",
-        "type": "object"
-      },
-      "CookieConsentPayload": {
-        "properties": {
-          "necessary": {
-            "title": "Necessary",
-            "type": "boolean"
-          },
-          "analytical": {
-            "title": "Analytical",
-            "type": "boolean"
-          },
-          "marketing": {
-            "title": "Marketing",
-            "type": "boolean"
-          }
-        },
-        "required": ["necessary", "analytical", "marketing"],
-        "title": "CookieConsentPayload",
-        "type": "object"
-      },
-      "SubscribePayload": {
-        "properties": {
-          "email": {
-            "title": "Email",
-            "type": "string"
-          },
-          "consent": {
-            "title": "Consent",
-            "type": "boolean"
-          }
-        },
-        "required": ["email", "consent"],
-        "title": "SubscribePayload",
-        "type": "object"
-      },
-      "TelemetryDualStreamPayload": {
-        "properties": {
-          "account_id": {
-            "title": "Account Id",
-            "type": "string"
-          },
-          "url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Url"
-          },
-          "stream_type": {
-            "title": "Stream Type",
-            "type": "string"
-          },
-          "tech_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tech Name"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "manifest_type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Manifest Type"
-          },
-          "manifest_content": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Manifest Content"
-          }
-        },
-        "required": ["account_id", "stream_type"],
-        "title": "TelemetryDualStreamPayload",
-        "type": "object"
-      },
-      "PQKeyExchangeResponse": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "key_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Key Id"
-          },
-          "public_key_b64": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Public Key B64"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          }
-        },
-        "required": ["status", "message"],
-        "title": "PQKeyExchangeResponse",
-        "type": "object"
-      },
-      "IncidentCaseOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "severity": {
-            "title": "Severity",
-            "type": "string"
-          },
-          "created_at": {
-            "title": "Created At",
-            "type": "string"
-          }
-        },
-        "required": ["id", "title", "status", "severity", "created_at"],
-        "title": "IncidentCaseOut",
-        "type": "object"
-      },
-      "IncidentCaseUpdate": {
-        "properties": {
-          "status": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Status"
-          },
-          "severity": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Severity"
-          }
-        },
-        "title": "IncidentCaseUpdate",
-        "type": "object"
-      },
-      "PlaybookOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "is_active": {
-            "title": "Is Active",
-            "type": "boolean"
-          }
-        },
-        "required": ["id", "name", "is_active"],
-        "title": "PlaybookOut",
-        "type": "object"
-      },
-      "PlaybookUpdate": {
-        "properties": {
-          "is_active": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Active"
-          }
-        },
-        "title": "PlaybookUpdate",
-        "type": "object"
-      },
-      "PlaybookExecuteOut": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          },
-          "actions_run": {
-            "title": "Actions Run",
-            "type": "integer"
-          }
-        },
-        "required": ["status", "message", "actions_run"],
-        "title": "PlaybookExecuteOut",
-        "type": "object"
-      },
-      "ExportJobOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "kind": {
-            "title": "Kind",
-            "type": "string"
-          },
-          "format": {
-            "title": "Format",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "byte_size": {
-            "title": "Byte Size",
-            "type": "integer"
-          },
-          "content_type": {
-            "title": "Content Type",
-            "type": "string"
-          },
-          "error": {
-            "title": "Error",
-            "type": "string"
-          },
-          "attempts": {
-            "title": "Attempts",
-            "type": "integer"
-          },
-          "next_attempt_at": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Next Attempt At"
-          },
-          "retrying": {
-            "title": "Retrying",
-            "type": "boolean"
-          },
-          "created_at": {
-            "title": "Created At",
-            "type": "string"
-          },
-          "completed_at": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Completed At"
-          },
-          "expires_at": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Expires At"
-          },
-          "download_ready": {
-            "title": "Download Ready",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "kind",
-          "format",
-          "status",
-          "byte_size",
-          "content_type",
-          "error",
-          "attempts",
-          "retrying",
-          "created_at",
-          "download_ready"
-        ],
-        "title": "ExportJobOut",
-        "type": "object"
-      },
-      "ExportCreateIn": {
-        "properties": {
-          "kind": {
-            "default": "analytics",
-            "title": "Kind",
-            "type": "string"
-          },
-          "format": {
-            "default": "csv",
-            "title": "Format",
-            "type": "string"
-          },
-          "days": {
-            "default": 7,
-            "title": "Days",
-            "type": "integer"
-          },
-          "site_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Site Url"
-          }
-        },
-        "title": "ExportCreateIn",
-        "type": "object"
-      },
-      "ExportDownloadOut": {
-        "properties": {
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "expires_in": {
-            "title": "Expires In",
-            "type": "integer"
-          },
-          "content_type": {
-            "title": "Content Type",
-            "type": "string"
-          },
-          "filename_hint": {
-            "title": "Filename Hint",
-            "type": "string"
-          }
-        },
-        "required": ["url", "expires_in", "content_type", "filename_hint"],
-        "title": "ExportDownloadOut",
-        "type": "object"
-      },
       "SuccessSchema": {
         "properties": {
           "status": {
@@ -1986,6 +868,42 @@
         "title": "LogoutIn",
         "type": "object"
       },
+      "ConsentIn": {
+        "properties": {
+          "necessary": {
+            "default": true,
+            "title": "Necessary",
+            "type": "boolean"
+          },
+          "analytical": {
+            "default": false,
+            "title": "Analytical",
+            "type": "boolean"
+          },
+          "marketing": {
+            "default": false,
+            "title": "Marketing",
+            "type": "boolean"
+          }
+        },
+        "title": "ConsentIn",
+        "type": "object"
+      },
+      "NewsletterIn": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "consent_accepted": {
+            "title": "Consent Accepted",
+            "type": "boolean"
+          }
+        },
+        "required": ["email", "consent_accepted"],
+        "title": "NewsletterIn",
+        "type": "object"
+      },
       "IssueReportPayload": {
         "properties": {
           "user_description": {
@@ -1994,441 +912,159 @@
           },
           "telemetry_context": {
             "additionalProperties": true,
+            "default": {},
             "title": "Telemetry Context",
             "type": "object"
           }
         },
-        "required": ["user_description", "telemetry_context"],
+        "required": ["user_description"],
         "title": "IssueReportPayload",
         "type": "object"
       },
-      "VulnerabilityOut": {
+      "EncryptedEnvelope": {
+        "additionalProperties": false,
         "properties": {
-          "id": {
-            "title": "Id",
+          "algo": {
+            "const": "aes-256-gcm",
+            "default": "aes-256-gcm",
+            "title": "Algo",
             "type": "string"
           },
-          "title": {
-            "title": "Title",
+          "key_id": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Key Id",
             "type": "string"
           },
-          "description": {
-            "title": "Description",
+          "nonce": {
+            "maxLength": 64,
+            "minLength": 8,
+            "title": "Nonce",
             "type": "string"
           },
-          "status": {
-            "title": "Status",
+          "ciphertext": {
+            "maxLength": 1048576,
+            "minLength": 24,
+            "title": "Ciphertext",
             "type": "string"
           },
-          "severity": {
-            "title": "Severity",
+          "ciphertext_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Ciphertext Sha256",
             "type": "string"
           },
-          "impact": {
-            "title": "Impact",
-            "type": "integer"
-          },
-          "likelihood": {
-            "title": "Likelihood",
-            "type": "integer"
-          },
-          "cve_id": {
+          "ratchet_header": {
             "anyOf": [
               {
+                "maxLength": 8192,
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Cve Id"
-          },
-          "customer_id": {
-            "title": "Customer Id",
+            "title": "Ratchet Header"
+          }
+        },
+        "required": ["key_id", "nonce", "ciphertext", "ciphertext_sha256"],
+        "title": "EncryptedEnvelope",
+        "type": "object"
+      },
+      "EncryptionOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "mode": {
+            "const": "e2ee",
+            "default": "e2ee",
+            "title": "Mode",
             "type": "string"
           },
-          "telemetry_context": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Telemetry Context"
-          },
-          "created_at": {
-            "title": "Created At",
-            "type": "string"
-          },
-          "updated_at": {
-            "title": "Updated At",
+          "algo": {
+            "const": "aes-256-gcm",
+            "default": "aes-256-gcm",
+            "title": "Algo",
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "title",
-          "description",
-          "status",
-          "severity",
-          "impact",
-          "likelihood",
-          "customer_id",
-          "created_at",
-          "updated_at"
-        ],
-        "title": "VulnerabilityOut",
+        "title": "EncryptionOptions",
         "type": "object"
       },
-      "VulnerabilityReportPayload": {
+      "SealedEvent": {
+        "additionalProperties": false,
+        "description": "The only event shape DEML may forward to FORJD today.",
         "properties": {
-          "title": {
-            "title": "Title",
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
             "type": "string"
           },
-          "description": {
-            "title": "Description",
+          "client_event_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Client Event Id",
             "type": "string"
           },
-          "telemetry_context": {
+          "content_type": {
+            "const": "application/forjd-telemetry+v1",
+            "default": "application/forjd-telemetry+v1",
+            "title": "Content Type",
+            "type": "string"
+          },
+          "event_type": {
+            "default": "deml.metric",
+            "enum": ["deml.metric", "deml.alert"],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "schema_version": {
+            "default": 1,
+            "maximum": 1000,
+            "minimum": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "workflow_id": {
+            "const": "deml_telemetry",
+            "default": "deml_telemetry",
+            "title": "Workflow Id",
+            "type": "string"
+          },
+          "encryption": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EncryptionOptions"
+              }
+            ]
+          },
+          "envelope": {
+            "$ref": "#/components/schemas/EncryptedEnvelope"
+          },
+          "metadata": {
             "additionalProperties": true,
-            "title": "Telemetry Context",
+            "title": "Metadata",
             "type": "object"
-          },
-          "customer_id": {
-            "default": "Internal",
-            "title": "Customer Id",
-            "type": "string"
-          },
-          "cve_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cve Id"
-          },
-          "severity": {
-            "default": "Medium",
-            "title": "Severity",
-            "type": "string"
           }
         },
-        "required": ["title", "description", "telemetry_context"],
-        "title": "VulnerabilityReportPayload",
+        "required": ["tenant_id", "client_event_id", "envelope"],
+        "title": "SealedEvent",
         "type": "object"
       },
-      "VulnerabilityUpdatePayload": {
+      "SealedEventBatch": {
+        "additionalProperties": false,
         "properties": {
-          "status": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Status"
-          },
-          "severity": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Severity"
-          },
-          "impact": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Impact"
-          },
-          "likelihood": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Likelihood"
-          }
-        },
-        "title": "VulnerabilityUpdatePayload",
-        "type": "object"
-      },
-      "IngestResponse": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          },
-          "processed_records": {
-            "title": "Processed Records",
-            "type": "integer"
-          }
-        },
-        "required": ["status", "message", "processed_records"],
-        "title": "IngestResponse",
-        "type": "object"
-      },
-      "IngestPayload": {
-        "properties": {
-          "batch_id": {
-            "title": "Batch Id",
-            "type": "string"
-          },
-          "records": {
+          "events": {
             "items": {
-              "additionalProperties": true,
-              "type": "object"
+              "$ref": "#/components/schemas/SealedEvent"
             },
-            "title": "Records",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Events",
             "type": "array"
           }
         },
-        "required": ["batch_id", "records"],
-        "title": "IngestPayload",
+        "required": ["events"],
+        "title": "SealedEventBatch",
         "type": "object"
-      },
-      "SecurityAlertResponse": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          },
-          "incident_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Incident Id"
-          }
-        },
-        "required": ["status", "message"],
-        "title": "SecurityAlertResponse",
-        "type": "object"
-      },
-      "SecurityAlertPayload": {
-        "properties": {
-          "source": {
-            "default": "edr_webhook",
-            "title": "Source",
-            "type": "string"
-          },
-          "severity": {
-            "default": "Medium",
-            "title": "Severity",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "ip_address": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ip Address"
-          },
-          "indicator_type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Indicator Type"
-          },
-          "raw": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Raw"
-          }
-        },
-        "required": ["title"],
-        "title": "SecurityAlertPayload",
-        "type": "object"
-      },
-      "PredictResponse": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "predictions": {
-            "items": {
-              "type": "number"
-            },
-            "title": "Predictions",
-            "type": "array"
-          },
-          "model_version": {
-            "title": "Model Version",
-            "type": "string"
-          },
-          "latency_ms": {
-            "title": "Latency Ms",
-            "type": "number"
-          }
-        },
-        "required": ["status", "predictions", "model_version", "latency_ms"],
-        "title": "PredictResponse",
-        "type": "object"
-      },
-      "PredictPayload": {
-        "properties": {
-          "model_version": {
-            "title": "Model Version",
-            "type": "string"
-          },
-          "inputs": {
-            "items": {
-              "type": "number"
-            },
-            "title": "Inputs",
-            "type": "array"
-          }
-        },
-        "required": ["model_version", "inputs"],
-        "title": "PredictPayload",
-        "type": "object"
-      },
-      "LLMPredictResponse": {
-        "properties": {
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "response": {
-            "title": "Response",
-            "type": "string"
-          },
-          "latency_ms": {
-            "title": "Latency Ms",
-            "type": "number"
-          }
-        },
-        "required": ["status", "response", "latency_ms"],
-        "title": "LLMPredictResponse",
-        "type": "object"
-      },
-      "LLMPredictPayload": {
-        "properties": {
-          "prompt": {
-            "title": "Prompt",
-            "type": "string"
-          },
-          "model_name": {
-            "default": "default-llm",
-            "title": "Model Name",
-            "type": "string"
-          }
-        },
-        "required": ["prompt"],
-        "title": "LLMPredictPayload",
-        "type": "object"
-      },
-      "IntegrationStatus": {
-        "properties": {
-          "integration": {
-            "title": "Integration",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "enabled": {
-            "title": "Enabled",
-            "type": "boolean"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "message": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Message"
-          }
-        },
-        "required": ["integration", "status", "enabled"],
-        "title": "IntegrationStatus",
-        "type": "object"
-      }
-    },
-    "securitySchemes": {
-      "IntegrationAPIKeyAuth": {
-        "type": "http",
-        "scheme": "bearer"
       }
     }
   },

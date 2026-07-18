@@ -1,5 +1,5 @@
 /**
- * DEML BACKEND APP API
+ * DEML Learning Platform API
  *
  *
  *
@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+/* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
@@ -27,69 +28,27 @@ import { APIKeyGenerateOut } from '../model/aPIKeyGenerateOut';
 // @ts-ignore
 import { APIKeyOut } from '../model/aPIKeyOut';
 // @ts-ignore
-import { ClarityIn } from '../model/clarityIn';
+import { DeleteAccountOut } from '../model/deleteAccountOut';
 // @ts-ignore
-import { CloudflareIn } from '../model/cloudflareIn';
+import { DesktopAuthOut } from '../model/desktopAuthOut';
 // @ts-ignore
-import { CookieConsentPayload } from '../model/cookieConsentPayload';
+import { DesktopSessionIn } from '../model/desktopSessionIn';
 // @ts-ignore
-import { EndpointOut } from '../model/endpointOut';
+import { HandoffGenerateIn } from '../model/handoffGenerateIn';
 // @ts-ignore
-import { ISACSubmissionIn } from '../model/iSACSubmissionIn';
+import { HandoffGenerateOut } from '../model/handoffGenerateOut';
 // @ts-ignore
-import { ISACSubmissionOut } from '../model/iSACSubmissionOut';
+import { HandoffVerifyIn } from '../model/handoffVerifyIn';
 // @ts-ignore
-import { IncidentIn } from '../model/incidentIn';
+import { LogoutIn } from '../model/logoutIn';
 // @ts-ignore
-import { IncidentOut } from '../model/incidentOut';
+import { SessionOut } from '../model/sessionOut';
 // @ts-ignore
-import { IngestPayload } from '../model/ingestPayload';
+import { SessionRegisterIn } from '../model/sessionRegisterIn';
 // @ts-ignore
-import { IngestResponse } from '../model/ingestResponse';
-// @ts-ignore
-import { IntegrationOut } from '../model/integrationOut';
-// @ts-ignore
-import { IntegrationStatus } from '../model/integrationStatus';
-// @ts-ignore
-import { IssueReportPayload } from '../model/issueReportPayload';
-// @ts-ignore
-import { LatestRunOut } from '../model/latestRunOut';
-// @ts-ignore
-import { MonitoredServiceIn } from '../model/monitoredServiceIn';
-// @ts-ignore
-import { MonitoredServiceOut } from '../model/monitoredServiceOut';
-// @ts-ignore
-import { PQKeyExchangeResponse } from '../model/pQKeyExchangeResponse';
-// @ts-ignore
-import { PredictPayload } from '../model/predictPayload';
-// @ts-ignore
-import { PredictResponse } from '../model/predictResponse';
-// @ts-ignore
-import { SOCStatusOut } from '../model/sOCStatusOut';
-// @ts-ignore
-import { STIXBundleOut } from '../model/sTIXBundleOut';
-// @ts-ignore
-import { StatusPageIn } from '../model/statusPageIn';
-// @ts-ignore
-import { StatusPageOut } from '../model/statusPageOut';
-// @ts-ignore
-import { SubscribePayload } from '../model/subscribePayload';
+import { SessionRegisterOut } from '../model/sessionRegisterOut';
 // @ts-ignore
 import { SuccessSchema } from '../model/successSchema';
-// @ts-ignore
-import { TelemetryDualStreamPayload } from '../model/telemetryDualStreamPayload';
-// @ts-ignore
-import { TelemetryPayload } from '../model/telemetryPayload';
-// @ts-ignore
-import { ThreatReportOut } from '../model/threatReportOut';
-// @ts-ignore
-import { TrainOut } from '../model/trainOut';
-// @ts-ignore
-import { VulnerabilityOut } from '../model/vulnerabilityOut';
-// @ts-ignore
-import { VulnerabilityReportPayload } from '../model/vulnerabilityReportPayload';
-// @ts-ignore
-import { VulnerabilityUpdatePayload } from '../model/vulnerabilityUpdatePayload';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
@@ -109,151 +68,32 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * List Vulnerabilities
-   * @endpoint get /api/v1/agent/vulnerabilities
-   * @param tenantId
-   * @param siteUrl
+   * Api Health
+   * @endpoint get /api/v1/health
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    * @param options additional options
    */
-  public agentApiListVulnerabilities(
-    tenantId?: string,
-    siteUrl?: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<VulnerabilityOut[]>;
-  public agentApiListVulnerabilities(
-    tenantId?: string,
-    siteUrl?: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<VulnerabilityOut[]>>;
-  public agentApiListVulnerabilities(
-    tenantId?: string,
-    siteUrl?: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<VulnerabilityOut[]>>;
-  public agentApiListVulnerabilities(
-    tenantId?: string,
-    siteUrl?: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'tenant_id',
-      tenantId as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'site_url',
-      siteUrl as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/agent/vulnerabilities`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<VulnerabilityOut[]>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Report Issue
-   * @endpoint post /api/v1/agent/report-issue
-   * @param issueReportPayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public agentApiReportIssue(
-    issueReportPayload: IssueReportPayload,
+  public configApiApiHealth(
     observe?: 'body',
     reportProgress?: boolean,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any>;
-  public agentApiReportIssue(
-    issueReportPayload: IssueReportPayload,
+  public configApiApiHealth(
     observe?: 'response',
     reportProgress?: boolean,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpResponse<any>>;
-  public agentApiReportIssue(
-    issueReportPayload: IssueReportPayload,
+  public configApiApiHealth(
     observe?: 'events',
     reportProgress?: boolean,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<HttpEvent<any>>;
-  public agentApiReportIssue(
-    issueReportPayload: IssueReportPayload,
+  public configApiApiHealth(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
-    if (issueReportPayload === null || issueReportPayload === undefined) {
-      throw new Error(
-        'Required parameter issueReportPayload was null or undefined when calling agentApiReportIssue.',
-      );
-    }
-
     let localVarHeaders = this.defaultHeaders;
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
@@ -266,14 +106,6 @@ export class DefaultService extends BaseService {
 
     const localVarTransferCache: boolean = options?.transferCache ?? true;
 
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
     let responseType_: 'text' | 'json' | 'blob' = 'json';
     if (localVarHttpHeaderAcceptSelected) {
       if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -285,220 +117,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/v1/agent/report-issue`;
+    let localVarPath = `/api/v1/health`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: issueReportPayload,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Report Vulnerability
-   * @endpoint post /api/v1/agent/vulnerabilities
-   * @param vulnerabilityReportPayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public agentApiReportVulnerability(
-    vulnerabilityReportPayload: VulnerabilityReportPayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<VulnerabilityOut>;
-  public agentApiReportVulnerability(
-    vulnerabilityReportPayload: VulnerabilityReportPayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<VulnerabilityOut>>;
-  public agentApiReportVulnerability(
-    vulnerabilityReportPayload: VulnerabilityReportPayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<VulnerabilityOut>>;
-  public agentApiReportVulnerability(
-    vulnerabilityReportPayload: VulnerabilityReportPayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (vulnerabilityReportPayload === null || vulnerabilityReportPayload === undefined) {
-      throw new Error(
-        'Required parameter vulnerabilityReportPayload was null or undefined when calling agentApiReportVulnerability.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/agent/vulnerabilities`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<VulnerabilityOut>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: vulnerabilityReportPayload,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Update Vulnerability
-   * @endpoint patch /api/v1/agent/vulnerabilities/{vuln_id}
-   * @param vulnId
-   * @param vulnerabilityUpdatePayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public agentApiUpdateVulnerability(
-    vulnId: string,
-    vulnerabilityUpdatePayload: VulnerabilityUpdatePayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<VulnerabilityOut>;
-  public agentApiUpdateVulnerability(
-    vulnId: string,
-    vulnerabilityUpdatePayload: VulnerabilityUpdatePayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<VulnerabilityOut>>;
-  public agentApiUpdateVulnerability(
-    vulnId: string,
-    vulnerabilityUpdatePayload: VulnerabilityUpdatePayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<VulnerabilityOut>>;
-  public agentApiUpdateVulnerability(
-    vulnId: string,
-    vulnerabilityUpdatePayload: VulnerabilityUpdatePayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (vulnId === null || vulnId === undefined) {
-      throw new Error(
-        'Required parameter vulnId was null or undefined when calling agentApiUpdateVulnerability.',
-      );
-    }
-    if (vulnerabilityUpdatePayload === null || vulnerabilityUpdatePayload === undefined) {
-      throw new Error(
-        'Required parameter vulnerabilityUpdatePayload was null or undefined when calling agentApiUpdateVulnerability.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/agent/vulnerabilities/${this.configuration.encodeParam({ name: 'vulnId', value: vulnId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<VulnerabilityOut>('patch', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: vulnerabilityUpdatePayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -522,7 +145,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<SuccessSchema>;
+  ): Observable<DeleteAccountOut>;
   public configApiAuthApiDeleteAccount(
     observe?: 'response',
     reportProgress?: boolean,
@@ -531,7 +154,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<SuccessSchema>>;
+  ): Observable<HttpResponse<DeleteAccountOut>>;
   public configApiAuthApiDeleteAccount(
     observe?: 'events',
     reportProgress?: boolean,
@@ -540,7 +163,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<SuccessSchema>>;
+  ): Observable<HttpEvent<DeleteAccountOut>>;
   public configApiAuthApiDeleteAccount(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -575,9 +198,89 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/auth/delete-account`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<SuccessSchema>('delete', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<DeleteAccountOut>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Api Register Health
+   * Health probe for monitors; user registration is handled client-side via Firebase.
+   * @endpoint get /api/v1/auth/register
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   * @param options additional options
+   */
+  public configApiAuthApiRegisterHealth(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<SuccessSchema>;
+  public configApiAuthApiRegisterHealth(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<SuccessSchema>>;
+  public configApiAuthApiRegisterHealth(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<SuccessSchema>>;
+  public configApiAuthApiRegisterHealth(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/api/v1/auth/register`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<SuccessSchema>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -656,7 +359,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -746,7 +449,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -845,7 +548,106 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<APIKeyGenerateOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: aPIKeyGenerateIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Generate cross-domain handoff token
+   * @endpoint post /api/v1/auth/handoff/generate
+   * @param handoffGenerateIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   * @param options additional options
+   */
+  public configApiAuthGenerateHandoffToken(
+    handoffGenerateIn: HandoffGenerateIn,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HandoffGenerateOut>;
+  public configApiAuthGenerateHandoffToken(
+    handoffGenerateIn: HandoffGenerateIn,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<HandoffGenerateOut>>;
+  public configApiAuthGenerateHandoffToken(
+    handoffGenerateIn: HandoffGenerateIn,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<HandoffGenerateOut>>;
+  public configApiAuthGenerateHandoffToken(
+    handoffGenerateIn: HandoffGenerateIn,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (handoffGenerateIn === null || handoffGenerateIn === undefined) {
+      throw new Error(
+        'Required parameter handoffGenerateIn was null or undefined when calling configApiAuthGenerateHandoffToken.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/api/v1/auth/handoff/generate`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<HandoffGenerateOut>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: handoffGenerateIn,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -869,7 +671,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<APIKeyOut[]>;
+  ): Observable<Array<APIKeyOut>>;
   public configApiAuthListApiKeys(
     observe?: 'response',
     reportProgress?: boolean,
@@ -878,7 +680,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<APIKeyOut[]>>;
+  ): Observable<HttpResponse<Array<APIKeyOut>>>;
   public configApiAuthListApiKeys(
     observe?: 'events',
     reportProgress?: boolean,
@@ -887,7 +689,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<APIKeyOut[]>>;
+  ): Observable<HttpEvent<Array<APIKeyOut>>>;
   public configApiAuthListApiKeys(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -922,9 +724,9 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/auth/api-keys`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<APIKeyOut[]>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<APIKeyOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -934,13 +736,13 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Apache Spark Integration Status
-   * @endpoint get /api/v1/integrations/apache-spark
+   * List active sessions
+   * @endpoint get /api/v1/auth/sessions
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    * @param options additional options
    */
-  public integrationsApiApacheSparkStatus(
+  public configApiAuthListSessionsEndpoint(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -948,8 +750,8 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<IntegrationStatus>;
-  public integrationsApiApacheSparkStatus(
+  ): Observable<Array<SessionOut>>;
+  public configApiAuthListSessionsEndpoint(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -957,8 +759,8 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<IntegrationStatus>>;
-  public integrationsApiApacheSparkStatus(
+  ): Observable<HttpResponse<Array<SessionOut>>>;
+  public configApiAuthListSessionsEndpoint(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -966,8 +768,8 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<IntegrationStatus>>;
-  public integrationsApiApacheSparkStatus(
+  ): Observable<HttpEvent<Array<SessionOut>>>;
+  public configApiAuthListSessionsEndpoint(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -999,11 +801,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/v1/integrations/apache-spark`;
+    let localVarPath = `/api/v1/auth/sessions`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<SessionOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1013,13 +815,15 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Databricks Integration Status
-   * @endpoint get /api/v1/integrations/databricks
+   * Sign out server session
+   * @endpoint post /api/v1/auth/logout
+   * @param logoutIn
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    * @param options additional options
    */
-  public integrationsApiDatabricksStatus(
+  public configApiAuthLogoutSessionEndpoint(
+    logoutIn: LogoutIn,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1027,8 +831,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<IntegrationStatus>;
-  public integrationsApiDatabricksStatus(
+  ): Observable<SuccessSchema>;
+  public configApiAuthLogoutSessionEndpoint(
+    logoutIn: LogoutIn,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1036,8 +841,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<IntegrationStatus>>;
-  public integrationsApiDatabricksStatus(
+  ): Observable<HttpResponse<SuccessSchema>>;
+  public configApiAuthLogoutSessionEndpoint(
+    logoutIn: LogoutIn,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1045,8 +851,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<IntegrationStatus>>;
-  public integrationsApiDatabricksStatus(
+  ): Observable<HttpEvent<SuccessSchema>>;
+  public configApiAuthLogoutSessionEndpoint(
+    logoutIn: LogoutIn,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1055,908 +862,9 @@ export class DefaultService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/integrations/databricks`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * High-Throughput Data Ingestion
-   * @endpoint post /api/v1/ingest
-   * @param ingestPayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public integrationsApiIngestData(
-    ingestPayload: IngestPayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IngestResponse>;
-  public integrationsApiIngestData(
-    ingestPayload: IngestPayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IngestResponse>>;
-  public integrationsApiIngestData(
-    ingestPayload: IngestPayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IngestResponse>>;
-  public integrationsApiIngestData(
-    ingestPayload: IngestPayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (ingestPayload === null || ingestPayload === undefined) {
+    if (logoutIn === null || logoutIn === undefined) {
       throw new Error(
-        'Required parameter ingestPayload was null or undefined when calling integrationsApiIngestData.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    // authentication (IntegrationAPIKeyAuth) required
-    localVarHeaders = this.configuration.addCredentialToHeaders(
-      'IntegrationAPIKeyAuth',
-      'Authorization',
-      localVarHeaders,
-      'Bearer ',
-    );
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ingest`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IngestResponse>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: ingestPayload,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Kubernetes Integration Status
-   * @endpoint get /api/v1/integrations/kubernetes
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public integrationsApiKubernetesStatus(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IntegrationStatus>;
-  public integrationsApiKubernetesStatus(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IntegrationStatus>>;
-  public integrationsApiKubernetesStatus(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IntegrationStatus>>;
-  public integrationsApiKubernetesStatus(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/integrations/kubernetes`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Real-time Model Inference
-   * @endpoint post /api/v1/predict
-   * @param predictPayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public integrationsApiPredict(
-    predictPayload: PredictPayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<PredictResponse>;
-  public integrationsApiPredict(
-    predictPayload: PredictPayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<PredictResponse>>;
-  public integrationsApiPredict(
-    predictPayload: PredictPayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<PredictResponse>>;
-  public integrationsApiPredict(
-    predictPayload: PredictPayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (predictPayload === null || predictPayload === undefined) {
-      throw new Error(
-        'Required parameter predictPayload was null or undefined when calling integrationsApiPredict.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    // authentication (IntegrationAPIKeyAuth) required
-    localVarHeaders = this.configuration.addCredentialToHeaders(
-      'IntegrationAPIKeyAuth',
-      'Authorization',
-      localVarHeaders,
-      'Bearer ',
-    );
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/predict`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<PredictResponse>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: predictPayload,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * PyTorch Integration Status
-   * @endpoint get /api/v1/integrations/pytorch
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public integrationsApiPytorchStatus(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IntegrationStatus>;
-  public integrationsApiPytorchStatus(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IntegrationStatus>>;
-  public integrationsApiPytorchStatus(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IntegrationStatus>>;
-  public integrationsApiPytorchStatus(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/integrations/pytorch`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * TensorFlow Integration Status
-   * @endpoint get /api/v1/integrations/tensorflow
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public integrationsApiTensorflowStatus(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IntegrationStatus>;
-  public integrationsApiTensorflowStatus(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IntegrationStatus>>;
-  public integrationsApiTensorflowStatus(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IntegrationStatus>>;
-  public integrationsApiTensorflowStatus(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/integrations/tensorflow`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get Latest Training
-   * @endpoint get /api/v1/ml/latest
-   * @param statusPageId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public mlMlApiGetLatestTraining(
-    statusPageId?: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<LatestRunOut>;
-  public mlMlApiGetLatestTraining(
-    statusPageId?: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<LatestRunOut>>;
-  public mlMlApiGetLatestTraining(
-    statusPageId?: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<LatestRunOut>>;
-  public mlMlApiGetLatestTraining(
-    statusPageId?: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'status_page_id',
-      statusPageId as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ml/latest`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LatestRunOut>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get Soc Status
-   * @endpoint get /api/v1/ml/compliance/soc-status
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public mlMlApiGetSocStatus(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<SOCStatusOut>;
-  public mlMlApiGetSocStatus(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<SOCStatusOut>>;
-  public mlMlApiGetSocStatus(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<SOCStatusOut>>;
-  public mlMlApiGetSocStatus(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ml/compliance/soc-status`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<SOCStatusOut>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get Threat Report
-   * @endpoint get /api/v1/ml/threat-intel/report
-   * @param statusPageId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public mlMlApiGetThreatReport(
-    statusPageId?: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<ThreatReportOut>;
-  public mlMlApiGetThreatReport(
-    statusPageId?: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<ThreatReportOut>>;
-  public mlMlApiGetThreatReport(
-    statusPageId?: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<ThreatReportOut>>;
-  public mlMlApiGetThreatReport(
-    statusPageId?: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'status_page_id',
-      statusPageId as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ml/threat-intel/report`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<ThreatReportOut>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get Threat Report Stix
-   * @endpoint get /api/v1/ml/threat-intel/stix
-   * @param statusPageId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public mlMlApiGetThreatReportStix(
-    statusPageId?: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<STIXBundleOut>;
-  public mlMlApiGetThreatReportStix(
-    statusPageId?: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<STIXBundleOut>>;
-  public mlMlApiGetThreatReportStix(
-    statusPageId?: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<STIXBundleOut>>;
-  public mlMlApiGetThreatReportStix(
-    statusPageId?: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'status_page_id',
-      statusPageId as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ml/threat-intel/stix`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<STIXBundleOut>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Submit To Isac
-   * @endpoint post /api/v1/ml/threat-intel/submit-isac
-   * @param iSACSubmissionIn
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public mlMlApiSubmitToIsac(
-    iSACSubmissionIn: ISACSubmissionIn,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<ISACSubmissionOut>;
-  public mlMlApiSubmitToIsac(
-    iSACSubmissionIn: ISACSubmissionIn,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<ISACSubmissionOut>>;
-  public mlMlApiSubmitToIsac(
-    iSACSubmissionIn: ISACSubmissionIn,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<ISACSubmissionOut>>;
-  public mlMlApiSubmitToIsac(
-    iSACSubmissionIn: ISACSubmissionIn,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (iSACSubmissionIn === null || iSACSubmissionIn === undefined) {
-      throw new Error(
-        'Required parameter iSACSubmissionIn was null or undefined when calling mlMlApiSubmitToIsac.',
+        'Required parameter logoutIn was null or undefined when calling configApiAuthLogoutSessionEndpoint.',
       );
     }
 
@@ -1991,12 +899,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/v1/ml/threat-intel/submit-isac`;
+    let localVarPath = `/api/v1/auth/logout`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<ISACSubmissionOut>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<SuccessSchema>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: iSACSubmissionIn,
-      responseType: responseType_ as any,
+      body: logoutIn,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2006,15 +914,15 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Train Model
-   * @endpoint get /api/v1/ml/train
-   * @param statusPageId
+   * Register browser session
+   * @endpoint post /api/v1/auth/sessions
+   * @param sessionRegisterIn
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    * @param options additional options
    */
-  public mlMlApiTrainModel(
-    statusPageId?: string,
+  public configApiAuthRegisterSessionEndpoint(
+    sessionRegisterIn: SessionRegisterIn,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2022,9 +930,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<TrainOut>;
-  public mlMlApiTrainModel(
-    statusPageId?: string,
+  ): Observable<SessionRegisterOut>;
+  public configApiAuthRegisterSessionEndpoint(
+    sessionRegisterIn: SessionRegisterIn,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2032,9 +940,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<TrainOut>>;
-  public mlMlApiTrainModel(
-    statusPageId?: string,
+  ): Observable<HttpResponse<SessionRegisterOut>>;
+  public configApiAuthRegisterSessionEndpoint(
+    sessionRegisterIn: SessionRegisterIn,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2042,9 +950,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<TrainOut>>;
-  public mlMlApiTrainModel(
-    statusPageId?: string,
+  ): Observable<HttpEvent<SessionRegisterOut>>;
+  public configApiAuthRegisterSessionEndpoint(
+    sessionRegisterIn: SessionRegisterIn,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2053,288 +961,9 @@ export class DefaultService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'status_page_id',
-      statusPageId as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ml/train`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<TrainOut>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Train Model
-   * @endpoint post /api/v1/ml/train
-   * @param statusPageId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public mlMlApiTrainModel_1(
-    statusPageId?: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<TrainOut>;
-  public mlMlApiTrainModel_1(
-    statusPageId?: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<TrainOut>>;
-  public mlMlApiTrainModel_1(
-    statusPageId?: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<TrainOut>>;
-  public mlMlApiTrainModel_1(
-    statusPageId?: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'status_page_id',
-      statusPageId as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ml/train`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<TrainOut>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Train Threat Intel
-   * @endpoint post /api/v1/ml/threat-intel/train
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public mlMlApiTrainThreatIntel(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<ThreatReportOut>;
-  public mlMlApiTrainThreatIntel(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<ThreatReportOut>>;
-  public mlMlApiTrainThreatIntel(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<ThreatReportOut>>;
-  public mlMlApiTrainThreatIntel(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/ml/threat-intel/train`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<ThreatReportOut>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Add Service
-   * @endpoint post /api/v1/system-status/status_pages/{page_id}/services
-   * @param pageId
-   * @param monitoredServiceIn
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiAddService(
-    pageId: string,
-    monitoredServiceIn: MonitoredServiceIn,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<MonitoredServiceOut>;
-  public monitorApiAddService(
-    pageId: string,
-    monitoredServiceIn: MonitoredServiceIn,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<MonitoredServiceOut>>;
-  public monitorApiAddService(
-    pageId: string,
-    monitoredServiceIn: MonitoredServiceIn,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<MonitoredServiceOut>>;
-  public monitorApiAddService(
-    pageId: string,
-    monitoredServiceIn: MonitoredServiceIn,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (pageId === null || pageId === undefined) {
+    if (sessionRegisterIn === null || sessionRegisterIn === undefined) {
       throw new Error(
-        'Required parameter pageId was null or undefined when calling monitorApiAddService.',
-      );
-    }
-    if (monitoredServiceIn === null || monitoredServiceIn === undefined) {
-      throw new Error(
-        'Required parameter monitoredServiceIn was null or undefined when calling monitorApiAddService.',
+        'Required parameter sessionRegisterIn was null or undefined when calling configApiAuthRegisterSessionEndpoint.',
       );
     }
 
@@ -2369,12 +998,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/services`;
+    let localVarPath = `/api/v1/auth/sessions`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<MonitoredServiceOut>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<SessionRegisterOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: monitoredServiceIn,
-      responseType: responseType_ as any,
+      body: sessionRegisterIn,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2384,36 +1013,63 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Api Health
-   * @endpoint get /api/v1/system-status/health
+   * Revoke session
+   * @endpoint delete /api/v1/auth/sessions/{session_id}
+   * @param sessionId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    * @param options additional options
    */
-  public monitorApiApiHealth(
+  public configApiAuthRevokeSessionEndpoint(
+    sessionId: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public monitorApiApiHealth(
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<SuccessSchema>;
+  public configApiAuthRevokeSessionEndpoint(
+    sessionId: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public monitorApiApiHealth(
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<SuccessSchema>>;
+  public configApiAuthRevokeSessionEndpoint(
+    sessionId: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public monitorApiApiHealth(
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<SuccessSchema>>;
+  public configApiAuthRevokeSessionEndpoint(
+    sessionId: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
   ): Observable<any> {
+    if (sessionId === null || sessionId === undefined) {
+      throw new Error(
+        'Required parameter sessionId was null or undefined when calling configApiAuthRevokeSessionEndpoint.',
+      );
+    }
+
     let localVarHeaders = this.defaultHeaders;
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
@@ -2433,11 +1089,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/v1/system-status/health`;
+    let localVarPath = `/api/v1/auth/sessions/${this.configuration.encodeParam({ name: 'sessionId', value: sessionId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<SuccessSchema>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2447,17 +1103,15 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Create Incident
-   * @endpoint post /api/v1/system-status/status_pages/{page_id}/incidents
-   * @param pageId
-   * @param incidentIn
+   * Validate a native desktop session
+   * @endpoint post /api/v1/auth/desktop/session
+   * @param desktopSessionIn
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    * @param options additional options
    */
-  public monitorApiCreateIncident(
-    pageId: string,
-    incidentIn: IncidentIn,
+  public configApiAuthValidateDesktopSession(
+    desktopSessionIn: DesktopSessionIn,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2465,10 +1119,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<IncidentOut>;
-  public monitorApiCreateIncident(
-    pageId: string,
-    incidentIn: IncidentIn,
+  ): Observable<DesktopAuthOut>;
+  public configApiAuthValidateDesktopSession(
+    desktopSessionIn: DesktopSessionIn,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2476,10 +1129,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<IncidentOut>>;
-  public monitorApiCreateIncident(
-    pageId: string,
-    incidentIn: IncidentIn,
+  ): Observable<HttpResponse<DesktopAuthOut>>;
+  public configApiAuthValidateDesktopSession(
+    desktopSessionIn: DesktopSessionIn,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2487,10 +1139,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<IncidentOut>>;
-  public monitorApiCreateIncident(
-    pageId: string,
-    incidentIn: IncidentIn,
+  ): Observable<HttpEvent<DesktopAuthOut>>;
+  public configApiAuthValidateDesktopSession(
+    desktopSessionIn: DesktopSessionIn,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2499,14 +1150,9 @@ export class DefaultService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (pageId === null || pageId === undefined) {
+    if (desktopSessionIn === null || desktopSessionIn === undefined) {
       throw new Error(
-        'Required parameter pageId was null or undefined when calling monitorApiCreateIncident.',
-      );
-    }
-    if (incidentIn === null || incidentIn === undefined) {
-      throw new Error(
-        'Required parameter incidentIn was null or undefined when calling monitorApiCreateIncident.',
+        'Required parameter desktopSessionIn was null or undefined when calling configApiAuthValidateDesktopSession.',
       );
     }
 
@@ -2541,12 +1187,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/incidents`;
+    let localVarPath = `/api/v1/auth/desktop/session`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IncidentOut>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<DesktopAuthOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: incidentIn,
-      responseType: responseType_ as any,
+      body: desktopSessionIn,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2556,15 +1202,15 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Create Status Page
-   * @endpoint post /api/v1/system-status/status_pages
-   * @param statusPageIn
+   * Verify one-time handoff token
+   * @endpoint post /api/v1/auth/handoff/verify
+   * @param handoffVerifyIn
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    * @param options additional options
    */
-  public monitorApiCreateStatusPage(
-    statusPageIn: StatusPageIn,
+  public configApiAuthVerifyHandoffToken(
+    handoffVerifyIn: HandoffVerifyIn,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2572,9 +1218,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<StatusPageOut>;
-  public monitorApiCreateStatusPage(
-    statusPageIn: StatusPageIn,
+  ): Observable<DesktopAuthOut>;
+  public configApiAuthVerifyHandoffToken(
+    handoffVerifyIn: HandoffVerifyIn,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2582,9 +1228,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<StatusPageOut>>;
-  public monitorApiCreateStatusPage(
-    statusPageIn: StatusPageIn,
+  ): Observable<HttpResponse<DesktopAuthOut>>;
+  public configApiAuthVerifyHandoffToken(
+    handoffVerifyIn: HandoffVerifyIn,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2592,9 +1238,9 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<StatusPageOut>>;
-  public monitorApiCreateStatusPage(
-    statusPageIn: StatusPageIn,
+  ): Observable<HttpEvent<DesktopAuthOut>>;
+  public configApiAuthVerifyHandoffToken(
+    handoffVerifyIn: HandoffVerifyIn,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2603,9 +1249,9 @@ export class DefaultService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (statusPageIn === null || statusPageIn === undefined) {
+    if (handoffVerifyIn === null || handoffVerifyIn === undefined) {
       throw new Error(
-        'Required parameter statusPageIn was null or undefined when calling monitorApiCreateStatusPage.',
+        'Required parameter handoffVerifyIn was null or undefined when calling configApiAuthVerifyHandoffToken.',
       );
     }
 
@@ -2640,1854 +1286,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/v1/system-status/status_pages`;
+    let localVarPath = `/api/v1/auth/handoff/verify`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<StatusPageOut>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<DesktopAuthOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: statusPageIn,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Delete Incident
-   * @endpoint delete /api/v1/system-status/incidents/{incident_id}
-   * @param incidentId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiDeleteIncident(
-    incidentId: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public monitorApiDeleteIncident(
-    incidentId: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public monitorApiDeleteIncident(
-    incidentId: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public monitorApiDeleteIncident(
-    incidentId: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (incidentId === null || incidentId === undefined) {
-      throw new Error(
-        'Required parameter incidentId was null or undefined when calling monitorApiDeleteIncident.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/incidents/${this.configuration.encodeParam({ name: 'incidentId', value: incidentId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Delete Integration
-   * @endpoint delete /api/v1/system-status/integrations/{integration_id}
-   * @param integrationId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiDeleteIntegration(
-    integrationId: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public monitorApiDeleteIntegration(
-    integrationId: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public monitorApiDeleteIntegration(
-    integrationId: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public monitorApiDeleteIntegration(
-    integrationId: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (integrationId === null || integrationId === undefined) {
-      throw new Error(
-        'Required parameter integrationId was null or undefined when calling monitorApiDeleteIntegration.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/integrations/${this.configuration.encodeParam({ name: 'integrationId', value: integrationId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Delete Service
-   * @endpoint delete /api/v1/system-status/services/{service_id}
-   * @param serviceId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiDeleteService(
-    serviceId: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public monitorApiDeleteService(
-    serviceId: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public monitorApiDeleteService(
-    serviceId: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public monitorApiDeleteService(
-    serviceId: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (serviceId === null || serviceId === undefined) {
-      throw new Error(
-        'Required parameter serviceId was null or undefined when calling monitorApiDeleteService.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/services/${this.configuration.encodeParam({ name: 'serviceId', value: serviceId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Delete Status Page
-   * @endpoint delete /api/v1/system-status/status_pages/{page_id}
-   * @param pageId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiDeleteStatusPage(
-    pageId: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public monitorApiDeleteStatusPage(
-    pageId: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public monitorApiDeleteStatusPage(
-    pageId: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public monitorApiDeleteStatusPage(
-    pageId: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (pageId === null || pageId === undefined) {
-      throw new Error(
-        'Required parameter pageId was null or undefined when calling monitorApiDeleteStatusPage.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get All Endpoints
-   * @endpoint get /api/v1/system-status/endpoints
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiGetAllEndpoints(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<EndpointOut[]>;
-  public monitorApiGetAllEndpoints(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<EndpointOut[]>>;
-  public monitorApiGetAllEndpoints(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<EndpointOut[]>>;
-  public monitorApiGetAllEndpoints(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/endpoints`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<EndpointOut[]>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get Status Page By Slug
-   * @endpoint get /api/v1/system-status/status_pages/slug/{slug}
-   * @param slug
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiGetStatusPageBySlug(
-    slug: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<StatusPageOut>;
-  public monitorApiGetStatusPageBySlug(
-    slug: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<StatusPageOut>>;
-  public monitorApiGetStatusPageBySlug(
-    slug: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<StatusPageOut>>;
-  public monitorApiGetStatusPageBySlug(
-    slug: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (slug === null || slug === undefined) {
-      throw new Error(
-        'Required parameter slug was null or undefined when calling monitorApiGetStatusPageBySlug.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/status_pages/slug/${this.configuration.encodeParam({ name: 'slug', value: slug, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<StatusPageOut>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Google Auth Url
-   * @endpoint get /api/v1/system-status/integrations/google/auth-url
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiGoogleAuthUrl(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public monitorApiGoogleAuthUrl(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public monitorApiGoogleAuthUrl(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public monitorApiGoogleAuthUrl(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/integrations/google/auth-url`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Google Callback
-   * @endpoint get /api/v1/system-status/integrations/google/callback
-   * @param code
-   * @param state
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiGoogleCallback(
-    code: string,
-    state: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public monitorApiGoogleCallback(
-    code: string,
-    state: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public monitorApiGoogleCallback(
-    code: string,
-    state: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public monitorApiGoogleCallback(
-    code: string,
-    state: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (code === null || code === undefined) {
-      throw new Error(
-        'Required parameter code was null or undefined when calling monitorApiGoogleCallback.',
-      );
-    }
-    if (state === null || state === undefined) {
-      throw new Error(
-        'Required parameter state was null or undefined when calling monitorApiGoogleCallback.',
-      );
-    }
-
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'code',
-      code as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'state',
-      state as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/integrations/google/callback`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * List Incidents
-   * @endpoint get /api/v1/system-status/status_pages/{page_id}/incidents
-   * @param pageId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiListIncidents(
-    pageId: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IncidentOut[]>;
-  public monitorApiListIncidents(
-    pageId: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IncidentOut[]>>;
-  public monitorApiListIncidents(
-    pageId: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IncidentOut[]>>;
-  public monitorApiListIncidents(
-    pageId: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (pageId === null || pageId === undefined) {
-      throw new Error(
-        'Required parameter pageId was null or undefined when calling monitorApiListIncidents.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/incidents`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IncidentOut[]>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * List Integrations
-   * @endpoint get /api/v1/system-status/integrations
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiListIntegrations(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IntegrationOut[]>;
-  public monitorApiListIntegrations(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IntegrationOut[]>>;
-  public monitorApiListIntegrations(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IntegrationOut[]>>;
-  public monitorApiListIntegrations(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/integrations`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationOut[]>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * List Services
-   * @endpoint get /api/v1/system-status/status_pages/{page_id}/services
-   * @param pageId
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiListServices(
-    pageId: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<MonitoredServiceOut[]>;
-  public monitorApiListServices(
-    pageId: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<MonitoredServiceOut[]>>;
-  public monitorApiListServices(
-    pageId: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<MonitoredServiceOut[]>>;
-  public monitorApiListServices(
-    pageId: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (pageId === null || pageId === undefined) {
-      throw new Error(
-        'Required parameter pageId was null or undefined when calling monitorApiListServices.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/services`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<MonitoredServiceOut[]>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * List Status Pages
-   * @endpoint get /api/v1/system-status/status_pages
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiListStatusPages(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<StatusPageOut[]>;
-  public monitorApiListStatusPages(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<StatusPageOut[]>>;
-  public monitorApiListStatusPages(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<StatusPageOut[]>>;
-  public monitorApiListStatusPages(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/status_pages`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<StatusPageOut[]>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Save Clarity
-   * @endpoint post /api/v1/system-status/integrations/clarity
-   * @param clarityIn
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiSaveClarity(
-    clarityIn: ClarityIn,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IntegrationOut>;
-  public monitorApiSaveClarity(
-    clarityIn: ClarityIn,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IntegrationOut>>;
-  public monitorApiSaveClarity(
-    clarityIn: ClarityIn,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IntegrationOut>>;
-  public monitorApiSaveClarity(
-    clarityIn: ClarityIn,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (clarityIn === null || clarityIn === undefined) {
-      throw new Error(
-        'Required parameter clarityIn was null or undefined when calling monitorApiSaveClarity.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/integrations/clarity`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationOut>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: clarityIn,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Save Cloudflare
-   * @endpoint post /api/v1/system-status/integrations/cloudflare
-   * @param cloudflareIn
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiSaveCloudflare(
-    cloudflareIn: CloudflareIn,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<IntegrationOut>;
-  public monitorApiSaveCloudflare(
-    cloudflareIn: CloudflareIn,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<IntegrationOut>>;
-  public monitorApiSaveCloudflare(
-    cloudflareIn: CloudflareIn,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<IntegrationOut>>;
-  public monitorApiSaveCloudflare(
-    cloudflareIn: CloudflareIn,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (cloudflareIn === null || cloudflareIn === undefined) {
-      throw new Error(
-        'Required parameter cloudflareIn was null or undefined when calling monitorApiSaveCloudflare.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/integrations/cloudflare`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationOut>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: cloudflareIn,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Update Status Page
-   * @endpoint put /api/v1/system-status/status_pages/{page_id}
-   * @param pageId
-   * @param statusPageIn
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public monitorApiUpdateStatusPage(
-    pageId: string,
-    statusPageIn: StatusPageIn,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<StatusPageOut>;
-  public monitorApiUpdateStatusPage(
-    pageId: string,
-    statusPageIn: StatusPageIn,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<StatusPageOut>>;
-  public monitorApiUpdateStatusPage(
-    pageId: string,
-    statusPageIn: StatusPageIn,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<StatusPageOut>>;
-  public monitorApiUpdateStatusPage(
-    pageId: string,
-    statusPageIn: StatusPageIn,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (pageId === null || pageId === undefined) {
-      throw new Error(
-        'Required parameter pageId was null or undefined when calling monitorApiUpdateStatusPage.',
-      );
-    }
-    if (statusPageIn === null || statusPageIn === undefined) {
-      throw new Error(
-        'Required parameter statusPageIn was null or undefined when calling monitorApiUpdateStatusPage.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<StatusPageOut>('put', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: statusPageIn,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get Analytics Overview
-   * @endpoint get /api/v1/analytics/overview
-   * @param tenantId
-   * @param siteUrl
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public telemetryAnalyticsViewsGetAnalyticsOverview(
-    tenantId?: string,
-    siteUrl?: string,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public telemetryAnalyticsViewsGetAnalyticsOverview(
-    tenantId?: string,
-    siteUrl?: string,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public telemetryAnalyticsViewsGetAnalyticsOverview(
-    tenantId?: string,
-    siteUrl?: string,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public telemetryAnalyticsViewsGetAnalyticsOverview(
-    tenantId?: string,
-    siteUrl?: string,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'tenant_id',
-      tenantId as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'site_url',
-      siteUrl as any,
-      QueryParamStyle.Form,
-      true,
-    );
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/analytics/overview`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get User Tenants
-   * @endpoint get /api/v1/analytics/tenants
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public telemetryAnalyticsViewsGetUserTenants(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public telemetryAnalyticsViewsGetUserTenants(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public telemetryAnalyticsViewsGetUserTenants(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public telemetryAnalyticsViewsGetUserTenants(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/analytics/tenants`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Get Pq Key Exchange
-   * @endpoint get /api/v1/telemetry/pq-key-exchange
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public telemetryApiGetPqKeyExchange(
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<PQKeyExchangeResponse>;
-  public telemetryApiGetPqKeyExchange(
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<PQKeyExchangeResponse>>;
-  public telemetryApiGetPqKeyExchange(
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<PQKeyExchangeResponse>>;
-  public telemetryApiGetPqKeyExchange(
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/telemetry/pq-key-exchange`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<PQKeyExchangeResponse>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Ingest Endpoint Telemetry
-   * @endpoint post /api/v1/telemetry/endpoints
-   * @param telemetryPayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public telemetryApiIngestEndpointTelemetry(
-    telemetryPayload: TelemetryPayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public telemetryApiIngestEndpointTelemetry(
-    telemetryPayload: TelemetryPayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public telemetryApiIngestEndpointTelemetry(
-    telemetryPayload: TelemetryPayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public telemetryApiIngestEndpointTelemetry(
-    telemetryPayload: TelemetryPayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (telemetryPayload === null || telemetryPayload === undefined) {
-      throw new Error(
-        'Required parameter telemetryPayload was null or undefined when calling telemetryApiIngestEndpointTelemetry.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/telemetry/endpoints`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: telemetryPayload,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Ingest Technology Telemetry
-   * @endpoint post /api/v1/telemetry/technology
-   * @param telemetryDualStreamPayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public telemetryApiIngestTechnologyTelemetry(
-    telemetryDualStreamPayload: TelemetryDualStreamPayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public telemetryApiIngestTechnologyTelemetry(
-    telemetryDualStreamPayload: TelemetryDualStreamPayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public telemetryApiIngestTechnologyTelemetry(
-    telemetryDualStreamPayload: TelemetryDualStreamPayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public telemetryApiIngestTechnologyTelemetry(
-    telemetryDualStreamPayload: TelemetryDualStreamPayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (telemetryDualStreamPayload === null || telemetryDualStreamPayload === undefined) {
-      throw new Error(
-        'Required parameter telemetryDualStreamPayload was null or undefined when calling telemetryApiIngestTechnologyTelemetry.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/telemetry/technology`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: telemetryDualStreamPayload,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Save Cookie Consent
-   * @endpoint post /api/v1/telemetry/cookie-consent
-   * @param cookieConsentPayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public telemetryApiSaveCookieConsent(
-    cookieConsentPayload: CookieConsentPayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public telemetryApiSaveCookieConsent(
-    cookieConsentPayload: CookieConsentPayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public telemetryApiSaveCookieConsent(
-    cookieConsentPayload: CookieConsentPayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public telemetryApiSaveCookieConsent(
-    cookieConsentPayload: CookieConsentPayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (cookieConsentPayload === null || cookieConsentPayload === undefined) {
-      throw new Error(
-        'Required parameter cookieConsentPayload was null or undefined when calling telemetryApiSaveCookieConsent.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/telemetry/cookie-consent`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: cookieConsentPayload,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
-  }
-
-  /**
-   * Subscribe Newsletter
-   * @endpoint post /api/v1/telemetry/subscribe
-   * @param subscribePayload
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   * @param options additional options
-   */
-  public telemetryApiSubscribeNewsletter(
-    subscribePayload: SubscribePayload,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
-  public telemetryApiSubscribeNewsletter(
-    subscribePayload: SubscribePayload,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
-  public telemetryApiSubscribeNewsletter(
-    subscribePayload: SubscribePayload,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
-  public telemetryApiSubscribeNewsletter(
-    subscribePayload: SubscribePayload,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any> {
-    if (subscribePayload === null || subscribePayload === undefined) {
-      throw new Error(
-        'Required parameter subscribePayload was null or undefined when calling telemetryApiSubscribeNewsletter.',
-      );
-    }
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-    }
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/api/v1/telemetry/subscribe`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: subscribePayload,
-      responseType: responseType_ as any,
+      body: handoffVerifyIn,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,

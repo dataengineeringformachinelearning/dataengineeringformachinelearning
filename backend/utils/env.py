@@ -1,15 +1,14 @@
 """
 Centralized environment variable helpers.
 
-All services (Django API, workers, management commands) should read dynamic
-configuration through these helpers or django.conf.settings — never hardcode
-production URLs, broker hosts, or secrets in application code.
+The Django user control plane reads configuration through these helpers or
+django.conf.settings. FORJD owns all data-plane configuration.
 """
 
 from __future__ import annotations
 
 import os
-from urllib.parse import parse_qs, quote, urlparse
+from urllib.parse import parse_qs, urlparse
 
 # Insecure Django default — must never ship to production unchanged.
 _INSECURE_SECRET_KEY = (
@@ -164,67 +163,12 @@ def validate_encrypted_transport_config() -> None:
 
   if not get_str("REDIS_URL"):
     raise RuntimeError("production REDIS_URL is required and must use rediss://.")
-  for name in ("REDIS_URL", "CPE_REDIS_URL"):
+  for name in ("REDIS_URL",):
     value = get_str(name)
     if value and not value.lower().startswith("rediss://"):
       raise RuntimeError(f"production {name} must use rediss:// with certificate verification.")
 
-  if get_str("REDPANDA_BROKERS"):
-    protocol = get_str("REDPANDA_SECURITY_PROTOCOL", "SASL_SSL").upper()
-    if protocol not in {"SSL", "SASL_SSL"}:
-      raise RuntimeError("production Redpanda transport must use SSL or SASL_SSL.")
-
-  for name in (
-    "OTEL_EXPORTER_OTLP_ENDPOINT",
-    "SCANNER_SERVICE_URL",
-    "CPE_GUESSER_URL",
-    "FIRECRAWL_API_URL",
-  ):
+  for name in ("OTEL_EXPORTER_OTLP_ENDPOINT", "FORJD_API_URL"):
     value = get_str(name)
     if value and not value.lower().startswith("https://"):
       raise RuntimeError(f"production {name} must use https://.")
-
-
-def tor_proxy_url() -> str:
-  """SOCKS5 proxy for dark-web OSINT (Tor). Override via TOR_PROXY_URL."""
-  return get_str("TOR_PROXY_URL", "socks5h://deml-tor-proxy.railway.internal:9050")
-
-
-def scanner_service_url() -> str:
-  """CVE scanner internal service URL."""
-  default = "" if is_production() else "http://localhost:8000"
-  return get_str("SCANNER_SERVICE_URL", default)
-
-
-def cpe_guesser_url() -> str:
-  """Rust CPE lookup service URL."""
-  default = "" if is_production() else "http://localhost:8080/unique"
-  return get_str("CPE_GUESSER_URL", default)
-
-
-def firecrawl_api_url() -> str:
-  """Managed or self-hosted Firecrawl API base URL."""
-  return get_str("FIRECRAWL_API_URL", "https://api.firecrawl.dev")
-
-
-def clickhouse_uri() -> str:
-  """ClickHouse URI from an explicit URI or the canonical split env contract."""
-  explicit_uri = get_str("CLICKHOUSE_URI")
-  if explicit_uri:
-    return explicit_uri
-
-  host = get_str("CLICKHOUSE_HOST")
-  if host:
-    port = get_int("CLICKHOUSE_PORT", 8123)
-    username = quote(get_str("CLICKHOUSE_USER", "default"), safe="")
-    password = quote(get_str("CLICKHOUSE_PASSWORD"), safe="")
-    database = quote(get_str("CLICKHOUSE_DB", "default"), safe="")
-    return f"clickhouse://{username}:{password}@{host}:{port}/{database}"
-
-  return "clickhouse://default:@clickhouse:8123/default"
-
-
-def rustfs_endpoint() -> str:
-  """S3 API endpoint for the RustFS report object store."""
-  default = "" if is_production() else "http://localhost:9100"
-  return get_str("RUSTFS_ENDPOINT", default)

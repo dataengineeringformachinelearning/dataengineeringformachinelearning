@@ -1,5 +1,18 @@
 # The Whitepaper: Operational Intelligence for the Digital Battlefield
 
+> **Current platform boundary (July 2026):** DEML owns the Firebase-authenticated
+> user control plane, Angular product, learning state, billing, consent, credentials,
+> and account-lifecycle UI. FORJD exclusively owns encrypted intake, processing,
+> projections, analytics, replay, threat processing, and machine learning. Native
+> FORJD requests use tenant-bound opaque `fjsvc_` credentials and sealed payloads;
+> Firebase tokens, OAuth client credentials, Supabase `service_role`, `/deml-compat`
+> aliases, and direct storage access are outside the trust boundary. Learning
+> projections, service-account crypto-session bootstrap, replay/DLQ, domain adapters,
+> and durable tenant erasure remain blocked FORJD dependencies. The local workers,
+> Redpanda, ClickHouse, Rust data plane, scanners, and ML runtime described later are
+> the retired architecture, retained only as research history. The authoritative
+> implementation contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md).
+
 **Abstract:** This paper specifies the architecture of the Data Engineering for AI Engineering and Cybersecurity (DEML) platform—a multi-tenant observability, AI intelligence, and threat-analytics system engineered for the new digital battlefield. The design unifies high-throughput event projections, AI/ML-forecasted service levels, automated STIX 2.1 indicator federation, model lifecycle management, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
 
 **Published:** July 2026
@@ -261,7 +274,7 @@ Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cl
 
 Retention never races materialization: the scheduler reconciles 31 days of hourly work to protect the rolling 30-day cutoff, repairs the 29 completed report/uptime days displayed beside today, requires current-version hourly coverage for endpoint and consent scopes at the deletion boundary, and archives audit batches to ClickHouse before deleting the acknowledged Postgres IDs. Any missing coverage, ClickHouse schema problem, or upload failure aborts the destructive phase. Existing ClickHouse volumes receive explicit TTL upgrades, not just fresh-table declarations. The public status query always returns 30 dated slots from `StatusPageUptimeDaily`, using isolated raw probes for today/repair gaps and legacy endpoint evidence for pre-probe history; pre-creation and truly unobserved days carry nullable uptime and remain neutral rather than being counted as successful uptime.
 
-The read architecture deliberately separates dimensions. Dashboard KPIs use hourly `AggregatedAnalytics`; downloadable analytics reports use daily `ReportArchive` with freshness-aware hourly fallback; Lighthouse reports use page/URL/hour `LighthouseScan`; public uptime uses `StatusPageUptimeDaily` keyed by page and date. Component status/SLA reads are batched for the whole page. Exports are durable queued jobs, drained every minute with bounded exponential retry, retry-visible clients, private signed proxy downloads, and full retained-range threat/vulnerability iteration. Account deletion locks report work and removes RustFS artifacts before metadata cascades. This keeps dashboard reads off transactional joins while preserving accurate site-specific reports through a tenant-scoped 30-day raw fallback.
+Historically, the read architecture separated dimensions across local projections and RustFS exports. That implementation is retired in favor of FORJD. Account deletion now fails closed before any local teardown and remains blocked until FORJD durably erases the mapped tenant.
 
 **Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([BOOK.md § Appendix M](BOOK.md#appendix-m-billing--subscriptions-operator-reference)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 

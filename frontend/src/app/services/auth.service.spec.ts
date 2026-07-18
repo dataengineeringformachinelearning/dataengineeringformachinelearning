@@ -52,7 +52,6 @@ vi.mock('firebase/auth', () => {
       callback(null);
       return () => undefined;
     },
-    deleteUser: () => Promise.resolve({}),
   };
 });
 
@@ -137,6 +136,47 @@ describe('AuthService', () => {
 
     expect(service.isAuthenticated()).toBe(false);
     expect(service.currentUserId()).toBeNull();
+  });
+
+  it('keeps the Firebase-backed session when server-side deletion is blocked', async () => {
+    service.isAuthenticated.set(true);
+    service.currentUserId.set(42);
+
+    const deletionPromise = service.deleteAccount();
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    const req = httpMock.expectOne(`${environment.backendUrl}/api/v1/auth/delete-account`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(
+      { detail: 'Account deletion is blocked on FORJD: durable tenant erasure is not shipped.' },
+      { status: 503, statusText: 'Service Unavailable' },
+    );
+
+    expect(await deletionPromise).toEqual({
+      status: 'blocked',
+      message: 'Account deletion is blocked on FORJD: durable tenant erasure is not shipped.',
+    });
+    expect(service.isAuthenticated()).toBe(true);
+    expect(service.currentUserId()).toBe(42);
+  });
+
+  it('distinguishes a request failure from the FORJD erasure blocker', async () => {
+    service.isAuthenticated.set(true);
+    service.currentUserId.set(42);
+
+    const deletionPromise = service.deleteAccount();
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    const req = httpMock.expectOne(`${environment.backendUrl}/api/v1/auth/delete-account`);
+    req.flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(await deletionPromise).toEqual({
+      status: 'failed',
+      message:
+        'Account deletion could not be requested. Your identities and account data remain intact. Please try again.',
+    });
+    expect(service.isAuthenticated()).toBe(true);
+    expect(service.currentUserId()).toBe(42);
   });
 });
 

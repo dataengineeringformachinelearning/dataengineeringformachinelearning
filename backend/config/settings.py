@@ -137,8 +137,6 @@ from utils.env import (
   configure_database_url,
   get_bool,
   get_csv,
-  get_float,
-  get_int,
   get_str,
   validate_production_config,
 )
@@ -163,6 +161,12 @@ ALLOWED_HOSTS = [
   if host.strip()
 ]
 
+# FORJD owns ingestion, processing, projections, analytics, and ML. DEML calls
+# it with one opaque service token per mapped FORJD tenant.
+FORJD_API_URL = get_str("FORJD_API_URL", "https://backend.forjd.co")
+FORJD_SERVICE_TOKEN = get_str("FORJD_SERVICE_TOKEN", "")
+FORJD_TENANT_ID = get_str("FORJD_TENANT_ID", "")
+
 
 # Application definition
 
@@ -179,7 +183,6 @@ INSTALLED_APPS = [
   "django_migration_linter",
   "monitor",
   "ml",
-  "telemetry",
 ]
 
 MIDDLEWARE = [
@@ -191,7 +194,6 @@ MIDDLEWARE = [
   "django.middleware.common.CommonMiddleware",
   "django.middleware.csrf.CsrfViewMiddleware",
   "config.middleware.FirebaseAuthenticationMiddleware",
-  "telemetry.middleware.NetworkTelemetryMiddleware",
   "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -315,19 +317,6 @@ FRONTEND_URL = get_str("FRONTEND_URL")
 BACKEND_URL = get_str("BACKEND_URL")
 MARKETING_URL: Final[str] = get_str("MARKETING_URL")
 
-# Internal service URLs (env-driven; see BOOK.md Appendix C)
-from utils.env import cpe_guesser_url, firecrawl_api_url, scanner_service_url, tor_proxy_url
-
-SCANNER_SERVICE_URL = scanner_service_url()
-CPE_GUESSER_URL = cpe_guesser_url()
-TOR_PROXY_URL = tor_proxy_url()
-FIRECRAWL_API_URL: Final[str] = firecrawl_api_url()
-FIRECRAWL_API_KEY: Final[str] = get_str("FIRECRAWL_API_KEY")
-FIRECRAWL_ENABLED: Final[bool] = get_bool("FIRECRAWL_ENABLED", default=False)
-FIRECRAWL_TIMEOUT_SECONDS: Final[int] = get_int("FIRECRAWL_TIMEOUT_SECONDS", 45)
-FIRECRAWL_MIN_CONFIDENCE: Final[float] = get_float("FIRECRAWL_MIN_CONFIDENCE", 0.55)
-FIRECRAWL_MAX_SITES_PER_RUN: Final[int] = get_int("FIRECRAWL_MAX_SITES_PER_RUN", 100)
-
 # Stripe Settings
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
@@ -349,30 +338,6 @@ SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
 
-
-# Google OAuth Analytics Integration Settings
-# Redirect must be an Authorized redirect URI on the Google Cloud OAuth client
-# and must match the live API host (BACKEND_URL). Prefer explicit env, else
-# derive from BACKEND_URL so domain renames cannot leave a dead redirect host.
-GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
-_backend_base = (BACKEND_URL or "http://localhost:8000").rstrip("/")
-_default_google_oauth_redirect = (
-  f"{_backend_base}/api/v1/system-status/integrations/google/callback"
-)
-GOOGLE_OAUTH_REDIRECT_URI = (
-  os.getenv("GOOGLE_OAUTH_REDIRECT_URI") or _default_google_oauth_redirect
-).rstrip("/")
-
-# RustFS — S3-compatible object store for analytics export artifacts (not BI facts).
-# See docs/exports-rustfs.md and infrastructure/rustfs/README.md.
-RUSTFS_ENDPOINT = os.getenv("RUSTFS_ENDPOINT", "").strip()
-RUSTFS_ACCESS_KEY = os.getenv("RUSTFS_ACCESS_KEY", "").strip()
-RUSTFS_SECRET_KEY = os.getenv("RUSTFS_SECRET_KEY", "").strip()
-RUSTFS_BUCKET = os.getenv("RUSTFS_BUCKET", "deml-exports").strip() or "deml-exports"
-RUSTFS_REGION = os.getenv("RUSTFS_REGION", "us-east-1").strip() or "us-east-1"
-RUSTFS_USE_SSL = os.getenv("RUSTFS_USE_SSL", "false").lower() in ("1", "true", "yes")
-RUSTFS_ADDRESSING_STYLE = os.getenv("RUSTFS_ADDRESSING_STYLE", "path").strip() or "path"
 
 # App versioning configuration
 VERSION_PATH = BASE_DIR.parent / "version.txt"
@@ -418,11 +383,6 @@ LOGGING = {
       "handlers": ["console"],
       "level": "INFO",
       "propagate": True,
-    },
-    "telemetry": {
-      "handlers": ["console"],
-      "level": "INFO",
-      "propagate": False,
     },
     "utils": {
       "handlers": ["console"],

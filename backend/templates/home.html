@@ -1,190 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}DEML Backend API — Operational Intelligence &amp; Telemetry{% endblock %}
-{% block og_title %}DEML Backend API — Operational Intelligence &amp; Telemetry{% endblock %}
-{% block twitter_title %}DEML Backend API — Operational Intelligence &amp; Telemetry{% endblock %}
-
-{% block meta_description %}
-<meta
-  name="description"
-  content="Django REST API for DEML — user accounts, model training schedules, SLA predictions, and multi-tenant telemetry orchestration."
-/>
-{% endblock %}
-{% block og_description %}Django REST API for DEML — user accounts, model training schedules, SLA predictions, and multi-tenant telemetry orchestration.{% endblock %}
-{% block twitter_description %}Django REST API for DEML — user accounts, model training schedules, SLA predictions, and multi-tenant telemetry orchestration.{% endblock %}
-{% block meta_keywords %}DEML backend API, Django REST, multi-tenant telemetry, SLA predictions, OpenAPI, cybersecurity{% endblock %}
+{% block title %}DEML Learning Platform API{% endblock %}
+{% block meta_description %}User control-plane API for the DEML learning platform and its secure FORJD data handoff.{% endblock %}
+{% block og_description %}Identity, account, billing, learning interactions, and sealed FORJD handoff.{% endblock %}
+{% block twitter_description %}Identity, account, billing, learning interactions, and sealed FORJD handoff.{% endblock %}
+{% block meta_keywords %}DEML learning platform, Django user API, FORJD{% endblock %}
 
 {% block content %}
-<main class="page-inner-wrapper backend-landing-shell" id="main-content" tabindex="-1">
-  <!-- Hero: Live Metrics Dashboard -->
-  <section class="backend-hero viking-unified-hero" aria-labelledby="backend-hero-title">
-    <div class="backend-hero-header viking-unified-hero-copy">
-      <span class="viking-badge viking-badge-success backend-status-badge viking-unified-hero-badge">
-        <span class="backend-status-dot" aria-hidden="true"></span>
-        Backend operational
-      </span>
-
-      <h1 class="viking-heading viking-heading-xl viking-unified-hero-title" id="backend-hero-title">
-        DEML Backend API
-      </h1>
-      <p class="viking-text-muted backend-hero-lead viking-unified-hero-lead">
-        The secure control plane for Data Engineering for Machine Learning. Manage
-        accounts, coordinate model training, compute SLA predictions, and inspect
-        platform telemetry.
+<main class="page-inner-wrapper">
+  <section class="viking-section" aria-labelledby="api-heading">
+    <viking-card>
+      <h1 id="api-heading">DEML Learning Platform API</h1>
+      <p>
+        This service owns user identity, account settings, subscriptions, consent, and
+        user-originated learning interactions. Encrypted intake, processing, analytics, projections,
+        and machine learning are handled by FORJD.
       </p>
-    </div>
-
-    <div class="viking-card viking-unified-hero-panel">
-      <div class="backend-health-header">
-        <div>
-          <h2 class="viking-heading viking-heading-sm" id="backend-health-heading">
-            Live platform health
-          </h2>
-          <p class="viking-text-muted backend-health-summary">
-            Read-only operational telemetry from rolling reporting windows.
-          </p>
-        </div>
-        <span class="viking-badge viking-badge-success">Live</span>
-      </div>
-
-      <div class="backend-hero-metrics" aria-labelledby="backend-health-heading">
-        <dl class="backend-metric-grid">
-          <div class="viking-card backend-health-metric">
-            <dt class="viking-metric-label">Uptime</dt>
-            <dd class="backend-health-measure">
-              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.overall_uptime|floatformat:2 }}%{% else %}—{% endif %}</span>
-              <span class="backend-health-period">Last 30 days</span>
-            </dd>
-          </div>
-          <div class="viking-card backend-health-metric">
-            <dt class="viking-metric-label">P99 latency</dt>
-            <dd class="backend-health-measure">
-              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.p99_latency|floatformat:0 }}ms{% else %}—{% endif %}</span>
-              <span class="backend-health-period">Last 24 hours</span>
-            </dd>
-          </div>
-          <div class="viking-card backend-health-metric">
-            <dt class="viking-metric-label">Requests</dt>
-            <dd class="backend-health-measure">
-              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.total_requests }}{% else %}—{% endif %}</span>
-              <span class="backend-health-period">Last 24 hours</span>
-            </dd>
-          </div>
-          <div class="viking-card backend-health-metric">
-            <dt class="viking-metric-label">Threats detected</dt>
-            <dd class="backend-health-measure">
-              <span class="viking-metric-value">{% if platform_metrics %}{{ platform_metrics.threats_detected_24h }}{% else %}—{% endif %}</span>
-              <span class="backend-health-period">Last 24 hours</span>
-            </dd>
-          </div>
-        </dl>
-      </div>
-
-      <div class="viking-cta-row backend-hero-cta viking-unified-hero-actions">
-        <a href="/api/v1/docs" class="viking-btn viking-btn-primary" id="explore-docs-btn">
-          <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
-          <span>Swagger Docs</span>
-        </a>
-        <a href="{{ frontend_url }}/explore" class="viking-btn viking-btn-outline">
-          <span data-viking-icon="globe" data-viking-icon-size="16" aria-hidden="true"></span>
-          <span>Explore App</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Feature Showcase: Inlaid Cards -->
-  <section class="backend-feature-showcase" aria-labelledby="backend-features-heading">
-    <h2 class="viking-label viking-unified-section-header" id="backend-features-heading">Platform capabilities</h2>
-
-    <div class="viking-card viking-feature-panel" aria-label="Django REST API">
-      <span
-        class="viking-icon-badge-static backend-feature-icon"
-        data-viking-icon="server"
-        data-viking-icon-color="accent"
-        data-viking-icon-size="24"
-        aria-hidden="true"
-      ></span>
-      <h3 class="viking-heading viking-heading-sm">Django REST API</h3>
-      <p class="viking-text-muted">
-        Secure, type-safe, and high-performance API endpoints generated
-        dynamically using the Django Ninja framework.
-      </p>
-      <div class="backend-feature-stats">
-        <span class="viking-badge viking-badge-accent">ACID</span>
-        <span class="viking-badge viking-badge-success">240ms</span>
-      </div>
-    </div>
-
-    <div class="viking-card viking-feature-panel" aria-label="Interactive Swagger">
-      <span
-        class="viking-icon-badge-static backend-feature-icon"
-        data-viking-icon="terminal"
-        data-viking-icon-color="accent"
-        data-viking-icon-size="24"
-        aria-hidden="true"
-      ></span>
-      <h3 class="viking-heading viking-heading-sm">Interactive Swagger</h3>
-      <p class="viking-text-muted">
-        Fully interactive OpenAPI specification interface under /api/v1/docs for
-        sandboxed query testing.
-      </p>
-      <div class="backend-feature-stats">
-        <span class="viking-badge viking-badge-success">OpenAPI 3.1</span>
-      </div>
-    </div>
-
-    <div class="viking-card viking-feature-panel" aria-label="Multi-Tenant Engine">
-      <span
-        class="viking-icon-badge-static backend-feature-icon"
-        data-viking-icon="globe"
-        data-viking-icon-color="accent"
-        data-viking-icon-size="24"
-        aria-hidden="true"
-      ></span>
-      <h3 class="viking-heading viking-heading-sm">Multi-Tenant Engine</h3>
-      <p class="viking-text-muted">
-        Robust data partitioning and tenant-scoped connection guards providing
-        isolated telemetry pipelines.
-      </p>
-      <div class="backend-feature-stats">
-        <span class="viking-badge viking-badge-warning">UUID-scoped</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Live Status Preview -->
-  <section class="backend-status-preview" aria-labelledby="status-preview-title">
-    <div class="backend-status-preview-header viking-unified-section-header">
-      <span class="section-tag">LIVE STATUS</span>
-      <h2 id="status-preview-title">Operational Telemetry Feed</h2>
-    </div>
-    <div class="viking-card" aria-label="Live metrics display">
-      <div class="backend-status-metrics">
-        <div class="backend-status-metric">
-          <span class="viking-metric-value backend-status-value">{% if platform_metrics %}{{ platform_metrics.overall_uptime|floatformat:2 }}%{% else %}—{% endif %}</span>
-          <span class="viking-metric-label">Availability · 30d</span>
-        </div>
-        <div class="backend-status-metric">
-          <span class="viking-metric-value backend-status-value">{% if platform_metrics %}{{ platform_metrics.total_requests }}{% else %}—{% endif %}</span>
-          <span class="viking-metric-label">Requests · 24h</span>
-        </div>
-        <div class="backend-status-metric">
-          <span class="viking-metric-value backend-status-value">{% if platform_metrics %}{{ platform_metrics.threats_detected_24h }}{% else %}—{% endif %}</span>
-          <span class="viking-metric-label">Threats Detected · 24h</span>
-        </div>
-      </div>
-      <div class="backend-status-sparkline" aria-hidden="true">
-        <svg viewBox="0 0 200 48" preserveAspectRatio="none">
-          <polyline
-            points="0,32 25,28 50,30 75,16 100,22 125,8 150,14 175,4 200,10"
-            fill="none"
-            stroke="var(--viking-success)"
-            stroke-width="2"
-          />
-        </svg>
-      </div>
-    </div>
+      <p><a href="/api/v1/docs">Open API documentation</a></p>
+    </viking-card>
   </section>
 </main>
 {% endblock %}

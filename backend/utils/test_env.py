@@ -120,8 +120,3 @@ def test_production_transport_rejects_plaintext_redis(monkeypatch):
   monkeypatch.setenv("REDIS_URL", "redis://cache.internal:6379")
   with pytest.raises(RuntimeError, match="rediss"):
     env.validate_encrypted_transport_config()
-
-
-def test_tor_proxy_url_reads_env(monkeypatch):
-  monkeypatch.setenv("TOR_PROXY_URL", "socks5h://localhost:9050")
-  assert env.tor_proxy_url() == "socks5h://localhost:9050"
