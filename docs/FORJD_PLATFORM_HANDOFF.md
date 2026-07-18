@@ -18,7 +18,7 @@ A FORJD enterprise administrator provisions the integration once with a human FO
 2. Create a service account with `POST /api/v1/service-accounts` for that tenant.
 3. Set `subprocessor` to a partner slug (e.g. `deml`) and grant required scopes: `ingest:*`, `projections:*`, `sessions:*`, `replay:*`, `status:*`, `analytics:read`.
 4. Store the returned opaque token immediately. FORJD returns it only once.
-5. After applying FORJD `sql/016`, **remint** tokens so stored scopes include the cutover surfaces.
+5. After applying FORJD `sql/017` (service-principal cutover; ML is `016`), **remint** tokens so stored scopes include the cutover surfaces.
 
 At runtime DEML authenticates only with the tenant-bound opaque credential:
 

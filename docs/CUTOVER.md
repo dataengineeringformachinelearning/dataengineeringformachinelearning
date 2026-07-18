@@ -16,7 +16,7 @@ FORJD operator checklist: forjd repo `CUTOVER.md`.
 
 ## Preflight
 
-1. Deploy FORJD with SQL `003`→`016`; remint `fjsvc_` after `016`.
+1. Deploy FORJD with SQL `003`→`017`; remint `fjsvc_` after `017` (ML is `016`).
 2. Map each DEML account (or bootstrap tenant) via `map_forjd_tenant`.
 3. Set DEML secrets: `FORJD_API_URL`, `FORJD_SERVICE_TOKEN`, `FORJD_TENANT_ID`
    (or per-tenant secret refs). Never store plaintext tokens in Postgres.
