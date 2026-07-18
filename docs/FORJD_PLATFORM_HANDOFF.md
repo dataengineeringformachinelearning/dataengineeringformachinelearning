@@ -47,20 +47,20 @@ python manage.py map_forjd_tenant <deml-account-uuid> <forjd-tenant-uuid> \
 
 FORJD does not ship `/api/v1/deml-compat/*`. Angular continues to call Django. Where an existing Angular path must remain stable, Django uses an explicit adapter to a real native FORJD path and maps the response to the established DEML shape.
 
-| Capability                  | Native FORJD route                                         |
-| --------------------------- | ---------------------------------------------------------- |
-| Sealed ingest               | `POST /api/v1/ingest`                                      |
-| Batch sealed ingest         | `POST /api/v1/ingest/events:batch`                         |
-| Event metadata              | `GET /api/v1/ingest/events?tenant_id=...`                  |
-| Workflow results            | `GET /api/v1/ingest/results?tenant_id=...&workflow_id=...` |
-| Projections                 | `GET /api/v1/projections?tenant_id=...&workflow_id=...`    |
-| Projection checkpoints      | `GET /api/v1/projections/checkpoints?tenant_id=...`        |
-| Advance projections         | `POST /api/v1/projections/run`                             |
-| Crypto sessions             | `POST/GET /api/v1/sessions` (+ revoke)                     |
-| Replay / DLQ                | `/api/v1/replay/*`                                         |
-| Status pages                | `/api/v1/status/*` (public slug unauthenticated)           |
-| Analytics overview          | `GET /api/v1/analytics/overview`                           |
-| Process health              | `GET /health`, `GET /ready`                                |
+| Capability             | Native FORJD route                                         |
+| ---------------------- | ---------------------------------------------------------- |
+| Sealed ingest          | `POST /api/v1/ingest`                                      |
+| Batch sealed ingest    | `POST /api/v1/ingest/events:batch`                         |
+| Event metadata         | `GET /api/v1/ingest/events?tenant_id=...`                  |
+| Workflow results       | `GET /api/v1/ingest/results?tenant_id=...&workflow_id=...` |
+| Projections            | `GET /api/v1/projections?tenant_id=...&workflow_id=...`    |
+| Projection checkpoints | `GET /api/v1/projections/checkpoints?tenant_id=...`        |
+| Advance projections    | `POST /api/v1/projections/run`                             |
+| Crypto sessions        | `POST/GET /api/v1/sessions` (+ revoke)                     |
+| Replay / DLQ           | `/api/v1/replay/*`                                         |
+| Status pages           | `/api/v1/status/*` (public slug unauthenticated)           |
+| Analytics overview     | `GET /api/v1/analytics/overview`                           |
+| Process health         | `GET /health`, `GET /ready`                                |
 
 Exports, ML, integrations, and other domain routes remain blocked until FORJD scopes and DEML response adapters exist. Public health/readiness/status-slug calls send no `Authorization` header.
 

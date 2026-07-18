@@ -402,9 +402,7 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
       request_id=request_id_from(request),
     )
     if response.status >= 400:
-      return HttpResponse(
-        response.body, status=response.status, content_type=response.content_type
-      )
+      return HttpResponse(response.body, status=response.status, content_type=response.content_type)
     upstream = json.loads(response.body or b"{}")
     service = upstream.get("service") if isinstance(upstream, dict) else None
     if not isinstance(service, dict):
@@ -463,9 +461,7 @@ async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> Htt
       request_id=request_id_from(request),
     )
     if response.status >= 400:
-      return HttpResponse(
-        response.body, status=response.status, content_type=response.content_type
-      )
+      return HttpResponse(response.body, status=response.status, content_type=response.content_type)
     upstream = json.loads(response.body or b"{}")
     incident = upstream.get("incident") if isinstance(upstream, dict) else None
     if not isinstance(incident, dict):
