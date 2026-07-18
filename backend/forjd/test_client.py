@@ -220,6 +220,26 @@ async def test_constructor_overrides_bind_per_tenant_credentials() -> None:
   FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
   FORJD_TENANT_ID=TENANT_ID,
 )
+async def test_list_projections_binds_tenant_query() -> None:
+  session = _FakeSession()
+
+  with patch("forjd.client.aiohttp.ClientSession", return_value=session):
+    await ForjdClient().list_projections(workflow_id="deml_telemetry", limit=25)
+
+  assert len(session.requests) == 1
+  assert session.requests[0]["method"] == "GET"
+  assert session.requests[0]["url"].startswith("https://forjd.example/api/v1/projections?")
+  assert f"tenant_id={TENANT_ID}" in session.requests[0]["url"]
+  assert "workflow_id=deml_telemetry" in session.requests[0]["url"]
+  assert session.requests[0]["headers"]["Authorization"] == f"Bearer {SERVICE_TOKEN}"
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+)
 async def test_delete_tenant_fails_closed_without_network_call() -> None:
   session = _FakeSession()
 

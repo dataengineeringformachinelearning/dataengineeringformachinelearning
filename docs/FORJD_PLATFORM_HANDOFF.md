@@ -4,7 +4,7 @@
 
 DEML is the Firebase-authenticated user control plane and Angular backend-for-frontend. It owns identities, profiles, roles, subscriptions, consent, API credentials, issue reports, learning content, learner progress currently stored by DEML, and account-lifecycle UI. FORJD is the exclusive data plane for sealed intake, processing, projections, analytics, replay, dead-letter handling, threat processing, and machine learning. DEML must not add a local processing fallback when a FORJD feature is unavailable.
 
-This contract reflects what FORJD ships now. Its canonical implementation references are `backend/docs/AUTH.md`, `ARCHITECTURE.md`, `backend/app/models/ingest.py`, and `backend/workflows/deml_telemetry.yaml` in the FORJD repository. Earlier DEML documentation describing `POST /oauth/token`, Supabase `service_role`, `X-DEML-*` authorization headers, `/api/v1/deml-compat/*`, `deml_learning.yaml`, or tenant deletion is superseded by this document.
+This contract reflects what FORJD ships now. Its canonical implementation references are `backend/docs/AUTH.md`, `ARCHITECTURE.md`, `backend/app/models/ingest.py`, and `backend/workflows/threat_telemetry.yaml` (with config-only `aliases` for partner wire ids such as `deml_telemetry`) in the FORJD repository. Earlier DEML documentation describing `POST /oauth/token`, Supabase `service_role`, `X-DEML-*` authorization headers, `/api/v1/deml-compat/*`, `deml_learning.yaml`, or tenant deletion is superseded by this document.
 
 DEML never sends Firebase end-user tokens to FORJD, never connects directly to FORJD Postgres or Dragonfly, and never places plaintext lesson content, answers, personal information, scores, learner IDs, or course IDs in ingest metadata.
 
@@ -64,7 +64,7 @@ The supported data-plane foundation is:
 
 FORJD collection APIs are limit-based today; DEML must not claim stable cursor support. `GET /api/v1/replay/{job_id}` is not available.
 
-FORJD also exposes native replay, DLQ, crypto-session, analytics, exports, security-alert, anomaly, threat-ML, and SLA routes. They currently require a human tenant-member principal, and several native response shapes do not satisfy DEML's established Angular contracts. DEML therefore blocks these domain adapters until FORJD service-principal authorization and an explicit Django request/response mapping are both implemented. It must never substitute a Firebase token, human FORJD JWT, or `service_role` token. Process health, readiness, and public status-page calls are intentionally unauthenticated and DEML sends no `Authorization` header to those public routes.
+FORJD now authorizes tenant-bound `fjsvc_` tokens for crypto sessions, replay/DLQ, status management, and analytics reads. DEML adapters forward those native routes with the mapped service credential and reshape responses only where Angular contracts require it (`analytics/overview`, status-page collections). Exports, ML, integrations, and other domain routes remain blocked until FORJD scopes and response adapters exist. DEML must never substitute a Firebase token, human FORJD JWT, or `service_role` token. Process health, readiness, and public status-page calls are intentionally unauthenticated and DEML sends no `Authorization` header to those public routes.
 
 The FORJD `agent` namespace does not exist. DEML must not call it.
 
@@ -100,7 +100,7 @@ DEML accepts and forwards only a client-sealed event matching FORJD's current te
 
 `event_type` is `deml.metric` or `deml.alert`. Metadata is a routing-tag allowlist. Its only permitted keys are `source`, `channel`, `region`, `env`, `environment`, `product`, `component`, `namespace`, `device_id`, `series_id`, `label`, `labels`, and `tags`. Plaintext payloads and identifiers belong only inside the ciphertext. DEML does not persist the plaintext or sealed event body. FORJD provides retry safety through the `(tenant_id, client_event_id)` idempotency key.
 
-When FORJD runs with `REQUIRE_CRYPTO_SESSION=true`, a client or authorized human tenant member registers `envelope.key_id` through the crypto-session API before ingest. DEML's service-principal adapter remains blocked until FORJD authorizes that route for tenant-bound service credentials.
+When FORJD runs with `REQUIRE_CRYPTO_SESSION=true`, DEML registers `envelope.key_id` through `POST /api/v1/sessions` using the tenant-bound `fjsvc_` service credential before sealed ingest.
 
 ## Learning support is blocked on FORJD
 

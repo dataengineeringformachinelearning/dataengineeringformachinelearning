@@ -1,4 +1,8 @@
-"""Tenant-bound HTTP client for the FORJD data plane."""
+"""Tenant-bound HTTP client for the FORJD data plane.
+
+DEML never forwards Firebase tokens. Every authenticated call uses one opaque
+``fjsvc_`` service token bound to one FORJD tenant.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +10,7 @@ import json
 import re
 from dataclasses import dataclass
 from typing import Any, Final
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit
 from uuid import UUID
 
 import aiohttp
@@ -142,6 +146,15 @@ class ForjdClient:
       headers["X-Request-ID"] = normalized_request_id
     return headers
 
+  def _tenant_query(self, **params: str | int | None) -> str:
+    self._validate_configuration()
+    query: dict[str, str] = {"tenant_id": self.tenant_id}
+    for key, value in params.items():
+      if value is None or value == "":
+        continue
+      query[key] = str(value)
+    return urlencode(query)
+
   async def proxy(
     self,
     method: str,
@@ -219,6 +232,7 @@ class ForjdClient:
   async def ready(self, request_id: str | None = None) -> dict[str, Any]:
     return await self.request_json("GET", "/ready", request_id=request_id)
 
+  # --- Sealed ingest ---
   async def ingest(
     self,
     payload: dict[str, Any],
@@ -230,6 +244,145 @@ class ForjdClient:
       "POST",
       "/api/v1/ingest",
       payload=payload,
+      request_id=request_id,
+    )
+
+  async def ingest_batch(
+    self,
+    payload: dict[str, Any],
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    self._validate_configuration()
+    events = payload.get("events")
+    if not isinstance(events, list) or not events:
+      raise ForjdError(400, "FORJD batch ingest requires a non-empty events list")
+    for event in events:
+      if isinstance(event, dict):
+        self._require_bound_tenant(event.get("tenant_id"), required=True)
+    return await self.request_json(
+      "POST",
+      "/api/v1/ingest/events:batch",
+      payload=payload,
+      request_id=request_id,
+    )
+
+  async def list_ingest_results(
+    self,
+    *,
+    workflow_id: str | None = None,
+    since: str | None = None,
+    limit: int = 50,
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    return await self.request_json(
+      "GET",
+      "/api/v1/ingest/results",
+      query_string=self._tenant_query(workflow_id=workflow_id, since=since, limit=limit),
+      request_id=request_id,
+    )
+
+  # --- Projections ---
+  async def list_projections(
+    self,
+    *,
+    workflow_id: str | None = None,
+    since: str | None = None,
+    limit: int = 50,
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    return await self.request_json(
+      "GET",
+      "/api/v1/projections",
+      query_string=self._tenant_query(workflow_id=workflow_id, since=since, limit=limit),
+      request_id=request_id,
+    )
+
+  async def list_projection_checkpoints(
+    self,
+    *,
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    return await self.request_json(
+      "GET",
+      "/api/v1/projections/checkpoints",
+      query_string=self._tenant_query(),
+      request_id=request_id,
+    )
+
+  async def run_projections(
+    self,
+    *,
+    workflow_id: str | None = None,
+    limit: int = 200,
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    payload: dict[str, Any] = {"tenant_id": self.tenant_id, "limit": limit}
+    if workflow_id:
+      payload["workflow_id"] = workflow_id
+    return await self.request_json(
+      "POST",
+      "/api/v1/projections/run",
+      payload=payload,
+      request_id=request_id,
+    )
+
+  # --- Crypto sessions (required when FORJD REQUIRE_CRYPTO_SESSION=true) ---
+  async def upsert_session(
+    self,
+    payload: dict[str, Any],
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    self._validate_configuration()
+    bound = dict(payload)
+    bound["tenant_id"] = self.tenant_id
+    return await self.request_json(
+      "POST",
+      "/api/v1/sessions",
+      payload=bound,
+      request_id=request_id,
+    )
+
+  async def list_sessions(
+    self,
+    *,
+    limit: int = 50,
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    return await self.request_json(
+      "GET",
+      "/api/v1/sessions",
+      query_string=self._tenant_query(limit=limit),
+      request_id=request_id,
+    )
+
+  # --- Analytics / status (service-principal ready on FORJD) ---
+  async def analytics_overview(self, request_id: str | None = None) -> dict[str, Any]:
+    return await self.request_json(
+      "GET",
+      "/api/v1/analytics/overview",
+      query_string=self._tenant_query(),
+      request_id=request_id,
+    )
+
+  async def list_status_pages(self, request_id: str | None = None) -> dict[str, Any]:
+    return await self.request_json(
+      "GET",
+      "/api/v1/status/pages",
+      query_string=self._tenant_query(),
+      request_id=request_id,
+    )
+
+  async def create_status_page(
+    self,
+    payload: dict[str, Any],
+    request_id: str | None = None,
+  ) -> dict[str, Any]:
+    bound = dict(payload)
+    bound["tenant_id"] = self.tenant_id
+    return await self.request_json(
+      "POST",
+      "/api/v1/status/pages",
+      payload=bound,
       request_id=request_id,
     )
 
