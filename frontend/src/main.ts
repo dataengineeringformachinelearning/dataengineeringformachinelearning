@@ -1,9 +1,17 @@
+import { isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { inject as injectAnalytics } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { environment } from './environments/environment';
 
 const MONITORING_IDLE_TIMEOUT_MS = 2_000;
+
+// Vercel Web Analytics + Speed Insights (no-op off Vercel).
+const vercelMode = isDevMode() ? 'development' : 'production';
+injectAnalytics({ mode: vercelMode });
+injectSpeedInsights({ framework: 'angular' });
 
 const initializeMonitoring = async (): Promise<void> => {
   if (!environment.sentryDsn) {

@@ -2,7 +2,6 @@ import logging
 import time
 from functools import wraps
 
-from django.conf import settings
 from django.http import JsonResponse
 
 try:
@@ -14,17 +13,15 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-from utils.env import get_int, get_str
+from utils.env import get_str
 from utils.tls import materialize_tls_file
 
-# Dragonfly/Redis — prefer DRAGONFLY_HOST (canonical); REDIS_URL overrides all.
-redis_host = get_str("REDISHOST") or getattr(settings, "DRAGONFLY_HOST", "dragonfly")
-redis_port = get_int("REDISPORT", getattr(settings, "REDIS_PORT", 6379))
-
+# Optional Redis only when REDIS_URL is set (deml-dragonfly retired).
+redis_client = None
 if HAS_REDIS:
-  try:
-    redis_url = get_str("REDIS_URL")
-    if redis_url:
+  redis_url = get_str("REDIS_URL")
+  if redis_url:
+    try:
       redis_ca = materialize_tls_file("REDIS_SSL_CA", "REDIS_SSL_CA_B64")
       redis_client = redis.from_url(
         redis_url,
@@ -33,20 +30,9 @@ if HAS_REDIS:
         socket_timeout=2,
         **({"ssl_ca_certs": redis_ca, "ssl_cert_reqs": "required"} if redis_ca else {}),
       )
-    else:
-      redis_client = redis.Redis(
-        host=redis_host,
-        port=redis_port,
-        db=0,
-        decode_responses=True,
-        socket_connect_timeout=2,
-        socket_timeout=2,
-      )
-  except Exception as e:
-    logger.error(f"Failed to connect to redis: {e}")
-    redis_client = None
-else:
-  redis_client = None
+    except Exception as e:
+      logger.error("Failed to connect to redis: %s", e)
+      redis_client = None
 
 BLOCKLIST_PREFIX = "deml:blocked_ip:"
 

@@ -1,8 +1,4 @@
-"""Tenant-bound HTTP client for the FORJD data plane.
-
-DEML never forwards Firebase tokens. Every authenticated call uses one opaque
-``fjsvc_`` service token bound to one FORJD tenant.
-"""
+"""Tenant-bound HTTP client for the FORJD data plane."""
 
 from __future__ import annotations
 
@@ -10,7 +6,7 @@ import json
 import re
 from dataclasses import dataclass
 from typing import Any, Final
-from urllib.parse import parse_qsl, urlencode, urlsplit
+from urllib.parse import parse_qsl, urlsplit
 from uuid import UUID
 
 import aiohttp
@@ -123,8 +119,9 @@ class ForjdClient:
       return
     try:
       payload = json.loads(body)
-    except (UnicodeDecodeError, json.JSONDecodeError):
-      return
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+      # Fail closed — never skip tenant checks because the body claimed JSON.
+      raise ForjdError(400, "FORJD request body must be valid JSON") from exc
     self._validate_tenant_assertions(payload)
 
   def _headers(
@@ -145,19 +142,6 @@ class ForjdClient:
     if normalized_request_id:
       headers["X-Request-ID"] = normalized_request_id
     return headers
-
-  def _tenant_query(self, **params: str | int | None) -> str:
-    from forjd.api import LEGACY_WORKFLOW_IDS
-
-    self._validate_configuration()
-    query: dict[str, str] = {"tenant_id": self.tenant_id}
-    for key, value in params.items():
-      if value is None or value == "":
-        continue
-      if key == "workflow_id" and isinstance(value, str):
-        value = LEGACY_WORKFLOW_IDS.get(value, value)
-      query[key] = str(value)
-    return urlencode(query)
 
   async def proxy(
     self,
@@ -236,7 +220,6 @@ class ForjdClient:
   async def ready(self, request_id: str | None = None) -> dict[str, Any]:
     return await self.request_json("GET", "/ready", request_id=request_id)
 
-  # --- Sealed ingest ---
   async def ingest(
     self,
     payload: dict[str, Any],
@@ -251,65 +234,24 @@ class ForjdClient:
       request_id=request_id,
     )
 
-  async def ingest_batch(
-    self,
-    payload: dict[str, Any],
-    request_id: str | None = None,
-  ) -> dict[str, Any]:
-    self._validate_configuration()
-    events = payload.get("events")
-    if not isinstance(events, list) or not events:
-      raise ForjdError(400, "FORJD batch ingest requires a non-empty events list")
-    for event in events:
-      if isinstance(event, dict):
-        self._require_bound_tenant(event.get("tenant_id"), required=True)
-    return await self.request_json(
-      "POST",
-      "/api/v1/ingest/events:batch",
-      payload=payload,
-      request_id=request_id,
-    )
-
-  async def list_ingest_results(
-    self,
-    *,
-    workflow_id: str | None = None,
-    since: str | None = None,
-    limit: int = 50,
-    request_id: str | None = None,
-  ) -> dict[str, Any]:
-    return await self.request_json(
-      "GET",
-      "/api/v1/ingest/results",
-      query_string=self._tenant_query(workflow_id=workflow_id, since=since, limit=limit),
-      request_id=request_id,
-    )
-
-  # --- Projections ---
   async def list_projections(
     self,
     *,
     workflow_id: str | None = None,
-    since: str | None = None,
-    limit: int = 50,
+    limit: int = 25,
     request_id: str | None = None,
   ) -> dict[str, Any]:
+    """GET /api/v1/projections for the bound tenant (Angular list adapter)."""
+    from urllib.parse import urlencode
+
+    self._validate_configuration()
+    query: dict[str, str] = {"tenant_id": self.tenant_id, "limit": str(max(1, min(limit, 200)))}
+    if workflow_id:
+      query["workflow_id"] = workflow_id
     return await self.request_json(
       "GET",
       "/api/v1/projections",
-      query_string=self._tenant_query(workflow_id=workflow_id, since=since, limit=limit),
-      request_id=request_id,
-    )
-
-  async def list_projection_checkpoints(
-    self,
-    *,
-    request_id: str | None = None,
-  ) -> dict[str, Any]:
-    return await self.request_json(
-      "GET",
-      "/api/v1/projections/checkpoints",
-      query_string=self._tenant_query(),
+      query_string=urlencode(query),
       request_id=request_id,
     )
 
@@ -317,14 +259,13 @@ class ForjdClient:
     self,
     *,
     workflow_id: str | None = None,
-    limit: int = 200,
     request_id: str | None = None,
   ) -> dict[str, Any]:
-    from forjd.api import LEGACY_WORKFLOW_IDS
-
-    payload: dict[str, Any] = {"tenant_id": self.tenant_id, "limit": limit}
+    """POST /api/v1/projections/run for the bound tenant."""
+    self._validate_configuration()
+    payload: dict[str, Any] = {"tenant_id": self.tenant_id}
     if workflow_id:
-      payload["workflow_id"] = LEGACY_WORKFLOW_IDS.get(workflow_id, workflow_id)
+      payload["workflow_id"] = workflow_id
     return await self.request_json(
       "POST",
       "/api/v1/projections/run",
@@ -332,68 +273,22 @@ class ForjdClient:
       request_id=request_id,
     )
 
-  # --- Crypto sessions (required when FORJD REQUIRE_CRYPTO_SESSION=true) ---
-  async def upsert_session(
+  async def erase_tenant(
     self,
-    payload: dict[str, Any],
-    request_id: str | None = None,
-  ) -> dict[str, Any]:
-    self._validate_configuration()
-    bound = dict(payload)
-    bound["tenant_id"] = self.tenant_id
-    return await self.request_json(
-      "POST",
-      "/api/v1/sessions",
-      payload=bound,
-      request_id=request_id,
-    )
-
-  async def list_sessions(
-    self,
+    tenant_id: str,
     *,
-    limit: int = 50,
     request_id: str | None = None,
   ) -> dict[str, Any]:
-    return await self.request_json(
-      "GET",
-      "/api/v1/sessions",
-      query_string=self._tenant_query(limit=limit),
-      request_id=request_id,
-    )
-
-  # --- Analytics / status (service-principal ready on FORJD) ---
-  async def analytics_overview(self, request_id: str | None = None) -> dict[str, Any]:
-    return await self.request_json(
-      "GET",
-      "/api/v1/analytics/overview",
-      query_string=self._tenant_query(),
-      request_id=request_id,
-    )
-
-  async def list_status_pages(self, request_id: str | None = None) -> dict[str, Any]:
-    return await self.request_json(
-      "GET",
-      "/api/v1/status/pages",
-      query_string=self._tenant_query(),
-      request_id=request_id,
-    )
-
-  async def create_status_page(
-    self,
-    payload: dict[str, Any],
-    request_id: str | None = None,
-  ) -> dict[str, Any]:
-    bound = dict(payload)
-    bound["tenant_id"] = self.tenant_id
+    """POST /api/v1/tenants/{id}/erase — durable wipe + revoke fjsvc_ credentials."""
+    self._validate_configuration()
+    self._require_bound_tenant(tenant_id, required=True)
     return await self.request_json(
       "POST",
-      "/api/v1/status/pages",
-      payload=bound,
+      f"/api/v1/tenants/{tenant_id}/erase",
+      payload={"confirm_tenant_id": tenant_id},
       request_id=request_id,
     )
 
   async def delete_tenant(self, tenant_id: str) -> dict[str, Any]:
-    """Fail closed until FORJD ships a durable, idempotent tenant erase API."""
-    self._validate_configuration()
-    self._require_bound_tenant(tenant_id, required=True)
-    raise ForjdError(503, "FORJD tenant erasure is not available")
+    """Alias for ``erase_tenant`` (account-deletion saga)."""
+    return await self.erase_tenant(tenant_id)

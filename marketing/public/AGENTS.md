@@ -11,9 +11,13 @@
 - DEML stores an explicit account-to-FORJD-tenant mapping and a secret reference, never a plaintext service token. Body/query tenant IDs must match the mapped tenant or fail closed.
 - Existing Angular paths remain DEML-owned. Django may adapt them only to FORJD-native routes that actually exist; `/api/v1/deml-compat/*`, `X-DEML-*` authorization, learning projections, and tenant erase are unavailable until FORJD ships them.
 - Missing FORJD capabilities are explicit dependencies. Never fill them with DEML workers, human FORJD JWTs, Firebase credentials, direct FORJD database access, or Railway processing fallbacks.
-- Cutover steps: [docs/CUTOVER.md](docs/CUTOVER.md). Do not revive retired data-plane instructions elsewhere in this file.
+- The legacy Event Projections, Rust data-plane, Redpanda, ClickHouse, scanner, and local ML instructions below are historical and superseded wherever they conflict with this section.
 
-**Operations**: The authoritative migration and runtime contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md). Older CONOPS sections remain historical context only where they describe retired DEML data-plane services.
+**Operations**: The authoritative migration and runtime contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md). Production cutover phases and rollback are in [docs/CUTOVER.md](docs/CUTOVER.md); the shared Fly/Vercel/Railway checklist is [docs/PRODUCTION_CUTOVER_CHECKLIST.md](docs/PRODUCTION_CUTOVER_CHECKLIST.md). Older BOOK CONOPS sections that mention Redpanda, ClickHouse, or DEML Rust workers are historical only.
+
+**Cutover flags (deml-backend):** `FORJD_CUTOVER_PHASE=0|1|2|3` or `FORJD_WRITE_MODE` / `FORJD_READ_MODE` (`off`/`forjd`/`dual`). Phase 0 dual-writes FORJD + shadow receipts with empty-stable Angular reads; phase 2 is FORJD-only. Never reintroduce local brokers as rollback.
+
+**FORJD engine:** Partner sealed path uses FORJD API → Supabase. Engine `FORJD_ROLE=all` (relay/ingest/…) needs internode keys via FORJD `scripts/sync_engine_dataplane_secrets.sh`; process-only `engine` remains a safe rollback.
 
 This document captures the core coding principles, philosophies, and "how we build" from the BOOK.md. All agents, contributors, and LLMs working on the codebase must internalize these to align with the vision of "thoughtful coders" and precision engineering.
 
@@ -22,18 +26,14 @@ This document captures the core coding principles, philosophies, and "how we bui
 - **Zero-Compromise Standards**: Quality is non-negotiable and a survival mechanism. No technical debt through human vigilance alone. Everything must be automated, enforced, and precise.
 - **Precision Engineering**: Focus on architectural logic, not trivia. High-velocity development enabled by guardrails.
 - **Path of Least Resistance**: Tooling guides developers to do the right thing automatically.
-- **User-plane symmetry**: Every DEML account resolves through the same identity, billing, consent, and FORJD tenant-mapping paths. Platform showcase (`platform-status`) stays public-metrics only.
-- **FORJD sealed data plane** (authoritative):
-  - **Commands**: Angular → Firebase-authenticated Django BFF → FORJD sealed ingest (`fjsvc_` service token).
-  - **Processing / projections / replay / analytics / ML**: FORJD exclusively.
-  - **Wire ids**: Django may accept legacy `deml_*` telemetry ids and rewrite them to FORJD-canonical `threat_*` before forwarding. FORJD core stays product-agnostic.
-  - **Fail closed**: Missing FORJD capabilities are dependencies, never local Redpanda/ClickHouse/worker fallbacks.
-- **Defense-in-Depth Security**: Assume breach. Ubiquitous encryption, least privilege, offloaded auth, automated scanning.
-- **Observability as First-Class**: Prefer FORJD status/analytics surfaces for data-plane health; DEML retains product UX and control-plane logs.
+- **Symmetrical Multi-Account Control Plane**: Account-scoped Django paths treat every mapped account identically. Platform showcase remains public metrics only. Stream processing, ML, and projections are FORJD’s job — never a DEML worker loop.
+- **FORJD Data Plane**: Sealed ingest, projections, replay/DLQ, analytics, and threat/ML execute exclusively in FORJD via tenant-bound `fjsvc_` tokens. Django is a BFF that rewrites product-local wire ids onto universal FORJD workflow families when needed.
+- **Defense-in-Depth Security**: Assume breach. Ubiquitous encryption, least privilege, offloaded auth (Firebase at DEML; Supabase Auth + service principals at FORJD), automated scanning.
+- **Observability as First-Class**: Product UI observability stays DEML-owned; sealed telemetry and OLAP live in FORJD. Do not stand up a local ClickHouse/Redpanda mesh.
 - **Automation Over Vigilance**: Pre-commit hooks, CI enforcement, doc sync, git flow automation.
-- **Pragmatic & Sovereign**: Own user identity and billing in DEML; stream sealed telemetry to FORJD as a subprocessor. Decouple content (Sanity) and edge (Cloudflare) where needed.
+- **Pragmatic & Sovereign**: Own identity, billing, consent, and learning content locally. Decouple content (Sanity) and edge (Cloudflare) where needed.
 - **Inclusive & Accessible**: WCAG 2.1 AA enforced automatically. Premium UX (skeleton loaders, custom palettes, mobile-first).
-- **Future-Proof**: Plan for PQC. Keep Angular product surface stable during data-plane cutover.
+- **Future-Proof**: Plan for PQC and FORJD-backed ML. Use state_dict only (no pickle for security) if any local model artifacts remain.
 
 ## Code Quality & Tooling (Enforced Automatically)
 
@@ -62,37 +62,27 @@ This document captures the core coding principles, philosophies, and "how we bui
 
 ## Architecture & Data Principles
 
-- **Decoupling**: Client (Angular) ↔ Server (Django) via REST + CORS + Signals. Data plane via FORJD service principal.
+- **Decoupling**: Client (Angular) ↔ Server (Django) via REST + CORS + Signals. Streaming/processing ↔ FORJD via sealed envelopes + `fjsvc_` service tokens.
 - **Storage (DEML-owned)**:
-  - Postgres: Transactional truth (accounts, billing, consent, API keys, mappings, learning content ownership).
-  - Dragonfly/Redis: session/rate-limit cache for the user plane.
-  - Firebase Auth (+ optional Firestore for product UX state that is not the analytics data plane).
-- **Storage (FORJD-owned)**: sealed events, projections, replay/DLQ, analytics, threat/ML artifacts under FORJD RLS.
-- **Multi-Tenancy**: Absolute isolation. DEML `account_id` → FORJD `tenant_id` mapping; body/query tenant must match.
-- **ML/Intelligence**: Executes in FORJD. DEML must not reintroduce local training workers.
+  - Postgres: Transactional truth (accounts, billing, consent, API credentials, FORJD tenant mapping, learning progress still local).
+  - Sessions/handoff: Postgres (`browser_sessions`, `auth_handoff_tokens`). Optional Redis only if explicitly configured for rate limits — not required.
+  - Firestore: Optional Firebase-adjacent user features — not a substitute FORJD projection store.
+- **Storage (FORJD-owned)**: Sealed events, `stream_results` projections, replay/DLQ, analytics, threat/ML tables.
+- **Multi-Tenancy**: Absolute isolation. Explicit `company_account → forjd_tenant_id` mapping. UUIDs everywhere.
+- **ML/Intelligence**: Executed in FORJD. DEML must not resurrect local ML workers or scanner loops when a FORJD capability is missing.
 - **UI/Frontend**:
-  - Signals for state.
-  - Native APIs (SVG, fetch).
-  - Headless Sanity for content (decoupled from Django).
-  - Dynamic injection for 3rd-party (e.g., Cloudflare, no hardcoded tokens).
-  - Angular product surface remains DEML-owned and unchanged during cutover.
+  - Keep the full Angular product surface intact.
+  - Signals for state; Viking-UI only for visuals.
+  - Headless Sanity for learning content (decoupled from Django).
 - **Security**:
-  - Firebase Auth + custom Django middleware for JWT (terminates at Django).
-  - FORJD called only with tenant-bound `fjsvc_…` (never Firebase, never `service_role`).
-  - AES-256-GCM sealed envelopes for telemetry; routing-tag metadata allowlist only.
+  - Firebase Auth + Django middleware for end users; never forward Firebase tokens to FORJD.
+  - AES-256-GCM + KMS for secrets/tokens at rest; store FORJD token secret refs, not plaintext.
   - UUID PKs (no sequential IDs).
-  - ABAC + RBAC on DEML product surfaces.
-  - Least privilege, unprivileged containers, App Check/reCAPTCHA.
+  - ABAC + RBAC on DEML surfaces; FORJD enforces tenant binding + RLS.
 - **Deployment & Ops**:
-  - Primary production mesh: **Railway** user-plane topology (`infrastructure/railway/services.json` — backend, frontend, Dragonfly). Data-plane services are retired.
-  - Cutover checklist: [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md) and [docs/CUTOVER.md](docs/CUTOVER.md).
-  - Rate limiting (sliding window in Dragonfly/Redis for COGS/security).
-  - Unprivileged multi-stage Docker.
-- **Resilience & Reliability**:
-  - Fail closed when FORJD is unavailable — no local broker fallback.
-  - Idempotent sealed ingest via `(tenant_id, client_event_id)` on FORJD.
-  - Healthchecks on DEML control plane; FORJD `/health` + `/ready` for the data plane.
-  - Snapshots for projections/replay.
+  - Primary hosts: Django on Fly (`deml-backend`, `docs/FLY.md`); Angular on Vercel (`deml`, `docs/VERCEL.md`). Railway services are optional standby. `deml-dragonfly` is retired.
+  - Audit/retire with `scripts/railway_audit.py` and `scripts/railway_retire_dataplane.py`.
+  - Never recreate retired Redpanda/ClickHouse/RustFS/daemon services.
 - **Accessibility & UX**:
   - Automated WCAG enforcement.
   - Premium, performant (skeletons, no bloat).
@@ -111,11 +101,11 @@ This document captures the core coding principles, philosophies, and "how we bui
 ## What Agents Must Do
 
 - When editing code: Ensure it follows automated rules (lint will catch, but think ahead).
-- When adding features: Align with the DEML user-plane / FORJD data-plane boundary, symmetrical account handling, and zero-compromise security.
-- Update docs first in BOOK.md / handoff if architectural.
-- Never add DEML-local streaming workers, Redpanda/ClickHouse/RustFS, or scanners. Extend FORJD or the Django BFF adapter instead.
-- Prioritize: Fail-closed FORJD integration, sealed E2EE, tenant isolation, Angular stability, maintainability (automation).
-- Never introduce: Hardcoded tenants/exceptions, sequential IDs, pickle for models, manual formatting, inaccessible UI, Firebase-to-FORJD credential forwarding.
+- When adding features: Align with Event Projections, symmetrical tenancy, zero-compromise security, Postgres-first transactional + projections.
+- Update docs first in BOOK.md if architectural.
+- For new workers/services: Must be symmetrical (loop over tenants), use Outbox where publishing events, emit OTEL.
+- Prioritize: Reliability (Outbox/idempotency), security (encryption, least priv), performance (Polars, native UI), maintainability (automation).
+- Never introduce: Hardcoded tenants/exceptions, sequential IDs, pickle for models, manual formatting, inaccessible UI, fire-and-forget without Outbox, unversioned events.
 - When in doubt: Refer to "zero-compromise", "precision engineering", "dogfood as Tenant0", "path of least resistance".
 
 ## Key Tools & Scripts
@@ -143,9 +133,7 @@ DEML documents first-class integration paths for enterprise ML infrastructure. E
 | Databricks   | [BOOK.md § Z](BOOK.md#appendix-z-integration-guides) | `/api/v1/ingest`, `/api/v1/predict` |
 | AWS Redshift | [BOOK.md § Z](BOOK.md#appendix-z-integration-guides) | `/api/v1/ingest`, `/api/v1/predict` |
 
-**Note:** Local Redpanda/ClickHouse are retired. Sealed telemetry and analytics
-exports go through FORJD. Customer warehouse paths (e.g. AWS Redshift) remain
-integration-guide material only.
+**Note:** Streaming and warehouse-style analytics exports are FORJD responsibilities. Do not document a DEML-local Redpanda or ClickHouse path.
 
 ## Project-Specific Agent Rules (from .agents/ setup)
 
@@ -161,11 +149,10 @@ These are additional invariants and rules specific to this project's development
 
 ### Core Architectural Invariants
 
-- **FORJD data-plane ownership:** All sealed ingest, processing, projections, replay/DLQ, analytics, and ML execute in FORJD. Django is the Firebase-authenticated user control plane and BFF only.
-- **Tenant mapping:** Every DEML account that needs the data plane has an explicit `deml_account_id → forjd_tenant_id → service_token_secret_ref` mapping. Body/query `tenant_id` must match or fail closed.
-- **Canonical wire rewrite:** Prefer FORJD-canonical `threat_telemetry` / `threat.*`. Legacy `deml_*` ids may be accepted at the BFF and rewritten before forward — never reintroduce product names into FORJD core.
-- **Angular stability:** Do not change Angular routes or generated clients for cutover; adapt only Django adapters when FORJD contracts evolve.
-- **No local fallback:** Missing FORJD capabilities stay blocked (501/503). Do not recreate workers, brokers, or OLAP in DEML.
+- **FORJD Exclusive Data Plane:** Never reintroduce Redpanda, ClickHouse, RustFS export workers, `DEML_ROLE` daemons, `telemetry_worker`, scanners, or local ML runtimes. Missing FORJD capabilities are documented dependencies — not DEML Railway fallbacks. Contract: [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md).
+- **Tenant UUID Normalization:** Never use string literals like `"platform"` as foreign keys. Map platform scope to the native Tenant0 UUID (`is_platform_tenant=True`) before any persistence or FORJD call.
+- **Account → FORJD Tenant Binding:** Every authenticated FORJD call resolves `deml_account_id → forjd_tenant_id → secret_ref` and fails closed on mismatch. Body/query `tenant_id` must equal the mapped tenant.
+- **Angular Surface Intact:** Do not delete or gut `frontend/src/app/**` product routes while retiring the local data plane. Django adapters keep established Angular paths stable.
 
 ### Antigravity Rules & Persona
 
@@ -237,9 +224,11 @@ All DEML surfaces share one design system: **grid-first modern enterprise SaaS**
 - **Consolidation**: Actively condense and consolidate workers where logically possible to reduce infrastructure overhead. Avoid fragmenting related sync and reconciliation logic across multiple disconnected scripts.
 - **Agent Principal**: Treat the background system as an intelligent, unified "Account Manager" that actively governs user data securely, automatically applying state changes globally across all recognized user identities without requiring manual intervention.
 
-This AGENTS.md ensures every agent/LLM knows the "what" (DEML user plane + FORJD sealed data plane, zero-compromise security) and "how" (automation, BFF adapters, fail-closed integration, strict enforcement).
+This AGENTS.md ensures every agent/LLM knows the "what" (Event Projections, multi-tenant ML platform with zero-compromise security/observability) and "how" (automation, decoupling, Postgres + events + projections, strict enforcement).
 
 Update this file whenever BOOK.md evolves core principles.
+
+**Final cutover (2026-07-18):** Remint `fjsvc_` after FORJD `sql/017`–`018`; BFF adapters cover vulns/exports/ML latest/security-alert; account deletion calls FORJD erase; hosts are Fly (Django) + Vercel (Angular) + FORJD Fly. Checklist: [docs/PRODUCTION_CUTOVER_CHECKLIST.md](docs/PRODUCTION_CUTOVER_CHECKLIST.md).
 
 **Note on file location**: Per the official AGENTS.md spec (https://agents.md/), the canonical location is at the **root of the repository**. Nested AGENTS.md files are supported for subprojects (nearest one wins).
 

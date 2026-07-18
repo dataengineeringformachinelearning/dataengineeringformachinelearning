@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const indexSource = readFileSync(resolve(process.cwd(), 'src/index.html'), 'utf8');
+const vercelSource = readFileSync(resolve(process.cwd(), 'vercel.json'), 'utf8');
 const serverSource = readFileSync(resolve(process.cwd(), 'src/server.ts'), 'utf8');
 
 describe('auth-status document isolation', () => {
@@ -13,7 +14,10 @@ describe('auth-status document isolation', () => {
     );
   });
 
-  it('prevents edge analytics injection without weakening the bridge CSP', () => {
+  it('keeps auth-status CSP on Vercel (CSR) and legacy SSR server', () => {
+    expect(vercelSource).toContain('"source": "/auth-status"');
+    expect(vercelSource).toContain('no-store, no-transform');
+    expect(vercelSource).toContain('Content-Security-Policy');
     expect(serverSource).toContain("'Cache-Control', 'no-store, no-transform'");
     expect(serverSource).toContain("headers.set('Content-Security-Policy', AUTH_STATUS_CSP)");
   });

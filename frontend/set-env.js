@@ -46,28 +46,38 @@ const sanityProjectId = process.env.SANITY_PROJECT_ID ?? 'hj5wtuct';
 const sanityDataset = process.env.SANITY_DATASET ?? 'production';
 const sentryDsn = process.env.SENTRY_DSN ?? '';
 
-// URL resolution prefers build-time env (BACKEND_URL, MARKETING_URL from Railway etc).
-// If not provided (empty), falls back to runtime hostname logic for common deploys (localhost, Railway patterns).
-// This avoids broken API calls when build env not set.
+// --- Deploy URLs (Vercel build-time; CSR has no runtime server injection) ---
+// Angular calls DEML Django BFF only. FORJD + Supabase are server-side via Django.
 const buildBackendUrl = process.env.BACKEND_URL ?? '';
 const buildMarketingUrl = process.env.MARKETING_URL ?? '';
-const buildFrontendUrl = process.env.FRONTEND_URL ?? '';
+const vercelFrontend =
+  process.env.FRONTEND_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : '') ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
+const buildFrontendUrl = vercelFrontend;
+const forjdApiUrl = process.env.FORJD_API_URL ?? 'https://backend.forjd.co';
+const supabaseUrl = process.env.SUPABASE_URL ?? '';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY ?? '';
 
 const getBackendUrlCode = `
 const getBackendUrl = () => {
-  if (typeof window === 'undefined') {
-    const globalProcess = (globalThis as any).process;
-    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['BACKEND_URL']) {
-      return globalProcess.env['BACKEND_URL'];
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+      return 'http://localhost:8000';
     }
-    return '${buildBackendUrl || 'https://backend.deml.app'}';
   }
-  const host = window.location.hostname;
-  if (host.includes('localhost') || host.includes('127.0.0.1')) {
-    return 'http://localhost:8000';
+  const configured = '${buildBackendUrl}';
+  if (configured) {
+    return configured;
   }
-  if (host === 'deml.app' || host.endsWith('.deml.app')) {
-    return 'https://backend.deml.app';
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'deml.app' || host.endsWith('.deml.app') || host.endsWith('.vercel.app')) {
+      return 'https://backend.deml.app';
+    }
   }
   return 'https://backend.deml.app';
 };
@@ -75,42 +85,46 @@ const getBackendUrl = () => {
 
 const getFrontendUrlCode = `
 const getFrontendUrl = () => {
-  if (typeof window === 'undefined') {
-    const globalProcess = (globalThis as any).process;
-    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['FRONTEND_URL']) {
-      return globalProcess.env['FRONTEND_URL'];
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+      return window.location.origin;
     }
-    return '${buildFrontendUrl || 'https://deml.app'}';
   }
-  const host = window.location.hostname;
-  if (host.includes('localhost') || host.includes('127.0.0.1')) {
-    return window.location.origin;
+  const configured = '${buildFrontendUrl}';
+  if (configured) {
+    return configured;
   }
-  if (host === 'deml.app' || host.endsWith('.deml.app')) {
-    return 'https://deml.app';
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'deml.app' || host.endsWith('.deml.app')) {
+      return 'https://deml.app';
+    }
+    if (host.endsWith('.vercel.app')) {
+      return window.location.origin;
+    }
   }
-  return '${buildFrontendUrl || 'https://deml.app'}';
+  return 'https://deml.app';
 };
 `;
 
 const getMarketingUrlCode = `
 const getMarketingUrl = () => {
-  if (typeof window === 'undefined') {
-    const globalProcess = (globalThis as any).process;
-    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['MARKETING_URL']) {
-      return globalProcess.env['MARKETING_URL'];
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+      return 'http://localhost:4321';
     }
-    return '${buildMarketingUrl || 'https://dataengineeringformachinelearning.com'}';
   }
-  const host = window.location.hostname;
-  if (host.includes('localhost') || host.includes('127.0.0.1')) {
-    return 'http://localhost:4321';
+  const configured = '${buildMarketingUrl}';
+  if (configured) {
+    return configured;
   }
-  return '${buildMarketingUrl || 'https://dataengineeringformachinelearning.com'}';
+  return 'https://dataengineeringformachinelearning.com';
 };
 `;
 
-const envConfigFileProd = `
+const envBody = production => `
 const getFirebaseConfig = () => {
   const defaultFirebase = {
     apiKey: '${apiKey}',
@@ -135,50 +149,15 @@ ${getFrontendUrlCode}
 ${getMarketingUrlCode}
 
 export const environment = {
-  production: true,
+  production: ${production},
   version: '${appVersion}',
   backendUrl: getBackendUrl(),
   frontendUrl: getFrontendUrl(),
   marketingUrl: getMarketingUrl(),
-  firebase: getFirebaseConfig(),
-  sanity: {
-    projectId: '${sanityProjectId}',
-    dataset: '${sanityDataset}'
-  },
-  sentryDsn: '${sentryDsn}'
-};
-`;
-
-const envConfigFileDev = `
-const getFirebaseConfig = () => {
-  const defaultFirebase = {
-    apiKey: '${apiKey}',
-    authDomain: '${authDomain}',
-    projectId: '${projectId}',
-    storageBucket: '${storageBucket}',
-    messagingSenderId: '${messagingSenderId}',
-    appId: '${appId}'
-  };
-
-  if (typeof window !== 'undefined' && (window as any).FIREBASE_CONFIG) {
-    return {
-      ...defaultFirebase,
-      ...(window as any).FIREBASE_CONFIG
-    };
-  }
-  return defaultFirebase;
-};
-
-${getBackendUrlCode}
-${getFrontendUrlCode}
-${getMarketingUrlCode}
-
-export const environment = {
-  production: false,
-  version: '${appVersion}',
-  backendUrl: getBackendUrl(),
-  frontendUrl: getFrontendUrl(),
-  marketingUrl: getMarketingUrl(),
+  /** Informational — data plane is reached via Django BFF, not from the browser. */
+  forjdApiUrl: '${forjdApiUrl}',
+  supabaseUrl: '${supabaseUrl}',
+  supabaseAnonKey: '${supabaseAnonKey}',
   firebase: getFirebaseConfig(),
   sanity: {
     projectId: '${sanityProjectId}',
@@ -190,10 +169,10 @@ export const environment = {
 
 const targetPathDev = path.join(__dirname, 'src', 'environments', 'environment.development.ts');
 
-fs.writeFileSync(targetPath, envConfigFileProd, 'utf8');
+fs.writeFileSync(targetPath, envBody(true), 'utf8');
 console.log(`Angular environment.ts dynamically generated at ${targetPath}`);
 
-fs.writeFileSync(targetPathDev, envConfigFileDev, 'utf8');
+fs.writeFileSync(targetPathDev, envBody(false), 'utf8');
 console.log(`Angular environment.development.ts dynamically generated at ${targetPathDev}`);
 
 // Ensure src/assets/firebase-config.js placeholder exists to prevent 404 errors

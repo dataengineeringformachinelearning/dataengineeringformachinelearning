@@ -31,6 +31,8 @@ def test_get_csv_splits_and_cleans(monkeypatch):
 def test_validate_production_config_allows_local_debug(monkeypatch):
   monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
   monkeypatch.delenv("RAILWAY_SERVICE_NAME", raising=False)
+  monkeypatch.delenv("FLY_APP_NAME", raising=False)
+  monkeypatch.delenv("FLY_MACHINE_ID", raising=False)
   monkeypatch.setenv("DEBUG", "True")
   env.validate_production_config()  # should not raise
 
@@ -91,6 +93,8 @@ def test_validate_production_config_rejects_sqlite_on_railway(monkeypatch):
 def test_configure_database_url_falls_back_to_sqlite_locally(monkeypatch):
   monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
   monkeypatch.delenv("RAILWAY_SERVICE_NAME", raising=False)
+  monkeypatch.delenv("FLY_APP_NAME", raising=False)
+  monkeypatch.delenv("FLY_MACHINE_ID", raising=False)
   monkeypatch.delenv("DATABASE_URL", raising=False)
   env.configure_database_url()
   assert os.getenv("DATABASE_URL", "").startswith("sqlite:///")
@@ -99,9 +103,43 @@ def test_configure_database_url_falls_back_to_sqlite_locally(monkeypatch):
 def test_configure_database_url_keeps_postgres_when_set(monkeypatch):
   monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
   monkeypatch.delenv("RAILWAY_SERVICE_NAME", raising=False)
+  monkeypatch.delenv("FLY_APP_NAME", raising=False)
   monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
   env.configure_database_url()
   assert os.getenv("DATABASE_URL") == "postgresql://user:pass@host:5432/db"
+
+
+def test_validate_production_config_requires_forjd_on_fly(monkeypatch):
+  monkeypatch.setenv("FLY_APP_NAME", "deml-backend")
+  monkeypatch.delenv("RAILWAY_SERVICE_NAME", raising=False)
+  monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
+  monkeypatch.setenv("DEBUG", "False")
+  monkeypatch.setenv("SECRET_KEY", "fly-test-secret-key")
+  monkeypatch.setenv(
+    "DATABASE_URL",
+    "postgresql://user:pass@host:5432/db?sslmode=verify-full",
+  )
+  monkeypatch.delenv("FORJD_API_URL", raising=False)
+  monkeypatch.delenv("FORJD_SERVICE_TOKEN", raising=False)
+  monkeypatch.delenv("FORJD_TENANT_ID", raising=False)
+  with pytest.raises(RuntimeError, match="FORJD_API_URL"):
+    env.validate_production_config()
+
+
+def test_validate_production_config_accepts_fly_with_forjd(monkeypatch):
+  monkeypatch.setenv("FLY_APP_NAME", "deml-backend")
+  monkeypatch.delenv("RAILWAY_SERVICE_NAME", raising=False)
+  monkeypatch.delenv("DEBUG", raising=False)
+  monkeypatch.setenv("SECRET_KEY", "fly-test-secret-key")
+  monkeypatch.setenv(
+    "DATABASE_URL",
+    "postgresql://user:pass@host:5432/db?sslmode=verify-full",
+  )
+  monkeypatch.setenv("FORJD_API_URL", "https://backend.forjd.co")
+  monkeypatch.setenv("FORJD_SERVICE_TOKEN", "fjsvc_abcdefgh_secret")
+  monkeypatch.setenv("FORJD_TENANT_ID", "00000000-0000-0000-0000-000000000001")
+  env.validate_production_config()
+  assert os.getenv("DEBUG") == "False"
 
 
 def test_production_transport_rejects_plaintext_postgres(monkeypatch):
@@ -120,3 +158,13 @@ def test_production_transport_rejects_plaintext_redis(monkeypatch):
   monkeypatch.setenv("REDIS_URL", "redis://cache.internal:6379")
   with pytest.raises(RuntimeError, match="rediss"):
     env.validate_encrypted_transport_config()
+
+
+def test_production_transport_allows_missing_redis(monkeypatch):
+  monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
+  monkeypatch.setenv(
+    "DATABASE_URL",
+    "postgresql://user:pass@host:5432/db?sslmode=verify-full",
+  )
+  monkeypatch.delenv("REDIS_URL", raising=False)
+  env.validate_encrypted_transport_config()

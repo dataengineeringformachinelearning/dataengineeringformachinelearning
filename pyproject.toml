@@ -20,9 +20,7 @@ exclude-newer = "7 days"
 [tool.uv.workspace]
 members = [
     "packages/deml-crypto",
-    "packages/deml-event-client",
     "packages/deml-rate-limit",
-    "packages/deml-storage",
 ]
 
 # Ruff configuration (inherited by all packages)

@@ -15,6 +15,8 @@ from ninja.errors import HttpError
 from pydantic import ConfigDict, field_validator, model_validator
 
 from forjd.client import ForjdClient, ForjdError
+from forjd.cutover import log_cutover_event, writes_enabled
+from forjd.shadow import record_shadow_batch, record_shadow_receipt_async
 from forjd.tenancy import (
   ForjdTenantConfigurationError,
   ForjdTenantCredential,
@@ -24,15 +26,16 @@ from forjd.tenancy import (
 router = Router(tags=["FORJD"])
 
 TELEMETRY_CONTENT_TYPE: Final[str] = "application/forjd-telemetry+v1"
-TELEMETRY_WORKFLOW_ID: Final[str] = "threat_telemetry"
-# Accept legacy DEML wire ids at the BFF, then rewrite to FORJD-canonical ids
-# so FORJD core never needs product-specific aliases.
-LEGACY_WORKFLOW_IDS: Final[dict[str, str]] = {
-  "deml_telemetry": TELEMETRY_WORKFLOW_ID,
-}
-LEGACY_EVENT_TYPES: Final[dict[str, str]] = {
+# DEML Angular/OpenAPI wire names (product-local BFF contract).
+TELEMETRY_WORKFLOW_ID: Final[str] = "deml_telemetry"
+# Canonical FORJD family — BFF rewrites before the network call.
+FORJD_TELEMETRY_WORKFLOW_ID: Final[str] = "threat_telemetry"
+EVENT_TYPE_TO_FORJD: Final[dict[str, str]] = {
   "deml.metric": "threat.metric",
   "deml.alert": "threat.alert",
+}
+WORKFLOW_ID_TO_FORJD: Final[dict[str, str]] = {
+  "deml_telemetry": FORJD_TELEMETRY_WORKFLOW_ID,
 }
 ALLOWED_METADATA_KEYS: Final[frozenset[str]] = frozenset(
   {
@@ -95,11 +98,9 @@ class SealedEvent(StrictSchema):
   tenant_id: UUID
   client_event_id: str = Field(min_length=1, max_length=128)
   content_type: Literal["application/forjd-telemetry+v1"] = TELEMETRY_CONTENT_TYPE
-  event_type: Literal["threat.metric", "threat.alert", "deml.metric", "deml.alert"] = (
-    "threat.metric"
-  )
+  event_type: Literal["deml.metric", "deml.alert"] = "deml.metric"
   schema_version: int = Field(default=1, ge=1, le=1000)
-  workflow_id: Literal["threat_telemetry", "deml_telemetry"] = TELEMETRY_WORKFLOW_ID
+  workflow_id: Literal["deml_telemetry"] = TELEMETRY_WORKFLOW_ID
   encryption: EncryptionOptions = Field(default_factory=EncryptionOptions)
   envelope: EncryptedEnvelope
   metadata: dict[str, Any] = Field(default_factory=dict)
@@ -131,18 +132,52 @@ class SealedEvent(StrictSchema):
         )
     return metadata
 
-  @model_validator(mode="after")
-  def canonicalize_forjd_wire_ids(self) -> SealedEvent:
-    """Rewrite legacy DEML ids to FORJD-canonical threat_* before forwarding."""
-    workflow_id = LEGACY_WORKFLOW_IDS.get(self.workflow_id, self.workflow_id)
-    event_type = LEGACY_EVENT_TYPES.get(self.event_type, self.event_type)
-    if workflow_id == self.workflow_id and event_type == self.event_type:
-      return self
-    return self.model_copy(update={"workflow_id": workflow_id, "event_type": event_type})
-
 
 class SealedEventBatch(StrictSchema):
   events: list[SealedEvent] = Field(min_length=1, max_length=100)
+
+
+# --- FORJD wire rewrite (product-local → canonical) ---
+def sealed_event_for_forjd(event: SealedEvent) -> dict[str, Any]:
+  """Map DEML OpenAPI wire ids onto universal FORJD threat_telemetry names."""
+  payload = event.model_dump(mode="json")
+  payload["workflow_id"] = WORKFLOW_ID_TO_FORJD.get(
+    str(payload.get("workflow_id", "")),
+    FORJD_TELEMETRY_WORKFLOW_ID,
+  )
+  event_type = str(payload.get("event_type", ""))
+  payload["event_type"] = EVENT_TYPE_TO_FORJD.get(event_type, event_type)
+  return payload
+
+
+def sealed_batch_for_forjd(batch: SealedEventBatch) -> dict[str, Any]:
+  return {"events": [sealed_event_for_forjd(event) for event in batch.events]}
+
+
+def rewrite_forjd_workflow_query(query: str) -> str:
+  """Rewrite product-local workflow_id query params to the canonical family."""
+  if not query:
+    return query
+  from urllib.parse import parse_qsl, unquote_plus, urlencode
+
+  pairs = []
+  for key, value in parse_qsl(query, keep_blank_values=True):
+    if key == "workflow_id":
+      decoded = unquote_plus(value)
+      value = WORKFLOW_ID_TO_FORJD.get(decoded, decoded)
+    pairs.append((key, value))
+  return urlencode(pairs)
+
+
+def rewrite_forjd_workflow_body(payload: dict[str, Any]) -> dict[str, Any]:
+  """Rewrite product-local workflow/event ids in JSON bodies (e.g. projections/run)."""
+  workflow_id = payload.get("workflow_id")
+  if isinstance(workflow_id, str):
+    payload["workflow_id"] = WORKFLOW_ID_TO_FORJD.get(workflow_id, workflow_id)
+  event_type = payload.get("event_type")
+  if isinstance(event_type, str):
+    payload["event_type"] = EVENT_TYPE_TO_FORJD.get(event_type, event_type)
+  return payload
 
 
 def request_id_from(request: Any) -> str | None:
@@ -152,7 +187,8 @@ def request_id_from(request: Any) -> str | None:
 
 async def resolve_request_credential(request: Any) -> ForjdTenantCredential:
   """Resolve the caller's DEML account to its tenant-scoped FORJD secret."""
-  if not request.user.is_authenticated:
+  # Require Firebase bearer claims — cookie/session alone must not mint FORJD calls.
+  if not request.user.is_authenticated or not getattr(request, "firebase_token", None):
     raise HttpError(401, "Not authenticated")
 
   account_id = await sync_to_async(
@@ -182,36 +218,88 @@ async def health(request: Any) -> dict[str, Any]:
 
 @router.post("/ingest")
 async def ingest(request: Any, payload: SealedEvent) -> dict[str, Any]:
+  if not writes_enabled():
+    raise HttpError(503, "FORJD writes are disabled for the current cutover phase")
+
   credential = await resolve_request_credential(request)
   require_mapped_tenant(payload.tenant_id, credential)
+  wire = sealed_event_for_forjd(payload)
+  request_id = request_id_from(request)
+  account_id = await sync_to_async(
+    lambda: getattr(getattr(request.user, "profile", None), "account_id", None)
+  )()
 
   try:
-    return await ForjdClient(
+    result = await ForjdClient(
       tenant_id=credential.tenant_id,
       service_token=credential.service_token,
-    ).ingest(
-      payload.model_dump(mode="json"),
-      request_id=request_id_from(request),
-    )
+    ).ingest(wire, request_id=request_id)
   except ForjdError as exc:
+    await record_shadow_receipt_async(
+      forjd_tenant_id=credential.tenant_id,
+      payload=wire,
+      forjd_status=exc.status,
+      forjd_ok=False,
+      request_id=request_id,
+      deml_account_id=account_id,
+    )
     raise HttpError(exc.status, str(exc)) from exc
+
+  await record_shadow_receipt_async(
+    forjd_tenant_id=credential.tenant_id,
+    payload=wire,
+    forjd_status=200,
+    forjd_ok=True,
+    request_id=request_id,
+    deml_account_id=account_id,
+  )
+  log_cutover_event(
+    "ingest_ok", tenant_id=credential.tenant_id, workflow_id=wire.get("workflow_id")
+  )
+  return result
 
 
 @router.post("/ingest/events:batch")
 async def ingest_batch(request: Any, payload: SealedEventBatch) -> dict[str, Any]:
+  if not writes_enabled():
+    raise HttpError(503, "FORJD writes are disabled for the current cutover phase")
+
   credential = await resolve_request_credential(request)
   for event in payload.events:
     require_mapped_tenant(event.tenant_id, credential)
+  wire = sealed_batch_for_forjd(payload)
+  request_id = request_id_from(request)
+  account_id = await sync_to_async(
+    lambda: getattr(getattr(request.user, "profile", None), "account_id", None)
+  )()
 
   try:
-    return await ForjdClient(
+    result = await ForjdClient(
       tenant_id=credential.tenant_id,
       service_token=credential.service_token,
     ).request_json(
       "POST",
       "/api/v1/ingest/events:batch",
-      payload=payload.model_dump(mode="json"),
-      request_id=request_id_from(request),
+      payload=wire,
+      request_id=request_id,
     )
   except ForjdError as exc:
+    await sync_to_async(record_shadow_batch)(
+      forjd_tenant_id=credential.tenant_id,
+      events=list(wire.get("events") or []),
+      forjd_status=exc.status,
+      forjd_ok=False,
+      request_id=request_id,
+      deml_account_id=account_id,
+    )
     raise HttpError(exc.status, str(exc)) from exc
+
+  await sync_to_async(record_shadow_batch)(
+    forjd_tenant_id=credential.tenant_id,
+    events=list(wire.get("events") or []),
+    forjd_status=200,
+    forjd_ok=True,
+    request_id=request_id,
+    deml_account_id=account_id,
+  )
+  return result

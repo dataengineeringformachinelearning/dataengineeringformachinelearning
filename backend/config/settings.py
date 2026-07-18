@@ -134,6 +134,7 @@ if not firebase_admin._apps:
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 from utils.env import (
+  apply_database_search_path,
   configure_database_url,
   get_bool,
   get_csv,
@@ -142,7 +143,7 @@ from utils.env import (
 )
 from utils.tls import materialize_tls_file
 
-# Fail fast on Railway/production if SECRET_KEY, DEBUG, or DATABASE_URL are insecure.
+# Fail fast on Fly/Railway/production if SECRET_KEY, DEBUG, or DATABASE_URL are insecure.
 validate_production_config()
 configure_database_url()
 
@@ -166,9 +167,11 @@ ALLOWED_HOSTS = [
 FORJD_API_URL = get_str("FORJD_API_URL", "https://backend.forjd.co")
 FORJD_SERVICE_TOKEN = get_str("FORJD_SERVICE_TOKEN", "")
 FORJD_TENANT_ID = get_str("FORJD_TENANT_ID", "")
-# Cutover flags (Django BFF only — Angular unchanged). No local streaming fallback.
-FORJD_READ_FROM_FORJD = get_bool("FORJD_READ_FROM_FORJD", default=True)
-FORJD_DUAL_WRITE_ENABLED = get_bool("FORJD_DUAL_WRITE_ENABLED", default=False)
+# Cutover controls — see docs/CUTOVER.md. Phase overrides write/read modes when set.
+# Phase: 0=dual-write/empty-read, 1=dual-write/forjd-read, 2|3=forjd-only.
+FORJD_CUTOVER_PHASE = get_str("FORJD_CUTOVER_PHASE", "")
+FORJD_WRITE_MODE = get_str("FORJD_WRITE_MODE", "forjd")  # off | forjd | dual
+FORJD_READ_MODE = get_str("FORJD_READ_MODE", "forjd")  # off | forjd | dual
 
 
 # Application definition
@@ -218,20 +221,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DRAGONFLY_HOST = os.getenv("DRAGONFLY_HOST", "deml-dragonfly.railway.internal")
-REDIS_URL = get_str("REDIS_URL", f"redis://{DRAGONFLY_HOST}:6379")
-REDIS_SSL_CA = materialize_tls_file("REDIS_SSL_CA", "REDIS_SSL_CA_B64")
-_redis_channel_host = {"address": REDIS_URL}
-if REDIS_SSL_CA:
-  _redis_channel_host.update(ssl_ca_certs=REDIS_SSL_CA, ssl_cert_reqs="required")
+# Optional Redis/Dragonfly — sessions/handoff use Postgres; leave unset in production.
+REDIS_URL = get_str("REDIS_URL")
+REDIS_SSL_CA = materialize_tls_file("REDIS_SSL_CA", "REDIS_SSL_CA_B64") if REDIS_URL else None
 
-# Channels
+# Channels — in-process layer (force-logout best-effort; no deml-dragonfly).
 CHANNEL_LAYERS = {
   "default": {
-    "BACKEND": "channels_redis.core.RedisChannelLayer",
-    "CONFIG": {
-      "hosts": [_redis_channel_host],
-    },
+    "BACKEND": "channels.layers.InMemoryChannelLayer",
   },
 }
 
@@ -245,6 +242,8 @@ DATABASES = {
     conn_health_checks=True,
   )
 }
+# Supabase consolidation: DATABASE_SEARCH_PATH=deml,public (FORJD docs/NEON_TO_SUPABASE.md)
+apply_database_search_path(DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

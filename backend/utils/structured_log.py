@@ -1,9 +1,9 @@
 """
 Structured JSON logging with request correlation IDs.
 
-Workers and API handlers log through the standard library; this module adds
-a correlation_id context variable so log lines can be traced across
-outbox → Kafka → projector → Firestore without guessing.
+API handlers log through the standard library; this module adds a
+correlation_id context variable so log lines can be traced across the
+Django control plane and outbound FORJD BFF calls without guessing.
 """
 
 from __future__ import annotations

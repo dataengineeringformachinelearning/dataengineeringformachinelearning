@@ -1,6 +1,5 @@
 # Continuous integration — backend pytest + frontend vitest
-# Cursor - Grok 4.3 (2026-06-30): automated test matrix for PRs and main.
-# Rust data-plane CI retired — FORJD owns streaming/processing.
+# Data-plane workloads live in FORJD; DEML CI covers control plane + UI only.
 
 name: CI Tests
 

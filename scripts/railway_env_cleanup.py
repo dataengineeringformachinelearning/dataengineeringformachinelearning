@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Remove Infisical-style variable pollution from Railway services that do not need them.
+"""Remove Infisical-style variable pollution from Railway user-plane services.
 
-Keeps the full backend bundle on Django API + workers only. Infrastructure services
-(dragonfly, postgres, queue, etc.) get a minimal whitelist. Frontend gets build/runtime
-vars only — never Django secrets or service-account JSON.
-
-For role/required/forbidden alignment against the canonical catalog, prefer:
+Keeps the full backend bundle on the Django control plane only. Frontend and
+Dragonfly get catalog-driven whitelists. Prefer role/required/forbidden
+alignment via:
 
   python scripts/railway_audit.py
   python scripts/railway_audit.py --apply
 
 See infrastructure/railway/services.json (source of truth) and
-infrastructure/railway/README.md (agent playbook). Retired: deml-daemon, deml-cpe-guesser.
+infrastructure/railway/README.md. Retired data-plane services are listed under
+`retired` and must not be recreated.
 """
 
 from __future__ import annotations
@@ -24,12 +23,11 @@ from typing import Any, Final
 
 RAILWAY_BIN: Final = "railway"
 CATALOG_PATH: Final = Path(__file__).resolve().parents[1] / "infrastructure/railway/services.json"
-FULL_ENV_CLASSES: Final[frozenset[str]] = frozenset(
-  {"django-api", "django-user-control-plane", "django-worker", "rust-data-plane"}
-)
+FULL_ENV_CLASSES: Final[frozenset[str]] = frozenset({"django-api", "django-user-control-plane"})
 
 # Railway Postgres plugin vars leaked onto app services during deml-postgres references.
-# DATABASE_URL must stay (Neon); everything else is stale pollution.
+# DATABASE_URL must stay (Neon today, or Supabase pooler after docs/NEON_TO_SUPABASE.md
+# consolidation into schema deml); everything else is stale pollution.
 BACKEND_PG_POLLUTION: Final[frozenset[str]] = frozenset(
   {
     "ALPINE_DATABASE_MODE",
@@ -66,40 +64,8 @@ FRONTEND_KEEP: Final[frozenset[str]] = frozenset(
   }
 )
 
-QUEUE_KEEP: Final[frozenset[str]] = frozenset(
-  {
-    "PUBLIC_REDPANDA_HOST",
-    "PUBLIC_REDPANDA_PORT",
-    "REDPANDA_SASL_USERNAME",
-    "REDPANDA_SASL_PASSWORD",
-    "REDPANDA_BROKERS",
-  }
-)
-
-CLICKHOUSE_KEEP: Final[frozenset[str]] = frozenset(
-  {
-    "CLICKHOUSE_DB",
-    "CLICKHOUSE_HOST",
-    "CLICKHOUSE_PASSWORD",
-    "CLICKHOUSE_PORT",
-    "CLICKHOUSE_USER",
-    "CLICKHOUSE_URI",
-  }
-)
-
-SCANNER_KEEP: Final[frozenset[str]] = frozenset(
-  {
-    "NVD_API_KEY",
-    "OSV_DB_PATH",
-    "CPE_GUESSER_URL",
-  }
-)
-
 OPTIONAL_KEEP: Final[dict[str, frozenset[str]]] = {
   "deml-frontend": FRONTEND_KEEP,
-  "deml-queue": QUEUE_KEEP,
-  "deml-clickhouse": CLICKHOUSE_KEEP,
-  "deml-scanner": SCANNER_KEEP,
 }
 
 

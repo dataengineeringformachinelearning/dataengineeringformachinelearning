@@ -1,7 +1,6 @@
 import base64
 import hashlib
 import hmac
-import json
 import re
 import secrets
 
@@ -161,23 +160,22 @@ def generate_handoff_token(request, payload: HandoffGenerateIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
 
-  from utils.rate_limit import redis_client
-
-  if not redis_client:
-    raise HttpError(500, "Redis unavailable")
+  from utils.session_registry import store_handoff
 
   challenge = (payload.code_challenge or "").strip()
   if challenge and not _PKCE_PATTERN.fullmatch(challenge):
     raise HttpError(400, "Invalid PKCE code challenge")
 
   token = secrets.token_urlsafe(32)
-  handoff = {
-    "user_id": request.user.id,
-    "code_challenge": challenge,
-    "client_name": payload.client_name[:64],
-  }
-  # Authorization codes are one-time and deliberately short-lived.
-  redis_client.setex(f"handoff:{token}", 120, json.dumps(handoff))
+  # One-time codes live in Postgres (TTL); deml-dragonfly retired.
+  if not store_handoff(
+    token,
+    user_id=request.user.id,
+    code_challenge=challenge,
+    client_name=payload.client_name[:64],
+    ttl_seconds=120,
+  ):
+    raise HttpError(503, "Handoff store unavailable")
 
   return {"status": "success", "token": token}
 
@@ -200,29 +198,18 @@ class DesktopAuthOut(Schema):
   "/handoff/verify", response=DesktopAuthOut, auth=None, summary="Verify one-time handoff token"
 )
 def verify_handoff_token(request, payload: HandoffVerifyIn):
-  from utils.rate_limit import redis_client
+  from utils.session_registry import consume_handoff
 
-  if not redis_client:
-    raise HttpError(500, "Redis unavailable")
-
-  raw_handoff = redis_client.get(f"handoff:{payload.token}")
-  if not raw_handoff:
+  # Consume before PKCE so a failed attempt cannot be retried.
+  handoff = consume_handoff(payload.token)
+  if not handoff:
     raise HttpError(401, "Invalid or expired token")
 
-  # Consume before verification so a failed PKCE attempt cannot be retried.
-  redis_client.delete(f"handoff:{payload.token}")
-
   try:
-    handoff = json.loads(raw_handoff)
     user_id = int(handoff["user_id"])
     expected_challenge = str(handoff.get("code_challenge") or "")
-  except (TypeError, ValueError, KeyError, json.JSONDecodeError):
-    # Backwards compatibility for handoffs issued by the previous deployment.
-    try:
-      user_id = int(raw_handoff)
-      expected_challenge = ""
-    except (TypeError, ValueError) as exc:
-      raise HttpError(401, "Invalid handoff payload") from exc
+  except (TypeError, ValueError, KeyError) as exc:
+    raise HttpError(401, "Invalid handoff payload") from exc
 
   if expected_challenge:
     verifier = (payload.code_verifier or "").strip()

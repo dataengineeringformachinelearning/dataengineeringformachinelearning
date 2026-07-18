@@ -1,7 +1,6 @@
-# Local DEML user control plane only.
-# FORJD owns streaming, processing, projections, analytics, and ML.
-# Do not reintroduce Redpanda, ClickHouse, RustFS, scanners, or Rust data-plane roles.
-
+# Local user control plane only. FORJD owns sealed ingest, projections, and ML.
+# See docs/FORJD_PLATFORM_HANDOFF.md and infrastructure/railway/README.md.
+# Sessions/handoff use Postgres — no local Dragonfly.
 services:
   postgres:
     image: postgres:15
@@ -17,16 +16,6 @@ services:
       timeout: 5s
       retries: 5
 
-  dragonfly:
-    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: ./backend
@@ -37,7 +26,6 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
       - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
-      - DRAGONFLY_HOST=dragonfly
       - FRONTEND_URL=http://localhost:4200
       - BACKEND_URL=http://localhost:8000
       - MARKETING_URL=http://localhost:4321
@@ -45,12 +33,8 @@ services:
       - FORJD_API_URL=${FORJD_API_URL:-https://backend.forjd.co}
       - FORJD_SERVICE_TOKEN=${FORJD_SERVICE_TOKEN:-}
       - FORJD_TENANT_ID=${FORJD_TENANT_ID:-}
-      - FORJD_READ_FROM_FORJD=${FORJD_READ_FROM_FORJD:-true}
-      - FORJD_DUAL_WRITE_ENABLED=${FORJD_DUAL_WRITE_ENABLED:-false}
     depends_on:
       postgres:
         condition: service_healthy
-      dragonfly:
-        condition: service_started
     command: >
       sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"

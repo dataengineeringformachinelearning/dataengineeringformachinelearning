@@ -82,6 +82,29 @@ def test_ingest_rejects_cross_tenant_event(mock_ingest: AsyncMock, client: Clien
 
 @pytest.mark.django_db
 @patch("forjd.api.ForjdClient.ingest", new_callable=AsyncMock)
+def test_ninja_ingest_rejects_cookie_session_without_firebase_bearer(
+  mock_ingest: AsyncMock,
+  client: Client,
+) -> None:
+  user, tenant_id = _mapped_user(username="session-only-ninja")
+  client.force_login(user)
+
+  with override_settings(
+    FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+    FORJD_TENANT_ID=str(tenant_id),
+  ):
+    response = client.post(
+      "/api/v1/forjd/ingest",
+      data=_event(tenant_id),
+      content_type="application/json",
+    )
+
+  assert response.status_code == 401
+  mock_ingest.assert_not_awaited()
+
+
+@pytest.mark.django_db
+@patch("forjd.api.ForjdClient.ingest", new_callable=AsyncMock)
 def test_ingest_forwards_only_mapped_sealed_telemetry(
   mock_ingest: AsyncMock,
   client: Client,
@@ -104,7 +127,7 @@ def test_ingest_forwards_only_mapped_sealed_telemetry(
   assert response.json() == {"ok": True, "accepted": 1}
   forwarded_payload = mock_ingest.await_args.args[0]
   assert forwarded_payload["tenant_id"] == str(tenant_id)
-  # Legacy deml_* wire ids are rewritten to FORJD-canonical threat_* at the BFF.
+  # Angular keeps deml_* wire names; BFF rewrites to universal FORJD ids.
   assert forwarded_payload["workflow_id"] == "threat_telemetry"
   assert forwarded_payload["event_type"] == "threat.metric"
   assert UUID(mock_ingest.await_args.kwargs["request_id"])

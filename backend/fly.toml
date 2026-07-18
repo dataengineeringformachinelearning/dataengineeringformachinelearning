@@ -1,0 +1,67 @@
+# DEML Django user control plane on Fly.io
+#
+# Deploy (from this directory):
+#   fly apps create deml-backend
+#   fly secrets set SECRET_KEY=… DATABASE_URL=… FORJD_SERVICE_TOKEN=… …
+#   fly deploy
+#
+# Docs: ../docs/FLY.md
+# Health: https://deml-backend.fly.dev/api/v1/health
+# Ready:  https://deml-backend.fly.dev/api/v1/ready
+#
+# Custom domain: backend.deml.app → this app (see docs/FLY.md).
+
+app = 'deml-backend'
+primary_region = 'iad'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  PORT = '8080'
+  DEBUG = 'False'
+  STRUCTURED_LOGS = 'true'
+  DEML_TRANSPORT_SECURITY = 'required'
+  # Non-secret defaults — override with secrets / fly secrets as needed.
+  FORJD_API_URL = 'https://backend.forjd.co'
+  FORJD_CUTOVER_PHASE = '2'
+  FORJD_WRITE_MODE = 'forjd'
+  FORJD_READ_MODE = 'forjd'
+  FRONTEND_URL = 'https://deml.app'
+  BACKEND_URL = 'https://backend.deml.app'
+  MARKETING_URL = 'https://dataengineeringformachinelearning.com'
+  # After Neon → Supabase consolidation (schema deml):
+  #   DATABASE_SEARCH_PATH = 'deml,public'
+  # Secrets (never commit): SECRET_KEY, DATABASE_URL, FIREBASE_*, FORJD_SERVICE_TOKEN,
+  # FORJD_TENANT_ID, STRIPE_*, RESEND_*, SENTRY_DSN, …
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'off'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+  [http_service.concurrency]
+    type = 'requests'
+    hard_limit = 100
+    soft_limit = 50
+
+  [[http_service.checks]]
+    interval = '15s'
+    timeout = '5s'
+    grace_period = '45s'
+    method = 'GET'
+    path = '/api/v1/health'
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '60s'
+    method = 'GET'
+    path = '/api/v1/ready'
+
+[[vm]]
+  size = 'shared-cpu-2x'
+  memory = '2048mb'

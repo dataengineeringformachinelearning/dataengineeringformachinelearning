@@ -143,15 +143,15 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
   <h2 class="viking-heading">Operational intelligence</h2>
   <p class="viking-text">Precision-engineered telemetry for contested ML infrastructure.</p>
-  <p class="viking-text-muted">Sub-50ms ClickHouse rollups · symmetrical tenant isolation</p>
+  <p class="viking-text-muted">Fast projection rollups · symmetrical tenant isolation</p>
   <span class="viking-label">Section label</span>
 </div>`,
         snippets: {
           angular: `<viking-heading size="lg" [level]="2">Operational intelligence</viking-heading>
-<viking-text variant="muted">Sub-50ms ClickHouse rollups</viking-text>
+<viking-text variant="muted">Fast projection rollups</viking-text>
 <viking-label>Mission ID</viking-label>`,
           astro: `<h2 class="viking-heading">Operational intelligence</h2>
-<p class="viking-text-muted">Sub-50ms ClickHouse rollups</p>`,
+<p class="viking-text-muted">Fast projection rollups</p>`,
           django: `<h2 class="viking-heading">{{ title }}</h2>
 <p class="viking-text-muted">{{ subtitle }}</p>`,
           javascript: `document.querySelector('.viking-heading')!.textContent = 'Operational intelligence';`,
@@ -371,7 +371,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Callout",
         description: "Contextual alerts with icon + label — not color alone.",
         preview: `<viking-callout-wc tone="info" heading="Event projections">
-  Commands commit to the transactional Outbox before Redpanda publish.
+  Commands commit through the control plane before FORJD sealed ingest.
 </viking-callout-wc>
 <viking-callout-wc tone="warning" heading="Degraded worker">
   telemetry_worker lag exceeds 3s on partition 3.

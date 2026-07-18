@@ -60,7 +60,8 @@ WORKDIR /app
 COPY --chown=65532:65532 --from=builder /opt/venv /opt/venv
 COPY --chown=65532:65532 --from=builder /app /app
 
-EXPOSE 8000
+# Fly uses PORT=8080 (fly.toml); Railway may use 8000.
+EXPOSE 8000 8080
 
 USER nonroot
 

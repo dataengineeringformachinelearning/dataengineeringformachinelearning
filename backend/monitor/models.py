@@ -139,9 +139,99 @@ class ForjdTenantMapping(models.Model):
 
   class Meta:
     db_table = "forjd_tenant_mappings"
+    constraints = [
+      models.CheckConstraint(
+        condition=models.Q(service_token_secret_ref__startswith="env:FORJD_SERVICE_TOKEN"),
+        name="forjd_tenant_mapping_secret_ref_env_only",
+      ),
+    ]
+
+  def clean(self) -> None:
+    """Reject plaintext tokens — only env:FORJD_SERVICE_TOKEN[_SUFFIX] refs."""
+    from django.core.exceptions import ValidationError
+    from forjd.tenancy import ForjdTenantConfigurationError, validate_service_token_secret_ref
+
+    try:
+      self.service_token_secret_ref = validate_service_token_secret_ref(
+        self.service_token_secret_ref
+      )
+    except ForjdTenantConfigurationError as exc:
+      raise ValidationError({"service_token_secret_ref": str(exc)}) from exc
+    # Reject opaque credential prefixes stored as plaintext refs.
+    _opaque_prefix = "fj" + "svc_"
+    if _opaque_prefix in self.service_token_secret_ref.lower():
+      raise ValidationError(
+        {"service_token_secret_ref": ("Must be an env: reference, never a plaintext credential")}
+      )
+
+  def save(self, *args: object, **kwargs: object) -> None:
+    self.full_clean()
+    super().save(*args, **kwargs)
 
   def __str__(self) -> str:
     return f"{self.deml_account_id} -> {self.forjd_tenant_id}"
+
+
+class ForjdShadowReceipt(models.Model):
+  """Metadata-only dual-write receipt — never stores ciphertext or tokens."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  deml_account_id = models.UUIDField(null=True, blank=True, db_index=True)
+  forjd_tenant_id = models.UUIDField(db_index=True)
+  client_event_id = models.CharField(max_length=128)
+  workflow_id = models.CharField(max_length=128, blank=True, default="")
+  content_type = models.CharField(max_length=128, blank=True, default="")
+  event_type = models.CharField(max_length=128, blank=True, default="")
+  ciphertext_sha256 = models.CharField(max_length=64, blank=True, default="")
+  forjd_status = models.PositiveSmallIntegerField(null=True, blank=True)
+  forjd_ok = models.BooleanField(default=False)
+  request_id = models.CharField(max_length=64, blank=True, default="")
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "forjd_shadow_receipts"
+    indexes = [
+      models.Index(fields=["forjd_tenant_id", "-created_at"]),
+      models.Index(fields=["client_event_id"]),
+    ]
+
+  def __str__(self) -> str:
+    return f"shadow:{self.client_event_id}:{self.forjd_status}"
+
+
+# --- Browser sessions + auth handoff (Postgres; replaces deml-dragonfly) ---
+class BrowserSession(models.Model):
+  """Server-side Firebase browser session registry (TTL via expires_at)."""
+
+  session_id = models.CharField(max_length=128, primary_key=True)
+  firebase_uid = models.CharField(max_length=128, db_index=True)
+  user_id = models.PositiveIntegerField()
+  user_agent = models.CharField(max_length=512, blank=True, default="")
+  ip = models.CharField(max_length=64, blank=True, default="")
+  created_at = models.DateTimeField(auto_now_add=True)
+  last_seen = models.DateTimeField(auto_now=True)
+  expires_at = models.DateTimeField(db_index=True)
+
+  class Meta:
+    db_table = "browser_sessions"
+    indexes = [
+      models.Index(fields=["firebase_uid", "-last_seen"]),
+    ]
+
+
+class AuthHandoffToken(models.Model):
+  """One-time cross-domain / desktop auth handoff (short TTL)."""
+
+  token_hash = models.CharField(max_length=64, primary_key=True)
+  user_id = models.PositiveIntegerField()
+  code_challenge = models.CharField(max_length=128, blank=True, default="")
+  client_name = models.CharField(max_length=64, blank=True, default="")
+  created_at = models.DateTimeField(auto_now_add=True)
+  expires_at = models.DateTimeField(db_index=True)
+  consumed_at = models.DateTimeField(null=True, blank=True)
+
+  class Meta:
+    db_table = "auth_handoff_tokens"
 
 
 class APIKey(models.Model):

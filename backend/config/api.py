@@ -41,4 +41,33 @@ api.add_router("/forjd/", forjd_router)
 
 @api.get("/health", auth=None)
 def api_health(request: Any) -> dict[str, str]:
+  """Liveness — process is up (Fly/Railway health checks)."""
   return {"status": "ok", "role": "user-control-plane"}
+
+
+@api.get("/ready", auth=None)
+def api_ready(request: Any) -> dict[str, Any]:
+  """Readiness — Postgres reachable; FORJD credentials present (not a live FORJD probe)."""
+  from django.db import connection
+  from ninja.errors import HttpError
+
+  try:
+    connection.ensure_connection()
+  except Exception as exc:
+    raise HttpError(503, f"database unavailable: {exc}") from exc
+
+  forjd_url = str(getattr(settings, "FORJD_API_URL", "") or "").strip()
+  forjd_ok = forjd_url.lower().startswith("https://")
+  token_set = bool(str(getattr(settings, "FORJD_SERVICE_TOKEN", "") or "").strip())
+  tenant_set = bool(str(getattr(settings, "FORJD_TENANT_ID", "") or "").strip())
+  if not forjd_ok or not token_set or not tenant_set:
+    raise HttpError(503, "FORJD control-plane credentials not configured")
+
+  return {
+    "status": "ready",
+    "role": "user-control-plane",
+    "database": "ok",
+    "forjd_api_url": forjd_url.rstrip("/"),
+    "forjd_token_configured": True,
+    "forjd_tenant_configured": True,
+  }

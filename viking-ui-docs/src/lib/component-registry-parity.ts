@@ -829,7 +829,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
   <details class="viking-accordion-static" open>
     <summary class="viking-heading viking-heading-sm">Event projections</summary>
-    <p class="viking-text-muted">Commands commit to Outbox before Redpanda publish.</p>
+    <p class="viking-text-muted">Commands commit through the control plane before FORJD sealed ingest.</p>
   </details>
   <details class="viking-accordion-static">
     <summary class="viking-heading viking-heading-sm">Multi-tenancy</summary>

@@ -315,8 +315,8 @@ Build like reusable flight hardware — every line earns its mass:
 
 ## Platform invariants (from AGENTS.md — do not break)
 
-- Event Projections: Outbox, idempotency, versioned events
-- Symmetrical multi-tenant workers: `Tenant.objects.all()` — no hardcoded Tenant0 exceptions
+- FORJD is the exclusive data plane — never reintroduce Redpanda, ClickHouse, Rust roles, or local stream workers
+- DEML owns identity, Angular UI, billing, consent, and learning content only
 - UUID PKs everywhere; no pickle for ML models
 - Dynamic CORS via database registration
 - Run `uvx pre-commit run --all-files` before committing

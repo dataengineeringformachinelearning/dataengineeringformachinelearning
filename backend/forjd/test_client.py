@@ -162,6 +162,30 @@ async def test_proxy_rejects_cross_tenant_query_without_network_call() -> None:
 
 
 @pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+)
+async def test_proxy_rejects_invalid_json_body_without_network_call() -> None:
+  session = _FakeSession()
+
+  with (
+    patch("forjd.client.aiohttp.ClientSession", return_value=session),
+    pytest.raises(ForjdError) as error,
+  ):
+    await ForjdClient().proxy(
+      "POST",
+      "/api/v1/projections/run",
+      body=b"{not-json",
+      content_type="application/json",
+    )
+
+  assert error.value.status == 400
+  assert session.requests == []
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
   "service_token",
   ["", "firebase-token", "fjsvc_", "fjsvc_short_secret", "fjsvc_12345678_", "fjsvc_bad\nvalue"],

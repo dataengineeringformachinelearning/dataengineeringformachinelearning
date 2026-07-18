@@ -13,14 +13,16 @@ converters.get_converters.cache_clear()
 
 from forjd.views import (
   analytics_overview_proxy,
-  analytics_tenants_proxy,
-  empty_collection_proxy,
+  dlq_retry_proxy,
+  exports_collection_proxy,
+  integrations_security_alert_proxy,
+  ml_latest_proxy,
   native_forjd_proxy,
   native_status_page_proxy,
-  status_page_incidents_proxy,
-  status_page_services_proxy,
-  status_pages_collection_proxy,
+  session_revoke_proxy,
+  status_pages_list_proxy,
   unsupported_forjd_proxy,
+  vulnerabilities_list_proxy,
 )
 from monitor.views import cookie_consent, newsletter
 
@@ -63,23 +65,13 @@ urlpatterns = [
   ),
   path(
     "api/v1/system-status/status_pages",
-    status_pages_collection_proxy,
-    name="forjd-status-pages-collection",
+    status_pages_list_proxy,
+    name="forjd-status-pages-list-adapter",
   ),
   path(
-    "api/v1/system-status/status_pages/<str:page_id>/services",
-    status_page_services_proxy,
-    name="forjd-status-page-services",
-  ),
-  path(
-    "api/v1/system-status/status_pages/<str:page_id>/incidents",
-    status_page_incidents_proxy,
-    name="forjd-status-page-incidents",
-  ),
-  path(
-    "api/v1/system-status/endpoints",
-    empty_collection_proxy,
-    name="forjd-system-status-endpoints-empty",
+    "api/v1/analytics/overview",
+    analytics_overview_proxy,
+    name="forjd-analytics-overview-adapter",
   ),
   path(
     "api/v1/ingest",
@@ -133,12 +125,7 @@ urlpatterns = [
   ),
   path(
     "api/v1/sessions/<str:session_id>",
-    native_forjd_proxy,
-    {
-      "target_path": "/api/v1/sessions/{session_id}",
-      "allowed_methods": ("DELETE",),
-      "tenant_binding": "query",
-    },
+    session_revoke_proxy,
     name="forjd-session-revoke-adapter",
   ),
   re_path(
@@ -193,23 +180,33 @@ urlpatterns = [
   ),
   path(
     "api/v1/replay/dlq/<str:dlq_id>/retry",
-    native_forjd_proxy,
-    {
-      "target_path": "/api/v1/replay/dlq/{dlq_id}/retry",
-      "allowed_methods": ("POST",),
-      "tenant_binding": "query",
-    },
+    dlq_retry_proxy,
     name="forjd-dlq-retry-adapter",
   ),
   path(
-    "api/v1/analytics/overview",
-    analytics_overview_proxy,
-    name="forjd-analytics-overview-adapter",
+    "api/v1/agent/vulnerabilities",
+    vulnerabilities_list_proxy,
+    name="forjd-vulnerabilities-adapter",
   ),
   path(
-    "api/v1/analytics/tenants",
-    analytics_tenants_proxy,
-    name="forjd-analytics-tenants-adapter",
+    "api/v1/exports/",
+    exports_collection_proxy,
+    name="forjd-exports-adapter",
+  ),
+  path(
+    "api/v1/exports",
+    exports_collection_proxy,
+    name="forjd-exports-adapter-noslash",
+  ),
+  path(
+    "api/v1/ml/latest",
+    ml_latest_proxy,
+    name="forjd-ml-latest-adapter",
+  ),
+  path(
+    "api/v1/integrations/security-alert",
+    integrations_security_alert_proxy,
+    name="forjd-integrations-security-alert-adapter",
   ),
   re_path(
     r"^api/v1/(?P<capability>system-status|analytics|telemetry|ml|exports|integrations|model)(?:/.*)?$",

@@ -16,7 +16,8 @@
     "deml-queue",
     "deml-clickhouse",
     "deml-rustfs",
-    "deml-tor-proxy"
+    "deml-tor-proxy",
+    "deml-dragonfly"
   ],
   "services": {
     "deml-backend": {
@@ -32,6 +33,11 @@
         "FORJD_SERVICE_TOKEN",
         "FORJD_TENANT_ID"
       ],
+      "envDefaults": {
+        "FORJD_CUTOVER_PHASE": "2",
+        "FORJD_WRITE_MODE": "forjd",
+        "FORJD_READ_MODE": "forjd"
+      },
       "forbiddenEnv": [
         "DEML_ROLE",
         "REDPANDA_BROKERS",
@@ -42,7 +48,13 @@
         "FORJD_TOKEN_URL",
         "FORJD_SERVICE_ACCOUNT_ID",
         "FORJD_SERVICE_ACCOUNT_SECRET",
-        "FORJD_SERVICE_ACCOUNT_AUDIENCE"
+        "FORJD_SERVICE_ACCOUNT_AUDIENCE",
+        "DRAGONFLY_HOST",
+        "REDIS_URL",
+        "REDISHOST",
+        "REDISPORT",
+        "REDIS_SSL_CA",
+        "REDIS_SSL_CA_B64"
       ]
     },
     "deml-frontend": {
@@ -50,11 +62,6 @@
       "configDir": "infrastructure/railway/frontend",
       "dockerfile": "frontend/Dockerfile",
       "requiredEnv": ["BACKEND_URL", "FRONTEND_URL"]
-    },
-    "deml-dragonfly": {
-      "class": "user-session-cache",
-      "configDir": "infrastructure/railway/dragonfly",
-      "requiredEnv": []
     }
   }
 }

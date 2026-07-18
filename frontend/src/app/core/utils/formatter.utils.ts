@@ -10,7 +10,8 @@ export const formatServiceName = (name: string): string => {
     return 'Django Web Server';
   }
   if (lowercase === 'redpanda broker') {
-    return 'Redpanda Broker';
+    // Legacy monitored-service label; local broker is retired.
+    return 'Message Broker';
   }
 
   // Extract a short suffix from UUID if present to provide clear, unique context

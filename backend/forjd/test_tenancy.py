@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Any
 from unittest.mock import patch
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
+from django.core.exceptions import ValidationError
 from django.test import override_settings
 from monitor.models import ForjdTenantMapping
 
@@ -42,7 +42,10 @@ def test_resolves_per_tenant_environment_secret_reference() -> None:
 
   with patch.dict(
     "os.environ",
-    {"FORJD_SERVICE_TOKEN_CUSTOMER_A": "fjsvc_a1b2c3d4_customer-a-secret"},
+    {
+      "FORJD_SERVICE_TOKEN_CUSTOMER_A": "fjsvc_a1b2c3d4_customer-a-secret",
+      "FORJD_TENANT_ID_CUSTOMER_A": str(tenant_id),
+    },
     clear=False,
   ):
     credential = resolve_forjd_tenant_credential(account_id)
@@ -53,25 +56,34 @@ def test_resolves_per_tenant_environment_secret_reference() -> None:
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-  ("secret_ref", "settings_overrides"),
+  "secret_ref",
   [
-    ("env:DATABASE_URL", {}),
-    ("literal:fjsvc_secret", {}),
-    ("env:FORJD_SERVICE_TOKEN", {"FORJD_SERVICE_TOKEN": "not-a-service-token"}),
+    "env:DATABASE_URL",
+    "literal:fjsvc_secret",
   ],
 )
-def test_rejects_unsafe_or_invalid_secret_reference(
-  secret_ref: str,
-  settings_overrides: dict[str, Any],
-) -> None:
+def test_rejects_unsafe_secret_reference_at_save(secret_ref: str) -> None:
+  with pytest.raises(ValidationError):
+    ForjdTenantMapping.objects.create(
+      deml_account_id=uuid4(),
+      forjd_tenant_id=uuid4(),
+      service_token_secret_ref=secret_ref,
+    )
+
+
+@pytest.mark.django_db
+@override_settings(
+  FORJD_SERVICE_TOKEN="not-a-service-token",
+  FORJD_TENANT_ID="00000000-0000-0000-0000-000000000001",
+)
+def test_rejects_invalid_token_format_at_resolve() -> None:
   account_id = uuid4()
   ForjdTenantMapping.objects.create(
     deml_account_id=account_id,
-    forjd_tenant_id=uuid4(),
-    service_token_secret_ref=secret_ref,
+    forjd_tenant_id=UUID("00000000-0000-0000-0000-000000000001"),
   )
 
-  with override_settings(**settings_overrides), pytest.raises(ForjdTenantConfigurationError):
+  with pytest.raises(ForjdTenantConfigurationError, match="invalid format"):
     resolve_forjd_tenant_credential(account_id)
 
 
@@ -95,3 +107,28 @@ def test_default_service_token_cannot_be_reused_for_another_tenant() -> None:
 def test_unmapped_account_fails_closed() -> None:
   with pytest.raises(ForjdTenantConfigurationError, match="not mapped"):
     resolve_forjd_tenant_credential(uuid4())
+
+
+@pytest.mark.django_db
+def test_per_tenant_token_requires_matching_tenant_env() -> None:
+  account_id = uuid4()
+  tenant_id = uuid4()
+  ForjdTenantMapping.objects.create(
+    deml_account_id=account_id,
+    forjd_tenant_id=tenant_id,
+    service_token_secret_ref="env:FORJD_SERVICE_TOKEN_CUSTOMER_A",  # pragma: allowlist secret
+  )
+
+  with (
+    patch.dict(
+      "os.environ",
+      {
+        # Test-only placeholder credential shape — not a real secret.
+        "FORJD_SERVICE_TOKEN_CUSTOMER_A": "fjsvc_a1b2c3d4_customer-a-secret",  # pragma: allowlist secret
+        "FORJD_TENANT_ID_CUSTOMER_A": str(uuid4()),
+      },
+      clear=False,
+    ),
+    pytest.raises(ForjdTenantConfigurationError, match="does not match"),
+  ):
+    resolve_forjd_tenant_credential(account_id)
