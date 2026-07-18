@@ -31,5 +31,7 @@ FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
 
+# nginx image includes an unprivileged nginx user
+USER nginx
 EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

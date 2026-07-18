@@ -126,7 +126,8 @@ repos:
           0006_user_centric_squash
           0007_trainingrun_model_type
           0041_rust_data_plane
-          0042_alter_outboxevent_available_at'
+          0042_alter_outboxevent_available_at
+          0055_forjd_secret_ref_constraint'
         language: system
         files: ^backend/.*/migrations/
         pass_filenames: false
