@@ -1,5 +1,6 @@
-# Continuous integration — backend pytest + frontend vitest + Rust data plane
+# Continuous integration — backend pytest + frontend vitest
 # Cursor - Grok 4.3 (2026-06-30): automated test matrix for PRs and main.
+# Rust data-plane CI retired — FORJD owns streaming/processing.
 
 name: CI Tests
 
@@ -17,7 +18,6 @@ on:
       - "packages/viking-ui/**"
       - "viking-ui-docs/**"
       - "scripts/**"
-      - "rust/**"
       - ".github/workflows/ci-tests.yml"
   pull_request:
     paths:
@@ -30,7 +30,6 @@ on:
       - "packages/viking-ui/**"
       - "viking-ui-docs/**"
       - "scripts/**"
-      - "rust/**"
       - ".github/workflows/ci-tests.yml"
   workflow_dispatch:
 
@@ -49,33 +48,6 @@ jobs:
 
       - name: Verify manifests, lockfiles, and public copy
         run: npm run check:viking-ui:version
-
-  rust-data-plane:
-    name: Rust data plane
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: rust
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Install native build dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake libcurl4-openssl-dev libsasl2-dev libssl-dev pkg-config
-
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy,rustfmt
-
-      - name: Check formatting
-        run: cargo fmt --all -- --check
-
-      - name: Run tests
-        run: cargo test --workspace
-
-      - name: Run Clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
 
   backend-pytest:
     name: Backend (pytest)

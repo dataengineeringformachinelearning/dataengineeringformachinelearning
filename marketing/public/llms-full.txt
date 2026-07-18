@@ -24,8 +24,9 @@ license: apache-2.0
 > `service_role`, Firebase-to-FORJD trust, `/deml-compat` aliases, or local processing
 > fallbacks. Learning projections, service-principal domain routes, crypto-session
 > bootstrap, replay/DLQ, and durable tenant erasure remain explicit FORJD dependencies.
-> See [the runtime contract](docs/FORJD_PLATFORM_HANDOFF.md). Older data-plane material
-> in this repository is historical only.
+> See [the runtime contract](docs/FORJD_PLATFORM_HANDOFF.md) and
+> [cutover checklist](docs/CUTOVER.md). Older data-plane material in this repository
+> is historical only.
 
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
@@ -63,12 +64,9 @@ security model and build instructions.
 
 ## Core Capabilities
 
-- **Event Projections**: Reliable command paths with fallback mechanisms and materialized read models
-- **High-Throughput Ingestion**: Sub-second telemetry dispatch with micro-batch aggregation
-- **Account Isolation**: Strict tenant separation without cross-account data exposure
-- **Aggregate Threat Modeling**: Collective anomaly baselines without raw data sharing
-- **Predictive SLAs**: Machine learning forecasts service-level breach trajectories
-- **SIEM/SOAR Federation**: STIX 2.1 threat intelligence export
+- **User control plane**: Firebase identity, billing, consent, API credentials, learning content, Angular product UX
+- **FORJD sealed data plane**: Encrypted ingest, projections, replay/DLQ, analytics, and threat/ML via tenant-bound `fjsvc_` tokens
+- **Account Isolation**: Strict DEML account → FORJD tenant mapping without cross-account data exposure
 - **WCAG 2.1 AA Design**: Premium Viking-UI theme across all surfaces ([THEME.md](THEME.md))
 - **Readable Metric Layouts**: Dense Viking-UI cards use a two-column maximum (6/12 each), equal-height rows, and single-line operational labels
 - **Canonical Brand Assets**: DEML artwork uses brand navy `#070C20` and brand blue `#0078FF`, governed and synchronized through Viking-UI
@@ -125,7 +123,7 @@ quality bars; their component runtimes and source are not bundled into Viking-UI
 - **Design systems and UI references:** [Material Design 3](https://m3.material.io/) for adaptive foundations and accessibility; [Flux UI](https://fluxui.dev/) for composable, responsive layouts; [Spartan](https://spartan.ng/) for accessible Angular primitives and signal-first ergonomics; [shadcn/ui](https://ui.shadcn.com/) for open composition, blocks, and clear component anatomy; and [Cloudscape Design System](https://cloudscape.design/) for AWS-scale responsive application patterns, accessibility guidance, and operational density.
 - **Security and governance reference:** [Trust Controls](https://www.trustcontrols.ai/) for control-oriented product governance and evidence-minded security UX.
 - **Design-system delivery:** [Storybook](https://storybook.js.org/) for component documentation and accessibility review; [Chromatic](https://www.chromatic.com/) for published visual regression evidence; [axe-core](https://github.com/dequelabs/axe-core) for automated WCAG checks; and [Inter](https://rsms.me/inter/) for self-hosted variable typography.
-- **Core application stack:** [Angular](https://angular.dev/), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Firebase](https://firebase.google.com/), [OpenTelemetry](https://opentelemetry.io/), [Firecrawl](https://www.firecrawl.dev/) for verified public-site technology evidence, and [AWS](https://aws.amazon.com/).
+- **Core application stack:** [Angular](https://angular.dev/), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Firebase](https://firebase.google.com/), [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (sealed streaming engine), [OpenTelemetry](https://opentelemetry.io/), and [AWS](https://aws.amazon.com/).
 
 The comprehensive technology acknowledgement and software inventory remain in
 [BOOK.md](BOOK.md#acknowledgements--technologies) and the generated SBOM.
@@ -156,7 +154,7 @@ The platform addresses a structural gap in modern infrastructure. Observability 
 
 For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [Appendix N: CONOPS Quick Reference](#appendix-n-concept-of-operations-operator-quick-reference). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
-**Architectural posture (July 2026):** DEML is being reshaped into a user-focused learning platform. Django owns identity, profiles, roles, subscriptions, consent, credentials, account lifecycle, and user-originated interactions. [FORJD](https://github.com/dataengineeringformachinelearning/forjd) exclusively owns encrypted intake, processing, workflows, projections, analytics, machine learning, replay, and data-plane operations. The former local Redpanda, ClickHouse, RustFS, scanner, worker, and Rust data-plane implementations are retired; they are historical architecture only. The authoritative cutover contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md).
+**Architectural posture (July 2026):** DEML is a user-focused learning platform and Firebase-authenticated control plane. Django owns identity, profiles, roles, subscriptions, consent, credentials, account lifecycle, and user-originated interactions. [FORJD](https://github.com/dataengineeringformachinelearning/forjd) exclusively owns encrypted intake, processing, workflows, projections, analytics, machine learning, replay, and data-plane operations. Local Redpanda, ClickHouse, RustFS, scanner, worker, and Rust data-plane implementations are retired. Runtime contract: [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md). Deploy/cutover sequence (dual-write → read switch → write switch → rollback): [docs/CUTOVER.md](docs/CUTOVER.md). Older CONOPS sections that describe Event Projections / Redpanda are historical only.
 
 The Angular interface remains DEML-owned during this migration. Dashboard, analytics, monitoring, status, vulnerability, onboarding, and generated-client surfaces continue to call Django. Django may preserve an established local path only by explicitly adapting it to a FORJD-native route that exists and supports the tenant service principal. FORJD does not currently provide `/api/v1/deml-compat/*`; unavailable domain capabilities fail closed and remain FORJD dependencies.
 

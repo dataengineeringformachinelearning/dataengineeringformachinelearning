@@ -97,7 +97,7 @@ def test_authenticated_adapter_uses_native_path_and_mapped_tenant(
   call = mock_proxy.await_args
   assert call.args == ("GET", "/api/v1/projections")
   assert parse_qs(call.kwargs["query_string"]) == {
-    "workflow_id": ["deml_telemetry"],
+    "workflow_id": ["threat_telemetry"],
     "limit": ["25"],
     "tenant_id": [str(tenant_id)],
   }
@@ -153,7 +153,10 @@ def test_stable_ingest_path_forwards_only_valid_sealed_telemetry(
   assert response.status_code == 200
   call = mock_proxy.await_args
   assert call.args == ("POST", "/api/v1/ingest")
-  assert json.loads(call.kwargs["body"])["tenant_id"] == str(tenant_id)
+  forwarded = json.loads(call.kwargs["body"])
+  assert forwarded["tenant_id"] == str(tenant_id)
+  assert forwarded["workflow_id"] == "threat_telemetry"
+  assert forwarded["event_type"] == "threat.metric"
   assert "actor_headers" not in call.kwargs
 
 
@@ -264,35 +267,138 @@ def test_public_status_page_rejects_invalid_forjd_response(
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-  ("method", "path"),
+  ("method", "path", "target_path"),
   [
-    ("get", "/api/v1/sessions"),
-    ("post", "/api/v1/sessions"),
-    ("delete", "/api/v1/sessions/session-1"),
-    ("post", "/api/v1/replay"),
-    ("get", "/api/v1/replay/dlq"),
-    ("post", f"/api/v1/replay/dlq/{uuid4()}/retry"),
+    ("get", "/api/v1/sessions", "/api/v1/sessions"),
+    ("post", "/api/v1/sessions", "/api/v1/sessions"),
+    ("delete", "/api/v1/sessions/session-1", "/api/v1/sessions/session-1"),
+    ("post", "/api/v1/replay", "/api/v1/replay"),
+    ("get", "/api/v1/replay/dlq", "/api/v1/replay/dlq"),
   ],
 )
 @patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
-def test_member_only_session_and_replay_routes_fail_closed(
+def test_session_and_replay_routes_proxy_with_service_token(
   mock_proxy: AsyncMock,
   client: Client,
   method: str,
   path: str,
+  target_path: str,
 ) -> None:
-  User.objects.create_user(username="learner")
-
-  response = getattr(client, method)(
-    path,
-    data={},
+  tenant_id = _mapped_user()
+  mock_proxy.return_value = ForjdResponse(
+    status=200,
+    body=b'{"ok": true}',
     content_type="application/json",
-    HTTP_AUTHORIZATION="Bearer mock-token-learner-learner@example.com",
   )
 
-  assert response.status_code == 501
-  assert response.json()["code"] == "forjd_capability_unavailable"
-  mock_proxy.assert_not_awaited()
+  with override_settings(
+    FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+    FORJD_TENANT_ID=str(tenant_id),
+  ):
+    auth = {"HTTP_AUTHORIZATION": "Bearer mock-token-learner-learner@example.com"}
+    if method == "post":
+      payload = (
+        {
+          "tenant_id": str(tenant_id),
+          "session_id": "device-1",
+          "identity_public_key": "x" * 44,
+        }
+        if path == "/api/v1/sessions"
+        else {"tenant_id": str(tenant_id)}
+      )
+      response = client.post(path, data=payload, content_type="application/json", **auth)
+    elif method == "delete":
+      response = client.delete(path, **auth)
+    else:
+      response = client.get(path, **auth)
+
+  assert response.status_code == 200
+  assert mock_proxy.await_args.args == (method.upper(), target_path)
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient.analytics_overview", new_callable=AsyncMock)
+def test_analytics_overview_maps_forjd_response_for_angular(
+  mock_overview: AsyncMock,
+  client: Client,
+) -> None:
+  tenant_id = _mapped_user()
+  mock_overview.return_value = {
+    "ok": True,
+    "window_hours": 24,
+    "total_requests": 10,
+    "threats_detected": 1,
+    "active_incidents": 2,
+    "p99_latency_ms": 120.5,
+    "uptime_pct": 99.0,
+    "status": "operational",
+    "ces": {
+      "ces_threat": 20.0,
+      "ces_sla": 99.0,
+      "ces_stability": 80.0,
+      "ces_level": 85.0,
+    },
+  }
+
+  with override_settings(
+    FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+    FORJD_TENANT_ID=str(tenant_id),
+  ):
+    response = client.get(
+      "/api/v1/analytics/overview",
+      HTTP_AUTHORIZATION="Bearer mock-token-learner-learner@example.com",
+    )
+
+  assert response.status_code == 200
+  body = response.json()
+  assert body["status"] == "success"
+  assert body["data"]["ces"]["level"] == 85.0
+  assert body["data"]["user_metrics"]["total_requests_24h"] == 10
+  assert body["data"]["user_metrics"]["active_incidents"] == 2
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient.list_status_pages", new_callable=AsyncMock)
+def test_status_pages_list_unwraps_forjd_pages_for_angular(
+  mock_list: AsyncMock,
+  client: Client,
+) -> None:
+  tenant_id = _mapped_user()
+  mock_list.return_value = {
+    "ok": True,
+    "pages": [
+      {
+        "id": "page-1",
+        "title": "Prod",
+        "slug": "prod",
+        "description": "",
+        "is_published": True,
+        "created_at": "2026-07-18T00:00:00+00:00",
+      }
+    ],
+  }
+
+  with override_settings(
+    FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+    FORJD_TENANT_ID=str(tenant_id),
+  ):
+    response = client.get(
+      "/api/v1/system-status/status_pages",
+      HTTP_AUTHORIZATION="Bearer mock-token-learner-learner@example.com",
+    )
+
+  assert response.status_code == 200
+  assert response.json() == [
+    {
+      "id": "page-1",
+      "title": "Prod",
+      "slug": "prod",
+      "description": "",
+      "is_published": True,
+      "created_at": "2026-07-18T00:00:00+00:00",
+      "user_id": None,
+    }
+  ]
 
 
 @pytest.mark.django_db
@@ -319,14 +425,13 @@ def test_unshipped_compatibility_and_agent_routes_fail_closed(
 @pytest.mark.parametrize(
   ("method", "path"),
   [
-    ("get", "/api/v1/analytics/overview"),
     ("post", "/api/v1/analytics/aggregate"),
     ("get", "/api/v1/exports/"),
     ("post", "/api/v1/integrations/security-alert"),
   ],
 )
 @patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
-def test_domain_routes_fail_closed_until_service_contract_and_response_adapter_exist(
+def test_unmapped_domain_routes_fail_closed(
   mock_proxy: AsyncMock,
   client: Client,
   method: str,

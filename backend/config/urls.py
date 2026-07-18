@@ -12,8 +12,14 @@ if "uuid" in converters.REGISTERED_CONVERTERS:
 converters.get_converters.cache_clear()
 
 from forjd.views import (
+  analytics_overview_proxy,
+  analytics_tenants_proxy,
+  empty_collection_proxy,
   native_forjd_proxy,
   native_status_page_proxy,
+  status_page_incidents_proxy,
+  status_page_services_proxy,
+  status_pages_collection_proxy,
   unsupported_forjd_proxy,
 )
 from monitor.views import cookie_consent, newsletter
@@ -54,6 +60,26 @@ urlpatterns = [
     "api/v1/system-status/status_pages/slug/<str:slug>",
     native_status_page_proxy,
     name="forjd-public-status-page-adapter",
+  ),
+  path(
+    "api/v1/system-status/status_pages",
+    status_pages_collection_proxy,
+    name="forjd-status-pages-collection",
+  ),
+  path(
+    "api/v1/system-status/status_pages/<str:page_id>/services",
+    status_page_services_proxy,
+    name="forjd-status-page-services",
+  ),
+  path(
+    "api/v1/system-status/status_pages/<str:page_id>/incidents",
+    status_page_incidents_proxy,
+    name="forjd-status-page-incidents",
+  ),
+  path(
+    "api/v1/system-status/endpoints",
+    empty_collection_proxy,
+    name="forjd-system-status-endpoints-empty",
   ),
   path(
     "api/v1/ingest",
@@ -97,15 +123,23 @@ urlpatterns = [
   ),
   re_path(
     r"^api/v1/sessions/?$",
-    unsupported_forjd_proxy,
-    {"capability": "crypto-sessions"},
-    name="forjd-sessions-unavailable",
+    native_forjd_proxy,
+    {
+      "target_path": "/api/v1/sessions",
+      "allowed_methods": ("GET", "POST"),
+      "tenant_binding": "method",
+    },
+    name="forjd-sessions-adapter",
   ),
   path(
     "api/v1/sessions/<str:session_id>",
-    unsupported_forjd_proxy,
-    {"capability": "crypto-sessions"},
-    name="forjd-session-revoke-unavailable",
+    native_forjd_proxy,
+    {
+      "target_path": "/api/v1/sessions/{session_id}",
+      "allowed_methods": ("DELETE",),
+      "tenant_binding": "query",
+    },
+    name="forjd-session-revoke-adapter",
   ),
   re_path(
     r"^api/v1/projections/?$",
@@ -139,21 +173,43 @@ urlpatterns = [
   ),
   re_path(
     r"^api/v1/replay/?$",
-    unsupported_forjd_proxy,
-    {"capability": "replay"},
-    name="forjd-replay-unavailable",
+    native_forjd_proxy,
+    {
+      "target_path": "/api/v1/replay",
+      "allowed_methods": ("POST",),
+      "tenant_binding": "body",
+    },
+    name="forjd-replay-adapter",
   ),
   path(
     "api/v1/replay/dlq",
-    unsupported_forjd_proxy,
-    {"capability": "replay-dlq"},
-    name="forjd-dlq-unavailable",
+    native_forjd_proxy,
+    {
+      "target_path": "/api/v1/replay/dlq",
+      "allowed_methods": ("GET",),
+      "tenant_binding": "query",
+    },
+    name="forjd-dlq-adapter",
   ),
   path(
     "api/v1/replay/dlq/<str:dlq_id>/retry",
-    unsupported_forjd_proxy,
-    {"capability": "replay-dlq"},
-    name="forjd-dlq-retry-unavailable",
+    native_forjd_proxy,
+    {
+      "target_path": "/api/v1/replay/dlq/{dlq_id}/retry",
+      "allowed_methods": ("POST",),
+      "tenant_binding": "query",
+    },
+    name="forjd-dlq-retry-adapter",
+  ),
+  path(
+    "api/v1/analytics/overview",
+    analytics_overview_proxy,
+    name="forjd-analytics-overview-adapter",
+  ),
+  path(
+    "api/v1/analytics/tenants",
+    analytics_tenants_proxy,
+    name="forjd-analytics-tenants-adapter",
   ),
   re_path(
     r"^api/v1/(?P<capability>system-status|analytics|telemetry|ml|exports|integrations|model)(?:/.*)?$",

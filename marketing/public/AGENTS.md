@@ -11,7 +11,7 @@
 - DEML stores an explicit account-to-FORJD-tenant mapping and a secret reference, never a plaintext service token. Body/query tenant IDs must match the mapped tenant or fail closed.
 - Existing Angular paths remain DEML-owned. Django may adapt them only to FORJD-native routes that actually exist; `/api/v1/deml-compat/*`, `X-DEML-*` authorization, learning projections, and tenant erase are unavailable until FORJD ships them.
 - Missing FORJD capabilities are explicit dependencies. Never fill them with DEML workers, human FORJD JWTs, Firebase credentials, direct FORJD database access, or Railway processing fallbacks.
-- The legacy Event Projections, Rust data-plane, Redpanda, ClickHouse, scanner, and local ML instructions below are historical and superseded wherever they conflict with this section.
+- Cutover steps: [docs/CUTOVER.md](docs/CUTOVER.md). Do not revive retired data-plane instructions elsewhere in this file.
 
 **Operations**: The authoritative migration and runtime contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md). Older CONOPS sections remain historical context only where they describe retired DEML data-plane services.
 
@@ -22,20 +22,18 @@ This document captures the core coding principles, philosophies, and "how we bui
 - **Zero-Compromise Standards**: Quality is non-negotiable and a survival mechanism. No technical debt through human vigilance alone. Everything must be automated, enforced, and precise.
 - **Precision Engineering**: Focus on architectural logic, not trivia. High-velocity development enabled by guardrails.
 - **Path of Least Resistance**: Tooling guides developers to do the right thing automatically.
-- **Symmetrical Multi-Account Pipeline**: Every worker, ML loop, scanner, etc., processes each `User` account (and the platform scope via `is_platform=True` / `platform-status`) through identical code paths. The platform showcase has no login — public metrics only.
-- **Event Projections Architecture** (recent evolution):
-  - **Commands**: Client events via Firebase Cloud Functions (`ingestEvent` callable, with `version` and `idempotency_key`).
-  - **Reliable Delivery**: Transactional Outbox in Django (Postgres `OutboxEvent` written atomically) + `outbox_relay` management command for publishing to Redpanda.
-  - **Projections**: `telemetry_worker` consumes (idempotent with DLQ to `frontend-events-dlq`), enriches (e.g., from Postgres), and materializes into Firestore (named `deml` DB).
-  - **Queries**: Direct real-time Firestore subscriptions (e.g., `users/{uid}/data/stats`).
-  - Events are versioned for governance. Worker is the authoritative source for projections.
-- **Defense-in-Depth Security**: Assume breach. Ubiquitous encryption, least privilege, offloaded auth, automated scanning, behavioral threat intel.
-- **Observability as First-Class**: OpenTelemetry + ClickHouse for traces/metrics. Enrichment at edge. Real-time via Firestore for key views.
+- **User-plane symmetry**: Every DEML account resolves through the same identity, billing, consent, and FORJD tenant-mapping paths. Platform showcase (`platform-status`) stays public-metrics only.
+- **FORJD sealed data plane** (authoritative):
+  - **Commands**: Angular → Firebase-authenticated Django BFF → FORJD sealed ingest (`fjsvc_` service token).
+  - **Processing / projections / replay / analytics / ML**: FORJD exclusively.
+  - **Wire ids**: Django may accept legacy `deml_*` telemetry ids and rewrite them to FORJD-canonical `threat_*` before forwarding. FORJD core stays product-agnostic.
+  - **Fail closed**: Missing FORJD capabilities are dependencies, never local Redpanda/ClickHouse/worker fallbacks.
+- **Defense-in-Depth Security**: Assume breach. Ubiquitous encryption, least privilege, offloaded auth, automated scanning.
+- **Observability as First-Class**: Prefer FORJD status/analytics surfaces for data-plane health; DEML retains product UX and control-plane logs.
 - **Automation Over Vigilance**: Pre-commit hooks, CI enforcement, doc sync, git flow automation.
-- **Pragmatic & Sovereign**: Own your data (e.g., subscribers via Resend but internal models). Use best tools (Postgres, Polars, PyTorch, Redpanda) but decouple where needed (Sanity for content, Cloudflare for edge).
+- **Pragmatic & Sovereign**: Own user identity and billing in DEML; stream sealed telemetry to FORJD as a subprocessor. Decouple content (Sanity) and edge (Cloudflare) where needed.
 - **Inclusive & Accessible**: WCAG 2.1 AA enforced automatically. Premium UX (skeleton loaders, custom palettes, mobile-first).
-- **Scalable Decoupling**: Event-driven with Redpanda for high-throughput. Decouple ingestion from transactions. Native SVG / zero-dep where performance matters. Dedicated apps for concerns (monitoring, ML).
-- **Future-Proof**: Plan for PQC, automated hyperparameter tuning, Hugging Face model hosting with tenant namespacing. Use state_dict only (no pickle for security).
+- **Future-Proof**: Plan for PQC. Keep Angular product surface stable during data-plane cutover.
 
 ## Code Quality & Tooling (Enforced Automatically)
 
@@ -64,53 +62,36 @@ This document captures the core coding principles, philosophies, and "how we bui
 
 ## Architecture & Data Principles
 
-- **Decoupling**: Client (Angular) ↔ Server (Django) via REST + CORS + Signals. Event-driven core (Redpanda for commands/events).
-- **Storage**:
-  - Postgres: Transactional truth (tenants, endpoints, incidents, keys, etc.).
-  - Redpanda: High-throughput event bus (topics: app-events, frontend-events, user-issues).
-  - Firestore (named "deml"): Materialized projections / real-time queries (e.g., user stats).
-  - ClickHouse: OLAP/analytics from OpenTelemetry.
-- **Multi-Tenancy**: Absolute isolation. Symmetrical pipelines. UUIDs everywhere.
-- **Event Projections**: As detailed above. Use Outbox for reliability from Django. Idempotent writes. Versioned events.
-- **ML/Intelligence**:
-  - Isolate in dedicated `ml` app.
-  - PyTorch (MLP for SLA/threat), Polars for batch, GridSearchCV.
-  - Teacher models (HF), knowledge distillation.
-  - Host on Hugging Face (namespaced by hashed tenant slug).
-  - Trigger training asynchronously.
+- **Decoupling**: Client (Angular) ↔ Server (Django) via REST + CORS + Signals. Data plane via FORJD service principal.
+- **Storage (DEML-owned)**:
+  - Postgres: Transactional truth (accounts, billing, consent, API keys, mappings, learning content ownership).
+  - Dragonfly/Redis: session/rate-limit cache for the user plane.
+  - Firebase Auth (+ optional Firestore for product UX state that is not the analytics data plane).
+- **Storage (FORJD-owned)**: sealed events, projections, replay/DLQ, analytics, threat/ML artifacts under FORJD RLS.
+- **Multi-Tenancy**: Absolute isolation. DEML `account_id` → FORJD `tenant_id` mapping; body/query tenant must match.
+- **ML/Intelligence**: Executes in FORJD. DEML must not reintroduce local training workers.
 - **UI/Frontend**:
   - Signals for state.
   - Native APIs (SVG, fetch).
   - Headless Sanity for content (decoupled from Django).
   - Dynamic injection for 3rd-party (e.g., Cloudflare, no hardcoded tokens).
+  - Angular product surface remains DEML-owned and unchanged during cutover.
 - **Security**:
-  - Firebase Auth + custom Django middleware for JWT.
-  - AES-256-GCM + KMS for secrets/tokens at rest.
+  - Firebase Auth + custom Django middleware for JWT (terminates at Django).
+  - FORJD called only with tenant-bound `fjsvc_…` (never Firebase, never `service_role`).
+  - AES-256-GCM sealed envelopes for telemetry; routing-tag metadata allowlist only.
   - UUID PKs (no sequential IDs).
-  - ABAC (public/private via `is_published`, owner checks) + RBAC (Viewer/Operator/Security Admin).
+  - ABAC + RBAC on DEML product surfaces.
   - Least privilege, unprivileged containers, App Check/reCAPTCHA.
-  - Enrichment + threat intel (AbuseIPDB, OTX, behavioral biometrics, ASN/ISP).
-  - PQC plans (lattice-based).
-  - Audit logs, Kanban for vulns (Semgrep/Trivy auto-ticket).
-- **Observability**:
-  - OpenTelemetry (OTLP) → Collector → ClickHouse.
-  - Edge enrichment (UA parsing, ipwho.is, domain mappings).
-  - Real-time projections in Firestore.
-  - Synthetic monitoring for Event Projections loop.
 - **Deployment & Ops**:
-  - Primary production mesh: **Railway** multi-service topology (`infrastructure/railway/services.json` + per-service `railway.json`). Optional targets: Cloud Run / AWS Lightsail.
-  - Rust data plane: one image, one `DEML_ROLE` per service ([BOOK.md § Appendix T](BOOK.md#appendix-t-rust-data-plane)). Django remains control plane.
-  - Zero-downtime rolling deploys, CI/CD webhooks.
-  - Symmetrical: Tenant0 dogfooding.
-  - Git flow automation + SemVer.
-  - Docs auto-sync.
+  - Primary production mesh: **Railway** user-plane topology (`infrastructure/railway/services.json` — backend, frontend, Dragonfly). Data-plane services are retired.
+  - Cutover checklist: [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md) and [docs/CUTOVER.md](docs/CUTOVER.md).
   - Rate limiting (sliding window in Dragonfly/Redis for COGS/security).
   - Unprivileged multi-stage Docker.
 - **Resilience & Reliability**:
-  - Event-driven decoupling.
-  - Outbox + idempotency + DLQ for projections.
-  - Circuit breakers, retries (future).
-  - Healthchecks, synthetic tests.
+  - Fail closed when FORJD is unavailable — no local broker fallback.
+  - Idempotent sealed ingest via `(tenant_id, client_event_id)` on FORJD.
+  - Healthchecks on DEML control plane; FORJD `/health` + `/ready` for the data plane.
   - Snapshots for projections/replay.
 - **Accessibility & UX**:
   - Automated WCAG enforcement.
@@ -130,11 +111,11 @@ This document captures the core coding principles, philosophies, and "how we bui
 ## What Agents Must Do
 
 - When editing code: Ensure it follows automated rules (lint will catch, but think ahead).
-- When adding features: Align with Event Projections, symmetrical tenancy, zero-compromise security, Postgres-first transactional + projections.
-- Update docs first in BOOK.md if architectural.
-- For new workers/services: Must be symmetrical (loop over tenants), use Outbox where publishing events, emit OTEL.
-- Prioritize: Reliability (Outbox/idempotency), security (encryption, least priv), performance (Polars, native UI), maintainability (automation).
-- Never introduce: Hardcoded tenants/exceptions, sequential IDs, pickle for models, manual formatting, inaccessible UI, fire-and-forget without Outbox, unversioned events.
+- When adding features: Align with the DEML user-plane / FORJD data-plane boundary, symmetrical account handling, and zero-compromise security.
+- Update docs first in BOOK.md / handoff if architectural.
+- Never add DEML-local streaming workers, Redpanda/ClickHouse/RustFS, or scanners. Extend FORJD or the Django BFF adapter instead.
+- Prioritize: Fail-closed FORJD integration, sealed E2EE, tenant isolation, Angular stability, maintainability (automation).
+- Never introduce: Hardcoded tenants/exceptions, sequential IDs, pickle for models, manual formatting, inaccessible UI, Firebase-to-FORJD credential forwarding.
 - When in doubt: Refer to "zero-compromise", "precision engineering", "dogfood as Tenant0", "path of least resistance".
 
 ## Key Tools & Scripts
@@ -162,7 +143,9 @@ DEML documents first-class integration paths for enterprise ML infrastructure. E
 | Databricks   | [BOOK.md § Z](BOOK.md#appendix-z-integration-guides) | `/api/v1/ingest`, `/api/v1/predict` |
 | AWS Redshift | [BOOK.md § Z](BOOK.md#appendix-z-integration-guides) | `/api/v1/ingest`, `/api/v1/predict` |
 
-**Note:** [Redpanda](https://redpanda.com/) is the platform's **internal** event broker (Event Projections, outbox relay). It is not listed as a customer integration — use AWS Redshift for warehouse analytics exports instead.
+**Note:** Local Redpanda/ClickHouse are retired. Sealed telemetry and analytics
+exports go through FORJD. Customer warehouse paths (e.g. AWS Redshift) remain
+integration-guide material only.
 
 ## Project-Specific Agent Rules (from .agents/ setup)
 
@@ -178,11 +161,11 @@ These are additional invariants and rules specific to this project's development
 
 ### Core Architectural Invariants
 
-- **Rust Data-Plane Ownership:** Deploy `rust/deml-daemon` with exactly one production role per service (`relay`, `scheduler`, `probe`, `normalizer`, or optional `ingest`). Django remains the control plane. Never run the Python relay, pinger, or embedded interval schedulers beside the equivalent Rust role. New data-plane work must use durable Postgres leases/idempotency, explicit Kafka acknowledgements, bounded concurrency, native tenant UUIDs, `/health` + `/ready`, and OpenTelemetry spans.
-
-- **Tenant0 UUID Normalization:** Never use string literals like `"platform"` as foreign keys in background workers or telemetry payloads. The `NetworkTelemetryMiddleware` explicitly intercepts legacy `"platform"` requests and dynamically maps them to the native UUID of Tenant0 (`is_platform_tenant=True`). This guarantees that Redpanda/Kafka streams and Polars aggregations operate on a homogenous stream of valid UUIDs end-to-end, preventing database foreign key constraint errors downstream.
-- **Symmetrical Multi-Tenant Pipelines:** When authoring background workers, cron workers, or OSINT scanners, NEVER hardcode execution exclusively for the platform. You must ALWAYS structure the pipeline to iterate dynamically over `Tenant.objects.all()`. Because the platform itself is cleanly bootstrapped as Tenant0, this guarantees that both the core infrastructure and individual customer environments are processed symmetrically within the exact same loop, eliminating architectural debt and hardcoded exceptions.
-- **Data Enrichments & Critical Path:** Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
+- **FORJD data-plane ownership:** All sealed ingest, processing, projections, replay/DLQ, analytics, and ML execute in FORJD. Django is the Firebase-authenticated user control plane and BFF only.
+- **Tenant mapping:** Every DEML account that needs the data plane has an explicit `deml_account_id → forjd_tenant_id → service_token_secret_ref` mapping. Body/query `tenant_id` must match or fail closed.
+- **Canonical wire rewrite:** Prefer FORJD-canonical `threat_telemetry` / `threat.*`. Legacy `deml_*` ids may be accepted at the BFF and rewritten before forward — never reintroduce product names into FORJD core.
+- **Angular stability:** Do not change Angular routes or generated clients for cutover; adapt only Django adapters when FORJD contracts evolve.
+- **No local fallback:** Missing FORJD capabilities stay blocked (501/503). Do not recreate workers, brokers, or OLAP in DEML.
 
 ### Antigravity Rules & Persona
 
@@ -254,7 +237,7 @@ All DEML surfaces share one design system: **grid-first modern enterprise SaaS**
 - **Consolidation**: Actively condense and consolidate workers where logically possible to reduce infrastructure overhead. Avoid fragmenting related sync and reconciliation logic across multiple disconnected scripts.
 - **Agent Principal**: Treat the background system as an intelligent, unified "Account Manager" that actively governs user data securely, automatically applying state changes globally across all recognized user identities without requiring manual intervention.
 
-This AGENTS.md ensures every agent/LLM knows the "what" (Event Projections, multi-tenant ML platform with zero-compromise security/observability) and "how" (automation, decoupling, Postgres + events + projections, strict enforcement).
+This AGENTS.md ensures every agent/LLM knows the "what" (DEML user plane + FORJD sealed data plane, zero-compromise security) and "how" (automation, BFF adapters, fail-closed integration, strict enforcement).
 
 Update this file whenever BOOK.md evolves core principles.
 

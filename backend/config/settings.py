@@ -166,6 +166,9 @@ ALLOWED_HOSTS = [
 FORJD_API_URL = get_str("FORJD_API_URL", "https://backend.forjd.co")
 FORJD_SERVICE_TOKEN = get_str("FORJD_SERVICE_TOKEN", "")
 FORJD_TENANT_ID = get_str("FORJD_TENANT_ID", "")
+# Cutover flags (Django BFF only — Angular unchanged). No local streaming fallback.
+FORJD_READ_FROM_FORJD = get_bool("FORJD_READ_FROM_FORJD", default=True)
+FORJD_DUAL_WRITE_ENABLED = get_bool("FORJD_DUAL_WRITE_ENABLED", default=False)
 
 
 # Application definition
