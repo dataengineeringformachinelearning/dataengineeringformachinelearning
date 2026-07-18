@@ -8,7 +8,7 @@
     {% block meta_description %}
     <meta
       name="description"
-      content="Core REST API, authentication, billing, and telemetry services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+      content="User, identity, billing, and FORJD handoff APIs for the DEML learning platform."
     />
     {% endblock %}
     <meta
@@ -84,7 +84,7 @@
         "@context": "https://schema.org",
         "@type": "WebAPI",
         "name": "DEML Backend API",
-        "description": "Core REST API, authentication, billing, and telemetry services for Data Engineering for AI Engineering and Cybersecurity.",
+        "description": "User control-plane APIs for the DEML learning platform.",
         "url": "{{ request.scheme }}://{{ request.get_host }}/",
         "documentation": "{{ request.scheme }}://{{ request.get_host }}/api/v1/docs"
       }

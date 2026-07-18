@@ -25,7 +25,7 @@ from typing import Any, Final
 RAILWAY_BIN: Final = "railway"
 CATALOG_PATH: Final = Path(__file__).resolve().parents[1] / "infrastructure/railway/services.json"
 FULL_ENV_CLASSES: Final[frozenset[str]] = frozenset(
-  {"django-api", "django-worker", "rust-data-plane"}
+  {"django-api", "django-user-control-plane", "django-worker", "rust-data-plane"}
 )
 
 # Railway Postgres plugin vars leaked onto app services during deml-postgres references.

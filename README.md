@@ -16,6 +16,17 @@ license: apache-2.0
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.svg)
 
+> **Current platform boundary (July 2026):** DEML is the Firebase-authenticated user
+> control plane and Angular backend-for-frontend. FORJD exclusively owns encrypted
+> intake, processing, projections, analytics, replay, threat processing, and machine
+> learning. DEML calls native FORJD routes with tenant-bound opaque `fjsvc_` tokens and
+> sealed AES-256-GCM envelopes; it does not use OAuth client credentials, Supabase
+> `service_role`, Firebase-to-FORJD trust, `/deml-compat` aliases, or local processing
+> fallbacks. Learning projections, service-principal domain routes, crypto-session
+> bootstrap, replay/DLQ, and durable tenant erasure remain explicit FORJD dependencies.
+> See [the runtime contract](docs/FORJD_PLATFORM_HANDOFF.md). Older data-plane material
+> in this repository is historical only.
+
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
 ---

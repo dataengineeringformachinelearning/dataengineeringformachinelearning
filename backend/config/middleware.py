@@ -3,7 +3,6 @@ import logging
 from django.contrib.auth.models import AnonymousUser
 from django.utils.deprecation import MiddlewareMixin
 from firebase_admin import auth
-from integrations.constants import SWAGGER_DEMO_API_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +18,6 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
       return None
 
     token = auth_header.split(" ")[1]
-    # Skip Firebase validation for public integration endpoints or the demo key
-    if (
-      request.path.startswith(("/api/v1/ingest", "/api/v1/predict"))
-      or token == SWAGGER_DEMO_API_KEY
-    ):
-      return None
-
     try:
       # Verify the Firebase ID token
       from django.conf import settings

@@ -348,9 +348,9 @@ export class Account implements OnInit {
     if (confirmed) {
       this.isDeletingAccount.set(true);
       try {
-        const success = await this.authService.deleteAccount();
+        const result = await this.authService.deleteAccount();
         this.isDeletingAccount.set(false);
-        if (success) {
+        if (result.status === 'completed') {
           await this.vikingDialog.openConfirm({
             title: 'Account Deleted',
             message: 'Your account and all associated data have been permanently deleted.',
@@ -359,10 +359,18 @@ export class Account implements OnInit {
           });
           await this.router.navigate(['/']);
           window.location.reload();
+        } else if (result.status === 'blocked') {
+          await this.vikingDialog.openConfirm({
+            title: 'Deletion Blocked',
+            message: result.message,
+            type: 'alert',
+            confirmBtnText: 'OK',
+            confirmBtnColor: 'warn',
+          });
         } else {
           await this.vikingDialog.openConfirm({
             title: 'Deletion Failed',
-            message: 'Failed to delete account.',
+            message: result.message,
             type: 'alert',
             confirmBtnText: 'OK',
             confirmBtnColor: 'warn',

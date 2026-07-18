@@ -1,11 +1,14 @@
 import base64
 import hashlib
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+from uuid import uuid4
 
 import pytest
+from account.lifecycle import FORJD_TENANT_ERASE_BLOCKER
 from django.contrib.auth import get_user_model
 from django.test import Client
+from monitor.models import APIKey, AuditLog, ForjdTenantMapping, UserLifecycleJob
 
 User = get_user_model()
 
@@ -130,21 +133,51 @@ def test_desktop_handoff_rejects_wrong_pkce(
 
 
 @pytest.mark.django_db
-@patch("account.lifecycle.delete_firebase_user")
-@patch("account.lifecycle.cancel_stripe_for_profile")
-def test_delete_account_authenticated(
-  _mock_stripe: Any,
-  _mock_firebase: Any,
+@patch("firebase_admin.auth.delete_user")
+@patch("forjd.client.ForjdClient")
+def test_delete_account_blocks_until_forjd_can_erase_tenant(
+  mock_forjd_client: MagicMock,
+  mock_firebase_delete: MagicMock,
   client: Client,
   test_user: User,
   mock_verify_token: Any,
 ) -> None:
+  profile = test_user.profile
+  profile.stripe_subscription_id = "sub_must_remain_active"
+  profile.save(update_fields=["stripe_subscription_id"])
+  api_key = APIKey.objects.create(
+    user=test_user,
+    name="Preserved key",
+    prefix="preserve",
+    key_hash="not-used-in-this-test",
+  )
+  mapping = ForjdTenantMapping.objects.create(
+    deml_account_id=profile.account_id,
+    forjd_tenant_id=uuid4(),
+    service_token_secret_ref="env:FORJD_SERVICE_TOKEN_TEST",  # pragma: allowlist secret
+  )
+
   response = client.delete("/api/v1/auth/delete-account", HTTP_AUTHORIZATION="Bearer valid-token")
-  assert response.status_code == 200
-  body = response.json()
-  assert body["status"] in ("success", "accepted")
-  assert body.get("completed") is True
-  assert not User.objects.filter(username="authuser").exists()
+  assert response.status_code == 503
+  assert response.json()["detail"] == FORJD_TENANT_ERASE_BLOCKER
+
+  job = UserLifecycleJob.objects.get(user=test_user)
+  assert job.state == UserLifecycleJob.State.FAILED
+  assert job.last_error == FORJD_TENANT_ERASE_BLOCKER
+  assert job.steps_completed == ["forjd_calls_stopped"]
+  assert job.completed_at is None
+  assert User.objects.filter(username="authuser").exists()
+  mapping.refresh_from_db()
+  assert mapping.is_active is False
+  api_key.refresh_from_db()
+  assert api_key.is_active is True
+  profile.refresh_from_db()
+  assert profile.stripe_subscription_id == "sub_must_remain_active"
+  assert not AuditLog.objects.filter(
+    action="ACCOUNT_DELETED", resource_id=str(profile.account_id)
+  ).exists()
+  mock_forjd_client.assert_not_called()
+  mock_firebase_delete.assert_not_called()
 
 
 @pytest.mark.django_db

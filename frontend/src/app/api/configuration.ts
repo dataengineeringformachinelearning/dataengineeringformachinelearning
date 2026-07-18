@@ -101,13 +101,6 @@ export class Configuration {
     }
     this.encodeParam = encodeParam ?? (param => this.defaultEncodeParam(param));
     this.credentials = credentials ?? {};
-
-    // init default IntegrationAPIKeyAuth credential
-    if (!this.credentials['IntegrationAPIKeyAuth']) {
-      this.credentials['IntegrationAPIKeyAuth'] = () => {
-        return typeof this.accessToken === 'function' ? this.accessToken() : this.accessToken;
-      };
-    }
   }
 
   /**

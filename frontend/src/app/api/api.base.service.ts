@@ -1,5 +1,5 @@
 /**
- * DEML BACKEND APP API
+ * DEML Learning Platform API
  *
  *
  *
@@ -12,10 +12,8 @@ import { CustomHttpParameterCodec } from './encoder';
 import { Configuration } from './configuration';
 import { OpenApiHttpParams, QueryParamStyle, concatHttpParamsObject } from './query.params';
 
-import { environment } from '../../environments/environment';
-
 export class BaseService {
-  protected basePath = environment.backendUrl;
+  protected basePath = 'http://localhost';
   public defaultHeaders = new HttpHeaders();
   public configuration: Configuration;
   public encoder: HttpParameterCodec;
@@ -31,7 +29,7 @@ export class BaseService {
       if (typeof basePath !== 'string') {
         basePath = this.basePath;
       }
-      this.configuration.basePath = basePath as string;
+      this.configuration.basePath = basePath;
     }
     this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
   }

@@ -1,5 +1,5 @@
 /**
- * DEML BACKEND APP API
+ * DEML Learning Platform API
  *
  *
  *
@@ -10,5 +10,5 @@
 
 export interface IssueReportPayload {
   user_description: string;
-  telemetry_context: { [key: string]: any };
+  telemetry_context?: { [key: string]: any };
 }

@@ -60,10 +60,12 @@ def api_delete_account(request):
 
   job = request_account_deletion(request.user, firebase_uid=firebase_uid)
   completed = job.state == UserLifecycleJob.State.COMPLETED
+  if not completed:
+    raise HttpError(503, job.last_error or "Account deletion is blocked on FORJD tenant erasure")
   return {
-    "status": "success" if completed else "accepted",
+    "status": "success",
     "job_id": str(job.id),
-    "completed": completed,
+    "completed": True,
   }
 
 

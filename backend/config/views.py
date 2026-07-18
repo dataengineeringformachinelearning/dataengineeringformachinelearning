@@ -2,7 +2,6 @@ import logging
 import mimetypes
 
 from django.conf import settings
-from django.db import DatabaseError
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render
 
@@ -11,19 +10,6 @@ logger = logging.getLogger(__name__)
 
 def home(request: HttpRequest) -> HttpResponse:
   frontend_url = settings.FRONTEND_URL.rstrip("/")
-  platform_metrics = None
-  try:
-    from monitor.models import StatusPage
-    from monitor.services.metrics import MetricsService
-
-    platform_page = (
-      StatusPage.objects.filter(slug="platform-status").prefetch_related("services").first()
-    )
-    if platform_page is not None:
-      platform_metrics = MetricsService.for_status_page(platform_page)
-  except DatabaseError:
-    logger.warning("Platform metrics unavailable while rendering the backend landing page")
-
   return render(
     request,
     "home.html",
@@ -31,40 +17,9 @@ def home(request: HttpRequest) -> HttpResponse:
       "debug": settings.DEBUG,
       "frontend_url": frontend_url,
       "marketing_url": settings.MARKETING_URL.rstrip("/"),
-      "platform_metrics": platform_metrics,
+      "platform_metrics": None,
     },
   )
-
-
-def honeypot_trap(request: HttpRequest, path: str) -> HttpResponse:
-  """Catch crawlers/scanners at decoy paths and log the interaction.
-
-  This catch-all view checks if the requested path is a registered honeypot trap.
-  If so, it logs the interaction for later threat analysis and ML training.
-  """
-  from ml.ml_services import log_honeypot_interaction
-  from monitor.models import HoneypotEndpoint
-
-  # Check if this is a registered honeypot trap
-  honeypot = HoneypotEndpoint.objects.filter(path=f"/{path}", is_active=True).first()
-
-  if honeypot:
-    source_ip = (
-      request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "unknown"))
-      .split(",")[0]
-      .strip()
-    )
-    user_agent = request.META.get("HTTP_USER_AGENT", "")
-    log_honeypot_interaction(
-      honeypot=honeypot,
-      source_ip=source_ip,
-      user_agent=user_agent,
-      method=request.method,
-      request_headers=dict(request.headers),
-    )
-
-  # Always return 404 to appear like a real dead-end
-  return HttpResponse(status=404)
 
 
 def custom_404(request: HttpRequest, exception: Exception) -> HttpResponse:

@@ -1,210 +1,26 @@
-import logging
+"""User-originated learning-platform interactions."""
+
 from typing import Any
 
-from django.http import HttpResponse
+from monitor.models import BugReport
 from ninja import Router, Schema
+from ninja.errors import HttpError
 
-from agent.llm_agent import process_user_issue
-
-logger = logging.getLogger(__name__)
-
-router = Router()
+router = Router(tags=["Interactions"])
 
 
 class IssueReportPayload(Schema):
   user_description: str
-  telemetry_context: dict
-
-
-class VulnerabilityReportPayload(Schema):
-  title: str
-  description: str
-  telemetry_context: dict
-  customer_id: str = "Internal"
-  cve_id: str | None = None
-  severity: str = "Medium"
-
-
-class VulnerabilityUpdatePayload(Schema):
-  status: str | None = None
-  severity: str | None = None
-  impact: int | None = None
-  likelihood: int | None = None
-
-
-class VulnerabilityOut(Schema):
-  id: str
-  title: str
-  description: str
-  status: str
-  severity: str
-  impact: int
-  likelihood: int
-  cve_id: str | None = None
-  customer_id: str
-  telemetry_context: dict | None = None
-  created_at: str
-
-  updated_at: str
+  telemetry_context: dict[str, Any] = {}
 
 
 @router.post("/report-issue")
-async def report_issue(request: Any, payload: IssueReportPayload) -> Any:
-  try:
-    from asgiref.sync import sync_to_async
-    from monitor.models import BugReport
-
-    # Create bug report in database
-    bug_report = await sync_to_async(BugReport.objects.create)(
-      user_description=payload.user_description, telemetry_context=payload.telemetry_context
-    )
-
-    response = await process_user_issue(
-      user_description=payload.user_description,
-      telemetry_context=payload.telemetry_context,
-      bug_report_id=str(bug_report.id),
-    )
-    logger.info("Successfully processed issue: %s", response)
-    return {
-      "status": "success",
-      "message": "Issue processed and sent to Redpanda",
-      "id": str(bug_report.id),
-    }
-  except Exception:
-    logger.exception("Error processing issue")
-    # nosemgrep: python.django.security.audit.xss.direct-use-of-httpresponse.direct-use-of-httpresponse
-    return HttpResponse(status=500, content="Internal Server Error")
-
-
-@router.post("/vulnerabilities", response=VulnerabilityOut)
-def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> Any:
-  from account.context import resolve_scope_from_account_id
-  from monitor.models import Vulnerability
-
-  # Set default severity if not provided or valid
-  severity = payload.severity
-  if severity not in ["Low", "Medium", "High", "Critical"]:
-    severity = "Medium"
-
-  user_obj = None
-  if payload.customer_id and payload.customer_id != "Internal":
-    user_obj, _ = resolve_scope_from_account_id(payload.customer_id)
-
-  if not user_obj and request.user.is_authenticated:
-    user_obj = request.user
-
-  vuln = Vulnerability.objects.create(
-    user=user_obj,
-    title=payload.title,
-    description=payload.description,
+def report_issue(request: Any, payload: IssueReportPayload) -> dict[str, str]:
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+  report = BugReport.objects.create(
+    user=request.user,
+    user_description=payload.user_description,
     telemetry_context=payload.telemetry_context,
-    customer_id=payload.customer_id,
-    cve_id=payload.cve_id,
-    severity=severity,
   )
-
-  return {
-    "id": str(vuln.id),
-    "title": vuln.title,
-    "description": vuln.description,
-    "status": vuln.status,
-    "severity": vuln.severity,
-    "impact": vuln.impact,
-    "likelihood": vuln.likelihood,
-    "cve_id": vuln.cve_id,
-    "customer_id": vuln.customer_id,
-    "telemetry_context": vuln.telemetry_context,
-    "created_at": vuln.created_at.isoformat(),
-    "updated_at": vuln.updated_at.isoformat(),
-  }
-
-
-@router.get("/vulnerabilities", response=list[VulnerabilityOut])
-def list_vulnerabilities(
-  request: Any,
-  account_id: str | None = None,
-  tenant_id: str | None = None,
-  site_url: str | None = None,
-) -> Any:
-  from django.db.models import Q
-  from monitor.models import Vulnerability
-
-  scoped_account_id = account_id or tenant_id
-  if request.user.is_authenticated:
-    profile = getattr(request.user, "profile", None)
-    user_account_id = str(profile.account_id) if profile and profile.account_id else None
-
-    if scoped_account_id and user_account_id and str(scoped_account_id) != user_account_id:
-      scoped_account_id = None
-
-    if scoped_account_id:
-      vulns = Vulnerability.objects.filter(
-        Q(user=request.user) | Q(customer_id=str(scoped_account_id))
-      ).order_by("-created_at")
-    else:
-      filters = Q(user=request.user)
-      if user_account_id:
-        filters |= Q(customer_id=user_account_id)
-      filters |= Q(customer_id=str(request.user.id))
-      vulns = Vulnerability.objects.filter(filters).order_by("-created_at")
-  else:
-    vulns = Vulnerability.objects.filter(customer_id="Internal").order_by("-created_at")
-
-  if site_url and site_url != "All":
-    vulns = [
-      v
-      for v in vulns
-      if isinstance(v.telemetry_context, dict) and v.telemetry_context.get("url") == site_url
-    ]
-
-  return [
-    {
-      "id": str(v.id),
-      "title": v.title,
-      "description": v.description,
-      "status": v.status,
-      "severity": v.severity,
-      "impact": v.impact,
-      "likelihood": v.likelihood,
-      "cve_id": v.cve_id,
-      "customer_id": v.customer_id,
-      "telemetry_context": v.telemetry_context,
-      "created_at": v.created_at.isoformat(),
-      "updated_at": v.updated_at.isoformat(),
-    }
-    for v in vulns
-  ]
-
-
-@router.patch("/vulnerabilities/{vuln_id}", response=VulnerabilityOut)
-def update_vulnerability(request: Any, vuln_id: str, payload: VulnerabilityUpdatePayload) -> Any:
-  from django.shortcuts import get_object_or_404
-  from monitor.models import Vulnerability
-
-  vuln = get_object_or_404(Vulnerability, id=vuln_id)
-
-  if payload.status is not None:
-    vuln.status = payload.status
-  if payload.severity is not None:
-    vuln.severity = payload.severity
-  if payload.impact is not None:
-    vuln.impact = payload.impact
-  if payload.likelihood is not None:
-    vuln.likelihood = payload.likelihood
-
-  vuln.save()
-
-  return {
-    "id": str(vuln.id),
-    "title": vuln.title,
-    "description": vuln.description,
-    "status": vuln.status,
-    "severity": vuln.severity,
-    "impact": vuln.impact,
-    "likelihood": vuln.likelihood,
-    "cve_id": vuln.cve_id,
-    "customer_id": vuln.customer_id,
-    "telemetry_context": vuln.telemetry_context,
-    "created_at": vuln.created_at.isoformat(),
-    "updated_at": vuln.updated_at.isoformat(),
-  }
+  return {"status": "recorded", "id": str(report.id)}

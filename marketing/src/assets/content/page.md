@@ -8,7 +8,11 @@ The platform addresses a structural gap in modern infrastructure. Observability 
 
 For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [Appendix N: CONOPS Quick Reference](#appendix-n-concept-of-operations-operator-quick-reference). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
-**Architectural posture (2026):** The system emphasizes **Event Projections** with production reliability guarantees. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for event streaming and Firestore (named `deml` database with dedicated security rules) for materialized read models. Django writes a **Transactional Outbox** (`OutboxEvent`) and the Rust `deml-relay` leases and publishes those rows. The `telemetry_worker` performs idempotent projections with dead-letter-queue support; Rust separately owns durable schedules, active probes, raw endpoint normalization, optional high-volume ingress, and request-time CPE lookup. Firebase Functions and rules deploy via a dedicated GitHub workflow. The end-to-end loop is health-checked automatically by a synthetic projection monitor and surfaced on the `platform-status` sentinel.
+**Architectural posture (July 2026):** DEML is being reshaped into a user-focused learning platform. Django owns identity, profiles, roles, subscriptions, consent, credentials, account lifecycle, and user-originated interactions. [FORJD](https://github.com/dataengineeringformachinelearning/forjd) exclusively owns encrypted intake, processing, workflows, projections, analytics, machine learning, replay, and data-plane operations. The former local Redpanda, ClickHouse, RustFS, scanner, worker, and Rust data-plane implementations are retired; they are historical architecture only. The authoritative cutover contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md).
+
+The Angular interface remains DEML-owned during this migration. Dashboard, analytics, monitoring, status, vulnerability, onboarding, and generated-client surfaces continue to call Django. Django may preserve an established local path only by explicitly adapting it to a FORJD-native route that exists and supports the tenant service principal. FORJD does not currently provide `/api/v1/deml-compat/*`; unavailable domain capabilities fail closed and remain FORJD dependencies.
+
+DEML is a trusted FORJD subprocessor authenticated with a tenant-bound opaque `fjsvc_` service token. Firebase remains the DEML end-user identity provider; its tokens terminate at Django and are never forwarded to FORJD. DEML maps each account to a FORJD tenant and secret reference, sends sealed telemetry through native `/api/v1/ingest`, and never uses OAuth client credentials, Supabase `service_role`, `X-DEML-*` authorization, or direct FORJD storage access. Learning projections and durable tenant erasure are blocked until FORJD ships them. Older sections describing local Redpanda, ClickHouse, workers, scanners, projections, threat engines, or ML execution are historical records superseded by this boundary.
 
 ## Quick Links
 
@@ -1274,7 +1278,7 @@ Deep within my Django backend architecture, I deploy a fleet of long-lived, asyn
 - **Hourly:** `deml-scheduler` materializes unique threat-intelligence task buckets; `deml-workers` fetches, parses, and integrates the newest Indicators of Compromise without relying on an in-memory timer.
 - **Daily:** The same durable schedule path executes `train_all_models`, securely aggregating anonymized operational data across all tenants to retrain SLA forecasts and the global PyTorch threat model (`platform_threat_model.pt`).
 - **Daily (Tiered Retention):** A durable `db_cleanup` run repairs daily projections, verifies current-version hourly coverage, archives expired audit batches to ClickHouse, then prunes only acknowledged or safely materialized source rows. Central policy covers raw telemetry, probes, receipts, consent, outbox/DLQ state, search/honeypot evidence, benchmark history, reports, uptime, and scheduler history. Long-term OLAP evidence remains in ClickHouse under its TTL policy.
-- **Daily (Billing & Accounts):** A durable `sync_subscriptions` run reconciles Stripe state. Account deletion remains on-demand through the lifecycle queue; there is no dormant-account purge.
+- **Daily (Billing & Accounts, historical):** The retired worker reconciled Stripe state. In the current boundary, account deletion fails closed before Stripe, Firebase, Django, or credential teardown and remains blocked until FORJD confirms durable tenant erasure.
 - **Daily (DEK Compliance):** `rotate_keys_if_due` checks the active Data Encryption Key lifecycle and invokes the existing re-enveloping workflow only when rotation is required.
 
 ### GitHub Actions Workflows
@@ -3282,7 +3286,7 @@ aws --endpoint-url http://localhost:9100 s3 mb s3://deml-exports
 
 Or from Django shell after `ensure_bucket()` when credentials are set.
 
-## Railway
+## Railway (historical retired export service)
 
 Service name: **`deml-rustfs`**
 
@@ -3313,8 +3317,8 @@ Service name: **`deml-rustfs`**
   the audit window.
 - CSV string cells with spreadsheet formula prefixes are neutralized before rendering; signed
   downloads validate job ID, object key, checksum, expiry, and token age before streaming.
-- Account deletion takes the same user/job locks, waits for active generation, deletes every
-  acknowledged object before its metadata can cascade, and resumes safely after partial cleanup.
+- This retired export path must not run during account deletion. Current deletion stops new
+  FORJD calls and preserves all DEML/Firebase state until FORJD confirms durable tenant erasure.
 
 ## Implemented surfaces
 

@@ -1,8 +1,19 @@
 # AGENTS.md - Coding Principles and Architectural Vision for the DEML Platform
 
-**Mission**: Build a zero-compromise, precision-engineered Data Engineering for AI Engineering and Cybersecurity (DEML) platform that merges rigorous data engineering with AI engineering (predictive ML, model lifecycles, intelligent systems) and cybersecurity (threat analytics, defense-in-depth, compliance). Prioritize quality, security, scalability, multi-tenancy isolation, and resilience at every step. The platform dogfoods itself as Tenant0 and must be production-grade, observable, secure, and maintainable.
+**Mission**: Build DEML as a zero-compromise, user-focused learning platform. DEML owns identity, profiles, roles, subscriptions, consent, account lifecycle, and user interactions. FORJD is the exclusive data plane for intake, processing, analytics, projections, replay, and machine learning. Do not add local processing workers, Kafka/Redpanda paths, scanners, ML runtimes, ClickHouse projections, RustFS exports, or Rust data-plane roles back to DEML. The replacement contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md).
 
-**Operations**: Production behavior—vendor split (Cloud Run / Firebase / GCP), command/projection/query paths, actor workflows, maintenance cadence, and degraded modes—is defined in [BOOK.md § CONOPS](BOOK.md#concept-of-operations-conops), [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops), and [BOOK.md § Appendix N (conops)](BOOK.md#appendix-n-conops). Architectural code changes must remain consistent with that CONOPS.
+## Final DEML ↔ FORJD Boundary (Authoritative)
+
+- Keep the complete Angular product surface intact: dashboards, analytics, status pages, vulnerability views, monitoring UI, onboarding, and generated API contracts remain DEML-owned until a separately approved frontend pivot.
+- Django remains the Firebase-authenticated user control plane and compatibility backend-for-frontend. Identity, profiles, roles, billing, consent, API credentials, issue reports, learning/library content, and account lifecycle remain local.
+- FORJD is the universal secure streaming and processing engine. All ingestion, streaming, transformation, projections, analytics, ML, threat processing, replay, and DLQ behavior executes there.
+- DEML calls FORJD with a tenant-bound opaque `fjsvc_` service token. It never calls an OAuth token endpoint, uses Supabase `service_role`, or forwards Firebase end-user tokens. FORJD retains Supabase Auth, Postgres/RLS, and Realtime for its own platform.
+- DEML stores an explicit account-to-FORJD-tenant mapping and a secret reference, never a plaintext service token. Body/query tenant IDs must match the mapped tenant or fail closed.
+- Existing Angular paths remain DEML-owned. Django may adapt them only to FORJD-native routes that actually exist; `/api/v1/deml-compat/*`, `X-DEML-*` authorization, learning projections, and tenant erase are unavailable until FORJD ships them.
+- Missing FORJD capabilities are explicit dependencies. Never fill them with DEML workers, human FORJD JWTs, Firebase credentials, direct FORJD database access, or Railway processing fallbacks.
+- The legacy Event Projections, Rust data-plane, Redpanda, ClickHouse, scanner, and local ML instructions below are historical and superseded wherever they conflict with this section.
+
+**Operations**: The authoritative migration and runtime contract is [docs/FORJD_PLATFORM_HANDOFF.md](docs/FORJD_PLATFORM_HANDOFF.md). Older CONOPS sections remain historical context only where they describe retired DEML data-plane services.
 
 This document captures the core coding principles, philosophies, and "how we build" from the BOOK.md. All agents, contributors, and LLMs working on the codebase must internalize these to align with the vision of "thoughtful coders" and precision engineering.
 

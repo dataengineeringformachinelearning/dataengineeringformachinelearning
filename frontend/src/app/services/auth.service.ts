@@ -1,5 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { firstValueFrom, timeout } from 'rxjs';
 import { initializeApp, getApp, getApps } from 'firebase/app';
@@ -13,7 +13,6 @@ import {
   updateProfile,
   onAuthStateChanged,
   User as FirebaseUser,
-  deleteUser,
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   getMultiFactorResolver,
@@ -36,6 +35,11 @@ const isMfaRequiredError = (error: unknown): boolean =>
   typeof error === 'object' &&
   'code' in error &&
   (error as { code?: string }).code === 'auth/multi-factor-auth-required';
+
+export type AccountDeletionResult =
+  | { status: 'completed' }
+  | { status: 'blocked'; message: string }
+  | { status: 'failed'; message: string };
 
 @Injectable({
   providedIn: 'root',
@@ -378,10 +382,9 @@ export class AuthService {
     }
   }
 
-  async deleteAccount() {
+  async deleteAccount(): Promise<AccountDeletionResult> {
     this.isProcessing.set(true);
     try {
-      // Backend runs the deletion saga (Stripe, API keys, Firebase, Postgres).
       const res = await firstValueFrom(
         this.http.delete<{ status: string; completed?: boolean }>(
           `${environment.backendUrl}/api/v1/auth/delete-account`,
@@ -389,19 +392,35 @@ export class AuthService {
         ),
       );
 
-      // Firebase is removed server-side when completed; client delete is a fallback only.
-      if (!res.completed && this.auth?.currentUser) {
-        await deleteUser(this.auth.currentUser);
+      // Identity deletion is server-owned and may proceed only after FORJD confirms erasure.
+      if (!res.completed) {
+        this.isProcessing.set(false);
+        return {
+          status: 'blocked',
+          message:
+            'Account deletion is blocked until FORJD confirms durable tenant erasure. Your identities and account data remain intact.',
+        };
       }
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
       this.currentUserRole.set(null);
       this.isProcessing.set(false);
-      return true;
-    } catch (e: any) {
-      console.error(e);
+      return { status: 'completed' };
+    } catch (error: unknown) {
       this.isProcessing.set(false);
-      return false;
+      const detail =
+        error instanceof HttpErrorResponse && typeof error.error?.detail === 'string'
+          ? error.error.detail
+          : '';
+      if (error instanceof HttpErrorResponse && error.status === 503 && detail.includes('FORJD')) {
+        return { status: 'blocked', message: detail };
+      }
+      console.error(error);
+      return {
+        status: 'failed',
+        message:
+          'Account deletion could not be requested. Your identities and account data remain intact. Please try again.',
+      };
     }
   }
 

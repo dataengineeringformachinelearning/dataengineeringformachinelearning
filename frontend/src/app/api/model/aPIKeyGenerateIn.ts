@@ -1,5 +1,5 @@
 /**
- * DEML BACKEND APP API
+ * DEML Learning Platform API
  *
  *
  *
