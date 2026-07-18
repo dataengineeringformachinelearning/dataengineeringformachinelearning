@@ -43,6 +43,21 @@ def test_unregistered_or_invalid_origin_fails_closed(origin: str) -> None:
 
 
 @pytest.mark.django_db
+@override_settings(CORS_ALLOWED_ORIGINS=[])
+@pytest.mark.parametrize(
+  "origin",
+  [
+    "https://deml.app",
+    "https://www.deml.app",
+    "http://localhost:4200",
+  ],
+)
+def test_platform_origins_are_always_allowed(origin: str) -> None:
+  cache.clear()
+  assert is_domain_registered(origin) is True
+
+
+@pytest.mark.django_db
 def test_unverified_domain_fails_closed() -> None:
   cache.clear()
   user = User.objects.create_user(username="unverified-owner")

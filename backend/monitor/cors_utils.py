@@ -6,6 +6,7 @@ import logging
 from typing import Final
 from urllib.parse import urlsplit
 
+from django.conf import settings
 from django.core.cache import cache
 from django.db import DatabaseError
 
@@ -14,6 +15,18 @@ from monitor.models import ValidatedSite
 logger = logging.getLogger(__name__)
 
 CACHE_TIMEOUT_SECONDS: Final[int] = 3600
+
+# Always-allowed product / local origins (not customer tenant domains).
+PLATFORM_HOSTNAMES: Final[frozenset[str]] = frozenset(
+  {
+    "deml.app",
+    "www.deml.app",
+    "dataengineeringformachinelearning.com",
+    "www.dataengineeringformachinelearning.com",
+    "localhost",
+    "127.0.0.1",
+  }
+)
 
 
 def _origin_hostname(origin: str) -> str | None:
@@ -26,11 +39,23 @@ def _origin_hostname(origin: str) -> str | None:
     return None
 
 
+def _static_allowed_hostnames() -> set[str]:
+  hosts: set[str] = set(PLATFORM_HOSTNAMES)
+  for origin in getattr(settings, "CORS_ALLOWED_ORIGINS", []) or []:
+    host = _origin_hostname(str(origin))
+    if host is not None:
+      hosts.add(host)
+  return hosts
+
+
 def is_domain_registered(origin: str) -> bool:
-  """Return true only for a verified database-backed origin hostname."""
+  """Allow platform/static origins, otherwise only verified ValidatedSite hosts."""
   domain = _origin_hostname(origin)
   if domain is None:
     return False
+
+  if domain in _static_allowed_hostnames():
+    return True
 
   cache_key = f"cors_origin_allowed:{domain}"
   try:
