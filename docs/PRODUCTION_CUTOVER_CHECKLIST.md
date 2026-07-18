@@ -44,7 +44,7 @@ Single ops checklist for the final DEML → FORJD cutover. No overlapping data p
    fly secrets set FORJD_CUTOVER_PHASE=1 -a deml-backend   # read FORJD
    fly secrets set FORJD_CUTOVER_PHASE=2 -a deml-backend   # FORJD-only (steady state)
    ```
-7. Smoke Angular: login, dashboard CES, status pages, vulns list, exports list, sessions, account delete (staging).
+7. Smoke Angular: login, dashboard CES, status page CRUD (create/service/incident), vulns list, exports list, sessions, account delete (staging).
 
 ## C. Retire legacy DEML Railway data plane
 

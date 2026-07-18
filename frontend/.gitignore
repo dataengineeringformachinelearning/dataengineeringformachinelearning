@@ -52,3 +52,5 @@ Thumbs.db
 src/assets/firebase-config.js
 /src/environments/environment.ts
 /src/environments/environment.development.ts
+.vercel
+.env*

@@ -8,7 +8,8 @@ import { environment } from './environments/environment';
 
 const MONITORING_IDLE_TIMEOUT_MS = 2_000;
 
-// Vercel Web Analytics + Speed Insights (no-op off Vercel).
+// Framework-agnostic Vercel Web Analytics + Speed Insights.
+// No-op locally; active on Vercel once Analytics / Speed Insights are enabled in the project.
 const vercelMode = isDevMode() ? 'development' : 'production';
 injectAnalytics({ mode: vercelMode });
 injectSpeedInsights({ framework: 'angular' });

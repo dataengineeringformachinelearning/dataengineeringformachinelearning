@@ -20,7 +20,12 @@ from forjd.views import (
   native_forjd_proxy,
   native_status_page_proxy,
   session_revoke_proxy,
+  status_incident_delete_proxy,
+  status_page_detail_proxy,
+  status_page_incidents_proxy,
+  status_page_services_proxy,
   status_pages_list_proxy,
+  status_service_delete_proxy,
   unsupported_forjd_proxy,
   vulnerabilities_list_proxy,
 )
@@ -64,9 +69,34 @@ urlpatterns = [
     name="forjd-public-status-page-adapter",
   ),
   path(
+    "api/v1/system-status/status_pages/<str:page_id>/services",
+    status_page_services_proxy,
+    name="forjd-status-page-services-adapter",
+  ),
+  path(
+    "api/v1/system-status/status_pages/<str:page_id>/incidents",
+    status_page_incidents_proxy,
+    name="forjd-status-page-incidents-adapter",
+  ),
+  path(
+    "api/v1/system-status/status_pages/<str:page_id>",
+    status_page_detail_proxy,
+    name="forjd-status-page-detail-adapter",
+  ),
+  path(
     "api/v1/system-status/status_pages",
     status_pages_list_proxy,
     name="forjd-status-pages-list-adapter",
+  ),
+  path(
+    "api/v1/system-status/services/<str:service_id>",
+    status_service_delete_proxy,
+    name="forjd-status-service-delete-adapter",
+  ),
+  path(
+    "api/v1/system-status/incidents/<str:incident_id>",
+    status_incident_delete_proxy,
+    name="forjd-status-incident-delete-adapter",
   ),
   path(
     "api/v1/analytics/overview",

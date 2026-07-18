@@ -2,17 +2,17 @@
 
 Canonical catalog: [`services.json`](./services.json).
 
-After the FORJD cutover, Railway runs only the DEML user control plane:
+After the FORJD cutover:
 
-| Service         | Role                                                                 |
-| --------------- | -------------------------------------------------------------------- |
-| `deml-backend`  | Optional Railway standby (primary API is **Fly** `deml-backend`)     |
-| `deml-frontend` | Optional nginx CSR standby (primary UI is **Vercel** project `deml`) |
+| Service         | Role                                                                           |
+| --------------- | ------------------------------------------------------------------------------ |
+| `deml-backend`  | Optional Railway standby until DNS cutover (primary is **Fly** `deml-backend`) |
+| `deml-frontend` | **Retired** — primary UI is **Vercel** project `deml`                          |
 
 Primary Django host: **Fly.io** — see [`docs/FLY.md`](../../docs/FLY.md) (`backend/fly.toml`).
 Primary Angular host: **Vercel** — see [`docs/VERCEL.md`](../../docs/VERCEL.md).
 Sessions and auth handoff live in DEML Postgres (`browser_sessions`, `auth_handoff_tokens`).
-Do **not** run `deml-dragonfly` — it is retired. FORJD’s Fly Dragonfly is unrelated.
+Do **not** run `deml-dragonfly` or `deml-frontend` — they are retired.
 
 Everything in `services.json` → `retired` must stay deleted (data plane lives on Fly/FORJD).
 

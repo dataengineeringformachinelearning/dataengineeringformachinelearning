@@ -65,14 +65,56 @@ Add Firebase Authorized Domains for `deml.app` and `*.vercel.app` if using previ
 ## Deploy
 
 ```bash
-# One-time
+# One-time (project: joealongi/deml)
 cd frontend
 npx vercel link --project deml --yes
-npx vercel env pull   # optional local mirror
 
 # Production
 npx vercel deploy --prod --yes
 ```
+
+`vercel.json` uses `npm install --legacy-peer-deps` (not `npm ci`) because the frontend
+workspace lockfile can lag behind root workspace deps (`@vercel/analytics`, etc.).
+
+### Production env (required — wrong values crash the app)
+
+`set-env.js` bakes URLs into the CSR bundle. Production **must** use:
+
+| Variable        | Value                                           |
+| --------------- | ----------------------------------------------- |
+| `BACKEND_URL`   | `https://backend.deml.app`                      |
+| `FRONTEND_URL`  | `https://deml.app`                              |
+| `MARKETING_URL` | `https://dataengineeringformachinelearning.com` |
+
+Never set `BACKEND_URL=http://localhost:8000` on Vercel — the app will call localhost from the browser.
+On Vercel, `set-env.js` rejects localhost URL envs and falls back to the table above.
+
+```bash
+npx vercel env add BACKEND_URL production --value 'https://backend.deml.app' --force --yes --no-sensitive
+npx vercel env add FRONTEND_URL production --value 'https://deml.app' --force --yes --no-sensitive
+npx vercel env add MARKETING_URL production --value 'https://dataengineeringformachinelearning.com' --force --yes --no-sensitive
+npx vercel deploy --prod --yes
+```
+
+### Public access
+
+SSO protection is `all_except_custom_domains` — `deml.app` is public once DNS works.
+`*.vercel.app` aliases redirect to Vercel login unless you disable SSO:
+
+```bash
+npx vercel project protection disable deml --sso
+```
+
+Or Dashboard → Project `deml` → Settings → Deployment Protection → Vercel Authentication → Off.
+
+### Custom domain `deml.app`
+
+Attached to project `deml`. DNS is still on Cloudflare nameservers — set either:
+
+1. **Recommended:** Cloudflare DNS A record for `@` → `76.76.21.21` (proxy **off** / DNS only), or
+2. Change nameservers to `ns1.vercel-dns.com` / `ns2.vercel-dns.com`.
+
+Until DNS updates: `https://deml-frontend.vercel.app` (after SSO off) or open the latest deployment URL while signed into Vercel.
 
 Or connect the GitHub repo in the Vercel dashboard with Root Directory `frontend` and project name `deml`.
 

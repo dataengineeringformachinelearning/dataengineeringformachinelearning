@@ -87,13 +87,26 @@ def _require_tenant_env_match(mapping: ForjdTenantMapping, secret_ref: str) -> N
     )
 
 
-def resolve_forjd_tenant_credential(account_id: UUID) -> ForjdTenantCredential:
-  mapping = ForjdTenantMapping.objects.filter(
-    deml_account_id=account_id,
-    is_active=True,
-  ).first()
+def resolve_forjd_tenant_credential(
+  account_id: UUID,
+  *,
+  allow_inactive: bool = False,
+) -> ForjdTenantCredential:
+  """Resolve the mapped FORJD tenant + ``fjsvc_`` token for an account.
+
+  ``allow_inactive`` is for account-deletion retries after the mapping was
+  deactivated to stop new partner calls — never use it for normal BFF traffic.
+  """
+  qs = ForjdTenantMapping.objects.filter(deml_account_id=account_id)
+  mapping = qs.filter(is_active=True).first()
+  if mapping is None and allow_inactive:
+    mapping = qs.order_by("-updated_at").first()
   if mapping is None:
-    raise ForjdTenantConfigurationError("This DEML account is not mapped to an active FORJD tenant")
+    raise ForjdTenantConfigurationError(
+      "This DEML account is not mapped to an active FORJD tenant"
+      if not allow_inactive
+      else "This DEML account has no FORJD tenant mapping to erase"
+    )
 
   secret_ref = validate_service_token_secret_ref(mapping.service_token_secret_ref)
   _require_tenant_env_match(mapping, secret_ref)

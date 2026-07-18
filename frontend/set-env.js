@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Load environment variables from .env file if it exists
+// Load .env only for keys not already set (Vercel/CI wins over local file).
 const envPath = path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) {
   const envConfig = fs.readFileSync(envPath, 'utf8');
@@ -16,7 +16,9 @@ if (fs.existsSync(envPath)) {
     if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1);
     }
-    process.env[key] = val;
+    if (process.env[key] === undefined || process.env[key] === '') {
+      process.env[key] = val;
+    }
   });
 }
 
@@ -48,14 +50,46 @@ const sentryDsn = process.env.SENTRY_DSN ?? '';
 
 // --- Deploy URLs (Vercel build-time; CSR has no runtime server injection) ---
 // Angular calls DEML Django BFF only. FORJD + Supabase are server-side via Django.
-const buildBackendUrl = process.env.BACKEND_URL ?? '';
-const buildMarketingUrl = process.env.MARKETING_URL ?? '';
-const vercelFrontend =
+const onVercel = Boolean(process.env.VERCEL);
+const isLocalUrl = value =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/?$/i.test(String(value || '').trim());
+
+let buildBackendUrl = process.env.BACKEND_URL ?? '';
+let buildMarketingUrl = process.env.MARKETING_URL ?? '';
+let vercelFrontend =
   process.env.FRONTEND_URL ||
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : '') ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
+
+// Never bake localhost API/marketing URLs into a Vercel production bundle.
+if (onVercel && isLocalUrl(buildBackendUrl)) {
+  console.warn(
+    'set-env: rejecting localhost BACKEND_URL on Vercel; using https://backend.deml.app',
+  );
+  buildBackendUrl = 'https://backend.deml.app';
+}
+if (onVercel && isLocalUrl(buildMarketingUrl)) {
+  console.warn(
+    'set-env: rejecting localhost MARKETING_URL on Vercel; using https://dataengineeringformachinelearning.com',
+  );
+  buildMarketingUrl = 'https://dataengineeringformachinelearning.com';
+}
+if (onVercel && isLocalUrl(vercelFrontend)) {
+  console.warn('set-env: rejecting localhost FRONTEND_URL on Vercel; using https://deml.app');
+  vercelFrontend = 'https://deml.app';
+}
+if (onVercel && !buildBackendUrl) {
+  buildBackendUrl = 'https://backend.deml.app';
+}
+if (onVercel && !buildMarketingUrl) {
+  buildMarketingUrl = 'https://dataengineeringformachinelearning.com';
+}
+if (onVercel && !vercelFrontend) {
+  vercelFrontend = 'https://deml.app';
+}
+
 const buildFrontendUrl = vercelFrontend;
 const forjdApiUrl = process.env.FORJD_API_URL ?? 'https://backend.forjd.co';
 const supabaseUrl = process.env.SUPABASE_URL ?? '';

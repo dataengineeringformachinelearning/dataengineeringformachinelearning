@@ -22,6 +22,8 @@ primary_region = 'iad'
   DEBUG = 'False'
   STRUCTURED_LOGS = 'true'
   DEML_TRANSPORT_SECURITY = 'required'
+  # TLS terminates at Fly edge; internal health checks are plain HTTP.
+  SECURE_SSL_REDIRECT = 'False'
   # Non-secret defaults — override with secrets / fly secrets as needed.
   FORJD_API_URL = 'https://backend.forjd.co'
   FORJD_CUTOVER_PHASE = '2'
@@ -54,6 +56,8 @@ primary_region = 'iad'
     grace_period = '45s'
     method = 'GET'
     path = '/api/v1/health'
+    [http_service.checks.headers]
+      Host = 'deml-backend.fly.dev'
 
   [[http_service.checks]]
     interval = '30s'
@@ -61,6 +65,8 @@ primary_region = 'iad'
     grace_period = '60s'
     method = 'GET'
     path = '/api/v1/ready'
+    [http_service.checks.headers]
+      Host = 'deml-backend.fly.dev'
 
 [[vm]]
   size = 'shared-cpu-2x'

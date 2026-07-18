@@ -66,21 +66,25 @@ def request_account_deletion(user: User, firebase_uid: str | None = None) -> Use
   return job
 
 
-def _erase_forjd_tenant(account_id: uuid.UUID) -> tuple[bool, str]:
+def _erase_forjd_tenant(
+  account_id: uuid.UUID,
+  *,
+  allow_inactive: bool = False,
+) -> tuple[bool, str]:
   """Call FORJD erase for the mapped tenant. Returns (ok, error_detail)."""
-  mapping = ForjdTenantMapping.objects.filter(
-    deml_account_id=account_id,
-    is_active=True,
-  ).first()
-  if mapping is None:
-    # Already inactive / never mapped — treat as erased.
-    return True, ""
-
   from forjd.client import ForjdClient, ForjdError
   from forjd.tenancy import ForjdTenantConfigurationError, resolve_forjd_tenant_credential
 
+  has_mapping = ForjdTenantMapping.objects.filter(deml_account_id=account_id).exists()
+  if not has_mapping:
+    # Never mapped — nothing to erase on FORJD.
+    return True, ""
+
   try:
-    credential = resolve_forjd_tenant_credential(account_id)
+    credential = resolve_forjd_tenant_credential(
+      account_id,
+      allow_inactive=allow_inactive,
+    )
   except ForjdTenantConfigurationError as exc:
     return False, str(exc)
 
@@ -155,28 +159,35 @@ def execute_deletion_job(job: UserLifecycleJob) -> bool:
   steps_completed = list(job.steps_completed or [])
 
   # 1) Durable FORJD erase (revokes fjsvc_ + deletes tenant rows).
-  erased, erase_error = _erase_forjd_tenant(job.account_id)
-  if not erased:
-    ForjdTenantMapping.objects.filter(deml_account_id=job.account_id).update(
-      is_active=False,
-      updated_at=timezone.now(),
-    )
-    if "forjd_calls_stopped" not in steps_completed:
-      steps_completed.append("forjd_calls_stopped")
-    job.state = UserLifecycleJob.State.FAILED
-    job.last_error = erase_error or FORJD_TENANT_ERASE_BLOCKER
-    job.completed_at = None
-    job.steps_completed = steps_completed
-    job.save(update_fields=["state", "last_error", "completed_at", "steps_completed", "updated_at"])
-    logger.warning(
-      "Account deletion blocked on FORJD erase for %s: %s",
-      job.account_id,
-      job.last_error,
-    )
-    return False
-
+  # Retries must still erase even if mapping was deactivated after a prior failure.
   if "forjd_erased" not in steps_completed:
+    erased, erase_error = _erase_forjd_tenant(
+      job.account_id,
+      allow_inactive=True,
+    )
+    if not erased:
+      # Stop new partner calls, but keep the mapping row for erase retries.
+      ForjdTenantMapping.objects.filter(deml_account_id=job.account_id).update(
+        is_active=False,
+        updated_at=timezone.now(),
+      )
+      if "forjd_calls_stopped" not in steps_completed:
+        steps_completed.append("forjd_calls_stopped")
+      job.state = UserLifecycleJob.State.FAILED
+      job.last_error = erase_error or FORJD_TENANT_ERASE_BLOCKER
+      job.completed_at = None
+      job.steps_completed = steps_completed
+      job.save(
+        update_fields=["state", "last_error", "completed_at", "steps_completed", "updated_at"]
+      )
+      logger.warning(
+        "Account deletion blocked on FORJD erase for %s: %s",
+        job.account_id,
+        job.last_error,
+      )
+      return False
     steps_completed.append("forjd_erased")
+
   ForjdTenantMapping.objects.filter(deml_account_id=job.account_id).update(
     is_active=False,
     updated_at=timezone.now(),
@@ -185,7 +196,6 @@ def execute_deletion_job(job: UserLifecycleJob) -> bool:
     steps_completed.append("forjd_calls_stopped")
   job.steps_completed = steps_completed
   job.save(update_fields=["steps_completed", "updated_at"])
-
   # 2) Mark complete before deleting the user (FK SET_NULL on user delete).
   job.state = UserLifecycleJob.State.COMPLETED
   job.last_error = ""

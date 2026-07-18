@@ -59,6 +59,25 @@ def empty_analytics_overview() -> dict[str, Any]:
 
 
 # --- Status pages list (MonitorService expects a JSON array) ---
+def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[str, Any]:
+  created = page.get("created_at")
+  return {
+    "id": str(page.get("id") or ""),
+    "title": str(page.get("title") or ""),
+    "slug": str(page.get("slug") or ""),
+    "description": str(page.get("description") or ""),
+    "is_published": bool(page.get("is_published")),
+    "created_at": created.isoformat() if hasattr(created, "isoformat") else str(created or ""),
+    "user_id": deml_user_id,
+    "overall_uptime": None,
+    "cumulative_sla": None,
+    "uptime_history": [],
+    "p99_latency": None,
+    "total_requests": None,
+    "threats_detected_24h": None,
+  }
+
+
 def deml_status_pages(
   forjd_body: dict[str, Any],
   *,
@@ -67,29 +86,91 @@ def deml_status_pages(
   pages = forjd_body.get("pages")
   if not isinstance(pages, list):
     return []
+  return [
+    deml_status_page(page, deml_user_id=deml_user_id) for page in pages if isinstance(page, dict)
+  ]
+
+
+def deml_status_services(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  rows = forjd_body.get("services")
+  if not isinstance(rows, list):
+    return []
   out: list[dict[str, Any]] = []
-  for page in pages:
-    if not isinstance(page, dict):
+  for row in rows:
+    if not isinstance(row, dict):
       continue
-    created = page.get("created_at")
+    updated = row.get("updated_at")
     out.append(
       {
-        "id": str(page.get("id") or ""),
-        "title": str(page.get("title") or ""),
-        "slug": str(page.get("slug") or ""),
-        "description": str(page.get("description") or ""),
-        "is_published": bool(page.get("is_published")),
-        "created_at": created.isoformat() if hasattr(created, "isoformat") else str(created or ""),
-        "user_id": deml_user_id,
-        "overall_uptime": None,
-        "cumulative_sla": None,
-        "uptime_history": [],
-        "p99_latency": None,
-        "total_requests": None,
-        "threats_detected_24h": None,
+        "id": str(row.get("id") or ""),
+        "name": str(row.get("name") or ""),
+        "url": str(row.get("description") or ""),
+        "status_page_id": str(row.get("page_id") or ""),
+        "created_at": updated.isoformat() if hasattr(updated, "isoformat") else str(updated or ""),
+        "status": str(row.get("status") or "operational"),
+        "sla": None,
       }
     )
   return out
+
+
+def deml_status_service(forjd_body: dict[str, Any]) -> dict[str, Any]:
+  svc = forjd_body.get("service") if isinstance(forjd_body.get("service"), dict) else forjd_body
+  rows = deml_status_services({"services": [svc] if isinstance(svc, dict) else []})
+  return (
+    rows[0]
+    if rows
+    else {
+      "id": "",
+      "name": "",
+      "url": "",
+      "status_page_id": "",
+      "created_at": "",
+      "status": "operational",
+    }
+  )
+
+
+def deml_status_incidents(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  rows = forjd_body.get("incidents")
+  if not isinstance(rows, list):
+    return []
+  out: list[dict[str, Any]] = []
+  for row in rows:
+    if not isinstance(row, dict):
+      continue
+    started = row.get("started_at")
+    started_s = started.isoformat() if hasattr(started, "isoformat") else str(started or "")
+    out.append(
+      {
+        "id": str(row.get("id") or ""),
+        "title": str(row.get("title") or ""),
+        "message": str(row.get("body") or ""),
+        "status": str(row.get("status") or "investigating"),
+        "status_page_id": str(row.get("page_id") or ""),
+        "created_at": started_s,
+        "updated_at": started_s,
+      }
+    )
+  return out
+
+
+def deml_status_incident(forjd_body: dict[str, Any]) -> dict[str, Any]:
+  inc = forjd_body.get("incident") if isinstance(forjd_body.get("incident"), dict) else forjd_body
+  rows = deml_status_incidents({"incidents": [inc] if isinstance(inc, dict) else []})
+  return (
+    rows[0]
+    if rows
+    else {
+      "id": "",
+      "title": "",
+      "message": "",
+      "status": "investigating",
+      "status_page_id": "",
+      "created_at": "",
+      "updated_at": "",
+    }
+  )
 
 
 # --- Vulnerabilities (VulnerabilityService expects a JSON array) ---

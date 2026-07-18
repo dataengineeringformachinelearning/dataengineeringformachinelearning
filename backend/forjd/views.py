@@ -18,7 +18,12 @@ from forjd.angular_compat import (
   deml_export_job,
   deml_export_jobs,
   deml_ml_latest,
+  deml_status_incident,
+  deml_status_incidents,
+  deml_status_page,
   deml_status_pages,
+  deml_status_service,
+  deml_status_services,
   deml_vulnerabilities,
   empty_analytics_overview,
   empty_capability_envelope,
@@ -58,7 +63,7 @@ TenantBinding = Literal[
   "method",
   "sealed_method",
 ]
-SUPPORTED_METHODS: Final[frozenset[str]] = frozenset({"GET", "POST", "DELETE"})
+SUPPORTED_METHODS: Final[frozenset[str]] = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -373,50 +378,382 @@ async def analytics_overview_proxy(request: HttpRequest) -> HttpResponse:
 
 
 async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
-  """Proxy FORJD status pages list into MonitorService's JSON array contract."""
-  if request.method != "GET":
+  """GET list / POST create — Angular ``/api/v1/system-status/status_pages``."""
+  if request.method == "GET":
+    try:
+      credential = await _credential_for_request(request)
+      deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
+      if not reads_from_forjd():
+        return JsonResponse([], status=200, safe=False)
+      client = ForjdClient(
+        tenant_id=credential.tenant_id,
+        service_token=credential.service_token,
+      )
+      _body, query_string = _bound_request(request, credential.tenant_id, "query")
+      response = await client.proxy(
+        "GET",
+        "/api/v1/status/pages",
+        body=None,
+        query_string=query_string,
+        content_type="application/json",
+        request_id=request_id_from(request),
+      )
+      if response.status >= 400:
+        if empty_read_fallback_enabled() and response.status >= 500:
+          return JsonResponse([], status=200, safe=False)
+        return JsonResponse(
+          {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+          status=response.status,
+        )
+      upstream = json.loads(response.body)
+      if not isinstance(upstream, dict):
+        raise AdapterError(502, "FORJD returned an invalid status pages list")
+      pages = deml_status_pages(upstream, deml_user_id=deml_user_id)
+      return JsonResponse(pages, status=200, safe=False)
+    except AdapterError as exc:
+      return JsonResponse({"detail": exc.detail}, status=exc.status)
+    except ForjdError as exc:
+      if empty_read_fallback_enabled() and exc.status >= 500:
+        return JsonResponse([], status=200, safe=False)
+      return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+      return JsonResponse(
+        {"detail": "FORJD returned an invalid status pages list", "source": "forjd"},
+        status=502,
+      )
+
+  if request.method != "POST":
     return JsonResponse({"detail": "Method not allowed"}, status=405)
   try:
+    if not writes_enabled():
+      return JsonResponse(
+        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        status=503,
+      )
     credential = await _credential_for_request(request)
     deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
-    if not reads_from_forjd():
-      return JsonResponse([], status=200, safe=False)
+    payload = _json_object(request)
+    body = json.dumps(
+      {
+        "tenant_id": str(credential.tenant_id),
+        "slug": str(payload.get("slug") or ""),
+        "title": str(payload.get("title") or ""),
+        "description": str(payload.get("description") or ""),
+        "is_published": bool(payload.get("is_published")),
+      }
+    ).encode()
     client = ForjdClient(
       tenant_id=credential.tenant_id,
       service_token=credential.service_token,
     )
-    _body, query_string = _bound_request(request, credential.tenant_id, "query")
     response = await client.proxy(
-      "GET",
+      "POST",
       "/api/v1/status/pages",
-      body=None,
-      query_string=query_string,
+      body=body,
       content_type="application/json",
       request_id=request_id_from(request),
     )
     if response.status >= 400:
-      if empty_read_fallback_enabled() and response.status >= 500:
+      return JsonResponse(
+        {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+        status=response.status,
+      )
+    upstream = json.loads(response.body)
+    page = upstream.get("page") if isinstance(upstream, dict) else None
+    if not isinstance(page, dict):
+      raise AdapterError(502, "FORJD returned an invalid status page")
+    return JsonResponse(deml_status_page(page, deml_user_id=deml_user_id), status=200)
+  except AdapterError as exc:
+    return JsonResponse({"detail": exc.detail}, status=exc.status)
+  except ForjdError as exc:
+    return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return JsonResponse(
+      {"detail": "FORJD returned an invalid status page", "source": "forjd"},
+      status=502,
+    )
+
+
+async def status_page_detail_proxy(request: HttpRequest, page_id: str) -> HttpResponse:
+  """PUT update / DELETE — Angular ``/status_pages/{id}``."""
+  if request.method not in {"PUT", "PATCH", "DELETE"}:
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  try:
+    if not writes_enabled():
+      return JsonResponse(
+        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        status=503,
+      )
+    credential = await _credential_for_request(request)
+    deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
+    client = ForjdClient(
+      tenant_id=credential.tenant_id,
+      service_token=credential.service_token,
+    )
+    if request.method == "DELETE":
+      response = await client.proxy(
+        "DELETE",
+        f"/api/v1/status/pages/{quote(page_id, safe='')}",
+        query_string=f"tenant_id={credential.tenant_id}",
+        request_id=request_id_from(request),
+      )
+      if response.status >= 400:
+        return JsonResponse(
+          {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+          status=response.status,
+        )
+      return JsonResponse({"ok": True}, status=200)
+
+    payload = _json_object(request)
+    body = json.dumps(
+      {
+        "tenant_id": str(credential.tenant_id),
+        "slug": payload.get("slug"),
+        "title": payload.get("title"),
+        "description": payload.get("description"),
+        "is_published": payload.get("is_published"),
+      }
+    ).encode()
+    response = await client.proxy(
+      "PATCH",
+      f"/api/v1/status/pages/{quote(page_id, safe='')}",
+      body=body,
+      content_type="application/json",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      return JsonResponse(
+        {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+        status=response.status,
+      )
+    upstream = json.loads(response.body)
+    page = upstream.get("page") if isinstance(upstream, dict) else None
+    if not isinstance(page, dict):
+      raise AdapterError(502, "FORJD returned an invalid status page")
+    return JsonResponse(deml_status_page(page, deml_user_id=deml_user_id), status=200)
+  except AdapterError as exc:
+    return JsonResponse({"detail": exc.detail}, status=exc.status)
+  except ForjdError as exc:
+    return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return JsonResponse(
+      {"detail": "FORJD returned an invalid status page", "source": "forjd"},
+      status=502,
+    )
+
+
+async def status_page_services_proxy(request: HttpRequest, page_id: str) -> HttpResponse:
+  """GET list / POST create — ``/status_pages/{id}/services``."""
+  try:
+    credential = await _credential_for_request(request)
+    client = ForjdClient(
+      tenant_id=credential.tenant_id,
+      service_token=credential.service_token,
+    )
+    if request.method == "GET":
+      if not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
+      response = await client.proxy(
+        "GET",
+        f"/api/v1/status/pages/{quote(page_id, safe='')}/services",
+        query_string=f"tenant_id={credential.tenant_id}",
+        request_id=request_id_from(request),
+      )
+      if response.status >= 400:
+        if empty_read_fallback_enabled() and response.status >= 500:
+          return JsonResponse([], status=200, safe=False)
+        return JsonResponse(
+          {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+          status=response.status,
+        )
+      upstream = json.loads(response.body)
+      if not isinstance(upstream, dict):
+        raise AdapterError(502, "FORJD returned invalid services")
+      return JsonResponse(deml_status_services(upstream), status=200, safe=False)
+
+    if request.method != "POST":
+      return JsonResponse({"detail": "Method not allowed"}, status=405)
+    if not writes_enabled():
+      return JsonResponse(
+        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        status=503,
+      )
+    payload = _json_object(request)
+    # Angular sends {name, url}; map url → description.
+    body = json.dumps(
+      {
+        "tenant_id": str(credential.tenant_id),
+        "name": str(payload.get("name") or ""),
+        "description": str(payload.get("url") or payload.get("description") or ""),
+        "status": str(payload.get("status") or "operational"),
+      }
+    ).encode()
+    response = await client.proxy(
+      "POST",
+      f"/api/v1/status/pages/{quote(page_id, safe='')}/services",
+      body=body,
+      content_type="application/json",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
       return JsonResponse(
         {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
         status=response.status,
       )
     upstream = json.loads(response.body)
     if not isinstance(upstream, dict):
-      raise AdapterError(502, "FORJD returned an invalid status pages list")
-    pages = deml_status_pages(upstream, deml_user_id=deml_user_id)
-    return JsonResponse(pages, status=200, safe=False)
+      raise AdapterError(502, "FORJD returned invalid service")
+    return JsonResponse(deml_status_service(upstream), status=200)
   except AdapterError as exc:
     return JsonResponse({"detail": exc.detail}, status=exc.status)
   except ForjdError as exc:
-    if empty_read_fallback_enabled() and exc.status >= 500:
-      return JsonResponse([], status=200, safe=False)
     return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
   except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
     return JsonResponse(
-      {"detail": "FORJD returned an invalid status pages list", "source": "forjd"},
+      {"detail": "FORJD returned invalid service", "source": "forjd"},
       status=502,
     )
+
+
+async def status_service_delete_proxy(request: HttpRequest, service_id: str) -> HttpResponse:
+  if request.method != "DELETE":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  try:
+    if not writes_enabled():
+      return JsonResponse(
+        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        status=503,
+      )
+    credential = await _credential_for_request(request)
+    client = ForjdClient(
+      tenant_id=credential.tenant_id,
+      service_token=credential.service_token,
+    )
+    response = await client.proxy(
+      "DELETE",
+      f"/api/v1/status/services/{quote(service_id, safe='')}",
+      query_string=f"tenant_id={credential.tenant_id}",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      return JsonResponse(
+        {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+        status=response.status,
+      )
+    return JsonResponse({"ok": True}, status=200)
+  except AdapterError as exc:
+    return JsonResponse({"detail": exc.detail}, status=exc.status)
+  except ForjdError as exc:
+    return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
+
+
+async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> HttpResponse:
+  """GET list / POST create — ``/status_pages/{id}/incidents``."""
+  try:
+    credential = await _credential_for_request(request)
+    client = ForjdClient(
+      tenant_id=credential.tenant_id,
+      service_token=credential.service_token,
+    )
+    if request.method == "GET":
+      if not reads_from_forjd():
+        return JsonResponse([], status=200, safe=False)
+      response = await client.proxy(
+        "GET",
+        f"/api/v1/status/pages/{quote(page_id, safe='')}/incidents",
+        query_string=f"tenant_id={credential.tenant_id}",
+        request_id=request_id_from(request),
+      )
+      if response.status >= 400:
+        if empty_read_fallback_enabled() and response.status >= 500:
+          return JsonResponse([], status=200, safe=False)
+        return JsonResponse(
+          {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+          status=response.status,
+        )
+      upstream = json.loads(response.body)
+      if not isinstance(upstream, dict):
+        raise AdapterError(502, "FORJD returned invalid incidents")
+      return JsonResponse(deml_status_incidents(upstream), status=200, safe=False)
+
+    if request.method != "POST":
+      return JsonResponse({"detail": "Method not allowed"}, status=405)
+    if not writes_enabled():
+      return JsonResponse(
+        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        status=503,
+      )
+    payload = _json_object(request)
+    # Angular sends {title, message, status}.
+    status_val = str(payload.get("status") or "investigating")
+    if status_val not in {"investigating", "identified", "monitoring", "resolved"}:
+      status_val = "investigating"
+    body = json.dumps(
+      {
+        "tenant_id": str(credential.tenant_id),
+        "title": str(payload.get("title") or ""),
+        "body": str(payload.get("message") or payload.get("body") or ""),
+        "status": status_val,
+        "severity": str(payload.get("severity") or "minor"),
+      }
+    ).encode()
+    response = await client.proxy(
+      "POST",
+      f"/api/v1/status/pages/{quote(page_id, safe='')}/incidents",
+      body=body,
+      content_type="application/json",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      return JsonResponse(
+        {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+        status=response.status,
+      )
+    upstream = json.loads(response.body)
+    if not isinstance(upstream, dict):
+      raise AdapterError(502, "FORJD returned invalid incident")
+    return JsonResponse(deml_status_incident(upstream), status=200)
+  except AdapterError as exc:
+    return JsonResponse({"detail": exc.detail}, status=exc.status)
+  except ForjdError as exc:
+    return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return JsonResponse(
+      {"detail": "FORJD returned invalid incident", "source": "forjd"},
+      status=502,
+    )
+
+
+async def status_incident_delete_proxy(request: HttpRequest, incident_id: str) -> HttpResponse:
+  if request.method != "DELETE":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  try:
+    if not writes_enabled():
+      return JsonResponse(
+        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        status=503,
+      )
+    credential = await _credential_for_request(request)
+    client = ForjdClient(
+      tenant_id=credential.tenant_id,
+      service_token=credential.service_token,
+    )
+    response = await client.proxy(
+      "DELETE",
+      f"/api/v1/status/incidents/{quote(incident_id, safe='')}",
+      query_string=f"tenant_id={credential.tenant_id}",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      return JsonResponse(
+        {"detail": response.body.decode("utf-8", errors="replace"), "source": "forjd"},
+        status=response.status,
+      )
+    return JsonResponse({"ok": True}, status=200)
+  except AdapterError as exc:
+    return JsonResponse({"detail": exc.detail}, status=exc.status)
+  except ForjdError as exc:
+    return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
 
 
 async def session_revoke_proxy(request: HttpRequest, session_id: str) -> HttpResponse:

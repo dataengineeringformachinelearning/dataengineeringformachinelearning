@@ -17,7 +17,8 @@
     "deml-clickhouse",
     "deml-rustfs",
     "deml-tor-proxy",
-    "deml-dragonfly"
+    "deml-dragonfly",
+    "deml-frontend"
   ],
   "services": {
     "deml-backend": {
@@ -56,12 +57,6 @@
         "REDIS_SSL_CA",
         "REDIS_SSL_CA_B64"
       ]
-    },
-    "deml-frontend": {
-      "class": "learning-frontend",
-      "configDir": "infrastructure/railway/frontend",
-      "dockerfile": "frontend/Dockerfile",
-      "requiredEnv": ["BACKEND_URL", "FRONTEND_URL"]
     }
   }
 }

@@ -6,7 +6,7 @@ DEML is the Firebase-authenticated user control plane and Angular backend-for-fr
 
 **Production cutover:** use phase flags `FORJD_CUTOVER_PHASE` / `FORJD_WRITE_MODE` / `FORJD_READ_MODE` and follow [`docs/CUTOVER.md`](./CUTOVER.md) plus the shared [`docs/PRODUCTION_CUTOVER_CHECKLIST.md`](./PRODUCTION_CUTOVER_CHECKLIST.md). Dual-write records metadata-only shadow receipts — never ciphertext — and never revives Redpanda, ClickHouse, or DEML workers.
 
-**Angular during cutover:** Dashboard CES, status pages, sessions, replay/DLQ, vulnerabilities list, exports list/create, ML latest, and security-alert ingest are BFF-mapped to FORJD natives. Remaining unshipped paths (train/forecast detail, export download, some system-status/telemetry) stay empty-stable GET or `501` on writes so the SPA does not hard-crash.
+**Angular during cutover:** Dashboard CES, status pages CRUD (+ services/incidents), sessions, replay/DLQ, vulnerabilities list, exports list/create, ML latest, and security-alert ingest are BFF-mapped to FORJD natives. Remaining unshipped paths (ML train/forecast, export download, Clarity/Cloudflare/GA integrations) stay empty-stable GET or `501` on writes so the SPA does not hard-crash.
 
 This contract reflects what FORJD ships now. Canonical references: FORJD `backend/docs/AUTH.md`, `ARCHITECTURE.md`, `backend/app/models/ingest.py`, `backend/workflows/threat_telemetry.yaml`. DEML’s Django BFF may accept product-local wire ids (`deml_telemetry` / `deml.metric`) from Angular and rewrite them to the universal FORJD family (`threat_telemetry` / `threat.metric`) before the network call.
 
