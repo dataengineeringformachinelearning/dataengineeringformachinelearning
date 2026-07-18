@@ -97,7 +97,7 @@ def test_authenticated_adapter_uses_native_path_and_mapped_tenant(
   call = mock_proxy.await_args
   assert call.args == ("GET", "/api/v1/projections")
   assert parse_qs(call.kwargs["query_string"]) == {
-    "workflow_id": ["deml_telemetry"],
+    "workflow_id": ["threat_telemetry"],
     "limit": ["25"],
     "tenant_id": [str(tenant_id)],
   }
@@ -153,7 +153,10 @@ def test_stable_ingest_path_forwards_only_valid_sealed_telemetry(
   assert response.status_code == 200
   call = mock_proxy.await_args
   assert call.args == ("POST", "/api/v1/ingest")
-  assert json.loads(call.kwargs["body"])["tenant_id"] == str(tenant_id)
+  forwarded = json.loads(call.kwargs["body"])
+  assert forwarded["tenant_id"] == str(tenant_id)
+  assert forwarded["workflow_id"] == "threat_telemetry"
+  assert forwarded["event_type"] == "threat.metric"
   assert "actor_headers" not in call.kwargs
 
 

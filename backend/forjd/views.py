@@ -18,8 +18,15 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from pydantic import ValidationError
 
-from forjd.api import SealedEvent, SealedEventBatch, request_id_from
+from forjd.api import (
+  LEGACY_EVENT_TYPES,
+  LEGACY_WORKFLOW_IDS,
+  SealedEvent,
+  SealedEventBatch,
+  request_id_from,
+)
 from forjd.client import ForjdClient, ForjdError
+from forjd.flags import read_from_forjd
 from forjd.tenancy import (
   ForjdTenantConfigurationError,
   ForjdTenantCredential,
@@ -65,12 +72,29 @@ def _require_payload_tenant(payload_tenant_id: UUID, tenant_id: UUID) -> None:
     raise AdapterError(403, "Request tenant does not match the account's FORJD tenant")
 
 
+def _canonicalize_workflow_id(value: object) -> object:
+  if isinstance(value, str):
+    return LEGACY_WORKFLOW_IDS.get(value, value)
+  return value
+
+
+def _canonicalize_event_type(value: object) -> object:
+  if isinstance(value, str):
+    return LEGACY_EVENT_TYPES.get(value, value)
+  return value
+
+
 def _bind_query(request: HttpRequest, tenant_id: UUID) -> str:
   query = request.GET.copy()
   supplied_tenants = query.getlist("tenant_id")
   if supplied_tenants and any(value != str(tenant_id) for value in supplied_tenants):
     raise AdapterError(403, "Request tenant does not match the account's FORJD tenant")
   query.setlist("tenant_id", [str(tenant_id)])
+  if "workflow_id" in query:
+    query.setlist(
+      "workflow_id",
+      [str(_canonicalize_workflow_id(value)) for value in query.getlist("workflow_id")],
+    )
   return query.urlencode()
 
 
@@ -90,6 +114,10 @@ def _bind_body(request: HttpRequest, tenant_id: UUID) -> bytes:
   if supplied_tenant is not None and str(supplied_tenant) != str(tenant_id):
     raise AdapterError(403, "Request tenant does not match the account's FORJD tenant")
   payload["tenant_id"] = str(tenant_id)
+  if "workflow_id" in payload:
+    payload["workflow_id"] = _canonicalize_workflow_id(payload["workflow_id"])
+  if "event_type" in payload:
+    payload["event_type"] = _canonicalize_event_type(payload["event_type"])
   return json.dumps(payload, separators=(",", ":")).encode()
 
 
@@ -170,6 +198,8 @@ async def native_forjd_proxy(
       body = request.body or None
       query_string = request.META.get("QUERY_STRING", "")
     else:
+      if not read_from_forjd():
+        raise AdapterError(503, "FORJD data-plane reads are temporarily disabled")
       credential = await _credential_for_request(request)
       client = _client_for_credential(credential)
       body, query_string = _bound_request(request, credential.tenant_id, tenant_binding)

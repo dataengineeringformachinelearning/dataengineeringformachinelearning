@@ -104,7 +104,9 @@ def test_ingest_forwards_only_mapped_sealed_telemetry(
   assert response.json() == {"ok": True, "accepted": 1}
   forwarded_payload = mock_ingest.await_args.args[0]
   assert forwarded_payload["tenant_id"] == str(tenant_id)
-  assert forwarded_payload["workflow_id"] == "deml_telemetry"
+  # Legacy deml_* wire ids are rewritten to FORJD-canonical threat_* at the BFF.
+  assert forwarded_payload["workflow_id"] == "threat_telemetry"
+  assert forwarded_payload["event_type"] == "threat.metric"
   assert UUID(mock_ingest.await_args.kwargs["request_id"])
 
 

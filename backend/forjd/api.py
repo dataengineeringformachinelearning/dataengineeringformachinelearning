@@ -24,7 +24,16 @@ from forjd.tenancy import (
 router = Router(tags=["FORJD"])
 
 TELEMETRY_CONTENT_TYPE: Final[str] = "application/forjd-telemetry+v1"
-TELEMETRY_WORKFLOW_ID: Final[str] = "deml_telemetry"
+TELEMETRY_WORKFLOW_ID: Final[str] = "threat_telemetry"
+# Accept legacy DEML wire ids at the BFF, then rewrite to FORJD-canonical ids
+# so FORJD core never needs product-specific aliases.
+LEGACY_WORKFLOW_IDS: Final[dict[str, str]] = {
+  "deml_telemetry": TELEMETRY_WORKFLOW_ID,
+}
+LEGACY_EVENT_TYPES: Final[dict[str, str]] = {
+  "deml.metric": "threat.metric",
+  "deml.alert": "threat.alert",
+}
 ALLOWED_METADATA_KEYS: Final[frozenset[str]] = frozenset(
   {
     "source",
@@ -86,9 +95,11 @@ class SealedEvent(StrictSchema):
   tenant_id: UUID
   client_event_id: str = Field(min_length=1, max_length=128)
   content_type: Literal["application/forjd-telemetry+v1"] = TELEMETRY_CONTENT_TYPE
-  event_type: Literal["deml.metric", "deml.alert"] = "deml.metric"
+  event_type: Literal["threat.metric", "threat.alert", "deml.metric", "deml.alert"] = (
+    "threat.metric"
+  )
   schema_version: int = Field(default=1, ge=1, le=1000)
-  workflow_id: Literal["deml_telemetry"] = TELEMETRY_WORKFLOW_ID
+  workflow_id: Literal["threat_telemetry", "deml_telemetry"] = TELEMETRY_WORKFLOW_ID
   encryption: EncryptionOptions = Field(default_factory=EncryptionOptions)
   envelope: EncryptedEnvelope
   metadata: dict[str, Any] = Field(default_factory=dict)
@@ -119,6 +130,15 @@ class SealedEvent(StrictSchema):
           f"metadata.{key} contains a non-routing value; plaintext and identifiers are forbidden"
         )
     return metadata
+
+  @model_validator(mode="after")
+  def canonicalize_forjd_wire_ids(self) -> SealedEvent:
+    """Rewrite legacy DEML ids to FORJD-canonical threat_* before forwarding."""
+    workflow_id = LEGACY_WORKFLOW_IDS.get(self.workflow_id, self.workflow_id)
+    event_type = LEGACY_EVENT_TYPES.get(self.event_type, self.event_type)
+    if workflow_id == self.workflow_id and event_type == self.event_type:
+      return self
+    return self.model_copy(update={"workflow_id": workflow_id, "event_type": event_type})
 
 
 class SealedEventBatch(StrictSchema):

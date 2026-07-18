@@ -230,7 +230,7 @@ async def test_list_projections_binds_tenant_query() -> None:
   assert session.requests[0]["method"] == "GET"
   assert session.requests[0]["url"].startswith("https://forjd.example/api/v1/projections?")
   assert f"tenant_id={TENANT_ID}" in session.requests[0]["url"]
-  assert "workflow_id=deml_telemetry" in session.requests[0]["url"]
+  assert "workflow_id=threat_telemetry" in session.requests[0]["url"]
   assert session.requests[0]["headers"]["Authorization"] == f"Bearer {SERVICE_TOKEN}"
 
 

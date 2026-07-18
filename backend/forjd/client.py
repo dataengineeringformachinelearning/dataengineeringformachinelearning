@@ -147,11 +147,15 @@ class ForjdClient:
     return headers
 
   def _tenant_query(self, **params: str | int | None) -> str:
+    from forjd.api import LEGACY_WORKFLOW_IDS
+
     self._validate_configuration()
     query: dict[str, str] = {"tenant_id": self.tenant_id}
     for key, value in params.items():
       if value is None or value == "":
         continue
+      if key == "workflow_id" and isinstance(value, str):
+        value = LEGACY_WORKFLOW_IDS.get(value, value)
       query[key] = str(value)
     return urlencode(query)
 
@@ -316,9 +320,11 @@ class ForjdClient:
     limit: int = 200,
     request_id: str | None = None,
   ) -> dict[str, Any]:
+    from forjd.api import LEGACY_WORKFLOW_IDS
+
     payload: dict[str, Any] = {"tenant_id": self.tenant_id, "limit": limit}
     if workflow_id:
-      payload["workflow_id"] = workflow_id
+      payload["workflow_id"] = LEGACY_WORKFLOW_IDS.get(workflow_id, workflow_id)
     return await self.request_json(
       "POST",
       "/api/v1/projections/run",
