@@ -438,19 +438,35 @@ def deml_ml_latest(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
 
 # --- Empty-stable GET envelopes for capabilities still on 501 writes ---
 def empty_capability_envelope(capability: str, path: str) -> Any:
-  """Return Angular-safe empty bodies so list pages do not hard-fail on GET."""
+  """Return Angular-safe empty bodies so list pages do not hard-fail on GET.
+
+  Dict envelopes set ``degraded=True`` so outage empties are distinguishable
+  from real empty success. Bare ``[]`` list contracts stay unchanged.
+  """
   if capability == "analytics":
     # /analytics/tenants expects an envelope whose ``data`` is a list; the
     # overview shape (data as object) makes the Angular tenant selector crash.
     if "tenants" in path:
-      return {"status": "success", "data": [], "source": "forjd"}
-    return empty_analytics_overview()
+      return {
+        "status": "success",
+        "data": [],
+        "source": "forjd",
+        "degraded": True,
+      }
+    overview = empty_analytics_overview()
+    if isinstance(overview, dict):
+      return {**overview, "degraded": True}
+    return overview
   if capability == "system-status":
     if "status_pages" in path:
       return []
     if "endpoints" in path or "services" in path or "incidents" in path:
       return []
-    return {"status": "unknown", "detail": "forjd_capability_unavailable"}
+    return {
+      "status": "unknown",
+      "detail": "forjd_capability_unavailable",
+      "degraded": True,
+    }
   if capability in {"ml", "exports", "telemetry", "integrations", "model"}:
     return []
   if capability == "vulnerabilities":
@@ -461,4 +477,5 @@ def empty_capability_envelope(capability: str, path: str) -> Any:
       "service-principal contract"
     ),
     "code": "forjd_capability_unavailable",
+    "degraded": True,
   }

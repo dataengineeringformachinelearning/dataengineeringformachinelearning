@@ -14,7 +14,8 @@ Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
   Identity, profiles, roles, billing, consent, API credentials, issue reports,
   learning/library content, and account lifecycle remain local.
 - FORJD owns sealed intake, streaming, transformation, projections, analytics, ML,
-  threat processing, replay, and DLQ.
+  threat processing, replay, and DLQ. The retired DEML-local OpenTelemetry /
+  ClickHouse / Redpanda plane must not return — see BOOK.md Chapter 34.
 - DEML calls FORJD with a tenant-bound opaque `fjsvc_` service token. It never calls
   an OAuth token endpoint, uses Supabase `service_role`, or forwards Firebase
   end-user tokens.

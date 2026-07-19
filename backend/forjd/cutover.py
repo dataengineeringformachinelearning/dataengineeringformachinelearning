@@ -104,12 +104,17 @@ def is_read_fallback_path(target_path: str) -> bool:
 
 
 def empty_read_envelope(target_path: str) -> dict[str, Any]:
-  """Stable JSON shapes for Angular list adapters when FORJD is skipped/down."""
+  """Stable JSON shapes for Angular list adapters when FORJD is skipped/down.
+
+  ``degraded=True`` marks fallback empties so clients never treat an outage
+  as a successful empty dataset.
+  """
   path = target_path.rstrip("/")
   base = {
     "source": "deml_forjd_fallback",
     "code": "forjd_read_fallback",
     "path": path,
+    "degraded": True,
   }
   if path.endswith("/checkpoints"):
     return {**base, "checkpoints": [], "items": []}

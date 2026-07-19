@@ -67,7 +67,13 @@ def test_deml_status_pages_sets_deml_user_id() -> None:
 
 def test_empty_capability_get_envelopes() -> None:
   assert empty_capability_envelope("system-status", "/api/v1/system-status/endpoints") == []
-  assert empty_capability_envelope("analytics", "/api/v1/analytics/tenants")["status"] == "success"
+  tenants = empty_capability_envelope("analytics", "/api/v1/analytics/tenants")
+  assert tenants["status"] == "success"
+  assert tenants["degraded"] is True
+  unavailable = empty_capability_envelope("unknown-cap", "/api/v1/unknown")
+  assert unavailable["code"] == "forjd_capability_unavailable"
+  assert unavailable["degraded"] is True
+  assert empty_capability_envelope("ml", "/api/v1/ml/models") == []
 
 
 def test_deml_vulnerabilities_maps_array() -> None:

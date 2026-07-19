@@ -62,8 +62,13 @@ def test_explicit_modes_when_phase_unset() -> None:
 
 
 def test_empty_read_envelope_shapes() -> None:
-  assert "items" in empty_read_envelope("/api/v1/projections")
-  assert "checkpoints" in empty_read_envelope("/api/v1/projections/checkpoints")
+  projections = empty_read_envelope("/api/v1/projections")
+  assert "items" in projections
+  assert projections["degraded"] is True
+  assert projections["code"] == "forjd_read_fallback"
+  checkpoints = empty_read_envelope("/api/v1/projections/checkpoints")
+  assert "checkpoints" in checkpoints
+  assert checkpoints["degraded"] is True
 
 
 @pytest.mark.django_db
@@ -86,6 +91,7 @@ def test_phase_zero_projections_return_empty_without_forjd_call(client: Client) 
   assert response.status_code == 200
   body = response.json()
   assert body["code"] == "forjd_read_fallback"
+  assert body["degraded"] is True
   assert body["items"] == []
   mock_proxy.assert_not_awaited()
 

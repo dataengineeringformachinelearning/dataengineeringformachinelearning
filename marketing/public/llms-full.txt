@@ -157,7 +157,7 @@ For the platform hypothesis, value proposition, architecture diagrams, and algor
 
 The Angular product surface remains DEML-owned. Dashboards, analytics, monitoring, status pages, vulnerability views, onboarding, and generated clients call Django. Django adapts established product paths to FORJD-native routes that exist for the tenant-bound service principal. Capabilities FORJD does not expose fail closed as FORJD dependencies—DEML does not implement a parallel processing plane.
 
-DEML is a trusted FORJD subprocessor authenticated with a tenant-bound opaque `fjsvc_` service token. Firebase remains the DEML end-user identity provider; its tokens terminate at Django and are never forwarded to FORJD. DEML maps each account to a FORJD tenant and secret reference, forwards sealed telemetry through native `/api/v1/ingest`, and never uses OAuth client credentials, Supabase `service_role`, or direct FORJD storage access. Account deletion calls FORJD `POST /api/v1/tenants/{id}/erase` before local teardown. Learning progress stored by DEML remains local until an agreed `deml_learning_v1` contract exists.
+DEML is a trusted FORJD subprocessor authenticated with a tenant-bound opaque `fjsvc_` service token. Firebase remains the DEML end-user identity provider; its tokens terminate at Django and are never forwarded to FORJD. DEML maps each account to a FORJD tenant and secret reference, forwards sealed telemetry through native `/api/v1/ingest`, and never uses OAuth client credentials, Supabase `service_role`, or direct FORJD storage access. Account deletion calls FORJD `POST /api/v1/tenants/{id}/erase` before local teardown. Learning progress stored by DEML remains local until an agreed `deml_learning_v1` contract exists. The historical DEML plane (OpenTelemetry Collector, ClickHouse, Redpanda) is retired—[Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd) records Then vs Now.
 
 ### Headless SIEM and SOAR control contract
 
@@ -187,6 +187,7 @@ Durable export creation preserves FORJD's `202 Accepted` response through the BF
 - [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) — AI-navigable code wiki
 - [Presentation (Gamma)](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg) — slide-deck companion to this book
 - [Acknowledgements & Technologies](#acknowledgements--technologies)
+- [Chapter 34: Then vs Now — OTel / ClickHouse / Redpanda → FORJD](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd)
 
 ---
 
@@ -499,16 +500,17 @@ Semantic versioning and release notes: `scripts/git_flow.py` ([Chapter 16](#chap
 
 ### 15. Documentation Map
 
-| Document                                                                 | Audience                 | Content                             |
-| ------------------------------------------------------------------------ | ------------------------ | ----------------------------------- |
-| **This CONOPS**                                                          | Operators, architects    | End-to-end operational narrative    |
-| [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference) | On-call engineers        | Checklists, modes, quick reference  |
-| [WHITEPAPER.md](WHITEAPER.md) §2                                         | Executives, reviewers    | Concise CONOPS + hypothesis         |
-| [README.md](README.md)                                                   | Integrators              | API gateway, architecture diagram   |
-| [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)                   | Integrators / BFF owners | Tenant binding & sealed ingest      |
-| [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md)                   | DevOps                   | Vercel + Fly + FORJD deploy         |
-| [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md)             | SRE                      | Production readiness checklist      |
-| [AGENTS.md](AGENTS.md)                                                   | AI agents / contributors | Coding principles aligned to CONOPS |
+| Document                                                                                   | Audience                 | Content                                     |
+| ------------------------------------------------------------------------------------------ | ------------------------ | ------------------------------------------- |
+| **This CONOPS**                                                                            | Operators, architects    | End-to-end operational narrative            |
+| [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference)                   | On-call engineers        | Checklists, modes, quick reference          |
+| [WHITEPAPER.md](WHITEAPER.md) §2                                                           | Executives, reviewers    | Concise CONOPS + hypothesis                 |
+| [README.md](README.md)                                                                     | Integrators              | API gateway, architecture diagram           |
+| [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)                                     | Integrators / BFF owners | Tenant binding & sealed ingest              |
+| [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md)                                     | DevOps                   | Vercel + Fly + FORJD deploy                 |
+| [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md)                               | SRE                      | Production readiness checklist              |
+| [AGENTS.md](AGENTS.md)                                                                     | AI agents / contributors | Coding principles aligned to CONOPS         |
+| [Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd) | Architects / operators   | Historical data-plane cutover (Then vs Now) |
 
 ---
 
@@ -1002,15 +1004,17 @@ async def post_ingest(request, payload: dict):
     return {"status": "accepted"}
 ```
 
-### OpenTelemetry and FORJD Analytics Integration
+### Product telemetry vs optional OTLP
 
-DEML forwards sealed telemetry to FORJD; FORJD owns processing, projections, and OLAP-style analytics retention. Application services emit OTLP where configured; operators query analytics through Django BFF adapters to FORJD rather than a DEML-local columnar cluster.
+**Product telemetry** is sealed AES-256-GCM envelopes on `/api/v1/ingest` — not a DEML-owned OpenTelemetry → ClickHouse lane. FORJD owns processing, durable projections, analytics retention, replay, and DLQ. Operators query analytics through Django BFF adapters; DEML never runs a local columnar cluster or message broker for this path.
+
+Optional **control-plane** observability (Sentry, edge analytics, future OTLP exporters for operator traces) may still emit outside the sealed product lane. That traffic must never be labeled E2EE and must never resurrect a DEML-local stream plane. The historical cutover from OpenTelemetry Collector + ClickHouse + Redpanda to FORJD is documented in [Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd).
 
 ---
 
 ## Chapter 9: Applying a Use-Case (The Status Page)
 
-The sealed telemetry path I described in the previous chapter—DEML forwarding to FORJD, with Polars for finite batch transforms and OpenTelemetry where configured—is a marvel of distributed systems engineering. However, infrastructure alone does not provide value; it must be harnessed to solve tangible business problems and enhance the human experience. To demonstrate the practical application of this architecture, I will build a cornerstone feature of any modern, reliable platform: a highly available, public-facing status dashboard. This use-case forces me to bridge the gap between raw data engineering and transparent, real-time user communication.
+The sealed telemetry path I described in the previous chapter—DEML forwarding to FORJD, with Polars for finite batch transforms inside FORJD—is the production spine. However, infrastructure alone does not provide value; it must be harnessed to solve tangible business problems and enhance the human experience. To demonstrate the practical application of this architecture, I will build a cornerstone feature of any modern, reliable platform: a highly available, public-facing status dashboard. This use-case forces me to bridge the gap between raw data engineering and transparent, real-time user communication.
 
 **Ownership boundary:** Status pages, services, incidents, and uptime projections live in **FORJD** (`/api/v1/status/*`). Angular calls stable DEML paths such as `/api/v1/system-status/status_pages`; Django authenticates the Firebase session and proxies through `backend/forjd/` adapters with a tenant-bound `fjsvc_` token. Local Django `StatusPage` / `StatusPageUptimeDaily` models are retired (migration `0053`).
 
@@ -1208,7 +1212,7 @@ This automated data portability ensures that the moment an architectural change 
 
 ## Chapter 19: Third-Party Telemetry and Cloudflare Integration
 
-My internal telemetry pipelines, anchored by OpenTelemetry and FORJD analytics, provide unparalleled visibility into the internal execution states of my application code and database queries. However, a robust solutions architecture recognizes that a platform does not exist in a vacuum; it exists on the hostile frontier of the public internet. If I restrict my observability exclusively to the boundaries of my own virtual private cloud, I remain fundamentally blind to the critical journey the user's request takes before it ever reaches my ingress controllers. To achieve comprehensive, end-to-end situational awareness, I must aggressively expand my telemetry net to the absolute edge of the network.
+My internal telemetry pipelines, anchored by sealed FORJD ingest and BFF-adapted projections/analytics, provide visibility into product execution states without a DEML-local broker or OLAP cluster. However, a robust solutions architecture recognizes that a platform does not exist in a vacuum; it exists on the hostile frontier of the public internet. If I restrict my observability exclusively to the boundaries of my own virtual private cloud, I remain fundamentally blind to the critical journey the user's request takes before it ever reaches my ingress controllers. To achieve comprehensive, end-to-end situational awareness, I must aggressively expand my telemetry net to the absolute edge of the network.
 
 To accomplish this, I integrate Cloudflare Web Analytics. Cloudflare’s globally distributed Anycast network sits in front of my infrastructure, acting as the primary shield against volumetric DDoS attacks and malicious traffic. By tapping into Cloudflare’s native analytics engine, I capture incredibly rich, privacy-first insights regarding DNS routing performance, edge caching efficiency, and global bandwidth consumption long before the HTTP packets hit my Django backend.
 
@@ -1387,7 +1391,7 @@ While my internal Django workers manage the live operational state of the applic
 
 In the complex landscape of modern distributed systems, relying on disparate and isolated metrics often leads to fragmented situational awareness and delayed incident response times. To solve this critical observability challenge, I engineered the Countermeasure Effectiveness Standard (CES), a unified, high-level measurement paradigm designed to predict and quantify the overall health, SLA adherence, and stableness of the entire platform. By aggressively aggregating high-velocity telemetry data from multiple sources—including P99 latency distribution, active incident tracking, and continuous uptime percentages—the CES synthesizes these complex vectors into a singular, rapidly interpretable score. This approach represents a paradigm shift away from traditional, flat dashboards that require operators to manually correlate scattered charts during high-stress operational events. Instead, the CES acts as an intelligent, predictive barometer, instantly signaling the platform's defensive posture and operational integrity. By codifying what constitutes "healthy" behavior through a weighted algorithmic formula, the CES provides an unmistakable, top-down view of system performance. This empowers engineering teams to proactively deploy countermeasures the moment the CES begins to degrade, rather than reacting retroactively to individual alarms. Ultimately, the Countermeasure Effectiveness Standard ensures that every layer of the technology stack is continuously evaluated against a rigorous, unified benchmark of operational excellence.
 
-The technical foundation of the Countermeasure Effectiveness Standard relies heavily on my advanced observability pipeline, leveraging the speed and scalability of OpenTelemetry and FORJD analytics. As application services and infrastructural components emit native OTLP telemetry via gRPC and HTTP protocols, an OpenTelemetry Collector intercepts, processes, and batches this high-volume data stream. This telemetry is then aggressively routed into FORJD analytics, a lightning-fast columnar database specifically optimized for Online Analytical Processing (OLAP) workloads. From this robust data warehouse, the analytics engine continuously extracts vital metrics such as total request volume, transient latency spikes, and ongoing system incidents. The backend logic then applies a sophisticated, weighted mathematical formula to calculate three distinct sub-scores: Threat Level, SLA Level, and Stableness. The Threat Level aggressively penalizes the system for active incidents and severe latency anomalies, while the SLA Level tracks strict adherence to performance bounds and uptime commitments. Simultaneously, the Stableness metric monitors the steady-state execution of the platform, penalizing erratic latency fluctuations. These three vectors are then computationally fused into the master CES score, providing a mathematically rigorous, real-time reflection of the system's operational reality without overwhelming the primary transactional database. This ensures that the analytical workload required to generate the Countermeasure Effectiveness Standard remains completely isolated from the critical path of the application, guaranteeing that my machine learning models and predictive threat intelligence algorithms always have access to pristine, uninterrupted telemetry data for continuous learning.
+The technical foundation of the Countermeasure Effectiveness Standard relies on FORJD-owned projections and analytics, not a DEML-local OpenTelemetry → ClickHouse warehouse. Sealed product telemetry enters FORJD through Django's BFF; FORJD materializes durable `stream_results` and analytics that Angular reads through stable DEML adapters. From those projections the CES engine extracts request volume, latency spikes, and incident signals, then applies a weighted formula to three sub-scores: Threat Level, SLA Level, and Stableness. Threat Level penalizes active incidents and severe latency anomalies; SLA Level tracks performance bounds and uptime; Stableness penalizes erratic steady-state fluctuation. The three vectors fuse into the master CES score without overwhelming DEML's transactional Postgres. Analytical and ML workloads remain on the FORJD data plane—exactly the separation earned by retiring ClickHouse and Redpanda from the DEML control plane ([Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd)).
 
 To visually represent the Countermeasure Effectiveness Standard on the analytics dashboard, I deliberately abandoned generic, off-the-shelf charting libraries in favor of native SVG gauge clusters styled through Viking-UI and [THEME.md](THEME.md). The CES meter follows precision instrumentation: machined charcoal wells (`--viking-surface-alt`), restrained top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`), and negative letter-spacing on instrument labels. Display typography uses `.viking-font-display` (Inter bold caps) exclusively for gauge badges and CES caps — never on body copy — with `0.08em` caps spacing per the design system. Animated SVG needles sweep across Threat, SLA, and Stableness sub-dials colored by semantic tokens: `--viking-crimson-500` for threat, `--viking-teal-600` for SLA adherence, and `--viking-green-500` for stableness. High-contrast token discipline ensures operators assess defensive posture at a single glance without decorative neon glow or gradient clutter — aligning the visual language with unyielding performance and reliability.
 
@@ -1415,7 +1419,7 @@ Scheduled task: enrich_web_technologies
   → FORJD projection / security dashboard
 ```
 
-Finally, the fully enriched vulnerability ledger is written to FORJD analytics through its authenticated HTTP `JSONEachRow` interface for fast analytical querying, while critical vulnerabilities are selectively synchronized into the operational Django database to alert administrators via the real-time Security dashboard. Fresh volumes receive the canonical MergeTree schema from the image; runtime idempotent schema upgrades keep persistent volumes compatible.
+Finally, enriched vulnerability evidence is persisted through FORJD scanner / threat surfaces (tenant-scoped tables and projections) and surfaced on the Security dashboard via Django BFF adapters. Critical findings may also be summarized in DEML-owned operational views for operator alerting. DEML does not write ClickHouse `JSONEachRow` / MergeTree volumes; that warehouse pattern is retired ([Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd)).
 
 ---
 
@@ -1512,7 +1516,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Data plane**: [PostgreSQL](https://www.postgresql.org/) (DEML identity), [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (sealed streaming engine), [Dragonfly](https://dragonflydb.io/) (FORJD), [Polars](https://pola.rs/)
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [Appendix Z](#appendix-z-integration-guides)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [FORJD analytics](https://FORJD analytics.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Firecrawl](https://www.firecrawl.dev/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (sealed product telemetry, projections, analytics—replacing the retired OpenTelemetry Collector + ClickHouse + Redpanda plane; see [Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd)), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Firecrawl](https://www.firecrawl.dev/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Vercel](https://vercel.com/), [Fly.io](https://fly.io/), [Cloud Run](https://cloud.google.com/run/) (alternate), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
 - **Documentation & code maps**: [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning), [Appendix Q: Glossary](#appendix-q-deml-glossary), [Appendix M: Billing](#appendix-m-billing--subscriptions-operator-reference)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
@@ -1820,23 +1824,16 @@ OLAP-style analytics, traces, and durable projections are owned by **FORJD**. DE
 - Ops: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md), [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md)
 - DEML only needs `FORJD_API_URL` + tenant-bound `FORJD_SERVICE_TOKEN` (secret ref)
 
-### 8. OpenTelemetry Collector (Router)
+### 8. OpenTelemetry Collector (Retired — historical Cloud Run note)
 
-The OpenTelemetry Collector receives all spans and metrics from the frontend widget and backend, processing them securely before batch-inserting into FORJD analytics.
+**Do not deploy.** Product telemetry no longer uses an OpenTelemetry Collector → ClickHouse (or "FORJD analytics" TCP) path. The sealed FORJD ingest lane replaced that topology; see [Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd).
 
-- **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/infrastructure/otel-collector`
-- **Builder**: Dockerfile (utilizes secure `otel/opentelemetry-collector-contrib` distroless base)
-- **Start Command**: Uses default Docker entrypoint
-- **Target Port**: `4318` (OTLP HTTP)
-- **Private Internal DNS**: `deml-telemetry-collector.internal`
-- **Public URL**: `https://telemetry.deml.app`
-- **Compute Limits**: 4 vCPU / 4 GB Memory
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**:
-- **FORJD_ANALYTICS_HOST**: The internal TCP host of your FORJD analytics service (e.g. `forjd-analytics.internal`).
-- **FORJD_ANALYTICS_USER**: Must match what you set in the FORJD analytics service.
-- **FORJD_ANALYTICS_PASSWORD**: Must match what you set in the FORJD analytics service.
+The bullets below are retained only so alternate-host cost models and old runbooks remain interpretable:
+
+- **Former root**: `/infrastructure/otel-collector` (OTLP HTTP `:4318`)
+- **Former public hostname**: `telemetry.deml.app` / `deml-telemetry-collector.internal`
+- **Replacement**: Angular/API sealed envelopes → Django BFF → FORJD `/api/v1/ingest` with tenant-bound `fjsvc_`
+- **Ops**: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)
 
 ### 9. Vulnerability Scanning (FORJD)
 
@@ -1894,21 +1891,18 @@ _(Once deployed, set `DRAGONFLY_HOST=Dragonfly (FORJD).internal` on **deml-backe
 
 All inter-service traffic uses private mesh DNS where applicable. **Never** expose database or cache traffic over public URLs; FORJD is reached only over HTTPS with `fjsvc_`.
 
-| Service         | Internal address                                               |
-| --------------- | -------------------------------------------------------------- |
-| Backend API     | `deml-backend.internal:8080`                                   |
-| Frontend        | `deml-frontend.internal:8080`                                  |
-| Postgres        | Via `DATABASE_URL` (internal connection string from Cloud Run) |
-| FORJD           | `backend.forjd.co`                                             |
-| Dragonfly       | `Dragonfly (FORJD).internal:6379`                              |
-| FORJD analytics | `forjd-analytics.internal:8123`                                |
-| Scanner         | `FORJD vulnerability surfaces.internal:8000`                   |
-| CPE lookup      | `FORJD CPE lookup.internal:8080`                               |
-| Tor proxy       | `FORJD OSINT routing.internal:9050`                            |
+| Service       | Internal address                                                                   |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Backend API   | `deml-backend.internal:8080`                                                       |
+| Frontend      | `deml-frontend.internal:8080`                                                      |
+| Postgres      | Via `DATABASE_URL` (internal connection string from Cloud Run)                     |
+| FORJD API     | `https://backend.forjd.co` (HTTPS + `fjsvc_`; no DEML-local `:8123` analytics DSN) |
+| Dragonfly     | FORJD-owned Redis-protocol cache (not a DEML service)                              |
+| Scanner / CPE | FORJD-owned surfaces (proxied via Django BFF)                                      |
 
 ## Local Development (`docker-compose.yml`)
 
-Local parity includes the Django control plane, telemetry and execution workers, FORJD engine, Postgres, FORJD, Dragonfly, FORJD analytics, Rust CPE lookup with a one-shot indexer, Tor proxy, and supporting infrastructure. Copy the environment examples and use localhost overrides:
+Local parity focuses on the Django control plane, Postgres, and calls to a running FORJD API (local or `backend.forjd.co`). DEML does not compose ClickHouse, Redpanda, or an OTel Collector for product telemetry ([Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd)). Copy the environment examples and use localhost overrides:
 
 ```
 FORJD_API_URL=https://backend.forjd.co
@@ -2069,12 +2063,11 @@ Update the containers JSON (or use the Lightsail console) to reference the new i
 - Expose via private hostname or authenticated public endpoint only as needed for Firebase Functions.
 - Set `FORJD_API_URL`, `FORJD_SERVICE_TOKEN`, and `FORJD_TENANT_ID` on the Django BFF.
 
-**FORJD analytics**
+**FORJD analytics (not a DEML ClickHouse service)**
 
-- Use the `infrastructure/FORJD analytics` Dockerfile.
-- Mount persistent volume at `/var/lib/forjd-analytics`.
-- Configure via `forjd-analytics-config.xml` and environment (`FORJD_ANALYTICS_USER`, `FORJD_ANALYTICS_PASSWORD`).
-- Consumers point `FORJD_ANALYTICS_HOST` and port 8123.
+- Analytics and CES inputs are FORJD API projections—not a DEML-owned columnar image on port 8123.
+- Do not deploy `infrastructure/FORJD analytics`, `forjd-analytics-config.xml`, or ClickHouse volumes on the control plane.
+- Set `FORJD_API_URL` + tenant-bound `FORJD_SERVICE_TOKEN` on Django; read analytics through BFF adapters.
 
 **Postgres**
 
@@ -2100,7 +2093,7 @@ Inside a Lightsail Container Service, containers resolve each other by the names
 
 1. Build and push all images to ECR from the existing Dockerfiles.
 2. Provision Postgres target and restore data.
-3. Stand up FORJD and FORJD analytics with volumes; use `rpk` to recreate topics or mirror from the old cluster.
+3. Point Django at FORJD (`FORJD_API_URL` + secret ref). Do not recreate Redpanda topics (`rpk`) or ClickHouse volumes—that plane is retired ([Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd)).
 4. Create the Lightsail Container Service deployment referencing ECR images and the full environment variable set.
 5. Point DNS / load balancer at the new public endpoint(s).
 6. Verify: Django `/api/v1/ready`, FORJD `/ready`, platform-status, and a full sealed ingest → projection read path.
@@ -2114,7 +2107,7 @@ Operational modes (normal, FORJD degraded, auth degraded, maintenance) and symme
 - Prefer calling external FORJD rather than hosting a data plane on Fargate.
 - Monitor with CloudWatch or existing Sentry + CES gauges.
 - Scale horizontally by adding Lightsail nodes only when CPU/memory or request latency demands it.
-- Persistent storage for FORJD analytics and FORJD is the primary growth vector; set retention policies aggressively in the workers (`db_cleanup`, FORJD analytics TTL).
+- FORJD retention (sealed events, projections, analytics TTL) is the primary data-growth vector; DEML `db_cleanup` covers control-plane rows only.
 
 This AWS topology delivers a production-grade, observable, secure deployment at significantly lower operational surface area than a dozen individually managed services while staying faithful to the platform's precision-engineered design.
 
@@ -2213,7 +2206,8 @@ This guide compiles instructions from across the workspace to help you run the d
 Make sure Docker Desktop is open and running, then execute the following command from the repository root:
 
 ```bash
-docker-compose up -d postgres FORJD FORJD analytics otel-collector
+docker-compose up -d postgres
+# Product telemetry uses FORJD (remote or local engine)—not otel-collector / ClickHouse / Redpanda.
 ```
 
 ---
@@ -2666,7 +2660,7 @@ Production hosts are Vercel for the Angular app (`deml`) and Fly.io for the Djan
 
 ### Database ingestion, retention, and scheduler efficiency
 
-Telemetry enters through `/api/v1/ingest`, Firebase `sealed ingest`, and OpenTelemetry collectors. Django authenticates each call, resolves the tenant binding, and forwards sealed envelopes to FORJD synchronously through the BFF adapters; FORJD owns the transactional outbox (Postgres outbox + Dragonfly streams), durable delivery, retries, and DLQ admission. FORJD projects idempotently into durable `stream_results` and analytics. Retention is enforced in FORJD: raw telemetry and audit evidence age out at **30 days**, and outbox/DLQ windows are engine policy. Tenant data erasure flows through FORJD `POST /api/v1/tenants/{id}/erase` plus the DEML account lifecycle. FORJD's scheduler creates durable, unique UTC task buckets for analytics, reports, exports, threat intelligence, cleanup, and ML training. Email dispatches on the DEML side use durable queues—no fire-and-forget request threads.
+Telemetry enters through `/api/v1/ingest` (and its batch form) as client-sealed envelopes. Django authenticates each call, resolves the tenant binding, and forwards to FORJD synchronously through the BFF adapters; FORJD owns the transactional outbox (Postgres outbox + Dragonfly streams), durable delivery, retries, and DLQ admission. FORJD projects idempotently into durable `stream_results` and analytics. Retention is enforced in FORJD: raw telemetry and audit evidence age out at **30 days**, and outbox/DLQ windows are engine policy. Tenant data erasure flows through FORJD `POST /api/v1/tenants/{id}/erase` plus the DEML account lifecycle. FORJD's scheduler creates durable, unique UTC task buckets for analytics, reports, exports, threat intelligence, cleanup, and ML training. Email dispatches on the DEML side use durable queues—no fire-and-forget request threads. A DEML-local OpenTelemetry Collector → ClickHouse → Redpanda plane is retired; see [Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd).
 
 ### Multi-tenant security and regulatory alignment
 
@@ -2679,6 +2673,112 @@ Before any merge, I run `uvx pre-commit run --all-files`, `npm run test:viking-u
 ### Documentation as operational truth
 
 When infrastructure or compliance posture changes, I update BOOK.md first, sync WHITEPAPER.md milestones, refresh the live `/documentation` Developer Portal on the marketing site, and run `python3 scripts/sync_content.py` so deml.app routes and search indexes stay aligned. Documentation is not marketing copy — it is the contract operators and auditors read when production behavior must be verified under stress.
+
+## Chapter 34: Then vs Now — From OpenTelemetry, ClickHouse, and Redpanda to FORJD
+
+This chapter is the explicit **Then vs Now** record for DEML's data plane. Earlier chapters describe the steady-state architecture; this chapter documents what we initially operated, why that topology failed our tenancy and security bar, and what we run instead. Operators and agents must not reintroduce the retired stack under a new name.
+
+### Why a first data plane existed
+
+DEML began as a full-stack learning and observability product. Identity, billing, Angular dashboards, and telemetry processing lived in one repository. To keep Django off the hot path, the first architecture borrowed a familiar industry pattern:
+
+1. **Emit** — services and the browser produced OpenTelemetry (OTLP) spans and metrics.
+2. **Route** — an OpenTelemetry Collector batched and exported high-volume telemetry.
+3. **Buffer** — a Kafka-compatible broker (**Redpanda**) absorbed bursts between producers and consumers.
+4. **Store / analyze** — a columnar OLAP store (**ClickHouse**) powered dashboards, CES-style rollups, and long-window analytics.
+5. **Project locally** — DEML workers (and later a Railway-hosted Rust data plane) materialized product read models beside Django.
+
+That stack was coherent for a single-owner SaaS that treated telemetry as operator observability. It was the wrong spine for a multi-tenant product that must forward **ciphertext-only** events, bind every call to a tenant, and keep the learning/control plane free of stream-broker operations.
+
+### Then: what we initially did
+
+| Concern             | Initial DEML-owned plane                                       |
+| ------------------- | -------------------------------------------------------------- |
+| Signal shape        | OTLP spans/metrics; often plaintext or lightly redacted        |
+| Ingest edge         | OTel Collector (`infrastructure/otel-collector`, OTLP `:4318`) |
+| Buffering           | Redpanda (or equivalent Kafka-protocol bus) on Railway/Fly     |
+| Analytics warehouse | ClickHouse (columnar OLAP) queried for CES and dashboards      |
+| Durable processing  | DEML/Railway workers, local outbox patterns, dual ownership    |
+| Product reads       | Mix of Django models + local projections + CH queries          |
+| Auth to data plane  | Shared service credentials, cluster DSNs, collector env vars   |
+| Failure mode        | Partial empties, dual writes, "is CH lag or is the app down?"  |
+
+Concrete friction showed up in operations and security review:
+
+- **Credential and surface sprawl.** Collector hosts, ClickHouse users/passwords, Redpanda ACLs, and worker DSNs multiplied. A partner integration could not be expressed as one tenant-bound token.
+- **Wrong trust boundary.** Firebase end-user identity and OTLP exporter credentials are not substitutes for sealed envelopes. Labeling plaintext or OTLP product telemetry as E2EE was dishonest.
+- **Split brain.** Django, ClickHouse, and Redpanda each held partial truth. Replay meant replaying a broker topic _and_ reconciling a columnar table _and_ healing local projections.
+- **Control-plane weight.** Running OLAP + broker + collector beside identity and Stripe billing forced DEML into stream-platform ops it did not want to own.
+- **Symmetry failure.** Not every account could run the same pipeline without provisioning CH/Redpanda capacity per tenant—antithetical to symmetrical multi-account control.
+
+Appendix C still documents an alternate Cloud Run topology that once assumed an OTel Collector writing into an analytics warehouse. That section is historical residency math—not the product path. Appendix T records the retirement of the Railway Rust data-plane roles that briefly replaced parts of this stack before FORJD became exclusive.
+
+### Now: what we do
+
+| Concern            | Steady-state FORJD plane                                                         |
+| ------------------ | -------------------------------------------------------------------------------- |
+| Signal shape       | Client-sealed AES-256-GCM envelopes (`key_id` + ciphertext + routing metadata)   |
+| Ingest edge        | Angular/API → Django BFF (Firebase or `deml_…` key) → FORJD `/api/v1/ingest`     |
+| Buffering          | FORJD Postgres outbox + Dragonfly streams (inside FORJD)                         |
+| Analytics / CES    | FORJD durable `stream_results` + analytics APIs via Django adapters              |
+| Durable processing | FORJD workflows, engine roles, Prefect soft-fail where configured                |
+| Product reads      | Stable DEML paths; Django adapts only allowlisted FORJD routes                   |
+| Auth to data plane | Tenant-bound opaque `fjsvc_` service token; secret **ref** in DEML Postgres      |
+| Failure mode       | Typed `503` / `forjd_degraded` (or explicit `degraded: true` fallback envelopes) |
+
+DEML owns identity, profiles, roles, Stripe billing, consent, learning content, API credentials, and the Angular surface. FORJD owns sealed intake, streaming, projections, analytics, ML, SIEM/SOAR, reports, replay, DLQ, and tenant erase. Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md). Ownership appendix: [Appendix T](#appendix-t-data-plane-ownership-forjd). Observability chapter (steady state): [Chapter 8](#chapter-8-enhancing-observability).
+
+```mermaid
+flowchart TB
+  subgraph then [Then — retired]
+    A1[Apps / browser] -->|OTLP| C1[OTel Collector]
+    C1 --> R1[Redpanda]
+    R1 --> CH[ClickHouse]
+    R1 --> W1[DEML / Railway workers]
+    W1 --> PG1[(Local projections)]
+    CH --> UI1[Dashboards]
+    PG1 --> UI1
+  end
+
+  subgraph now [Now — steady state]
+    A2[Angular / integrators] -->|Firebase or deml_ key + sealed envelope| DJ[Django BFF]
+    DJ -->|fjsvc_| FJ[FORJD API + engine]
+    FJ --> DF[(Dragonfly)]
+    FJ --> SB[(Supabase Postgres)]
+    FJ --> PR[Projections analytics ML SIEM]
+    A2 -->|Product reads| DJ
+    DJ -.->|BFF adapters| PR
+  end
+```
+
+### Benefits of the cutover
+
+1. **One trust model.** Partners and DEML itself authenticate to FORJD with a tenant-bound `fjsvc_` token. End-user Firebase JWTs terminate at Django and are never forwarded.
+2. **Ciphertext-first product lane.** Sealed envelopes carry routing metadata only; plaintext lesson content, PII, and scores stay out of ingest metadata. E2EE is a real cryptographic boundary, not a marketing label on OTLP.
+3. **Lean control plane.** DEML no longer runs ClickHouse nodes, Redpanda clusters, or OTel Collectors for product telemetry. Fly Django + managed Postgres + Vercel stay focused on identity and BFF adaptation.
+4. **Durable recovery.** Replay and DLQ are FORJD contracts with idempotent projection keys—not ad-hoc "replay the topic into CH and hope the dashboard catches up."
+5. **Fail-closed honesty.** Steady `FORJD_READ_MODE=forjd` returns typed degradation; empty success is reserved for explicit cutover modes and is marked `degraded: true` so Angular never confuses an outage with an empty tenant.
+6. **Symmetrical tenancy.** Every mapped account uses the same adapter paths; capacity and RLS live in FORJD, not in per-tenant CH databases provisioned from DEML.
+7. **Clear erase saga.** Account deletion calls FORJD `POST /api/v1/tenants/{id}/erase` before local teardown—impossible to express cleanly when telemetry lived in three stores.
+8. **Optional add-ons stay optional.** FORJD's lean-core / fat-extension model (`FORJD_ADDONS`) keeps scanners and intel behind config gates without dragging pandas/OLAP into the sealed path.
+
+### What must not return
+
+- Do **not** add OpenTelemetry Collector, ClickHouse, Redpanda, Kafka, or a DEML-local projection worker "for convenience."
+- Do **not** query FORJD Postgres or Dragonfly from Django.
+- Do **not** forward Firebase tokens or `deml_…` keys to FORJD.
+- Do **not** treat missing FORJD SIEM/analytics routes as empty `200` success lists without an explicit degraded marker.
+- Do **not** document OTLP → columnar warehouse as the product telemetry path; optional operator tracing is a separate, non-E2EE concern.
+
+### Operator checklist after reading this chapter
+
+1. Confirm production flags: `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd` (or cutover phase 2).
+2. Confirm every account that needs data-plane access has `map_forjd_tenant` + secret ref (never a plaintext token in git).
+3. Confirm Railway/ClickHouse/Redpanda/OTel collector services for product telemetry are absent from live topology ([`infrastructure/railway/README.md`](infrastructure/railway/README.md)).
+4. Confirm dashboards and CES read through Django adapters to FORJD—not direct CH DSNs.
+5. On FORJD outage: restore FORJD; do not stand up a temporary Redpanda/ClickHouse sidecar.
+
+The transition is complete when DEML's repository contains adapters and policy—not brokers and warehouses. Everything else in this book assumes **Now**.
 
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 
@@ -2930,15 +3030,15 @@ This document tells operators **how DEML runs in production**: vendors, services
 
 ## 2. System mission
 
-| Goal                   | Mechanism                                                                                    |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| Non-blocking ingestion | Firebase `sealed ingest` + Django BFF sealed forward → FORJD (FORJD owns the durable outbox) |
-| Real-time dashboards   | FORJD `stream_results` projections read through the Django BFF                               |
-| Transactional truth    | PostgreSQL (users, pages, incidents, API keys)                                               |
-| Analytics & CES        | OpenTelemetry → FORJD analytics                                                              |
-| Tenant isolation       | `account_id` scoping + FORJD tenant binding and Supabase RLS                                 |
-| Public transparency    | `platform-status` dogfoods under real load                                                   |
-| Paid tiers             | Stripe Standard → Pro ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))  |
+| Goal                   | Mechanism                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Non-blocking ingestion | Firebase `sealed ingest` + Django BFF sealed forward → FORJD (FORJD owns the durable outbox)                                                            |
+| Real-time dashboards   | FORJD `stream_results` projections read through the Django BFF                                                                                          |
+| Transactional truth    | PostgreSQL (users, pages, incidents, API keys)                                                                                                          |
+| Analytics & CES        | Sealed FORJD ingest → projections/analytics via Django BFF ([Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd)) |
+| Tenant isolation       | `account_id` scoping + FORJD tenant binding and Supabase RLS                                                                                            |
+| Public transparency    | `platform-status` dogfoods under real load                                                                                                              |
+| Paid tiers             | Stripe Standard → Pro ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                                                             |
 
 ## 3. Vendor & deployment map
 
@@ -3349,13 +3449,14 @@ Short definitions for architectural patterns, domain concepts, and production co
 
 ## Data stores & mesh
 
-| Term                | Definition                                                                                                                     |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **PostgreSQL**      | Transactional system of record (users, pages, incidents, keys, outbox).                                                        |
-| **FORJD**           | Universal secure streaming engine (sealed ingest, projections, analytics, ML, replay/DLQ). Not a customer integration product. |
-| **Firebase Auth**   | DEML end-user identity; JWTs terminate at Django and are never forwarded to FORJD.                                             |
-| **FORJD analytics** | OLAP store for OpenTelemetry traces/metrics and heavy analytics.                                                               |
-| **Dragonfly**       | Redis-compatible cache / Channels / rate-limit window store.                                                                   |
+| Term                   | Definition                                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **PostgreSQL**         | Transactional system of record (users, pages, incidents, keys, outbox).                                                                                                  |
+| **FORJD**              | Universal secure streaming engine (sealed ingest, projections, analytics, ML, replay/DLQ). Not a customer integration product.                                           |
+| **Firebase Auth**      | DEML end-user identity; JWTs terminate at Django and are never forwarded to FORJD.                                                                                       |
+| **FORJD analytics**    | FORJD-owned analytics and CES inputs read through the Django BFF (not a DEML ClickHouse cluster).                                                                        |
+| **Retired OTel/CH/RP** | Historical DEML plane: OpenTelemetry Collector + ClickHouse + Redpanda — see [Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd). |
+| **Dragonfly**          | Redis-compatible cache / Channels / rate-limit window store.                                                                                                             |
 
 ## Related docs
 
@@ -3542,9 +3643,9 @@ _Note: All Knowledge Distillation API calls happen during the offline training w
 
 ## Appendix T: Data Plane Ownership (FORJD)
 
-**Retired — the DEML-local Rust data plane moved to FORJD.** Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+**Retired — the DEML-local Rust data plane moved to FORJD.** Earlier still, DEML operated an OpenTelemetry Collector → Redpanda → ClickHouse plane for product telemetry; that stack is also retired. Narrative: [Chapter 34](#chapter-34-then-vs-now--from-opentelemetry-clickhouse-and-redpanda-to-forjd). Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
-The data plane is owned by [FORJD](https://github.com/dataengineeringformachinelearning/forjd). The `forjd-engine` binary deploys on Fly.io from the FORJD repository and owns sealed ingest, the transactional outbox (Postgres outbox + Dragonfly streams), durable scheduling, probes, raw-telemetry normalization, request-time CPE lookup, analytics, ML, replay, and DLQ. DEML does not compile, deploy, or operate a local Rust workspace or any `FORJD_ROLE` services.
+The data plane is owned by [FORJD](https://github.com/dataengineeringformachinelearning/forjd). The `forjd-engine` binary deploys on Fly.io from the FORJD repository and owns sealed ingest, the transactional outbox (Postgres outbox + Dragonfly streams), durable scheduling, probes, raw-telemetry normalization, request-time CPE lookup, analytics, ML, replay, and DLQ. DEML does not compile, deploy, or operate a local Rust workspace, ClickHouse cluster, Redpanda bus, or any `FORJD_ROLE` services.
 
 DEML's FORJD deployment uses `infrastructure/forjd/addons.yaml`, whose
 `addons.enabled: all` opts into the complete optional add-on catalog. FORJD
@@ -3603,11 +3704,11 @@ The former Railway data-plane services (relay, scheduler, probe, normalizer, ing
 
 ## Observability
 
-| Signal         | Technology    | Notes                    |
-| -------------- | ------------- | ------------------------ |
-| Metrics        | OpenTelemetry | OTLP to FORJD analytics  |
-| Tracing        | OpenTelemetry | Distributed tracing      |
-| Error Tracking | Sentry        | Production error surface |
+| Signal            | Technology                          | Notes                                                                 |
+| ----------------- | ----------------------------------- | --------------------------------------------------------------------- |
+| Product telemetry | FORJD sealed ingest                 | Client AES-256-GCM → Django BFF → `fjsvc_` (not OTLP→ClickHouse)      |
+| Projections / CES | FORJD analytics via Django adapters | Durable `stream_results`; see Chapter 34 for retired CH/Redpanda path |
+| Error tracking    | Sentry                              | Control-plane production errors                                       |
 
 ## Integrations
 
