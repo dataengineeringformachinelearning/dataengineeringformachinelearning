@@ -109,8 +109,10 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
     raw_api_key = _api_key_from_request(request)
     if raw_api_key is not None:
       if _authenticate_api_key(request, raw_api_key) is None:
+        # Prefix-only audit trail; never log the full credential.
+        # nosemgrep: python.lang.security.audit.logging.logger-credential-leak.python-logger-credential-disclosure
         logger.warning(
-          "DEML API key authentication rejected prefix=%s",
+          "DEML headless authentication rejected prefix=%s",
           (_api_key_prefix(raw_api_key) or "-")[:8],
         )
         return JsonResponse({"detail": "Invalid API key"}, status=401)

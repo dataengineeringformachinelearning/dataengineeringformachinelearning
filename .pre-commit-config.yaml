@@ -127,7 +127,10 @@ repos:
           0007_trainingrun_model_type
           0041_rust_data_plane
           0042_alter_outboxevent_available_at
-          0055_forjd_secret_ref_constraint'
+          0055_forjd_secret_ref_constraint
+          0058_bugreport_delivery_outbox
+          0060_destination_history_lifecycle_fencing
+          0061_bugreport_dead_letter_outbox'
         language: system
         files: ^backend/.*/migrations/
         pass_filenames: false
