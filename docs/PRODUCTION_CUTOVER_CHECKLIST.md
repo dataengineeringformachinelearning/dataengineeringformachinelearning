@@ -53,7 +53,9 @@ python scripts/railway_audit.py --apply --service deml-backend
 python scripts/railway_retire_dataplane.py --apply   # includes deml-dragonfly
 ```
 
-Keep Railway `deml-backend` / `deml-frontend` only as cold standby until DNS is stable on Fly/Vercel.
+Keep Railway `deml-backend` only as cold standby until DNS is stable on Fly.
+`deml-frontend` and `deml-dragonfly` are retired (Vercel + FORJD Dragonfly).
+See `docs/CLEANUP_2026-07-18.md`.
 
 ## D. Separation invariants (no overlaps)
 

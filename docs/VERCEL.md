@@ -52,12 +52,12 @@ Set in Vercel → Project `deml` → Settings → Environment Variables:
 On `deml-backend`, include every browser origin:
 
 ```bash
-# Production custom domain + Vercel previews as needed
-railway variable set \
+# Production custom domain + Vercel previews as needed (primary host: Fly)
+fly secrets set \
   CORS_ALLOWED_ORIGINS=https://deml.app,https://dataengineeringformachinelearning.com,https://deml.vercel.app \
   CSRF_TRUSTED_ORIGINS=https://deml.app,https://dataengineeringformachinelearning.com,https://deml.vercel.app \
   FRONTEND_URL=https://deml.app \
-  --service deml-backend
+  -a deml-backend
 ```
 
 Add Firebase Authorized Domains for `deml.app` and `*.vercel.app` if using previews.

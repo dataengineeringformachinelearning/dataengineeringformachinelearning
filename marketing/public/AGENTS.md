@@ -228,7 +228,7 @@ This AGENTS.md ensures every agent/LLM knows the "what" (Event Projections, mult
 
 Update this file whenever BOOK.md evolves core principles.
 
-**Final cutover (2026-07-18):** Remint `fjsvc_` after FORJD `sql/017`–`018`; BFF adapters cover vulns/exports/ML latest/security-alert; account deletion calls FORJD erase; hosts are Fly (Django) + Vercel (Angular) + FORJD Fly. Checklist: [docs/PRODUCTION_CUTOVER_CHECKLIST.md](docs/PRODUCTION_CUTOVER_CHECKLIST.md).
+**Final cutover (2026-07-18):** Remint `fjsvc_` after FORJD `sql/017`–`018`; BFF adapters cover vulns/exports/ML latest/security-alert; account deletion calls FORJD erase; hosts are Fly (Django) + Vercel (Angular) + FORJD Fly. Checklist: [docs/PRODUCTION_CUTOVER_CHECKLIST.md](docs/PRODUCTION_CUTOVER_CHECKLIST.md). Cleanup log: [docs/CLEANUP_2026-07-18.md](docs/CLEANUP_2026-07-18.md).
 
 **Note on file location**: Per the official AGENTS.md spec (https://agents.md/), the canonical location is at the **root of the repository**. Nested AGENTS.md files are supported for subprojects (nearest one wins).
 

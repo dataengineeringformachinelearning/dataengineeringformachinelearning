@@ -135,29 +135,29 @@ const platformOpsCards = [
   },
   {
     icon: 'schedule',
-    title: 'Scheduler Cadence',
-    descriptionHtml: `<strong>outbox_relay</strong> every 5s · <strong>security_worker</strong> hourly IoC fetch + daily <code>db_cleanup</code> · <strong>ml_worker</strong> daily retrain · Stripe <code>sync_subscriptions</code> daily · DEK rotation at 30 days.`,
+    title: 'Control-Plane Cadence',
+    descriptionHtml: `Django on <strong>Fly</strong> owns identity, billing, consent, and BFF adapters. Stripe <code>sync_subscriptions</code> and DEK rotation stay DEML-local. Sealed ingest, projections, replay/DLQ, and ML run exclusively on <strong>FORJD</strong>.`,
   },
   {
     icon: 'delete_sweep',
     title: '30-Day Data Retention',
-    descriptionHtml: `Raw telemetry, audit logs, and cookie consent records purge after <strong>30 days</strong> via <code>backend/utils/retention.py</code>. Published outbox rows retain 30 days; DLQ candidates purge after 7. OLAP traces TTL in ClickHouse — Postgres stays lean.`,
+    descriptionHtml: `Control-plane audit logs and cookie consent records purge after <strong>30 days</strong> via <code>backend/utils/retention.py</code>. Sealed telemetry retention and projection/DLQ TTLs are enforced on <strong>FORJD</strong> (Supabase), not a local OLAP mesh.`,
   },
   {
     icon: 'lock',
     title: 'Tenant Isolation',
-    descriptionHtml: `UUID primary keys everywhere. Django ORM queries filter by authenticated tenant context. API keys hash with SHA-256 at rest. Workers iterate <code>Tenant.objects.all()</code> — no hardcoded platform exceptions. Cross-tenant reads fail closed.`,
+    descriptionHtml: `UUID primary keys everywhere. Django ORM queries filter by authenticated account context. API keys hash with SHA-256 at rest. FORJD calls bind <code>deml_account_id → forjd_tenant_id</code> and fail closed on mismatch. Cross-tenant reads fail closed.`,
   },
   {
     icon: 'insights',
     title: 'CES Anonymized Aggregation',
     description:
-      'Countermeasure Effectiveness Standard (CES) consumes only aggregated latency, incident, and uptime vectors from ClickHouse. Individual identities and raw tenant payloads never enter the CES engine — only safe mathematical outputs contribute to Threat, SLA, and Stableness gauges.',
+      'Countermeasure Effectiveness Standard (CES) consumes only aggregated latency, incident, and uptime vectors from FORJD projections. Individual identities and raw tenant payloads never enter the CES engine — only safe mathematical outputs contribute to Threat, SLA, and Stableness gauges.',
   },
   {
     icon: 'hub',
-    title: 'Event Projections Loop',
-    descriptionHtml: `Firebase commands land in Django with a transactional <strong>Outbox</strong>, relay to Redpanda, and idempotent <code>telemetry_worker</code> projections into Firestore. Failed events route to DLQ for replay — no fire-and-forget writes on the critical path.`,
+    title: 'FORJD Sealed Data Plane',
+    descriptionHtml: `Browser traffic hits Django (Firebase JWT). Django seals envelopes and calls FORJD with a tenant-bound <code>fjsvc_</code> token. Projections, replay/DLQ, analytics, and ML execute on FORJD Fly — no Redpanda, ClickHouse, or local stream workers.`,
   },
 ];
 ---
@@ -352,18 +352,17 @@ const platformOpsCards = [
           </header>
 
           <DocsBentoGrid evenPairs>
-            <DocsBentoCard icon="cloud" title="Railway Service Matrix" fullWidth headingLevel="h3">
+            <DocsBentoCard icon="cloud" title="Production Host Matrix" fullWidth headingLevel="h3">
               <p class="u-style-7f7d6d">
-                Each deployable unit carries an <code>infrastructure/railway/*/railway.json</code> manifest.
-                Frontend SSR, Django API, telemetry worker, scanner, and daemon images build from repo-root
-                Dockerfiles with health checks on <code>/api/v1/system-status/health</code> for the API plane.
+                DEML owns the user control plane. FORJD owns the sealed data plane. Railway data-plane
+                services are retired; keep only optional cold standby for Django until DNS is stable.
               </p>
               <div class="code-block-premium">
                 <div class="code-header">Core services</div>
-                <pre><code>{`frontend/     → gcr.io/distroless/nodejs22-debian12 (SSR, port 4000)
-backend/      → gcr.io/distroless/python3-debian12 (Django, port 8000)
-workers/      → telemetry_worker, security_worker, outbox_relay
-scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
+                <pre><code>{`frontend/     → Vercel project deml (CSR)
+backend/      → Fly deml-backend (Django BFF, Firebase identity)
+FORJD         → Fly forjd-backend + forjd-engine + Dragonfly
+Postgres      → Neon/Supabase deml schema (control plane only)`}</code></pre>
               </div>
             </DocsBentoCard>
 

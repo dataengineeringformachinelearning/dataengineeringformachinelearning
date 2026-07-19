@@ -1,5 +1,6 @@
-# Deploy Firebase Backend components (Cloud Run function + Firestore rules)
-# This covers the CQRS / event ingestion path (ingestEvent + Firestore "deml" DB rules).
+# Deploy Firebase Backend components (Cloud Run function + Firestore rules).
+# ingestEvent is retired from the local data plane (FORJD owns sealed ingest).
+# Deploy keeps Firestore rules current and clears any legacy Redpanda env on Cloud Run.
 #
 # Triggers on changes to functions code, firestore rules, or firebase config on main.
 # Also supports manual dispatch.
@@ -57,75 +58,16 @@ jobs:
       - name: Verify lockfile-pinned Firebase CLI
         run: npx --no-install firebase --version
 
-      - name: Configure public Redpanda SASL listener for ingestEvent (fast direct path)
-        # For the lowest-latency Event Projections path (no polling), the Cloud Function
-        # publishes directly to the public Redpanda listener exposed via a Railway TCP
-        # Proxy. ingestEvent is a 2nd-gen (Cloud Run) function, so runtime config must be
-        # provided as environment variables (process.env) via a temporary env file —
-        # the legacy `firebase functions:config:set` (gen1) does not apply to v2 functions.
-        #
-        # Set these GitHub repo secrets:
-        #   REDPANDA_PUBLIC_BROKERS        e.g. zephyr.proxy.rlwy.net:32253 (Railway TCP Proxy)
-        #   REDPANDA_PUBLIC_SASL_USERNAME  e.g. admin
-        #   REDPANDA_PUBLIC_SASL_PASSWORD  (same value as the deml-queue service)
-        #   REDPANDA_PUBLIC_TLS_CA_B64     CA that signed the advertised broker certificate
-        #   DEML_INTERNODE_KEYS            rotation keyring JSON
-        #   DEML_INTERNODE_ACTIVE_KID      active key id in that keyring
-        # If REDPANDA_PUBLIC_BROKERS is not set, ingestEvent uses the resilient Firestore
-        # inbox fallback (slower, polled) instead of the direct path.
-        env:
-          REDPANDA_PUBLIC_BROKERS: ${{ secrets.REDPANDA_PUBLIC_BROKERS }}
-          REDPANDA_PUBLIC_SASL_USERNAME: ${{ secrets.REDPANDA_PUBLIC_SASL_USERNAME }}
-          REDPANDA_PUBLIC_SASL_PASSWORD: ${{ secrets.REDPANDA_PUBLIC_SASL_PASSWORD }}
-          REDPANDA_PUBLIC_TLS_CA_B64: ${{ secrets.REDPANDA_PUBLIC_TLS_CA_B64 }}
-          DEML_INTERNODE_KEYS: ${{ secrets.DEML_INTERNODE_KEYS }}
-          DEML_INTERNODE_ACTIVE_KID: ${{ secrets.DEML_INTERNODE_ACTIVE_KID }}
-        run: |
-          if [ -n "$REDPANDA_PUBLIC_BROKERS" ]; then
-            missing=0
-            for name in \
-              REDPANDA_PUBLIC_SASL_USERNAME \
-              REDPANDA_PUBLIC_SASL_PASSWORD \
-              REDPANDA_PUBLIC_TLS_CA_B64 \
-              DEML_INTERNODE_KEYS \
-              DEML_INTERNODE_ACTIVE_KID; do
-              if [ -z "${!name}" ]; then
-                echo "${name} must be configured when REDPANDA_PUBLIC_BROKERS is set" >&2
-                missing=1
-              fi
-            done
-            test "$missing" -eq 0
-            {
-              echo "REDPANDA_BROKERS=${REDPANDA_PUBLIC_BROKERS}"
-              echo "REDPANDA_SASL_USERNAME=${REDPANDA_PUBLIC_SASL_USERNAME}"
-              echo "REDPANDA_SASL_PASSWORD=${REDPANDA_PUBLIC_SASL_PASSWORD}"
-              echo "REDPANDA_SSL=true"
-              echo "REDPANDA_SSL_CA_B64=${REDPANDA_PUBLIC_TLS_CA_B64}"
-              echo "DEML_INTERNODE_ENCRYPTION=required"
-              echo "DEML_INTERNODE_ACTIVE_KID=${DEML_INTERNODE_ACTIVE_KID}"
-              echo "DEML_INTERNODE_KEYS=${DEML_INTERNODE_KEYS}"
-              echo "DEML_NODE_ID=deml-firebase-ingest"
-            } > "${RUNNER_TEMP}/ingestevent.env"
-            echo "Wrote the temporary runtime environment file (verified TLS, SASL, and internode encryption enabled)"
-          else
-            echo "REDPANDA_PUBLIC_BROKERS not configured; ingestEvent will use Firestore inbox fallback"
-          fi
-
       - name: Deploy Firestore rules and indexes
         run: npx --no-install firebase deploy --only firestore --project demldotcom --non-interactive
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
 
-      - name: Deploy migrated ingestEvent Cloud Run function
+      - name: Deploy ingestEvent Cloud Run function (retired; clear legacy data-plane env)
         shell: bash
         run: |
-          runtime_env="${RUNNER_TEMP}/ingestevent.env"
-          if [[ -f "${runtime_env}" ]]; then
-            env_args=(--env-vars-file="${runtime_env}")
-          else
-            env_args=(--clear-env-vars)
-          fi
-
+          # Always clear Redpanda / DEML_INTERNODE secrets — local brokers are retired.
+          # Function code fails closed; sealed ingest belongs on FORJD (fjsvc_).
           gcloud run deploy ingestevent \
             --source=functions \
             --function=ingestEvent \
@@ -134,7 +76,7 @@ jobs:
             --service-account=demldotcom@appspot.gserviceaccount.com \
             --build-service-account=projects/demldotcom/serviceAccounts/870072971206-compute@developer.gserviceaccount.com \
             --base-image=us-east4-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22 \
-            "${env_args[@]}" \
+            --clear-env-vars \
             --quiet
 
       - name: Verify deployed callable function
@@ -174,9 +116,9 @@ jobs:
       - name: Deployment summary
         run: |
           echo "✅ Cloud Run function and Firestore rules deployed to project: demldotcom"
-          echo "   - Cloud Run function: ingestEvent"
+          echo "   - Cloud Run function: ingestEvent (retired data-plane path; env cleared)"
           echo "   - Firestore: rules from firestore.rules for the named deml database"
-          echo "   - To enable fast direct Redpanda publish from Functions: set the REDPANDA_PUBLIC_* GitHub secrets and re-run this workflow"
+          echo "   - Sealed ingest / projections / ML: FORJD only (https://backend.forjd.co)"
 
   purge-cloudflare-cache:
     needs: deploy

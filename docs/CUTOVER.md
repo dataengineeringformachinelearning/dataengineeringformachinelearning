@@ -3,7 +3,8 @@
 Safe sequence for making FORJD the exclusive sealed data plane while keeping
 the Angular product UI on Vercel unchanged. Pair with
 [`PRODUCTION_CUTOVER_CHECKLIST.md`](./PRODUCTION_CUTOVER_CHECKLIST.md),
-[`FLY.md`](./FLY.md), [`VERCEL.md`](./VERCEL.md), and FORJD
+[`FLY.md`](./FLY.md), [`VERCEL.md`](./VERCEL.md),
+[`CLEANUP_2026-07-18.md`](./CLEANUP_2026-07-18.md), and FORJD
 [`CUTOVER.md`](https://github.com/dataengineeringformachinelearning/forjd/blob/main/CUTOVER.md).
 
 ## Hosts (no overlaps)

@@ -9,11 +9,6 @@ export const formatServiceName = (name: string): string => {
   if (lowercase === 'django web server') {
     return 'Django Web Server';
   }
-  if (lowercase === 'redpanda broker') {
-    // Legacy monitored-service label; local broker is retired.
-    return 'Message Broker';
-  }
-
   // Extract a short suffix from UUID if present to provide clear, unique context
   const uuidMatch = name.match(/([0-9a-f]{8})-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
   const suffix = uuidMatch ? ` (${uuidMatch[1].toLowerCase()})` : '';

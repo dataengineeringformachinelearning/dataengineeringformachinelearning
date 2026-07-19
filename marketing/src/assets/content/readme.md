@@ -22,12 +22,13 @@ license: apache-2.0
 > learning. DEML calls native FORJD routes with tenant-bound opaque `fjsvc_` tokens and
 > sealed AES-256-GCM envelopes; it does not use OAuth client credentials, Supabase
 > `service_role`, Firebase-to-FORJD trust, `/deml-compat` aliases, or local processing
-> fallbacks. Production cutover uses `FORJD_CUTOVER_PHASE` dual-write/dual-read flags
-> ([docs/CUTOVER.md](docs/CUTOVER.md)) so Angular stays stable on Railway while FORJD
-> runs on Fly/Vercel. Learning projections, service-principal domain routes,
-> crypto-session bootstrap, replay/DLQ, and durable tenant erasure remain explicit
-> FORJD dependencies. See [the runtime contract](docs/FORJD_PLATFORM_HANDOFF.md).
-> Older data-plane material in this repository is historical only.
+> fallbacks. Production hosts: Angular on **Vercel**, Django BFF on **Fly**
+> (`deml-backend`), data plane on **FORJD** Fly. Cutover uses `FORJD_CUTOVER_PHASE`
+> dual-write/dual-read flags ([docs/CUTOVER.md](docs/CUTOVER.md)). Learning
+> projections, service-principal domain routes, crypto-session bootstrap, replay/DLQ,
+> and durable tenant erasure are FORJD-owned. See
+> [the runtime contract](docs/FORJD_PLATFORM_HANDOFF.md). Older Redpanda/ClickHouse/worker
+> material in this repository is historical only.
 
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
@@ -127,7 +128,7 @@ quality bars; their component runtimes and source are not bundled into Viking-UI
 - **Design systems and UI references:** [Material Design 3](https://m3.material.io/) for adaptive foundations and accessibility; [Flux UI](https://fluxui.dev/) for composable, responsive layouts; [Spartan](https://spartan.ng/) for accessible Angular primitives and signal-first ergonomics; [shadcn/ui](https://ui.shadcn.com/) for open composition, blocks, and clear component anatomy; and [Cloudscape Design System](https://cloudscape.design/) for AWS-scale responsive application patterns, accessibility guidance, and operational density.
 - **Security and governance reference:** [Trust Controls](https://www.trustcontrols.ai/) for control-oriented product governance and evidence-minded security UX.
 - **Design-system delivery:** [Storybook](https://storybook.js.org/) for component documentation and accessibility review; [Chromatic](https://www.chromatic.com/) for published visual regression evidence; [axe-core](https://github.com/dequelabs/axe-core) for automated WCAG checks; and [Inter](https://rsms.me/inter/) for self-hosted variable typography.
-- **Core application stack:** [Angular](https://angular.dev/), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Firebase](https://firebase.google.com/), [OpenTelemetry](https://opentelemetry.io/), [Firecrawl](https://www.firecrawl.dev/) for verified public-site technology evidence, and [AWS](https://aws.amazon.com/).
+- **Core application stack:** [Angular](https://angular.dev/), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Firebase](https://firebase.google.com/), [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (sealed data plane), [Fly.io](https://fly.io/), [Vercel](https://vercel.com/), [OpenTelemetry](https://opentelemetry.io/), and [Firecrawl](https://www.firecrawl.dev/) for verified public-site technology evidence.
 
 The comprehensive technology acknowledgement and software inventory remain in
 [BOOK.md](BOOK.md#acknowledgements--technologies) and the generated SBOM.
