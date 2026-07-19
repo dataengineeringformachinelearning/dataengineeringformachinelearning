@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
     "WebTechnologyObservation",
   )
 
-  # Database tables and data are intentionally retained for rollback. A later,
-  # separately approved purge migration may remove them after FORJD cutover.
+  # FORJD cutover is complete. Database tables and data are retained deliberately
+  # for a rollback window; a separately approved purge migration may remove them later.
   operations = [
     migrations.SeparateDatabaseAndState(
       database_operations=[],

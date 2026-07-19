@@ -1,8 +1,9 @@
 ---
 title: "Analytics exports via FORJD"
 summary: Export jobs are tenant-scoped and executed in FORJD; DEML exposes them through the BFF.
-date: 2026-07-10
-tags:
+publishedAt: 2026-07-10
+note: Platform Note 015
+categories:
   - Analytics
   - FORJD
   - Exports

@@ -154,7 +154,7 @@ All DEML surfaces share one design system: **grid-first modern enterprise SaaS**
 with Cyber-Noir dark surfaces and Ocean Blue Serenity accents.
 **[.cursorrules](.cursorrules)** is the Cursor agent entry point;
 **[THEME.md](THEME.md)** is the canonical token matrix;
-**[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)**
+**[BOOK.md § Chapter 32](BOOK.md#chapter-32-viking-ui--the-zero-dependency-ui-kit)**
 documents the kit. Package:
 `@dataengineeringformachinelearning/viking-ui`.
 

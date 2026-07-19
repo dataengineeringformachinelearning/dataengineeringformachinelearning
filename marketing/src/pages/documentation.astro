@@ -9,8 +9,14 @@ import IconHeading from '../components/IconHeading.astro';
 import PageMockup from '../components/PageMockup.astro';
 import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
+import { blueNoteHref, formatBlueNoteDate, getBlueNotes } from '../lib/blue-notes';
 
-const { MARKETING_URL } = siteEnv();
+const { MARKETING_URL, BACKEND_URL } = siteEnv();
+const swaggerUrl = `${BACKEND_URL.replace(/\/$/, '')}/api/v1/docs`;
+
+// Latest field-log entries (Blue Notes) surfaced directly on the docs page.
+const blueNotes = await getBlueNotes();
+const recentNotes = blueNotes.slice(0, 4);
 const pageTitle = 'Developer Portal — DEML Platform';
 const pageDescription =
   'Hardened API gateway for the digital battlefield. First-class integration specifications for Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and AWS Redshift — plus telemetry ingestion and inference endpoints.';
@@ -93,6 +99,7 @@ const docsOutline = [
   { id: 'platform-operations', label: 'Platform Ops', icon: 'settings_suggest' },
   { id: 'integrations-title', label: 'Integrations', icon: 'hub' },
   { id: 'health-checks', label: 'Health Checks', icon: 'monitor_heart' },
+  { id: 'blue-notes', label: 'Blue Notes', icon: 'insights' },
 ];
 
 const quickStartSteps = [
@@ -141,7 +148,7 @@ const platformOpsCards = [
   {
     icon: 'delete_sweep',
     title: '30-Day Data Retention',
-    descriptionHtml: `Control-plane audit logs and cookie consent records purge after <strong>30 days</strong> via <code>backend/utils/retention.py</code>. Sealed telemetry retention and projection/DLQ TTLs are enforced on <strong>FORJD</strong> (Supabase), not a local OLAP mesh.`,
+    descriptionHtml: `Sealed telemetry retention and projection/DLQ TTLs are enforced on <strong>FORJD</strong> (Supabase), not a local OLAP mesh. Tenant data erasure flows through FORJD <code>POST /api/v1/tenants/{id}/erase</code> plus the DEML account lifecycle.`,
   },
   {
     icon: 'lock',
@@ -157,7 +164,7 @@ const platformOpsCards = [
   {
     icon: 'hub',
     title: 'FORJD Sealed Data Plane',
-    descriptionHtml: `Browser traffic hits Django (Firebase JWT). Django seals envelopes and calls FORJD with a tenant-bound <code>fjsvc_</code> token. Projections, replay/DLQ, analytics, and ML execute on FORJD Fly — no Redpanda, ClickHouse, or local stream workers.`,
+    descriptionHtml: `The Angular client seals envelopes end-to-end (E2EE). Django authenticates the user (Firebase JWT) and forwards the sealed payloads to FORJD with a tenant-bound <code>fjsvc_</code> token. Projections, replay/DLQ, analytics, and ML execute on FORJD Fly — no Redpanda, ClickHouse, or local stream workers.`,
   },
 ];
 ---
@@ -197,6 +204,9 @@ const platformOpsCards = [
               </DocsCta>
               <DocsCta href="#quick-start" variant="secondary" icon="play_circle">
                 Quick Start Guide
+              </DocsCta>
+              <DocsCta href={swaggerUrl} variant="secondary" icon="terminal">
+                Swagger UI
               </DocsCta>
               </DocsCtaGroup>
             </div>
@@ -414,6 +424,48 @@ Postgres      → Neon/Supabase deml schema (control plane only)`}</code></pre>
               <div class="code-header">Health endpoints</div>
               <pre><code>{integrationPlatforms.map(p => `GET ${p.health}`).join('\n')}</code></pre>
             </div>
+          </div>
+        </section>
+
+        <section class="integrations-section" id="blue-notes" aria-labelledby="blue-notes-title">
+          <header class="integrations-header">
+            <span class="section-tag">FIELD LOG · BLUE NOTES</span>
+            <h2 id="blue-notes-title">Engineering, in the open</h2>
+            <p>
+              The operating record behind the platform — releases, architecture decisions, and
+              reliability work. Newest dispatches first.
+            </p>
+          </header>
+
+          {recentNotes.length > 0 ? (
+            <div class="blog-spotlight-grid">
+              {recentNotes.map(note => (
+                <article class="viking-card blog-spotlight-card">
+                  <div class="blog-note-meta">
+                    <span>{note.data.note}</span>
+                    <time datetime={note.data.publishedAt.toISOString()}>
+                      {formatBlueNoteDate(note.data.publishedAt)}
+                    </time>
+                  </div>
+                  <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
+                  <p>{note.data.summary}</p>
+                  <a class="blog-read-cue" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
+                    Read the note <VikingIcon name="chevron_right" size={18} />
+                  </a>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p class="u-style-efd290">No dispatches published yet.</p>
+          )}
+
+          <div class="blog-actions">
+            <a class="viking-btn viking-btn-outline" href="/blog/">
+              <VikingIcon name="arrow_forward" size={18} /> Browse the full archive
+            </a>
+            <a class="viking-btn viking-btn-ghost" href="/blog/rss.xml">
+              <VikingIcon name="send" size={18} /> Follow via RSS
+            </a>
           </div>
         </section>
         </div>

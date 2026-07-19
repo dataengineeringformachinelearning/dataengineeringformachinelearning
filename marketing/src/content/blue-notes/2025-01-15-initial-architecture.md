@@ -1,8 +1,9 @@
 ---
 title: "DEML architecture: control plane + FORJD"
 summary: DEML owns identity and the Angular product; FORJD is the universal secure streaming engine.
-date: 2025-01-15
-tags:
+publishedAt: 2025-01-15
+note: Platform Note 010
+categories:
   - Architecture
   - FORJD
 ---

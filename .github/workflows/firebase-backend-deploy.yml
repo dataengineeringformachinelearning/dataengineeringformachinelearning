@@ -1,22 +1,22 @@
-# Deploy Firebase Backend components (Cloud Run function + Firestore rules).
-# ingestEvent is a fail-closed stub; sealed ingest runs on FORJD via the Django BFF.
-# Deploy keeps Firestore rules current and clears unused env on Cloud Run.
+# Deploy Firebase Firestore rules for DEML.
 #
-# Triggers on changes to functions code, firestore rules, or firebase config on main.
-# Also supports manual dispatch.
+# DEML no longer ships Cloud Run functions: authentication/authorization and
+# all data storage & retrieval run through the Django control plane and FORJD
+# (sealed ingest, projections, analytics, ML) via tenant-bound `fjsvc_` tokens.
+# Firestore rules remain only for the optional Firebase-adjacent user documents.
 #
-# Uses the same FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM secret as the hosting workflows.
+# Triggers on Firestore rule or Firebase config changes on main. Manual dispatch
+# is also supported.
+#
+# Uses the FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM secret shared with hosting workflows.
 
-name: Deploy Firebase Backend (Cloud Run + Firestore)
+name: Deploy Firebase Firestore Rules
 
 on:
   push:
     branches:
       - main
     paths:
-      - "functions/**"
-      - "package.json"
-      - "package-lock.json"
       - "firestore.rules"
       - "firebase.json"
       - ".github/workflows/firebase-backend-deploy.yml"
@@ -26,24 +26,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     concurrency:
-      group: firebase-backend-production
+      group: firebase-firestore-production
       cancel-in-progress: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Setup Node.js 22 for the Functions runtime
+      - name: Setup Node.js 22
         uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "npm"
           cache-dependency-path: "package-lock.json"
-
-      - name: Install, test, and build Functions
-        run: |
-          npm ci --legacy-peer-deps --workspace functions
-          npm test --workspace functions
-          npm run build --workspace functions
 
       - name: Authenticate to Google Cloud / Firebase
         id: auth
@@ -63,61 +57,10 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
 
-      - name: Deploy ingestEvent Cloud Run function (fail-closed stub)
-        shell: bash
-        run: |
-          # Clear env so the stub never inherits unused broker credentials.
-          # Sealed ingest belongs on FORJD (fjsvc_) via the Django BFF.
-          gcloud run deploy ingestevent \
-            --source=functions \
-            --function=ingestEvent \
-            --region=us-east4 \
-            --project=demldotcom \
-            --service-account=demldotcom@appspot.gserviceaccount.com \
-            --build-service-account=projects/demldotcom/serviceAccounts/870072971206-compute@developer.gserviceaccount.com \
-            --base-image=us-east4-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22 \
-            --clear-env-vars \
-            --quiet
-
-      - name: Verify deployed callable function
-        shell: bash
-        run: |
-          read -r latest_created latest_ready < <(
-            gcloud run services describe ingestevent \
-              --region=us-east4 \
-              --project=demldotcom \
-              --format="value(status.latestCreatedRevisionName,status.latestReadyRevisionName)"
-          )
-          test -n "${latest_created}"
-          test "${latest_created}" = "${latest_ready}"
-
-          service_url=$(
-            gcloud run services describe ingestevent \
-              --region=us-east4 \
-              --project=demldotcom \
-              --format="value(status.url)"
-          )
-          response_file=$(mktemp)
-          status=$(curl --silent --show-error \
-            --output "${response_file}" \
-            --write-out "%{http_code}" \
-            --request POST \
-            --header "Content-Type: application/json" \
-            --data '{"data":{}}' \
-            "${service_url}")
-          test "${status}" = "401"
-          node -e '
-            const fs = require("node:fs");
-            const response = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
-            if (response.error?.status !== "UNAUTHENTICATED") process.exit(1);
-          ' "${response_file}"
-          echo "Verified ready revision ${latest_ready} and callable authentication boundary"
-
       - name: Deployment summary
         run: |
-          echo "✅ Cloud Run function and Firestore rules deployed to project: demldotcom"
-          echo "   - Cloud Run function: ingestEvent (fail-closed stub; env cleared)"
-          echo "   - Firestore: rules from firestore.rules for the named deml database"
+          echo "✅ Firestore rules deployed to project: demldotcom"
+          echo "   - Auth / data storage & retrieval: Django control plane + FORJD"
           echo "   - Sealed ingest / projections / ML: FORJD (https://backend.forjd.co)"
 
   purge-cloudflare-cache:

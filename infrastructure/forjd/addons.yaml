@@ -1,0 +1,4 @@
+# DEML's FORJD deployment profile. Mount/copy this file into the FORJD backend
+# and set FORJD_ADDONS_CONFIG to its in-container path.
+addons:
+  enabled: all

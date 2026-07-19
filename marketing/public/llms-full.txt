@@ -281,7 +281,7 @@ Invariants: Firebase Auth terminates at Django; every FORJD call uses a tenant-b
 
 ### 6. User Roles & Operational Workflows
 
-The platform uses a **User + Sites** model—one Firebase login, many `StatusPage` records, no org hierarchies ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)).
+The platform uses a **User + Sites** model—one Firebase login, many `StatusPage` records, no org hierarchies ([Chapter 29](#chapter-29-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)).
 
 | Actor                          | Primary workflows                                                                                                                    |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -342,7 +342,7 @@ Production topology is fixed for the product:
 - **Data-plane trust:** Only tenant-bound `fjsvc_` tokens; sealed envelopes; no Firebase-to-FORJD trust; no Supabase `service_role` on application routes; no direct DEML access to FORJD storage.
 - **Data protection:** AES-256-GCM field encryption for DEML secrets; sealed ingest ciphertext on the wire ([Chapter 10](#chapter-10-encrypting-the-data--key-management)).
 - **Supply chain:** Pre-commit + GitHub Actions (Semgrep, Trivy, Gitleaks, Renovate); internal Kanban for vulns ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)).
-- **Compliance posture:** Architected for SOC 2 Type II, CMMC 2.0 Level 2, NIST SP 800-171 Rev. 3 ([Chapter 23](#chapter-23-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3)).
+- **Compliance posture:** Architected for SOC 2 Type II, CMMC 2.0 Level 2, NIST SP 800-171 Rev. 3 ([Chapter 24](#chapter-24-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3)).
 
 ### 10. Threat-Driven Design and Defendable Architecture Principles
 
@@ -362,13 +362,13 @@ Modern data and ML platforms are not passive repositories—they are **detection
 
 Visibility means the platform exposes enough trustworthy signal—across control-plane actions and data-plane processing—to detect misuse, misconfiguration, and attack progression without guessing. DEML achieves this through layered telemetry rather than a single dashboard.
 
-The **sealed FORJD path** is the primary visibility spine: Angular seals envelopes; Django terminates Firebase Auth and forwards with `fjsvc_`; FORJD materializes durable projections and analytics while retaining replay/DLQ for poison or failed work. Operators do not infer pipeline health from user complaints—Django `/api/v1/ready` and FORJD `/ready` continuously validate dependency health, and product surfaces expose CES and projection status for Tenant0 dogfood. Network traffic enrichment ([Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry)) adds ASN, GeoIP, UA parsing, and behavioral context at the DEML edge before sealed forward. Threat analytics and ML scoring execute in FORJD; DEML surfaces scores and vulnerability lists through BFF adapters. The **CES dashboard** ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) distills Threat Level, SLA Level, and Stableness into a single operational gauge. Sentry, platform logging, and immutable audit logs complete the picture for release regressions and compliance evidence. Visibility is incomplete if it is tenant-blind: DEML `account_id` scoping and FORJD tenant binding ensure every signal is attributable.
+The **sealed FORJD path** is the primary visibility spine: Angular seals envelopes; Django terminates Firebase Auth and forwards with `fjsvc_`; FORJD materializes durable projections and analytics while retaining replay/DLQ for poison or failed work. Operators do not infer pipeline health from user complaints—Django `/api/v1/ready` and FORJD `/ready` continuously validate dependency health, and product surfaces expose CES and projection status for Tenant0 dogfood. Network traffic enrichment ([Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry)) adds ASN, GeoIP, UA parsing, and behavioral context at the DEML edge before sealed forward. Threat analytics and ML scoring execute in FORJD; DEML surfaces scores and vulnerability lists through BFF adapters. The **CES dashboard** ([Chapter 26](#chapter-26-countermeasure-effectiveness-standard-ces)) distills Threat Level, SLA Level, and Stableness into a single operational gauge. Sentry, platform logging, and immutable audit logs complete the picture for release regressions and compliance evidence. Visibility is incomplete if it is tenant-blind: DEML `account_id` scoping and FORJD tenant binding ensure every signal is attributable.
 
 #### Manageability
 
 Manageability means operators can change posture, deploy fixes, rotate secrets, and tune models **without architectural surgery**—controls are centralized, automated, and repeatable across tenants including Tenant0 dogfood.
 
-Automation is the manageability engine. DEML owns identity, billing, consent, and learning cadence on Fly Django; FORJD owns sealed pipeline schedules, projection materialization, threat-intel fusion, and ML retraining. Pre-commit hooks, Semgrep, Trivy, Renovate, and the internal vulnerability Kanban ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)) turn supply-chain findings into tracked remediation without manual triage drift. RBAC + ABAC ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)) and key rotation ([Chapter 10](#chapter-10-encrypting-the-data--key-management)) are managed through documented APIs—not ad hoc SQL. CI/CD splits Vercel, Fly Django, Firebase, and FORJD deploy paths so surfaces ship independently ([§14](#14-cicd--release-operations)). Integration health endpoints and the service matrix in [§8](#8-deployment-topology--service-matrix) give operators a single map of what to restart, scale, or roll back. Manageability fails when tenants are exceptions; DEML's symmetrical account → FORJD tenant mapping guarantees that a control applied to one account applies to all.
+Automation is the manageability engine. DEML owns identity, billing, consent, and learning cadence on Fly Django; FORJD owns sealed pipeline schedules, projection materialization, threat-intel fusion, and ML retraining. Pre-commit hooks, Semgrep, Trivy, Renovate, and the internal vulnerability Kanban ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)) turn supply-chain findings into tracked remediation without manual triage drift. RBAC + ABAC ([Chapter 29](#chapter-29-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)) and key rotation ([Chapter 10](#chapter-10-encrypting-the-data--key-management)) are managed through documented APIs—not ad hoc SQL. CI/CD splits Vercel, Fly Django, Firebase, and FORJD deploy paths so surfaces ship independently ([§14](#14-cicd--release-operations)). Integration health endpoints and the service matrix in [§8](#8-deployment-topology--service-matrix) give operators a single map of what to restart, scale, or roll back. Manageability fails when tenants are exceptions; DEML's symmetrical account → FORJD tenant mapping guarantees that a control applied to one account applies to all.
 
 #### Survivability
 
@@ -403,7 +403,7 @@ Microsoft's original **STRIDE** model (Spoofing, Tampering, Repudiation, Informa
 | **S** — Spoofing               | Pretending to be a user, service, tenant, or event source.                       | Firebase Auth JWT verification in Django middleware; WebAuthn hardware-key MFA on writes; Firebase App Check + reCAPTCHA where enabled; integration API keys bound to tenant scope; tenant-bound `fjsvc_` tokens that cannot override FORJD tenant binding.                                                                                                                                                                                   |
 | **T** — Tampering              | Modifying data at rest or in the sealed pipeline.                                | Client-sealed AES-256-GCM envelopes; DEML field encryption for secrets; FORJD durable projections with replay/DLQ; versioned event schemas; `platform-status` immutability via ABAC.                                                                                                                                                                                                                                                          |
 | **R** — Repudiation            | Denying that an action occurred or obscuring attribution.                        | Immutable platform audit trails; DEML Postgres records with tenant `account_id`; FORJD audit metadata (ciphertext never logged); request correlation via `X-Request-ID`.                                                                                                                                                                                                                                                                      |
-| **I** — Information Disclosure | Exposing data or metadata to unauthorized parties.                               | UUID primary keys (anti-IDOR); RBAC + ABAC ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)); FORJD RLS; encrypted integration tokens at rest ([Chapter 10](#chapter-10-encrypting-the-data--key-management)); sealed metadata allowlists only.                                                                                                                                               |
+| **I** — Information Disclosure | Exposing data or metadata to unauthorized parties.                               | UUID primary keys (anti-IDOR); RBAC + ABAC ([Chapter 29](#chapter-29-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)); FORJD RLS; encrypted integration tokens at rest ([Chapter 10](#chapter-10-encrypting-the-data--key-management)); sealed metadata allowlists only.                                                                                                                                               |
 | **D** — Denial of Service      | Degrading or blocking availability of services or projections.                   | Rate limits at the BFF edge; FORJD DLQ isolates poison work from healthy streams; distroless containers reduce exploit surface; Sanity CDN–backed status communications survive backend outages ([Chapter 14](#chapter-14-scaling-reporting-and-announcements-with-sanity)); readiness probes alert on FORJD or Django dependency failure.                                                                                                    |
 | **E** — Elevation of Privilege | Gaining capabilities beyond authorized role or tenant scope.                     | Three-tier RBAC (`Viewer` / `Operator` / `Security Admin`); ABAC ownership and `is_published` gates; unprivileged Fly/Vercel execution; Infisical/Fly runtime secret injection (no keys on disk); Semgrep/Trivy supply-chain gates in CI.                                                                                                                                                                                                     |
 | **LM** — Lateral Movement      | Pivoting from one compromised asset to others within or across trust boundaries. | **Primary containment layer:** strict multi-tenant isolation—DEML Postgres `account_id` on every transactional row, FORJD tenant binding + RLS, no cross-tenant foreign keys in adapter payloads (Tenant0 UUID normalization replaces `"platform"` literals). Compromise in one tenant's ingest path cannot traverse to another tenant's projections, model weights, or integration keys without a separate, auditable authorization failure. |
@@ -418,7 +418,7 @@ High-throughput sealed platforms amplify both the value and the risk of security
 
 **Triage.** Prioritize findings by business/mission impact and threat intelligence—not by CVE count alone. Impact outweighs raw probability at this stage; active intel feeds the probability variable later in risk management. Express results in both business and technical terms. _DEML example:_ Triage ranks (1) cross-tenant data leakage via mis-mapped FORJD tenants as catastrophic, (2) integration key compromise with ingest write access as high, (3) single-tenant DLQ replay backlog as medium operational debt. Semgrep and Trivy findings enter the internal vulnerability Kanban ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)) only after threat-context triage—not every CVE is an immediate patch. _Pipeline-builder example:_ A pipeline owner triages training-data poisoning above TLS misconfiguration if their model directly gates financial holds; they document the business impact ("false approvals") alongside the technical fix ("schema validation + outlier quarantine before ingest").
 
-**Controls.** Select, implement, and validate controls that remove, counter, or mitigate prioritized threats. Controls exhibit functions—inventory, collect, detect, protect, manage, respond—and must trace back to specific attack vectors, not generic compliance checklists. Measure effectiveness and identify coverage gaps. _DEML example:_ Controls mapped to ingest injection include Firebase App Check + MFA on writes (protect), UUID PKs + ABAC (protect), sealed envelopes + `fjsvc_` tenant binding (protect/detect), FORJD threat scoring (detect/respond), and DLQ replay (respond). CES ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) scores how well these controls perform in production on Tenant0 before customer rollout. _Pipeline-builder example:_ A customer implements schema contracts and row-level checksums on batches before POSTing to `/api/v1/ingest`, enables DEML rate limits, stores API keys in a vault with rotation, and adds a human review queue when threat scores exceed a tenant-defined threshold.
+**Controls.** Select, implement, and validate controls that remove, counter, or mitigate prioritized threats. Controls exhibit functions—inventory, collect, detect, protect, manage, respond—and must trace back to specific attack vectors, not generic compliance checklists. Measure effectiveness and identify coverage gaps. _DEML example:_ Controls mapped to ingest injection include Firebase App Check + MFA on writes (protect), UUID PKs + ABAC (protect), sealed envelopes + `fjsvc_` tenant binding (protect/detect), FORJD threat scoring (detect/respond), and DLQ replay (respond). CES ([Chapter 26](#chapter-26-countermeasure-effectiveness-standard-ces)) scores how well these controls perform in production on Tenant0 before customer rollout. _Pipeline-builder example:_ A customer implements schema contracts and row-level checksums on batches before POSTing to `/api/v1/ingest`, enables DEML rate limits, stores API keys in a vault with rotation, and adds a human review queue when threat scores exceed a tenant-defined threshold.
 
 ##### Platform Practice Mapping
 
@@ -431,20 +431,20 @@ The table below shows where DEML's current production practices align with IDDIL
 | **D** — Decompose system        | Service matrix [§8](#8-deployment-topology--service-matrix); DEML control plane → FORJD data plane                                                                                                                                                                |
 | **I** — Identify attack vectors | STRIDE-LM categorization ([§10](#stride-lm-threat-categorization)); UUID PK anti-IDOR, FORJD fail-closed modes [§13](#13-contingency--degraded-operations), network enrichment ([Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry)) |
 | **L** — List threat actors      | FORJD threat intel feeds, HIBP/Tor OSINT surfaces ([Chapter 13](#chapter-13-enhancing-data-with-threat-intelligence)), behavioral biometrics                                                                                                                      |
-| **A** — Analysis & assessment   | FORJD threat/ML scoring, Cyber Kill Chain–aligned CES metrics ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)), readiness probes                                                                                                             |
+| **A** — Analysis & assessment   | FORJD threat/ML scoring, Cyber Kill Chain–aligned CES metrics ([Chapter 26](#chapter-26-countermeasure-effectiveness-standard-ces)), readiness probes                                                                                                             |
 | **T** — Triage                  | Vulnerability Kanban ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)), impact-weighted incident response, FORJD DLQ depth alerting                                                                                                         |
-| **C** — Controls                | RBAC/ABAC ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)), key rotation, App Check, rate limits, sealed ingest, FORJD tenant binding                                                                            |
+| **C** — Controls                | RBAC/ABAC ([Chapter 29](#chapter-29-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)), key rotation, App Check, rate limits, sealed ingest, FORJD tenant binding                                                                            |
 
 **Actionable workflow for pipeline builders.** Run IDDIL before your first production ingest: (1) list assets and draw a DFD with trust boundaries, (2) decompose your ETL → DEML → FORJD → model-serving stack, (3) enumerate vectors and actors against that diagram, (4) analyze impact and triage by business consequence, (5) implement controls that map to specific vectors—not a generic security bundle—and (6) loop back when intel, DLQ telemetry, or model drift falsifies your assumptions. Threat-driven design is continuous; the mnemonic exists because unaddressed threats do not remain idle—they become the next incident in your detection pipeline.
 
-These principles are operational scaffolding, not abstract theory. [Chapter 7](#chapter-7-securing-the-compute) and [Chapter 23](#chapter-23-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3) apply them to compute hardening and enterprise compliance evidence; [STRIDE-LM](#stride-lm-threat-categorization) provides the threat taxonomy; [Chapter 13](#chapter-13-enhancing-data-with-threat-intelligence) details the threat-intelligence fusion pipeline; [Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry) covers edge enrichment; and [Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces) formalizes how countermeasure effectiveness is measured and displayed.
+These principles are operational scaffolding, not abstract theory. [Chapter 7](#chapter-7-securing-the-compute) and [Chapter 24](#chapter-24-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3) apply them to compute hardening and enterprise compliance evidence; [STRIDE-LM](#stride-lm-threat-categorization) provides the threat taxonomy; [Chapter 13](#chapter-13-enhancing-data-with-threat-intelligence) details the threat-intelligence fusion pipeline; [Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry) covers edge enrichment; and [Chapter 26](#chapter-26-countermeasure-effectiveness-standard-ces) formalizes how countermeasure effectiveness is measured and displayed.
 
 ### 11. Observability & Health Monitoring
 
 | Signal                            | Source                                     | Operator use                                                                                           |
 | --------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | **Projection / analytics health** | Django BFF → FORJD                         | Dashboard CES / projection freshness on platform-status                                                |
-| **CES dashboard**                 | FORJD analytics + backend aggregates       | Threat / SLA / Stableness gauges ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) |
+| **CES dashboard**                 | FORJD analytics + backend aggregates       | Threat / SLA / Stableness gauges ([Chapter 26](#chapter-26-countermeasure-effectiveness-standard-ces)) |
 | **Readiness**                     | Django `/api/v1/ready`, FORJD `/ready`     | Dependency failures (DB, FORJD URL/token/tenant, engine)                                               |
 | **Errors**                        | Sentry (frontend + backend)                | Release regressions                                                                                    |
 | **Synthetic uptime**              | Status-page probes / FORJD status surfaces | Status page accuracy                                                                                   |
@@ -840,50 +840,22 @@ This visualization is not merely aesthetic; it is the pulse of the platform. By 
 
 ## Chapter 6: Intelligence (Modeling and Training)
 
-With an established data engineering pipeline actively streaming and persisting high-fidelity telemetry into my PostgreSQL data warehouse, I reach a critical inflection point in my architecture. Gathering metrics retroactively diagnoses past failures, but true technological leverage is achieved only when I transition from a reactive posture to a predictive one. This is the domain of machine intelligence. By analyzing the historical vectors of my `Endpoints` data—specifically the complex relationship between latency fluctuations, status codes, and temporal patterns—I can construct mathematical models capable of forecasting systemic degradation and Service Level Agreement (SLA) breaches before they fully manifest and impact the end user. To engineer this intelligence layer, I bypass standard analytical tooling and integrate heavy-duty frameworks designed for high-performance computing: PyTorch for neural network orchestration and Polars for blazingly fast, multi-threaded data manipulation.
+With an established data engineering pipeline actively streaming sealed, high-fidelity telemetry into FORJD, I reach a critical inflection point in my architecture. Gathering metrics retroactively diagnoses past failures, but true technological leverage is achieved only when I transition from a reactive posture to a predictive one. This is the domain of machine intelligence. By analyzing historical telemetry vectors—specifically the complex relationship between latency fluctuations, status codes, and temporal patterns—mathematical models can forecast systemic degradation and Service Level Agreement (SLA) breaches before they fully manifest and impact the end user.
 
-I begin by provisioning a dedicated application boundary within my Django monolith, explicitly isolating the machine learning logic from my standard web operations to maintain architectural purity.
+The decisive architectural choice is **where** this intelligence executes. Machine learning is computationally expensive, stateful, and data-hungry—exactly the profile of work that belongs in the data plane, not the user control plane. Training and scoring therefore execute in **FORJD**, which owns the sealed event history, durable `stream_results` projections, and the ML catalog exposed under `/api/v1/ml` (training runs, embedding vectors, and model scores hydrated from stream-result metadata). Django remains the control plane: it never imports PyTorch, never runs a training loop, and never holds model weights. Instead, it resolves the tenant binding and adapts FORJD's ML surfaces to the established product routes through the BFF adapters in `backend/forjd/`.
 
-```bash
-pip install torch polars scikit-learn
-python manage.py startapp ml
+The core predictive technique remains instructive even though the runtime moved. A Multi-Layer Perceptron (MLP)—a foundational class of feedforward artificial neural networks—is exceptionally efficient at uncovering non-linear correlations within structured, tabular telemetry data. An SLA forecaster of this shape maps a small input vector (moving-average latency, recent error rates, temporal features) through a fully connected hidden layer with Rectified Linear Unit (ReLU) activations to produce a single, continuous prediction of the system's immediate health trajectory. FORJD trains models of exactly this class against tenant-scoped telemetry inside its engine.
+
+Crucially, from an infrastructure perspective, executing a computationally intensive backpropagation training loop synchronously on a web-serving thread is a catastrophic anti-pattern that leads directly to resource exhaustion and request timeouts. Precision engineering dictates that the training workload is decoupled from the request path entirely: FORJD's durable scheduler materializes training work off the critical path, records each run in its `training_runs` catalog, and publishes scores that DEML reads on demand. The DEML API surface stays thin and responsive:
+
+```text
+Angular → Django BFF (Firebase JWT terminates here)
+       → FORJD /api/v1/ml (tenant-bound fjsvc_ token)
+       ← latest model scores / training-run metadata
+       ← rendered on dashboards and status surfaces
 ```
 
-The core of my predictive engine relies on a Multi-Layer Perceptron (MLP), a foundational class of feedforward artificial neural networks. While modern deep learning architectures often trend toward excessive complexity, a well-tuned MLP is exceptionally efficient at uncovering non-linear correlations within structured, tabular telemetry data. In my `SLAModel`, I define a streamlined architecture consisting of a primary input layer mapped to a fully connected hidden layer utilizing Rectified Linear Unit (ReLU) activation functions. This mathematical transformation allows the network to learn complex interaction effects between my input vectors (such as moving average latency and recent error rates) to produce a single, continuous output prediction regarding the immediate health trajectory of the system.
-
-Crucially, from an infrastructure perspective, executing a computationally intensive backpropagation training loop synchronously on the primary web server thread is a catastrophic anti-pattern that will immediately lead to resource exhaustion and request timeouts. Instead, precision engineering dictates that I decouple the training workload. I construct an API endpoint designed specifically to act as an asynchronous trigger, initiating the PyTorch training sequence while immediately returning an acknowledgment payload to the caller. This ensures my API gateways remain responsive, while the heavy lifting of calculating loss gradients and optimizing network parameters happens safely out of the critical path.
-
-```python
-# backend/ml/ml_api.py
-import torch
-import torch.nn as nn
-from django.http import JsonResponse
-from monitor.models import Endpoints
-
-class SLAModel(nn.Module):
- def __init__(self):
- super().__init__()
- self.fc1 = nn.Linear(3, 16)
- self.fc2 = nn.Linear(16, 1)
-
- def forward(self, x):
- return self.fc2(torch.relu(self.fc1(x)))
-
-def train_model(request):
- endpoints = Endpoints.objects.all()
- # ... prepare X and Y tensors from endpoint data ...
- model = SLAModel()
- optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-
- optimizer.zero_grad()
- # loss = criterion(model(X), Y)
- # loss.backward()
- # optimizer.step()
-
- return JsonResponse({'status': 'training_initiated'})
-```
-
-By embedding this intelligence natively within the backend infrastructure, I create a continuous feedback loop based on a dual-model strategy. First, to leverage the massive scale of Big Data without compromising privacy, the system continuously trains a global `platform_threat_model.pt`. This model aggregates anonymized, non-PII metrics across all platform endpoints (such as global failure rates over 90 days), granting every tenant the power of "herd immunity." Second, individual threat models are evaluated dynamically, matching a specific tenant's precise telemetry footprint against the massive aggregate model.
+This boundary creates a continuous feedback loop based on a dual-model strategy. First, to leverage the massive scale of Big Data without compromising privacy, the platform maintains a global threat model that aggregates anonymized, non-PII metrics across all tenants (such as global failure rates over 90 days), granting every tenant the power of "herd immunity." Second, individual threat evaluations match a specific tenant's precise telemetry footprint against the massive aggregate model—training on big data, inferencing on the tenant's own isolated footprint, all inside FORJD's tenant-bound boundary.
 
 Furthermore, we dogfood this entire intelligence layer continuously. The core infrastructure operates internally as **Tenant0**, serving as a living "Apex Sandbox" and "Public Sentinel." This means the platform itself continuously runs its own telemetry ingestion, status pages, and threat models. It acts as a resilient sandbox to test bleeding-edge anomaly detection and serves as a public sentinel to showcase the true, real-time capabilities of the ecosystem.
 
@@ -1112,7 +1084,7 @@ External feeds do not arrive pre-labeled for your architecture—they arrive as 
 | Non-human Clarity / GA4 behavioral fingerprint    | **S** Spoofing                                        | Challenge or sever session before Postgres write                                                                                                             |
 | Known Tor exit node or open-proxy reconnaissance  | **LM** Lateral Movement, **S** Spoofing               | Flag for active probe; restrict sensitive routes (`/api/v1/predict`, export APIs)                                                                            |
 | HIBP credential match for platform user           | **S** Spoofing, **E** Elevation of Privilege          | `ThreatIntelligence` record (`is_malicious=True`); forced MFA re-enrollment; tenant dashboard alert                                                          |
-| Dark-web brand mention (Ahmia scan)               | **I** Information Disclosure                          | Incident record; operator notification; STIX bundle for ISAC sharing ([Chapter 23](#chapter-23-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3)) |
+| Dark-web brand mention (Ahmia scan)               | **I** Information Disclosure                          | Incident record; operator notification; STIX bundle for ISAC sharing ([Chapter 24](#chapter-24-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3)) |
 | Volumetric scrape on `platform-status`            | **D** Denial of Service                               | Rate limit; CES Threat Level penalty; Sanity status unaffected (decoupled CDN)                                                                               |
 | Cross-tenant projection read attempt in audit log | **I** Information Disclosure, **LM** Lateral Movement | Highest-severity triage; Firestore rule audit; immutable Cloud Logging evidence                                                                              |
 
@@ -1361,11 +1333,11 @@ Compliance frameworks and threat-driven operations often speak different languag
 
 | Control Function | Platform Components & Features                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Inventory**    | Asynchronous Asset Inventory & Vulnerability Scanner (`scanner/` microservice with `osv-scanner` and `cpe-guesser`); `/api/telemetry/technology` ingestion pipeline; `Endpoints`, `MonitoredService`, `ValidatedSite`, and `Tenant` registry in PostgreSQL; integration API key inventory; CPE 2.3 normalization against NVD and OSV.dev ([Chapter 26](#chapter-26-building-an-asynchronous-asset-inventory))                                                                                                                                                                     |
+| **Inventory**    | Asynchronous Asset Inventory & Vulnerability Scanner (`scanner/` microservice with `osv-scanner` and `cpe-guesser`); `/api/telemetry/technology` ingestion pipeline; `Endpoints`, `MonitoredService`, `ValidatedSite`, and `Tenant` registry in PostgreSQL; integration API key inventory; CPE 2.3 normalization against NVD and OSV.dev ([Chapter 27](#chapter-27-building-an-asynchronous-asset-inventory))                                                                                                                                                                     |
 | **Collect**      | Angular → Django BFF → FORJD sealed ingest (`fjsvc_`); FORJD durable projections and analytics; `NetworkTelemetryMiddleware` edge enrichment (ASN, GeoIP, UA parsing); FORJD threat-feed fusion; Cloudflare and third-party telemetry integrations ([Chapters 8](#chapter-8-enhancing-observability), [13](#chapter-13-enhancing-data-with-threat-intelligence), [19–20](#chapter-19-third-party-telemetry-and-cloudflare-integration))                                                                                                                                           |
-| **Detect**       | FORJD threat/ML scoring producing dynamic Access Threat Scores; Countermeasure Effectiveness Standard (CES) Threat Level sub-gauge; vulnerability ledger alerts via FORJD/BFF adapters; Semgrep/Trivy/Checkov supply-chain findings; OSINT reconnaissance (HIBP credential checks, Ahmia dark-web brand scans); Django `/api/v1/ready` + FORJD `/ready` on `platform-status` ([Chapters 6](#chapter-6-intelligence-modeling-and-training), [13](#chapter-13-enhancing-data-with-threat-intelligence), [25](#chapter-25-countermeasure-effectiveness-standard-ces))                |
-| **Protect**      | AES-256-GCM field encryption with GCP KMS envelope rotation; RBAC (`Viewer` / `Operator` / `Security Admin`) and ABAC (`is_published`, ownership, platform sentinel rules); hybrid Post-Quantum KEM key exchange via `/api/v1/telemetry/pq-key-exchange`; Firebase App Check + reCAPTCHA Enterprise; Dragonfly sliding-window rate limiting; distroless container hardening; WebAuthn hardware-key MFA ([Chapters 7](#chapter-7-securing-the-compute), [10](#chapter-10-encrypting-the-data--key-management), [27–28](#chapter-27-preparations-for-q-day-and-quantum-encryption)) |
-| **Manage**       | Scheduled `security_worker` and `ml_worker` automation (hourly IoC refresh, daily `platform_threat_model.pt` retraining); 30-day DEK lifecycle with `rotate_keys`; `db_cleanup` retention and data-minimization passes; Renovate, pre-commit, and quarterly Semgrep CI governance; Infisical runtime secret injection; internal vulnerability Kanban triage workflow ([Chapters 21](#chapter-21-team-workflows-and-vulnerability-management), [24](#chapter-24-automation-and-maintenance-schedules))                                                                             |
+| **Detect**       | FORJD threat/ML scoring producing dynamic Access Threat Scores; Countermeasure Effectiveness Standard (CES) Threat Level sub-gauge; vulnerability ledger alerts via FORJD/BFF adapters; Semgrep/Trivy/Checkov supply-chain findings; OSINT reconnaissance (HIBP credential checks, Ahmia dark-web brand scans); Django `/api/v1/ready` + FORJD `/ready` on `platform-status` ([Chapters 6](#chapter-6-intelligence-modeling-and-training), [13](#chapter-13-enhancing-data-with-threat-intelligence), [26](#chapter-26-countermeasure-effectiveness-standard-ces))                |
+| **Protect**      | AES-256-GCM field encryption with GCP KMS envelope rotation; RBAC (`Viewer` / `Operator` / `Security Admin`) and ABAC (`is_published`, ownership, platform sentinel rules); hybrid Post-Quantum KEM key exchange via `/api/v1/telemetry/pq-key-exchange`; Firebase App Check + reCAPTCHA Enterprise; Dragonfly sliding-window rate limiting; distroless container hardening; WebAuthn hardware-key MFA ([Chapters 7](#chapter-7-securing-the-compute), [10](#chapter-10-encrypting-the-data--key-management), [28–29](#chapter-28-preparations-for-q-day-and-quantum-encryption)) |
+| **Manage**       | Scheduled `security_worker` and `ml_worker` automation (hourly IoC refresh, daily `platform_threat_model.pt` retraining); 30-day DEK lifecycle with `rotate_keys`; `db_cleanup` retention and data-minimization passes; Renovate, pre-commit, and quarterly Semgrep CI governance; Infisical runtime secret injection; internal vulnerability Kanban triage workflow ([Chapters 21](#chapter-21-team-workflows-and-vulnerability-management), [25](#chapter-25-automation-and-maintenance-schedules))                                                                             |
 | **Respond**      | STIX 2.1 bundle serialization and TAXII 2.1 submission to CISA AIS / ISAC hubs; incident lifecycle on status pages with Sanity-backed public communications; FORJD replay/DLQ for poison or failed sealed work; `ThreatReport` and `BugReport` retention; automated throttle/challenge/block actions driven by threat scores ([Chapters 9](#chapter-9-applying-a-use-case-the-status-page), [14](#chapter-14-scaling-reporting-and-announcements-with-sanity))                                                                                                                    |
 
 **Inventory.** Before I can defend an asset, I must know it exists. The platform maintains a continuously refreshed catalog of monitored endpoints, registered tenant domains, integration credentials, and application dependency manifests. The isolated `scanner/` service normalizes infrastructure fingerprints into CPE 2.3 identifiers and cross-references lockfiles against OSV and NVD databases without exposing sensitive manifests to the public internet.
@@ -1384,7 +1356,7 @@ This six-function hierarchy directly supports threat-driven operations: Inventor
 
 ---
 
-## Chapter 24: Automation and Maintenance Schedules
+## Chapter 25: Automation and Maintenance Schedules
 
 Operating a globally distributed, AI-native platform involves managing an immense amount of operational entropy. Databases bloat, threat landscapes evolve, machine learning models drift, and third-party dependencies constantly release security patches. If human engineers are required to manually intervene and execute these routine maintenance tasks, the organization quickly becomes paralyzed by operational overhead, stifling innovation and increasing the likelihood of catastrophic human error. To achieve true scalability, the platform must be designed to be fundamentally self-sufficient. I engineer this autonomy by relying on a strict cadence of autonomous background workers and meticulously configured GitHub Actions.
 
@@ -1408,7 +1380,7 @@ While my internal Django workers manage the live operational state of the applic
 
 ---
 
-## Chapter 25: Countermeasure Effectiveness Standard (CES)
+## Chapter 26: Countermeasure Effectiveness Standard (CES)
 
 In the complex landscape of modern distributed systems, relying on disparate and isolated metrics often leads to fragmented situational awareness and delayed incident response times. To solve this critical observability challenge, I engineered the Countermeasure Effectiveness Standard (CES), a unified, high-level measurement paradigm designed to predict and quantify the overall health, SLA adherence, and stableness of the entire platform. By aggressively aggregating high-velocity telemetry data from multiple sources—including P99 latency distribution, active incident tracking, and continuous uptime percentages—the CES synthesizes these complex vectors into a singular, rapidly interpretable score. This approach represents a paradigm shift away from traditional, flat dashboards that require operators to manually correlate scattered charts during high-stress operational events. Instead, the CES acts as an intelligent, predictive barometer, instantly signaling the platform's defensive posture and operational integrity. By codifying what constitutes "healthy" behavior through a weighted algorithmic formula, the CES provides an unmistakable, top-down view of system performance. This empowers engineering teams to proactively deploy countermeasures the moment the CES begins to degrade, rather than reacting retroactively to individual alarms. Ultimately, the Countermeasure Effectiveness Standard ensures that every layer of the technology stack is continuously evaluated against a rigorous, unified benchmark of operational excellence.
 
@@ -1418,7 +1390,7 @@ To visually represent the Countermeasure Effectiveness Standard on the analytics
 
 ---
 
-## Chapter 26: Building an Asynchronous Asset Inventory
+## Chapter 27: Building an Asynchronous Asset Inventory
 
 As the platform scales, manually tracking third-party dependencies and infrastructure components becomes an impossible task. To solve this, I designed a dual-stream Asset Inventory and Vulnerability Scanner engine that operates asynchronously without bloating the core application.
 
@@ -1426,17 +1398,17 @@ Instead of embedding heavy security scanning tools directly into the main Django
 
 The ingestion pipeline in the core backend (`backend/telemetry/vulnerability_ledger.py`) exposes a unified `/api/telemetry/technology` endpoint capable of receiving both infrastructure signatures and application dependency manifests. To achieve maximum throughput, the backend processes these payloads in batches using the high-performance `Polars` DataFrame library. Once the raw telemetry is normalized, the backend securely delegates all scanning logic to the isolated `scanner` microservice. This microservice dynamically queries the National Vulnerability Database (NVD) REST API and OSV.dev REST API to extract exact CVEs and CVSS metrics, seamlessly bridging the gap between hardware/infrastructure reporting and modern application lockfile scanning.
 
-Public web surfaces add a third, evidence-bounded discovery stream. For every verified `ValidatedSite`, the Rust scheduler publishes a daily `enrich_web_technologies` task and the consolidated Django worker calls [Firecrawl](https://www.firecrawl.dev/) only for that account's approved public origins. Firecrawl renders JavaScript and returns a structured list of observable technologies—frameworks, CMS products, web servers, analytics providers, CDNs, and exposed version strings—together with the page evidence and a confidence score. DEML treats these results as untrusted observations rather than vulnerability facts: names are normalized, exact duplicates collapse inside the account boundary, and only evidence-bearing candidates enter the existing CPE 2.3 and CVE comparison path. Private, loopback, link-local, metadata-service, credential-bearing, and cross-domain targets are rejected before any request is submitted. The connector is disabled unless its server-side secret and explicit feature flag are present; no Firecrawl credential reaches a browser or Firestore projection.
+Public web surfaces add a third, evidence-bounded discovery stream. For every verified `ValidatedSite`, a scheduled `enrich_web_technologies` task calls [Firecrawl](https://www.firecrawl.dev/) only for that account's approved public origins. Firecrawl renders JavaScript and returns a structured list of observable technologies—frameworks, CMS products, web servers, analytics providers, CDNs, and exposed version strings—together with the page evidence and a confidence score. DEML treats these results as untrusted observations rather than vulnerability facts: names are normalized, exact duplicates collapse inside the account boundary, and only evidence-bearing candidates enter the existing CPE 2.3 and CVE comparison path. Private, loopback, link-local, metadata-service, credential-bearing, and cross-domain targets are rejected before any request is submitted. The connector is disabled unless its server-side secret and explicit feature flag are present; no Firecrawl credential reaches a browser or Firestore projection.
 
-The transactional result is materialized in the dedicated `web_technology_observations` table. Each row records the native account UUID, verified site, source URL, technology name and version, confidence, evidence, matched CPE, CVE identifiers, and first/last-seen timestamps. This preserves provenance and makes the dashboard read path independent of Firecrawl availability. A scan failure never deletes the last known inventory and never manufactures a vulnerability. Successful scans emit a versioned transactional Outbox event so FORJD consumers can project a compact summary without coupling Firecrawl to the UI. Tenant0 follows the same loop through its verified public domains; customer rows remain scoped to their owning `UserProfile.account_id`.
+The transactional result is materialized in the dedicated `web_technology_observations` table. Each row records the native account UUID, verified site, source URL, technology name and version, confidence, evidence, matched CPE, CVE identifiers, and first/last-seen timestamps. This preserves provenance and makes the dashboard read path independent of Firecrawl availability. A scan failure never deletes the last known inventory and never manufactures a vulnerability. Successful scans forward a compact versioned summary to FORJD through the BFF adapters, so FORJD can project it without coupling Firecrawl to the UI. Tenant0 follows the same loop through its verified public domains; customer rows remain scoped to their owning `UserProfile.account_id`.
 
 ```text
-Rust scheduler → internal-tasks: enrich_web_technologies
+Scheduled task: enrich_web_technologies
   → verified public ValidatedSite origins
   → Firecrawl structured technology evidence
   → normalize/deduplicate technology + version
-  → scanner service → Rust CPE lookup → NVD/OSV CVEs
-  → PostgreSQL WebTechnologyObservation + OutboxEvent
+  → FORJD scanner surfaces (CPE 2.3 + NVD/OSV CVE enrichment)
+  → PostgreSQL WebTechnologyObservation; summary forwarded to FORJD via BFF adapter
   → FORJD projection / security dashboard
 ```
 
@@ -1444,7 +1416,7 @@ Finally, the fully enriched vulnerability ledger is written to FORJD analytics t
 
 ---
 
-## Chapter 27: Preparations for Q-Day and Quantum Encryption
+## Chapter 28: Preparations for Q-Day and Quantum Encryption
 
 As we secure our platform against contemporary threats, we must also gaze towards the horizon of cryptography to prepare for an inevitable event: Q-Day. Q-Day refers to the theoretical point in time when quantum computers reach sufficient operational scale and error correction capability (often measured in millions of physical qubits) to successfully run Shor's algorithm. When this occurs, the foundational asymmetric encryption algorithms that secure the modern internet—specifically RSA, Diffie-Hellman, and Elliptic Curve Cryptography (ECC)—will be fundamentally compromised. While experts debate the exact timeline, the threat of "Harvest Now, Decrypt Later" attacks means that sensitive telemetry and configuration data intercepted today could be decrypted tomorrow.
 
@@ -1454,7 +1426,7 @@ My initial preparations involve auditing our entire cryptographic stack. For our
 
 Furthermore, our data-at-rest encryption (currently AES-256-GCM) is generally considered quantum-resistant, as Grover's algorithm only halves the effective key size (reducing 256-bit to an effective 128-bit security level, which remains highly secure). However, the key management infrastructure (KMS) and the digital signatures used for verifying JSON Web Tokens (JWTs) and software manifests will require transitioning to quantum-resistant signature schemes like Dilithium (ML-DSA) or SPHINCS+. By laying this groundwork now and maintaining cryptographic agility, we ensure that our platform's intelligence and our users' data remain imperviously locked, both today and in the post-quantum future.
 
-## Chapter 28: Access Control Matrix: Role-Based (RBAC) & Attribute-Based (ABAC) Paradigms
+## Chapter 29: Access Control Matrix: Role-Based (RBAC) & Attribute-Based (ABAC) Paradigms
 
 Architecting a scalable SaaS observability platform requires authorization that matches how customers actually use the product. The DEML Platform uses a **User + Sites** model: one [Firebase Authentication](https://firebase.google.com/products/auth) login maps to one [Django](https://www.djangoproject.com/) `User`, one `UserProfile.account_id`, and many owned `StatusPage` records. There are **no organization hierarchies, no team sub-logins, and no shared seats within a workspace**. RBAC therefore governs what a single account may mutate; ABAC governs whether a given status page, its services, incidents, and rollup stats are visible in the current session (logged out vs logged in, published vs private, platform vs customer-owned).
 
@@ -1872,26 +1844,9 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 - **FORJD_ANALYTICS_USER**: Must match what you set in the FORJD analytics service.
 - **FORJD_ANALYTICS_PASSWORD**: Must match what you set in the FORJD analytics service.
 
-### 9. Vulnerability Scanner Engine
+### 9. Vulnerability Scanning (FORJD)
 
-This microservice provides an offline, isolated environment for executing `osv-scanner` and `cpe-guesser` to enrich telemetry without bloating the main backend image.
-
-- **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/infrastructure/scanner`
-- **Builder**: Dockerfile (utilizes `python:3.11-slim` with the official Google `osv-scanner` binary)
-- **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 8000` (Default in Dockerfile)
-- **Target Port**: `8000` (FastAPI)
-- **Private Internal DNS**: `FORJD vulnerability surfaces.internal:8000`
-- **Public URL**: None (Strictly an internal service)
-- **Compute Limits**: 4 vCPU / 4 GB Memory
-- **Persistent Storage**: You MUST attach a Cloud Run Persistent Volume to `/data/osv` so the OSV database dump does not have to be repeatedly downloaded.
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**:
-- **OSV_DB_PATH**: `/data/osv` (The mounted volume path)
-- **CPE_GUESSER_URL**: `http://FORJD CPE lookup.internal:8080/unique`
-- **NVD_API_KEY**: Your National Vulnerability Database API Key (optional but highly recommended to bypass rate limits)
-
-**Consumers** (`deml-backend`, workers) set `SCANNER_SERVICE_URL=http://FORJD vulnerability surfaces.internal:8000`.
+Vulnerability and technology scanning runs in FORJD, not as a DEML microservice. Domain scanners are FORJD-owned, tenant-scoped tables (FORJD `sql/011`–`012`), and the FORJD engine deploys from the FORJD repository — there is no `/infrastructure/scanner` service in this repository. DEML surfaces scanner findings through the Django BFF adapters (`backend/forjd/`) using the tenant-bound `fjsvc_` token; see [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
 ### 10. CPE Indexer and Rust Lookup Service
 
@@ -2073,7 +2028,7 @@ jobs:
  run: |
  docker build -t $ECR_REGISTRY/deml-frontend:$GITHUB_SHA -f frontend/Dockerfile frontend
  docker push $ECR_REGISTRY/deml-frontend:$GITHUB_SHA
- # Repeat for backend, rust/forjd-engine (context ./rust), infrastructure/scanner, etc.
+ # Repeat for backend. The FORJD engine and scanners deploy from the FORJD repo, not this one.
  - name: Deploy to Lightsail
  run: |
  aws lightsail create-container-service-deployment \
@@ -2171,54 +2126,53 @@ This AWS topology delivers a production-grade, observable, secure deployment at 
 
 ## Appendix D: Maintenance & Automation Schedule
 
-This appendix is the **single source of truth** for all scheduled maintenance: background workers, data retention, billing reconciliation, and GitHub Actions. Constants live in `backend/utils/retention.py`.
+This appendix is the **single source of truth** for all scheduled maintenance: background workers, data retention, billing reconciliation, and GitHub Actions. Sealed telemetry retention is enforced in FORJD; data erasure flows through the FORJD tenant erase endpoint (`POST /api/v1/tenants/{id}/erase`) and the DEML account lifecycle.
 
 ### Continuous Background Work
 
-| Owner                                  | Cadence                      | Responsibility                                                                                                        |
-| -------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **FORJD** (Fly + engine)               | Continuous                   | Sealed ingest, workflows, durable projections, analytics, ML, replay/DLQ                                              |
-| **Django BFF** (`deml-backend` on Fly) | Continuous                   | Firebase JWT termination; `account → forjd_tenant` mapping; sealed forward with `fjsvc_`; product-path adapters       |
-| **DEML control-plane tasks**           | Daily / hourly as configured | Stripe `sync_subscriptions`, DEK rotation checks, identity-adjacent retention (`db_cleanup`), consent/billing hygiene |
+| Owner                                  | Cadence                      | Responsibility                                                                                                  |
+| -------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **FORJD** (Fly + engine)               | Continuous                   | Sealed ingest, workflows, durable projections, analytics, ML, replay/DLQ                                        |
+| **Django BFF** (`deml-backend` on Fly) | Continuous                   | Firebase JWT termination; `account → forjd_tenant` mapping; sealed forward with `fjsvc_`; product-path adapters |
+| **DEML control-plane tasks**           | Daily / hourly as configured | Stripe subscription reconciliation, DEK rotation checks, identity-adjacent retention, consent/billing hygiene   |
 
 DEML does **not** run local stream consumers, topic relays, or projection workers for product telemetry. Stream processing and ML execute in FORJD. See [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md) and [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md).
 
 **DEML-owned schedules (control plane):**
 
-- `sync_subscriptions` (daily) — Stripe reconciliation
-- `rotate_keys_if_due` (daily) — KMS / DEK lifecycle
-- `db_cleanup` (daily) — prune identity-adjacent hot data DEML owns (not sealed telemetry)
+- Stripe subscription reconciliation (daily)
+- KMS / DEK lifecycle checks (daily)
+- Identity-adjacent account-lifecycle hygiene — never sealed telemetry retention, which is FORJD's
 - Optional: lighthouse, dark-web, or TAXII helpers only when still DEML-local; prefer FORJD surfaces when available
 
 Daily jobs are staggered to avoid thundering-herd load on Postgres and Stripe.
 
-### Data Retention (`db_cleanup` + `cleanup_FORJD analytics`)
+### Data Retention
 
-Owned exclusively by the Rust scheduler (`forjd-engine`). Policy constants defined in `backend/utils/retention.py`.
+Sealed telemetry, projection, and analytics retention is owned by FORJD (engine scheduler on Fly). DEML retains only identity-adjacent control-plane data and delegates tenant data erasure to FORJD via `POST /api/v1/tenants/{id}/erase` during account deletion. The policy windows below are enforced on the FORJD side.
 
 **Neon (PostgreSQL):**
 
-| Data Class                                 | Retention  | Action                                                               |
-| ------------------------------------------ | ---------- | -------------------------------------------------------------------- |
-| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted only after versioned hourly and daily coverage exists        |
-| `HealthProbeObservation` (raw probes)      | 30 days    | Deleted only after page-scoped daily uptime repair                   |
-| `LighthouseScan` (site quality)            | 30 days    | Dedicated page/URL/hour projection, then deleted                     |
-| `TelemetryIngestReceipt`                   | 30 days    | Deleted after replay window                                          |
-| `AuditLog`                                 | 30 days    | Archived to FORJD analytics, then exact acknowledged IDs are deleted |
-| `CookieConsent`                            | 30 days    | Deleted only after versioned hourly coverage exists                  |
-| `OutboxEvent` (published)                  | 30 days    | Deleted                                                              |
-| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted seven days after `dlq_at`, not original creation             |
-| `ThreatIntelligence`                       | 90 days    | Deleted, duplicates purged                                           |
-| `SearchQuery`                              | 30 days    | PII-bearing query evidence deleted                                   |
-| `HoneypotInteraction`                      | 90 days    | Security interaction evidence deleted                                |
-| `BenchmarkRun`                             | 365 days   | Annual model-comparison evidence deleted                             |
-| `AggregatedAnalytics` (hourly)             | 30 days    | Deleted after daily rollups                                          |
-| `ReportArchive` (daily rollups)            | 90 days    | Materialized; then deleted                                           |
-| `StatusPageUptimeDaily` (daily rollups)    | 90 days    | Fast status-page uptime reads                                        |
-| FORJD exports export artifacts             | 14 days    | Object deleted; job marked expired                                   |
-| `ExportJob` terminal metadata              | 90 days    | Expired and terminal-failed rows deleted after object cleanup        |
-| `ScheduledTaskRun`                         | 90 days    | Completed/terminal-failure history pruned                            |
-| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record                                             |
+| Data Class                                 | Retention   | Action                                                                 |
+| ------------------------------------------ | ----------- | ---------------------------------------------------------------------- |
+| `Endpoints` (raw ping telemetry)           | 30 days     | Deleted only after versioned hourly and daily coverage exists          |
+| `HealthProbeObservation` (raw probes)      | 30 days     | Deleted only after page-scoped daily uptime repair                     |
+| `LighthouseScan` (site quality)            | 30 days     | Dedicated page/URL/hour projection, then deleted                       |
+| `TelemetryIngestReceipt`                   | 30 days     | Deleted after replay window                                            |
+| `AuditLog`                                 | 30 days     | Archived to FORJD analytics, then exact acknowledged IDs are deleted   |
+| `CookieConsent`                            | 30 days     | Deleted only after versioned hourly coverage exists                    |
+| FORJD outbox rows (published / DLQ)        | 30 / 7 days | Enforced inside the FORJD engine (Postgres outbox + Dragonfly streams) |
+| `ThreatIntelligence`                       | 90 days     | Deleted, duplicates purged                                             |
+| `SearchQuery`                              | 30 days     | PII-bearing query evidence deleted                                     |
+| `HoneypotInteraction`                      | 90 days     | Security interaction evidence deleted                                  |
+| `BenchmarkRun`                             | 365 days    | Annual model-comparison evidence deleted                               |
+| `AggregatedAnalytics` (hourly)             | 30 days     | Deleted after daily rollups                                            |
+| `ReportArchive` (daily rollups)            | 90 days     | Materialized; then deleted                                             |
+| `StatusPageUptimeDaily` (daily rollups)    | 90 days     | Fast status-page uptime reads                                          |
+| FORJD exports export artifacts             | 14 days     | Object deleted; job marked expired                                     |
+| `ExportJob` terminal metadata              | 90 days     | Expired and terminal-failed rows deleted after object cleanup          |
+| `ScheduledTaskRun`                         | 90 days     | Completed/terminal-failure history pruned                              |
+| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite  | Kept as system of record                                               |
 
 Cleanup is deliberately **repair-first and fail-closed**. Before raw telemetry is removed, the scheduler rebuilds the retained daily report and page-uptime projections and verifies that each endpoint- or consent-backed scope in the rolling cutoff boundary has an `AggregatedAnalytics` row carrying the current aggregation version. Scheduler reconciliation creates 31 days of hourly work so that boundary is repairable before the 30-day source policy is enforced; evidence already older than policy is not allowed to deadlock pruning forever. Missing boundary coverage aborts pruning. Audit rows are uploaded to FORJD analytics in bounded batches and Postgres deletes only the exact IDs acknowledged by FORJD analytics; an archive or schema failure leaves the source rows intact. This ordering makes pruning safe during scheduler, worker, database, or FORJD analytics outages.
 
@@ -2519,7 +2473,7 @@ export const globalState = signal({
 
 ---
 
-## Chapter 29: The Integrations Gateway & API Key Infrastructure
+## Chapter 30: The Integrations Gateway & API Key Infrastructure
 
 As the platform matured beyond its foundational dashboard and telemetry systems, a critical requirement emerged: the ability to seamlessly ingest streaming data from distributed, high-throughput systems and expose low-latency predictive models. Enterprise environments rarely operate in isolation. They utilize complex, multi-tiered architectures powered by Apache Spark, Databricks, Kubernetes, PyTorch, TensorFlow, and AWS Redshift. To integrate gracefully into these ecosystems, the platform required a dedicated API Gateway capable of handling both heavy ingestion and real-time inference.
 
@@ -2535,7 +2489,7 @@ Crucially, the architecture unifies machine data and user telemetry without bypa
 
 This architecture successfully decoupled the human-facing application from the machine-facing gateway. By standardizing the ingestion schema, centralizing data flow into the widget streams, and enforcing strict cryptographic access controls via the UI, the platform was now ready to securely handle automated, enterprise-scale data streams from the industry's most demanding tools.
 
-## Chapter 30: DevSecOps, Platform Standardization, and Leak-Proof Tenancy
+## Chapter 31: DevSecOps, Platform Standardization, and Leak-Proof Tenancy
 
 As the platform scaled, the necessity for uncompromising infrastructure security and UI/UX standardization became paramount. I initiated a comprehensive DevSecOps audit, focusing first on the frontend containerization. By transitioning the Angular UI deployment pipeline to leverage strict multi-stage Distroless builds (`gcr.io/distroless/nodejs22-debian12`), I successfully eliminated all runtime shells and package managers. This drastically reduced the attack surface, ensuring the production image runs only the compiled SSR server.
 
@@ -2561,7 +2515,7 @@ To ensure long-term maintainability, the platform is strictly governed by automa
 
 Furthermore, critical business logic—such as billing, telemetry, and background workers—is protected by a comprehensive test suite using `pytest`. Database interactions are mocked or verified via test databases (`@pytest.mark.django_db`) to guarantee functional parity with production. By codifying these invariants and test cases, the platform ensures SaaS-level reliability while moving at the velocity of a startup.
 
-## Chapter 31: Viking-UI — The Zero-Dependency UI Kit
+## Chapter 32: Viking-UI — The Zero-Dependency UI Kit
 
 The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles, framework-neutral Web Components, shared utility exports, and Angular wrapper components. The historical split that placed library ownership under frontend-specific paths has been unused; apps now consume the package the way they would consume an external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. Intrinsic `viking-grid columns="auto"` and `viking-switcher` contracts form tracks from available content space rather than device names, preserving readable minimums, equal-height cards, aligned action rows, and natural row-to-column flow from 320px and 400% zoom through wide operational canvases. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
 
@@ -2717,7 +2671,7 @@ Peer dependencies: `@angular/core`, `@angular/common`, and `@angular/forms` ^22.
 
 The library carries a machine-readable manifest (`viking.manifest.json`) that maps each component to its Angular exports and the date of the last audit. The `npm run check:viking-upstream` script diffs manifest coverage and exits non-zero when the catalog drifts — surfacing gaps in CI the same way a failing contract test would. Accessibility is treated as a WCAG 2.1 AA / Section 508 contract: visible `:focus-visible` rings on every interactive element, full keyboard navigation for listboxes, menus and the command palette, `role`/`aria-*` semantics throughout, and `prefers-reduced-motion` handling on animated pieces such as skeletons and progress bars. The suite is verified by dedicated [Vitest](https://vitest.dev/) component tests (`npm run test:viking-ui`) that compile real templates through the [AnalogJS](https://analogjs.org/) Angular plugin, plus `ng lint` accessibility rules over the library's inline templates.
 
-## Chapter 32: Daily Platform Operations Audit
+## Chapter 33: Daily Platform Operations Audit
 
 Operating a high-throughput event platform is not a one-time architecture exercise — it is a recurring discipline. Every production day, I run a structured audit across layout cohesion, accessibility, container security, tenant isolation, scheduler health, and documentation fidelity. The objective is not checkbox compliance; it is to catch drift before it becomes an incident or an audit finding. This chapter documents the operational playbook I execute on DEML and the invariants it enforces.
 
@@ -2733,13 +2687,13 @@ Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the
 
 Keyboard navigation, visible `:focus-visible` rings (`--viking-ring`), semantic headings, explicit image alts, and `aria-*` on dynamic widgets are enforced mechanically. `node scripts/run_axe.js` targets marketing HTML and Astro output for WCAG 2.1 AA violations. Viking-UI form stacks compose through `viking-field` so labels, errors, and required states remain screen-reader coherent. Status alone is insufficient — automated gates run on every pre-commit pass.
 
-### Railway deployment and distroless runtimes
+### Production deployment and distroless runtimes
 
-Production services deploy on Railway using per-service manifests under `infrastructure/railway/`. The Angular SSR frontend builds with `node:24-alpine`, then copies artifacts into `gcr.io/distroless/nodejs22-debian12`. The Django API compiles dependencies and `collectstatic` in `python:3.11-slim-bookworm`, then runs from `gcr.io/distroless/python3-debian12` as UID `nonroot`. No shell, no package manager, no opportunistic `curl` inside the runtime — the attack surface is the binary and its shared libraries, nothing else. Health checks hit `/api/v1/system-status/health` on the API service; workers restart on failure with bounded retries.
+Production hosts are Vercel for the Angular app (`deml`) and Fly.io for the Django API (`deml-backend`); the FORJD engine deploys from the FORJD repository ([docs/VERCEL.md](docs/VERCEL.md), [docs/FLY.md](docs/FLY.md)). Railway is retired for the data plane and the Angular frontend; `infrastructure/railway/services.json` catalogs the retired services and `scripts/railway_retire_dataplane.py` performs cleanup. The Django API compiles dependencies and `collectstatic` in `python:3.11-slim-bookworm`, then runs from `gcr.io/distroless/python3-debian12` as UID `nonroot`. No shell, no package manager, no opportunistic `curl` inside the runtime — the attack surface is the binary and its shared libraries, nothing else. Health checks hit `/api/v1/ready` on the API service.
 
 ### Database ingestion, retention, and scheduler efficiency
 
-Telemetry enters through `/api/v1/ingest`, Firebase `sealed ingest`, and OpenTelemetry collectors. Commands land in Postgres via transactional Outbox; FORJD ingest wakes on commit and uses bounded polling as a fallback. FORJD projections projects idempotently into Firestore and enrichment tables. Retention constants live in `backend/utils/retention.py`: raw telemetry and audit logs are eligible at **30 days**, published outbox rows at 30 days, and exhausted Outbox DLQ rows seven days after their explicit `dlq_at` admission timestamp. The destructive pass first repairs page/day and account/hour projections, checks aggregate version coverage, and requires FORJD analytics acknowledgement for audit batches. `FORJD scheduler` creates durable, unique UTC task buckets for analytics, reports, exports, threat intelligence, cleanup, subscriptions, OSINT, and daily ML training; `FORJD workers` executes the whitelisted Python commands. Email and export dispatches use durable queues—no fire-and-forget request threads.
+Telemetry enters through `/api/v1/ingest`, Firebase `sealed ingest`, and OpenTelemetry collectors. Django authenticates each call, resolves the tenant binding, and forwards sealed envelopes to FORJD synchronously through the BFF adapters; FORJD owns the transactional outbox (Postgres outbox + Dragonfly streams), durable delivery, retries, and DLQ admission. FORJD projects idempotently into durable `stream_results` and analytics. Retention is enforced in FORJD: raw telemetry and audit evidence age out at **30 days**, and outbox/DLQ windows are engine policy. Tenant data erasure flows through FORJD `POST /api/v1/tenants/{id}/erase` plus the DEML account lifecycle. FORJD's scheduler creates durable, unique UTC task buckets for analytics, reports, exports, threat intelligence, cleanup, and ML training. Email dispatches on the DEML side use durable queues—no fire-and-forget request threads.
 
 ### Multi-tenant security and regulatory alignment
 
@@ -2777,9 +2731,9 @@ To minimize deployment footprint, operational complexity, and resource overhead,
 - Sweeps active Stripe subscriptions daily (`sync_subscriptions`) to enforce pricing tiers.
 - Optimizes PostgreSQL storage nightly via `VACUUM ANALYZE`.
 
-### 4. Rust Outbox Relay (`FORJD_ROLE=relay`)
+### 4. Durable delivery (FORJD engine outbox)
 
-- **Event Publishing**: Atomically leases unpublished `OutboxEvent` rows with `FOR UPDATE SKIP LOCKED`, publishes concurrently with stable event IDs, and releases or completes each lease. Published rows are purged by `db_cleanup` after 30 days; exhausted retries receive `dlq_at` and remain for seven full days from DLQ admission.
+- **Event Publishing**: The transactional outbox lives inside FORJD's engine (Postgres outbox + Dragonfly streams). Django calls the FORJD BFF adapters synchronously with a tenant-bound `fjsvc_` token; FORJD owns leasing, stable event IDs, retry backoff, DLQ admission, and outbox retention. DEML runs no local relay process.
 
 ## Appendix I: API Rate Limiting, Tiered Pricing, and Usage Analytics
 
@@ -2916,11 +2870,11 @@ Canonical record of end-of-day workspace sync, hardening, and polish passes. Eac
 | 2026-06-30 | **Cursor - Grok 4.3 (Session 3)** | Multi-pass hardening: removed dead `up.railway.app` hostname detection from `environment.ts` + `environment.development.ts` (app fully migrated to `deml.app`); sanitized `main.ts` Sentry DSN comment (removed "Railway" deployment-provider branding); replaced hardcoded `/tmp/sla_model.pt` in `ml/ml_services.py` with `tempfile.NamedTemporaryFile` + `os.unlink` teardown (S108 fix, prevents temp file leakage); replaced hardcoded `/tmp/gcp-service-account.json` in `config/settings.py` with `tempfile.mkstemp` (S108 fix, OS-secure path allocation); added `# noqa: S104` on intentional container `0.0.0.0` bind in `start.py` (Daphne Cloud Run entrypoint false positive suppression); `scripts/sync_content.py` re-ran → search-index 72 sections synced; **94 pytest** green across all modules post-fix; TypeScript `npx tsc --noEmit` clean; Ruff S-rules audit documented (false positives annotated).                                                                                                                                                                                                               |
 | 2026-07-02 | **Cursor Agent (818d)**           | PASS 0–5: cache purge (`deml-cleanup.sh`); **95 pytest + 27 vitest** green; deml.app `/home` landing (marketing parity: hero, capability bands, pricing); Polars-style compact `app-whitepaper-cta` (animated bar grid + sparkline); legacy Angular Material SCSS removed (`material-overrides`, `material-tokens`, dead `mat-*` rules); root guard routes unauthenticated users to `/home`; explore page whitepaper CTA; Distroless Docker audit confirmed (backend, frontend, scanner).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 2026-07-02 | **Cursor Agent (c5bc)**           | PASS 0–5: **95 pytest + 27 vitest** green; `pretest` + vitest alias for `@deml/viking-ui`; CI `build:viking-ui` step; removed stale `up.railway.app` from `set-env.js`, `firebase.json`, `nginx.conf`; domain-pure marketing `sitemap.xml` (no cross-domain app routes); wired `/telemetry/` landing; `llms.txt` AGENTS/MCP settings; auth-status `hidden` attr (no inline styles); Appendix D `ci-tests.yml` entry.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| 2026-07-04 | **Cursor Agent (ce2d)**           | Daily platform audit (Tracks 1–8): unified `/status` page shell with `.dashboard-page-container` + full-height flex chain; root `scripts/check_mobile_first.js` wrapper; Developer Portal `/documentation` Platform Ops section (Railway, distroless, retention, schedulers, CES); BOOK Ch.32 + WHITEPAPER §15.1; theme/mobile-first enforcement green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 2026-07-04 | **Cursor Agent (ce2d)**           | Daily platform audit (Tracks 1–8): unified `/status` page shell with `.dashboard-page-container` + full-height flex chain; root `scripts/check_mobile_first.js` wrapper; Developer Portal `/documentation` Platform Ops section (Railway, distroless, retention, schedulers, CES); BOOK Ch.33 + WHITEPAPER §15.1; theme/mobile-first enforcement green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## Appendix L: Foundational Security Frameworks
 
-DEML adopts two white papers as guiding references for its threat-driven security architecture. They are operational doctrine—not decorative citations—and are applied throughout [§10](#10-threat-driven-design-and-defendable-architecture-principles) and [Chapter 23](#chapter-23-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3).
+DEML adopts two white papers as guiding references for its threat-driven security architecture. They are operational doctrine—not decorative citations—and are applied throughout [§10](#10-threat-driven-design-and-defendable-architecture-principles) and [Chapter 24](#chapter-24-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3).
 
 **Why these references were chosen.** Compliance frameworks (SOC 2, CMMC, NIST) catalog control objectives; vulnerability scanners enumerate CVEs. Neither alone keeps pace with adversaries targeting high-throughput telemetry pipelines, ML inference endpoints, and multi-tenant boundaries. _A Threat-Driven Approach to Cyber Security_ supplies a repeatable discovery-to-controls workflow (IDDIL/ATC, STRIDE-LM, functional control hierarchy) that lets operators prioritize by mission impact and threat intelligence—not patch-queue volume alone. _Defendable Architectures_ translates that mindset into engineering requirements: systems must be designed for **Visibility** (observable adversary behavior), **Manageability** (centralized, automated posture changes), and **Survivability** (graceful degradation without silent data loss). That pairing matches DEML's sealed FORJD projections loop, symmetrical tenant pipelines, and CES countermeasure scoring.
 
@@ -2981,8 +2935,8 @@ Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/s
 
 ## Related
 
-- [Glossary](glossary.md)
-- [CONOPS](conops.md)
+- [Glossary (Appendix Q)](#appendix-q-deml-glossary)
+- [CONOPS (Appendix N)](#appendix-n-concept-of-operations-operator-quick-reference)
 - [DeepWiki · Billing](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning/2.8-billing-and-subscriptions)
 
 ---
@@ -2993,7 +2947,7 @@ Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/s
 **Last aligned:** July 2026 (sealed FORJD projections; multi-runtime compute)
 **Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
 **Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
-**Glossary:** [glossary.md](glossary.md) · **Billing:** [billing.md](billing.md) · **DeepWiki:** [code wiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+**Glossary:** [Appendix Q](#appendix-q-deml-glossary) · **Billing:** [Appendix M](#appendix-m-billing--subscriptions-operator-reference) · **DeepWiki:** [code wiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
 
 ---
 
@@ -3003,44 +2957,47 @@ This document tells operators **how DEML runs in production**: vendors, services
 
 ## 2. System mission
 
-| Goal                   | Mechanism                                                |
-| ---------------------- | -------------------------------------------------------- |
-| Non-blocking ingestion | Firebase `sealed ingest` + Django Outbox → FORJD         |
-| Real-time dashboards   | Firestore projections (`deml` DB) + Angular `onSnapshot` |
-| Transactional truth    | PostgreSQL (users, pages, incidents, API keys, outbox)   |
-| Analytics & CES        | OpenTelemetry → FORJD analytics                          |
-| Tenant isolation       | `account_id` scoping + Firestore security rules          |
-| Public transparency    | `platform-status` dogfoods under real load               |
-| Paid tiers             | Stripe Standard → Pro ([billing.md](billing.md))         |
+| Goal                   | Mechanism                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| Non-blocking ingestion | Firebase `sealed ingest` + Django BFF sealed forward → FORJD (FORJD owns the durable outbox) |
+| Real-time dashboards   | Firestore projections (`deml` DB) + Angular `onSnapshot`                                     |
+| Transactional truth    | PostgreSQL (users, pages, incidents, API keys)                                               |
+| Analytics & CES        | OpenTelemetry → FORJD analytics                                                              |
+| Tenant isolation       | `account_id` scoping + Firestore security rules                                              |
+| Public transparency    | `platform-status` dogfoods under real load                                                   |
+| Paid tiers             | Stripe Standard → Pro ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))  |
 
 ## 3. Vendor & deployment map
 
-Compute is **multi-target** with **identical container images** and sealed FORJD projections invariants:
+Production hosts are fixed: **Vercel** for the Angular app, **Fly.io** for the Django control plane, and **FORJD** (Fly + Supabase + Dragonfly) for the data plane. Alternate control-plane residency (Cloud Run, AWS Lightsail) is documented for portability only:
 
-| Runtime                     | Notes                                            | Docs                                                                    |
-| --------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
-| **Railway**                 | Private service mesh; `railway.json` per service | [infrastructure/railway/README.md](../infrastructure/railway/README.md) |
-| **Cloud Run (GCP)**         | Fully managed reference topology                 | BOOK Appendix C                                                         |
-| **AWS Lightsail / Fargate** | Cost-optimized alternate; ECR                    | BOOK Ch. 23 / Appendix E                                                |
+| Runtime                     | Notes                                                                              | Docs                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Vercel**                  | Angular product UI (`deml`)                                                        | [docs/VERCEL.md](../docs/VERCEL.md)                                     |
+| **Fly.io**                  | Django BFF (`deml-backend`)                                                        | [docs/FLY.md](../docs/FLY.md)                                           |
+| **FORJD (Fly)**             | `forjd-engine` data plane; deploys from the FORJD repo                             | [docs/FORJD_INTEGRATION.md](../docs/FORJD_INTEGRATION.md)               |
+| **Railway** _(retired)_     | Former data-plane/frontend host; cleanup via `scripts/railway_retire_dataplane.py` | [infrastructure/railway/README.md](../infrastructure/railway/README.md) |
+| **Cloud Run (GCP)**         | Alternate control-plane reference topology                                         | BOOK Appendix C                                                         |
+| **AWS Lightsail / Fargate** | Alternate control-plane residency; ECR                                             | BOOK Ch. 23 / Appendix E                                                |
 
 Firebase (Auth, `sealed ingest`, Firestore, marketing Hosting) is shared across compute hosts. GCP KMS/audit applies when the GCP control plane is enabled.
 
-| Component                             | Example service names                                                                                                                                            | Deploy trigger                  |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Angular app (`deml.app`)              | `deml-frontend`                                                                                                                                                  | Push to `main`                  |
-| Django API                            | `deml-backend`                                                                                                                                                   | Push to `main`                  |
-| Workers, **Rust data plane**, scanner | `FORJD workers`, FORJD ingest, `FORJD scheduler`, `FORJD probe`, `FORJD normalizer`, `FORJD CPE lookup`, optional `FORJD ingest`, `FORJD vulnerability surfaces` | Push to `main`                  |
-| Postgres                              | managed DB / sidecar                                                                                                                                             | Infrastructure change           |
-| FORJD, FORJD analytics                | `FORJD data plane`, `FORJD analytics`                                                                                                                            | Infrastructure + image push     |
-| `sealed ingest` + Firestore rules     | Firebase / GCP                                                                                                                                                   | `.github/workflows/firebase...` |
-| Marketing site                        | Firebase Hosting                                                                                                                                                 | `firebase-hosting-merge.yml`    |
+| Component                                                                        | Example service names                   | Deploy trigger                  |
+| -------------------------------------------------------------------------------- | --------------------------------------- | ------------------------------- |
+| Angular app (`deml.app`)                                                         | `deml` on Vercel                        | Push to `main`                  |
+| Django API                                                                       | `deml-backend` on Fly                   | Push to `main`                  |
+| Data plane (ingest, workflows, projections, analytics, ML, scanners, replay/DLQ) | FORJD `forjd-engine` (FORJD repository) | FORJD deploy pipeline           |
+| Postgres                                                                         | managed DB (DEML control plane)         | Infrastructure change           |
+| `sealed ingest` + Firestore rules                                                | Firebase / GCP                          | `.github/workflows/firebase...` |
+| Marketing site                                                                   | Firebase Hosting                        | `firebase-hosting-merge.yml`    |
 
-**Ownership invariant:** Rust roles own relay, durable schedule creation, pure
-database maintenance, probes, raw telemetry normalization, request-time CPE
-lookup, and optional high-volume ingest. Python equivalents are rollback-only
-and must not run concurrently. Django workers retain business projections, ML,
-billing, KMS, and external API integrations. See the
-[Python-to-Rust ownership ledger](rust-data-plane.md#python-to-rust-ownership-ledger).
+**Ownership invariant:** FORJD owns the data plane end to end — sealed ingest,
+the transactional outbox, durable scheduling, probes, normalization, CPE lookup,
+analytics, ML, replay, and DLQ. Django calls FORJD BFF adapters synchronously
+with tenant-bound `fjsvc_` tokens and never runs concurrent local equivalents.
+DEML retains identity, billing, consent, KMS, and external API integrations. See
+[Appendix T](#appendix-t-data-plane-ownership-forjd) and
+[docs/FORJD_INTEGRATION.md](../docs/FORJD_INTEGRATION.md).
 
 **Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
 
@@ -3158,7 +3115,7 @@ Details: [Appendix D](#appendix-d-maintenance--automation-schedule), [docs/PRODU
 | [BOOK.md](../BOOK.md)                                                | Full CONOPS narrative + chapters          |
 | [WHITEPAPER.md](../WHITEPAPER.md)                                    | Executive architecture                    |
 | [README.md](../README.md)                                            | API integration gateway                   |
-| [features.md](features.md)                                           | Feature catalog                           |
+| [Appendix P](../BOOK.md#appendix-p-platform-features)                | Feature catalog                           |
 | [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles         |
 | [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                          |
 | [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                                 |
@@ -3317,9 +3274,9 @@ Operational doctrine—how the platform runs in production, who performs which w
 
 - [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops) — canonical narrative
 - [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops) — executive summary
-- [conops.md](conops.md) — operator quick reference (checklists, service matrix, contingencies)
-- [glossary.md](glossary.md) — patterns, entities, stores
-- [billing.md](billing.md) — Stripe Standard → Pro
+- [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference) — operator quick reference (checklists, service matrix, contingencies)
+- [Appendix Q](#appendix-q-deml-glossary) — patterns, entities, stores
+- [Appendix M](#appendix-m-billing--subscriptions-operator-reference) — Stripe Standard → Pro
 - [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md) — analytics export object store (FORJD exports) + download design
 - [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning) — code-entity wiki
 
@@ -3341,7 +3298,7 @@ Operational doctrine—how the platform runs in production, who performs which w
 
 1. **High-Throughput Asynchronous Telemetry Ingestion + sealed FORJD projections (Reliable)**
    - Client events: Firebase Cloud Functions (`sealed ingest` with `version` + `idempotency_key`) → FORJD or Firestore fallback.
-   - Django paths use **Transactional Outbox** (`OutboxEvent` model) + Django → FORJD forward command for reliable publishing.
+   - Django paths call the FORJD BFF adapters synchronously with a tenant-bound `fjsvc_` token; FORJD's engine owns the transactional outbox (Postgres outbox + Dragonfly streams) and durable delivery.
    - FORJD projections performs idempotent projections (with DLQ to `FORJD DLQ`) and builds materialized read models in Firestore (`deml` DB).
    - Queries use direct Firestore real-time subscriptions. FORJD + Polars for heavy batch work. Decouples from transactional DB while providing at-least-once + dedup semantics.
 
@@ -3387,12 +3344,12 @@ Operational doctrine—how the platform runs in production, who performs which w
 
 15. **RBAC & ABAC Access Control**
     - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin` (one role per login). Status page create/update/delete requires `Operator` or `Security Admin` (`@role_required`). Settings UI disables mutations for `Viewer`.
-    - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + an **MFA-verified session** (`amr` / `firebase.sign_in_second_factor`—see [glossary.md](glossary.md)). Enrolled MFA without re-auth after second factor leaves Settings locked. `platform-status` is immutable for customers.
+    - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + an **MFA-verified session** (`amr` / `firebase.sign_in_second_factor`—see [Appendix Q](#appendix-q-deml-glossary)). Enrolled MFA without re-auth after second factor leaves Settings locked. `platform-status` is immutable for customers.
     - **Public stats:** `/status/:slug` and `/explore` expose uptime and service health only when `is_published=True` or `slug=platform-status`.
     - See [WHITEPAPER.md §8](../WHITEPAPER.md#8-role-based--attribute-based-access-control-rbac--abac) for the full access matrix.
 
 16. **Billing (Stripe)**
-    - Live Standard → Pro checkout, webhooks, success-page sync, and scheduled `sync_subscriptions`. Operator detail: [billing.md](billing.md).
+    - Live Standard → Pro checkout, webhooks, success-page sync, and scheduled subscription reconciliation. Operator detail: [Appendix M](#appendix-m-billing--subscriptions-operator-reference).
 
 17. **Embeddable widgets**
     - Public status embeds via `widget.js` (Viking-UI package / synced marketing assets) for customer sites without pulling the full Angular app.
@@ -3432,7 +3389,7 @@ Short definitions for architectural patterns, domain concepts, and production co
 | **Django → FORJD forward**   | BFF sealed ingest with tenant-bound `fjsvc_`                                                        | [docs/FORJD_INTEGRATION.md](../docs/FORJD_INTEGRATION.md), [docs/FLY.md](../docs/FLY.md) |
 | **DEML control-plane tasks** | Billing sync, key rotation, identity-adjacent retention—never sealed stream processing              | `backend/` management commands                                                           |
 | **Viking-UI**                | Design system SSoT: tokens, CSS, Angular + Web Components                                           | `packages/viking-ui/`, [THEME.md](../THEME.md)                                           |
-| **Kyber / liboqs**           | Post-quantum KEM primitives available on hybrid key-exchange paths                                  | BOOK App. A / Ch. 27                                                                     |
+| **Kyber / liboqs**           | Post-quantum KEM primitives available on hybrid key-exchange paths                                  | BOOK App. A / Ch. 28                                                                     |
 
 ## Data stores & mesh
 
@@ -3446,10 +3403,10 @@ Short definitions for architectural patterns, domain concepts, and production co
 
 ## Related docs
 
-- [CONOPS operator reference](conops.md)
-- [Platform features](features.md)
-- [Billing & subscriptions](billing.md)
-- [Railway service topology](../infrastructure/railway/README.md)
+- [CONOPS operator reference (Appendix N)](#appendix-n-concept-of-operations-operator-quick-reference)
+- [Platform features (Appendix P)](#appendix-p-platform-features)
+- [Billing & subscriptions (Appendix M)](#appendix-m-billing--subscriptions-operator-reference)
+- [Railway service topology (retired)](../infrastructure/railway/README.md)
 - [DeepWiki index](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
 
 ---
@@ -3627,122 +3584,21 @@ _Note: All Knowledge Distillation API calls happen during the offline training w
 
 ---
 
-## Appendix T: Rust Data Plane Operations
+## Appendix T: Data Plane Ownership (FORJD)
 
-The DEML Rust workspace owns high-volume and timing-sensitive work while Django remains the control plane. One compiled image is deployed with exactly one `FORJD_ROLE` per production service:
+**Retired — the DEML-local Rust data plane moved to FORJD.** Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
-| Role         | Service            | Durable boundary                                                                       |
-| ------------ | ------------------ | -------------------------------------------------------------------------------------- |
-| `relay`      | FORJD ingest       | Leased `monitor_outboxevent` rows; stable `x-deml-event-id` header                     |
-| `scheduler`  | `FORJD scheduler`  | Unique `(task_name, scheduled_for)` UTC buckets in `scheduled_task_runs`               |
-| `probe`      | `FORJD probe`      | Unique `health_probe_observations.observation_key` and transactional `endpoints` write |
-| `normalizer` | `FORJD normalizer` | Unique FORJD stream topic/partition/offset receipt in `telemetry_ingest_receipts`      |
-| `ingest`     | `FORJD ingest`     | API-key auth, Dragonfly rate limiting, chain-of-custody hash, transactional Outbox     |
-| `cpe`        | `FORJD CPE lookup` | Lua-ranked CPE lookup against the imported Dragonfly database 8 index                  |
+The data plane is owned by [FORJD](https://github.com/dataengineeringformachinelearning/forjd). The `forjd-engine` binary deploys on Fly.io from the FORJD repository and owns sealed ingest, the transactional outbox (Postgres outbox + Dragonfly streams), durable scheduling, probes, raw-telemetry normalization, request-time CPE lookup, analytics, ML, replay, and DLQ. DEML does not compile, deploy, or operate a local Rust workspace or any `FORJD_ROLE` services.
 
-`FORJD_ROLE=all` exists only for local diagnostics. Production uses separate roles so a probe spike, FORJD streams rebalance, scheduler failure, or CPE refresh cannot take down relay delivery. The pinned Python CPE package remains a one-shot dictionary importer; Rust owns the request-time `/unique` lookup path.
+DEML's FORJD deployment uses `infrastructure/forjd/addons.yaml`, whose
+`addons.enabled: all` opts into the complete optional add-on catalog. FORJD
+still treats add-ons as disabled by default for every other deployment and
+reports installation/provisioning readiness independently through its catalog
+API.
 
-## Python-to-Rust ownership ledger
+DEML integrates as a control plane only. Django resolves `deml_account_id → forjd_tenant_id → secret_ref` and calls FORJD synchronously through the BFF adapters in `backend/forjd/` with a tenant-bound `fjsvc_` service token. Durable delivery, retries, DLQ admission, and replay are FORJD responsibilities; DEML fails closed when FORJD is unavailable rather than inventing local workers. Endpoints, cutover flags, failure semantics, and rollback are documented in [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
-The migration changes runtime ownership, not the Django control-plane contract.
-Python models, migrations, admin/API behavior, and rollback commands remain in
-the repository; only one runtime may own each loop in production.
-
-| Capability                                            | Production owner        | Python status                              | Durable / failure contract                                                                |
-| ----------------------------------------------------- | ----------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| Outbox delivery                                       | FORJD ingest            | Django → FORJD forward is rollback-only    | `SKIP LOCKED` lease, broker `acks=all`, stable event header, exponential retry            |
-| Schedule creation                                     | `FORJD scheduler`       | embedded interval schedulers disabled      | unique UTC task bucket plus a 60-second renewable claim                                   |
-| Database retention and rollups                        | `FORJD scheduler`       | management commands are guarded fallbacks  | native SQL; failed runs remain `failed` and retry instead of being marked complete        |
-| Service probes                                        | `FORJD probe`           | embedded pinger disabled                   | bounded concurrency, SSRF-safe resolution, transactional observation write                |
-| Raw telemetry normalization                           | `FORJD normalizer`      | removed from projection worker ownership   | topic/partition/offset receipt, explicit FORJD streams acknowledgement, DLQ before commit |
-| High-volume ingest                                    | optional `FORJD ingest` | Django remains the default/canary fallback | API-key auth, fail-closed rate limit, batch idempotency, transactional Outbox             |
-| Request-time CPE lookup                               | `FORJD CPE lookup`      | Python imports the pinned dictionary only  | Dragonfly DB 8 Lua ranking; no Python HTTP lookup service                                 |
-| Business projections, ML, billing, KMS, external APIs | Django workers          | active                                     | Rust scheduler publishes whitelisted triggers; Python performs ecosystem work             |
-
-## Required rollout order
-
-1. Deploy the Django migrations and verify `python manage.py migrate` completes. Existing Rust
-   data-plane installs require `0041`/`0042`; this retention/report release must also reach
-   `0048_status_page_uptime_daily`, `0049_export_job_retries`,
-   `0050_health_probe_observed_at_concurrent_index`, and `0051_lighthouse_scan` before workers or
-   the scheduler run the new queries.
-2. Start FORJD ingest; stop `relay_start.py` and any Python Django → FORJD forward process.
-3. Start `FORJD normalizer`, then confirm new endpoint telemetry is published to `telemetry-raw` and the `telemetry-raw-dlq` depth remains zero.
-4. Start `FORJD probe`; Keep DEML free of local stream schedulers; processing runs in FORJD.
-5. Start `FORJD scheduler`; keep the same Python flag disabled on `FORJD workers` and the ML worker.
-6. Populate CPE Dragonfly DB 8 via the pinned Python importer, then start `FORJD CPE lookup`.
-7. Deploy `FORJD ingest` behind the `/api/v1/ingest` route only after API-key, quota, duplicate-batch, and payload-size canaries pass. `/api/v1/predict` and `/api/v1/ingest/security-alert` remain on Django.
-
-Railway service configs live under `infrastructure/railway/{relay,scheduler,probe,normalizer,ingest,cpe}/` and bake `FORJD_ROLE` into each `startCommand`. The full production topology (all services, required/forbidden env, unused names) is catalogued in [`infrastructure/railway/services.json`](../infrastructure/railway/services.json); agents should audit with `python scripts/railway_audit.py` and follow [infrastructure/railway/README.md](../infrastructure/railway/README.md).
-
-Do not change all owners at once in an existing production environment. Observe one complete cadence and backlog recovery before advancing to the next role.
-
-## Environment
-
-All roles require `DATABASE_URL`. Relay, scheduler, and normalizer require `FORJD_API_URL` plus the existing `FORJD_SERVICE_TOKEN` variables when authentication is enabled. Ingest requires `REDIS_URL` and fails closed when Dragonfly is unavailable. Probe accepts `PINGER_INTERVAL_SECS` and `MAX_CONCURRENCY`; TLS verification is on unless the explicitly local-only `HEALTH_PINGER_SKIP_TLS_VERIFY=true` flag is set.
-
-Every role exposes `/health` and `/ready` on `PORT` (default `8080`). Readiness is Postgres-backed except for the CPE role, whose only runtime dependency is its imported Dragonfly index. The ingest role additionally exposes `POST /api/v1/ingest` with the existing `{batch_id, records}` response contract. Bodies are limited to 2 MiB and 10,000 records, batch IDs are path-safe, API-key comparison is constant-time, and rate limiting uses one atomic Dragonfly Lua operation. The Swagger demo credential remains Django-only; gateways must keep that traffic on Django during an ingest deploy.
-
-## Delivery and failure semantics
-
-The relay provides at-least-once delivery. A crash after FORJD acknowledgement but before the Postgres completion update can republish an event; consumers must deduplicate by `x-deml-event-id` or their domain idempotency key. Failed publishes use exponential backoff and become explicit DLQ candidates after the configured maximum attempts. The guarded Python rollback relay does not age pending rows out of its query: a row remains eligible until it is acknowledged or explicitly admitted to the DLQ, so an old outage cannot create permanently orphaned outbox work.
-
-The scheduler never treats an in-memory timer as durable state. Replicas materialize the same UTC bucket, the database unique constraint elects one logical run, and a lease elects one publisher. `FORJD workers` moves the run through `published → running → completed`; command failures become `failed` and are republished with the same run ID after the retry lease.
-
-The probe role never calls Django. It rejects credentials in URLs, non-HTTP schemes, redirects, and targets resolving to private, loopback, link-local, multicast, documentation, or unspecified addresses. A probe result and its compatibility `endpoints` row commit in one Postgres transaction.
-
-FORJD streams values published or consumed by relay, scheduler, and normalizer use the
-versioned DEML Internode Envelope (`deml-internode+jwe`, A256GCM). The FORJD streams
-topic is authenticated as envelope context, so ciphertext cannot be moved to a
-different topic and still validate. Production uses
-`DEML_INTERNODE_ENCRYPTION=required`; `optional` is only for bounded key
-rotation, and `disabled` is local/test only. The active key ID and JSON keyring
-support overlap during rotation without accepting unknown keys.
-
-## Durable scheduler and native maintenance
-
-The scheduler polls every 15 seconds, materializes absolute UTC buckets, and
-claims at most 20 due rows with `FOR UPDATE SKIP LOCKED`. Native maintenance is
-executed in-process. Ecosystem tasks are encrypted and published to
-`internal-tasks`, where `FORJD workers` accepts only its command allowlist.
-
-| Task                      | Cadence / UTC offset | Owner          | Result                                                                          |
-| ------------------------- | -------------------- | -------------- | ------------------------------------------------------------------------------- |
-| `aggregate_analytics`     | hourly + 5m          | Python trigger | refreshes analytical rollups                                                    |
-| `generate_export`         | minutely + 30s       | Python trigger | drains durable report jobs, retries failures, and expires private artifacts     |
-| `fetch_threat_intel`      | hourly + 10m         | Python trigger | external threat enrichment                                                      |
-| `ingest_taxii`            | hourly + 12m30s      | Python trigger | STIX/TAXII ingestion                                                            |
-| `run_lighthouse_scans`    | 6-hourly + 15m       | Python trigger | page/URL-scoped accessibility/performance projection                            |
-| `archive_reports`         | daily + 30m          | Rust native    | repairs 29 completed days of user/Tenant0 reports and page uptime               |
-| `rotate_keys_if_due`      | daily + 20m          | Python trigger | KMS policy work                                                                 |
-| `train_all_models`        | daily + 1h           | Python trigger | tenant-scoped PyTorch training                                                  |
-| `scan_dark_web`           | daily + 1h15m        | Python trigger | OSINT/Tor workflow                                                              |
-| `sync_subscriptions`      | daily + 2h           | Python trigger | Stripe reconciliation                                                           |
-| `reconcile_accounts`      | daily + 2h5m         | Python trigger | identity/account reconciliation                                                 |
-| `db_cleanup`              | daily + 3h           | Rust native    | repair-first raw pruning, acknowledged audit archive, and centralized retention |
-| `cleanup_FORJD analytics` | weekly + 3h20m       | Rust native    | 180/365/730-day archive retention                                               |
-| `optimize_database`       | daily + 4h           | Rust native    | `VACUUM ANALYZE` on core tables                                                 |
-
-Native task errors are recorded on `scheduled_task_runs`, release the lease with
-a bounded retry delay, and never transition to `completed`. `FORJD_API_URL` is
-therefore mandatory on `FORJD scheduler`; missing configuration makes the weekly
-cleanup fail visibly instead of silently succeeding.
-
-Scheduler startup and hourly reconciliation materialize 31 days of analytics buckets—the 30-day retained source window plus one cleanup-boundary day—while each regular poll also ensures the latest three hourly buckets so an outage heals without a restart. A completed bucket is requeued when endpoint or cookie-consent evidence lacks a matching aggregation-version-2 scope. Daily repair intentionally covers the 29 completed days shown beside today; it never overwrites the oldest complete archive with a partially retained `today-30` day. Work is claimed one row at a time, native leases heartbeat while running, failed native maintenance backs off long enough for the catch-up queue to drain, and state-plus-owner compare-and-set updates prevent a late publisher acknowledgement from overwriting worker `running` or `completed` progress.
-
-## Rollback
-
-Stop the affected Rust role before enabling its Python fallback. Set `PYTHON_EMBEDDED_SCHEDULERS_ENABLED=1` only when both `FORJD probe` and `FORJD scheduler` are stopped. The Python relay may be started only after every FORJD ingest replica is stopped or drained. The migration is additive; rollback does not require dropping data-plane tables.
-
-## Acceptance gates
-
-- Two relay replicas process a seeded backlog without concurrently leasing the same row.
-- Killing a relay after broker acknowledgement produces at most an idempotent duplicate and no lost event.
-- Restarting two scheduler replicas does not create a second logical task bucket.
-- A Django outage does not stop probe observations or Outbox delivery.
-- A poison `telemetry-raw` record reaches its DLQ before the source offset is committed.
-- Firestore projections continue while raw telemetry normalization is intentionally stopped.
-- Rust unit tests, Clippy with warnings denied, Django migration checks, backend tests, and `docker compose config` pass before promotion.
+The former Railway data-plane services (relay, scheduler, probe, normalizer, ingest, CPE) are retired. [`infrastructure/railway/services.json`](infrastructure/railway/services.json) catalogs the retired service names, and `python scripts/railway_retire_dataplane.py` performs the Railway cleanup. The corresponding local Django state was retired in `backend/monitor/migrations/0053_retire_local_data_plane.py`; the underlying tables are retained deliberately for a rollback window.
 
 ---
 
@@ -5356,14 +5212,14 @@ Long-term SaaS reliability is sustained through an uncompromising CI/CD and pre-
 
 The July 2026 daily platform audit codified several evolutionary steps critical for enterprise compliance reviews:
 
-| Milestone                       | Engineering outcome                                                                                                                                                                     | Compliance relevance                                                |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Unified dashboard shell         | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status`                                                                                         | Consistent operator UX; reduced misconfiguration during incidents   |
-| Root mobile-first gate          | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first`                                                                  | Process integrity — layout regressions fail before deploy           |
-| Viking-UI package consolidation | `packages/viking-ui/` is the single source of truth for tokens, CSS, Web Components, utility bundles, and Angular wrappers; Railway frontend compiles via package-synced artifacts only | Supply-chain minimization; smaller attack surface in CI             |
-| Retention centralization        | `backend/utils/retention.py` constants drive `db_cleanup`                                                                                                                               | SOC 2 confidentiality; CMMC data minimization                       |
-| CES anonymization contract      | FORJD analytics aggregates only; no PII in CES engine                                                                                                                                   | Safe cross-tenant statistical contribution without identity leakage |
-| Live Developer Portal           | `/documentation` section documents Vercel/Fly/FORJD hosts, sealed ingest, distroless strategy                                                                                           | Auditor-readable operational truth synchronized with BOOK           |
+| Milestone                       | Engineering outcome                                                                                                                                                                                                     | Compliance relevance                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Unified dashboard shell         | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status`                                                                                                                         | Consistent operator UX; reduced misconfiguration during incidents   |
+| Root mobile-first gate          | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first`                                                                                                  | Process integrity — layout regressions fail before deploy           |
+| Viking-UI package consolidation | `packages/viking-ui/` is the single source of truth for tokens, CSS, Web Components, utility bundles, and Angular wrappers; the Vercel Angular build and Fly Django static assets consume package-synced artifacts only | Supply-chain minimization; smaller attack surface in CI             |
+| Retention & erasure boundary    | Sealed telemetry retention is enforced in FORJD; tenant data erasure flows through FORJD `POST /api/v1/tenants/{id}/erase` and the DEML account lifecycle                                                               | SOC 2 confidentiality; CMMC data minimization                       |
+| CES anonymization contract      | FORJD analytics aggregates only; no PII in CES engine                                                                                                                                                                   | Safe cross-tenant statistical contribution without identity leakage |
+| Live Developer Portal           | `/documentation` section documents Vercel/Fly/FORJD hosts, sealed ingest, distroless strategy                                                                                                                           | Auditor-readable operational truth synchronized with BOOK           |
 
 These milestones do not replace formal certification—they produce traceable evidence that Visibility, Manageability, and Survivability controls described in Section 3 remain operable under daily engineering velocity.
 

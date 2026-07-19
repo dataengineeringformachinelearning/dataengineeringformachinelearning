@@ -88,6 +88,22 @@ async def _credential_for_request(request: HttpRequest) -> ForjdTenantCredential
     raise AdapterError(503, "FORJD tenant service credential is unavailable") from exc
 
 
+async def _read_credential_or_none(request: HttpRequest) -> ForjdTenantCredential | None:
+  """Resolve a credential for read-only GET adapters, tolerating unconfigured
+  tenant mappings.
+
+  Authentication is still required (401 propagates), but a missing/misconfigured
+  FORJD tenant credential (503) degrades to ``None`` so dashboards render an
+  empty-stable state instead of spamming errors on every poll.
+  """
+  try:
+    return await _credential_for_request(request)
+  except AdapterError as exc:
+    if exc.status == 503:
+      return None
+    raise
+
+
 def _client_for_credential(credential: ForjdTenantCredential) -> ForjdClient:
   return ForjdClient(
     tenant_id=credential.tenant_id,
@@ -341,8 +357,8 @@ async def analytics_overview_proxy(request: HttpRequest) -> HttpResponse:
   if request.method != "GET":
     return JsonResponse({"detail": "Method not allowed"}, status=405)
   try:
-    credential = await _credential_for_request(request)
-    if not reads_from_forjd():
+    credential = await _read_credential_or_none(request)
+    if credential is None or not reads_from_forjd():
       return JsonResponse(empty_analytics_overview(), status=200)
     client = _client_for_credential(credential)
     _body, query_string = _bound_request(request, credential.tenant_id, "query")
@@ -382,9 +398,9 @@ async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
   """GET list / POST create — Angular ``/api/v1/system-status/status_pages``."""
   if request.method == "GET":
     try:
-      credential = await _credential_for_request(request)
+      credential = await _read_credential_or_none(request)
       deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
-      if not reads_from_forjd():
+      if credential is None or not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
       client = _client_for_credential(credential)
       _body, query_string = _bound_request(request, credential.tenant_id, "query")
@@ -537,11 +553,11 @@ async def status_page_detail_proxy(request: HttpRequest, page_id: str) -> HttpRe
 async def status_page_services_proxy(request: HttpRequest, page_id: str) -> HttpResponse:
   """GET list / POST create — ``/status_pages/{id}/services``."""
   try:
-    credential = await _credential_for_request(request)
-    client = _client_for_credential(credential)
+    credential = await _read_credential_or_none(request)
     if request.method == "GET":
-      if not reads_from_forjd():
+      if credential is None or not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
+      client = _client_for_credential(credential)
       response = await client.proxy(
         "GET",
         f"/api/v1/status/pages/{quote(page_id, safe='')}/services",
@@ -567,6 +583,9 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
         {"detail": "FORJD writes are disabled"},
         status=503,
       )
+    if credential is None:
+      return JsonResponse({"detail": "FORJD tenant service credential is unavailable"}, status=503)
+    client = _client_for_credential(credential)
     payload = _json_object(request)
     # Angular sends {name, url}; map url → description.
     body = json.dumps(
@@ -636,11 +655,11 @@ async def status_service_delete_proxy(request: HttpRequest, service_id: str) -> 
 async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> HttpResponse:
   """GET list / POST create — ``/status_pages/{id}/incidents``."""
   try:
-    credential = await _credential_for_request(request)
-    client = _client_for_credential(credential)
+    credential = await _read_credential_or_none(request)
     if request.method == "GET":
-      if not reads_from_forjd():
+      if credential is None or not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
+      client = _client_for_credential(credential)
       response = await client.proxy(
         "GET",
         f"/api/v1/status/pages/{quote(page_id, safe='')}/incidents",
@@ -666,6 +685,9 @@ async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> Htt
         {"detail": "FORJD writes are disabled"},
         status=503,
       )
+    if credential is None:
+      return JsonResponse({"detail": "FORJD tenant service credential is unavailable"}, status=503)
+    client = _client_for_credential(credential)
     payload = _json_object(request)
     # Angular sends {title, message, status}.
     status_val = str(payload.get("status") or "investigating")
@@ -761,8 +783,8 @@ async def vulnerabilities_list_proxy(request: HttpRequest) -> HttpResponse:
   if request.method != "GET":
     return JsonResponse({"detail": "Method not allowed"}, status=405)
   try:
-    credential = await _credential_for_request(request)
-    if not reads_from_forjd():
+    credential = await _read_credential_or_none(request)
+    if credential is None or not reads_from_forjd():
       return JsonResponse([], status=200, safe=False)
     client = _client_for_credential(credential)
     _body, query_string = _bound_request(request, credential.tenant_id, "query")
@@ -800,8 +822,8 @@ async def exports_collection_proxy(request: HttpRequest) -> HttpResponse:
   """GET list / POST create — Angular ``/api/v1/exports/``."""
   if request.method == "GET":
     try:
-      credential = await _credential_for_request(request)
-      if not reads_from_forjd():
+      credential = await _read_credential_or_none(request)
+      if credential is None or not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
       client = _client_for_credential(credential)
       _body, query_string = _bound_request(request, credential.tenant_id, "query")
@@ -887,8 +909,8 @@ async def ml_latest_proxy(request: HttpRequest) -> HttpResponse:
   if request.method != "GET":
     return JsonResponse({"detail": "Method not allowed"}, status=405)
   try:
-    credential = await _credential_for_request(request)
-    if not reads_from_forjd():
+    credential = await _read_credential_or_none(request)
+    if credential is None or not reads_from_forjd():
       return JsonResponse([], status=200, safe=False)
     client = _client_for_credential(credential)
     _body, query_string = _bound_request(request, credential.tenant_id, "query")

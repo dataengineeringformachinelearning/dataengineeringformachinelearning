@@ -8,7 +8,6 @@
     "frontend",
     "marketing",
     "viking-ui-docs",
-    "functions",
     "infrastructure/studio"
   ],
   "engines": {

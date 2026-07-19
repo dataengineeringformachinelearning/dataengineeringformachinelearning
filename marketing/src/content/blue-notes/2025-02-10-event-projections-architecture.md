@@ -1,8 +1,9 @@
 ---
 title: "Sealed projections through FORJD"
 summary: Durable projections and analytics execute in FORJD; DEML adapts product paths through Django.
-date: 2025-02-10
-tags:
+publishedAt: 2025-02-10
+note: Platform Note 012
+categories:
   - Architecture
   - FORJD
   - Projections

@@ -110,6 +110,13 @@ FORJD_WRITE_MODE=forjd
 FORJD_READ_MODE=forjd
 ```
 
+DEML enables FORJD's optional integration catalog as a deployment profile. Copy
+or mount [`infrastructure/forjd/addons.yaml`](../infrastructure/forjd/addons.yaml)
+into the FORJD backend and set `FORJD_ADDONS_CONFIG` to its in-container path
+(or set `FORJD_ADDONS=all` as the equivalent environment override). Add-on
+enablement does not install scanner binaries or Python packages; FORJD
+`GET /api/v1/addons` reports `available` separately from `enabled`.
+
 Hosts: Angular on Vercel (`docs/VERCEL.md`); Django on Fly (`docs/FLY.md`).
 
 ## Verification gates

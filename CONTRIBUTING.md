@@ -17,7 +17,7 @@ Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is th
 | **Static CSS build**   | `packages/viking-ui/scripts/build-css.mjs`      | CSS bundle pipeline changes           |
 | **Web/utility build**  | `packages/viking-ui/scripts/build-elements.mjs` | Custom elements, widgets, utility JS  |
 | **Showcase / docs**    | `viking-ui-docs/src/`                           | Demos, guides, playground             |
-| **Governance docs**    | `THEME.md`, `BOOK.md` Ch.31                     | Architectural or token policy changes |
+| **Governance docs**    | `THEME.md`, `BOOK.md` Ch.32                     | Architectural or token policy changes |
 
 New shared UI **always** belongs in `packages/viking-ui/` first (styles, tokens, Web Components, utilities, package exports), where Angular wrappers are also maintained. Application code should consume public package entrypoints (`@dataengineeringformachinelearning/viking-ui`, `/angular`, `/web-components.js`, `/icons`, `/site-drakkar`, `/tokens.json`) rather than importing from package source paths.
 
@@ -104,7 +104,7 @@ npm run build:viking-ui:package
 python scripts/sync_design_system.py
 ```
 
-Update **THEME.md** and **BOOK.md** Chapter 31 together when governance or architecture changes.
+Update **THEME.md** and **BOOK.md** Chapter 32 together when governance or architecture changes.
 
 ---
 
@@ -226,5 +226,5 @@ By contributing, you agree that your contributions will be licensed under the [A
 
 - [Viking-UI showcase](https://ui.dataengineeringformachinelearning.com)
 - [THEME.md](THEME.md) — token matrix
-- [BOOK.md Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) — architecture narrative
+- [BOOK.md Chapter 32](BOOK.md#chapter-32-viking-ui--the-zero-dependency-ui-kit) — architecture narrative
 - [AGENTS.md](AGENTS.md) — platform invariants

@@ -298,6 +298,10 @@ def deml_ml_latest(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
 def empty_capability_envelope(capability: str, path: str) -> Any:
   """Return Angular-safe empty bodies so list pages do not hard-fail on GET."""
   if capability == "analytics":
+    # /analytics/tenants expects an envelope whose ``data`` is a list; the
+    # overview shape (data as object) makes the Angular tenant selector crash.
+    if "tenants" in path:
+      return {"status": "success", "data": [], "source": "forjd"}
     return empty_analytics_overview()
   if capability == "system-status":
     if "status_pages" in path:

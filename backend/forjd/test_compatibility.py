@@ -331,7 +331,7 @@ def test_session_and_replay_routes_require_tenant_mapping(
 
 @pytest.mark.django_db
 @patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
-def test_unmapped_domain_gets_fail_closed_without_credential(
+def test_unmapped_domain_gets_degrade_to_empty_stable(
   mock_proxy: AsyncMock,
   client: Client,
 ) -> None:
@@ -346,12 +346,10 @@ def test_unmapped_domain_gets_fail_closed_without_credential(
     HTTP_AUTHORIZATION="Bearer mock-token-learner-learner@example.com",
   )
 
-  # Wired vulns adapter needs tenant mapping; unshipped system-status stays empty-stable.
-  assert response.status_code == 503
-  assert (
-    "credential" in response.json()["detail"].lower()
-    or "forjd" in response.json()["detail"].lower()
-  )
+  # Read-only GETs degrade to empty-stable 200 (no tenant data leaks) so
+  # dashboards stay up; unshipped system-status is likewise empty-stable.
+  assert response.status_code == 200
+  assert response.json() == []
   assert status_response.status_code == 200
   mock_proxy.assert_not_awaited()
 
@@ -360,14 +358,16 @@ def test_unmapped_domain_gets_fail_closed_without_credential(
 @pytest.mark.parametrize(
   ("method", "path", "expected_status"),
   [
-    ("get", "/api/v1/analytics/overview", 503),  # wired; needs tenant mapping
+    # Read-only GETs degrade to empty-stable 200 without a tenant mapping.
+    ("get", "/api/v1/analytics/overview", 200),
+    ("get", "/api/v1/exports/", 200),
+    # Writes still fail closed.
     ("post", "/api/v1/analytics/aggregate", 501),  # write still blocked
-    ("get", "/api/v1/exports/", 503),  # wired; needs tenant mapping
     ("post", "/api/v1/integrations/security-alert", 503),  # wired; needs mapping + write
   ],
 )
 @patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
-def test_wired_domain_routes_fail_closed_without_tenant_mapping(
+def test_wired_domain_routes_gate_by_method_without_tenant_mapping(
   mock_proxy: AsyncMock,
   client: Client,
   method: str,
@@ -386,4 +386,5 @@ def test_wired_domain_routes_fail_closed_without_tenant_mapping(
   assert response.status_code == expected_status
   if expected_status == 501:
     assert response.json()["code"] == "forjd_capability_unavailable"
+  # Empty-stable reads never touch the upstream FORJD client.
   mock_proxy.assert_not_awaited()

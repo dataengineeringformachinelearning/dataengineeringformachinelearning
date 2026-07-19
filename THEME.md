@@ -912,7 +912,7 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 | IDE / Cursor        | [.cursorrules](.cursorrules)                                                | Mandatory Viking-UI imports, composable composition, zero hardcoded styles |
 | Tokens & components | **THEME.md** (this file)                                                    | Canonical `--viking-*` matrix, component standards, do's/don'ts            |
 | Platform invariants | [AGENTS.md](AGENTS.md)                                                      | Architecture, security, automation, Viking-UI Uniformity Law               |
-| Narrative & build   | [BOOK.md § Ch.31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) | Kit philosophy, consumption, publish workflow                              |
+| Narrative & build   | [BOOK.md § Ch.32](BOOK.md#chapter-32-viking-ui--the-zero-dependency-ui-kit) | Kit philosophy, consumption, publish workflow                              |
 
 ### Unified component policy
 
@@ -923,6 +923,6 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 - **Non-Angular:** static `viking-ui.css` + semantic aliases, Web Components from `web-components.js`, and Angular-free utility subpaths only; run `sync_design_system.py` after token edits.
 - **Styling ownership:** all CSS, tokens, wrappers, Web Components, and chart treatments live in `packages/viking-ui/`; app surfaces never receive bespoke visual patches.
 
-When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
+When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.32** in the same change set so agents and humans never drift.
 
 **Theme identity:** Viking-UI premium palette (precision-engineered command aesthetic, deep navy / teal / crimson, composable primitives, dense operational data, unified package governance). The publish version is read from `packages/viking-ui/package.json`; never duplicate it in customer-facing UI. Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

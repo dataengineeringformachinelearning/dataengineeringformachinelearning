@@ -1,8 +1,9 @@
 ---
 title: "Projection health on the status surface"
 summary: Platform status reflects FORJD readiness and sealed projection availability through the Django BFF.
-date: 2026-06-28
-tags:
+publishedAt: 2026-06-28
+note: Platform Note 013
+categories:
   - Operations
   - FORJD
   - Status

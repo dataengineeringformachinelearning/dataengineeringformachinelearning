@@ -1,8 +1,9 @@
 ---
 title: "Containerized control plane"
 summary: Distroless Django and Angular images keep DEML’s user plane portable across hosts.
-date: 2025-01-20
-tags:
+publishedAt: 2025-01-20
+note: Platform Note 011
+categories:
   - Docker
   - Deploy
 ---

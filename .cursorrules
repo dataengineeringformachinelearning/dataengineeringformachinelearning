@@ -7,7 +7,7 @@ You are building the **Data Engineering for Machine Learning (DEML)** platform. 
 1. **This file** (`.cursorrules`) — mandatory UI/component behavior for Cursor agents
 2. **[THEME.md](THEME.md)** — canonical token matrix, composable component standards
 3. **[AGENTS.md](AGENTS.md)** — platform architecture, security, automation invariants
-4. **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** — Viking-UI kit narrative, build, publish
+4. **[BOOK.md § Chapter 32](BOOK.md#chapter-32-viking-ui--the-zero-dependency-ui-kit)** — Viking-UI kit narrative, build, publish
 
 Before editing HTML, CSS/SCSS, Tailwind config, or Angular templates: **read THEME.md** for the surfaces you touch.
 
@@ -247,7 +247,7 @@ Before merge, confirm the touched surface matches marketing benchmark quality:
 5. Context matches density — dashboard components in settings forms (or vice versa) is a blocking defect.
 6. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
 7. Token changes start in `packages/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui:package` + `python scripts/sync_design_system.py`.
-8. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.31**, and **README.md** together.
+8. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.32**, and **README.md** together.
 9. `npm run test:viking-ui` and app `npm test` pass for touched surfaces (charts, auth, forms, icons).
 10. `node scripts/enforce-theme.js` reports zero violations before merge.
 11. No orphaned app-local styles, raw hex, ad-hoc breakpoints, or `<div class="card">` / `<div class="alert">` outliers in consuming surfaces.

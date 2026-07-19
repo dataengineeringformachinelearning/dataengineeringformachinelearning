@@ -1,8 +1,9 @@
 ---
 title: "FORJD owns the streaming hot path"
 summary: DEML stays the control plane; FORJD’s Rust engine runs sealed pipeline and data-plane roles.
-date: 2026-07-09
-tags:
+publishedAt: 2026-07-09
+note: Platform Note 014
+categories:
   - FORJD
   - Architecture
 ---

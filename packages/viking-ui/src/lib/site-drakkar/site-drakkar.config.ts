@@ -60,13 +60,6 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
     marketingHref: "/documentation",
   },
   {
-    id: "blue-notes",
-    label: "Blue Notes",
-    icon: "file",
-    appHref: "https://dataengineeringformachinelearning.com/blog/",
-    marketingHref: "/blog/",
-  },
-  {
     id: "dashboard",
     label: "Dashboard",
     icon: "home",
