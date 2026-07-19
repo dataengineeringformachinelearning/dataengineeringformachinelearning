@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Transitional DEML user-plane topology. FORJD owns every data-plane workload.",
+  "description": "Optional Railway standby for deml-backend. Primary hosts are Fly (Django) and Vercel (Angular); FORJD owns streaming.",
   "project": "deml",
   "environment": "production",
   "retired": [

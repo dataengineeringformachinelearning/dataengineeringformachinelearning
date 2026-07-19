@@ -1,1 +1,1 @@
-"""No local ML models. This module remains only to retire historical tables."""
+"""No local ML models. Kept so Django migrations can drop unused tables cleanly."""

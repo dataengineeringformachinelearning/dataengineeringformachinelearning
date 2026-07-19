@@ -199,7 +199,7 @@ class ForjdShadowReceipt(models.Model):
     return f"shadow:{self.client_event_id}:{self.forjd_status}"
 
 
-# --- Browser sessions + auth handoff (Postgres; replaces deml-dragonfly) ---
+# --- Browser sessions + auth handoff (Postgres) ---
 class BrowserSession(models.Model):
   """Server-side Firebase browser session registry (TTL via expires_at)."""
 

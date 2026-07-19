@@ -129,7 +129,7 @@ https://github.com/joealongi/dataengineeringformachinelearning
 ## Agent & MCP Settings
 - AGENTS.md (coding principles): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/AGENTS.md
 - THEME.md (Viking-UI design system): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/THEME.md
-- MCP servers: Hugging Face, Sentry, Sanity, Stripe, ClickHouse (see `.cursor/mcp.json` in repo)
+- MCP servers: Hugging Face, Sentry, Sanity, Stripe, Firebase (see Cursor MCP settings)
 - Full book for LLMs: /llms-full.txt
 
 ## Notes
@@ -150,7 +150,7 @@ https://github.com/joealongi/dataengineeringformachinelearning
 ## Agent & MCP Settings
 - AGENTS.md (coding principles): /AGENTS.md
 - THEME.md (Viking-UI design system): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/THEME.md
-- MCP servers: Hugging Face, Sentry, Sanity, Stripe, ClickHouse (see `.cursor/mcp.json` in repo)
+- MCP servers: Hugging Face, Sentry, Sanity, Stripe, Firebase (see Cursor MCP settings)
 - Full book for LLMs: /llms-full.txt
 
 ## Notes

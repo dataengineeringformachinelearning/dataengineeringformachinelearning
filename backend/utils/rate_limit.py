@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 from utils.env import get_str
 from utils.tls import materialize_tls_file
 
-# Optional Redis only when REDIS_URL is set (deml-dragonfly retired).
+# Optional Redis only when REDIS_URL is set.
 redis_client = None
 if HAS_REDIS:
   redis_url = get_str("REDIS_URL")

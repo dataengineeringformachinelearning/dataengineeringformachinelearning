@@ -42,7 +42,7 @@ from forjd.cutover import (
   empty_read_envelope,
   empty_read_fallback_enabled,
   is_read_fallback_path,
-  log_cutover_event,
+  log_forjd_mode_event,
   reads_from_forjd,
   shadow_writes_enabled,
   writes_enabled,
@@ -86,6 +86,13 @@ async def _credential_for_request(request: HttpRequest) -> ForjdTenantCredential
     return await sync_to_async(resolve_forjd_tenant_credential)(account_id)
   except ForjdTenantConfigurationError as exc:
     raise AdapterError(503, "FORJD tenant service credential is unavailable") from exc
+
+
+def _client_for_credential(credential: ForjdTenantCredential) -> ForjdClient:
+  return ForjdClient(
+    tenant_id=credential.tenant_id,
+    service_token=credential.service_token,
+  )
 
 
 def _require_payload_tenant(payload_tenant_id: UUID, tenant_id: UUID) -> None:
@@ -241,23 +248,20 @@ async def native_forjd_proxy(
       query_string = request.META.get("QUERY_STRING", "")
     else:
       credential = await _credential_for_request(request)
-      # --- Cutover write gate (after Firebase + tenant credential) ---
+      # --- Write gate (after Firebase + tenant credential) ---
       if is_write and not writes_enabled():
         return JsonResponse(
           {
-            "detail": "FORJD writes are disabled for the current cutover phase",
+            "detail": "FORJD writes are disabled",
             "code": "forjd_writes_disabled",
           },
           status=503,
         )
-      # Phase 0 read=off: authenticated empty envelopes (Angular stays up).
+      # read=off: authenticated empty envelopes so Angular list routes stay up.
       if is_get and is_read_fallback_path(target_path) and not reads_from_forjd():
-        log_cutover_event("read_skipped", path=target_path, mode="off")
+        log_forjd_mode_event("read_skipped", path=target_path, mode="off")
         return JsonResponse(empty_read_envelope(target_path), status=200)
-      client = ForjdClient(
-        tenant_id=credential.tenant_id,
-        service_token=credential.service_token,
-      )
+      client = _client_for_credential(credential)
       body, query_string = _bound_request(request, credential.tenant_id, tenant_binding)
 
     response = await client.proxy(
@@ -301,7 +305,7 @@ async def native_forjd_proxy(
       and is_read_fallback_path(target_path)
       and exc.status >= 500
     ):
-      log_cutover_event("read_fallback", path=target_path, status=exc.status)
+      log_forjd_mode_event("read_fallback", path=target_path, status=exc.status)
       return JsonResponse(empty_read_envelope(target_path), status=200)
     return JsonResponse({"detail": str(exc), "source": "forjd"}, status=exc.status)
 
@@ -340,10 +344,7 @@ async def analytics_overview_proxy(request: HttpRequest) -> HttpResponse:
     credential = await _credential_for_request(request)
     if not reads_from_forjd():
       return JsonResponse(empty_analytics_overview(), status=200)
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     _body, query_string = _bound_request(request, credential.tenant_id, "query")
     response = await client.proxy(
       "GET",
@@ -385,10 +386,7 @@ async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
       deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
       if not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
-      client = ForjdClient(
-        tenant_id=credential.tenant_id,
-        service_token=credential.service_token,
-      )
+      client = _client_for_credential(credential)
       _body, query_string = _bound_request(request, credential.tenant_id, "query")
       response = await client.proxy(
         "GET",
@@ -427,7 +425,7 @@ async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
   try:
     if not writes_enabled():
       return JsonResponse(
-        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        {"detail": "FORJD writes are disabled"},
         status=503,
       )
     credential = await _credential_for_request(request)
@@ -442,10 +440,7 @@ async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
         "is_published": bool(payload.get("is_published")),
       }
     ).encode()
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     response = await client.proxy(
       "POST",
       "/api/v1/status/pages",
@@ -481,15 +476,12 @@ async def status_page_detail_proxy(request: HttpRequest, page_id: str) -> HttpRe
   try:
     if not writes_enabled():
       return JsonResponse(
-        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        {"detail": "FORJD writes are disabled"},
         status=503,
       )
     credential = await _credential_for_request(request)
     deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     if request.method == "DELETE":
       response = await client.proxy(
         "DELETE",
@@ -546,10 +538,7 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
   """GET list / POST create — ``/status_pages/{id}/services``."""
   try:
     credential = await _credential_for_request(request)
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     if request.method == "GET":
       if not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
@@ -575,7 +564,7 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
       return JsonResponse({"detail": "Method not allowed"}, status=405)
     if not writes_enabled():
       return JsonResponse(
-        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        {"detail": "FORJD writes are disabled"},
         status=503,
       )
     payload = _json_object(request)
@@ -621,14 +610,11 @@ async def status_service_delete_proxy(request: HttpRequest, service_id: str) -> 
   try:
     if not writes_enabled():
       return JsonResponse(
-        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        {"detail": "FORJD writes are disabled"},
         status=503,
       )
     credential = await _credential_for_request(request)
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     response = await client.proxy(
       "DELETE",
       f"/api/v1/status/services/{quote(service_id, safe='')}",
@@ -651,10 +637,7 @@ async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> Htt
   """GET list / POST create — ``/status_pages/{id}/incidents``."""
   try:
     credential = await _credential_for_request(request)
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     if request.method == "GET":
       if not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
@@ -680,7 +663,7 @@ async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> Htt
       return JsonResponse({"detail": "Method not allowed"}, status=405)
     if not writes_enabled():
       return JsonResponse(
-        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        {"detail": "FORJD writes are disabled"},
         status=503,
       )
     payload = _json_object(request)
@@ -730,14 +713,11 @@ async def status_incident_delete_proxy(request: HttpRequest, incident_id: str) -
   try:
     if not writes_enabled():
       return JsonResponse(
-        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        {"detail": "FORJD writes are disabled"},
         status=503,
       )
     credential = await _credential_for_request(request)
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     response = await client.proxy(
       "DELETE",
       f"/api/v1/status/incidents/{quote(incident_id, safe='')}",
@@ -784,10 +764,7 @@ async def vulnerabilities_list_proxy(request: HttpRequest) -> HttpResponse:
     credential = await _credential_for_request(request)
     if not reads_from_forjd():
       return JsonResponse([], status=200, safe=False)
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     _body, query_string = _bound_request(request, credential.tenant_id, "query")
     response = await client.proxy(
       "GET",
@@ -826,10 +803,7 @@ async def exports_collection_proxy(request: HttpRequest) -> HttpResponse:
       credential = await _credential_for_request(request)
       if not reads_from_forjd():
         return JsonResponse([], status=200, safe=False)
-      client = ForjdClient(
-        tenant_id=credential.tenant_id,
-        service_token=credential.service_token,
-      )
+      client = _client_for_credential(credential)
       _body, query_string = _bound_request(request, credential.tenant_id, "query")
       response = await client.proxy(
         "GET",
@@ -865,7 +839,7 @@ async def exports_collection_proxy(request: HttpRequest) -> HttpResponse:
   try:
     if not writes_enabled():
       return JsonResponse(
-        {"detail": "FORJD writes are disabled for the current cutover phase"},
+        {"detail": "FORJD writes are disabled"},
         status=503,
       )
     credential = await _credential_for_request(request)
@@ -881,10 +855,7 @@ async def exports_collection_proxy(request: HttpRequest) -> HttpResponse:
         "limit": 10_000,
       }
     ).encode()
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     response = await client.proxy(
       "POST",
       "/api/v1/exports",
@@ -919,10 +890,7 @@ async def ml_latest_proxy(request: HttpRequest) -> HttpResponse:
     credential = await _credential_for_request(request)
     if not reads_from_forjd():
       return JsonResponse([], status=200, safe=False)
-    client = ForjdClient(
-      tenant_id=credential.tenant_id,
-      service_token=credential.service_token,
-    )
+    client = _client_for_credential(credential)
     _body, query_string = _bound_request(request, credential.tenant_id, "query")
     response = await client.proxy(
       "GET",

@@ -225,7 +225,7 @@ ASGI_APPLICATION = "config.asgi.application"
 REDIS_URL = get_str("REDIS_URL")
 REDIS_SSL_CA = materialize_tls_file("REDIS_SSL_CA", "REDIS_SSL_CA_B64") if REDIS_URL else None
 
-# Channels — in-process layer (force-logout best-effort; no deml-dragonfly).
+# Channels — in-process layer (force-logout best-effort).
 CHANNEL_LAYERS = {
   "default": {
     "BACKEND": "channels.layers.InMemoryChannelLayer",

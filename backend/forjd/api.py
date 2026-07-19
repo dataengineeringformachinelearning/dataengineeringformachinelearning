@@ -15,7 +15,7 @@ from ninja.errors import HttpError
 from pydantic import ConfigDict, field_validator, model_validator
 
 from forjd.client import ForjdClient, ForjdError
-from forjd.cutover import log_cutover_event, writes_enabled
+from forjd.cutover import log_forjd_mode_event, writes_enabled
 from forjd.shadow import record_shadow_batch, record_shadow_receipt_async
 from forjd.tenancy import (
   ForjdTenantConfigurationError,
@@ -219,7 +219,7 @@ async def health(request: Any) -> dict[str, Any]:
 @router.post("/ingest")
 async def ingest(request: Any, payload: SealedEvent) -> dict[str, Any]:
   if not writes_enabled():
-    raise HttpError(503, "FORJD writes are disabled for the current cutover phase")
+    raise HttpError(503, "FORJD writes are disabled")
 
   credential = await resolve_request_credential(request)
   require_mapped_tenant(payload.tenant_id, credential)
@@ -253,7 +253,7 @@ async def ingest(request: Any, payload: SealedEvent) -> dict[str, Any]:
     request_id=request_id,
     deml_account_id=account_id,
   )
-  log_cutover_event(
+  log_forjd_mode_event(
     "ingest_ok", tenant_id=credential.tenant_id, workflow_id=wire.get("workflow_id")
   )
   return result
@@ -262,7 +262,7 @@ async def ingest(request: Any, payload: SealedEvent) -> dict[str, Any]:
 @router.post("/ingest/events:batch")
 async def ingest_batch(request: Any, payload: SealedEventBatch) -> dict[str, Any]:
   if not writes_enabled():
-    raise HttpError(503, "FORJD writes are disabled for the current cutover phase")
+    raise HttpError(503, "FORJD writes are disabled")
 
   credential = await resolve_request_credential(request)
   for event in payload.events:

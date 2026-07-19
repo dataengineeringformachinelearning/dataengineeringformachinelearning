@@ -3,7 +3,7 @@ const { spawnSync } = require("node:child_process");
 const path = require("node:path");
 const { test } = require("node:test");
 
-test("loads in the Cloud Run runtime without Redpanda config", () => {
+test("loads in the Cloud Run runtime without broker config", () => {
   const result = spawnSync(
     process.execPath,
     ["-e", 'require("./lib/index.js")'],

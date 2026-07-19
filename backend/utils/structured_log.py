@@ -31,7 +31,7 @@ def log_event(logger: logging.Logger, level: int, event: str, **fields: Any) -> 
   Emit a single JSON log line. Prefer this in workers over stdout.write.
 
   Example:
-    log_event(logger, logging.INFO, "outbox_published", event_id=str(evt.id), topic=evt.topic)
+    log_event(logger, logging.INFO, "forjd_proxy", path="/api/v1/projections", status=200)
   """
   payload = {
     "event": event,

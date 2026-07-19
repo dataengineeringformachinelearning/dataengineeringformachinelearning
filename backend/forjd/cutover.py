@@ -20,7 +20,7 @@ from typing import Any, Final, Literal
 
 from django.conf import settings
 
-logger = logging.getLogger("forjd.cutover")
+logger = logging.getLogger("forjd.modes")
 
 WriteMode = Literal["off", "forjd", "dual"]
 ReadMode = Literal["off", "forjd", "dual"]
@@ -78,7 +78,7 @@ def reads_from_forjd() -> bool:
 
 
 def empty_read_fallback_enabled() -> bool:
-  """Phase 0 (read off) or dual-read outage fallback."""
+  """Empty envelopes when reads are off, or dual-read outage fallback."""
   return read_mode() in {"off", "dual"}
 
 
@@ -90,7 +90,7 @@ def empty_read_envelope(target_path: str) -> dict[str, Any]:
   """Stable JSON shapes for Angular list adapters when FORJD is skipped/down."""
   path = target_path.rstrip("/")
   base = {
-    "source": "deml_cutover_fallback",
+    "source": "deml_forjd_fallback",
     "code": "forjd_read_fallback",
     "path": path,
   }
@@ -111,5 +111,5 @@ def empty_read_envelope(target_path: str) -> dict[str, Any]:
   return {**base, "items": [], "results": []}
 
 
-def log_cutover_event(event: str, **fields: object) -> None:
-  logger.info("forjd_cutover event=%s %s", event, " ".join(f"{k}={v}" for k, v in fields.items()))
+def log_forjd_mode_event(event: str, **fields: object) -> None:
+  logger.info("forjd_mode event=%s %s", event, " ".join(f"{k}={v}" for k, v in fields.items()))

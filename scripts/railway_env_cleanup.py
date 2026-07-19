@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
-"""Remove Infisical-style variable pollution from Railway user-plane services.
+"""Remove Infisical-style variable pollution from Railway standby services.
 
-Keeps the full backend bundle on the Django control plane only. Frontend and
-Dragonfly get catalog-driven whitelists. Prefer role/required/forbidden
-alignment via:
+Keeps the full backend bundle on the Django control plane only. Prefer
+role/required/forbidden alignment via:
 
   python scripts/railway_audit.py
   python scripts/railway_audit.py --apply
 
-See infrastructure/railway/services.json (source of truth) and
-infrastructure/railway/README.md. Retired data-plane services are listed under
-`retired` and must not be recreated.
+See infrastructure/railway/services.json and infrastructure/railway/README.md.
 """
 
 from __future__ import annotations
@@ -23,11 +20,10 @@ from typing import Any, Final
 
 RAILWAY_BIN: Final = "railway"
 CATALOG_PATH: Final = Path(__file__).resolve().parents[1] / "infrastructure/railway/services.json"
-FULL_ENV_CLASSES: Final[frozenset[str]] = frozenset({"django-api", "django-user-control-plane"})
+FULL_ENV_CLASSES: Final[frozenset[str]] = frozenset({"django-user-control-plane"})
 
-# Railway Postgres plugin vars leaked onto app services during deml-postgres references.
-# DATABASE_URL must stay (Neon today, or Supabase pooler after docs/NEON_TO_SUPABASE.md
-# consolidation into schema deml); everything else is stale pollution.
+# Railway Postgres plugin vars that leak onto app services.
+# DATABASE_URL must stay; other PG* plugin vars are pollution.
 BACKEND_PG_POLLUTION: Final[frozenset[str]] = frozenset(
   {
     "ALPINE_DATABASE_MODE",
@@ -46,28 +42,6 @@ BACKEND_PG_POLLUTION: Final[frozenset[str]] = frozenset(
   }
 )
 
-FRONTEND_KEEP: Final[frozenset[str]] = frozenset(
-  {
-    "FIREBASE_API_KEY",
-    "FIREBASE_APP_ID",
-    "FIREBASE_AUTH_DOMAIN",
-    "FIREBASE_MESSAGING_SENDER_ID",
-    "FIREBASE_PROJECT_ID",
-    "FIREBASE_STORAGE_BUCKET",
-    "FRONTEND_URL",
-    "BACKEND_URL",
-    "MARKETING_URL",
-    "SANITY_PROJECT_ID",
-    "SANITY_DATASET",
-    "SENTRY_DSN",
-    "SENTRY_SEND_PII",
-  }
-)
-
-OPTIONAL_KEEP: Final[dict[str, frozenset[str]]] = {
-  "deml-frontend": FRONTEND_KEEP,
-}
-
 
 def _load_catalog() -> dict[str, dict[str, Any]]:
   with CATALOG_PATH.open(encoding="utf-8") as catalog_file:
@@ -83,14 +57,6 @@ def _railway_vars(service: str) -> dict[str, str]:
     check=True,
   )
   return json.loads(result.stdout)
-
-
-def _should_keep(key: str, keep: frozenset[str]) -> bool:
-  if key.startswith("RAILWAY_"):
-    return True
-  if key == "PORT":
-    return key in keep
-  return key in keep
 
 
 def _delete_var(service: str, key: str, dry_run: bool) -> bool:
@@ -130,19 +96,8 @@ def cleanup_service(
   if service_config["class"] in FULL_ENV_CLASSES:
     return cleanup_backend_pg_pollution(service, dry_run)
 
-  catalog_keep = set(service_config.get("requiredEnv", []))
-  catalog_keep.update(service_config.get("envDefaults", {}).keys())
-  keep = frozenset(catalog_keep) | OPTIONAL_KEEP.get(service, frozenset())
-
-  vars_map = _railway_vars(service)
-  to_delete = [k for k in sorted(vars_map) if not _should_keep(k, keep)]
-  deleted = 0
-  for key in to_delete:
-    prefix = "[dry-run] " if dry_run else ""
-    print(f"{prefix}DELETE {service}: {key}")
-    if _delete_var(service, key, dry_run):
-      deleted += 1
-  return len(to_delete), deleted
+  print(f"SKIP {service}: class={service_config['class']} (no cleanup policy)")
+  return 0, 0
 
 
 def main() -> None:

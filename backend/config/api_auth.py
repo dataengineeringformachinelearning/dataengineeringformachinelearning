@@ -167,7 +167,7 @@ def generate_handoff_token(request, payload: HandoffGenerateIn):
     raise HttpError(400, "Invalid PKCE code challenge")
 
   token = secrets.token_urlsafe(32)
-  # One-time codes live in Postgres (TTL); deml-dragonfly retired.
+  # One-time codes live in Postgres (TTL).
   if not store_handoff(
     token,
     user_id=request.user.id,

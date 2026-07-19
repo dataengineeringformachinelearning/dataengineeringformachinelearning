@@ -28,7 +28,7 @@ export const ingestEvent = onCall(
     });
     throw new HttpsError(
       "failed-precondition",
-      "Local event ingest is retired. Use the DEML API sealed FORJD ingest path.",
+      "Use the DEML API sealed FORJD ingest path.",
     );
   },
 );

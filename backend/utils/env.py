@@ -217,7 +217,7 @@ def validate_encrypted_transport_config() -> None:
         + "."
       )
 
-  # REDIS_URL is optional (deml-dragonfly retired). If set, require TLS.
+  # REDIS_URL is optional. If set, require TLS.
   redis_url = get_str("REDIS_URL")
   if redis_url and not redis_url.lower().startswith("rediss://"):
     raise RuntimeError("production REDIS_URL must use rediss:// with certificate verification.")

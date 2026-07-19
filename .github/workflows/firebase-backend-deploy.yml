@@ -1,6 +1,6 @@
 # Deploy Firebase Backend components (Cloud Run function + Firestore rules).
-# ingestEvent is retired from the local data plane (FORJD owns sealed ingest).
-# Deploy keeps Firestore rules current and clears any legacy Redpanda env on Cloud Run.
+# ingestEvent is a fail-closed stub; sealed ingest runs on FORJD via the Django BFF.
+# Deploy keeps Firestore rules current and clears unused env on Cloud Run.
 #
 # Triggers on changes to functions code, firestore rules, or firebase config on main.
 # Also supports manual dispatch.
@@ -63,11 +63,11 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
 
-      - name: Deploy ingestEvent Cloud Run function (retired; clear legacy data-plane env)
+      - name: Deploy ingestEvent Cloud Run function (fail-closed stub)
         shell: bash
         run: |
-          # Always clear Redpanda / DEML_INTERNODE secrets — local brokers are retired.
-          # Function code fails closed; sealed ingest belongs on FORJD (fjsvc_).
+          # Clear env so the stub never inherits unused broker credentials.
+          # Sealed ingest belongs on FORJD (fjsvc_) via the Django BFF.
           gcloud run deploy ingestevent \
             --source=functions \
             --function=ingestEvent \
@@ -116,9 +116,9 @@ jobs:
       - name: Deployment summary
         run: |
           echo "✅ Cloud Run function and Firestore rules deployed to project: demldotcom"
-          echo "   - Cloud Run function: ingestEvent (retired data-plane path; env cleared)"
+          echo "   - Cloud Run function: ingestEvent (fail-closed stub; env cleared)"
           echo "   - Firestore: rules from firestore.rules for the named deml database"
-          echo "   - Sealed ingest / projections / ML: FORJD only (https://backend.forjd.co)"
+          echo "   - Sealed ingest / projections / ML: FORJD (https://backend.forjd.co)"
 
   purge-cloudflare-cache:
     needs: deploy

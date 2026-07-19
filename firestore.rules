@@ -2,7 +2,7 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Event Projections and user-specific data: only the authenticated owner can read/write their stats and subdocs.
+    // User-owned docs: only the authenticated owner can read/write their stats and subdocs.
     // Admin SDK (Cloud Functions, Django worker) bypasses these rules.
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;

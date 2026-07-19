@@ -1,4 +1,4 @@
-"""Dual-write shadow receipts — ciphertext-blind cutover audit trail."""
+"""Optional metadata-only shadow receipts for FORJD write auditing."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from uuid import UUID
 from asgiref.sync import sync_to_async
 from monitor.models import ForjdShadowReceipt
 
-from forjd.cutover import log_cutover_event, shadow_writes_enabled
+from forjd.cutover import log_forjd_mode_event, shadow_writes_enabled
 
 logger = logging.getLogger("forjd.shadow")
 
@@ -49,7 +49,7 @@ def record_shadow_receipt(
       request_id=str(request_id or "")[:64],
       **fields,
     )
-    log_cutover_event(
+    log_forjd_mode_event(
       "shadow_receipt",
       tenant_id=forjd_tenant_id,
       client_event_id=fields["client_event_id"],

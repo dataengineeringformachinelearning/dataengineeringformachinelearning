@@ -5,14 +5,13 @@ exports.ingestEvent = void 0;
  * Firebase callables for DEML user-plane helpers.
  *
  * Sealed telemetry and projections go through Django → FORJD
- * (`docs/FORJD_PLATFORM_HANDOFF.md`). The former Redpanda `ingestEvent`
- * gateway is retired and fails closed.
+ * (`docs/FORJD_INTEGRATION.md`). Browser clients must not call FORJD directly.
  */
 const https_1 = require("firebase-functions/v2/https");
 const firebase_functions_1 = require("firebase-functions");
 /**
- * Retired Event Projections gateway. Clients must seal and POST via
- * Django `/api/v1/forjd/ingest` (or the native BFF adapters).
+ * Compatibility stub. Clients seal and POST via Django
+ * `/api/v1/forjd/ingest` (or the native BFF adapters).
  */
 exports.ingestEvent = (0, https_1.onCall)(
   {
@@ -26,14 +25,14 @@ exports.ingestEvent = (0, https_1.onCall)(
       );
     }
     firebase_functions_1.logger.warn(
-      "ingestEvent called after Redpanda retirement",
+      "ingestEvent stub invoked; use Django sealed ingest",
       {
         uid: request.auth.uid,
       },
     );
     throw new https_1.HttpsError(
       "failed-precondition",
-      "Local event ingest is retired. Use the DEML API sealed FORJD ingest path.",
+      "Use the DEML API sealed FORJD ingest path.",
     );
   },
 );
