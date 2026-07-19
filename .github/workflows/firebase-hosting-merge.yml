@@ -52,15 +52,15 @@ jobs:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
           create_credentials_file: true
 
-      - name: Verify lockfile-pinned Firebase CLI
-        run: npx --no-install firebase --version
+      - name: Verify Firebase CLI
+        run: npx --yes firebase-tools@14.12.0 --version
 
       - name: Deploy marketing hosting target
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
         run: |
           set +e
-          OUTPUT=$(npx --no-install firebase deploy --only hosting:marketing --project demldotcom --non-interactive 2>&1)
+          OUTPUT=$(npx --yes firebase-tools@14.12.0 deploy --only hosting:marketing --project demldotcom --non-interactive 2>&1)
           STATUS=$?
           echo "$OUTPUT"
           if [ "$STATUS" -eq 0 ]; then
