@@ -13,15 +13,16 @@ The Angular app must **not** call FORJD or Supabase with Firebase end-user token
 
 ## Project settings
 
-| Setting          | Value                                      |
-| ---------------- | ------------------------------------------ |
-| Project name     | `deml`                                     |
-| Framework Preset | Other                                      |
-| Root Directory   | `frontend`                                 |
-| Build Command    | `npm run build` (from `vercel.json`)       |
-| Output Directory | `dist/frontend/browser`                    |
-| Install Command  | `npm ci --legacy-peer-deps`                |
-| Node.js          | **24.x** (`frontend/package.json` engines) |
+| Setting          | Value                                                                          |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Project name     | `deml`                                                                         |
+| Framework Preset | Other                                                                          |
+| Root Directory   | `frontend` (Git monorepo root → app folder)                                    |
+| Build Command    | `npm run build` (from `vercel.json`)                                           |
+| Output Directory | `dist/frontend/browser`                                                        |
+| Install Command  | `npm install --legacy-peer-deps --no-workspaces`                               |
+| Node.js          | **24.x** (`frontend/package.json` engines)                                     |
+| Git repository   | `dataengineeringformachinelearning/dataengineeringformachinelearning` (`main`) |
 
 ## Environment variables (Production)
 
@@ -73,8 +74,9 @@ npx vercel link --project deml --yes
 npx vercel deploy --prod --yes
 ```
 
-`vercel.json` uses `npm install --legacy-peer-deps` (not `npm ci`) because the frontend
-workspace lockfile can lag behind root workspace deps (`@vercel/analytics`, etc.).
+`vercel.json` uses `npm install --legacy-peer-deps --no-workspaces` so Vercel installs
+the published `@dataengineeringformachinelearning/viking-ui` from npm instead of the
+monorepo workspace link (which is not built on the Vercel machine).
 
 ### Production env (required — wrong values crash the app)
 
