@@ -56,6 +56,7 @@ const jsonLdPayload = jsonLd
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="shortcut icon" href="/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
 
 		<meta name="generator" content={Astro.generator} />
 
@@ -64,7 +65,7 @@ const jsonLdPayload = jsonLd
 		<meta name="description" content={description} />
 		{keywords && <meta name="keywords" content={keywords} />}
 		<meta name="author" content={AUTHOR_NAME} />
-		<meta name="robots" content={robots} />
+		<meta name="robots" content={`${robots}, max-image-preview:large`} />
 		<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 		<meta name="algolia-site-verification" content="687B59B29612DE68" /> <!-- pragma: allowlist secret -->
 		<meta name="format-detection" content="telephone=no" />
@@ -78,6 +79,9 @@ const jsonLdPayload = jsonLd
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={ogImageUrl} />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content="1280" />
+		<meta property="og:image:height" content="720" />
 		<meta property="og:image:alt" content={ogImageAlt} />
 		<meta property="og:site_name" content={SITE_NAME} />
 		<meta property="og:locale" content="en_US" />

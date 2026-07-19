@@ -1,9 +1,9 @@
 export const SITE_NAME = "DEML (DATA ENGINEERING FOR MACHINE LEARNING)";
 export const SITE_SHORT_NAME = "DEML";
-export const DEFAULT_OG_IMAGE =
-  "/data-engineering-for-machine-learning-preview.png";
+export const DEFAULT_OG_IMAGE = "/dataengineeringformachinelearning-social.png";
+export const ORGANIZATION_LOGO = "/dataengineeringformachinelearning.png";
 export const DEFAULT_OG_IMAGE_ALT =
-  "DEML — operational intelligence for the digital battlefield: telemetry, SLA forecasting, and threat analytics";
+  "DEML ship mark for data engineering, machine learning, and cybersecurity";
 export const TWITTER_SITE = "@joealongi";
 export const AUTHOR_NAME = "Joe Alongi";
 
@@ -22,7 +22,7 @@ export function organizationJsonLd(siteUrl: string) {
     "@type": "Organization",
     name: SITE_NAME,
     url: siteUrl,
-    logo: new URL(DEFAULT_OG_IMAGE, siteUrl).href,
+    logo: new URL(ORGANIZATION_LOGO, siteUrl).href,
     sameAs: ["https://twitter.com/joealongi"],
   };
 }

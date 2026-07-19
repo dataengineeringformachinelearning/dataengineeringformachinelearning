@@ -3,9 +3,8 @@ import { Meta, Title } from '@angular/platform-browser';
 import { resolveRouteMeta } from '../core/page-meta';
 import { environment } from '../../environments/environment';
 
-const OG_IMAGE = '/data-engineering-for-machine-learning-preview.png';
-const OG_IMAGE_ALT =
-  'DEML application preview — data engineering and machine learning telemetry dashboard';
+const OG_IMAGE = '/dataengineeringformachinelearning-social.png';
+const OG_IMAGE_ALT = 'DEML ship mark for data engineering, machine learning, and cybersecurity';
 const ALGOLIA_SITE_VERIFICATION = '687B59B29612DE68'; // pragma: allowlist secret
 
 @Injectable({ providedIn: 'root' })
@@ -33,6 +32,10 @@ export class PageMetaService {
       content: `${environment.frontendUrl}${OG_IMAGE}`,
     });
     this.meta.updateTag({ property: 'og:image:alt', content: OG_IMAGE_ALT });
+    this.meta.updateTag({ property: 'og:image:type', content: 'image/png' });
+    this.meta.updateTag({ property: 'og:image:width', content: '1280' });
+    this.meta.updateTag({ property: 'og:image:height', content: '720' });
+    this.meta.updateTag({ property: 'og:site_name', content: 'DEML' });
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.meta.updateTag({ name: 'twitter:title', content: title });
     this.meta.updateTag({ name: 'twitter:description', content: description });

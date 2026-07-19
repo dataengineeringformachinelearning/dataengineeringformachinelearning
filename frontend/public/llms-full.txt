@@ -14,7 +14,7 @@ license: apache-2.0
 
 [Acknowledgements & Technologies](#acknowledgements--technologies)
 
-![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.svg)
+![DEML brand](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/dataengineeringformachinelearning-social.png)
 
 > **Platform boundary:** DEML is the Firebase-authenticated user control plane and
 > Angular backend-for-frontend. FORJD is the universal secure streaming engine for

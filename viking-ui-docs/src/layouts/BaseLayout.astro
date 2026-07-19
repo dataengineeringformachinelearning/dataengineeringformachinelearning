@@ -14,8 +14,8 @@ const {
   title = SITE.title,
   description = SITE.description,
   bodyClass = '',
-  ogImage = '/viking-ui-components-preview.png',
-  ogImageAlt = 'Viking-UI component library with precision-built interface primitives',
+  ogImage = '/dataengineeringformachinelearning-social.png',
+  ogImageAlt = 'DEML ship mark for the Viking-UI component library',
 } = Astro.props;
 
 const pageTitle = title === SITE.title ? title : `${title} · ${SITE.name}`;
@@ -37,12 +37,14 @@ const demlEnv = {
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1280" />
     <meta property="og:image:height" content="720" />
     <meta property="og:image:alt" content={ogImageAlt} />
@@ -56,8 +58,10 @@ const demlEnv = {
     <meta name="color-scheme" content="light dark" />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <link
       rel="preload"
