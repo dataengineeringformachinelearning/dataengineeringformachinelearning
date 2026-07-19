@@ -31,23 +31,33 @@ export class IssueReporter {
   issueDescription = signal('');
   submissionStatus = signal<'idle' | 'success' | 'error'>('idle');
 
-  // Track the last few console errors as default telemetry context
+  // Track only error classes; never capture console values or error messages.
   private recentErrors: string[] = [];
+  private pendingClientReportId: string | null = null;
 
-  constructor(private http: HttpClient) {
-    this.captureConsoleErrors();
+  constructor(private http: HttpClient) {}
+
+  private recordErrorClass(value: unknown): void {
+    // Never serialize console arguments/messages: they commonly contain URLs,
+    // auth responses, form values, or arbitrary nested application objects.
+    const name =
+      value instanceof Error && /^[A-Za-z][A-Za-z0-9_.-]{0,63}$/.test(value.name)
+        ? value.name
+        : 'ClientError';
+    this.recentErrors.push(`Error:${name}`);
+    if (this.recentErrors.length > 5) {
+      this.recentErrors.shift();
+    }
   }
 
-  private captureConsoleErrors() {
-    const originalError = console.error;
-    console.error = (...args) => {
-      this.recentErrors.push(args.join(' '));
-      // Keep only the last 5 errors
-      if (this.recentErrors.length > 5) {
-        this.recentErrors.shift();
-      }
-      originalError.apply(console, args);
-    };
+  @HostListener('window:error', ['$event'])
+  onWindowError(event: ErrorEvent): void {
+    this.recordErrorClass(event.error);
+  }
+
+  @HostListener('window:unhandledrejection', ['$event'])
+  onUnhandledRejection(event: PromiseRejectionEvent): void {
+    this.recordErrorClass(event.reason);
   }
 
   @HostListener('window:openBugReporter')
@@ -83,11 +93,14 @@ export class IssueReporter {
     if (!this.issueDescription().trim()) return;
 
     this.isSubmitting.set(true);
+    this.pendingClientReportId ??= crypto.randomUUID();
 
     const payload = {
+      client_report_id: this.pendingClientReportId,
       user_description: this.issueDescription(),
       telemetry_context: {
-        url: window.location.href,
+        // Query strings and fragments often contain OAuth/reset/session tokens.
+        route: window.location.pathname,
         userAgent: navigator.userAgent,
         recentErrors: this.recentErrors,
       },
@@ -97,6 +110,7 @@ export class IssueReporter {
       next: () => {
         this.isSubmitting.set(false);
         this.submissionStatus.set('success');
+        this.pendingClientReportId = null;
         setTimeout(() => this.closeModal(), 2000); // Close after 2s
       },
       error: err => {

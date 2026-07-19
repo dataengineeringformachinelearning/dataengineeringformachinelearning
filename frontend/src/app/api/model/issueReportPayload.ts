@@ -9,6 +9,7 @@
  */
 
 export interface IssueReportPayload {
+  client_report_id?: string;
   user_description: string;
   telemetry_context?: { [key: string]: any };
 }

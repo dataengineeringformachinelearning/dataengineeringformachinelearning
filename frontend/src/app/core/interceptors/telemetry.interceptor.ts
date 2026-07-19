@@ -3,10 +3,17 @@ import { inject } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { TelemetryService, TelemetryPayload } from '../services/telemetry.service';
 import { API_ENDPOINTS } from '../constants/api.constants';
+import { environment } from '../../../environments/environment';
 
 export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
+  // This legacy payload is plaintext and the old endpoint is not part of the
+  // FORJD contract. SealedEvent → /api/v1/ingest is the supported telemetry lane.
+  if (!environment.enableLegacyPlaintextTelemetry) {
+    return next(req);
+  }
   const telemetryService = inject(TelemetryService);
   const startTime = Date.now();
+  const sanitizedUrl = req.url.split(/[?#]/, 1)[0];
 
   return next(req).pipe(
     tap({
@@ -16,7 +23,7 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
           if (!req.url.includes(API_ENDPOINTS.TELEMETRY.ENDPOINTS)) {
             const responseTimeMs = Date.now() - startTime;
             const payload: TelemetryPayload = {
-              url: req.url,
+              url: sanitizedUrl,
               status_code: event.status,
               response_time_ms: responseTimeMs,
               ip_address: '0.0.0.0', // Handled by backend if needed
@@ -33,7 +40,7 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
           if (error.status !== 0 && !req.url.includes(API_ENDPOINTS.TELEMETRY.ENDPOINTS)) {
             const responseTimeMs = Date.now() - startTime;
             const payload: TelemetryPayload = {
-              url: req.url,
+              url: sanitizedUrl,
               status_code: error.status || 500,
               response_time_ms: responseTimeMs,
               ip_address: '0.0.0.0',

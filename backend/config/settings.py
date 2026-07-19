@@ -138,6 +138,8 @@ from utils.env import (
   configure_database_url,
   get_bool,
   get_csv,
+  get_float,
+  get_int,
   get_str,
   validate_production_config,
 )
@@ -172,6 +174,14 @@ FORJD_TENANT_ID = get_str("FORJD_TENANT_ID", "")
 FORJD_CUTOVER_PHASE = get_str("FORJD_CUTOVER_PHASE", "")
 FORJD_WRITE_MODE = get_str("FORJD_WRITE_MODE", "forjd")  # off | forjd | dual
 FORJD_READ_MODE = get_str("FORJD_READ_MODE", "forjd")  # off | forjd | dual
+FORJD_REQUIRED_CONTRACT_VERSION = get_str("FORJD_REQUIRED_CONTRACT_VERSION", "1.0")
+FORJD_CONNECT_TIMEOUT_SECONDS = get_float("FORJD_CONNECT_TIMEOUT_SECONDS", 5.0)
+FORJD_REQUEST_TIMEOUT_SECONDS = get_float("FORJD_REQUEST_TIMEOUT_SECONDS", 20.0)
+FORJD_LONG_REQUEST_TIMEOUT_SECONDS = get_float("FORJD_LONG_REQUEST_TIMEOUT_SECONDS", 45.0)
+FORJD_RESPONSE_MAX_BYTES = get_int("FORJD_RESPONSE_MAX_BYTES", 2 * 1024 * 1024)
+FORJD_READ_RETRY_ATTEMPTS = get_int("FORJD_READ_RETRY_ATTEMPTS", 3)
+FORJD_RETRY_BASE_SECONDS = get_float("FORJD_RETRY_BASE_SECONDS", 0.1)
+FORJD_RETRY_MAX_SECONDS = get_float("FORJD_RETRY_MAX_SECONDS", 2.0)
 
 
 # Application definition
@@ -200,6 +210,8 @@ MIDDLEWARE = [
   "django.middleware.common.CommonMiddleware",
   "django.middleware.csrf.CsrfViewMiddleware",
   "config.middleware.FirebaseAuthenticationMiddleware",
+  "config.middleware.HeadlessRateLimitMiddleware",
+  "forjd.body_limit.ForjdIngestBodyLimitMiddleware",
   "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -224,6 +236,13 @@ ASGI_APPLICATION = "config.asgi.application"
 # Optional Redis/Dragonfly — sessions/handoff use Postgres; leave unset in production.
 REDIS_URL = get_str("REDIS_URL")
 REDIS_SSL_CA = materialize_tls_file("REDIS_SSL_CA", "REDIS_SSL_CA_B64") if REDIS_URL else None
+
+# DEML control-plane quotas are Postgres-backed so API keys/accounts remain
+# isolated even though each account hands off through a tenant service token.
+DEML_HEADLESS_RATE_LIMIT_ENABLED = get_bool("DEML_HEADLESS_RATE_LIMIT_ENABLED", default=True)
+DEML_HEADLESS_INGEST_RPM = get_int("DEML_HEADLESS_INGEST_RPM", default=120)
+DEML_HEADLESS_WRITE_RPM = get_int("DEML_HEADLESS_WRITE_RPM", default=300)
+DEML_HEADLESS_READ_RPM = get_int("DEML_HEADLESS_READ_RPM", default=1200)
 
 # Channels — in-process layer (force-logout best-effort).
 CHANNEL_LAYERS = {
@@ -300,8 +319,18 @@ CORS_ALLOW_HEADERS = [
   "cache-control",
   "pragma",
   "expires",
+  "x-api-key",
   # Browser session registry (Dragonfly) — sent by credentials.interceptor.ts
   "x-deml-session-id",
+]
+CORS_EXPOSE_HEADERS = [
+  "Retry-After",
+  "Server-Timing",
+  "X-FORJD-Request-ID",
+  "X-RateLimit-Limit",
+  "X-RateLimit-Remaining",
+  "X-RateLimit-Reset",
+  "X-Request-ID",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False

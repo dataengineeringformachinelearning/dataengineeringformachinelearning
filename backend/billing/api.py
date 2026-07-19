@@ -12,8 +12,10 @@ except ImportError:
   HAS_STRIPE = False
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.http import HttpResponse
-from monitor.models import UserProfile
+from monitor.models import UserLifecycleJob, UserProfile
 from ninja import Router
 
 logger = logging.getLogger(__name__)
@@ -22,6 +24,34 @@ if HAS_STRIPE:
   stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", "")
 
 router = Router(tags=["Billing"])
+User = get_user_model()
+
+
+def _stripe_resource_is_missing(exc: Exception) -> bool:
+  error_code = str(getattr(exc, "code", "") or "")
+  error_body = getattr(exc, "json_body", None)
+  if isinstance(error_body, dict):
+    nested = error_body.get("error")
+    if isinstance(nested, dict):
+      error_code = error_code or str(nested.get("code") or "")
+  return getattr(exc, "http_status", None) == 404 or error_code == "resource_missing"
+
+
+def _cancel_tombstoned_subscription(subscription_id: object) -> bool:
+  value = str(subscription_id or "").strip()
+  if not value:
+    return True
+  try:
+    stripe.Subscription.cancel(value)
+  except Exception as exc:
+    if _stripe_resource_is_missing(exc):
+      return True
+    logger.exception(
+      "Late checkout subscription cancellation failed error_type=%s",
+      type(exc).__name__,
+    )
+    return False
+  return True
 
 
 def _subscription_period_end(subscription: Any) -> int | None:
@@ -58,7 +88,7 @@ def _get_profile(request) -> UserProfile | None:
 
 @router.post("/create-checkout-session")
 def create_checkout_session(request):
-  if not request.user.is_authenticated:
+  if not request.user.is_authenticated or not request.user.is_active:
     from django.http import JsonResponse
 
     return JsonResponse({"error": "Authentication required"}, status=401)
@@ -72,6 +102,14 @@ def create_checkout_session(request):
       from django.http import JsonResponse
 
       return JsonResponse({"error": "Account profile not provisioned"}, status=400)
+
+    if UserLifecycleJob.objects.filter(
+      account_id=profile.account_id,
+      job_type=UserLifecycleJob.JobType.DELETION,
+    ).exists():
+      from django.http import JsonResponse
+
+      return JsonResponse({"error": "Account deletion is in progress"}, status=409)
 
     if account_id:
       try:
@@ -143,25 +181,53 @@ def stripe_webhook(request):
     )
 
     if client_reference_id:
-      try:
-        profile = UserProfile.objects.get(account_id=client_reference_id)
-        profile.tier = "Pro"
-        profile.stripe_customer_id = customer_id
-        profile.stripe_subscription_id = subscription_id
-        profile.subscription_active = True
-
-        # Fetch subscription to get current_period_end
-        if subscription_id:
-          sub = stripe.Subscription.retrieve(subscription_id)
-          period_end = _subscription_period_end(sub)
-          if period_end:
-            profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
-              period_end, tz=datetime.timezone.utc
+      profile_ref = UserProfile.objects.filter(account_id=client_reference_id).first()
+      tombstoned = profile_ref is None
+      if profile_ref is not None:
+        try:
+          # Lock in the same user→profile order as deletion. Whichever request
+          # wins is then visible to the loser: deletion cancels a stored
+          # subscription, or this webhook observes the tombstone and cancels it.
+          with transaction.atomic():
+            locked_user = User.objects.select_for_update().get(pk=profile_ref.user_id)
+            profile = UserProfile.objects.select_for_update().get(pk=profile_ref.pk)
+            tombstoned = (
+              not locked_user.is_active
+              or UserLifecycleJob.objects.filter(
+                account_id=profile.account_id,
+                job_type=UserLifecycleJob.JobType.DELETION,
+              ).exists()
             )
+            if tombstoned:
+              profile.tier = "Standard"
+              profile.subscription_active = False
+              profile.save(update_fields=["tier", "subscription_active"])
+            else:
+              profile.tier = "Pro"
+              profile.stripe_customer_id = customer_id
+              profile.stripe_subscription_id = subscription_id
+              profile.subscription_active = True
 
-        profile.save()
-      except UserProfile.DoesNotExist:
-        logger.error(f"UserProfile {client_reference_id} not found for checkout.")
+              if subscription_id:
+                sub = stripe.Subscription.retrieve(subscription_id)
+                period_end = _subscription_period_end(sub)
+                if period_end:
+                  profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
+                    period_end, tz=datetime.timezone.utc
+                  )
+              profile.save()
+        except (User.DoesNotExist, UserProfile.DoesNotExist):
+          tombstoned = True
+
+      if tombstoned:
+        logger.warning(
+          "Canceling checkout completed behind account deletion tombstone account=%s",
+          client_reference_id,
+        )
+        if not _cancel_tombstoned_subscription(subscription_id):
+          # Stripe retries signed webhooks on non-2xx responses. Never
+          # acknowledge a late subscription until recurring billing is stopped.
+          return HttpResponse(status=500)
 
   elif event["type"] in ["customer.subscription.updated", "customer.subscription.deleted"]:
     subscription = event["data"]["object"]
@@ -177,7 +243,10 @@ def stripe_webhook(request):
     )
     period_end = _subscription_period_end(subscription)
 
-    profiles = UserProfile.objects.filter(stripe_subscription_id=sub_id)
+    profiles = UserProfile.objects.filter(
+      stripe_subscription_id=sub_id,
+      user__is_active=True,
+    )
     for profile in profiles:
       if event["type"] == "customer.subscription.deleted" or status in [
         "canceled",

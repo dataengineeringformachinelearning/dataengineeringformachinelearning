@@ -5,7 +5,8 @@ Operator runbook for production. Pair with
 [`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md),
 [`FLY.md`](./FLY.md), [`VERCEL.md`](./VERCEL.md).
 
-**Verified live (2026-07-18):**
+**Last live baseline (2026-07-18, before the SIEM/SOAR hardening in this
+change set):**
 
 | Check                                    | Result                                            |
 | ---------------------------------------- | ------------------------------------------------- |
@@ -16,6 +17,10 @@ Operator runbook for production. Pair with
 | Fly `deml-backend`                       | started, 2/2 checks passing (iad)                 |
 | `https://backend.forjd.co/ready`         | postgres + redis + `schema_rls` + engine `All`    |
 | FORJD modes                              | `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd` |
+
+Treat this table as the rollback baseline, not proof that the new migrations
+are deployed. Re-run every check in this runbook after applying the DEML and
+FORJD migrations below.
 
 ---
 
@@ -59,6 +64,16 @@ curl -fsS https://backend.deml.app/api/v1/ready
 fly checks list -a deml-backend
 ```
 
+`start.py` applies Django migrations before accepting traffic. The release must
+include `monitor/0058_bugreport_delivery_outbox` and
+`monitor/0059_headless_rate_limit_bucket`; confirm both are applied after the
+deploy:
+
+```bash
+fly ssh console -a deml-backend -C \
+  "python manage.py showmigrations monitor"
+```
+
 Required secrets: see [`FLY.md`](./FLY.md) (`DATABASE_URL`, Firebase, `FORJD_API_URL`,
 `FORJD_SERVICE_TOKEN`, `FORJD_TENANT_ID`, CORS/CSRF for `deml.app`).
 
@@ -76,11 +91,15 @@ fly ssh console -a deml-backend -C \
 On the FORJD repo:
 
 ```bash
-# Schema (includes sql/019 least-privilege erase default)
+# Schema (003 → 025: least-privilege auth, SIEM/SOAR, exports, and durable ingest)
 cd backend && uv run python scripts/apply_sql_migrations.py
+POSTGRES_DSN='…' uv run python scripts/verify_supabase_post_migration.py
 
-# Remint partner token with erase for account deletion
+# Remint the DEML partner token so the stored scopes include the new surfaces.
+# Add tenants:erase only when account deletion is enabled.
 ./scripts/remint_service_account.sh deml-production
+# Account deletion enabled for this DEML deployment:
+# FORJD_INCLUDE_ERASE=1 ./scripts/remint_service_account.sh deml-production
 # → set Fly deml-backend FORJD_SERVICE_TOKEN + FORJD_TENANT_ID
 
 cd backend && fly deploy -a forjd-backend
@@ -108,21 +127,30 @@ curl -fsS https://forjd-engine.fly.dev/ready
 
 1. Open `https://deml.app` → Firebase login → `/dashboard` CES loads.
 2. Status pages: create page → add service → create incident (BFF → FORJD).
-3. Vulns list + exports list return FORJD-backed JSON (or empty-stable).
-4. Sealed path (service token / staging): register crypto session →
+3. Submit a SIEM signal, observe its correlated case, execute a playbook, then
+   acknowledge or retry a partner-owned action through DEML.
+4. Vulns list + exports list return FORJD-backed JSON; create an idempotent
+   export, poll it to completion, and obtain its short-lived signed download.
+   A dependency outage is a typed `503` in steady mode.
+5. Sealed path (service token / staging): register crypto session →
    `POST /api/v1/ingest` (via Django sealed adapter) → `GET` projections.
-5. Staging account delete: FORJD erase then local teardown.
+6. Exceed a staging headless quota and verify `429`, `Retry-After`, and
+   `X-RateLimit-*` are scoped to the credential/account.
+7. Staging account delete: FORJD erase then local teardown, including private
+   export/report artifacts and durable processing metadata.
 
 ---
 
 ## Production readiness
 
-| Surface                | Ready?                                                            |
-| ---------------------- | ----------------------------------------------------------------- |
-| Angular on Vercel      | **Yes** — `deml.app` / `deml.vercel.app` 200; `BACKEND_URL` → Fly |
-| Django BFF on Fly      | **Yes** — health/ready passing; FORJD wired                       |
-| FORJD sealed plane     | **Yes** — `/ready` RLS + engine `All` + Dragonfly                 |
-| FORJD write/read modes | **Yes** — `forjd` / `forjd`                                       |
+| Surface                | Current gate                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| Angular on Vercel      | Local tests/build pass; deploy and re-check `BACKEND_URL`                     |
+| Django BFF on Fly      | Apply migrations `0058`–`0059`; verify API + outbox worker health             |
+| FORJD sealed plane     | Apply SQL `020`–`025`; verify Postgres, Dragonfly, engine, and object storage |
+| FORJD write/read modes | Set both to `forjd` only after the staged end-to-end smoke passes             |
 
-**Verdict:** DEML and FORJD are production-ready. Apply FORJD `sql/019` and
-mint or rotate tokens as needed, then run the smoke list above.
+**Verdict:** the code and local contract suites are release-ready. Do not call
+the production cutover complete until both migration sets are applied, the
+DEML `fjsvc_` credential is reminted with the required scopes, private object
+storage is configured, and the live smoke sequence above passes.

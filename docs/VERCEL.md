@@ -28,23 +28,20 @@ The Angular app must **not** call FORJD or Supabase with Firebase end-user token
 
 Set in Vercel → Project `deml` → Settings → Environment Variables:
 
-| Variable                       | Example                                         | Required                                     |
-| ------------------------------ | ----------------------------------------------- | -------------------------------------------- |
-| `FRONTEND_URL`                 | `https://deml.app`                              | yes                                          |
-| `BACKEND_URL`                  | `https://backend.deml.app`                      | yes                                          |
-| `MARKETING_URL`                | `https://dataengineeringformachinelearning.com` | yes                                          |
-| `FIREBASE_API_KEY`             | (Firebase web key)                              | yes                                          |
-| `FIREBASE_PROJECT_ID`          | `demldotcom`                                    | yes                                          |
-| `FIREBASE_APP_ID`              | `1:…:web:…`                                     | yes                                          |
-| `FIREBASE_AUTH_DOMAIN`         | `demldotcom.firebaseapp.com`                    | yes                                          |
-| `FIREBASE_STORAGE_BUCKET`      | `demldotcom.firebasestorage.app`                | yes                                          |
-| `FIREBASE_MESSAGING_SENDER_ID` | `870072971206`                                  | yes                                          |
-| `SANITY_PROJECT_ID`            | `hj5wtuct`                                      | optional                                     |
-| `SANITY_DATASET`               | `production`                                    | optional                                     |
-| `SENTRY_DSN`                   |                                                 | optional                                     |
-| `FORJD_API_URL`                | `https://backend.forjd.co`                      | informational                                |
-| `SUPABASE_URL`                 | `https://….supabase.co`                         | informational                                |
-| `SUPABASE_ANON_KEY`            |                                                 | leave empty unless a client feature needs it |
+| Variable                       | Example                                         | Required      |
+| ------------------------------ | ----------------------------------------------- | ------------- |
+| `FRONTEND_URL`                 | `https://deml.app`                              | yes           |
+| `BACKEND_URL`                  | `https://backend.deml.app`                      | yes           |
+| `MARKETING_URL`                | `https://dataengineeringformachinelearning.com` | yes           |
+| `FIREBASE_API_KEY`             | (Firebase web key)                              | yes           |
+| `FIREBASE_PROJECT_ID`          | `demldotcom`                                    | yes           |
+| `FIREBASE_APP_ID`              | `1:…:web:…`                                     | yes           |
+| `FIREBASE_AUTH_DOMAIN`         | `demldotcom.firebaseapp.com`                    | yes           |
+| `FIREBASE_MESSAGING_SENDER_ID` | `870072971206`                                  | yes           |
+| `SANITY_PROJECT_ID`            | `hj5wtuct`                                      | optional      |
+| `SANITY_DATASET`               | `production`                                    | optional      |
+| `SENTRY_DSN`                   |                                                 | optional      |
+| `FORJD_API_URL`                | `https://backend.forjd.co`                      | informational |
 
 `set-env.js` bakes these into `environment.ts` at build time (CSR has no runtime secret injection).
 

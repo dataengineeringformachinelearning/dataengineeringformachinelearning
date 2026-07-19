@@ -35,6 +35,8 @@ def _event(tenant_id: UUID) -> dict[str, object]:
 
 def _mapped_user(username: str = "learner") -> tuple[object, UUID]:
   user = User.objects.create_user(username=username)
+  user.profile.role = "Operator"
+  user.profile.save(update_fields=["role"])
   tenant_id = uuid4()
   ForjdTenantMapping.objects.create(
     deml_account_id=user.profile.account_id,
@@ -171,7 +173,9 @@ def test_ingest_rejects_unshipped_learning_and_plaintext_metadata(
 
 @pytest.mark.django_db
 def test_ingest_fails_closed_without_tenant_mapping(client: Client) -> None:
-  User.objects.create_user(username="learner")
+  user = User.objects.create_user(username="learner")
+  user.profile.role = "Operator"
+  user.profile.save(update_fields=["role"])
 
   response = client.post(
     "/api/v1/forjd/ingest",

@@ -15,6 +15,9 @@ def test_openapi_exposes_forjd_handoff_and_no_local_processing(client: Client) -
   paths: dict[str, Any] = payload.get("paths", {})
   assert "post" in paths["/api/v1/forjd/ingest"]
   assert "post" in paths["/api/v1/forjd/ingest/events:batch"]
+  assert (
+    payload["components"]["schemas"]["SealedEventBatch"]["properties"]["events"]["maxItems"] == 25
+  )
 
   serialized_contract = str(payload)
   assert "application/forjd-telemetry+v1" in serialized_contract

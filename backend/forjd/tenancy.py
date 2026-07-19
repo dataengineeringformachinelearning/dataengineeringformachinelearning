@@ -66,7 +66,7 @@ def _expected_tenant_env_name(secret_ref: str) -> str:
   return f"FORJD_TENANT_ID{suffix}"
 
 
-def _require_tenant_env_match(mapping: ForjdTenantMapping, secret_ref: str) -> None:
+def _require_tenant_env_match(tenant_id: UUID, secret_ref: str) -> None:
   """Bind each service-token ref to a matching FORJD_TENANT_ID[_SUFFIX] value."""
   tenant_env = _expected_tenant_env_name(secret_ref)
   if secret_ref == DEFAULT_SERVICE_TOKEN_SECRET_REF:
@@ -81,7 +81,7 @@ def _require_tenant_env_match(mapping: ForjdTenantMapping, secret_ref: str) -> N
     expected_tenant_id = UUID(configured)
   except ValueError as exc:
     raise ForjdTenantConfigurationError(f"{tenant_env} is not a valid UUID") from exc
-  if mapping.forjd_tenant_id != expected_tenant_id:
+  if tenant_id != expected_tenant_id:
     raise ForjdTenantConfigurationError(
       "The mapped FORJD tenant does not match the service credential tenant"
     )
@@ -109,9 +109,22 @@ def resolve_forjd_tenant_credential(
     )
 
   secret_ref = validate_service_token_secret_ref(mapping.service_token_secret_ref)
-  _require_tenant_env_match(mapping, secret_ref)
+  _require_tenant_env_match(mapping.forjd_tenant_id, secret_ref)
 
   return ForjdTenantCredential(
     tenant_id=mapping.forjd_tenant_id,
+    service_token=_resolve_service_token(secret_ref),
+  )
+
+
+def resolve_forjd_snapshot_credential(
+  tenant_id: UUID,
+  service_token_secret_ref: str,
+) -> ForjdTenantCredential:
+  """Resolve an assignment-once destination without consulting the current mapping."""
+  secret_ref = validate_service_token_secret_ref(service_token_secret_ref)
+  _require_tenant_env_match(tenant_id, secret_ref)
+  return ForjdTenantCredential(
+    tenant_id=tenant_id,
     service_token=_resolve_service_token(secret_ref),
   )

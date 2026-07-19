@@ -201,8 +201,13 @@ export class IsolatedStatus implements OnInit {
             },
           }));
 
-          this.monitorService.fetchAllIncidents([page]);
-          this.monitorService.fetchAllServices([page]);
+          // Public slug payload embeds services/incidents; the authed list
+          // adapters return [] for anonymous visitors and would clobber them.
+          this.monitorService.seedFromEmbeddedPage(page);
+          if (this.authService.isAuthenticated()) {
+            this.monitorService.fetchAllIncidents([page]);
+            this.monitorService.fetchAllServices([page]);
+          }
           runInInjectionContext(this.injector, () => {
             this.mlService.fetchLatestStat(page.id);
             this.mlService.fetchThreatReport(page.id);

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation — DEML Learning Platform API{% endblock %}
+{% block og_title %}Documentation — DEML Learning Platform API{% endblock %}
+{% block twitter_title %}Documentation — DEML Learning Platform API{% endblock %}
+
+{% block meta_description %}
+<meta
+  name="description"
+  content="DEML API documentation and Blue Notes field log — authentication, ingestion, inference, and platform engineering dispatches on one page."
+/>
+{% endblock %}
+{% block og_description %}DEML API documentation and Blue Notes field log — authentication, ingestion, inference, and engineering dispatches.{% endblock %}
+{% block twitter_description %}DEML API documentation and Blue Notes field log on one page.{% endblock %}
+{% block meta_keywords %}DEML documentation, Blue Notes, API reference, telemetry ingestion, inference{% endblock %}
+
+{% block body_class %}backend-docs{% endblock %}
+
+{% block content %}
+<main class="page-inner-wrapper" id="main-content" tabindex="-1">
+  <div class="docs-page-stack">
+    <header class="viking-page-header-static" aria-label="Documentation header">
+      <p class="viking-label">Documentation · Blue Notes</p>
+      <h1 class="viking-heading viking-heading-lg">One page. The whole platform.</h1>
+      <p class="viking-text-muted">
+        Everything needed to integrate with the DEML user control plane — plus the Blue Notes
+        field log that records how the platform is engineered. For the interactive sandbox, open
+        the <a href="/api/v1/docs">Swagger UI</a>.
+      </p>
+    </header>
+
+    <section class="viking-section" aria-labelledby="docs-reference-title">
+      <header class="integrations-header">
+        <span class="section-tag">API REFERENCE</span>
+        <h2 id="docs-reference-title">Documentation</h2>
+        <p>
+          Authenticate once, then stream telemetry and run inference through the gateway. Every
+          endpoint below is explorable in the interactive Swagger sandbox.
+        </p>
+      </header>
+
+      <div class="docs-bento-grid">
+        <article class="viking-card docs-bento-card docs-bento-full">
+          <h3 class="viking-card-title">Authentication</h3>
+          <p class="viking-text-muted">
+            Generate an API key from your account settings and pass it as a bearer token. Keys are
+            shown once at creation and hashed with SHA-256 at rest.
+          </p>
+          <div class="code-block-premium">
+            <div class="code-header">HTTP Header</div>
+            <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+          </div>
+        </article>
+
+        <article class="viking-card docs-bento-card">
+          <h3 class="viking-card-title">Data ingestion</h3>
+          <p class="viking-text-muted">
+            High-throughput endpoint for batched or streaming records from distributed pipelines.
+          </p>
+          <div class="endpoint-badge">
+            <span class="method">POST</span>
+            <span class="path">/api/v1/ingest</span>
+          </div>
+        </article>
+
+        <article class="viking-card docs-bento-card">
+          <h3 class="viking-card-title">Real-time inference</h3>
+          <p class="viking-text-muted">
+            Low-latency model inference for sidecars and services calling models directly.
+          </p>
+          <div class="endpoint-badge">
+            <span class="method">POST</span>
+            <span class="path">/api/v1/predict</span>
+          </div>
+        </article>
+
+        <article class="viking-card docs-bento-card">
+          <h3 class="viking-card-title">Interactive reference</h3>
+          <p class="viking-text-muted">
+            Browse every operation, authorize with your token, and execute calls in the browser.
+          </p>
+          <a class="viking-btn viking-btn-outline" href="/api/v1/docs">
+            <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
+            Open Swagger UI
+          </a>
+        </article>
+
+        <article class="viking-card docs-bento-card">
+          <h3 class="viking-card-title">Integration guides</h3>
+          <p class="viking-text-muted">
+            First-class guides for Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and
+            AWS Redshift live in the developer portal.
+          </p>
+          <a class="viking-btn viking-btn-outline" href="{{ marketing_url }}/documentation/">
+            <span data-viking-icon="hub" data-viking-icon-size="16" aria-hidden="true"></span>
+            Open developer portal
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="viking-section" aria-labelledby="blue-notes-title">
+      <header class="integrations-header">
+        <span class="section-tag">FIELD LOG · BLUE NOTES</span>
+        <h2 id="blue-notes-title">Engineering, in the open</h2>
+        <p>
+          The operating record behind the platform — releases, architecture decisions, and
+          reliability work. Newest dispatches first.
+        </p>
+      </header>
+
+      <div class="blog-actions">
+        <a class="viking-btn viking-btn-outline" href="{{ marketing_url }}/blog/">
+          <span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
+          Browse the full archive
+        </a>
+        <a class="viking-btn viking-btn-ghost" href="{{ marketing_url }}/blog/rss.xml">
+          <span data-viking-icon="send" data-viking-icon-size="16" aria-hidden="true"></span>
+          Follow via RSS
+        </a>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}

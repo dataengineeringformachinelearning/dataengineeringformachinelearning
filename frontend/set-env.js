@@ -42,7 +42,6 @@ const apiKey = process.env.FIREBASE_API_KEY ?? 'PLACEHOLDER_API_KEY';
 const projectId = process.env.FIREBASE_PROJECT_ID ?? 'demldotcom';
 const appId = process.env.FIREBASE_APP_ID ?? '1:870072971206:web:5231fde2822d750abfccc7';
 const authDomain = process.env.FIREBASE_AUTH_DOMAIN ?? 'demldotcom.firebaseapp.com';
-const storageBucket = process.env.FIREBASE_STORAGE_BUCKET ?? 'demldotcom.firebasestorage.app';
 const messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID ?? '870072971206';
 const sanityProjectId = process.env.SANITY_PROJECT_ID ?? 'hj5wtuct';
 const sanityDataset = process.env.SANITY_DATASET ?? 'production';
@@ -92,8 +91,8 @@ if (onVercel && !vercelFrontend) {
 
 const buildFrontendUrl = vercelFrontend;
 const forjdApiUrl = process.env.FORJD_API_URL ?? 'https://backend.forjd.co';
-const supabaseUrl = process.env.SUPABASE_URL ?? '';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY ?? '';
+const enableLegacyPlaintextTelemetry =
+  String(process.env.ENABLE_LEGACY_PLAINTEXT_TELEMETRY || '').toLowerCase() === 'true';
 
 const getBackendUrlCode = `
 const getBackendUrl = () => {
@@ -160,11 +159,11 @@ const getMarketingUrl = () => {
 
 const envBody = production => `
 const getFirebaseConfig = () => {
+  // Auth-only Firebase config — DEML stores no product data in Firebase.
   const defaultFirebase = {
     apiKey: '${apiKey}',
     authDomain: '${authDomain}',
     projectId: '${projectId}',
-    storageBucket: '${storageBucket}',
     messagingSenderId: '${messagingSenderId}',
     appId: '${appId}'
   };
@@ -190,8 +189,8 @@ export const environment = {
   marketingUrl: getMarketingUrl(),
   /** Informational — data plane is reached via Django BFF, not from the browser. */
   forjdApiUrl: '${forjdApiUrl}',
-  supabaseUrl: '${supabaseUrl}',
-  supabaseAnonKey: '${supabaseAnonKey}',
+  /** Deprecated plaintext endpoint telemetry; sealed FORJD ingest is the supported lane. */
+  enableLegacyPlaintextTelemetry: ${enableLegacyPlaintextTelemetry},
   firebase: getFirebaseConfig(),
   sanity: {
     projectId: '${sanityProjectId}',

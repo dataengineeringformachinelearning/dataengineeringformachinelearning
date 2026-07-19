@@ -9,6 +9,14 @@ from __future__ import annotations
 from typing import Any
 
 
+def _timestamp(value: Any) -> str:
+  return value.isoformat() if hasattr(value, "isoformat") else str(value or "")
+
+
+def _label(value: Any, default: str) -> str:
+  return str(value or default).replace("_", " ").replace("-", " ").title()
+
+
 # --- Analytics overview (dashboard / analytics / vulnerabilities pages) ---
 def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
   """Shape FORJD ``/api/v1/analytics/overview`` into the Angular CES envelope."""
@@ -173,35 +181,168 @@ def deml_status_incident(forjd_body: dict[str, Any]) -> dict[str, Any]:
   )
 
 
-# --- Vulnerabilities (VulnerabilityService expects a JSON array) ---
-def deml_vulnerabilities(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
-  rows = forjd_body.get("vulnerabilities")
+# --- Headless SOC cases (VulnerabilityService expects JSON arrays/objects) ---
+def deml_incident_case(row: dict[str, Any]) -> dict[str, Any]:
+  case = row.get("case") if isinstance(row.get("case"), dict) else row
+  created = _timestamp(case.get("created_at"))
+  return {
+    "id": str(case.get("id") or ""),
+    "title": str(case.get("title") or ""),
+    "description": str(case.get("description") or ""),
+    "status": _label(case.get("status"), "Open"),
+    "severity": _label(case.get("severity"), "Medium"),
+    "assigned_actor_id": case.get("assigned_actor_id"),
+    "source_signal_id": case.get("source_signal_id"),
+    "correlation_rule_ids": list(case.get("correlation_rule_ids") or []),
+    "metadata": case.get("metadata") if isinstance(case.get("metadata"), dict) else {},
+    "created_at": created,
+    "updated_at": _timestamp(case.get("updated_at")) or created,
+  }
+
+
+def deml_incident_cases(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  rows = forjd_body.get("cases", forjd_body.get("items"))
+  if not isinstance(rows, list):
+    return []
+  return [deml_incident_case(row) for row in rows if isinstance(row, dict)]
+
+
+# --- SOAR playbooks and execution runs ---
+def deml_playbook(row: dict[str, Any]) -> dict[str, Any]:
+  playbook = row.get("playbook") if isinstance(row.get("playbook"), dict) else row
+  return {
+    "id": str(playbook.get("id") or ""),
+    "name": str(playbook.get("name") or ""),
+    "description": str(playbook.get("description") or ""),
+    "is_active": bool(playbook.get("is_active", True)),
+    "trigger_conditions": playbook.get("trigger_conditions")
+    if isinstance(playbook.get("trigger_conditions"), dict)
+    else {},
+    "actions": playbook.get("actions") if isinstance(playbook.get("actions"), list) else [],
+    "created_at": _timestamp(playbook.get("created_at")),
+    "updated_at": _timestamp(playbook.get("updated_at")),
+  }
+
+
+def deml_playbooks(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  rows = forjd_body.get("playbooks", forjd_body.get("items"))
+  if not isinstance(rows, list):
+    return []
+  return [deml_playbook(row) for row in rows if isinstance(row, dict)]
+
+
+def deml_playbook_action_result(row: dict[str, Any]) -> dict[str, Any]:
+  """Expose the durable SOAR result without leaking worker-only retry state."""
+  status_code = row.get("status_code")
+  action_type = str(row.get("action_type") or "")
+  result = {
+    "id": str(row.get("id") or ""),
+    "action_plan_key": str(row.get("action_plan_key") or ""),
+    "playbook_action_id": str(row["playbook_action_id"])
+    if row.get("playbook_action_id") is not None
+    else None,
+    "action_type": action_type,
+    "status": str(row.get("status") or "unknown"),
+    "attempt": int(row.get("attempt") or 0),
+    "max_attempts": int(row.get("max_attempts") or 0),
+    "status_code": int(status_code) if status_code is not None else None,
+    "error_code": str(row["error_code"]) if row.get("error_code") is not None else None,
+    "external_reference": str(row["external_reference"])
+    if row.get("external_reference") is not None
+    else None,
+    "metadata": row.get("metadata") if isinstance(row.get("metadata"), dict) else {},
+    "next_attempt_at": _timestamp(row.get("next_attempt_at")) or None,
+    "last_attempt_at": _timestamp(row.get("last_attempt_at")) or None,
+    "created_at": _timestamp(row.get("created_at")),
+    "updated_at": _timestamp(row.get("updated_at")),
+    "completed_at": _timestamp(row.get("completed_at")) or None,
+  }
+  safe_configuration_keys = {
+    "email_alert": {"template", "channel_ref"},
+    "block_ip": {"provider_ref", "duration_seconds"},
+    "revoke_api_key": {"credential_ref"},
+  }.get(action_type)
+  configuration = row.get("configuration")
+  if safe_configuration_keys is not None and isinstance(configuration, dict):
+    result["configuration"] = {
+      key: value for key, value in configuration.items() if key in safe_configuration_keys
+    }
+  return result
+
+
+def deml_playbook_runs(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  rows = forjd_body.get("runs", forjd_body.get("playbook_runs", forjd_body.get("items")))
   if not isinstance(rows, list):
     return []
   out: list[dict[str, Any]] = []
   for row in rows:
     if not isinstance(row, dict):
       continue
-    severity = str(row.get("severity") or "medium")
-    created = row.get("created_at")
-    created_s = created.isoformat() if hasattr(created, "isoformat") else str(created or "")
+    raw_actions = row.get("actions") if isinstance(row.get("actions"), list) else []
+    actions = [
+      deml_playbook_action_result(action) for action in raw_actions if isinstance(action, dict)
+    ]
     out.append(
       {
         "id": str(row.get("id") or ""),
-        "title": str(row.get("title") or ""),
-        "description": str(row.get("description") or ""),
-        "status": str(row.get("status") or "triage"),
-        "severity": severity,
-        "impact": 0,
-        "likelihood": 0,
-        "cve_id": row.get("cve_id") or "",
-        "customer_id": str(row.get("tenant_id") or ""),
-        "telemetry_context": {},
-        "created_at": created_s,
-        "updated_at": created_s,
+        "playbook_id": str(row.get("playbook_id") or ""),
+        "case_id": str(row.get("case_id") or ""),
+        "status": _label(row.get("status"), "Queued"),
+        "actions_run": int(row.get("actions_run") or row.get("action_count") or len(actions)),
+        "actions": actions,
+        "started_at": _timestamp(row.get("started_at") or row.get("created_at")),
+        "completed_at": _timestamp(row.get("completed_at")) or None,
       }
     )
   return out
+
+
+def deml_playbook_execution(forjd_body: dict[str, Any]) -> dict[str, Any]:
+  run = forjd_body.get("run") if isinstance(forjd_body.get("run"), dict) else forjd_body
+  raw_status = str(run.get("status") or "accepted")
+  actions = run.get("actions") if isinstance(run.get("actions"), list) else []
+  return {
+    "status": raw_status,
+    "message": str(run.get("message") or "Playbook execution accepted"),
+    "actions_run": int(run.get("actions_run") or run.get("action_count") or len(actions)),
+    "run": run,
+  }
+
+
+def deml_siem_signals(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  rows = forjd_body.get("signals", forjd_body.get("items"))
+  if not isinstance(rows, list):
+    return []
+  return [dict(row) for row in rows if isinstance(row, dict)]
+
+
+# --- Vulnerabilities (VulnerabilityService expects a JSON array) ---
+def deml_vulnerability(row: dict[str, Any]) -> dict[str, Any]:
+  vulnerability = row.get("vulnerability") if isinstance(row.get("vulnerability"), dict) else row
+  created = _timestamp(vulnerability.get("created_at"))
+  return {
+    "id": str(vulnerability.get("id") or ""),
+    "title": str(vulnerability.get("title") or ""),
+    "description": str(vulnerability.get("description") or ""),
+    "status": _label(vulnerability.get("status"), "Triage"),
+    "severity": _label(vulnerability.get("severity"), "Medium"),
+    "impact": int(vulnerability.get("impact") or 0),
+    "likelihood": int(vulnerability.get("likelihood") or 0),
+    "cve_id": vulnerability.get("cve_id") or "",
+    "customer_id": str(vulnerability.get("tenant_id") or ""),
+    "telemetry_context": vulnerability.get("telemetry_context")
+    if isinstance(vulnerability.get("telemetry_context"), dict)
+    else {},
+    "created_at": created,
+    "updated_at": _timestamp(vulnerability.get("updated_at")) or created,
+  }
+
+
+def deml_vulnerabilities(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  rows = forjd_body.get("vulnerabilities")
+  if not isinstance(rows, list):
+    return []
+  return [deml_vulnerability(row) for row in rows if isinstance(row, dict)]
 
 
 # --- Exports (analytics ExportJobRow[]) ---
@@ -222,18 +363,19 @@ def deml_export_jobs(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
         "kind": str(job.get("source_kind") or "stream_results"),
         "format": str(job.get("format") or "csv"),
         "status": status,
-        "byte_size": 0,
-        "content_type": "application/octet-stream",
+        "byte_size": int(job.get("byte_size") or 0),
+        "content_type": str(job.get("content_type") or "application/octet-stream"),
         "error": str(job.get("error") or ""),
-        "attempts": 1,
-        "next_attempt_at": None,
-        "retrying": status in {"queued", "running"},
+        "attempts": int(job.get("attempts") or 0),
+        "next_attempt_at": job.get("next_attempt_at"),
+        "retrying": status in {"queued", "running", "retry_scheduled"},
         "created_at": created.isoformat() if hasattr(created, "isoformat") else str(created or ""),
         "completed_at": completed.isoformat()
         if hasattr(completed, "isoformat")
         else (str(completed) if completed else None),
-        "expires_at": None,
-        "download_ready": status == "completed" and bool(job.get("object_key")),
+        "expires_at": job.get("expires_at"),
+        "download_ready": bool(job.get("download_ready"))
+        or (status == "completed" and bool(job.get("object_key"))),
       }
     )
   return out

@@ -66,10 +66,10 @@ Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
   Streaming/processing ↔ FORJD via sealed envelopes + `fjsvc_` tokens.
 - **Storage (DEML-owned):** Postgres (accounts, billing, consent, credentials,
   FORJD tenant mapping, learning progress); sessions in Postgres
-  (`browser_sessions`, `auth_handoff_tokens`); optional Firestore for
-  Firebase-adjacent user features.
-- **Storage (FORJD-owned):** Sealed events, `stream_results`, replay/DLQ,
-  analytics, threat/ML tables.
+  (`browser_sessions`, `auth_handoff_tokens`). Firebase is Auth-only — no
+  Firestore, Storage, or Cloud Functions.
+- **Storage (FORJD-owned):** Sealed events, `stream_results`, report documents,
+  replay/DLQ, analytics, threat/ML tables.
 - **Multi-Tenancy:** Absolute isolation. Explicit
   `company_account → forjd_tenant_id` mapping. UUIDs everywhere.
 - **ML/Intelligence:** Executed in FORJD.

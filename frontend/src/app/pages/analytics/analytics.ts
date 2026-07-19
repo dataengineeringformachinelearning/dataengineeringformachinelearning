@@ -293,6 +293,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public exportBusy = false;
   public exportMessage = '';
   public exportsList: ExportJobRow[] = [];
+  private exportIdempotencyKey: string | null = null;
+  private exportRequestFingerprint = '';
 
   public readonly exportKindOptions: SelectOption[] = [
     { value: 'analytics', label: 'Analytics' },
@@ -598,21 +600,34 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       this.exportDays,
       this.selectedSite,
     );
-    this.http.post<ExportJobRow>(API_ENDPOINTS.EXPORTS.CREATE, payload).subscribe({
-      next: job => {
-        this.exportBusy = false;
-        const jobId = job?.id ?? 'unknown';
-        this.exportMessage = `Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`;
-        this.loadExports();
-        this.cdr.markForCheck();
-      },
-      error: err => {
-        this.exportBusy = false;
-        const detail = err?.error?.detail || err?.error?.message || err?.message || 'Export failed';
-        this.exportMessage = String(detail);
-        this.cdr.markForCheck();
-      },
-    });
+    const fingerprint = JSON.stringify(payload);
+    if (!this.exportIdempotencyKey || this.exportRequestFingerprint !== fingerprint) {
+      this.exportIdempotencyKey = crypto.randomUUID();
+      this.exportRequestFingerprint = fingerprint;
+    }
+    this.http
+      .post<ExportJobRow>(API_ENDPOINTS.EXPORTS.CREATE, {
+        ...payload,
+        idempotency_key: this.exportIdempotencyKey,
+      })
+      .subscribe({
+        next: job => {
+          this.exportBusy = false;
+          this.exportIdempotencyKey = null;
+          this.exportRequestFingerprint = '';
+          const jobId = job?.id ?? 'unknown';
+          this.exportMessage = `Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`;
+          this.loadExports();
+          this.cdr.markForCheck();
+        },
+        error: err => {
+          this.exportBusy = false;
+          const detail =
+            err?.error?.detail || err?.error?.message || err?.message || 'Export failed';
+          this.exportMessage = String(detail);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   public downloadExport(jobId: string): void {

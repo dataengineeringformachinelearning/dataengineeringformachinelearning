@@ -22,6 +22,9 @@ Browser (Vercel deml.app)
 | Liveness      | `GET /api/v1/health`                               |
 | Readiness     | `GET /api/v1/ready` (Postgres + FORJD env present) |
 
+The container supervises Daphne and the durable FORJD report-outbox worker as
+one unit; either child exiting terminates the machine so Fly can replace it.
+
 ## Database (Supabase control plane)
 
 | Setting | `DATABASE_URL` / search path                                                                         |
@@ -73,7 +76,10 @@ Do **not** set `REDIS_URL` / `DRAGONFLY_*` on DEML — sessions live in Postgres
 Streaming cache belongs to FORJD.
 
 Non-secret FORJD defaults are already in `fly.toml` (`FORJD_WRITE_MODE=forjd`,
-`FORJD_READ_MODE=forjd`).
+`FORJD_READ_MODE=forjd`). Set production-sized
+`DEML_HEADLESS_INGEST_RPM`, `DEML_HEADLESS_WRITE_RPM`, and
+`DEML_HEADLESS_READ_RPM` as environment values when their defaults are not
+appropriate.
 
 ## Deploy
 
@@ -81,6 +87,10 @@ Non-secret FORJD defaults are already in `fly.toml` (`FORJD_WRITE_MODE=forjd`,
 cd backend
 fly deploy
 ```
+
+Startup applies Django migrations before binding the HTTP port. Confirm the
+release includes and applies `monitor/0058_bugreport_delivery_outbox` and
+`monitor/0059_headless_rate_limit_bucket`.
 
 Verify:
 

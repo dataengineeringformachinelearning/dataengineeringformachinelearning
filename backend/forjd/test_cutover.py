@@ -19,6 +19,8 @@ User = get_user_model()
 
 def _mapped_user(username: str = "cutover") -> tuple[object, object]:
   user = User.objects.create_user(username=username)
+  user.profile.role = "Operator"
+  user.profile.save(update_fields=["role"])
   tenant_id = uuid4()
   ForjdTenantMapping.objects.create(
     deml_account_id=user.profile.account_id,

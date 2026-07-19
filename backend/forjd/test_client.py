@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from typing import Any, Final
-from unittest.mock import patch
-from uuid import uuid4
+from unittest.mock import AsyncMock, patch
+from uuid import UUID, uuid4
 
 import pytest
 from django.test import override_settings
@@ -15,10 +16,16 @@ SERVICE_TOKEN: Final[str] = "fjsvc_deadbeef_test-secret"  # pragma: allowlist se
 
 
 class _FakeResponse:
-  def __init__(self, body: bytes = b'{"ok": true}') -> None:
-    self.status = 200
+  def __init__(
+    self,
+    body: bytes = b'{"ok": true}',
+    *,
+    status: int = 200,
+    headers: dict[str, str] | None = None,
+  ) -> None:
+    self.status = status
     self.body = body
-    self.headers = {"Content-Type": "application/json"}
+    self.headers = headers or {"Content-Type": "application/json"}
 
   async def __aenter__(self) -> _FakeResponse:
     return self
@@ -47,6 +54,7 @@ class _FakeSession:
     *,
     data: bytes | None,
     headers: dict[str, str],
+    allow_redirects: bool = False,
   ) -> _FakeResponse:
     self.requests.append(
       {
@@ -54,9 +62,36 @@ class _FakeSession:
         "url": url,
         "data": data,
         "headers": headers,
+        "allow_redirects": allow_redirects,
       }
     )
     return _FakeResponse()
+
+
+class _SequenceSession(_FakeSession):
+  def __init__(self, responses: list[_FakeResponse]) -> None:
+    super().__init__()
+    self.responses = responses
+
+  def request(
+    self,
+    method: str,
+    url: str,
+    *,
+    data: bytes | None,
+    headers: dict[str, str],
+    allow_redirects: bool = False,
+  ) -> _FakeResponse:
+    self.requests.append(
+      {
+        "method": method,
+        "url": url,
+        "data": data,
+        "headers": headers,
+        "allow_redirects": allow_redirects,
+      }
+    )
+    return self.responses.pop(0)
 
 
 @pytest.mark.asyncio
@@ -83,6 +118,7 @@ async def test_proxy_uses_opaque_bearer_token_and_optional_request_id() -> None:
   assert request["url"] == "https://forjd.example/api/v1/ingest"
   assert request["headers"]["Authorization"] == f"Bearer {SERVICE_TOKEN}"
   assert request["headers"]["X-Request-ID"] == "629fb242-a45a-4bf1-b092-bd9599a02424"
+  assert request["allow_redirects"] is False
   assert not any(header.startswith("X-DEML-") for header in request["headers"])
 
 
@@ -92,13 +128,13 @@ async def test_proxy_uses_opaque_bearer_token_and_optional_request_id() -> None:
   FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
   FORJD_TENANT_ID=TENANT_ID,
 )
-async def test_proxy_omits_request_id_when_not_provided() -> None:
+async def test_proxy_generates_request_id_when_not_provided() -> None:
   session = _FakeSession()
 
   with patch("forjd.client.aiohttp.ClientSession", return_value=session):
     await ForjdClient().proxy("GET", "/health")
 
-  assert "X-Request-ID" not in session.requests[0]["headers"]
+  assert UUID(session.requests[0]["headers"]["X-Request-ID"])
   assert "Content-Type" not in session.requests[0]["headers"]
 
 
@@ -310,3 +346,106 @@ def test_redact_forjd_secrets_strips_tokens() -> None:
   assert SERVICE_TOKEN not in redacted
   assert "fjsvc_[REDACTED]" in redacted
   assert "Bearer [REDACTED]" in redacted
+
+
+def test_shared_connector_lifecycle_is_scoped_to_its_event_loop() -> None:
+  from forjd.client import _shared_connector, close_forjd_connector
+
+  async def create_and_close_connector():
+    connector = _shared_connector()
+    assert _shared_connector() is connector
+    await close_forjd_connector()
+    return connector
+
+  first_loop = asyncio.new_event_loop()
+  try:
+    first_connector = first_loop.run_until_complete(create_and_close_connector())
+  finally:
+    first_loop.close()
+
+  second_loop = asyncio.new_event_loop()
+  try:
+    second_connector = second_loop.run_until_complete(create_and_close_connector())
+  finally:
+    second_loop.close()
+
+  assert first_connector is not second_connector
+  assert first_connector.closed
+  assert second_connector.closed
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+  FORJD_READ_RETRY_ATTEMPTS=3,
+)
+async def test_idempotent_read_honors_retry_after_and_returns_safe_headers() -> None:
+  session = _SequenceSession(
+    [
+      _FakeResponse(status=503, headers={"Retry-After": "1.5", "X-Request-ID": "upstream-0001"}),
+      _FakeResponse(headers={"X-Request-ID": "upstream-0002", "Location": "/jobs/1"}),
+    ]
+  )
+  with (
+    patch("forjd.client.aiohttp.ClientSession", return_value=session),
+    patch("forjd.client.asyncio.sleep", new_callable=AsyncMock) as sleep,
+  ):
+    response = await ForjdClient().proxy("GET", "/api/v1/projections")
+
+  assert len(session.requests) == 2
+  sleep.assert_awaited_once_with(1.5)
+  assert response.headers == {"X-Request-ID": "upstream-0002", "Location": "/jobs/1"}
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+  FORJD_READ_RETRY_ATTEMPTS=4,
+)
+async def test_write_is_never_retried() -> None:
+  session = _SequenceSession([_FakeResponse(status=503)])
+  with patch("forjd.client.aiohttp.ClientSession", return_value=session):
+    response = await ForjdClient().proxy("POST", "/api/v1/exports", body=b"{}")
+
+  assert response.status == 503
+  assert len(session.requests) == 1
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+  FORJD_RESPONSE_MAX_BYTES=1024,
+)
+async def test_response_size_cap_fails_closed() -> None:
+  session = _SequenceSession([_FakeResponse(body=b"x" * 1025)])
+  with (
+    patch("forjd.client.aiohttp.ClientSession", return_value=session),
+    pytest.raises(ForjdError, match="size limit") as error,
+  ):
+    await ForjdClient().proxy("POST", "/api/v1/exports", body=b"{}")
+
+  assert error.value.status == 502
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+)
+async def test_request_id_shape_is_validated_before_network() -> None:
+  session = _FakeSession()
+  with (
+    patch("forjd.client.aiohttp.ClientSession", return_value=session),
+    pytest.raises(ForjdError, match="8-128") as error,
+  ):
+    await ForjdClient().proxy("GET", "/health", request_id="bad:id")
+
+  assert error.value.status == 400
+  assert session.requests == []

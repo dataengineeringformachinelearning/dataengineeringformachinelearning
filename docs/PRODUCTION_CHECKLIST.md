@@ -15,28 +15,50 @@ Integration contract: [`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md).
 
 ## A. FORJD binding
 
-| Step | Action                                                        |
-| ---- | ------------------------------------------------------------- |
-| A1   | Confirm FORJD SQL + `/ready` healthy                          |
-| A2   | Map account → FORJD tenant + secret ref                       |
-| A3   | Set `FORJD_API_URL`, `FORJD_SERVICE_TOKEN`, `FORJD_TENANT_ID` |
-| A4   | Set `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd`         |
+| Step | Action                                                                                                                                                                                                                                                   |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A1   | Apply FORJD SQL `003`–`025`; confirm migration checksums and `/ready` (including private object storage and worker contracts)                                                                                                                            |
+| A2   | Map account → FORJD tenant + secret ref                                                                                                                                                                                                                  |
+| A3   | Set `FORJD_API_URL`, `FORJD_SERVICE_TOKEN`, `FORJD_TENANT_ID`                                                                                                                                                                                            |
+| A4   | Set `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd`                                                                                                                                                                                                    |
+| A5   | Set `FORJD_REQUIRED_CONTRACT_VERSION=1.0`; verify `/api/v1/forjd/capabilities` is `ready`                                                                                                                                                                |
+| A6   | Remint from FORJD canonical defaults; verify ingest, cases, playbooks/runs, SIEM, vulnerabilities, replay/DLQ, reports, exports, status, analytics, ML-read, and threat-intel-read scopes; include `tenants:erase` only when account deletion is enabled |
 
 ## B. Fly + Vercel
 
-| Step | Action                                                                    |
-| ---- | ------------------------------------------------------------------------- |
-| B1   | Deploy Django (`docs/FLY.md`)                                             |
-| B2   | Deploy Angular (`docs/VERCEL.md`, `BACKEND_URL=https://backend.deml.app`) |
-| B3   | Confirm Firebase Auth → Django only                                       |
+| Step | Action                                                                                                            |
+| ---- | ----------------------------------------------------------------------------------------------------------------- |
+| B1   | Deploy Django (`docs/FLY.md`); confirm `monitor` migrations `0058`–`0059` and the supervised report-outbox worker |
+| B2   | Deploy Angular (`docs/VERCEL.md`, `BACKEND_URL=https://backend.deml.app`)                                         |
+| B3   | Confirm Firebase Auth → Django only                                                                               |
+| B4   | Confirm headless keys use `deml_…` via `X-API-Key` or Bearer and are accepted only on integration routes          |
+| B5   | Keep `ENABLE_LEGACY_PLAINTEXT_TELEMETRY=false`; verify the browser has no legacy queue                            |
+| B6   | Set and load-test `DEML_HEADLESS_{INGEST,WRITE,READ}_RPM` for the production database size                        |
 
 ## C. Smoke
 
 1. Login → dashboard loads via Django BFF.
-2. Sealed ingest → projections list via FORJD.
-3. Account deletion calls FORJD erase before local teardown.
+2. `GET /api/v1/forjd/capabilities` reports contract `1.0`, `status=ready`, and an `X-FORJD-Request-ID`.
+3. Sealed ingest → projections list via FORJD; no Firebase/API-key credential appears in the upstream request.
+4. SIEM signal → correlated case → case update; playbook execution produces a visible run.
+5. Vulnerability create/update and compliance SOC read preserve Angular response contracts.
+6. Create an idempotent export, poll its durable job through DEML, and obtain a short-lived signed download URL after completion.
+7. Account deletion calls FORJD erase before local teardown.
 
-## D. Separation invariants
+## D. RBAC and degradation
+
+| Step | Assertion                                                                                                                                      |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1   | Viewer reads succeed and every write returns `403 forjd_action_forbidden`                                                                      |
+| D2   | Operator can ingest, update cases/vulnerabilities, replay/DLQ, create exports, submit SIEM signals, and execute approved playbooks             |
+| D3   | Only Security Admin can administer playbooks/status/integrations/models and destructive resources                                              |
+| D4   | Privileged attempts and results appear in DEML audit logs with local/upstream request ids and no bodies or credentials                         |
+| D5   | In `FORJD_READ_MODE=forjd`, remove a mapping or simulate an upstream 5xx and verify typed `503 forjd_degraded`, never empty `200`              |
+| D6   | In an intentional `dual` drill, verify empty fallback responses identify `deml_forjd_fallback`                                                 |
+| D7   | Verify every write verb (`POST`, `PUT`, `PATCH`, `DELETE`) is blocked when `FORJD_WRITE_MODE=off`                                              |
+| D8   | Exercise per-credential and per-account headless quotas; verify `429`, `Retry-After`, and `X-RateLimit-*` without one account starving another |
+
+## E. Separation invariants
 
 | Concern                     | DEML                                  | FORJD                                          |
 | --------------------------- | ------------------------------------- | ---------------------------------------------- |

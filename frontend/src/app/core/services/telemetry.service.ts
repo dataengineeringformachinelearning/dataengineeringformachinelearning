@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { API_ENDPOINTS } from '../constants/api.constants';
+import { environment } from '../../../environments/environment';
 
 export interface TelemetryPayload {
   url: string;
@@ -12,47 +13,57 @@ export interface TelemetryPayload {
   is_active: boolean;
 }
 
+interface QueuedTelemetry {
+  queuedAt: number;
+  payload: TelemetryPayload;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class TelemetryService implements OnDestroy {
   private readonly STORAGE_KEY = 'offline_telemetry_queue';
+  private readonly MAX_QUEUE_EVENTS = 100;
+  private readonly MAX_QUEUE_AGE_MS = 24 * 60 * 60 * 1000;
+  private readonly MAX_QUEUE_CHARS = 256 * 1024;
+  private readonly enabled = environment.enableLegacyPlaintextTelemetry;
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
   private http = inject(HttpClient);
+  private syncInFlight = false;
 
   private onlineListener = () => {
-    this.syncOfflineQueue();
+    void this.syncOfflineQueue();
   };
 
   constructor() {
-    // Listen for network becoming online to sync any queued offline telemetry
-    if (this.isBrowser) {
+    if (this.isBrowser && this.enabled) {
       window.addEventListener('online', this.onlineListener);
+      this.persistQueue(this.readQueue());
+    } else if (this.isBrowser) {
+      // Purge payloads left by earlier releases now that plaintext reporting is off.
+      this.removeQueue();
     }
   }
 
   ngOnDestroy(): void {
-    if (this.isBrowser) {
+    if (this.isBrowser && this.enabled) {
       window.removeEventListener('online', this.onlineListener);
     }
   }
 
   public reportEndpointStatus(payload: TelemetryPayload): void {
-    if (!this.isBrowser) {
-      // Do not send telemetry during SSR prerendering
+    if (!this.isBrowser || !this.enabled) {
       return;
     }
 
     if (navigator.onLine) {
       this.sendPayload(payload).subscribe({
-        error: err => {
-          console.error('Failed to send telemetry online, queueing offline.', err);
+        error: () => {
           this.queueForOffline(payload);
         },
       });
     } else {
-      console.warn('Network offline. Queueing telemetry for later sync.');
       this.queueForOffline(payload);
     }
   }
@@ -62,59 +73,81 @@ export class TelemetryService implements OnDestroy {
   }
 
   private queueForOffline(payload: TelemetryPayload): void {
-    if (!this.isBrowser) return;
-
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    const queue: TelemetryPayload[] = (() => {
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          return Array.isArray(parsed) ? parsed : [];
-        } catch {
-          return [];
-        }
-      }
-      return [];
-    })();
-    queue.push(payload);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
+    if (!this.isBrowser || !this.enabled) return;
+    const queue = this.readQueue();
+    queue.push({ queuedAt: Date.now(), payload });
+    this.persistQueue(queue);
   }
 
   private async syncOfflineQueue(): Promise<void> {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser || !this.enabled || this.syncInFlight) return;
+    const queue = this.readQueue();
+    if (queue.length === 0) {
+      this.removeQueue();
+      return;
+    }
 
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (!stored) return;
-
-    const queue: TelemetryPayload[] = (() => {
-      try {
-        const parsed = JSON.parse(stored);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
+    this.syncInFlight = true;
+    const remaining: QueuedTelemetry[] = [];
+    try {
+      // Sequential replay avoids a reconnect burst against a deprecated endpoint.
+      for (const entry of queue) {
+        try {
+          await firstValueFrom(this.sendPayload(entry.payload));
+        } catch {
+          remaining.push(entry);
+        }
       }
-    })();
+      this.persistQueue(remaining);
+    } finally {
+      this.syncInFlight = false;
+    }
+  }
 
-    if (queue.length === 0) return;
+  private readQueue(): QueuedTelemetry[] {
+    if (!this.isBrowser || !this.enabled) return [];
+    try {
+      const parsed: unknown = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '[]');
+      if (!Array.isArray(parsed)) return [];
+      const cutoff = Date.now() - this.MAX_QUEUE_AGE_MS;
+      return parsed
+        .filter(
+          (entry): entry is QueuedTelemetry =>
+            typeof entry === 'object' &&
+            entry !== null &&
+            typeof (entry as QueuedTelemetry).queuedAt === 'number' &&
+            (entry as QueuedTelemetry).queuedAt >= cutoff &&
+            typeof (entry as QueuedTelemetry).payload === 'object' &&
+            (entry as QueuedTelemetry).payload !== null,
+        )
+        .slice(-this.MAX_QUEUE_EVENTS);
+    } catch {
+      return [];
+    }
+  }
 
-    console.log(`Syncing ${queue.length} offline telemetry events...`);
+  private persistQueue(entries: QueuedTelemetry[]): void {
+    if (!this.isBrowser || !this.enabled) return;
+    const queue = entries.slice(-this.MAX_QUEUE_EVENTS);
+    while (queue.length > 0 && JSON.stringify(queue).length > this.MAX_QUEUE_CHARS) {
+      queue.shift();
+    }
+    if (queue.length === 0) {
+      this.removeQueue();
+      return;
+    }
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
+    } catch {
+      // Storage may be unavailable or full; telemetry must never affect the app flow.
+    }
+  }
 
-    const newQueue: TelemetryPayload[] = [];
-    const promises = queue.map(async payload => {
-      try {
-        await firstValueFrom(this.sendPayload(payload));
-      } catch (err) {
-        console.error('Failed to sync offline telemetry payload:', err);
-        newQueue.push(payload);
-      }
-    });
-
-    await Promise.all(promises);
-
-    if (newQueue.length === 0) {
+  private removeQueue(): void {
+    try {
       localStorage.removeItem(this.STORAGE_KEY);
-    } else {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newQueue));
+    } catch {
+      // Storage may be unavailable; the reporting path remains best effort.
     }
   }
 }

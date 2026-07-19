@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import os
+import signal
 import subprocess
 import sys
+import time
 
 
 def main() -> None:
@@ -39,10 +41,49 @@ def main() -> None:
 
   # Prefer venv daphne binary; fall back to python -m daphne (distroless-safe).
   daphne_bin = "/opt/venv/bin/daphne"
+  server_command: list[str]
   if os.path.exists(daphne_bin):
-    subprocess.run([daphne_bin, *daphne_args], check=True)
+    server_command = [daphne_bin, *daphne_args]
   else:
-    subprocess.run([python_bin, "-m", "daphne", *daphne_args], check=True)
+    server_command = [python_bin, "-m", "daphne", *daphne_args]
+
+  # Durable issue-report outbox delivery is part of the control-plane boundary.
+  # FORJD's client_report_id contract makes overlapping machine retries safe.
+  worker_command = [
+    python_bin,
+    "manage.py",
+    "reconcile_forjd_reports",
+    "--watch",
+    "--interval",
+    "30",
+  ]
+  server = subprocess.Popen(server_command)
+  worker = subprocess.Popen(worker_command)
+  children = (server, worker)
+
+  def _shutdown(_signum: int, _frame: object) -> None:
+    for child in children:
+      if child.poll() is None:
+        child.terminate()
+    raise SystemExit(0)
+
+  signal.signal(signal.SIGTERM, _shutdown)
+  signal.signal(signal.SIGINT, _shutdown)
+  try:
+    while True:
+      server_status = server.poll()
+      worker_status = worker.poll()
+      if server_status is not None or worker_status is not None:
+        for child in children:
+          if child.poll() is None:
+            child.terminate()
+        exit_code = server_status if server_status is not None else worker_status
+        raise SystemExit(exit_code or 1)
+      time.sleep(1)
+  finally:
+    for child in children:
+      if child.poll() is None:
+        child.terminate()
 
 
 if __name__ == "__main__":

@@ -243,7 +243,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Full-surface blocking loader for async route transitions.",
           preview: `<div class="viking-loading-overlay-demo viking-card">
   <span class="viking-spinner-static" role="status" aria-label="Loading dashboard"></span>
-  <p class="viking-text-muted">Materializing Firestore projections…</p>
+  <p class="viking-text-muted">Materializing FORJD projections…</p>
 </div>`,
           selector: "viking-loading-overlay",
           tags: ["angular"],

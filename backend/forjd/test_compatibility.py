@@ -15,6 +15,8 @@ User = get_user_model()
 
 def _mapped_user(username: str = "learner") -> UUID:
   user = User.objects.create_user(username=username)
+  user.profile.role = "Operator"
+  user.profile.save(update_fields=["role"])
   tenant_id = uuid4()
   ForjdTenantMapping.objects.create(
     deml_account_id=user.profile.account_id,
@@ -270,9 +272,69 @@ def test_public_status_page_unwraps_forjd_response_for_existing_angular_shape(
     response = client.get("/api/v1/system-status/status_pages/slug/public-page")
 
   assert response.status_code == 200
-  assert response.json() == {"id": "page-1", "slug": "public-page", "title": "Public"}
+  assert response.json() == {
+    "id": "page-1",
+    "slug": "public-page",
+    "title": "Public",
+    "services": [],
+    "incidents": [],
+  }
   mock_client.assert_called_once_with(use_service_auth=False)
   assert mock_proxy.await_args.args == ("GET", "/api/v1/status/pages/slug/public-page")
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient")
+def test_public_status_page_reshapes_embedded_services_for_angular(
+  mock_client: MagicMock,
+  client: Client,
+) -> None:
+  """Anonymous visitors get Angular-shaped services/incidents inline."""
+  mock_proxy = AsyncMock()
+  mock_proxy.return_value = ForjdResponse(
+    status=200,
+    body=json.dumps(
+      {
+        "ok": True,
+        "page": {
+          "id": "page-1",
+          "slug": "public-page",
+          "title": "Public",
+          "services": [
+            {
+              "id": "svc-1",
+              "name": "deml.app",
+              "status": "operational",
+              "description": "Angular application",
+              "sort_order": 1,
+              "updated_at": "2026-07-19T00:00:00+00:00",
+            }
+          ],
+          "incidents": [],
+        },
+      }
+    ).encode(),
+    content_type="application/json",
+  )
+  mock_client.return_value.proxy = mock_proxy
+
+  with override_settings(FORJD_SERVICE_TOKEN="", FORJD_TENANT_ID=""):
+    response = client.get("/api/v1/system-status/status_pages/slug/public-page")
+
+  assert response.status_code == 200
+  payload = response.json()
+  assert payload["services"] == [
+    {
+      "id": "svc-1",
+      "name": "deml.app",
+      "url": "Angular application",
+      "status_page_id": "page-1",
+      "created_at": "2026-07-19T00:00:00+00:00",
+      "status": "operational",
+      "sla": None,
+    }
+  ]
+  assert payload["incidents"] == []
 
 
 @pytest.mark.django_db
@@ -291,7 +353,8 @@ def test_public_status_page_rejects_invalid_forjd_response(
 
   response = client.get("/api/v1/system-status/status_pages/slug/public-page")
 
-  assert response.status_code == 502
+  assert response.status_code == 503
+  assert response.json()["code"] == "forjd_degraded"
   assert response.json()["source"] == "forjd"
 
 
@@ -315,7 +378,9 @@ def test_session_and_replay_routes_require_tenant_mapping(
   path: str,
 ) -> None:
   """Wired adapters still fail closed without an account→FORJD tenant mapping."""
-  User.objects.create_user(username="learner")
+  user = User.objects.create_user(username="learner")
+  user.profile.role = "Security Admin"
+  user.profile.save(update_fields=["role"])
 
   response = getattr(client, method)(
     path,
@@ -331,7 +396,7 @@ def test_session_and_replay_routes_require_tenant_mapping(
 
 @pytest.mark.django_db
 @patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
-def test_unmapped_domain_gets_degrade_to_empty_stable(
+def test_unmapped_domain_gets_fail_closed_in_steady_mode(
   mock_proxy: AsyncMock,
   client: Client,
 ) -> None:
@@ -346,11 +411,10 @@ def test_unmapped_domain_gets_degrade_to_empty_stable(
     HTTP_AUTHORIZATION="Bearer mock-token-learner-learner@example.com",
   )
 
-  # Read-only GETs degrade to empty-stable 200 (no tenant data leaks) so
-  # dashboards stay up; unshipped system-status is likewise empty-stable.
-  assert response.status_code == 200
-  assert response.json() == []
-  assert status_response.status_code == 200
+  assert response.status_code == 503
+  assert response.json()["code"] == "forjd_degraded"
+  assert status_response.status_code == 501
+  assert status_response.json()["code"] == "forjd_capability_unavailable"
   mock_proxy.assert_not_awaited()
 
 
@@ -358,12 +422,10 @@ def test_unmapped_domain_gets_degrade_to_empty_stable(
 @pytest.mark.parametrize(
   ("method", "path", "expected_status"),
   [
-    # Read-only GETs degrade to empty-stable 200 without a tenant mapping.
-    ("get", "/api/v1/analytics/overview", 200),
-    ("get", "/api/v1/exports/", 200),
-    # Writes still fail closed.
-    ("post", "/api/v1/analytics/aggregate", 501),  # write still blocked
-    ("post", "/api/v1/integrations/security-alert", 503),  # wired; needs mapping + write
+    ("get", "/api/v1/analytics/overview", 503),
+    ("get", "/api/v1/exports/", 503),
+    ("post", "/api/v1/analytics/aggregate", 403),
+    ("post", "/api/v1/integrations/security-alert", 403),
   ],
 )
 @patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
@@ -384,7 +446,6 @@ def test_wired_domain_routes_gate_by_method_without_tenant_mapping(
   )
 
   assert response.status_code == expected_status
-  if expected_status == 501:
-    assert response.json()["code"] == "forjd_capability_unavailable"
-  # Empty-stable reads never touch the upstream FORJD client.
+  if expected_status == 403:
+    assert response.json()["code"] == "forjd_action_forbidden"
   mock_proxy.assert_not_awaited()

@@ -15,7 +15,21 @@
           "200": {
             "description": "OK"
           }
-        }
+        },
+        "description": "Liveness \u2014 process is up (Fly/Railway health checks)."
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "operationId": "config_api_api_ready",
+        "summary": "Api Ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Readiness \u2014 Postgres reachable; FORJD credentials present (not a live FORJD probe)."
       }
     },
     "/api/v1/auth/register": {
@@ -906,6 +920,18 @@
       },
       "IssueReportPayload": {
         "properties": {
+          "client_report_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Report Id"
+          },
           "user_description": {
             "title": "User Description",
             "type": "string"
@@ -1056,7 +1082,7 @@
             "items": {
               "$ref": "#/components/schemas/SealedEvent"
             },
-            "maxItems": 100,
+            "maxItems": 25,
             "minItems": 1,
             "title": "Events",
             "type": "array"

@@ -7,17 +7,27 @@
 {% block meta_keywords %}DEML learning platform, Django user API, FORJD{% endblock %}
 
 {% block content %}
-<main class="page-inner-wrapper">
-  <section class="viking-section" aria-labelledby="api-heading">
-    <viking-card>
-      <h1 id="api-heading">DEML Learning Platform API</h1>
-      <p>
-        This service owns user identity, account settings, subscriptions, consent, and
-        user-originated learning interactions. Encrypted intake, processing, analytics, projections,
-        and machine learning are handled by FORJD.
-      </p>
-      <p><a href="/api/v1/docs">Open API documentation</a></p>
-    </viking-card>
+<main class="page-inner-wrapper backend-landing-shell" id="main-content" tabindex="-1">
+  <section class="viking-section backend-hero" aria-labelledby="api-heading">
+    <div class="backend-hero-header">
+      <p class="viking-label">User Control Plane · Secured</p>
+      <h1 id="api-heading" class="viking-heading-xl">DEML Learning Platform API</h1>
+    </div>
+    <p class="viking-text-muted backend-hero-lead">
+      This service owns user identity, account settings, subscriptions, consent, and
+      user-originated learning interactions. Encrypted intake, processing, analytics,
+      projections, and machine learning are handled by FORJD.
+    </p>
+    <div class="backend-hero-cta">
+      <a class="viking-btn viking-btn-primary" href="/api/v1/docs">
+        <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
+        Open Swagger UI
+      </a>
+      <a class="viking-btn viking-btn-outline" href="/documentation">
+        <span data-viking-icon="file" data-viking-icon-size="16" aria-hidden="true"></span>
+        Documentation
+      </a>
+    </div>
   </section>
 </main>
 {% endblock %}

@@ -13,13 +13,28 @@ converters.get_converters.cache_clear()
 
 from forjd.views import (
   analytics_overview_proxy,
+  analytics_tenants_proxy,
+  compliance_soc_proxy,
   dlq_retry_proxy,
+  export_detail_proxy,
+  export_download_proxy,
   exports_collection_proxy,
+  forjd_capabilities_proxy,
+  incident_case_detail_proxy,
+  incident_cases_proxy,
+  ingest_processing_status_proxy,
   integrations_security_alert_proxy,
   ml_latest_proxy,
   native_forjd_proxy,
   native_status_page_proxy,
+  playbook_action_ack_proxy,
+  playbook_action_retry_proxy,
+  playbook_detail_proxy,
+  playbook_execute_proxy,
+  playbook_runs_proxy,
+  playbooks_proxy,
   session_revoke_proxy,
+  siem_signals_proxy,
   status_incident_delete_proxy,
   status_page_detail_proxy,
   status_page_incidents_proxy,
@@ -28,6 +43,7 @@ from forjd.views import (
   status_service_delete_proxy,
   unsupported_forjd_proxy,
   vulnerabilities_list_proxy,
+  vulnerability_detail_proxy,
 )
 from monitor.views import cookie_consent, newsletter
 
@@ -40,9 +56,15 @@ sitemaps = {
 
 urlpatterns = [
   path("", views.home, name="home"),
+  path("documentation", views.documentation, name="documentation"),
   path("assets/<path:path>", views.serve_asset, name="serve_asset"),
   path("api/v1/telemetry/cookie-consent", cookie_consent, name="cookie-consent"),
   path("api/v1/telemetry/subscribe", newsletter, name="newsletter-subscribe"),
+  path(
+    "api/v1/forjd/capabilities",
+    forjd_capabilities_proxy,
+    name="forjd-capabilities-adapter",
+  ),
   path(
     "api/v1/system-status/health",
     native_forjd_proxy,
@@ -104,6 +126,61 @@ urlpatterns = [
     name="forjd-analytics-overview-adapter",
   ),
   path(
+    "api/v1/analytics/tenants",
+    analytics_tenants_proxy,
+    name="forjd-analytics-tenants-adapter",
+  ),
+  path(
+    "api/v1/analytics/incidents/<str:case_id>",
+    incident_case_detail_proxy,
+    name="forjd-incident-case-detail-adapter",
+  ),
+  path(
+    "api/v1/analytics/incidents",
+    incident_cases_proxy,
+    name="forjd-incident-cases-adapter",
+  ),
+  path(
+    "api/v1/analytics/playbooks/<str:playbook_id>/execute",
+    playbook_execute_proxy,
+    name="forjd-playbook-execute-adapter",
+  ),
+  path(
+    "api/v1/analytics/playbooks/<str:playbook_id>",
+    playbook_detail_proxy,
+    name="forjd-playbook-detail-adapter",
+  ),
+  path(
+    "api/v1/analytics/playbooks",
+    playbooks_proxy,
+    name="forjd-playbooks-adapter",
+  ),
+  path(
+    "api/v1/analytics/playbook-runs/<str:run_id>/actions/<str:action_result_id>/ack",
+    playbook_action_ack_proxy,
+    name="forjd-playbook-action-ack-adapter",
+  ),
+  path(
+    "api/v1/analytics/playbook-runs/<str:run_id>/actions/<str:action_result_id>/retry",
+    playbook_action_retry_proxy,
+    name="forjd-playbook-action-retry-adapter",
+  ),
+  path(
+    "api/v1/analytics/playbook-runs",
+    playbook_runs_proxy,
+    name="forjd-playbook-runs-adapter",
+  ),
+  path(
+    "api/v1/siem/signals",
+    siem_signals_proxy,
+    name="forjd-siem-signals-adapter",
+  ),
+  path(
+    "api/v1/ml/compliance/soc-status",
+    compliance_soc_proxy,
+    name="forjd-compliance-soc-adapter",
+  ),
+  path(
     "api/v1/ingest",
     native_forjd_proxy,
     {
@@ -122,6 +199,11 @@ urlpatterns = [
       "tenant_binding": "sealed_batch",
     },
     name="forjd-sealed-ingest-batch-adapter",
+  ),
+  path(
+    "api/v1/ingest/processing/<str:batch_id>",
+    ingest_processing_status_proxy,
+    name="forjd-ingest-processing-status-adapter",
   ),
   path(
     "api/v1/ingest/events",
@@ -214,9 +296,24 @@ urlpatterns = [
     name="forjd-dlq-retry-adapter",
   ),
   path(
+    "api/v1/agent/vulnerabilities/<str:vulnerability_id>",
+    vulnerability_detail_proxy,
+    name="forjd-vulnerability-detail-adapter",
+  ),
+  path(
     "api/v1/agent/vulnerabilities",
     vulnerabilities_list_proxy,
     name="forjd-vulnerabilities-adapter",
+  ),
+  path(
+    "api/v1/exports/<str:export_id>/download",
+    export_download_proxy,
+    name="forjd-export-download-adapter",
+  ),
+  path(
+    "api/v1/exports/<str:export_id>",
+    export_detail_proxy,
+    name="forjd-export-detail-adapter",
   ),
   path(
     "api/v1/exports/",

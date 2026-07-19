@@ -22,6 +22,19 @@ def home(request: HttpRequest) -> HttpResponse:
   )
 
 
+def documentation(request: HttpRequest) -> HttpResponse:
+  """Single Documentation page — API reference plus Blue Notes field log."""
+  return render(
+    request,
+    "documentation.html",
+    {
+      "debug": settings.DEBUG,
+      "frontend_url": settings.FRONTEND_URL.rstrip("/"),
+      "marketing_url": settings.MARKETING_URL.rstrip("/"),
+    },
+  )
+
+
 def custom_404(request: HttpRequest, exception: Exception) -> HttpResponse:
   frontend_url = settings.FRONTEND_URL.rstrip("/")
   return render(
@@ -52,6 +65,7 @@ def robots_txt(request: HttpRequest) -> HttpResponse:
   lines = [
     "User-agent: *",
     "Allow: /",
+    "Allow: /documentation",
     "Allow: /api/v1/docs",
     "Disallow: /api/",
     "",

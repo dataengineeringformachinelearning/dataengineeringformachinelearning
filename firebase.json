@@ -1,10 +1,4 @@
 {
-  "firestore": [
-    {
-      "database": "deml",
-      "rules": "firestore.rules"
-    }
-  ],
   "hosting": [
     {
       "target": "marketing",

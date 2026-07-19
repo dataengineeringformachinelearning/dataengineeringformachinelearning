@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TelemetryService, TelemetryPayload } from './telemetry.service';
 import { API_ENDPOINTS } from '../constants/api.constants';
+import { environment } from '../../../environments/environment';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('TelemetryService', () => {
@@ -11,6 +12,7 @@ describe('TelemetryService', () => {
   let store: Record<string, string>;
 
   beforeEach(() => {
+    environment.enableLegacyPlaintextTelemetry = true;
     store = {};
 
     // Stub localStorage
@@ -42,6 +44,7 @@ describe('TelemetryService', () => {
   afterEach(() => {
     httpMock.verify();
     vi.unstubAllGlobals();
+    environment.enableLegacyPlaintextTelemetry = false;
   });
 
   it('should be created', () => {
@@ -86,7 +89,8 @@ describe('TelemetryService', () => {
     expect(queueData).toBeTruthy();
     const parsed = JSON.parse(queueData!);
     expect(parsed.length).toBe(1);
-    expect(parsed[0]).toEqual(payload);
+    expect(parsed[0].payload).toEqual(payload);
+    expect(parsed[0].queuedAt).toEqual(expect.any(Number));
   });
 
   it('should queue payload for offline when HTTP send fails', () => {
@@ -108,7 +112,7 @@ describe('TelemetryService', () => {
     expect(queueData).toBeTruthy();
     const parsed = JSON.parse(queueData!);
     expect(parsed.length).toBe(1);
-    expect(parsed[0]).toEqual(payload);
+    expect(parsed[0].payload).toEqual(payload);
   });
 
   it('should sync offline queue when coming online', async () => {
@@ -128,23 +132,98 @@ describe('TelemetryService', () => {
     };
 
     // Pre-populate queue
-    localStorage.setItem('offline_telemetry_queue', JSON.stringify([payload1, payload2]));
+    const queuedAt = Date.now();
+    localStorage.setItem(
+      'offline_telemetry_queue',
+      JSON.stringify([
+        { queuedAt, payload: payload1 },
+        { queuedAt, payload: payload2 },
+      ]),
+    );
 
     // Trigger online event listener
     const event = new Event('online');
     window.dispatchEvent(event);
 
-    const reqs = httpMock.match(API_ENDPOINTS.TELEMETRY.ENDPOINTS);
-    expect(reqs.length).toBe(2);
-
-    // Flush both successfully
-    reqs[0].flush({});
-    reqs[1].flush({});
+    const first = httpMock.expectOne(API_ENDPOINTS.TELEMETRY.ENDPOINTS);
+    first.flush({});
+    await Promise.resolve();
+    const second = httpMock.expectOne(API_ENDPOINTS.TELEMETRY.ENDPOINTS);
+    second.flush({});
 
     // Wait for the async queue processing to finish
     await new Promise(resolve => setTimeout(resolve, 10));
 
     // Verify queue is cleared
+    expect(localStorage.getItem('offline_telemetry_queue')).toBeNull();
+  });
+
+  it('bounds the legacy queue and drops expired entries', () => {
+    vi.stubGlobal('navigator', { onLine: false });
+    const payload: TelemetryPayload = {
+      url: 'http://test-endpoint.com',
+      status_code: 200,
+      response_time_ms: 100,
+      ip_address: '0.0.0.0',
+      is_active: true,
+    };
+
+    for (let index = 0; index < 105; index += 1) {
+      service.reportEndpointStatus({ ...payload, url: `${payload.url}/${index}` });
+    }
+    const bounded = JSON.parse(localStorage.getItem('offline_telemetry_queue')!);
+    expect(bounded).toHaveLength(100);
+
+    localStorage.setItem(
+      'offline_telemetry_queue',
+      JSON.stringify([{ queuedAt: Date.now() - 25 * 60 * 60 * 1000, payload }]),
+    );
+    window.dispatchEvent(new Event('online'));
+    expect(localStorage.getItem('offline_telemetry_queue')).toBeNull();
+    httpMock.expectNone(API_ENDPOINTS.TELEMETRY.ENDPOINTS);
+  });
+});
+
+describe('TelemetryService disabled-by-default lane', () => {
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    environment.enableLegacyPlaintextTelemetry = false;
+    const store: Record<string, string> = {
+      offline_telemetry_queue: JSON.stringify([{ legacy: 'plaintext' }]),
+    };
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => store[key] || null,
+      setItem: (key: string, value: string) => {
+        store[key] = value;
+      },
+      removeItem: (key: string) => {
+        delete store[key];
+      },
+    });
+    vi.stubGlobal('navigator', { onLine: true });
+    TestBed.configureTestingModule({
+      providers: [TelemetryService, provideHttpClient(), provideHttpClientTesting()],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+    vi.unstubAllGlobals();
+  });
+
+  it('purges legacy plaintext data and performs no HTTP call', () => {
+    const service = TestBed.inject(TelemetryService);
+    service.reportEndpointStatus({
+      url: 'https://example.test',
+      status_code: 200,
+      response_time_ms: 10,
+      ip_address: '0.0.0.0',
+      is_active: true,
+    });
+
+    httpMock.expectNone(API_ENDPOINTS.TELEMETRY.ENDPOINTS);
     expect(localStorage.getItem('offline_telemetry_queue')).toBeNull();
   });
 });

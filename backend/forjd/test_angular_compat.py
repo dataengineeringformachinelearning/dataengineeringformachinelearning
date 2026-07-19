@@ -14,6 +14,8 @@ from forjd.angular_compat import (
   deml_analytics_overview,
   deml_export_jobs,
   deml_ml_latest,
+  deml_playbook_action_result,
+  deml_playbook_runs,
   deml_status_pages,
   deml_vulnerabilities,
   empty_capability_envelope,
@@ -84,7 +86,7 @@ def test_deml_vulnerabilities_maps_array() -> None:
     }
   )
   assert rows[0]["id"] == "v1"
-  assert rows[0]["severity"] == "high"
+  assert rows[0]["severity"] == "High"
   assert rows[0]["customer_id"] == "t1"
 
 
@@ -96,6 +98,76 @@ def test_deml_export_jobs_and_ml_latest() -> None:
   scores = deml_ml_latest({"scores": [{"id": "s1", "model_id": "m1", "score": 0.9}]})
   assert isinstance(scores, list)
   assert len(scores) >= 1
+
+
+def test_deml_playbook_runs_preserves_safe_action_results() -> None:
+  runs = deml_playbook_runs(
+    {
+      "runs": [
+        {
+          "id": "run-1",
+          "playbook_id": "playbook-1",
+          "status": "retrying",
+          "created_at": "2026-07-19T12:00:00Z",
+          "actions": [
+            {
+              "id": "action-result-1",
+              "action_plan_key": "0000:webhook",
+              "playbook_action_id": "action-1",
+              "action_type": "webhook",
+              "status": "retry_scheduled",
+              "attempt": 2,
+              "max_attempts": 5,
+              "status_code": 503,
+              "error_code": "upstream_error",
+              "external_reference": None,
+              "metadata": {"retry_after_seconds": 30},
+              "next_attempt_at": "2026-07-19T12:00:30Z",
+              "last_attempt_at": "2026-07-19T12:00:00Z",
+              "created_at": "2026-07-19T11:59:00Z",
+              "updated_at": "2026-07-19T12:00:00Z",
+              "completed_at": None,
+              "configuration_snapshot": {"url": "https://hooks.example"},
+              "lease_owner": "worker-secret",
+              "lease_expires_at": "2026-07-19T12:00:30Z",
+            }
+          ],
+        }
+      ]
+    }
+  )
+
+  assert runs[0]["actions_run"] == 1
+  assert runs[0]["status"] == "Retrying"
+  action = runs[0]["actions"][0]
+  assert action["action_plan_key"] == "0000:webhook"
+  assert action["status"] == "retry_scheduled"
+  assert action["attempt"] == 2
+  assert action["max_attempts"] == 5
+  assert action["next_attempt_at"] == "2026-07-19T12:00:30Z"
+  assert action["metadata"] == {"retry_after_seconds": 30}
+  assert "configuration_snapshot" not in action
+  assert "lease_owner" not in action
+  assert "lease_expires_at" not in action
+
+
+def test_deml_control_plane_action_preserves_only_safe_configuration() -> None:
+  action = deml_playbook_action_result(
+    {
+      "id": "action-result-2",
+      "action_type": "block_ip",
+      "status": "awaiting_ack",
+      "configuration": {
+        "provider_ref": "edge-waf",
+        "duration_seconds": 3600,
+        "unexpected": "drop-me",
+      },
+    }
+  )
+  assert action["configuration"] == {
+    "provider_ref": "edge-waf",
+    "duration_seconds": 3600,
+  }
 
 
 @pytest.mark.django_db

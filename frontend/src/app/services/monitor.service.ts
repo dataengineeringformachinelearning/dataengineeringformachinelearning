@@ -30,6 +30,9 @@ export interface StatusPageData {
   p99_latency?: number;
   total_requests?: number;
   threats_detected_24h?: number;
+  /** Embedded on the public slug payload so anonymous visitors see services. */
+  services?: MonitoredServiceData[];
+  incidents?: IncidentData[];
 }
 
 export interface MonitoredServiceData {
@@ -60,6 +63,18 @@ export class MonitorService {
 
   public incidentsMap = signal<Record<string, IncidentData[]>>({});
   public servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
+
+  /** Seed maps from a public slug payload (embedded arrays, no auth needed). */
+  seedFromEmbeddedPage(page: StatusPageData) {
+    if (Array.isArray(page.services)) {
+      const services = page.services;
+      this.servicesMap.update(map => ({ ...map, [page.id]: services }));
+    }
+    if (Array.isArray(page.incidents)) {
+      const incidents = page.incidents;
+      this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
+    }
+  }
 
   fetchAllIncidents(pages: StatusPageData[]) {
     if (!Array.isArray(pages)) return;

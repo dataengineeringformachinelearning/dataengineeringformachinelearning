@@ -10,11 +10,11 @@ import { join } from 'node:path';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 /** Firebase web config served at runtime — never baked into Docker image layers. */
+// Auth-only Firebase config — DEML stores no product data in Firebase.
 const buildFirebaseConfig = (): Record<string, string> => ({
   apiKey: process.env['FIREBASE_API_KEY'] ?? 'PLACEHOLDER_API_KEY',
   authDomain: process.env['FIREBASE_AUTH_DOMAIN'] ?? 'demldotcom.firebaseapp.com',
   projectId: process.env['FIREBASE_PROJECT_ID'] ?? 'demldotcom',
-  storageBucket: process.env['FIREBASE_STORAGE_BUCKET'] ?? 'demldotcom.firebasestorage.app',
   messagingSenderId: process.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '870072971206',
   appId: process.env['FIREBASE_APP_ID'] ?? '1:870072971206:web:5231fde2822d750abfccc7',
 });

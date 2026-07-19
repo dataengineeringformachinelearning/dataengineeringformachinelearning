@@ -8,10 +8,11 @@ state and user-originated interactions.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import uuid
 
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.db import models, transaction
 
 User = get_user_model()
 
@@ -34,17 +35,45 @@ class CookieConsent(models.Model):
 
 
 class BugReport(models.Model):
+  class DeliveryStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    DELIVERED = "delivered", "Delivered"
+    DEAD_LETTER = "dead_letter", "Dead letter"
+    LEGACY_RETAINED = "legacy_retained", "Legacy retained locally"
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  client_report_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
   user = models.ForeignKey(
-    User, on_delete=models.CASCADE, related_name="bug_reports", null=True, blank=True
+    User, on_delete=models.SET_NULL, related_name="bug_reports", null=True, blank=True
   )
+  account_id = models.UUIDField(null=True, blank=True, db_index=True)
+  forjd_tenant_id = models.UUIDField(null=True, blank=True, db_index=True)
+  forjd_service_token_secret_ref = models.CharField(max_length=255, blank=True, default="")
+  submitted_by_pseudonym = models.CharField(max_length=64, blank=True, default="")
   user_description = models.TextField()
   telemetry_context = models.JSONField(null=True, blank=True)
+  content_sha256 = models.CharField(max_length=64, blank=True, default="")
+  delivery_status = models.CharField(
+    max_length=16,
+    choices=DeliveryStatus.choices,
+    default=DeliveryStatus.PENDING,
+    db_index=True,
+  )
+  forjd_document_id = models.CharField(max_length=64, blank=True, default="")
+  delivery_attempts = models.PositiveIntegerField(default=0)
+  next_delivery_at = models.DateTimeField(null=True, blank=True, db_index=True)
+  last_delivery_error = models.CharField(max_length=128, blank=True, default="")
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
     db_table = "bug_reports"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(
+        fields=["delivery_status", "next_delivery_at", "created_at"],
+        name="bug_report_delivery_ready_idx",
+      )
+    ]
 
 
 class NewsletterSubscription(models.Model):
@@ -165,11 +194,70 @@ class ForjdTenantMapping(models.Model):
       )
 
   def save(self, *args: object, **kwargs: object) -> None:
+    previous = type(self).objects.filter(pk=self.pk).first() if self.pk else None
+    if (
+      previous is not None
+      and previous.forjd_tenant_id != self.forjd_tenant_id
+      and previous.service_token_secret_ref == self.service_token_secret_ref
+    ):
+      from django.core.exceptions import ValidationError
+
+      raise ValidationError(
+        {
+          "service_token_secret_ref": (
+            "A tenant remap requires a distinct secret reference so the historical "
+            "tenant remains addressable"
+          )
+        }
+      )
     self.full_clean()
-    super().save(*args, **kwargs)
+    with transaction.atomic():
+      if previous is not None:
+        ForjdTenantAssociation.objects.get_or_create(
+          deml_account_id=previous.deml_account_id,
+          forjd_tenant_id=previous.forjd_tenant_id,
+          service_token_secret_ref=previous.service_token_secret_ref,
+        )
+      super().save(*args, **kwargs)
+      ForjdTenantAssociation.objects.get_or_create(
+        deml_account_id=self.deml_account_id,
+        forjd_tenant_id=self.forjd_tenant_id,
+        service_token_secret_ref=self.service_token_secret_ref,
+      )
 
   def __str__(self) -> str:
     return f"{self.deml_account_id} -> {self.forjd_tenant_id}"
+
+
+class ForjdTenantAssociation(models.Model):
+  """Immutable account-to-tenant history used by erasure and durable retries."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  deml_account_id = models.UUIDField(db_index=True)
+  forjd_tenant_id = models.UUIDField(db_index=True)
+  service_token_secret_ref = models.CharField(max_length=255)
+  mapped_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "forjd_tenant_associations"
+    constraints = [
+      models.UniqueConstraint(
+        fields=["deml_account_id", "forjd_tenant_id", "service_token_secret_ref"],
+        name="forjd_tenant_assoc_identity_uniq",
+      ),
+      models.CheckConstraint(
+        condition=models.Q(service_token_secret_ref__startswith="env:FORJD_SERVICE_TOKEN"),
+        name="forjd_tenant_assoc_secret_ref_env_only",
+      ),
+    ]
+
+  def save(self, *args: object, **kwargs: object) -> None:
+    if self.pk and type(self).objects.filter(pk=self.pk).exists():
+      raise ValueError("FORJD tenant association history is immutable")
+    from forjd.tenancy import validate_service_token_secret_ref
+
+    self.service_token_secret_ref = validate_service_token_secret_ref(self.service_token_secret_ref)
+    super().save(*args, **kwargs)
 
 
 class ForjdShadowReceipt(models.Model):
@@ -191,8 +279,8 @@ class ForjdShadowReceipt(models.Model):
   class Meta:
     db_table = "forjd_shadow_receipts"
     indexes = [
-      models.Index(fields=["forjd_tenant_id", "-created_at"]),
-      models.Index(fields=["client_event_id"]),
+      models.Index(fields=["forjd_tenant_id", "-created_at"], name="forjd_shado_forjd_t_idx"),
+      models.Index(fields=["client_event_id"], name="forjd_shado_client__idx"),
     ]
 
   def __str__(self) -> str:
@@ -215,7 +303,7 @@ class BrowserSession(models.Model):
   class Meta:
     db_table = "browser_sessions"
     indexes = [
-      models.Index(fields=["firebase_uid", "-last_seen"]),
+      models.Index(fields=["firebase_uid", "-last_seen"], name="browser_ses_firebas_idx"),
     ]
 
 
@@ -249,7 +337,21 @@ class APIKey(models.Model):
     self.key_hash = hashlib.sha256(raw_key.encode()).hexdigest()
 
   def verify_key(self, raw_key: str) -> bool:
-    return self.key_hash == hashlib.sha256(raw_key.encode()).hexdigest()
+    return hmac.compare_digest(
+      self.key_hash,
+      hashlib.sha256(raw_key.encode()).hexdigest(),
+    )
+
+
+class HeadlessRateLimitBucket(models.Model):
+  """Replica-safe token bucket for DEML's headless FORJD control plane."""
+
+  scope_key = models.CharField(max_length=64, primary_key=True)
+  tokens = models.FloatField()
+  updated_at = models.DateTimeField(db_index=True)
+
+  class Meta:
+    db_table = "headless_rate_limit_buckets"
 
 
 class UserLifecycleJob(models.Model):
@@ -262,6 +364,7 @@ class UserLifecycleJob(models.Model):
     RUNNING = "running", "Running"
     COMPLETED = "completed", "Completed"
     FAILED = "failed", "Failed"
+    DEAD_LETTER = "dead_letter", "Dead letter"
 
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   job_type = models.CharField(max_length=32, choices=JobType.choices, default=JobType.DELETION)
@@ -272,7 +375,15 @@ class UserLifecycleJob(models.Model):
   account_id = models.UUIDField()
   firebase_uid = models.CharField(max_length=128, blank=True, default="")
   user_email = models.CharField(max_length=255, blank=True, default="")
+  forjd_erase_targets = models.JSONField(default=list, blank=True)
+  forjd_erased_tenant_ids = models.JSONField(default=list, blank=True)
   steps_completed = models.JSONField(default=list, blank=True)
+  attempts = models.PositiveIntegerField(default=0)
+  max_attempts = models.PositiveIntegerField(default=12)
+  next_attempt_at = models.DateTimeField(null=True, blank=True, db_index=True)
+  failure_code = models.CharField(max_length=128, blank=True, default="")
+  lease_token = models.UUIDField(null=True, blank=True, editable=False)
+  lease_expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
   last_error = models.TextField(blank=True, default="")
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
@@ -280,6 +391,13 @@ class UserLifecycleJob(models.Model):
 
   class Meta:
     db_table = "user_lifecycle_jobs"
+    constraints = [
+      models.UniqueConstraint(
+        fields=["account_id", "job_type"],
+        condition=models.Q(state__in=["pending", "running", "failed", "dead_letter"]),
+        name="user_lifecycle_active_job_uniq",
+      )
+    ]
 
   def __str__(self) -> str:
     return f"{self.job_type}:{self.state} ({self.account_id})"
@@ -293,6 +411,7 @@ UserOwnedModel = (
   | AuditLog
   | UserProfile
   | ForjdTenantMapping
+  | ForjdTenantAssociation
 )
 
 
@@ -309,6 +428,7 @@ def user_model_names() -> tuple[str, ...]:
       AuditLog,
       UserProfile,
       ForjdTenantMapping,
+      ForjdTenantAssociation,
       APIKey,
       UserLifecycleJob,
     )

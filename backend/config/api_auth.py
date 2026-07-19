@@ -5,6 +5,7 @@ import re
 import secrets
 
 from django.core import signing
+from django.db import IntegrityError
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
@@ -87,12 +88,23 @@ def generate_api_key(request, payload: APIKeyGenerateIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
 
-  raw_key = secrets.token_urlsafe(32)
-  prefix = raw_key[:8]
-
-  api_key = APIKey(user=request.user, name=payload.name, prefix=prefix)
-  api_key.set_key(raw_key)
-  api_key.save()
+  api_key = None
+  raw_key = ""
+  for _attempt in range(5):
+    prefix = secrets.token_hex(4)
+    # Prefixing makes the credential unambiguous in Authorization: Bearer while
+    # keeping the stored lookup prefix and one-time secret semantics unchanged.
+    raw_key = f"deml_{prefix}_{secrets.token_urlsafe(32)}"
+    candidate = APIKey(user=request.user, name=payload.name, prefix=prefix)
+    candidate.set_key(raw_key)
+    try:
+      candidate.save()
+    except IntegrityError:
+      continue
+    api_key = candidate
+    break
+  if api_key is None:
+    raise HttpError(503, "Unable to allocate a unique API key; retry the request")
 
   return {"status": "success", "name": api_key.name, "key": raw_key, "prefix": api_key.prefix}
 

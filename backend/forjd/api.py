@@ -16,6 +16,13 @@ from pydantic import ConfigDict, field_validator, model_validator
 
 from forjd.client import ForjdClient, ForjdError
 from forjd.cutover import log_forjd_mode_event, writes_enabled
+from forjd.limits import MAX_INGEST_BATCH_EVENTS
+from forjd.policy import (
+  ForjdPolicyError,
+  actor_for_request,
+  authorize_forjd_action,
+  record_forjd_audit,
+)
 from forjd.shadow import record_shadow_batch, record_shadow_receipt_async
 from forjd.tenancy import (
   ForjdTenantConfigurationError,
@@ -134,7 +141,7 @@ class SealedEvent(StrictSchema):
 
 
 class SealedEventBatch(StrictSchema):
-  events: list[SealedEvent] = Field(min_length=1, max_length=100)
+  events: list[SealedEvent] = Field(min_length=1, max_length=MAX_INGEST_BATCH_EVENTS)
 
 
 # --- FORJD wire rewrite (product-local → canonical) ---
@@ -187,18 +194,13 @@ def request_id_from(request: Any) -> str | None:
 
 async def resolve_request_credential(request: Any) -> ForjdTenantCredential:
   """Resolve the caller's DEML account to its tenant-scoped FORJD secret."""
-  # Require Firebase bearer claims — cookie/session alone must not mint FORJD calls.
-  if not request.user.is_authenticated or not getattr(request, "firebase_token", None):
-    raise HttpError(401, "Not authenticated")
-
-  account_id = await sync_to_async(
-    lambda: getattr(getattr(request.user, "profile", None), "account_id", None)
-  )()
-  if account_id is None:
-    raise HttpError(403, "The authenticated user has no DEML account")
+  try:
+    actor = await authorize_forjd_action(request, "ingest.write", resource_id=request.path)
+  except ForjdPolicyError as exc:
+    raise HttpError(exc.status, exc.detail) from exc
 
   try:
-    return await sync_to_async(resolve_forjd_tenant_credential)(account_id)
+    return await sync_to_async(resolve_forjd_tenant_credential)(actor.account_id)
   except ForjdTenantConfigurationError as exc:
     raise HttpError(503, "FORJD tenant service credential is unavailable") from exc
 
@@ -218,11 +220,40 @@ async def health(request: Any) -> dict[str, Any]:
 
 @router.post("/ingest")
 async def ingest(request: Any, payload: SealedEvent) -> dict[str, Any]:
-  if not writes_enabled():
-    raise HttpError(503, "FORJD writes are disabled")
-
   credential = await resolve_request_credential(request)
-  require_mapped_tenant(payload.tenant_id, credential)
+  actor = await actor_for_request(request)
+  await record_forjd_audit(
+    actor=actor,
+    request=request,
+    action="ingest.write",
+    outcome="attempted",
+    tenant_id=credential.tenant_id,
+    resource_id=request.path,
+  )
+  if not writes_enabled():
+    await record_forjd_audit(
+      actor=actor,
+      request=request,
+      action="ingest.write",
+      outcome="failed",
+      tenant_id=credential.tenant_id,
+      status=503,
+      resource_id=request.path,
+    )
+    raise HttpError(503, "FORJD writes are disabled")
+  try:
+    require_mapped_tenant(payload.tenant_id, credential)
+  except HttpError as exc:
+    await record_forjd_audit(
+      actor=actor,
+      request=request,
+      action="ingest.write",
+      outcome="failed",
+      tenant_id=credential.tenant_id,
+      status=exc.status_code,
+      resource_id=request.path,
+    )
+    raise
   wire = sealed_event_for_forjd(payload)
   request_id = request_id_from(request)
   account_id = await sync_to_async(
@@ -243,6 +274,16 @@ async def ingest(request: Any, payload: SealedEvent) -> dict[str, Any]:
       request_id=request_id,
       deml_account_id=account_id,
     )
+    await record_forjd_audit(
+      actor=actor,
+      request=request,
+      action="ingest.write",
+      outcome="failed",
+      tenant_id=credential.tenant_id,
+      status=exc.status,
+      resource_id=request.path,
+      upstream_request_id=exc.upstream_request_id,
+    )
     raise HttpError(exc.status, str(exc)) from exc
 
   await record_shadow_receipt_async(
@@ -256,17 +297,55 @@ async def ingest(request: Any, payload: SealedEvent) -> dict[str, Any]:
   log_forjd_mode_event(
     "ingest_ok", tenant_id=credential.tenant_id, workflow_id=wire.get("workflow_id")
   )
+  await record_forjd_audit(
+    actor=actor,
+    request=request,
+    action="ingest.write",
+    outcome="succeeded",
+    tenant_id=credential.tenant_id,
+    status=200,
+    resource_id=request.path,
+  )
   return result
 
 
 @router.post("/ingest/events:batch")
 async def ingest_batch(request: Any, payload: SealedEventBatch) -> dict[str, Any]:
-  if not writes_enabled():
-    raise HttpError(503, "FORJD writes are disabled")
-
   credential = await resolve_request_credential(request)
-  for event in payload.events:
-    require_mapped_tenant(event.tenant_id, credential)
+  actor = await actor_for_request(request)
+  await record_forjd_audit(
+    actor=actor,
+    request=request,
+    action="ingest.write",
+    outcome="attempted",
+    tenant_id=credential.tenant_id,
+    resource_id=request.path,
+  )
+  if not writes_enabled():
+    await record_forjd_audit(
+      actor=actor,
+      request=request,
+      action="ingest.write",
+      outcome="failed",
+      tenant_id=credential.tenant_id,
+      status=503,
+      resource_id=request.path,
+    )
+    raise HttpError(503, "FORJD writes are disabled")
+  try:
+    for event in payload.events:
+      require_mapped_tenant(event.tenant_id, credential)
+  except HttpError as exc:
+    await record_forjd_audit(
+      actor=actor,
+      request=request,
+      action="ingest.write",
+      outcome="failed",
+      tenant_id=credential.tenant_id,
+      status=exc.status_code,
+      resource_id=request.path,
+    )
+    raise
   wire = sealed_batch_for_forjd(payload)
   request_id = request_id_from(request)
   account_id = await sync_to_async(
@@ -292,6 +371,16 @@ async def ingest_batch(request: Any, payload: SealedEventBatch) -> dict[str, Any
       request_id=request_id,
       deml_account_id=account_id,
     )
+    await record_forjd_audit(
+      actor=actor,
+      request=request,
+      action="ingest.write",
+      outcome="failed",
+      tenant_id=credential.tenant_id,
+      status=exc.status,
+      resource_id=request.path,
+      upstream_request_id=exc.upstream_request_id,
+    )
     raise HttpError(exc.status, str(exc)) from exc
 
   await sync_to_async(record_shadow_batch)(
@@ -301,5 +390,14 @@ async def ingest_batch(request: Any, payload: SealedEventBatch) -> dict[str, Any
     forjd_ok=True,
     request_id=request_id,
     deml_account_id=account_id,
+  )
+  await record_forjd_audit(
+    actor=actor,
+    request=request,
+    action="ingest.write",
+    outcome="succeeded",
+    tenant_id=credential.tenant_id,
+    status=200,
+    resource_id=request.path,
   )
   return result
