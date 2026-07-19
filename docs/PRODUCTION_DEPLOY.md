@@ -1,20 +1,21 @@
 # Production deploy — DEML (Vercel + Fly) → FORJD
 
-Final operator runbook for production. Pair with
-[`PRODUCTION_CUTOVER_CHECKLIST.md`](./PRODUCTION_CUTOVER_CHECKLIST.md),
-[`CUTOVER.md`](./CUTOVER.md), [`FLY.md`](./FLY.md), [`VERCEL.md`](./VERCEL.md).
+Operator runbook for production. Pair with
+[`PRODUCTION_CHECKLIST.md`](./PRODUCTION_CHECKLIST.md),
+[`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md),
+[`FLY.md`](./FLY.md), [`VERCEL.md`](./VERCEL.md).
 
 **Verified live (2026-07-18):**
 
-| Check                                    | Result                                                                    |
-| ---------------------------------------- | ------------------------------------------------------------------------- |
-| `https://deml.app`                       | HTTP 200                                                                  |
-| `https://deml.vercel.app`                | HTTP 200                                                                  |
-| `https://backend.deml.app/api/v1/health` | `ok` / user-control-plane                                                 |
-| `https://backend.deml.app/api/v1/ready`  | DB ok + FORJD URL/token/tenant configured                                 |
-| Fly `deml-backend`                       | started, 2/2 checks passing (iad)                                         |
-| `https://backend.forjd.co/ready`         | postgres + redis + `schema_rls` + engine `All`                            |
-| Cutover phase                            | `FORJD_CUTOVER_PHASE` / write+read `forjd` secrets present (steady state) |
+| Check                                    | Result                                            |
+| ---------------------------------------- | ------------------------------------------------- |
+| `https://deml.app`                       | HTTP 200                                          |
+| `https://deml.vercel.app`                | HTTP 200                                          |
+| `https://backend.deml.app/api/v1/health` | `ok` / user-control-plane                         |
+| `https://backend.deml.app/api/v1/ready`  | DB ok + FORJD URL/token/tenant configured         |
+| Fly `deml-backend`                       | started, 2/2 checks passing (iad)                 |
+| `https://backend.forjd.co/ready`         | postgres + redis + `schema_rls` + engine `All`    |
+| FORJD modes                              | `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd` |
 
 ---
 
@@ -50,8 +51,8 @@ npx vercel deploy --prod --yes
 cd backend
 fly deploy -a deml-backend
 
-# Steady-state cutover (already the intended prod default)
-fly secrets set FORJD_CUTOVER_PHASE=2 FORJD_WRITE_MODE=forjd FORJD_READ_MODE=forjd -a deml-backend
+# Steady-state FORJD modes
+fly secrets set FORJD_WRITE_MODE=forjd FORJD_READ_MODE=forjd -a deml-backend
 
 curl -fsS https://backend.deml.app/api/v1/health
 curl -fsS https://backend.deml.app/api/v1/ready
@@ -93,16 +94,13 @@ curl -fsS https://forjd-engine.fly.dev/ready
 
 ## 4. Rollback
 
-| Symptom                 | Action                                                           |
-| ----------------------- | ---------------------------------------------------------------- |
-| Bad Angular build       | Vercel → Promote previous deployment                             |
-| Bad Django deploy       | `fly releases -a deml-backend` → deploy prior image              |
-| FORJD 5xx / bad shapes  | `fly secrets set FORJD_CUTOVER_PHASE=1 -a deml-backend` (or `0`) |
-| Stop FORJD IO           | `FORJD_WRITE_MODE=off` + `FORJD_READ_MODE=off`                   |
-| Wrong `fjsvc_`          | Remint on FORJD → rotate Fly secret → remap if needed            |
-| Engine data-plane fault | On FORJD: `fly secrets set FORJD_ROLE=engine -a forjd-engine`    |
-
-Never re-enable Redpanda, ClickHouse, or `deml-dragonfly` as rollback.
+| Symptom                 | Action                                                             |
+| ----------------------- | ------------------------------------------------------------------ |
+| Bad Angular build       | Vercel → Promote previous deployment                               |
+| Bad Django deploy       | `fly releases -a deml-backend` → deploy prior image                |
+| FORJD 5xx / bad shapes  | Pause reads/writes: `FORJD_WRITE_MODE=off` + `FORJD_READ_MODE=off` |
+| Wrong `fjsvc_`          | Remint on FORJD → rotate Fly secret → remap if needed              |
+| Engine data-plane fault | On FORJD: `fly secrets set FORJD_ROLE=engine -a forjd-engine`      |
 
 ---
 
@@ -117,29 +115,14 @@ Never re-enable Redpanda, ClickHouse, or `deml-dragonfly` as rollback.
 
 ---
 
-## 6. Remaining polish (non-blocking)
-
-| Item                             | Notes                                                                   |
-| -------------------------------- | ----------------------------------------------------------------------- |
-| Apply FORJD `sql/019`            | Least-privilege erase default; remint if erase scopes needed            |
-| Deploy latest `main` to Fly      | Security/perf pass (sticky revoke, batch sessions, ForjdClient retries) |
-| Tear down Railway `deml-backend` | Optional after DNS stable; keep Neon DB                                 |
-| Detached Railway volumes         | Purge ClickHouse/RustFS/scanner/queue volumes when ready                |
-| Neon → Supabase `deml` schema    | Optional consolidation; see FORJD `docs/NEON_TO_SUPABASE.md`            |
-| Marketing search-index sync      | Regenerates on commit via pre-commit                                    |
-
----
-
 ## Production readiness
 
-| Surface                        | Ready?                                                            |
-| ------------------------------ | ----------------------------------------------------------------- |
-| Angular on Vercel              | **Yes** — `deml.app` / `deml.vercel.app` 200; `BACKEND_URL` → Fly |
-| Django BFF on Fly              | **Yes** — health/ready passing; FORJD wired                       |
-| FORJD sealed plane             | **Yes** — `/ready` RLS + engine `All` + Dragonfly                 |
-| Cutover steady state           | **Yes** — phase 2 / forjd write+read                              |
-| Boundary (no local data plane) | **Yes** — retired deploy paths removed                            |
+| Surface                | Ready?                                                            |
+| ---------------------- | ----------------------------------------------------------------- |
+| Angular on Vercel      | **Yes** — `deml.app` / `deml.vercel.app` 200; `BACKEND_URL` → Fly |
+| Django BFF on Fly      | **Yes** — health/ready passing; FORJD wired                       |
+| FORJD sealed plane     | **Yes** — `/ready` RLS + engine `All` + Dragonfly                 |
+| FORJD write/read modes | **Yes** — `forjd` / `forjd`                                       |
 
-**Verdict:** Both DEML and FORJD are ready for production cutover. Ship latest
-`main` to Fly after merge, apply `sql/019`, remint if erase is required, then
-run the smoke list above.
+**Verdict:** DEML and FORJD are production-ready. Apply FORJD `sql/019` and
+mint or rotate tokens as needed, then run the smoke list above.

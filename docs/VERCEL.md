@@ -1,6 +1,6 @@
 # DEML Angular on Vercel (project: `deml`)
 
-Primary host for `deml-frontend` is **Vercel** (CSR static export). Django BFF is on **Fly** (`deml-backend`; Railway standby only). FORJD (Fly) + Supabase own the data plane.
+Primary host for `deml-frontend` is **Vercel** (CSR static export). Django BFF is on **Fly** (`deml-backend`). FORJD (Fly) + Supabase own the streaming engine.
 
 ```text
 Browser (Vercel deml.app)
@@ -137,4 +137,5 @@ Confirm `dist/frontend/browser/index.html` exists (CSR) and there is **no** `dis
 
 ## Rollback
 
-Keep Railway `deml-frontend` Dockerfile (nginx CSR) as a cold standby, or point DNS back to the previous host. Do not re-enable Angular SSR unless you restore `angular.json` `server` / `ssr` entries.
+Promote the previous Vercel deployment, or point DNS back to the previous host.
+Do not re-enable Angular SSR unless you restore `angular.json` `server` / `ssr` entries.

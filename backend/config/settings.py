@@ -167,7 +167,7 @@ ALLOWED_HOSTS = [
 FORJD_API_URL = get_str("FORJD_API_URL", "https://backend.forjd.co")
 FORJD_SERVICE_TOKEN = get_str("FORJD_SERVICE_TOKEN", "")
 FORJD_TENANT_ID = get_str("FORJD_TENANT_ID", "")
-# Cutover controls — see docs/CUTOVER.md. Phase overrides write/read modes when set.
+# FORJD write/read modes — see docs/FORJD_INTEGRATION.md. Phase overrides modes when set.
 # Phase: 0=dual-write/empty-read, 1=dual-write/forjd-read, 2|3=forjd-only.
 FORJD_CUTOVER_PHASE = get_str("FORJD_CUTOVER_PHASE", "")
 FORJD_WRITE_MODE = get_str("FORJD_WRITE_MODE", "forjd")  # off | forjd | dual
@@ -242,7 +242,7 @@ DATABASES = {
     conn_health_checks=True,
   )
 }
-# Supabase consolidation: DATABASE_SEARCH_PATH=deml,public (FORJD docs/NEON_TO_SUPABASE.md)
+# Supabase consolidation: DATABASE_SEARCH_PATH=partner_control,public
 apply_database_search_path(DATABASES)
 
 # Password validation

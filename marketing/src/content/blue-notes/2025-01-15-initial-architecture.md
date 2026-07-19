@@ -1,33 +1,17 @@
 ---
-title: "Initial Architecture: Django Backend and Angular Frontend Scaffolding"
-summary: "The foundational commit established the core Django/Angular monorepo structure with PostgreSQL models, REST API endpoints, and initial Viking-UI component system."
-publishedAt: 2025-01-15
-note: Platform Note 002
-categories:
-  - Foundation
+title: "DEML architecture: control plane + FORJD"
+summary: DEML owns identity and the Angular product; FORJD is the universal secure streaming engine.
+date: 2025-01-15
+tags:
   - Architecture
-  - Django
-  - Angular
-featured: false
-draft: false
+  - FORJD
 ---
 
-## What shipped
+DEML is the Firebase-authenticated user control plane and Angular product surface.
+Django owns identity, billing, consent, learning content, and BFF adapters.
+[FORJD](https://github.com/dataengineeringformachinelearning/forjd) is the
+universal secure streaming engine: sealed ingest, projections, analytics, ML,
+and replay/DLQ via tenant-bound `fjsvc_` tokens.
 
-The first functional commit laid out the monorepo architecture with:
-
-- **Django REST Framework API** with Ninja schema for OpenAPI generation
-- **Angular SSR frontend** with standalone components and signal-based state
-- **PostgreSQL models** for tenants, endpoints, incidents, and status pages
-- **Viking-UI component library** with design tokens and dark-first aesthetic
-
-## Key architectural decisions
-
-- **Monorepo structure**: Single repository managing frontend, backend, Firebase functions, and infrastructure
-- **Event-driven core**: Redpanda Kafka for high-throughput event streams
-- **Multi-tenancy**: UUID-based tenant isolation with symmetrical pipelines
-- **Security-first**: Firebase Auth, JWT middleware, and CSP-hardened templates
-
-## Why it mattered
-
-This commit established the framework constraints that shaped every subsequent decision: no pickle for models, state dict serialization, distroless containers, and WCAG 2.1 AA compliance as non-negotiable standards.
+Production hosts: Angular on Vercel, Django on Fly, FORJD on Fly + Supabase.
+Integration contract: [docs/FORJD_INTEGRATION.md](../../../docs/FORJD_INTEGRATION.md).

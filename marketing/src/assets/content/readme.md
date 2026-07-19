@@ -16,19 +16,13 @@ license: apache-2.0
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.svg)
 
-> **Current platform boundary (July 2026):** DEML is the Firebase-authenticated user
-> control plane and Angular backend-for-frontend. FORJD exclusively owns encrypted
-> intake, processing, projections, analytics, replay, threat processing, and machine
-> learning. DEML calls native FORJD routes with tenant-bound opaque `fjsvc_` tokens and
-> sealed AES-256-GCM envelopes; it does not use OAuth client credentials, Supabase
-> `service_role`, Firebase-to-FORJD trust, `/deml-compat` aliases, or local processing
-> fallbacks. Production hosts: Angular on **Vercel**, Django BFF on **Fly**
-> (`deml-backend`), data plane on **FORJD** Fly. Cutover uses `FORJD_CUTOVER_PHASE`
-> dual-write/dual-read flags ([docs/CUTOVER.md](docs/CUTOVER.md)). Learning
-> projections, service-principal domain routes, crypto-session bootstrap, replay/DLQ,
-> and durable tenant erasure are FORJD-owned. See
-> [the runtime contract](docs/FORJD_PLATFORM_HANDOFF.md). Older Redpanda/ClickHouse/worker
-> material in this repository is historical only.
+> **Platform boundary:** DEML is the Firebase-authenticated user control plane and
+> Angular backend-for-frontend. FORJD is the universal secure streaming engine for
+> sealed intake, processing, projections, analytics, replay, threat processing, and
+> machine learning. DEML calls FORJD with tenant-bound opaque `fjsvc_` tokens and
+> sealed AES-256-GCM envelopes. Production hosts: Angular on **Vercel**, Django BFF
+> on **Fly** (`deml-backend`), streaming engine on **FORJD** Fly + Supabase.
+> Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
 **Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
@@ -66,7 +60,7 @@ security model and build instructions.
 
 ## Core Capabilities
 
-- **Event Projections**: Reliable command paths with fallback mechanisms and materialized read models
+- **Sealed FORJD projections**: Django BFF forwards sealed telemetry; FORJD materializes durable read models
 - **High-Throughput Ingestion**: Sub-second telemetry dispatch with micro-batch aggregation
 - **Account Isolation**: Strict tenant separation without cross-account data exposure
 - **Aggregate Threat Modeling**: Collective anomaly baselines without raw data sharing

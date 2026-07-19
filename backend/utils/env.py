@@ -101,8 +101,8 @@ def configure_database_url() -> None:
   Ensure DATABASE_URL is set for Django.
 
   Local development may fall back to SQLite. Railway/Fly require PostgreSQL.
-  Neon remains valid until Supabase consolidation; then use the Supabase pooler
-  URI with DATABASE_SEARCH_PATH=deml,public (FORJD docs/NEON_TO_SUPABASE.md).
+  Production uses Supabase with DATABASE_SEARCH_PATH=partner_control,public
+  (FORJD docs/NEON_TO_SUPABASE_ETL.md).
   """
   db_url = get_str("DATABASE_URL")
   if db_url and any(db_url.startswith(scheme) for scheme in _VALID_DB_SCHEMES):
@@ -201,10 +201,20 @@ def validate_encrypted_transport_config() -> None:
 
   db_url = get_str("DATABASE_URL")
   if db_url.startswith(_POSTGRES_SCHEMES):
-    sslmode = parse_qs(urlparse(db_url).query).get("sslmode", [""])[0].lower()
-    if sslmode not in {"verify-ca", "verify-full"}:
+    parsed = urlparse(db_url)
+    sslmode = parse_qs(parsed.query).get("sslmode", [""])[0].lower()
+    host = (parsed.hostname or "").lower()
+    # Supabase pooler/direct often fails libpq verify-full against distro CAs;
+    # require still enforces TLS. Neon and other hosts keep verify-ca/full.
+    supabase_host = host.endswith(".supabase.co") or host.endswith(".pooler.supabase.com")
+    allowed = {"verify-ca", "verify-full"}
+    if supabase_host:
+      allowed.add("require")
+    if sslmode not in allowed:
       raise RuntimeError(
-        "production DATABASE_URL must set sslmode=verify-ca or sslmode=verify-full."
+        "production DATABASE_URL must set sslmode=verify-ca or sslmode=verify-full"
+        + (" (or require for Supabase hosts)" if supabase_host else "")
+        + "."
       )
 
   # REDIS_URL is optional (deml-dragonfly retired). If set, require TLS.

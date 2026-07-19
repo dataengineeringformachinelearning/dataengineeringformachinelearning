@@ -1,16 +1,16 @@
-"""Cutover phase flags for safe DEML → FORJD production transition.
+"""FORJD write/read mode helpers for the DEML BFF.
 
-Phases match ``docs/CUTOVER.md`` / FORJD ``CUTOVER.md``:
+Steady-state production uses ``FORJD_WRITE_MODE=forjd`` and
+``FORJD_READ_MODE=forjd``. Optional ``FORJD_CUTOVER_PHASE`` presets:
 
 | Phase | Write | Read | Intent |
 |-------|-------|------|--------|
-| 0 | dual | off | Shadow + FORJD writes; Angular reads empty-stable shapes |
+| 0 | dual | off | FORJD writes + metadata shadow; Angular reads empty-stable |
 | 1 | dual | dual | Dual-write; Angular reads FORJD (empty fallback on 5xx) |
-| 2 | forjd | forjd | FORJD-only (default after cutover) |
-| 3 | forjd | forjd | Same as 2 — decommission complete |
+| 2 | forjd | forjd | FORJD-only (production default) |
+| 3 | forjd | forjd | Same as 2 |
 
-Legacy Redpanda/ClickHouse writers are **not** reintroduced. Dual-write means
-FORJD plus a metadata-only local shadow receipt for ops comparison.
+See ``docs/FORJD_INTEGRATION.md``.
 """
 
 from __future__ import annotations

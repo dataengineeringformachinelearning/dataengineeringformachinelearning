@@ -32,8 +32,8 @@ primary_region = 'iad'
   FRONTEND_URL = 'https://deml.app'
   BACKEND_URL = 'https://backend.deml.app'
   MARKETING_URL = 'https://dataengineeringformachinelearning.com'
-  # After Neon → Supabase consolidation (schema deml):
-  #   DATABASE_SEARCH_PATH = 'deml,public'
+  # After Neon → Supabase consolidation (secret):
+  #   DATABASE_SEARCH_PATH = 'partner_control,public'
   # Secrets (never commit): SECRET_KEY, DATABASE_URL, FIREBASE_*, FORJD_SERVICE_TOKEN,
   # FORJD_TENANT_ID, STRIPE_*, RESEND_*, SENTRY_DSN, …
 

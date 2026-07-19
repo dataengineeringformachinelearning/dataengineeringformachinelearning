@@ -1,6 +1,5 @@
 # Local user control plane only. FORJD owns sealed ingest, projections, and ML.
-# See docs/FORJD_PLATFORM_HANDOFF.md and infrastructure/railway/README.md.
-# Sessions/handoff use Postgres — no local Dragonfly.
+# See docs/FORJD_INTEGRATION.md. Sessions use Postgres.
 services:
   postgres:
     image: postgres:15

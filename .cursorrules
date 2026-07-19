@@ -102,7 +102,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 - **Framework-neutral shared UI** (styles, primitives, services, utilities) belongs in `packages/viking-ui/` first.
 - `packages/viking-ui/` is the single home for all Viking-UI code, including token SCSS, static CSS bundles, Web Components, Angular-free utility exports, package metadata, and all Angular wrapper components.
 - Do not add `styleUrl`, `styleUrls`, inline `styles`, or component-local SCSS to Angular app components. If a visual rule is needed, create or extend a Viking-UI component. Angular component files must not contain any visual styling — all rules belong in the Viking-UI package.
-- Never import from retired frontend-local library paths or from `packages/viking-ui/src/...` in app/runtime code. Consume public entrypoints through the npm package or workspace alias: package root or `/angular` for Angular, `/web-components.js` for custom elements, `/icons` and `/site-drakkar` for static-site utilities, `/tokens.json` for design tooling.
+- Never import from private package internals (`packages/viking-ui/src/...`) in app/runtime code. Consume public entrypoints through the npm package or workspace alias: package root or `/angular` for Angular, `/web-components.js` for custom elements, `/icons` and `/site-drakkar` for static-site utilities, `/tokens.json` for design tooling.
 
 ```typescript
 import {
@@ -315,7 +315,7 @@ Build like reusable flight hardware — every line earns its mass:
 
 ## Platform invariants (from AGENTS.md — do not break)
 
-- FORJD is the exclusive data plane — never reintroduce Redpanda, ClickHouse, Rust roles, or local stream workers
+- FORJD is the universal secure streaming engine; DEML does not run a local stream plane
 - DEML owns identity, Angular UI, billing, consent, and learning content only
 - UUID PKs everywhere; no pickle for ML models
 - Dynamic CORS via database registration

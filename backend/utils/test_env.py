@@ -168,3 +168,23 @@ def test_production_transport_allows_missing_redis(monkeypatch):
   )
   monkeypatch.delenv("REDIS_URL", raising=False)
   env.validate_encrypted_transport_config()
+
+
+def test_production_transport_allows_supabase_require(monkeypatch):
+  monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
+  monkeypatch.setenv(
+    "DATABASE_URL",
+    "postgresql://user:pass@db.example.supabase.co:5432/postgres?sslmode=require",
+  )
+  monkeypatch.delenv("REDIS_URL", raising=False)
+  env.validate_encrypted_transport_config()
+
+
+def test_production_transport_rejects_non_supabase_require(monkeypatch):
+  monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
+  monkeypatch.setenv(
+    "DATABASE_URL",
+    "postgresql://user:pass@ep-x.neon.tech:5432/db?sslmode=require",
+  )
+  with pytest.raises(RuntimeError, match="sslmode"):
+    env.validate_encrypted_transport_config()
