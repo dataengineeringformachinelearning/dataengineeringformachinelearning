@@ -36,7 +36,8 @@ Dual-write records metadata-only `forjd_shadow_receipts` — never ciphertext.
 
 ## Preflight
 
-1. **FORJD:** apply SQL `003`→`018`; remint `fjsvc_` (`scripts/remint_service_account.sh`); `/ready` healthy.
+1. **FORJD:** apply SQL `003`→`019`; remint `fjsvc_` (`scripts/remint_service_account.sh`); `/ready` healthy.
+   Full deploy/rollback: [`PRODUCTION_DEPLOY.md`](./PRODUCTION_DEPLOY.md).
 2. **DEML Fly:** secrets `FORJD_API_URL`, reminted `FORJD_SERVICE_TOKEN`, `FORJD_TENANT_ID`; `map_forjd_tenant`.
 3. **Vercel:** `BACKEND_URL` points at Django, never at `backend.forjd.co`.
 

@@ -95,9 +95,13 @@ def _erase_forjd_tenant(
   try:
     async_to_sync(client.erase_tenant)(str(credential.tenant_id))
   except ForjdError as exc:
-    return False, str(exc)
+    from forjd.client import redact_forjd_secrets
+
+    return False, redact_forjd_secrets(str(exc))
   except Exception as exc:
-    return False, f"FORJD erase failed: {exc}"
+    from forjd.client import redact_forjd_secrets
+
+    return False, redact_forjd_secrets(f"FORJD erase failed: {exc}")
   return True, ""
 
 

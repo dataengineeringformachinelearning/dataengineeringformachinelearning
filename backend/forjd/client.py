@@ -2,19 +2,32 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
+import logging
 import re
 from dataclasses import dataclass
 from typing import Any, Final
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit
 from uuid import UUID
 
 import aiohttp
 from django.conf import settings
 
-DEFAULT_TIMEOUT_SECONDS: Final[int] = 20
+logger = logging.getLogger("forjd.client")
+
+DEFAULT_TIMEOUT_SECONDS: Final[float] = 20.0
+CONNECT_TIMEOUT_SECONDS: Final[float] = 5.0
 SERVICE_TOKEN_PREFIX: Final[str] = "fjsvc_"
 SERVICE_TOKEN_PATTERN: Final[re.Pattern[str]] = re.compile(r"\Afjsvc_[^_\s]{8}_[^\s]+\Z")
+# Nested JSON keys that must match the bound tenant (fail closed).
+TENANT_ASSERTION_KEYS: Final[frozenset[str]] = frozenset({"tenant_id", "confirm_tenant_id"})
+# Idempotent methods safe to retry once on transient upstream errors.
+_RETRYABLE_METHODS: Final[frozenset[str]] = frozenset({"GET", "HEAD"})
+_RETRYABLE_STATUSES: Final[frozenset[int]] = frozenset({502, 503, 504})
+_MAX_GET_ATTEMPTS: Final[int] = 2
+
+_connector: aiohttp.TCPConnector | None = None
 
 
 def is_forjd_service_token(token: str) -> bool:
@@ -22,9 +35,17 @@ def is_forjd_service_token(token: str) -> bool:
   return SERVICE_TOKEN_PATTERN.fullmatch(token) is not None
 
 
+def redact_forjd_secrets(message: str) -> str:
+  """Strip opaque tokens / Bearer credentials from error surfaces."""
+  text = str(message or "")
+  text = re.sub(r"fjsvc_[^\s'\"]+", "fjsvc_[REDACTED]", text)
+  text = re.sub(r"(?i)Bearer\s+[^\s'\"]+", "Bearer [REDACTED]", text)
+  return text
+
+
 class ForjdError(RuntimeError):
   def __init__(self, status: int, message: str) -> None:
-    super().__init__(message)
+    super().__init__(redact_forjd_secrets(message))
     self.status = status
 
 
@@ -33,6 +54,13 @@ class ForjdResponse:
   status: int
   body: bytes
   content_type: str
+
+
+def _shared_connector() -> aiohttp.TCPConnector:
+  global _connector
+  if _connector is None or _connector.closed:
+    _connector = aiohttp.TCPConnector(limit=32, ttl_dns_cache=300)
+  return _connector
 
 
 class ForjdClient:
@@ -95,8 +123,9 @@ class ForjdClient:
 
   def _validate_tenant_assertions(self, value: Any) -> None:
     if isinstance(value, dict):
-      if "tenant_id" in value:
-        self._require_bound_tenant(value["tenant_id"])
+      for key in TENANT_ASSERTION_KEYS:
+        if key in value:
+          self._require_bound_tenant(value[key])
       for nested_value in value.values():
         self._validate_tenant_assertions(nested_value)
     elif isinstance(value, list):
@@ -111,7 +140,7 @@ class ForjdClient:
     content_type: str,
   ) -> None:
     for key, value in parse_qsl(query_string, keep_blank_values=True):
-      if key == "tenant_id":
+      if key in TENANT_ASSERTION_KEYS:
         self._require_bound_tenant(value)
 
     media_type = content_type.partition(";")[0].strip().lower()
@@ -173,19 +202,51 @@ class ForjdClient:
     url = f"{self.base_url}{path}"
     if query_string:
       url = f"{url}?{query_string}"
-    timeout = aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT_SECONDS)
-    try:
-      async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.request(method, url, data=body, headers=headers) as response:
-          return ForjdResponse(
-            status=response.status,
-            body=await response.read(),
-            content_type=response.headers.get("Content-Type", "application/json"),
+    timeout = aiohttp.ClientTimeout(
+      total=DEFAULT_TIMEOUT_SECONDS,
+      connect=CONNECT_TIMEOUT_SECONDS,
+      sock_read=DEFAULT_TIMEOUT_SECONDS,
+    )
+    verb = method.upper()
+    attempts = _MAX_GET_ATTEMPTS if verb in _RETRYABLE_METHODS else 1
+    last_error: Exception | None = None
+
+    for attempt in range(1, attempts + 1):
+      try:
+        async with aiohttp.ClientSession(
+          timeout=timeout,
+          connector=_shared_connector(),
+          connector_owner=False,
+        ) as session:
+          async with session.request(verb, url, data=body, headers=headers) as response:
+            result = ForjdResponse(
+              status=response.status,
+              body=await response.read(),
+              content_type=response.headers.get("Content-Type", "application/json"),
+            )
+        if (
+          attempt < attempts and verb in _RETRYABLE_METHODS and result.status in _RETRYABLE_STATUSES
+        ):
+          await asyncio.sleep(0.05 * attempt)
+          continue
+        return result
+      except ForjdError:
+        raise
+      except (aiohttp.ClientError, TimeoutError, asyncio.TimeoutError) as exc:
+        last_error = exc
+        if attempt < attempts and verb in _RETRYABLE_METHODS:
+          logger.warning(
+            "forjd_transient method=%s path=%s attempt=%s error=%s",
+            verb,
+            path,
+            attempt,
+            type(exc).__name__,
           )
-    except ForjdError:
-      raise
-    except (aiohttp.ClientError, TimeoutError) as exc:
-      raise ForjdError(502, "FORJD is unavailable") from exc
+          await asyncio.sleep(0.05 * attempt)
+          continue
+        raise ForjdError(502, "FORJD is unavailable") from exc
+
+    raise ForjdError(502, "FORJD is unavailable") from last_error
 
   async def request_json(
     self,
@@ -242,12 +303,12 @@ class ForjdClient:
     request_id: str | None = None,
   ) -> dict[str, Any]:
     """GET /api/v1/projections for the bound tenant (Angular list adapter)."""
-    from urllib.parse import urlencode
+    from forjd.api import WORKFLOW_ID_TO_FORJD
 
     self._validate_configuration()
     query: dict[str, str] = {"tenant_id": self.tenant_id, "limit": str(max(1, min(limit, 200)))}
     if workflow_id:
-      query["workflow_id"] = workflow_id
+      query["workflow_id"] = WORKFLOW_ID_TO_FORJD.get(workflow_id, workflow_id)
     return await self.request_json(
       "GET",
       "/api/v1/projections",
@@ -262,10 +323,12 @@ class ForjdClient:
     request_id: str | None = None,
   ) -> dict[str, Any]:
     """POST /api/v1/projections/run for the bound tenant."""
+    from forjd.api import WORKFLOW_ID_TO_FORJD
+
     self._validate_configuration()
     payload: dict[str, Any] = {"tenant_id": self.tenant_id}
     if workflow_id:
-      payload["workflow_id"] = workflow_id
+      payload["workflow_id"] = WORKFLOW_ID_TO_FORJD.get(workflow_id, workflow_id)
     return await self.request_json(
       "POST",
       "/api/v1/projections/run",

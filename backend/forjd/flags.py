@@ -1,23 +1,19 @@
-"""BFF cutover flags for FORJD-backed data-plane adapters.
+"""Legacy BFF cutover flag aliases.
 
-Angular routes stay unchanged. These flags only affect Django's decision to
-call FORJD versus fail closed. There is no local streaming fallback.
+Prefer ``forjd.cutover`` (``FORJD_CUTOVER_PHASE`` / ``FORJD_*_MODE``). These
+wrappers exist so older imports do not read unset settings.
 """
 
 from __future__ import annotations
 
-from django.conf import settings
+from forjd.cutover import reads_from_forjd, shadow_writes_enabled
 
 
 def read_from_forjd() -> bool:
-  """When False, authenticated FORJD adapters return 503 (fail closed)."""
-  return bool(getattr(settings, "FORJD_READ_FROM_FORJD", True))
+  """True when Angular adapters should read FORJD (phase 1-3)."""
+  return reads_from_forjd()
 
 
 def dual_write_enabled() -> bool:
-  """Advisory flag for operators running a temporary dual-write bridge.
-
-  Local DEML brokers/workers are retired. Dual-write, if used, must live in a
-  separately deployed bridge — never by reintroducing Redpanda/ClickHouse here.
-  """
-  return bool(getattr(settings, "FORJD_DUAL_WRITE_ENABLED", False))
+  """True when sealed writes also record metadata-only shadow receipts."""
+  return shadow_writes_enabled()

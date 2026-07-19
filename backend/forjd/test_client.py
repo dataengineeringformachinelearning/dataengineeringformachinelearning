@@ -264,14 +264,49 @@ async def test_list_projections_binds_tenant_query() -> None:
   FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
   FORJD_TENANT_ID=TENANT_ID,
 )
-async def test_delete_tenant_fails_closed_without_network_call() -> None:
+async def test_erase_tenant_posts_confirm_and_uses_bound_tenant() -> None:
   session = _FakeSession()
+
+  with patch("forjd.client.aiohttp.ClientSession", return_value=session):
+    await ForjdClient().erase_tenant(TENANT_ID)
+
+  assert len(session.requests) == 1
+  request = session.requests[0]
+  assert request["method"] == "POST"
+  assert request["url"] == f"https://forjd.example/api/v1/tenants/{TENANT_ID}/erase"
+  body = json.loads(request["data"].decode())
+  assert body == {"confirm_tenant_id": TENANT_ID}
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+)
+async def test_erase_rejects_cross_tenant_confirm_without_network_call() -> None:
+  session = _FakeSession()
+  other = str(uuid4())
 
   with (
     patch("forjd.client.aiohttp.ClientSession", return_value=session),
-    pytest.raises(ForjdError, match="tenant erasure is not available") as error,
+    pytest.raises(ForjdError) as error,
   ):
-    await ForjdClient().delete_tenant(TENANT_ID)
+    await ForjdClient().proxy(
+      "POST",
+      f"/api/v1/tenants/{TENANT_ID}/erase",
+      body=json.dumps({"confirm_tenant_id": other}).encode(),
+    )
 
-  assert error.value.status == 503
+  assert error.value.status == 403
   assert session.requests == []
+
+
+def test_redact_forjd_secrets_strips_tokens() -> None:
+  from forjd.client import redact_forjd_secrets
+
+  raw = f"upstream said Bearer {SERVICE_TOKEN} and {SERVICE_TOKEN}"
+  redacted = redact_forjd_secrets(raw)
+  assert SERVICE_TOKEN not in redacted
+  assert "fjsvc_[REDACTED]" in redacted
+  assert "Bearer [REDACTED]" in redacted
