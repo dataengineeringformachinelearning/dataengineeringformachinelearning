@@ -1,3 +1,5 @@
+"""Transactional alert email via Resend (control-plane notifications only)."""
+
 import logging
 import os
 
@@ -6,36 +8,8 @@ import resend
 logger = logging.getLogger(__name__)
 
 
-def get_recent_stats_text() -> str:
-  """
-  Retrieves the most recent 1h bucket of AggregatedAnalytics as a formatted string.
-  """
-  try:
-    from monitor.models import AggregatedAnalytics
-
-    recent = AggregatedAnalytics.objects.filter(bucket_size="1h").order_by("-timestamp").first()
-    if not recent:
-      return "No recent stats available."
-
-    return (
-      f"--- Recent Stats (Since {recent.timestamp.strftime('%Y-%m-%d %H:%M:%S UTC')}) ---\n"
-      f"Total Requests: {recent.total_requests}\n"
-      f"Avg Latency: {recent.avg_latency_ms:.2f} ms\n"
-      f"P99 Latency: {recent.p99_latency_ms:.2f} ms\n"
-      f"Error Rate: {recent.error_rate_percent:.2f}%\n"
-      f"Threats Detected: {recent.threats_detected}\n"
-      f"Active Incidents: {recent.active_incidents}\n"
-      f"Unique Visitors: {recent.unique_visitors}\n"
-    )
-  except Exception as e:
-    logger.error(f"Failed to fetch recent stats for email: {e}")
-    return "Failed to fetch recent stats."
-
-
 def send_alert_email(subject: str, message: str):
-  """
-  Sends an alert email using the Resend API with a marketing-style HTML template.
-  """
+  """Send an alert email using Resend with a marketing-style HTML template."""
   from django.conf import settings
 
   api_key = getattr(settings, "RESEND_API_KEY", "") or os.environ.get("RESEND_API_KEY")

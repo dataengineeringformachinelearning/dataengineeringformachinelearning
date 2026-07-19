@@ -78,9 +78,9 @@ class Command(BaseCommand):
     # next_delivery_at doubles as a bounded claim lease. SKIP LOCKED permits
     # multiple app machines without holding a DB transaction over the network.
     with transaction.atomic():
+      # of=("self",) — user FK is nullable; Postgres rejects FOR UPDATE on OUTER JOIN.
       reports = list(
-        BugReport.objects.select_for_update(skip_locked=True)
-        .select_related("user")
+        BugReport.objects.select_for_update(skip_locked=True, of=("self",))
         .filter(delivery_status=BugReport.DeliveryStatus.PENDING)
         .filter(Q(next_delivery_at__isnull=True) | Q(next_delivery_at__lte=timezone.now()))
         .order_by("created_at")[:limit]

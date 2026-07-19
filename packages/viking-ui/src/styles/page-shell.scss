@@ -1029,6 +1029,16 @@ app-status-card.status-directory-card {
   transition: var(--viking-transition-interactive);
 }
 
+/* Explore error state shares directory-card chrome but must stay flex-centered */
+.status-error-state.status-directory-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--viking-space-2);
+}
+
 /* Hover state for the directory card wrapper — consistent with viking-card */
 .status-directory-card:hover,
 app-status-card.status-directory-card:hover {

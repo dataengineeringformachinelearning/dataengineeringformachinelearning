@@ -16,7 +16,9 @@ User = get_user_model()
 def _mapped_user(username: str = "learner") -> UUID:
   user = User.objects.create_user(username=username)
   user.profile.role = "Operator"
-  user.profile.save(update_fields=["role"])
+  user.profile.tier = "Pro"
+  user.profile.subscription_active = True
+  user.profile.save(update_fields=["role", "tier", "subscription_active"])
   tenant_id = uuid4()
   ForjdTenantMapping.objects.create(
     deml_account_id=user.profile.account_id,
@@ -255,6 +257,123 @@ def test_public_probes_use_shipped_forjd_paths_without_tenant_credentials(
 
 
 @pytest.mark.django_db
+@override_settings(
+  FORJD_CUTOVER_PHASE="2",
+  FORJD_READ_MODE="forjd",
+  FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+  FORJD_TENANT_ID="ded3e76a-64ca-44c9-aa90-cb6a4868fc4f",
+)
+@patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
+def test_anonymous_status_services_require_published_page(
+  mock_proxy: AsyncMock,
+  client: Client,
+) -> None:
+  """Anonymous service reads must not leak unpublished page detail."""
+  pages_body = json.dumps(
+    {
+      "ok": True,
+      "pages": [
+        {
+          "id": "page-draft",
+          "slug": "draft-page",
+          "title": "Draft",
+          "is_published": False,
+        },
+        {
+          "id": "page-public",
+          "slug": "public-page",
+          "title": "Public",
+          "is_published": True,
+        },
+      ],
+    }
+  ).encode()
+  services_body = json.dumps(
+    {
+      "ok": True,
+      "services": [{"id": "svc-1", "name": "API", "status": "operational"}],
+    }
+  ).encode()
+
+  async def _proxy(method: str, path: str, **_kwargs: object) -> ForjdResponse:
+    if path == "/api/v1/status/pages":
+      return ForjdResponse(status=200, body=pages_body, content_type="application/json")
+    return ForjdResponse(status=200, body=services_body, content_type="application/json")
+
+  mock_proxy.side_effect = _proxy
+
+  denied = client.get("/api/v1/system-status/status_pages/page-draft/services")
+  allowed = client.get("/api/v1/system-status/status_pages/page-public/services")
+
+  assert denied.status_code == 404
+  assert allowed.status_code == 200
+  assert allowed.json()[0]["name"] == "API"
+  assert mock_proxy.await_count == 3  # pages check (denied) + pages check + services
+
+
+@pytest.mark.django_db
+@override_settings(
+  FORJD_CUTOVER_PHASE="2",
+  FORJD_READ_MODE="forjd",
+  FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+  FORJD_TENANT_ID="ded3e76a-64ca-44c9-aa90-cb6a4868fc4f",
+)
+@patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
+def test_anonymous_status_pages_list_returns_published_directory(
+  mock_proxy: AsyncMock,
+  client: Client,
+) -> None:
+  """Explore directory must work without Firebase auth."""
+  tenant_id = "ded3e76a-64ca-44c9-aa90-cb6a4868fc4f"
+  mock_proxy.return_value = ForjdResponse(
+    status=200,
+    body=json.dumps(
+      {
+        "ok": True,
+        "pages": [
+          {
+            "id": "page-public",
+            "slug": "joealongi-dev",
+            "title": "joealongi.dev",
+            "description": "Personal site status",
+            "is_published": True,
+            "created_at": "2026-07-19T00:00:00Z",
+          },
+          {
+            "id": "page-draft",
+            "slug": "draft-page",
+            "title": "Draft",
+            "description": "",
+            "is_published": False,
+            "created_at": "2026-07-19T00:00:00Z",
+          },
+          {
+            "id": "page-platform",
+            "slug": "platform-status",
+            "title": "Platform Status",
+            "description": "",
+            "is_published": True,
+            "created_at": "2026-07-19T00:00:00Z",
+          },
+        ],
+      }
+    ).encode(),
+    content_type="application/json",
+  )
+
+  response = client.get("/api/v1/system-status/status_pages")
+  slash_response = client.get("/api/v1/system-status/status_pages/")
+
+  assert response.status_code == 200
+  assert slash_response.status_code == 200
+  pages = response.json()
+  assert {page["slug"] for page in pages} == {"joealongi-dev", "platform-status"}
+  assert slash_response.json() == pages
+  assert mock_proxy.await_args.args[:2] == ("GET", "/api/v1/status/pages")
+  assert parse_qs(mock_proxy.await_args.kwargs["query_string"])["tenant_id"] == [tenant_id]
+
+
+@pytest.mark.django_db
 @patch("forjd.views.ForjdClient")
 def test_public_status_page_unwraps_forjd_response_for_existing_angular_shape(
   mock_client: MagicMock,
@@ -263,7 +382,10 @@ def test_public_status_page_unwraps_forjd_response_for_existing_angular_shape(
   mock_proxy = AsyncMock()
   mock_proxy.return_value = ForjdResponse(
     status=200,
-    body=b'{"ok":true,"page":{"id":"page-1","slug":"public-page","title":"Public"}}',
+    body=(
+      b'{"ok":true,"page":{"id":"page-1","tenant_id":"ded3e76a-64ca-44c9-aa90-cb6a4868fc4f",'
+      b'"slug":"public-page","title":"Public"}}'
+    ),
     content_type="application/json",
   )
   mock_client.return_value.proxy = mock_proxy
@@ -279,6 +401,7 @@ def test_public_status_page_unwraps_forjd_response_for_existing_angular_shape(
     "services": [],
     "incidents": [],
   }
+  assert "tenant_id" not in response.json()
   mock_client.assert_called_once_with(use_service_auth=False)
   assert mock_proxy.await_args.args == ("GET", "/api/v1/status/pages/slug/public-page")
 
@@ -380,7 +503,9 @@ def test_session_and_replay_routes_require_tenant_mapping(
   """Wired adapters still fail closed without an account→FORJD tenant mapping."""
   user = User.objects.create_user(username="learner")
   user.profile.role = "Security Admin"
-  user.profile.save(update_fields=["role"])
+  user.profile.tier = "Pro"
+  user.profile.subscription_active = True
+  user.profile.save(update_fields=["role", "tier", "subscription_active"])
 
   response = getattr(client, method)(
     path,

@@ -86,9 +86,19 @@ urlpatterns = [
     name="forjd-readiness-adapter",
   ),
   path(
+    "api/v1/system-status/status_pages/slug/<str:slug>/",
+    native_status_page_proxy,
+    name="forjd-public-status-page-adapter-slash",
+  ),
+  path(
     "api/v1/system-status/status_pages/slug/<str:slug>",
     native_status_page_proxy,
     name="forjd-public-status-page-adapter",
+  ),
+  path(
+    "api/v1/system-status/status_pages/<str:page_id>/services/",
+    status_page_services_proxy,
+    name="forjd-status-page-services-adapter-slash",
   ),
   path(
     "api/v1/system-status/status_pages/<str:page_id>/services",
@@ -96,14 +106,29 @@ urlpatterns = [
     name="forjd-status-page-services-adapter",
   ),
   path(
+    "api/v1/system-status/status_pages/<str:page_id>/incidents/",
+    status_page_incidents_proxy,
+    name="forjd-status-page-incidents-adapter-slash",
+  ),
+  path(
     "api/v1/system-status/status_pages/<str:page_id>/incidents",
     status_page_incidents_proxy,
     name="forjd-status-page-incidents-adapter",
   ),
   path(
+    "api/v1/system-status/status_pages/<str:page_id>/",
+    status_page_detail_proxy,
+    name="forjd-status-page-detail-adapter-slash",
+  ),
+  path(
     "api/v1/system-status/status_pages/<str:page_id>",
     status_page_detail_proxy,
     name="forjd-status-page-detail-adapter",
+  ),
+  path(
+    "api/v1/system-status/status_pages/",
+    status_pages_list_proxy,
+    name="forjd-status-pages-list-adapter-slash",
   ),
   path(
     "api/v1/system-status/status_pages",

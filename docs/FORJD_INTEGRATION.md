@@ -92,6 +92,13 @@ service credential. API keys do not bypass user roles.
 | Operator       | Viewer plus sealed ingest, case/vulnerability changes, replay/DLQ actions, export creation, SIEM signal submission, approved playbook execution, and SOAR action acknowledgement/retry |
 | Security Admin | Operator plus playbook/status/integration/model administration and destructive domain actions                                                                                          |
 
+**Pro entitlement (DEML-side):** role alone is not enough for premium writes. Exports,
+ML admin, SIEM signal writes, projections run, vulnerability/case writes, and playbook
+execute/admin also require `tier=Pro` and `subscription_active` (Stripe). Standard keeps
+core read/ingest/status/report/session/security-alert/replay paths. FORJD has no billing
+awareness — entitlement is enforced in `backend/forjd/policy.py` before the BFF exchanges
+credentials. Denials return `403` with `code=pro_required`.
+
 Privileged attempts, denials, successes, and failures create metadata-only DEML audit
 records. Audit details may contain actor, role, action, local and upstream request ids,
 resource, mapped tenant, result, and status. They never contain request bodies,
@@ -99,31 +106,31 @@ ciphertext, Firebase tokens, API keys, or `fjsvc_` credentials.
 
 ## Native FORJD APIs (BFF-adapted)
 
-| Capability         | Native FORJD route                                                | Stable DEML path                                                    |
-| ------------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Contract probe     | `GET /api/v1/capabilities`                                        | `GET /api/v1/forjd/capabilities`                                    |
-| Sealed ingest      | `POST /api/v1/ingest`                                             | `/api/v1/ingest` (+ batch)                                          |
-| Ingest processing  | `GET /api/v1/ingest/processing/{batch_id}`                        | same tenant-bound path                                              |
-| Projections        | `GET /api/v1/projections`                                         | `/api/v1/projections`                                               |
-| Analytics overview | `GET /api/v1/analytics/overview`                                  | `/api/v1/analytics/overview`                                        |
-| Tenant selector    | DEML account mapping                                              | `GET /api/v1/analytics/tenants`                                     |
-| Incident cases     | `GET/POST/PATCH /api/v1/soc/cases[/id]`                           | `/api/v1/analytics/incidents[/id]`                                  |
-| SOAR playbooks     | `/api/v1/playbooks[/id][/execute]`                                | `/api/v1/analytics/playbooks[/id][/execute]`                        |
-| Playbook runs      | `GET /api/v1/playbooks/runs`                                      | `GET /api/v1/analytics/playbook-runs`                               |
-| Action acknowledge | `POST /api/v1/playbooks/runs/{run}/actions/{action}/ack`          | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/ack`   |
-| Action retry       | `POST /api/v1/playbooks/runs/{run}/actions/{action}/retry`        | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/retry` |
-| SIEM signals       | `GET/POST /api/v1/siem/signals`                                   | `GET/POST /api/v1/siem/signals`                                     |
-| Vulnerabilities    | `GET/POST/PATCH /api/v1/vulnerabilities[/id]`                     | `/api/v1/agent/vulnerabilities[/id]`                                |
-| Compliance         | `GET /api/v1/compliance/soc`                                      | `GET /api/v1/ml/compliance/soc-status`                              |
-| Status pages       | `GET /api/v1/status/pages`                                        | `/api/v1/system-status/status_pages`                                |
-| Crypto sessions    | `/api/v1/sessions/*`                                              | `/api/v1/sessions/*`                                                |
-| Replay / DLQ       | `/api/v1/replay/*`                                                | `/api/v1/replay/*`                                                  |
-| Exports            | `GET/POST /api/v1/exports`, `GET /api/v1/exports/{id}[/download]` | `/api/v1/exports[/id][/download]`                                   |
-| ML latest          | `GET /api/v1/ml/scores` (fallback models)                         | `/api/v1/ml/latest`                                                 |
-| Security alert     | `POST /api/v1/integrations/security-alert`                        | same path                                                           |
-| Report documents   | `POST/GET /api/v1/reports/documents`                              | `POST /api/v1/agent/report-issue`                                   |
-| Tenant erase       | `POST /api/v1/tenants/{id}/erase`                                 | account deletion saga                                               |
-| Health             | `GET /health`, `GET /ready`                                       | proxied / local ready                                               |
+| Capability         | Native FORJD route                                                | Stable DEML path                                                                                |
+| ------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Contract probe     | `GET /api/v1/capabilities`                                        | `GET /api/v1/forjd/capabilities`                                                                |
+| Sealed ingest      | `POST /api/v1/ingest`                                             | `/api/v1/ingest` (+ batch)                                                                      |
+| Ingest processing  | `GET /api/v1/ingest/processing/{batch_id}`                        | same tenant-bound path                                                                          |
+| Projections        | `GET /api/v1/projections`                                         | `/api/v1/projections`                                                                           |
+| Analytics overview | `GET /api/v1/analytics/overview`                                  | `/api/v1/analytics/overview`                                                                    |
+| Tenant selector    | DEML account mapping                                              | `GET /api/v1/analytics/tenants`                                                                 |
+| Incident cases     | `GET/POST/PATCH /api/v1/soc/cases[/id]`                           | `/api/v1/analytics/incidents[/id]`                                                              |
+| SOAR playbooks     | `/api/v1/playbooks[/id][/execute]`                                | `/api/v1/analytics/playbooks[/id][/execute]`                                                    |
+| Playbook runs      | `GET /api/v1/playbooks/runs`                                      | `GET /api/v1/analytics/playbook-runs`                                                           |
+| Action acknowledge | `POST /api/v1/playbooks/runs/{run}/actions/{action}/ack`          | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/ack`                               |
+| Action retry       | `POST /api/v1/playbooks/runs/{run}/actions/{action}/retry`        | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/retry`                             |
+| SIEM signals       | `GET/POST /api/v1/siem/signals`                                   | `GET/POST /api/v1/siem/signals`                                                                 |
+| Vulnerabilities    | `GET/POST/PATCH /api/v1/vulnerabilities[/id]`                     | `/api/v1/agent/vulnerabilities[/id]`                                                            |
+| Compliance         | `GET /api/v1/compliance/soc`                                      | `GET /api/v1/ml/compliance/soc-status`                                                          |
+| Status pages       | `GET /api/v1/status/pages`                                        | `/api/v1/system-status/status_pages` (anonymous explore: published-only via platform `FORJD_*`) |
+| Crypto sessions    | `/api/v1/sessions/*`                                              | `/api/v1/sessions/*`                                                                            |
+| Replay / DLQ       | `/api/v1/replay/*`                                                | `/api/v1/replay/*`                                                                              |
+| Exports            | `GET/POST /api/v1/exports`, `GET /api/v1/exports/{id}[/download]` | `/api/v1/exports[/id][/download]`                                                               |
+| ML latest          | `GET /api/v1/ml/scores` (fallback models)                         | `/api/v1/ml/latest`                                                                             |
+| Security alert     | `POST /api/v1/integrations/security-alert`                        | same path                                                                                       |
+| Report documents   | `POST/GET /api/v1/reports/documents`                              | `POST /api/v1/agent/report-issue`                                                               |
+| Tenant erase       | `POST /api/v1/tenants/{id}/erase`                                 | account deletion saga                                                                           |
+| Health             | `GET /health`, `GET /ready`                                       | proxied / local ready                                                                           |
 
 FORJD collection APIs are limit-based. Sealed batches contain at most 25 events and
 canonical ingest request bodies are capped at 8 MiB; DEML applies the same limits without

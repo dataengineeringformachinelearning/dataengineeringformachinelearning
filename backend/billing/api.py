@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import os
 import uuid
 from typing import Any
 
@@ -25,6 +26,17 @@ if HAS_STRIPE:
 
 router = Router(tags=["Billing"])
 User = get_user_model()
+
+_DEFAULT_STRIPE_PRICE_ID = "price_1TlgG2Er73F9pBqwItcWHIJf"
+_ACTIVE_SUBSCRIPTION_STATUSES = frozenset({"active", "trialing"})
+
+
+def _stripe_price_id() -> str:
+  return (
+    str(getattr(settings, "STRIPE_PRICE_ID", "") or "").strip()
+    or str(os.getenv("STRIPE_PRICE_ID", "") or "").strip()
+    or _DEFAULT_STRIPE_PRICE_ID
+  )
 
 
 def _stripe_resource_is_missing(exc: Exception) -> bool:
@@ -80,10 +92,42 @@ def _subscription_period_end(subscription: Any) -> int | None:
   return max(ends) if ends else None
 
 
+def _subscription_status(subscription: Any) -> str:
+  if isinstance(subscription, dict):
+    return str(subscription.get("status") or "")
+  return str(getattr(subscription, "status", "") or "")
+
+
 def _get_profile(request) -> UserProfile | None:
   if not hasattr(request.user, "profile"):
     return None
   return request.user.profile
+
+
+def _apply_active_subscription(
+  profile: UserProfile, subscription: Any, *, customer_id: str | None
+) -> None:
+  profile.tier = "Pro"
+  profile.subscription_active = True
+  if customer_id:
+    profile.stripe_customer_id = customer_id
+  sub_id = (
+    subscription.get("id") if isinstance(subscription, dict) else getattr(subscription, "id", None)
+  )
+  if sub_id:
+    profile.stripe_subscription_id = str(sub_id)
+  period_end = _subscription_period_end(subscription)
+  if period_end:
+    profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
+      period_end, tz=datetime.timezone.utc
+    )
+  profile.save()
+
+
+def _downgrade_to_standard(profile: UserProfile) -> None:
+  profile.tier = "Standard"
+  profile.subscription_active = False
+  profile.save(update_fields=["tier", "subscription_active"])
 
 
 @router.post("/create-checkout-session")
@@ -94,7 +138,18 @@ def create_checkout_session(request):
     return JsonResponse({"error": "Authentication required"}, status=401)
 
   try:
-    data = json.loads(request.body) if request.body else {}
+    # --- Optional JSON body (empty / non-JSON posts are treated as {}) ---
+    raw_body = request.body or b""
+    if not raw_body.strip():
+      data = {}
+    else:
+      try:
+        parsed = json.loads(raw_body)
+      except json.JSONDecodeError:
+        from django.http import JsonResponse
+
+        return JsonResponse({"error": "Invalid request body"}, status=400)
+      data = parsed if isinstance(parsed, dict) else {}
     account_id = data.get("account_id")
 
     profile = _get_profile(request)
@@ -111,6 +166,11 @@ def create_checkout_session(request):
 
       return JsonResponse({"error": "Account deletion is in progress"}, status=409)
 
+    if profile.tier == "Pro" and profile.subscription_active:
+      from django.http import JsonResponse
+
+      return JsonResponse({"error": "Pro subscription already active"}, status=409)
+
     if account_id:
       try:
         valid_id = uuid.UUID(account_id)
@@ -124,28 +184,35 @@ def create_checkout_session(request):
 
       return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
 
-    price_id = "price_1TlgG2Er73F9pBqwItcWHIJf"
-
-    session = stripe.checkout.Session.create(
-      payment_method_types=["card"],
-      line_items=[
+    account_key = str(profile.account_id)
+    session_kwargs: dict[str, Any] = {
+      "payment_method_types": ["card"],
+      "line_items": [
         {
-          "price": price_id,
+          "price": _stripe_price_id(),
           "quantity": 1,
         },
       ],
-      mode="subscription",
-      success_url=settings.FRONTEND_URL + "/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url=settings.FRONTEND_URL + "/",
-      client_reference_id=str(profile.account_id),
-      allow_promotion_codes=True,
-    )
+      "mode": "subscription",
+      "success_url": settings.FRONTEND_URL + "/success?session_id={CHECKOUT_SESSION_ID}",
+      "cancel_url": settings.FRONTEND_URL + "/",
+      "client_reference_id": account_key,
+      "metadata": {"deml_account_id": account_key},
+      "subscription_data": {"metadata": {"deml_account_id": account_key}},
+      "allow_promotion_codes": True,
+    }
+    if profile.stripe_customer_id:
+      session_kwargs["customer"] = profile.stripe_customer_id
+    elif getattr(request.user, "email", None):
+      session_kwargs["customer_email"] = request.user.email
+
+    session = stripe.checkout.Session.create(**session_kwargs)
     return {"checkout_url": session.url}
   except Exception as e:
-    logger.error(f"Error creating checkout session: {e}")
+    logger.error("Error creating checkout session: %s", type(e).__name__)
     from django.http import JsonResponse
 
-    return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Unable to create checkout session"}, status=500)
 
 
 @router.post("/webhook", auth=None)
@@ -179,6 +246,18 @@ def stripe_webhook(request):
       if isinstance(session, dict)
       else getattr(session, "subscription", None)
     )
+    payment_status = (
+      session.get("payment_status")
+      if isinstance(session, dict)
+      else getattr(session, "payment_status", None)
+    )
+    mode = session.get("mode") if isinstance(session, dict) else getattr(session, "mode", None)
+
+    # --- Require paid subscription checkout before upgrading ---
+    if payment_status not in {"paid", "no_payment_required"}:
+      return HttpResponse(status=200)
+    if mode is not None and str(mode) != "subscription":
+      return HttpResponse(status=200)
 
     if client_reference_id:
       profile_ref = UserProfile.objects.filter(account_id=client_reference_id).first()
@@ -279,19 +358,6 @@ def sync_subscription(request: Any) -> Any:
   if not profile:
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
 
-  email = request.user.email
-
-  # Collect all possible emails to check against Stripe
-  emails_to_check = set()
-  if email:
-    emails_to_check.add(email)
-
-  if hasattr(request, "firebase_token") and request.firebase_token:
-    identities = request.firebase_token.get("firebase", {}).get("identities", {})
-    linked_emails = identities.get("email", [])
-    for linked_email in linked_emails:
-      emails_to_check.add(linked_email)
-
   if not HAS_STRIPE or not getattr(stripe, "api_key", None):
     return {
       "status": "synced",
@@ -300,84 +366,76 @@ def sync_subscription(request: Any) -> Any:
       "message": "Billing sync unavailable (Stripe not configured)",
     }
 
-  if not emails_to_check and not profile.stripe_customer_id:
-    if profile.stripe_customer_id is None and profile.tier == "Pro":
-      profile.subscription_active = True
-      profile.save()
-      return {"status": "synced", "active": True, "cancel_at_period_end": False}
-    profile.tier = "Standard"
-    profile.subscription_active = False
-    profile.save()
+  # Never attach subscriptions by email — only bound Stripe identifiers.
+  customer_id = str(profile.stripe_customer_id or "").strip()
+  subscription_id = str(profile.stripe_subscription_id or "").strip()
+  if not customer_id and not subscription_id:
+    _downgrade_to_standard(profile)
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
 
-  stripe_error_occurred = False
   try:
-    customers = []
-    if profile.stripe_customer_id:
+    subscription: Any | None = None
+    if subscription_id:
       try:
-        customer = stripe.Customer.retrieve(profile.stripe_customer_id)
-        if not getattr(customer, "deleted", False):
-          customers.append(customer)
+        subscription = stripe.Subscription.retrieve(subscription_id)
       except Exception as err:
-        logger.warning(f"Stripe customer retrieve failed: {err}")
-        stripe_error_occurred = True
+        if not _stripe_resource_is_missing(err):
+          logger.warning("Stripe subscription retrieve failed: %s", type(err).__name__)
+          return {
+            "status": "synced",
+            "active": profile.subscription_active,
+            "cancel_at_period_end": False,
+            "message": "Billing sync degraded (Stripe API error)",
+          }
+        subscription = None
+    elif customer_id:
+      try:
+        customer = stripe.Customer.retrieve(customer_id)
+        if getattr(customer, "deleted", False):
+          subscription = None
+        else:
+          subscriptions = stripe.Subscription.list(customer=customer_id, status="active").data
+          subscription = subscriptions[0] if subscriptions else None
+      except Exception as err:
+        if not _stripe_resource_is_missing(err):
+          logger.warning("Stripe customer sync failed: %s", type(err).__name__)
+          return {
+            "status": "synced",
+            "active": profile.subscription_active,
+            "cancel_at_period_end": False,
+            "message": "Billing sync degraded (Stripe API error)",
+          }
+        subscription = None
 
-    if not customers and not stripe_error_occurred:
-      for e in emails_to_check:
-        try:
-          customers.extend(stripe.Customer.list(email=e).data)
-        except Exception as err:
-          logger.warning(f"Stripe customer list failed: {err}")
-          stripe_error_occurred = True
-
-    if customers and not stripe_error_occurred:
-      for customer in customers:
-        try:
-          subscriptions = stripe.Subscription.list(customer=customer.id, status="active").data
-          if subscriptions:
-            sub = subscriptions[0]
-            profile.tier = "Pro"
-            profile.stripe_customer_id = customer.id
-            profile.stripe_subscription_id = sub.id
-            profile.subscription_active = True
-            period_end = _subscription_period_end(sub)
-            if period_end:
-              profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
-                period_end, tz=datetime.timezone.utc
-              )
-            profile.save()
-            return {
-              "status": "synced",
-              "active": True,
-              "cancel_at_period_end": getattr(sub, "cancel_at_period_end", False),
-            }
-        except Exception as err:
-          logger.warning(f"Stripe subscription list failed: {err}")
-          stripe_error_occurred = True
-
-    if stripe_error_occurred:
+    if (
+      subscription is not None
+      and _subscription_status(subscription) in _ACTIVE_SUBSCRIPTION_STATUSES
+    ):
+      resolved_customer = customer_id or (
+        subscription.get("customer")
+        if isinstance(subscription, dict)
+        else getattr(subscription, "customer", None)
+      )
+      _apply_active_subscription(
+        profile, subscription, customer_id=str(resolved_customer or "") or None
+      )
       return {
         "status": "synced",
-        "active": profile.subscription_active,
-        "cancel_at_period_end": False,
-        "message": "Billing sync degraded (Stripe API error)",
+        "active": True,
+        "cancel_at_period_end": bool(
+          subscription.get("cancel_at_period_end")
+          if isinstance(subscription, dict)
+          else getattr(subscription, "cancel_at_period_end", False)
+        ),
       }
 
-    if profile.stripe_customer_id is None and profile.tier == "Pro":
-      # Preserve manual upgrades that don't have a Stripe customer tied to them
-      profile.subscription_active = True
-      profile.save()
-      return {"status": "synced", "active": True, "cancel_at_period_end": False}
-
-    profile.tier = "Standard"
-    profile.subscription_active = False
-    profile.save()
+    _downgrade_to_standard(profile)
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
   except Exception as e:
-    logger.error(f"Error syncing subscription: {e}", exc_info=True)
+    logger.error("Error syncing subscription: %s", type(e).__name__, exc_info=True)
     from django.http import JsonResponse
 
-    return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Unable to sync subscription"}, status=500)
 
 
 @router.post("/cancel-subscription")
@@ -407,10 +465,10 @@ def cancel_subscription(request):
     sub = stripe.Subscription.modify(profile.stripe_subscription_id, cancel_at_period_end=True)
     return {"status": "cancelled", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
-    logger.error(f"Error cancelling subscription: {e}")
+    logger.error("Error cancelling subscription: %s", type(e).__name__)
     from django.http import JsonResponse
 
-    return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Unable to cancel subscription"}, status=500)
 
 
 @router.post("/resume-subscription")
@@ -440,7 +498,7 @@ def resume_subscription(request):
     sub = stripe.Subscription.modify(profile.stripe_subscription_id, cancel_at_period_end=False)
     return {"status": "resumed", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
-    logger.error(f"Error resuming subscription: {e}")
+    logger.error("Error resuming subscription: %s", type(e).__name__)
     from django.http import JsonResponse
 
-    return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Unable to resume subscription"}, status=500)

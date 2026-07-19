@@ -78,10 +78,10 @@ export class IsolatedStatus implements OnInit {
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
-  p99LatencyMap = signal<Record<string, number>>({ 'mock-id': 0 });
-  totalRequestsMap = signal<Record<string, number>>({ 'mock-id': 0 });
+  p99LatencyMap = signal<Record<string, number>>({ 'loading-placeholder': 0 });
+  totalRequestsMap = signal<Record<string, number>>({ 'loading-placeholder': 0 });
   simulatedThreatReportMap = signal<Record<string, ThreatReportResponse>>({
-    'mock-id': {
+    'loading-placeholder': {
       status: 'success',
       suspicious_ratio: 0,
       anomaly_score: 0,
@@ -92,8 +92,9 @@ export class IsolatedStatus implements OnInit {
     },
   });
 
-  mockPage: StatusPageData = {
-    id: 'mock-id',
+  /** Skeleton card shown while the public status page loads. */
+  loadingPlaceholder: StatusPageData = {
+    id: 'loading-placeholder',
     title: 'Platform Status Feed',
     slug: 'platform-status',
     description: 'Real-time telemetry and status monitoring for all machine learning pipelines.',
@@ -103,7 +104,7 @@ export class IsolatedStatus implements OnInit {
 
   displayPages = computed(() => {
     if (this.isLoading() && !this.loadFailed()) {
-      return [this.mockPage];
+      return [this.loadingPlaceholder];
     }
     return this.statusPages();
   });
@@ -174,7 +175,7 @@ export class IsolatedStatus implements OnInit {
     this.loadFailed.set(false);
     const isCrawler = typeof navigator !== 'undefined' && navigator.webdriver;
     if (isCrawler) {
-      this.statusPages.set([this.mockPage]);
+      this.statusPages.set([this.loadingPlaceholder]);
       this.isLoading.set(false);
       this.loadFailed.set(false);
       this.cdr.markForCheck();

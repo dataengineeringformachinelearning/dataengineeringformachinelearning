@@ -59,8 +59,9 @@ export class Explore implements OnInit {
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
-  mockPage: StatusPageData = {
-    id: 'mock-id',
+  /** Skeleton card shown while the published directory loads. */
+  loadingPlaceholder: StatusPageData = {
+    id: 'loading-placeholder',
     title: 'Loading Directory...',
     slug: 'loading',
     description: 'Fetching status pages from the platform directory...',
@@ -70,7 +71,7 @@ export class Explore implements OnInit {
 
   displayPages = computed(() => {
     if (this.isLoading() && !this.loadFailed()) {
-      return [this.mockPage];
+      return [this.loadingPlaceholder];
     }
     return this.statusPages();
   });

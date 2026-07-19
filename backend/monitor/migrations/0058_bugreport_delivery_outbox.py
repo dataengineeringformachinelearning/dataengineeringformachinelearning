@@ -8,6 +8,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 from django.db import migrations, models
+from django.db.utils import OperationalError, ProgrammingError
 
 _EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
 _JWT_RE = re.compile(r"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b")
@@ -90,16 +91,18 @@ def backfill_legacy_reports(apps, schema_editor) -> None:
   pending = []
   queryset = bug_report.objects.using(database).all()
   for report in queryset.iterator(chunk_size=500):
-    report.client_report_id = uuid.uuid4()
+    if not getattr(report, "client_report_id", None):
+      report.client_report_id = uuid.uuid4()
     report.user_description = _redact_report_text(report.user_description).strip()[:8000]
     report.telemetry_context = _report_context(report.telemetry_context)
     report.content_sha256 = _content_sha256(
       report.user_description,
       report.telemetry_context,
     )
-    report.delivery_status = "legacy_retained"
-    report.next_delivery_at = None
-    report.last_delivery_error = "LegacyReportRetainedLocally"
+    if report.delivery_status in {"", "pending"} and not report.forjd_document_id:
+      report.delivery_status = "legacy_retained"
+      report.next_delivery_at = None
+      report.last_delivery_error = "LegacyReportRetainedLocally"
     pending.append(report)
     if len(pending) == 500:
       bug_report.objects.using(database).bulk_update(
@@ -130,21 +133,34 @@ def backfill_legacy_reports(apps, schema_editor) -> None:
     )
 
 
+class _AddFieldIfMissing(migrations.AddField):
+  """AddField that tolerates columns already present from a partial deploy."""
+
+  def database_forwards(self, app_label, schema_editor, from_state, to_state) -> None:
+    try:
+      super().database_forwards(app_label, schema_editor, from_state, to_state)
+    except (OperationalError, ProgrammingError) as exc:
+      message = str(exc).lower()
+      if "already exists" in message or "duplicate column" in message:
+        return
+      raise
+
+
 class Migration(migrations.Migration):
   dependencies = [("monitor", "0057_browser_session_auth_handoff")]
 
   operations = [
-    migrations.AddField(
+    _AddFieldIfMissing(
       model_name="bugreport",
       name="client_report_id",
       field=models.UUIDField(editable=False, null=True),
     ),
-    migrations.AddField(
+    _AddFieldIfMissing(
       model_name="bugreport",
       name="content_sha256",
       field=models.CharField(blank=True, default="", max_length=64),
     ),
-    migrations.AddField(
+    _AddFieldIfMissing(
       model_name="bugreport",
       name="delivery_status",
       field=models.CharField(
@@ -158,22 +174,22 @@ class Migration(migrations.Migration):
         max_length=16,
       ),
     ),
-    migrations.AddField(
+    _AddFieldIfMissing(
       model_name="bugreport",
       name="forjd_document_id",
       field=models.CharField(blank=True, default="", max_length=64),
     ),
-    migrations.AddField(
+    _AddFieldIfMissing(
       model_name="bugreport",
       name="delivery_attempts",
       field=models.PositiveIntegerField(default=0),
     ),
-    migrations.AddField(
+    _AddFieldIfMissing(
       model_name="bugreport",
       name="next_delivery_at",
       field=models.DateTimeField(blank=True, db_index=True, null=True),
     ),
-    migrations.AddField(
+    _AddFieldIfMissing(
       model_name="bugreport",
       name="last_delivery_error",
       field=models.CharField(blank=True, default="", max_length=128),

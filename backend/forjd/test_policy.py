@@ -13,6 +13,19 @@ from forjd.policy import action_policy, actor_for_request, require_forjd_action
 
 User = get_user_model()
 
+_PRO_ACTIONS = frozenset(
+  {
+    "export.write",
+    "model.admin",
+    "playbook.admin",
+    "playbook.execute",
+    "siem.signal.write",
+    "projection.run",
+    "vulnerability.write",
+    "case.write",
+  }
+)
+
 
 @pytest.mark.parametrize(
   ("action", "allowed_roles"),
@@ -32,13 +45,37 @@ User = get_user_model()
   ],
 )
 def test_action_policy_matrix(action: str, allowed_roles: set[str]) -> None:
-  assert action_policy(action).roles == allowed_roles
+  policy = action_policy(action)
+  assert policy.roles == allowed_roles
+  assert policy.requires_pro is (action in _PRO_ACTIONS)
 
 
-async def _request_for(role: str):
-  user = await sync_to_async(User.objects.create_user)(username=f"policy-{role}")
+@pytest.mark.parametrize(
+  "action",
+  [
+    "read",
+    "ingest.write",
+    "report.write",
+    "status.admin",
+    "session.write",
+    "security-alert.write",
+    "replay.write",
+  ],
+)
+def test_core_product_actions_do_not_require_pro(action: str) -> None:
+  assert action_policy(action).requires_pro is False
+
+
+async def _request_for(role: str, *, pro: bool = False):
+  user = await sync_to_async(User.objects.create_user)(username=f"policy-{role}-{pro}")
   user.profile.role = role
-  await sync_to_async(user.profile.save)(update_fields=["role"])
+  if pro:
+    user.profile.tier = "Pro"
+    user.profile.subscription_active = True
+  else:
+    user.profile.tier = "Standard"
+    user.profile.subscription_active = False
+  await sync_to_async(user.profile.save)(update_fields=["role", "tier", "subscription_active"])
   request = RequestFactory().post("/api/v1/analytics/playbooks")
   request.user = user
   request.firebase_token = {"uid": user.username}
@@ -53,7 +90,7 @@ async def test_privileged_decorator_audits_attempt_and_result(
   status: int,
   outcome: str,
 ) -> None:
-  request, user = await _request_for("Security Admin")
+  request, user = await _request_for("Security Admin", pro=True)
 
   @require_forjd_action("playbook.admin")
   async def view(_request):
@@ -75,7 +112,7 @@ async def test_privileged_decorator_audits_attempt_and_result(
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
 async def test_privileged_decorator_denies_viewer_and_audits_denial() -> None:
-  request, user = await _request_for("Viewer")
+  request, user = await _request_for("Viewer", pro=True)
 
   @require_forjd_action("playbook.admin")
   async def view(_request):
@@ -87,6 +124,38 @@ async def test_privileged_decorator_denies_viewer_and_audits_denial() -> None:
   assert json.loads(response.content)["code"] == "forjd_action_forbidden"
   log = await sync_to_async(AuditLog.objects.get)(user=user)
   assert log.action == "FORJD_PLAYBOOK_ADMIN_DENIED"
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+async def test_pro_action_denies_standard_operator() -> None:
+  request, user = await _request_for("Operator", pro=False)
+
+  @require_forjd_action("export.write")
+  async def view(_request):
+    return JsonResponse({"ok": True})
+
+  response = await view(request)
+
+  assert response.status_code == 403
+  body = json.loads(response.content)
+  assert body["code"] == "pro_required"
+  assert body["detail"] == "Pro subscription required"
+  log = await sync_to_async(AuditLog.objects.get)(user=user)
+  assert log.action == "FORJD_EXPORT_WRITE_DENIED"
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+async def test_actor_loads_tier_and_subscription_flags() -> None:
+  request, user = await _request_for("Operator", pro=True)
+
+  actor = await actor_for_request(request)
+
+  assert actor.user_id == user.id
+  assert actor.role == "Operator"
+  assert actor.tier == "Pro"
+  assert actor.subscription_active is True
 
 
 @pytest.mark.asyncio

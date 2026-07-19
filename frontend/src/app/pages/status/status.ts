@@ -81,8 +81,9 @@ export class Status implements OnInit {
     return 'muted';
   }
 
-  mockPage: StatusPageData = {
-    id: 'mock-id',
+  /** Skeleton card shown while status pages load. */
+  loadingPlaceholder: StatusPageData = {
+    id: 'loading-placeholder',
     title: 'Platform Status Feed',
     slug: 'platform-status',
     description: 'Real-time telemetry and status monitoring for all machine learning pipelines.',
@@ -92,7 +93,7 @@ export class Status implements OnInit {
 
   displayPages = computed(() => {
     if (this.isLoading() && !this.loadFailed()) {
-      return [this.mockPage];
+      return [this.loadingPlaceholder];
     }
     return this.statusPages();
   });
@@ -193,24 +194,24 @@ export class Status implements OnInit {
 
   dashboardServices = (page: StatusPageData): StatusDashboardService[] => {
     const services = this.servicesMap()[page.id] ?? [];
-    if (services.length === 0 && page.id === this.mockPage.id) {
+    if (services.length === 0 && page.id === this.loadingPlaceholder.id) {
       return [
         {
           name: 'Primary Site',
-          url: 'https://joealongi.dev',
+          url: 'https://example.com',
           status: 'operational',
           statusLabel: 'Operational',
-          latency: `${page.p99_latency ?? 158.71}ms`,
-          uptime: '100.00%',
+          latency: `${page.p99_latency ?? 0}ms`,
+          uptime: '—',
           history: this.dashboardHistory(page),
         },
         {
           name: 'API Gateway',
-          url: 'https://api.deml.app',
+          url: 'https://api.example.com',
           status: 'operational',
           statusLabel: 'Operational',
-          latency: `${page.p99_latency ?? 176.24}ms`,
-          uptime: '99.99%',
+          latency: `${page.p99_latency ?? 0}ms`,
+          uptime: '—',
           history: this.dashboardHistory(page, { name: 'API Gateway' }),
         },
       ];
@@ -314,7 +315,7 @@ export class Status implements OnInit {
     this.loadFailed.set(false);
     const isCrawler = typeof navigator !== 'undefined' && navigator.webdriver;
     if (isCrawler) {
-      this.statusPages.set([this.mockPage]);
+      this.statusPages.set([this.loadingPlaceholder]);
       this.isLoading.set(false);
       this.loadFailed.set(false);
       this.cdr.markForCheck();

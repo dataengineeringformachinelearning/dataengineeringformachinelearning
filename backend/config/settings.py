@@ -243,6 +243,8 @@ DEML_HEADLESS_RATE_LIMIT_ENABLED = get_bool("DEML_HEADLESS_RATE_LIMIT_ENABLED", 
 DEML_HEADLESS_INGEST_RPM = get_int("DEML_HEADLESS_INGEST_RPM", default=120)
 DEML_HEADLESS_WRITE_RPM = get_int("DEML_HEADLESS_WRITE_RPM", default=300)
 DEML_HEADLESS_READ_RPM = get_int("DEML_HEADLESS_READ_RPM", default=1200)
+# Anonymous explore/status directory reads (IP-hashed; separate from headless auth quotas).
+DEML_PUBLIC_STATUS_RPM = get_int("DEML_PUBLIC_STATUS_RPM", default=60)
 
 # Channels — in-process layer (force-logout best-effort).
 CHANNEL_LAYERS = {
@@ -352,6 +354,7 @@ MARKETING_URL: Final[str] = get_str("MARKETING_URL")
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "price_1TlgG2Er73F9pBqwItcWHIJf")
 
 # Security Headers & Cookie Settings — Antigravity - Claude Opus 4.6
 if not DEBUG:

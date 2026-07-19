@@ -3,12 +3,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
-import { Validators } from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Login } from './login';
 import { AuthService } from '../../services/auth.service';
 
-type LoginTestComponent = Login & {
+type LoginHarness = {
+  loginForm: FormGroup;
   setMfaVerificationValidators: () => void;
 };
 
@@ -26,7 +27,7 @@ const authServiceMock = {
 };
 
 describe('Login', () => {
-  let component: LoginTestComponent;
+  let harness: LoginHarness;
   let fixture: ComponentFixture<Login>;
 
   beforeEach(async () => {
@@ -41,27 +42,28 @@ describe('Login', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(Login);
-    component = fixture.componentInstance as LoginTestComponent;
+    // Private MFA helper is exercised via a narrow harness cast (not Login & private).
+    harness = fixture.componentInstance as unknown as LoginHarness;
     fixture.detectChanges();
     await fixture.whenStable();
   });
 
   it('allows MFA verification to depend only on the visible code input', () => {
     for (const controlName of ['username', 'password']) {
-      const control = component.loginForm.get(controlName);
+      const control = harness.loginForm.get(controlName);
       control?.setValue('');
       control?.setValidators([Validators.required]);
       control?.updateValueAndValidity();
     }
 
-    component.setMfaVerificationValidators();
+    harness.setMfaVerificationValidators();
 
-    expect(component.loginForm.valid).toBe(false);
-    expect(component.loginForm.get('username')?.hasError('required')).toBe(false);
-    expect(component.loginForm.get('password')?.hasError('required')).toBe(false);
+    expect(harness.loginForm.valid).toBe(false);
+    expect(harness.loginForm.get('username')?.hasError('required')).toBe(false);
+    expect(harness.loginForm.get('password')?.hasError('required')).toBe(false);
 
-    component.loginForm.patchValue({ verificationCode: '123456' });
+    harness.loginForm.patchValue({ verificationCode: '123456' });
 
-    expect(component.loginForm.valid).toBe(true);
+    expect(harness.loginForm.valid).toBe(true);
   });
 });

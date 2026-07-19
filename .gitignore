@@ -94,3 +94,4 @@ packages/deml-design-system/
 
 # Local Railway CLI config pull dumps (never commit)
 .railway-config-pull-*/
+.vercel

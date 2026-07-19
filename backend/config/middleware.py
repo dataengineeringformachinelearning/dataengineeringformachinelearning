@@ -6,6 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
 from firebase_admin import auth
+from utils.request import get_client_ip
 
 from config.headless_rate_limit import consume_many, hashed_scope
 
@@ -183,14 +184,29 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
     return None
 
 
+def _is_public_status_path(path: str) -> bool:
+  normalized = path.rstrip("/") or "/"
+  return normalized == "/api/v1/system-status" or normalized.startswith("/api/v1/system-status/")
+
+
 class HeadlessRateLimitMiddleware(MiddlewareMixin):
   """Protect each credential/user and account before shared FORJD handoff."""
 
   def process_request(self, request):
     if not settings.DEML_HEADLESS_RATE_LIMIT_ENABLED:
       return None
+
+    authenticated = bool(getattr(request.user, "is_authenticated", False))
+    # --- Anonymous public status directory (IP-hashed) ---
+    if not authenticated and _is_public_status_path(request.path):
+      return self._consume_scopes(
+        request,
+        scope_keys=(hashed_scope("ip", get_client_ip(request) or "unknown", "public_status"),),
+        capacity=int(settings.DEML_PUBLIC_STATUS_RPM),
+      )
+
     limit_bucket = _headless_limit_bucket(request)
-    if limit_bucket is None or not getattr(request.user, "is_authenticated", False):
+    if limit_bucket is None or not authenticated:
       return None
     bucket_name, capacity = limit_bucket
     api_key = getattr(request, "deml_api_key", None)
@@ -202,8 +218,11 @@ class HeadlessRateLimitMiddleware(MiddlewareMixin):
     if account_id is not None:
       scopes.add(hashed_scope("account", account_id, bucket_name))
 
+    return self._consume_scopes(request, scope_keys=tuple(scopes), capacity=capacity)
+
+  def _consume_scopes(self, request, *, scope_keys: tuple[str, ...], capacity: int):
     try:
-      decisions = consume_many(scope_keys=tuple(scopes), capacity=capacity)
+      decisions = consume_many(scope_keys=scope_keys, capacity=capacity)
     except Exception as exc:
       logger.exception("DEML headless rate limiter failed error_type=%s", type(exc).__name__)
       if settings.DEBUG:

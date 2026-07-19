@@ -353,19 +353,21 @@ const platformOpsCards = [
         <section class="docs-operations-section" id="platform-operations" aria-labelledby="platform-operations-title">
           <header class="integrations-header">
             <span class="section-tag">PRODUCTION OPERATIONS</span>
-            <h2 id="platform-operations-title">Railway, Distroless Runtimes & Compliance Cadence</h2>
+            <h2 id="platform-operations-title">Vercel, Fly, FORJD & Compliance Cadence</h2>
             <p>
-              DEML ships as Docker services on Railway with Google Distroless production images,
-              symmetrical multi-tenant workers, and automated retention — the same controls audited
-              for SOC 2 Type II and CMMC 2.0 evidence collection.
+              DEML ships the Angular product on Vercel and the Django BFF on Fly, with Google Distroless
+              production images for containerized surfaces, FORJD as the exclusive sealed data plane,
+              and automated retention — the same controls audited for SOC 2 Type II and CMMC 2.0
+              evidence collection.
             </p>
           </header>
 
           <DocsBentoGrid evenPairs>
             <DocsBentoCard icon="cloud" title="Production Host Matrix" fullWidth headingLevel="h3">
               <p class="u-style-7f7d6d">
-                DEML owns the user control plane. FORJD owns the sealed data plane. Railway data-plane
-                services are retired; keep only optional cold standby for Django until DNS is stable.
+                DEML owns the user control plane (identity, billing, consent, BFF). FORJD owns sealed
+                ingest, projections, status pages, analytics, ML, SIEM/SOAR, and reports. Cloud Run /
+                Railway are alternate or legacy hosts — not the primary shipping model.
               </p>
               <div class="code-block-premium">
                 <div class="code-header">Core services</div>

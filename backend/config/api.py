@@ -5,17 +5,50 @@ pass-through. No data-plane router is mounted in Django.
 """
 
 import logging
-from typing import Any
+from typing import Any, Final
 
 from django.conf import settings
+from django.http import HttpRequest, HttpResponse
+from django.middleware.csrf import get_token
+from django.template.loader import render_to_string
 from ninja import NinjaAPI
+from ninja.openapi.docs import Swagger
 
 logger = logging.getLogger(__name__)
+
+
+# --- Viking-themed Swagger shell ---
+class CustomSwagger(Swagger):
+  def render_page(self, request: HttpRequest, api: NinjaAPI, **kwargs: Any) -> HttpResponse:
+    openapi_url: Final[str] = self.get_openapi_url(api, kwargs)
+    csrf_token: Final[str] = get_token(request) or ""
+    html: Final[str] = render_to_string(
+      "swagger.html",
+      {
+        "api_title": api.title,
+        "api_version": api.version,
+        "openapi_url": openapi_url,
+        "csrf_token": csrf_token,
+        "frontend_url": settings.FRONTEND_URL.rstrip("/"),
+        "marketing_url": settings.MARKETING_URL.rstrip("/"),
+      },
+      request=request,
+    )
+    # nosemgrep: python.django.security.audit.xss.direct-use-of-httpresponse.direct-use-of-httpresponse
+    return HttpResponse(html, content_type="text/html")
+
 
 api = NinjaAPI(
   title="DEML Learning Platform API",
   version=getattr(settings, "APP_VERSION", "1.0.0"),
-  description="Identity, account, billing, learning interactions, and sealed FORJD handoff.",
+  docs_url="/docs",
+  docs=CustomSwagger(),
+  description=(
+    "Identity, account, billing, learning interactions, and sealed FORJD handoff.\n\n"
+    "Authenticate with a Firebase session cookie (browser) or a `deml_…` API key "
+    "(Bearer / `X-API-Key`) on headless integration routes. Sealed ingest and "
+    "processing execute in FORJD via the mapped tenant service credential."
+  ),
 )
 
 

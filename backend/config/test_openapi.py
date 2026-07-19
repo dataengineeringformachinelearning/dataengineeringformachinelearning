@@ -35,3 +35,30 @@ def test_openapi_exposes_forjd_handoff_and_no_local_processing(client: Client) -
     "/api/v1/system-status/",
   )
   assert not any(path.startswith(retired_prefixes) for path in paths)
+
+
+@pytest.mark.django_db
+def test_viking_swagger_shell_is_served(client: Client) -> None:
+  response = client.get("/api/v1/docs")
+  assert response.status_code == 200
+  body = response.content.decode()
+  assert "swagger-ui" in body
+  assert "backend-swagger" in body
+  assert "Documentation" in body
+
+
+@pytest.mark.django_db
+def test_home_and_documentation_landing_copy(client: Client) -> None:
+  home = client.get("/")
+  assert home.status_code == 200
+  home_body = home.content.decode()
+  assert "Documentation" in home_body
+  assert "Swagger UI" in home_body
+
+  docs = client.get("/documentation")
+  assert docs.status_code == 200
+  docs_body = docs.content.decode()
+  assert "/api/v1/forjd/ingest" in docs_body
+  assert "/api/v1/forjd/capabilities" in docs_body
+  assert "/api/v1/predict" not in docs_body
+  assert "Blue Notes" in docs_body

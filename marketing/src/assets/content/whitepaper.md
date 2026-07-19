@@ -170,79 +170,76 @@ To support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 readine
 
 ## 9. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
 
-Access control is implemented as defense-in-depth: **RBAC** (what a logged-in user may do) plus **ABAC** (whether a specific resource is visible or mutable in the current session context). The platform uses a **User + Sites** model—one Firebase login maps to one Django `User` and one `UserProfile.account_id`, and that account may own many `StatusPage` sites. There are **no organization hierarchies, sub-users, or shared team logins per workspace**. Authorization therefore hinges on four axes rather than org charts:
+Access control is implemented as defense-in-depth: **RBAC** (what a logged-in user may do) plus **ABAC** (whether a specific resource is visible or mutable in the current session context). The platform uses a **User + Sites** model—one Firebase login maps to one Django `User` and one `UserProfile.account_id`, and that account maps to a FORJD tenant that may own many status pages. There are **no organization hierarchies, sub-users, or shared team logins per workspace**. Status pages, services, incidents, and uptime projections are **FORJD-owned**; Django authenticates the session and proxies product paths through `backend/forjd/` adapters. Authorization therefore hinges on four axes rather than org charts:
 
-1. **Session** — logged out (anonymous) vs logged in (Firebase JWT).
-2. **Ownership** — `status_page.user_id == request.user.id` for private resources.
-3. **Publication** — `is_published=True` exposes a status page (and its services, incidents, and rollup metrics) to anonymous visitors.
-4. **Platform scope** — the canonical `platform-status` page (`is_platform=True`, `user=null`) is always world-readable and never mutable by customers.
+1. **Session** — logged out (anonymous) vs logged in (Firebase JWT terminated at Django).
+2. **Tenant binding** — every FORJD call resolves `deml_account_id → forjd_tenant_id → secret_ref` and fails closed on mismatch.
+3. **Publication** — FORJD publication flags expose a status page (and its services, incidents, and rollup metrics) to anonymous visitors via the BFF.
+4. **Platform scope** — the canonical `platform-status` sentinel remains world-readable and is never mutable by customers.
 
 ### RBAC (per-account roles)
 
-Each `UserProfile` carries exactly one role: `Viewer`, `Operator`, or `Security Admin`. Roles apply to the **single login** behind that profile—not to nested org members.
+Each `UserProfile` carries exactly one role: `Viewer`, `Operator`, or `Security Admin`. Roles apply to the **single login** behind that profile—not to nested org members. Django enforces role gates before proxying mutating status, playbook, and administration actions to FORJD.
 
-| Role             | Typical capability                                                                                                                 |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `Viewer`         | Read dashboards, status pages, and analytics; Settings UI is read-only.                                                            |
-| `Operator`       | Create/update/delete owned status pages (API-enforced); manage services, incidents, and integrations when UI controls are enabled. |
-| `Security Admin` | Same write surface as Operator; reserved for platform administration (`admin@…` bootstrap).                                        |
+| Role             | Typical capability                                                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Viewer`         | Read dashboards, published status pages, and FORJD analytics via the BFF; Settings UI is read-only.                                             |
+| `Operator`       | Create/update/delete owned status pages through FORJD status APIs (BFF-enforced); manage services, incidents, and integrations when UI-enabled. |
+| `Security Admin` | Same write surface as Operator plus elevated FORJD administration actions; reserved for platform bootstrap (`admin@…`).                         |
 
-**API enforcement:** Status page lifecycle endpoints (`POST`/`PUT`/`DELETE` `/status_pages`) use `@role_required(["Operator", "Security Admin"])`. Viewers receive `403 Forbidden`. New Firebase users are provisioned as `Operator` on first login; `Viewer` is assigned when an account is deliberately restricted.
+**API enforcement:** Stable DEML paths such as `/api/v1/system-status/status_pages` adapt to FORJD `/api/v1/status/pages`. Mutating verbs require `Operator` or `Security Admin` plus MFA; Viewers receive `403 Forbidden`. New Firebase users are provisioned as `Operator` on first login; `Viewer` is assigned when an account is deliberately restricted.
 
 **UI enforcement:** The Angular Settings console disables all mutation controls when `currentUserRole() === 'Viewer'`. Routes `/analytics` and `/vulnerabilities` require `authGuard` (login only). `/status`, `/status/:slug`, and `/explore` remain reachable without login for public pages.
 
 ### ABAC (resource and context attributes)
 
-Implemented in `monitor/access.py` and query filters in `monitor/api.py`:
+Enforced at the Django BFF (`backend/forjd/` policy + adapters) and inside FORJD tenant binding / publication rules:
 
-- **`check_status_page_access`** — allows read of services, incidents, and ML rollups when `slug == "platform-status"`, `is_platform`, `is_published`, or the caller owns the page.
-- **`require_page_owner` / `forbid_platform_page`** — write paths require ownership; `platform-status` mutations always return `403`.
+- **Published directory** — anonymous `GET` explore lists only published pages (plus `platform-status`) via platform FORJD credentials.
+- **Owner / tenant scope** — authenticated reads and writes bind to the mapped FORJD tenant; cross-tenant access fails closed.
+- **Platform sentinel** — `platform-status` mutations are forbidden to customers.
 - **`check_mfa_satisfied`** — write operations inspect the Firebase token `amr` claim for `"mfa"` (test UID `testuser` is exempt in CI).
-- **List/get filters** — anonymous callers see only `is_published` pages plus `platform-status`; authenticated callers additionally see their own unpublished pages.
 
-Programmatic ingestion (`/api/v1/ingest`, `/api/v1/predict`) resolves scope via API keys hashed in the database, mapping to `UserProfile.account_id` (or the `platform` sentinel for showcase traffic)—not hardcoded domains.
+Programmatic ingestion (`/api/v1/ingest`, `/api/v1/predict`) resolves scope via API keys hashed in the DEML database, mapping to `UserProfile.account_id` and the FORJD tenant—not hardcoded domains.
 
 ### Access decision matrix (status pages & public stats)
 
-| Action                                   | Anonymous (logged out)         | Logged-in owner                              | Logged-in non-owner                                              |
-| ---------------------------------------- | ------------------------------ | -------------------------------------------- | ---------------------------------------------------------------- |
-| List / explore status pages              | Published + `platform-status`  | Published + own + `platform-status`          | Published + `platform-status` only                               |
-| View services / incidents / uptime stats | Published or `platform-status` | Also own **unpublished** pages               | Published or `platform-status`; **403** on others' private pages |
-| Create / update / delete status page     | `401`                          | `Operator`/`Security Admin` + MFA + owner    | `403` or `404`                                                   |
-| Add / remove services or incidents       | `401`                          | Owner + MFA (Settings blocks `Viewer` in UI) | `404` not owner                                                  |
-| Mutate `platform-status`                 | N/A (read-only)                | **Forbidden**                                | **Forbidden**                                                    |
+| Action                                   | Anonymous (logged out)         | Logged-in owner (mapped tenant)                  | Logged-in non-owner                                              |
+| ---------------------------------------- | ------------------------------ | ------------------------------------------------ | ---------------------------------------------------------------- |
+| List / explore status pages              | Published + `platform-status`  | Published + own tenant pages + `platform-status` | Published + `platform-status` only                               |
+| View services / incidents / uptime stats | Published or `platform-status` | Also own **unpublished** tenant pages            | Published or `platform-status`; **403** on others' private pages |
+| Create / update / delete status page     | `401`                          | `Operator`/`Security Admin` + MFA + tenant bind  | `403` or `404`                                                   |
+| Add / remove services or incidents       | `401`                          | Owner tenant + MFA (Settings blocks `Viewer`)    | `404` / forbidden                                                |
+| Mutate `platform-status`                 | N/A (read-only)                | **Forbidden**                                    | **Forbidden**                                                    |
 
-Private-by-default: until `is_published` is set, only the owning login (and the API with a valid owner session) can read operational stats—anonymous visitors hitting `/status/:slug` or the stats API receive `403`/`404`.
+Private-by-default: until a page is published in FORJD, only the owning tenant session (via the Django BFF) can read operational stats—anonymous visitors hitting `/status/:slug` or the stats API receive `403`/`404`.
 
 ## 10. Data Tenancy, Retention, and Lifecycle Policy
 
-Observability systems must enforce strict isolation. DEML implements **account-scoped isolation** at the database level: telemetry, integrations, threat reports, and status widgets are keyed to `User` / `UserProfile.account_id` (or the `platform` sentinel for `platform-status`). Data is private-by-default; nothing bleeds across accounts.
+Observability systems must enforce strict isolation. DEML implements **account-scoped isolation** for the control plane: identity, billing, consent, API credentials, and `deml_account_id → forjd_tenant_id` mappings live in DEML Postgres. Sealed telemetry, status pages, projections, analytics, ML artifacts, SIEM/SOAR state, and report documents are **FORJD-owned** and tenant-bound. Data is private-by-default; nothing bleeds across accounts or tenants.
 
-To provide world-class threat detection, a dual-model strategy applies. The global `platform_threat_model.pt` continuously trains on **aggregate, anonymized Big Data** across the entire platform (extracting non-PII metrics such as global failure rates and suspicious request ratios). All tenants benefit from collective anomaly baselines while maintaining perfect isolation. Direct cross-account raw fallbacks are eliminated; threat models evaluate and predict anomalies exclusively against the target tenant's isolated telemetry fed through the aggregate network. Accounts without sufficient collected telemetry leverage safe, zero-threat baselines rather than raw shared data.
+Local DEML models such as `AggregatedAnalytics`, `StatusPage`, `StatusPageUptimeDaily`, and `ExportJob` are **retired** (Django migration `0053_retire_local_data_plane`). They are not live product surfaces; dashboards, status, exports, and analytics read through FORJD APIs via the Django BFF.
 
-Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cloudflare tokens) are protected via transparent application-level AES-256 Fernet encryption at-rest. Public access to status page details, services, incidents, and telemetry graphs remains restricted unless the status page owner explicitly publishes the page—preventing exposure of private endpoints or telemetry.
+To provide world-class threat detection, a dual-model strategy applies in FORJD. Aggregate, anonymized non-PII metrics (for example global failure rates and suspicious request ratios) inform collective baselines while inference remains tenant-scoped. Accounts without sufficient collected telemetry leverage safe, zero-threat baselines rather than raw shared data.
+
+Sensitive DEML credentials (integration tokens, FORJD secret references) are protected via application-level AES-256-GCM envelope encryption at rest. Public access to status page details, services, incidents, and telemetry graphs remains restricted unless the owning FORJD tenant explicitly publishes the page.
 
 **Tiered retention strategy** prevents database bloat while preserving operational data:
 
-**Neon (PostgreSQL) - Hot data:**
+**DEML Postgres (control plane):**
 
-- Raw endpoint telemetry, health-probe observations, ingest receipts, audit logs, cookie consent, and PII-bearing search queries: **30 days** (repair-first, fail-closed pruning)
-- Page/URL/hour `LighthouseScan` quality projections: **30 days**
-- Hourly `AggregatedAnalytics`: **30 days** (after daily rollups)
-- `ThreatIntelligence`, `ReportArchive`, and `StatusPageUptimeDaily`: **90 days** (security, reports, and fast uptime history)
-- `HoneypotInteraction`: **90 days**; `BenchmarkRun`: **365 days**
-- FORJD export artifacts: retention per FORJD export policy
-- Business objects (`BugReport`, `ThreatReport`, API keys): **Indefinite** (system of record)
+- Audit logs, cookie consent, and other identity-adjacent hot rows: **30 days** (repair-first, fail-closed pruning where configured)
+- API keys, billing profile state, FORJD tenant mapping (secret refs only), consent records: retained as system of record until account deletion
+- Business objects still DEML-owned (`BugReport` delivery metadata, lifecycle jobs): **Indefinite** or until lifecycle erase
 
-**FORJD analytics - durable analytics:**
+**FORJD (data plane — sealed events, status, projections, analytics, exports):**
 
-- Audit archives, security events, and OTEL-style traces: retention per FORJD policy
-- Report exports generated from FORJD export APIs; DEML does not host a parallel OLAP cluster
+- Sealed ingest, durable `stream_results`, status pages / uptime projections, SIEM/SOAR, ML scores: retention per FORJD policy
+- Export artifacts and downloadable reports: retention per FORJD export policy
+- Audit archives, security events, and OTEL-style traces: retention per FORJD analytics policy
+- DEML does not host a parallel OLAP cluster or Railway object-store download path for product exports
 
-- `ReportArchive` materialized daily for fast 90-day report queries
-- Report exports are generated from the 90-day Postgres rollup window; FORJD analytics retention applies only to explicitly archived security and OTEL datasets
-
-Retention never races materialization: DEML prunes only identity-adjacent hot data it owns; FORJD owns sealed-event and projection retention. Account deletion fails closed before local teardown and remains blocked until FORJD durably erases the mapped tenant.
+Retention never races materialization: DEML prunes only identity-adjacent hot data it owns; FORJD owns sealed-event, status, projection, and analytics retention. Account deletion fails closed before local teardown and remains blocked until FORJD durably erases the mapped tenant.
 
 **Billing is live:** Stripe Checkout upgrades accounts from **Standard** to **Pro**, with webhook-driven tier updates and scheduled `sync_subscriptions` reconciliation so local profile state matches Stripe ([BOOK.md § Appendix M](BOOK.md#appendix-m-billing--subscriptions-operator-reference)). Pro tiers may refresh models and forecasts more frequently than the Standard baseline schedule while every account still traverses symmetrical worker pipelines.
 

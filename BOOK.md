@@ -122,22 +122,22 @@ flowchart TB
  A -.->|Product UI reads via BFF| DJ
 ```
 
-**Authoritative stores:** DEML PostgreSQL holds transactional truth for users, status-page ownership metadata, API credentials, consent, billing, and FORJD tenant mapping (secret references only—never plaintext `fjsvc_` tokens). FORJD (Supabase Postgres + Dragonfly + engine) holds sealed events, durable `stream_results` projections, analytics, ML artifacts, replay/DLQ, and threat intelligence. Firebase Auth terminates at Django; Firebase carries no product data — Firestore, Storage, and Cloud Functions are retired in favor of FORJD + Supabase.
+**Authoritative stores:** DEML PostgreSQL holds transactional truth for users, API credentials, consent, billing, and FORJD tenant mapping (secret references only—never plaintext `fjsvc_` tokens). FORJD (Supabase Postgres + Dragonfly + engine) holds sealed events, durable `stream_results` projections, **status pages**, analytics, ML artifacts, SIEM/SOAR, reports, replay/DLQ, and threat intelligence. Firebase Auth terminates at Django; Firebase carries no product data — Firestore, Storage, and Cloud Functions are not used for product telemetry (Auth only).
 
 ### 4. Operational Environment
 
-| Layer                    | Provider                                                                 | Responsibility                                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| **Product UI**           | [Vercel](https://vercel.com/) (`deml.app`)                               | Angular SPA; calls Django only                                                                                          |
-| **Control plane API**    | [Fly.io](https://fly.io/) `deml-backend`                                 | Django BFF: auth, billing, consent, learning, FORJD adapters                                                            |
-| **Data plane**           | FORJD on Fly + [Supabase](https://supabase.com/) + Dragonfly             | Sealed ingest, workflows, projections, analytics, ML, replay/DLQ, tenant erase                                          |
-| **Identity**             | [Firebase Authentication](https://firebase.google.com/products/auth)     | Email/OAuth/MFA; JWT verified by Django middleware; MFA claims gate site mutations                                      |
-| **Marketing hosting**    | Marketing site (Astro)                                                   | `dataengineeringformachinelearning.com`                                                                                 |
-| **Cryptography & audit** | Application AES-256-GCM + KMS / platform audit sinks                     | Field encryption for secrets; sealed envelopes on the wire to FORJD                                                     |
-| **Secrets**              | [Infisical](https://infisical.com/) / Fly secrets (recommended)          | Runtime secret injection; `FORJD_SERVICE_TOKEN` as secret ref                                                           |
-| **Billing**              | [Stripe](https://stripe.com/)                                            | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference)) |
-| **Model artifacts**      | FORJD ML surfaces (+ optional Hugging Face namespacing where configured) | Training and scoring execute in FORJD                                                                                   |
-| **Content**              | [Sanity.io](https://www.sanity.io/)                                      | Learning narratives and incident communications decoupled from Django                                                   |
+| Layer                    | Provider                                                                          | Responsibility                                                                                                          |
+| ------------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Product UI**           | [Vercel](https://vercel.com/) (`deml.app`)                                        | Angular SPA; calls Django only                                                                                          |
+| **Control plane API**    | [Fly.io](https://fly.io/) `deml-backend`                                          | Django BFF: auth, billing, consent, learning, FORJD adapters                                                            |
+| **Data plane**           | FORJD on Fly (`backend.forjd.co`) + [Supabase](https://supabase.com/) + Dragonfly | Sealed ingest, workflows, projections, **status pages**, analytics, ML, SIEM/SOAR, reports, replay/DLQ, tenant erase    |
+| **Identity**             | [Firebase Authentication](https://firebase.google.com/products/auth)              | Email/OAuth/MFA; JWT verified by Django middleware; MFA claims gate site mutations                                      |
+| **Marketing hosting**    | Marketing site (Astro)                                                            | `dataengineeringformachinelearning.com`                                                                                 |
+| **Cryptography & audit** | Application AES-256-GCM + KMS / platform audit sinks                              | Field encryption for secrets; sealed envelopes on the wire to FORJD                                                     |
+| **Secrets**              | [Infisical](https://infisical.com/) / Fly secrets (recommended)                   | Runtime secret injection; `FORJD_SERVICE_TOKEN` as secret ref                                                           |
+| **Billing**              | [Stripe](https://stripe.com/)                                                     | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference)) |
+| **Model artifacts**      | FORJD ML surfaces (+ optional Hugging Face namespacing where configured)          | Training and scoring execute in FORJD                                                                                   |
+| **Content**              | [Sanity.io](https://www.sanity.io/)                                               | Learning narratives and incident communications decoupled from Django                                                   |
 
 #### Production host matrix
 
@@ -163,16 +163,16 @@ Invariants: Firebase Auth terminates at Django; every FORJD call uses a tenant-b
 
 ### 6. User Roles & Operational Workflows
 
-The platform uses a **User + Sites** model—one Firebase login, many `StatusPage` records, no org hierarchies ([Chapter 29](#chapter-29-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)).
+The platform uses a **User + Sites** model—one Firebase login, one mapped FORJD tenant, many FORJD status pages (proxied via Django BFF), no org hierarchies ([Chapter 29](#chapter-29-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)).
 
-| Actor                          | Primary workflows                                                                                                                    |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **Anonymous visitor**          | Browse published status pages and `platform-status`; `/explore` directory; no PII beyond CDN logs                                    |
-| **Account owner (`Operator`)** | Firebase login → Django profile provisioned; create status pages (MFA required); configure integrations; view FORJD-backed analytics |
-| **Viewer**                     | Read-only Settings and dashboards; API returns `403` on mutations                                                                    |
-| **Security Admin**             | Platform bootstrap account; same write surface as Operator for owned resources                                                       |
-| **API integrator**             | `Authorization: Bearer <API_KEY>` on DEML ingest/predict paths; Django maps account → FORJD tenant and forwards sealed traffic       |
-| **Platform operator (you)**    | Vercel/Fly dashboards, FORJD readiness, Firebase console, secrets, GitHub Actions, Infisical, internal vulnerability Kanban          |
+| Actor                          | Primary workflows                                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Anonymous visitor**          | Browse published FORJD status pages and `platform-status` via BFF; `/explore` directory; no PII beyond CDN logs                |
+| **Account owner (`Operator`)** | Firebase login → Django profile provisioned; create status pages on FORJD via BFF (MFA required); view FORJD-backed analytics  |
+| **Viewer**                     | Read-only Settings and dashboards; API returns `403` on mutations                                                              |
+| **Security Admin**             | Platform bootstrap account; same write surface as Operator for owned resources                                                 |
+| **API integrator**             | `Authorization: Bearer <API_KEY>` on DEML ingest/predict paths; Django maps account → FORJD tenant and forwards sealed traffic |
+| **Platform operator (you)**    | Vercel/Fly dashboards, FORJD readiness, Firebase console, secrets, GitHub Actions, Infisical, internal vulnerability Kanban    |
 
 **Typical owner session:** Marketing site → auth handoff → Angular dashboard → Firebase JWT to Django → sealed telemetry and reads adapted to FORJD → dashboards update from FORJD projections/analytics via the BFF.
 
@@ -202,17 +202,17 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 Production topology is fixed for the product:
 
-| Service / host           | Operational role                                                               |
-| ------------------------ | ------------------------------------------------------------------------------ |
-| `deml` (Vercel)          | Angular app, widgets, public status UI                                         |
-| `deml-backend` (Fly)     | Django REST BFF, auth middleware, billing, consent, learning, FORJD adapters   |
-| DEML Postgres            | System of record for identity, tenancy mapping, credentials, consent, billing  |
-| FORJD API + engine (Fly) | Sealed ingest, workflows, projections, analytics, ML, replay/DLQ, tenant erase |
-| Supabase                 | FORJD Auth, Postgres/RLS, Realtime, pgvector                                   |
-| Dragonfly                | FORJD cache / streams                                                          |
-| Firebase Auth            | DEML end-user identity (tokens terminate at Django)                            |
-| Stripe                   | Subscriptions                                                                  |
-| Sanity                   | Decoupled content                                                              |
+| Service / host           | Operational role                                                                                                     |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `deml` (Vercel)          | Angular app, widgets, public status UI                                                                               |
+| `deml-backend` (Fly)     | Django REST BFF, auth middleware, billing, consent, learning, FORJD adapters                                         |
+| DEML Postgres            | System of record for identity, tenancy mapping, credentials, consent, billing                                        |
+| FORJD API + engine (Fly) | Sealed ingest, workflows, projections, **status pages**, analytics, ML, SIEM/SOAR, reports, replay/DLQ, tenant erase |
+| Supabase                 | FORJD Auth, Postgres/RLS, Realtime, pgvector                                                                         |
+| Dragonfly                | FORJD cache / streams                                                                                                |
+| Firebase Auth            | DEML end-user identity (tokens terminate at Django)                                                                  |
+| Stripe                   | Subscriptions                                                                                                        |
+| Sanity                   | Decoupled content                                                                                                    |
 
 **Deploy paths:** Angular via Vercel ([docs/VERCEL.md](docs/VERCEL.md)); Django via `fly deploy -a deml-backend` ([docs/FLY.md](docs/FLY.md)); FORJD per its own Fly/Supabase runbooks. Operator sequence: [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md) + [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md).
 
@@ -878,17 +878,19 @@ DEML forwards sealed telemetry to FORJD; FORJD owns processing, projections, and
 
 The sealed telemetry path I described in the previous chapter—DEML forwarding to FORJD, with Polars for finite batch transforms and OpenTelemetry where configured—is a marvel of distributed systems engineering. However, infrastructure alone does not provide value; it must be harnessed to solve tangible business problems and enhance the human experience. To demonstrate the practical application of this architecture, I will build a cornerstone feature of any modern, reliable platform: a highly available, public-facing status dashboard. This use-case forces me to bridge the gap between raw data engineering and transparent, real-time user communication.
 
+**Ownership boundary:** Status pages, services, incidents, and uptime projections live in **FORJD** (`/api/v1/status/*`). Angular calls stable DEML paths such as `/api/v1/system-status/status_pages`; Django authenticates the Firebase session and proxies through `backend/forjd/` adapters with a tenant-bound `fjsvc_` token. Local Django `StatusPage` / `StatusPageUptimeDaily` models are retired (migration `0053`).
+
 The architecture for the status page requires orchestrating four distinct technical phases:
 
 1. **Telemetry Processing:** The lifecycle begins when DEML forwards sealed healthcheck and latency telemetry to FORJD. FORJD owns stream processing and durable projections; finite batch aggregations may use Polars inside FORJD for reports and offline transforms, filtering anomalous noise into structured temporal datasets.
 
-2. **SLA Calculation:** With the data structured, the system continuously computes my real-time Service Level Agreement (SLA) compliance. By analyzing the frequency of HTTP 500 errors against the total request volume, and measuring the P99 latency against my strict performance thresholds, the system generates an immediate, mathematically rigorous assessment of platform stability. This SLA metric acts as the definitive source of truth for the entire organization.
+2. **SLA Calculation:** With the data structured, FORJD continuously computes Service Level Agreement (SLA) compliance from projections. By analyzing error rates against total request volume and measuring P99 latency against performance thresholds, the system generates a rigorous assessment of platform stability. Angular reads those metrics through the Django BFF—never from a DEML-local rollup table.
 
-3. **Incident Operations:** While telemetry is automated, managing public perception during an outage requires human nuance and explicit communication. To facilitate this without entangling content management directly within my Django application, I decouple incident reporting by utilizing Sanity.io as a headless Content Management System (CMS). When a severe outage occurs, operators securely log into the Sanity studio to draft and publish incident reports. My Angular frontend is explicitly configured to listen to Sanity's real-time API via reactive Signals. The moment an operator publishes an update, the frontend instantly renders critical alert banners across the application, bypassing traditional database queries entirely and ensuring users are informed immediately.
+3. **Incident Operations:** While telemetry is automated, managing public perception during an outage requires human nuance and explicit communication. Operational incident records on the status page are FORJD-owned; narrative communications can additionally use Sanity.io as a headless CMS. When a severe outage occurs, operators publish updates; Angular listens where configured (Sanity real-time and/or FORJD status APIs via the BFF) so users are informed immediately without coupling content to DEML Postgres.
 
-4. **Historical Visualizations:** Transparency builds trust. It is not enough to simply state the current status; I must visually demonstrate my historical reliability. The processed telemetry is queried and fed directly into Native SVG visualizations, rendering an interactive, 90-day health graph on the public dashboard. This visualization allows users to scrub through historical data, analyze past incident resolutions, and visually verify the platform's long-term stability and operational integrity.
+4. **Historical Visualizations:** Transparency builds trust. It is not enough to simply state the current status; I must visually demonstrate historical reliability. FORJD uptime/projection data is queried through the BFF and rendered with Native SVG `viking-chart` visualizations (for example a 90-day health graph). Users can scrub historical data, analyze past incident resolutions, and verify long-term stability.
 
-By combining high-velocity event streaming, rigorous algorithmic calculations, and edge-cached headless CMS delivery, I engineer a status page that remains incredibly resilient. Even if my primary PostgreSQL database experiences a catastrophic failure, the decoupled nature of Sanity.io and my reactive Angular frontend ensures that critical communication channels to my users remain completely uncompromised.
+By combining FORJD sealed streaming, BFF-adapted status APIs, and edge-cached communications, the status surface remains resilient even if DEML control-plane Postgres is degraded—public published pages and Sanity-backed announcements can still reach users while sealed processing recovers on FORJD.
 
 ---
 
@@ -1108,58 +1110,43 @@ I completely overhauled the data fetching states, replacing generic spinning ind
 
 ---
 
-## Chapter 22: Production Deployment on Cloud Run
+## Chapter 22: Production Deployment (Vercel, Fly, and FORJD)
 
-The ultimate crucible for any software architecture is its transition from a controlled local development environment into the hostile, chaotic reality of the public internet. The "it works on my machine" paradigm is an unacceptable failure of engineering discipline. To guarantee that my platform performs with absolute consistency and resilience, deployment cannot be treated as a discrete, manual event. It must be codified, automated, and treated as a seamless extension of my Continuous Integration pipeline. To achieve this modern deployment topology, I host my entire infrastructure on Cloud Run.
+The ultimate crucible for any software architecture is its transition from a controlled local development environment into the hostile, chaotic reality of the public internet. The "it works on my machine" paradigm is an unacceptable failure of engineering discipline. To guarantee that my platform performs with absolute consistency and resilience, deployment cannot be treated as a discrete, manual event. It must be codified, automated, and treated as a seamless extension of my Continuous Integration pipeline.
 
-Google Cloud provides the declarative infrastructure-as-code capabilities required to orchestrate my complex, multi-service architecture without the immense cognitive overhead of manually configuring Kubernetes clusters. I deploy the Angular Web Frontend, the Django REST API, and my persistent PostgreSQL databases as DEML control-plane services, while sealed telemetry is forwarded to FORJD over HTTPS—within a unified Google Cloud or Fly topology as documented in production runbooks.
+**Primary production hosts** are fixed for the product:
 
-This topology allows me to scale my infrastructure surgically. If a massive influx of external traffic threatens to overwhelm the platform, Cloud Run automatically provisions additional replica nodes for the Django API edge, while the FORJD processing continue to process the FORJD sealed ingest path at their own deliberate, uncompromised pace. The frontend static assets are distributed globally to edge nodes, ensuring rapid time-to-interactive for users regardless of their geographic location.
+| Surface                        | Host                                     | Public hostname (typical)  |
+| ------------------------------ | ---------------------------------------- | -------------------------- |
+| Angular product UI             | [Vercel](https://vercel.com/) (`deml`)   | `https://deml.app`         |
+| Django BFF / control plane     | [Fly.io](https://fly.io/) `deml-backend` | `https://backend.deml.app` |
+| FORJD API + engine + Dragonfly | FORJD on Fly + Supabase                  | `https://backend.forjd.co` |
 
-Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Cloud Run intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. The complete per-service setup checklist — env vars, FORJD BFF secrets, cross-site URL trio, and local `docker-compose` parity — lives in **Appendix C**. This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
+DEML owns identity, billing, consent, learning, and BFF adapters. FORJD owns sealed ingest, streams, projections, status pages, analytics, ML, SIEM/SOAR, and reports. Firebase Authentication terminates at Django; Firebase carries no product data (no Firestore, Storage, or Cloud Functions for telemetry). Operator checklists: [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md), [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md), [docs/VERCEL.md](docs/VERCEL.md), [docs/FLY.md](docs/FLY.md).
+
+This topology scales surgically. Vercel distributes Angular assets globally; Fly scales `deml-backend` for control-plane load; FORJD scales the sealed pipeline and projections independently so a traffic spike on the product UI never forces DEML to invent local stream workers. Cross-site URLs remain the env-driven trio (`FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`); `FORJD_API_URL` is configured separately and must never replace `BACKEND_URL`.
+
+CI/CD splits by surface: merge to `main` deploys Angular on Vercel and Django on Fly when their paths change; FORJD deploys from its own repository and Fly apps. Distroless multi-stage images remain the packaging standard for Django (and for alternate container hosts). **Google Cloud Run** (Appendix C) and AWS Lightsail/Fargate (Chapter 23) are supported **alternate** control-plane topologies when an organization requires those residencies—they are not the primary shipping model.
 
 ### Infrastructure & Compute Resource Allocation
 
-To maintain a highly efficient, cost-optimized deployment footprint (particularly on platforms like Cloud Run or Kubernetes), the platform is designed to run extremely lean. By intentionally constraining CPU and memory limits, we force aggressive garbage collection and prevent unbounded caching.
+To maintain a highly efficient, cost-optimized deployment footprint, the platform is designed to run extremely lean on the DEML control plane while FORJD owns data-plane capacity.
 
-The recommended replica limits for a production-grade deployment are:
+| Service / host                   | Typical sizing     | Justification                                                         |
+| -------------------------------- | ------------------ | --------------------------------------------------------------------- |
+| **deml** (Vercel Angular)        | Serverless / edge  | CSR product UI; no DEML stream plane                                  |
+| **deml-backend** (Fly Django)    | 1–4 vCPU / 1–4 GB  | Auth, billing, consent, learning, FORJD BFF adapters                  |
+| **DEML Postgres**                | Managed            | Identity, billing, consent, FORJD tenant mapping (secret refs only)   |
+| **FORJD API + engine** (Fly)     | Per FORJD runbooks | Sealed ingest, workflows, projections, status, analytics, ML, exports |
+| **Supabase / Dragonfly (FORJD)** | Per FORJD runbooks | FORJD Postgres/RLS, Realtime, cache/streams                           |
 
-| Service                          | CPU Limit | RAM Limit | Justification                                               |
-| -------------------------------- | --------- | --------- | ----------------------------------------------------------- |
-| **deml-backend** (Django API)    | 4 vCPU    | 4 GB      | Maximum concurrent worker capacity.                         |
-| **deml-frontend** (Angular)      | 4 vCPU    | 4 GB      | Rapid SSR and robust production build capacity.             |
-| **deml-postgres**                | 4 vCPU    | 4 GB      | High-throughput transactional data store.                   |
-| **FORJD analytics**              | 4 vCPU    | 4 GB      | Memory-intensive OLAP analytical queries.                   |
-| **FORJD** (external data plane)  | —         | —         | Sealed ingest/projections/analytics on FORJD Fly + Supabase |
-| **Dragonfly (FORJD)**            | 4 vCPU    | 4 GB      | Ultra-fast in-memory cache operations.                      |
-| **FORJD projections**            | 4 vCPU    | 4 GB      | High-speed Polars batch processing.                         |
-| **FORJD workers**                | 4 vCPU    | 4 GB      | PyTorch ML training + OSINT intel gathering.                |
-| **FORJD vulnerability surfaces** | 4 vCPU    | 4 GB      | Heavy vulnerability database parsing.                       |
-| **FORJD CPE lookup**             | 1 vCPU    | 1 GB      | Rust lookup service over the shared CPE index.              |
-| **FORJD OSINT routing**          | 4 vCPU    | 4 GB      | High-bandwidth, encrypted network routing.                  |
-
-FORJD engine and API scale independently from the DEML control plane; ML and analytics capacity live on FORJD.
+FORJD engine and API scale independently from the DEML control plane; ML, status, and analytics capacity live on FORJD (`backend.forjd.co`).
 
 ### Estimated Monthly Infrastructure Costs
 
-Assuming 24/7 continuous utilization at the maximum 4 vCPU / 4 GB limits across all services:
+Baseline DEML control-plane spend is dominated by Fly Django + managed Postgres + Vercel. FORJD compute, Supabase, and Dragonfly are billed on the FORJD side—not as DEML-local OLAP or broker nodes. Treat Cloud Run–style “provisioned vCPU × hours” math as an **alternate-host** estimate only (Appendix C); primary ops use Fly/Vercel usage meters and FORJD’s own cost model.
 
-- **CPU Compute:** 44 vCPUs × $20/vCPU = **$880 / month**
-- **RAM Compute:** 44 GB × $10/GB = **$440 / month**
-- **Total Compute (Theoretical Maximum):** **~$1,320 / month**
-
-**Actual Baseline Usage (Estimated):**
-Because Cloud Run bills strictly on _consumed_ resources per minute rather than _provisioned_ limits, the actual monthly operational cost is drastically lower than the theoretical maximum. Extrapolating from current active development and testing telemetry (roughly $27 over 24 days), a realistic baseline full-month estimate is approximately **$35.00 per month**.
-
-The primary drivers of this ~$35 baseline cost are the heavily utilized core services:
-
-- **deml-backend:** ~$11.50/mo (High memory utilization)
-- **FORJD analytics:** ~$8.00/mo (Heavy memory and volume I/O)
-- **FORJD workers:** ~$6.00/mo (Spikes during periodic ML training and OSINT sync)
-- **FORJD projections:** ~$3.00/mo (Intermittent Polars processing)
-
-**Note on Persistent Volumes:**
-In addition to standard compute, this architecture provisions persistent disk volumes for **deml-postgres**, **FORJD analytics**, and **FORJD vulnerability surfaces**. Storage on Cloud Run is billed at **$0.15 per GB / month**. However, because these volumes dynamically scale with data ingestion, their baseline cost footprint remains highly efficient—averaging only pennies during standard baseline operations, but capable of scaling to hundreds of gigabytes (e.g., ~$45/month for 300GB) if required.
+**Note on persistent storage:** DEML Postgres holds control-plane state. Sealed-event volume, projection retention, and export object storage grow on FORJD (Supabase + FORJD export store)—retain aggressively per FORJD policy, not via retired DEML rollup tables.
 
 ---
 
@@ -1310,54 +1297,48 @@ Furthermore, our data-at-rest encryption (currently AES-256-GCM) is generally co
 
 ## Chapter 29: Access Control Matrix: Role-Based (RBAC) & Attribute-Based (ABAC) Paradigms
 
-Architecting a scalable SaaS observability platform requires authorization that matches how customers actually use the product. The DEML Platform uses a **User + Sites** model: one [Firebase Authentication](https://firebase.google.com/products/auth) login maps to one [Django](https://www.djangoproject.com/) `User`, one `UserProfile.account_id`, and many owned `StatusPage` records. There are **no organization hierarchies, no team sub-logins, and no shared seats within a workspace**. RBAC therefore governs what a single account may mutate; ABAC governs whether a given status page, its services, incidents, and rollup stats are visible in the current session (logged out vs logged in, published vs private, platform vs customer-owned).
+Architecting a scalable SaaS observability platform requires authorization that matches how customers actually use the product. The DEML Platform uses a **User + Sites** model: one [Firebase Authentication](https://firebase.google.com/products/auth) login maps to one [Django](https://www.djangoproject.com/) `User`, one `UserProfile.account_id`, and one FORJD tenant that may own many status pages. There are **no organization hierarchies, no team sub-logins, and no shared seats within a workspace**. Status pages, services, incidents, and uptime projections are **FORJD-owned** and reached through the Django BFF (`backend/forjd/`). RBAC governs what a single DEML account may mutate via that BFF; FORJD enforces tenant binding, scopes, and published-page visibility for anonymous explore/status reads.
 
 ### RBAC: one role per login
 
-`UserProfile.role` is exactly one of `Viewer`, `Operator`, or `Security Admin`. On first Firebase login, middleware provisions a profile—defaulting to `Operator` (or `Security Admin` for the platform bootstrap account). The `@role_required` decorator in `utils/permissions.py` gates status page lifecycle APIs:
+`UserProfile.role` is exactly one of `Viewer`, `Operator`, or `Security Admin`. On first Firebase login, middleware provisions a profile—defaulting to `Operator` (or `Security Admin` for the platform bootstrap account). Django role gates and `backend/forjd/` action policy run **before** proxying status lifecycle calls to FORJD:
 
 ```python
-@role_required(["Operator", "Security Admin"])
-def create_status_page(request, payload: StatusPageIn):
- if not check_mfa_satisfied(request):
- raise HttpError(403, "Multi-factor authentication required")
- ...
+# Conceptual BFF gate — stable DEML path adapts to FORJD /api/v1/status/pages
+@require_forjd_action("status.admin")  # Operator / Security Admin
+async def status_pages_list_proxy(request):
+  if request.method in ("POST", "PUT", "PATCH", "DELETE") and not check_mfa_satisfied(request):
+    return JsonResponse({"detail": "Multi-factor authentication required"}, status=403)
+  return await proxy_to_forjd(request, "GET|POST", "/api/v1/status/pages")
 ```
 
-`Viewer` accounts receive `403 Forbidden` on `POST`/`PUT`/`DELETE` `/status_pages`. Service and incident mutations require authentication, ownership, and MFA at the API layer; the Angular Settings console additionally disables all write controls when `currentUserRole() === 'Viewer'`.
+`Viewer` accounts receive `403 Forbidden` on mutating `/api/v1/system-status/status_pages` verbs. Service and incident mutations require authentication, mapped-tenant ownership, and MFA at the BFF; the Angular Settings console additionally disables all write controls when `currentUserRole() === 'Viewer'`.
 
-### ABAC: publication, ownership, and platform scope
+### ABAC: publication, tenant binding, and platform scope
 
-Resource visibility is enforced in `monitor/access.py`:
+Resource visibility is enforced by the Django BFF adapters plus FORJD tenant binding and publication rules—not by a local `StatusPage` ORM:
 
-```python
-def check_status_page_access(request, status_page: StatusPage) -> bool:
- if status_page.slug == "platform-status" or status_page.is_platform or status_page.is_published:
- return True
- if request.user.is_authenticated and status_page.user_id == request.user.id:
- return True
- return False
-```
+- **Anonymous explore** — `GET /api/v1/system-status/status_pages` returns published pages (plus `platform-status`) via platform FORJD credentials.
+- **Authenticated reads/writes** — resolve `deml_account_id → forjd_tenant_id → secret_ref` and fail closed on mismatch; unpublished pages stay private to the owning tenant.
+- **Platform sentinel** — customers cannot mutate `platform-status`.
 
-This function protects reads of services, incidents, and ML-backed rollups. Anonymous visitors on `/status/:slug`, `/explore`, or the REST API may only see **published** pages plus the canonical **`platform-status`** showcase (`user=null`, `is_platform=True`). Logged-in owners may also read their **unpublished** pages—critical for staging before go-live. Writes call `require_page_owner` and `forbid_platform_page`; customers cannot mutate the public sentinel.
-
-MFA is ABAC on the session token: `check_mfa_satisfied` requires `"mfa"` in the Firebase JWT `amr` claim before any state change. Machine clients use a separate ABAC path—API keys on `/api/v1/ingest` and `/api/v1/predict` resolve to `UserProfile.account_id` (or the `platform` sentinel) via hashed tokens, not hardcoded hostnames.
+MFA is ABAC on the session token: `check_mfa_satisfied` requires `"mfa"` in the Firebase JWT `amr` claim before any state change. Machine clients use a separate ABAC path—API keys on `/api/v1/ingest` and `/api/v1/predict` resolve to `UserProfile.account_id` and the mapped FORJD tenant via hashed tokens, not hardcoded hostnames.
 
 ### Frontend routing mirrors backend intent
 
 | Route                            | Guard          | Anonymous                                | Logged-in                   |
 | -------------------------------- | -------------- | ---------------------------------------- | --------------------------- |
-| `/status`, `/status/:slug`       | none           | published + `platform-status`            | + own unpublished           |
+| `/status`, `/status/:slug`       | none           | published + `platform-status`            | + own unpublished (via BFF) |
 | `/explore`                       | none           | published directory                      | same filter                 |
-| `/analytics`, `/vulnerabilities` | `authGuard`    | redirect `/login`                        | account data                |
+| `/analytics`, `/vulnerabilities` | `authGuard`    | redirect `/login`                        | account / FORJD data        |
 | `/settings`                      | none (UI RBAC) | loads; mutations need login + non-Viewer | full console if `Operator`+ |
 
-`authGuard` only checks authentication—it does not replace server-side RBAC/ABAC. The backend remains authoritative.
+`authGuard` only checks authentication—it does not replace server-side RBAC/ABAC. The Django BFF remains authoritative for session termination; FORJD remains authoritative for status-page data.
 
 ### Production helpers (not generic samples)
 
 ```python
-# monitor/access.py — MFA session gate (simplified; production accepts amr + firebase.sign_in_second_factor)
+# MFA session gate (simplified; production accepts amr + firebase.sign_in_second_factor)
 def check_mfa_satisfied(request) -> bool:
   token = request.firebase_token or {}
   amr = token.get("amr", [])
@@ -1369,11 +1350,6 @@ def check_mfa_satisfied(request) -> bool:
   if isinstance(firebase, dict) and firebase.get("sign_in_second_factor"):
     return True
   return token.get("uid") == "testuser"
-
-def require_page_owner(request, page: StatusPage) -> None:
-  forbid_platform_page(page)
-  if not request.user.is_authenticated or page.user_id != request.user.id:
-    raise HttpError(404, "Status page not found")
 ```
 
 ```typescript
@@ -1385,7 +1361,7 @@ export const authGuard: CanActivateFn = () => {
 };
 ```
 
-By combining per-account RBAC with publication- and ownership-aware ABAC, the platform keeps private operational stats off the public internet while still exposing a world-readable `platform-status` sentinel and customer-published pages—without inventing org charts we do not implement.
+By combining per-account RBAC with publication- and tenant-aware ABAC on the FORJD status APIs, the platform keeps private operational stats off the public internet while still exposing a world-readable `platform-status` sentinel and customer-published pages—without inventing org charts we do not implement.
 
 ---
 
@@ -1403,7 +1379,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [Appendix Z](#appendix-z-integration-guides)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [FORJD analytics](https://FORJD analytics.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Firecrawl](https://www.firecrawl.dev/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Vercel](https://vercel.com/), [Fly.io](https://fly.io/), [Cloud Run](https://cloud.google.com/run/) (alternate), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
 - **Documentation & code maps**: [DeepWiki](https://deepwiki.com/dataengineeringformachinelearning/dataengineeringformachinelearning), [Appendix Q: Glossary](#appendix-q-deml-glossary), [Appendix M: Billing](#appendix-m-billing--subscriptions-operator-reference)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [OASIS CTI](https://www.oasis-open.org/committees/cyber-threat-intelligence/) (STIX 2.1 / TAXII 2.1), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
@@ -1516,14 +1492,16 @@ By joining the enriched general traffic with the Threat Intelligence models, we 
 Because we are processing potentially identifiable information (IP addresses, precise locations), we strictly adhere to the following principles:
 
 - **Consent Gateways:** Enriched analytical tracking relies on the `CookieConsent` model. If a user rejects analytical cookies, their data is aggregated anonymously.
-- **Data Minimization:** Once an IP is enriched to an ASN/Geo and its session concludes, we strive to drop the raw IP from long-term aggregate storage (using the `AggregatedAnalytics` roll-up buckets) to prevent unauthorized PII accumulation.
+- **Data Minimization:** Once an IP is enriched to an ASN/Geo and its session concludes, raw IPs are dropped from long-term aggregates. Durable analytics and rollups live in **FORJD** (local DEML `AggregatedAnalytics` is retired); sealed metadata allowlists keep PII out of projection metadata.
 - **Security by Design:** All third-party integrations (Google Analytics, Microsoft Clarity) are opt-in and handled via secure encrypted credential storage in `AnalyticsIntegration`.
 
-## Appendix C: Cloud Run Deployment
+## Appendix C: Cloud Run Deployment (Alternate Host)
+
+**Primary production hosts are Vercel + Fly + FORJD** ([Chapter 22](#chapter-22-production-deployment-vercel-fly-and-forjd)). This appendix is the checklist for an **alternate** Google Cloud Run control-plane residency when required.
 
 **Env templates:** `backend/.env.example`, `frontend/.env.example`, `marketing/.env.example`.
 
-This appendix is the **complete setup checklist** for deploying the DEML platform on Cloud Run (project: `deml`). Every hostname, FORJD API URL, and cross-site URL is **env-driven** — never hardcode domains in application code.
+Every hostname, FORJD API URL, and cross-site URL is **env-driven** — never hardcode domains in application code. Cloud Run must not become a parallel DEML stream plane; sealed ingest, status, projections, and analytics remain on FORJD.
 
 ### Pre-Deploy Checklist
 
@@ -2031,56 +2009,36 @@ Daily jobs are staggered to avoid thundering-herd load on Postgres and Stripe.
 
 ### Data Retention
 
-Sealed telemetry, projection, and analytics retention is owned by FORJD (engine scheduler on Fly). DEML retains only identity-adjacent control-plane data and delegates tenant data erasure to FORJD via `POST /api/v1/tenants/{id}/erase` during account deletion. The policy windows below are enforced on the FORJD side.
+Sealed telemetry, status pages, projections, analytics, ML, SIEM/SOAR, and export retention are owned by **FORJD** (Fly + Supabase + engine). DEML retains only identity-adjacent control-plane data and delegates tenant data erasure to FORJD via `POST /api/v1/tenants/{id}/erase` during account deletion. Local DEML models such as `AggregatedAnalytics`, `StatusPage`, `StatusPageUptimeDaily`, `ExportJob`, `ReportArchive`, and related telemetry tables are **retired** (migration `0053_retire_local_data_plane`) and are not live product surfaces.
 
-**Neon (PostgreSQL):**
+**DEML Postgres (control plane):**
 
-| Data Class                                 | Retention   | Action                                                                 |
-| ------------------------------------------ | ----------- | ---------------------------------------------------------------------- |
-| `Endpoints` (raw ping telemetry)           | 30 days     | Deleted only after versioned hourly and daily coverage exists          |
-| `HealthProbeObservation` (raw probes)      | 30 days     | Deleted only after page-scoped daily uptime repair                     |
-| `LighthouseScan` (site quality)            | 30 days     | Dedicated page/URL/hour projection, then deleted                       |
-| `TelemetryIngestReceipt`                   | 30 days     | Deleted after replay window                                            |
-| `AuditLog`                                 | 30 days     | Archived to FORJD analytics, then exact acknowledged IDs are deleted   |
-| `CookieConsent`                            | 30 days     | Deleted only after versioned hourly coverage exists                    |
-| FORJD outbox rows (published / DLQ)        | 30 / 7 days | Enforced inside the FORJD engine (Postgres outbox + Dragonfly streams) |
-| `ThreatIntelligence`                       | 90 days     | Deleted, duplicates purged                                             |
-| `SearchQuery`                              | 30 days     | PII-bearing query evidence deleted                                     |
-| `HoneypotInteraction`                      | 90 days     | Security interaction evidence deleted                                  |
-| `BenchmarkRun`                             | 365 days    | Annual model-comparison evidence deleted                               |
-| `AggregatedAnalytics` (hourly)             | 30 days     | Deleted after daily rollups                                            |
-| `ReportArchive` (daily rollups)            | 90 days     | Materialized; then deleted                                             |
-| `StatusPageUptimeDaily` (daily rollups)    | 90 days     | Fast status-page uptime reads                                          |
-| FORJD exports export artifacts             | 14 days     | Object deleted; job marked expired                                     |
-| `ExportJob` terminal metadata              | 90 days     | Expired and terminal-failed rows deleted after object cleanup          |
-| `ScheduledTaskRun`                         | 90 days     | Completed/terminal-failure history pruned                              |
-| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite  | Kept as system of record                                               |
+| Data Class                                      | Retention  | Action                                                               |
+| ----------------------------------------------- | ---------- | -------------------------------------------------------------------- |
+| `AuditLog` (DEML control-plane audit)           | 30 days    | Pruned after optional archive handoff; fail-closed on archive errors |
+| `CookieConsent`                                 | Policy TTL | Deleted per consent/retention hygiene jobs                           |
+| API keys, billing profile, FORJD tenant mapping | Indefinite | System of record until account deletion saga                         |
+| `BugReport` / lifecycle job metadata            | Indefinite | DEML-owned delivery/outbox metadata; content processing may be FORJD |
 
-Cleanup is deliberately **repair-first and fail-closed**. Before raw telemetry is removed, the scheduler rebuilds the retained daily report and page-uptime projections and verifies that each endpoint- or consent-backed scope in the rolling cutoff boundary has an `AggregatedAnalytics` row carrying the current aggregation version. Scheduler reconciliation creates 31 days of hourly work so that boundary is repairable before the 30-day source policy is enforced; evidence already older than policy is not allowed to deadlock pruning forever. Missing boundary coverage aborts pruning. Audit rows are uploaded to FORJD analytics in bounded batches and Postgres deletes only the exact IDs acknowledged by FORJD analytics; an archive or schema failure leaves the source rows intact. This ordering makes pruning safe during scheduler, worker, database, or FORJD analytics outages.
+**FORJD (data plane — authoritative for product telemetry):**
 
-**FORJD analytics (Archival):**
+| Data Class                                   | Retention        | Action                                                                |
+| -------------------------------------------- | ---------------- | --------------------------------------------------------------------- |
+| Sealed events / outbox / Dragonfly streams   | Per FORJD policy | Enforced inside the FORJD engine                                      |
+| Durable `stream_results` projections         | Per FORJD policy | Materialized read models for dashboards and BFF adapters              |
+| Status pages / uptime / incidents            | Per FORJD policy | Served via `/api/v1/status/*` (DEML proxies)                          |
+| Analytics, SIEM/SOAR, ML scores, report docs | Per FORJD policy | No DEML-local OLAP duplicate                                          |
+| Export artifacts + job metadata              | Per FORJD export | Downloads via FORJD export APIs (short-lived object URLs through BFF) |
+| Audit archives / security events / OTEL      | Per FORJD policy | FORJD analytics retention — not Neon rollup tables                    |
 
-| Data Class                   | Retention | Action                          |
-| ---------------------------- | --------- | ------------------------------- |
-| `audit_archive`              | 180 days  | `cleanup_FORJD analytics` purge |
-| `security_events`            | 365 days  | `cleanup_FORJD analytics` purge |
-| `asset_vulnerability_ledger` | 730 days  | `cleanup_FORJD analytics` purge |
-| OTEL traces/metrics          | 730+ days | TTL via MergeTree               |
+Cleanup is **repair-first and fail-closed** on each side of the boundary: DEML never deletes identity rows that would strand a mapped FORJD tenant, and FORJD never treats a DEML control-plane outage as license to skip its own retention scheduler. Account deletion remains blocked until FORJD confirms durable tenant erase.
 
-The FORJD analytics image creates these archival tables with matching MergeTree TTLs on fresh volumes. Runtime maintenance also issues idempotent `CREATE TABLE IF NOT EXISTS`, `ALTER ... ADD COLUMN IF NOT EXISTS`, and explicit `ALTER ... MODIFY TTL` statements so existing persistent volumes converge before writers or cleanup run. The legacy vulnerability timestamp column receives a deterministic migration anchor rather than `now()`, preventing every old row from being assigned a misleading fresh age. Schema and delete failures are surfaced instead of being treated as successful maintenance.
-
-**Dragonfly/Redis (Rate Limiting):**
+**Dragonfly (FORJD cache / rate limits):**
 
 | Data Class      | Retention  | Action                       |
 | --------------- | ---------- | ---------------------------- |
 | Rate limit keys | 60 seconds | Auto-expire (sliding window) |
 | IP blocklist    | 24 hours   | TTL via `setex`              |
-
-**FORJD exports Object Storage:**
-
-| Data Class       | Retention | Action                                                            |
-| ---------------- | --------- | ----------------------------------------------------------------- |
-| Export artifacts | 14 days   | Application deletes object, then retains job metadata for 90 days |
 
 ### Billing & Account Lifecycle
 
@@ -2089,7 +2047,7 @@ The FORJD analytics image creates these archival tables with matching MergeTree 
 | `sync_subscriptions`                 | Scheduled | Daily (security_worker) | Stripe sweep: upgrades active subs, downgrades lapsed Pro users; preserves manual Pro grants (`tier=Pro`, no `stripe_customer_id`) |
 | Stripe webhooks                      | Real-time | On event                | `checkout.session.completed`, `customer.subscription.updated/deleted`                                                              |
 | `POST /api/v1/billing/sync`          | On-demand | User-initiated          | Manual subscription reconciliation                                                                                                 |
-| `DELETE /api/v1/auth/delete-account` | On-demand | User-initiated          | Saga cancels identity/access, locks report jobs, deletes FORJD exports artifacts, then performs the Postgres cascade and audit     |
+| `DELETE /api/v1/auth/delete-account` | On-demand | User-initiated          | Saga calls FORJD tenant erase first; on success revokes DEML keys, best-effort Stripe cancel, deletes Firebase + Django user       |
 
 There is **no** scheduled purge of dormant accounts or orphaned Stripe customers.
 
@@ -2108,7 +2066,7 @@ There is **no** scheduled purge of dormant accounts or orphaned Stripe customers
 | `production-deployment-smoke.yml` | Every six hours + manual        | Public surfaces and HF model freshness |
 
 > [!NOTE]
-> Daily ML training and threat-intel fetch run in **Django workers**, not GitHub Actions. The Rust scheduler publishes the durable `train_all_models` trigger, `FORJD workers` executes it, and `HfApi` publishes model state dictionaries when the required Railway `HF_TOKEN` and `HF_REPO_ID` variables are present. There is no `daily-automation.yml` model-publishing workflow.
+> Daily ML training and threat-intel fusion run in **FORJD**, not DEML Django workers or GitHub Actions. FORJD schedules durable training triggers and publishes model state dictionaries when `HF_TOKEN` / `HF_REPO_ID` (or FORJD-native artifact storage) are configured. There is no `daily-automation.yml` model-publishing workflow and no Railway-hosted ML plane.
 
 ## Appendix E: Contributing Guidelines & Getting Started
 
@@ -2788,12 +2746,12 @@ Stripe powers **Standard → Pro** upgrades for DEML accounts. This is a live pa
 
 ## API surface
 
-| Endpoint / command                    | Role                                                                      |
-| ------------------------------------- | ------------------------------------------------------------------------- |
-| `POST` billing checkout session       | Create Stripe Checkout URL (`client_reference_id` = account id)           |
-| Stripe webhook                        | Async tier mutations                                                      |
-| Billing **sync**                      | Manual / success-page refresh from Stripe by customer id or linked emails |
-| `python manage.py sync_subscriptions` | Sweep non-Standard profiles against Stripe                                |
+| Endpoint / command                    | Role                                                                                                                          |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `POST` billing checkout session       | Create Stripe Checkout URL (`client_reference_id` = account id)                                                               |
+| Stripe webhook                        | Async tier mutations                                                                                                          |
+| Billing **sync**                      | Manual / success-page refresh from Stripe by stored `stripe_customer_id` / `stripe_subscription_id` only (never email lookup) |
+| `python manage.py sync_subscriptions` | Sweep Pro / subscribed profiles against Stripe; heals missed webhooks                                                         |
 
 Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/sync_subscriptions.py`, frontend `success` page.
 
@@ -2811,7 +2769,7 @@ Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/s
 
 - **Secrets:** `STRIPE_*` keys via Infisical / host env—never commit.
 - **Viewers** cannot open checkout.
-- **Pro vs Standard** may gate higher-frequency model refresh and product features; workers still run **symmetrical** pipelines for every account.
+- **Pro vs Standard** is enforced on the Django BFF: exports, ML admin, SIEM/SOAR writes, projections run, vulnerabilities, and cases require `tier=Pro` and `subscription_active`. Standard keeps core read/ingest/status/report paths. FORJD itself has no billing awareness — entitlement is DEML-side.
 - After deploy, verify webhook endpoint URL and signing secret in the Stripe dashboard point at the current `BACKEND_URL`.
 
 ## Related
@@ -2990,25 +2948,24 @@ Details: [Appendix D](#appendix-d-maintenance--automation-schedule), [docs/PRODU
 
 ## 12. Related documents
 
-| Document                                                             | Use                                       |
-| -------------------------------------------------------------------- | ----------------------------------------- |
-| [BOOK.md](../BOOK.md)                                                | Full CONOPS narrative + chapters          |
-| [WHITEPAPER.md](../WHITEPAPER.md)                                    | Executive architecture                    |
-| [README.md](../README.md)                                            | API integration gateway                   |
-| [Appendix P](../BOOK.md#appendix-p-platform-features)                | Feature catalog                           |
-| [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles         |
-| [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                          |
-| [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                                 |
-| [FORJD integration](../docs/FORJD_INTEGRATION.md)                    | Role rollout, failure semantics, rollback |
+| Document                                                                | Use                                       |
+| ----------------------------------------------------------------------- | ----------------------------------------- |
+| [BOOK.md](../BOOK.md)                                                   | Full CONOPS narrative + chapters          |
+| [WHITEPAPER.md](../WHITEPAPER.md)                                       | Executive architecture                    |
+| [README.md](../README.md)                                               | API integration gateway                   |
+| [Appendix P](../BOOK.md#appendix-p-platform-features)                   | Feature catalog                           |
+| [AGENTS.md](../AGENTS.md)                                               | Contributor / AI agent principles         |
+| [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment-alternate-host) | Cloud Run alternate deploy                |
+| [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule)    | Schedules                                 |
+| [FORJD integration](../docs/FORJD_INTEGRATION.md)                       | Role rollout, failure semantics, rollback |
 
 ---
 
 ## Appendix O: Analytics Exports & FORJD exports Object Store
 
-**Status:** infrastructure, client, `ExportJob` model/API/worker, and Analytics UI exports panel.
+**Status:** FORJD-owned export jobs + object store; DEML BFF adapts stable `/api/v1/exports` paths; Analytics UI panel. Local DEML `ExportJob` model/worker is **retired** (`0053`).
 **Object store:** [FORJD exports](https://github.com/dataengineeringformachinelearning/forjd) (Apache 2.0, S3-compatible)
 **Ops:** [`docs/FORJD_INTEGRATION.md`](../docs/FORJD_INTEGRATION.md)
-**Catalog:** `FORJD exports` in [`infrastructure/railway/services.json`](../infrastructure/railway/services.json)
 
 ## Why FORJD exports (not MinIO, not a lakehouse)
 
@@ -3017,46 +2974,42 @@ Details: [Appendix D](#appendix-d-maintenance--automation-schedule), [docs/PRODU
 | MinIO CE                | **Avoid** — upstream community repo archived / unmaintained (2026)           |
 | Garage                  | Solid Rust alternative; we chose FORJD exports for S3-shaped DX + Apache 2.0 |
 | Delta / Iceberg / Unity | **Not for downloads** — lake table formats, not tenant PDF storage           |
-| S3 / R2                 | Valid managed fallback; same client (`boto3` path-style)                     |
-| **FORJD exports**       | **Selected** self-hosted S3 for report **blobs**                             |
+| S3 / R2                 | Valid managed fallback; same client path-style                               |
+| **FORJD exports**       | **Selected** S3-shaped store for report **blobs**                            |
 
 **Facts vs files**
 
 - **FORJD analytics + Postgres** = analytics truth (BI queries, CES, telemetry aggregates).
-- **FORJD exports** = durable **files** (PDF / CSV / Parquet / JSON) after a job runs.
+- **FORJD exports** = durable **files** (PDF / CSV / Parquet / JSON) after a FORJD job runs.
 - **FORJD projections** = live UI reads via the Django BFF — not an archive for multi‑MB reports.
 
 ## Architecture
 
 ```text
-  Angular ──POST /api/v1/exports/──► deml-backend (Django Ninja)
-                                          │
-                                          │ ExportJob (queued)
+  Angular ──POST /api/v1/exports/──► deml-backend (Django BFF)
+                                          │ tenant-bound fjsvc_
                                           ▼
-                              durable scheduler → FORJD workers
-                               Polars + FORJD/PG → render
+                              FORJD POST /api/v1/exports (durable job)
+                               render + put_bytes → FORJD object store
                                           │
-                          put_bytes ──────► FORJD exports API
-                          storage_uri ────► ExportJob ready
-                                          │
-  Angular ◄── signed proxy GET (TTL) ───── deml-backend ──private read──► FORJD exports
+  Angular ◄── download URL (TTL) ──────── deml-backend ◄── FORJD GET …/download
 ```
 
 ### Object key layout
 
 ```text
-accounts/{account_id}/exports/{job_id}/{filename}
+tenants/{forjd_tenant_id}/exports/{job_id}/{filename}
 ```
 
-Implemented in `backend/utils/object_storage.export_object_key`.
+(DEML may still log `account_id` for audit; object isolation is FORJD-tenant-scoped.)
 
 ### Client
 
-| Surface    | Module                                           |
-| ---------- | ------------------------------------------------ |
-| Settings   | `FORJD_EXPORT_*` in `backend/config/settings.py` |
-| Helpers    | `backend/utils/object_storage.py`                |
-| Dependency | `boto3` in `backend/requirements.txt`            |
+| Surface | Module                                                               |
+| ------- | -------------------------------------------------------------------- |
+| BFF     | `backend/forjd/` adapters for `/api/v1/exports`                      |
+| Config  | `FORJD_API_URL`, export-related FORJD settings / secret refs         |
+| UI      | Angular Analytics exports panel → Django only (never FORJD directly) |
 
 ## Local development
 
@@ -3109,34 +3062,23 @@ Service name: **`FORJD exports`**
 ## Security invariants
 
 - Owner/RBAC checks on every export create/list/download (app layer).
-- Short-lived Django-signed **backend proxy GET** (default 15 minutes), so private Railway DNS
-  and FORJD exports root credentials are never exposed to the browser.
-- No frontend access to root keys.
-- Prefix isolation by `account_id` UUID.
-- At most three active exports and twenty creations per user per hour; quota evaluation and creation
-  share a per-user database lock, and generation never starts an unbounded request thread.
-- The every-minute `generate_export` task reclaims stale jobs, retries transient failures at most
-  five times with exponential backoff, deletes expired objects, and prunes terminal metadata after
-  the audit window.
-- CSV string cells with spreadsheet formula prefixes are neutralized before rendering; signed
-  downloads validate job ID, object key, checksum, expiry, and token age before streaming.
+- Stable DEML paths (`/api/v1/exports…`) authenticate the Firebase session, bind the FORJD tenant, and adapt to FORJD export APIs. Download responses expose a **short-lived private object-storage URL** from FORJD—not a Railway-hosted DEML download worker and not root credentials in the browser.
+- No frontend access to FORJD or object-store root keys.
+- Prefix / tenant isolation by mapped FORJD tenant (and DEML `account_id` for audit).
+- Export create/list/download honor DEML RBAC and FORJD tenant binding; quotas and job durability are enforced on the FORJD side.
 - Export generation must not run during account deletion. Deletion stops new
   FORJD calls and preserves all DEML/Firebase state until FORJD confirms durable tenant erasure.
 
 ## Implemented surfaces
 
-| Piece   | Location                                                                    |
-| ------- | --------------------------------------------------------------------------- |
-| Model   | `ExportJob`, `ReportArchive`, `LighthouseScan` (`0043`, `0049`, `0051`)     |
-| API     | `GET/POST /api/v1/exports/`, `GET /api/v1/exports/{id}`, `GET .../download` |
-| Service | `monitor/services/exports.py` (CSV/JSON/Parquet/PDF)                        |
-| Command | `python manage.py generate_export` (+ optional `--job-id`)                  |
-| Workers | `generate_export` in `ALLOWED_TASKS`                                        |
-| UI      | Analytics page exports panel                                                |
+| Piece   | Location                                                                                          |
+| ------- | ------------------------------------------------------------------------------------------------- |
+| Owner   | **FORJD** export jobs + object store (local DEML `ExportJob` / `ReportArchive` retired in `0053`) |
+| API     | DEML `GET/POST /api/v1/exports[/id][/download]` → FORJD `/api/v1/exports…` via `backend/forjd/`   |
+| Formats | CSV / JSON / Parquet / PDF as exposed by FORJD export APIs                                        |
+| UI      | Analytics page exports panel (Angular → Django BFF only)                                          |
 
-Analytics exports query `ReportArchive` first for the 90-day daily reporting window, compare its source bucket count/update watermark, merge hourly `AggregatedAnalytics` when a current, missed, or delayed bucket is fresher, and emit explicit `no_data` rows for every requested date. A selected site is dimensionally narrower than the account rollup, so site reports use the isolated retained raw endpoint window and are capped at 30 days. Lighthouse reports read the dedicated page/URL/hour `LighthouseScan` projection and support the same site filter. Threat and vulnerability exports iterate the full selected retained range in bounded database chunks rather than silently stopping at 5,000 rows; PDF output paginates its visible tabular rendering.
-
-The dashboard and public status paths use separate projections because they have different dimensions. Account/platform KPI cards read `AggregatedAnalytics` for completed hourly buckets and only touch raw data for the current partial hour. Reports read `ReportArchive` or `LighthouseScan`. Public uptime reads `StatusPageUptimeDaily`, keyed by status page and date, with raw probes used only for today or a missing repair bucket and isolated legacy endpoint rows seeding pre-probe history. Component SLA/current-state queries are batched across the page rather than scanning raw rows once per service. The response always contains 30 dated, ordered slots with nullable uptime: operational/outage colors appear when checks exist, while days before page creation or without checks remain an explicit neutral `no_data` state rather than being misreported as 100% uptime.
+Analytics, status uptime, and report downloads read **FORJD projections and export APIs** through the BFF. DEML does not materialize `AggregatedAnalytics`, `StatusPageUptimeDaily`, or `LighthouseScan` as live product tables. KPI cards and public status graphs consume FORJD analytics/status responses; missing windows surface as explicit `no_data` rather than fabricated 100% uptime.
 
 ## Risk note
 
@@ -3183,8 +3125,8 @@ Operational doctrine—how the platform runs in production, who performs which w
    - Queries read projections through the Django BFF adapters. FORJD + Polars for heavy batch work. Decouples from transactional DB while providing at-least-once + dedup semantics.
 
 2. **Account & Site Isolation (User + Sites)**
-   - One Firebase login → one Django `User` → `UserProfile.account_id`. Each account may own many `StatusPage` sites.
-   - No organization hierarchies or multiple logins per workspace. Telemetry, integrations, and widgets are scoped to `user` / `account_id`; data cannot bleed across accounts.
+   - One Firebase login → one Django `User` → `UserProfile.account_id` → mapped FORJD tenant. Each tenant may own many FORJD status pages (proxied via `/api/v1/system-status/*`).
+   - No organization hierarchies or multiple logins per workspace. Control-plane rows are scoped to `account_id`; sealed telemetry and status data are scoped to the FORJD tenant—cross-tenant reads fail closed.
 
 3. **Big Data Aggregate Threat Modeling ("Herd Immunity")**
    - The platform trains a global `platform_threat_model.pt` that aggregates anonymized, non-PII metrics across all accounts (e.g., global failure rates, average suspicious request ratios over the last 90 days).
@@ -3488,22 +3430,24 @@ The former Railway data-plane services (relay, scheduler, probe, normalizer, ing
 
 ## Compute & Deployment
 
-| Layer             | Technology                          | Notes                                   |
-| ----------------- | ----------------------------------- | --------------------------------------- |
-| Container Runtime | Docker                              | Unprivileged multi-stage builds         |
-| Orchestration     | Railway / Cloud Run / AWS Lightsail | Multi-target deployment topology        |
-| Backend           | Django (Python)                     | Control plane with async/asgi           |
-| Data Plane        | Rust                                | Role-selected services (`forjd-engine`) |
+| Layer             | Technology                                      | Notes                                                       |
+| ----------------- | ----------------------------------------------- | ----------------------------------------------------------- |
+| Container Runtime | Docker                                          | Unprivileged multi-stage / Distroless builds                |
+| Primary hosts     | Vercel (Angular) + Fly (`deml-backend`) + FORJD | `deml.app` / `backend.deml.app` / `backend.forjd.co`        |
+| Alternate hosts   | Cloud Run / AWS Lightsail / Fargate             | Control-plane residency options only (not primary shipping) |
+| Backend           | Django (Python)                                 | Control plane BFF with async/ASGI                           |
+| Data Plane        | FORJD (Rust engine + API)                       | Role-selected services (`forjd-engine`); sealed pipeline    |
 
 ## Data Layer
 
-| Component           | Technology      | Purpose                                              |
-| ------------------- | --------------- | ---------------------------------------------------- |
-| Transactional Store | PostgreSQL      | System of record (users, pages, incidents)           |
-| Event Streaming     | FORJD           | Internal event bus with FORJD streams compatibility  |
-| Real-time Models    | FORJD           | Materialized `stream_results` read models (Supabase) |
-| Analytics Store     | FORJD analytics | OLAP telemetry, CES aggregates                       |
-| Cache/Rate Limiting | Dragonfly       | Redis-protocol compatible caching                    |
+| Component           | Technology      | Purpose                                                         |
+| ------------------- | --------------- | --------------------------------------------------------------- |
+| Transactional Store | PostgreSQL      | DEML system of record (users, billing, consent, tenant mapping) |
+| Status / incidents  | FORJD           | Status pages, services, incidents, uptime projections           |
+| Event Streaming     | FORJD           | Sealed ingest + Dragonfly streams                               |
+| Real-time Models    | FORJD           | Materialized `stream_results` read models (Supabase)            |
+| Analytics Store     | FORJD analytics | OLAP telemetry, CES aggregates, exports                         |
+| Cache/Rate Limiting | Dragonfly       | FORJD Redis-protocol compatible caching                         |
 
 ## Frontend & Design
 

@@ -10,7 +10,7 @@
   <!-- Always stacked (single column) for dense status cards.
            These cards have too much information (metrics + uptime + status) to render side-by-side. -->
   <div class="status-directory-grid">
-    @for (page of displayPages(); track page) {
+    @for (page of displayPages(); track page.id) {
     <viking-explore-card
       [title]="page.title"
       [description]="page.description || 'Monitoring core services'"

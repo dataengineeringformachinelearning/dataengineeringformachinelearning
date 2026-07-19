@@ -8,11 +8,11 @@
 {% block meta_description %}
 <meta
   name="description"
-  content="Interactive OpenAPI documentation for DEML public ingestion and inference endpoints."
+  content="Interactive OpenAPI documentation for the DEML learning platform control plane and FORJD handoff."
 />
 {% endblock %}
-{% block og_description %}Interactive OpenAPI documentation for DEML public ingestion and inference endpoints.{% endblock %}
-{% block twitter_description %}Interactive OpenAPI documentation for DEML public ingestion and inference endpoints.{% endblock %}
+{% block og_description %}Interactive OpenAPI documentation for the DEML control plane and FORJD handoff.{% endblock %}
+{% block twitter_description %}Interactive OpenAPI documentation for the DEML control plane and FORJD handoff.{% endblock %}
 {% block meta_keywords %}DEML OpenAPI, learning platform, user API, FORJD handoff{% endblock %}
 
 {% block body_class %}backend-swagger{% endblock %}
@@ -32,9 +32,9 @@
       <p class="viking-label">OpenAPI · v{{ api_version }}</p>
       <h1 class="viking-heading viking-heading-lg">{{ api_title }}</h1>
       <p class="viking-text-muted">
-        Interactive sandbox for public ingestion and inference endpoints. Authorize with your
-        bearer token using the control below, or press
-        <kbd class="viking-kbd-static">⌘K</kbd> to search the platform.
+        Interactive sandbox for the DEML control plane and sealed FORJD handoff. Authorize with
+        your bearer token, or open the
+        <a href="/documentation">Documentation</a> page for the Blue Notes field log.
       </p>
     </header>
 
@@ -120,14 +120,12 @@
     return true;
   };
 
-
   let attempts = 0;
-  const maxAttempts = 50; // 6 seconds max
+  const maxAttempts = 50;
   const searchPoll = window.setInterval(() => {
     if (syncSwaggerSearch() || ++attempts >= maxAttempts) {
       window.clearInterval(searchPoll);
     }
   }, 120);
-
 </script>
 {% endblock %}

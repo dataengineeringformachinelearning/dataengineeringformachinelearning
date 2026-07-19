@@ -145,7 +145,8 @@ class UserProfile(models.Model):
   tier = models.CharField(max_length=50, choices=TIER_CHOICES, default="Standard")
   stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
   stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True)
-  subscription_active = models.BooleanField(default=True)
+  # New profiles start Standard/inactive until Stripe checkout or webhook activates Pro.
+  subscription_active = models.BooleanField(default=False)
   subscription_current_period_end = models.DateTimeField(null=True, blank=True)
 
   class Meta:

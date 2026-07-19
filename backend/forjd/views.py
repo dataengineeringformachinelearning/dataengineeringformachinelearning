@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from dataclasses import dataclass
-from typing import Final, Literal
+from typing import Any, Final, Literal
 from urllib.parse import quote, urlsplit
 from uuid import UUID, uuid4
 
@@ -122,6 +122,79 @@ def _client_for_credential(credential: ForjdTenantCredential) -> ForjdClient:
     tenant_id=credential.tenant_id,
     service_token=credential.service_token,
   )
+
+
+def _request_has_end_user_auth(request: HttpRequest) -> bool:
+  """True when Firebase/API-key identity terminated on this request."""
+  has_token = bool(
+    getattr(request, "firebase_token", None) or getattr(request, "deml_api_key", None)
+  )
+  return bool(
+    has_token
+    and getattr(request.user, "is_authenticated", False)
+    and getattr(request.user, "is_active", False)
+  )
+
+
+async def _status_directory_read_client(
+  request: HttpRequest,
+) -> tuple[ForjdClient | None, int | None, bool]:
+  """Resolve a FORJD client for status directory GETs.
+
+  Authenticated product users use their mapped tenant credential (all pages).
+  Anonymous explore uses the platform ``FORJD_*`` service credential and must
+  filter to published pages only.
+  """
+  if _request_has_end_user_auth(request):
+    deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
+    credential = await _read_credential_or_none(request)
+    if credential is None or not reads_from_forjd():
+      return None, deml_user_id, False
+    return _client_for_credential(credential), deml_user_id, False
+
+  if not reads_from_forjd():
+    return None, None, True
+  try:
+    return ForjdClient(), None, True
+  except ForjdError:
+    return None, None, True
+
+
+def _published_directory_pages(pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+  return [
+    page for page in pages if page.get("is_published") or page.get("slug") == "platform-status"
+  ]
+
+
+async def _ensure_published_status_page(
+  client: ForjdClient,
+  page_id: str,
+  *,
+  request_id: str | None,
+) -> HttpResponse | None:
+  """For anonymous directory reads, refuse unpublished page detail proxies."""
+  response = await client.proxy(
+    "GET",
+    "/api/v1/status/pages",
+    body=None,
+    query_string=f"tenant_id={client.tenant_id}",
+    content_type="application/json",
+    request_id=request_id,
+  )
+  if response.status >= 400:
+    if empty_read_fallback_enabled() and response.status >= 500:
+      return JsonResponse({"detail": "Not found"}, status=404)
+    return _upstream_error_response(response)
+  try:
+    upstream = json.loads(response.body)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return JsonResponse({"detail": "Not found"}, status=404)
+  if not isinstance(upstream, dict):
+    return JsonResponse({"detail": "Not found"}, status=404)
+  pages = _published_directory_pages(deml_status_pages(upstream, deml_user_id=None))
+  if not any(str(page.get("id") or "") == str(page_id) for page in pages):
+    return JsonResponse({"detail": "Not found"}, status=404)
+  return None
 
 
 def _require_payload_tenant(payload_tenant_id: UUID, tenant_id: UUID) -> None:
@@ -671,6 +744,8 @@ async def native_status_page_proxy(request: HttpRequest, slug: str) -> HttpRespo
     )
   # Anonymous visitors cannot hit the authed services/incidents adapters, so
   # reshape the embedded FORJD arrays into the Angular contracts inline.
+  # Never echo FORJD tenant_id on the public slug surface (enumeration risk).
+  page.pop("tenant_id", None)
   page_id = str(page.get("id") or "")
   services = deml_status_services(page)
   incidents = deml_status_incidents(page)
@@ -783,17 +858,18 @@ async def analytics_overview_proxy(request: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
-@require_forjd_action({"GET": "read", "POST": "status.admin"})
+@require_forjd_action({"GET": "public", "POST": "status.admin"})
 async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
-  """GET list / POST create — Angular ``/api/v1/system-status/status_pages``."""
+  """GET list / POST create — Angular ``/api/v1/system-status/status_pages``.
+
+  GET is public for the explore directory (platform credential, published-only).
+  """
   if request.method == "GET":
     try:
-      credential = await _read_credential_or_none(request)
-      deml_user_id = await sync_to_async(lambda: getattr(request.user, "id", None))()
-      if credential is None or not reads_from_forjd():
+      client, deml_user_id, published_only = await _status_directory_read_client(request)
+      if client is None:
         return JsonResponse([], status=200, safe=False)
-      client = _client_for_credential(credential)
-      _body, query_string = _bound_request(request, credential.tenant_id, "query")
+      query_string = f"tenant_id={client.tenant_id}"
       response = await client.proxy(
         "GET",
         "/api/v1/status/pages",
@@ -810,6 +886,8 @@ async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
       if not isinstance(upstream, dict):
         raise AdapterError(502, "FORJD returned an invalid status pages list")
       pages = deml_status_pages(upstream, deml_user_id=deml_user_id)
+      if published_only:
+        pages = _published_directory_pages(pages)
       return JsonResponse(pages, status=200, safe=False)
     except AdapterError as exc:
       return _adapter_error_response(exc)
@@ -924,19 +1002,24 @@ async def status_page_detail_proxy(request: HttpRequest, page_id: str) -> HttpRe
 
 
 @csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
-@require_forjd_action({"GET": "read", "POST": "status.admin"})
+@require_forjd_action({"GET": "public", "POST": "status.admin"})
 async def status_page_services_proxy(request: HttpRequest, page_id: str) -> HttpResponse:
   """GET list / POST create — ``/status_pages/{id}/services``."""
   try:
-    credential = await _read_credential_or_none(request)
     if request.method == "GET":
-      if credential is None or not reads_from_forjd():
+      client, _deml_user_id, published_only = await _status_directory_read_client(request)
+      if client is None:
         return JsonResponse([], status=200, safe=False)
-      client = _client_for_credential(credential)
+      if published_only:
+        denied = await _ensure_published_status_page(
+          client, page_id, request_id=request_id_from(request)
+        )
+        if denied is not None:
+          return denied
       response = await client.proxy(
         "GET",
         f"/api/v1/status/pages/{quote(page_id, safe='')}/services",
-        query_string=f"tenant_id={credential.tenant_id}",
+        query_string=f"tenant_id={client.tenant_id}",
         request_id=request_id_from(request),
       )
       if response.status >= 400:
@@ -955,8 +1038,7 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
         {"detail": "FORJD writes are disabled", "code": "forjd_writes_disabled"},
         status=503,
       )
-    if credential is None:
-      return JsonResponse({"detail": "FORJD tenant service credential is unavailable"}, status=503)
+    credential = await _credential_for_request(request)
     client = _client_for_credential(credential)
     payload = _json_object(request)
     # Angular sends {name, url}; map url → description.
@@ -1018,19 +1100,24 @@ async def status_service_delete_proxy(request: HttpRequest, service_id: str) -> 
 
 
 @csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
-@require_forjd_action({"GET": "read", "POST": "status.admin"})
+@require_forjd_action({"GET": "public", "POST": "status.admin"})
 async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> HttpResponse:
   """GET list / POST create — ``/status_pages/{id}/incidents``."""
   try:
-    credential = await _read_credential_or_none(request)
     if request.method == "GET":
-      if credential is None or not reads_from_forjd():
+      client, _deml_user_id, published_only = await _status_directory_read_client(request)
+      if client is None:
         return JsonResponse([], status=200, safe=False)
-      client = _client_for_credential(credential)
+      if published_only:
+        denied = await _ensure_published_status_page(
+          client, page_id, request_id=request_id_from(request)
+        )
+        if denied is not None:
+          return denied
       response = await client.proxy(
         "GET",
         f"/api/v1/status/pages/{quote(page_id, safe='')}/incidents",
-        query_string=f"tenant_id={credential.tenant_id}",
+        query_string=f"tenant_id={client.tenant_id}",
         request_id=request_id_from(request),
       )
       if response.status >= 400:
@@ -1049,8 +1136,7 @@ async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> Htt
         {"detail": "FORJD writes are disabled", "code": "forjd_writes_disabled"},
         status=503,
       )
-    if credential is None:
-      return JsonResponse({"detail": "FORJD tenant service credential is unavailable"}, status=503)
+    credential = await _credential_for_request(request)
     client = _client_for_credential(credential)
     payload = _json_object(request)
     # Angular sends {title, message, status}.

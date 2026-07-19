@@ -7,12 +7,12 @@
 {% block meta_description %}
 <meta
   name="description"
-  content="DEML API documentation and Blue Notes field log — authentication, ingestion, inference, and platform engineering dispatches on one page."
+  content="DEML API documentation and Blue Notes field log — authentication, FORJD handoff, and platform engineering dispatches on one page."
 />
 {% endblock %}
-{% block og_description %}DEML API documentation and Blue Notes field log — authentication, ingestion, inference, and engineering dispatches.{% endblock %}
+{% block og_description %}DEML API documentation and Blue Notes field log — authentication, FORJD handoff, and engineering dispatches.{% endblock %}
 {% block twitter_description %}DEML API documentation and Blue Notes field log on one page.{% endblock %}
-{% block meta_keywords %}DEML documentation, Blue Notes, API reference, telemetry ingestion, inference{% endblock %}
+{% block meta_keywords %}DEML documentation, Blue Notes, API reference, FORJD handoff{% endblock %}
 
 {% block body_class %}backend-docs{% endblock %}
 
@@ -21,11 +21,10 @@
   <div class="docs-page-stack">
     <header class="viking-page-header-static" aria-label="Documentation header">
       <p class="viking-label">Documentation · Blue Notes</p>
-      <h1 class="viking-heading viking-heading-lg">One page. The whole platform.</h1>
+      <h1 class="viking-heading viking-heading-lg">One page. The whole control plane.</h1>
       <p class="viking-text-muted">
-        Everything needed to integrate with the DEML user control plane — plus the Blue Notes
-        field log that records how the platform is engineered. For the interactive sandbox, open
-        the <a href="/api/v1/docs">Swagger UI</a>.
+        Integrate with the DEML user control plane, then hand sealed work to FORJD.
+        Interactive sandbox: <a href="/api/v1/docs">Swagger UI</a>.
       </p>
     </header>
 
@@ -34,8 +33,8 @@
         <span class="section-tag">API REFERENCE</span>
         <h2 id="docs-reference-title">Documentation</h2>
         <p>
-          Authenticate once, then stream telemetry and run inference through the gateway. Every
-          endpoint below is explorable in the interactive Swagger sandbox.
+          Authenticate once, then call DEML for identity and learning surfaces.
+          Sealed ingest and processing run in FORJD through the mapped tenant credential.
         </p>
       </header>
 
@@ -43,34 +42,36 @@
         <article class="viking-card docs-bento-card docs-bento-full">
           <h3 class="viking-card-title">Authentication</h3>
           <p class="viking-text-muted">
-            Generate an API key from your account settings and pass it as a bearer token. Keys are
-            shown once at creation and hashed with SHA-256 at rest.
+            Browser sessions use Firebase Auth through Django. Headless integrations use a
+            <code>deml_…</code> API key as Bearer or <code>X-API-Key</code>. Keys are shown once
+            at creation and hashed with SHA-256 at rest.
           </p>
           <div class="code-block-premium">
             <div class="code-header">HTTP Header</div>
-            <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+            <pre><code>Authorization: Bearer deml_YOUR_API_KEY</code></pre>
           </div>
         </article>
 
         <article class="viking-card docs-bento-card">
-          <h3 class="viking-card-title">Data ingestion</h3>
+          <h3 class="viking-card-title">Sealed FORJD handoff</h3>
           <p class="viking-text-muted">
-            High-throughput endpoint for batched or streaming records from distributed pipelines.
+            Batch sealed envelopes into FORJD. DEML never stores ciphertext or end-user tokens
+            on the upstream call.
           </p>
           <div class="endpoint-badge">
             <span class="method">POST</span>
-            <span class="path">/api/v1/ingest</span>
+            <span class="path">/api/v1/forjd/ingest</span>
           </div>
         </article>
 
         <article class="viking-card docs-bento-card">
-          <h3 class="viking-card-title">Real-time inference</h3>
+          <h3 class="viking-card-title">Contract probe</h3>
           <p class="viking-text-muted">
-            Low-latency model inference for sidecars and services calling models directly.
+            Confirm the DEML ↔ FORJD contract version and readiness before cutting traffic.
           </p>
           <div class="endpoint-badge">
-            <span class="method">POST</span>
-            <span class="path">/api/v1/predict</span>
+            <span class="method">GET</span>
+            <span class="path">/api/v1/forjd/capabilities</span>
           </div>
         </article>
 
@@ -109,15 +110,38 @@
         </p>
       </header>
 
-      <div class="blog-actions">
-        <a class="viking-btn viking-btn-outline" href="{{ marketing_url }}/blog/">
-          <span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
-          Browse the full archive
-        </a>
-        <a class="viking-btn viking-btn-ghost" href="{{ marketing_url }}/blog/rss.xml">
-          <span data-viking-icon="send" data-viking-icon-size="16" aria-hidden="true"></span>
-          Follow via RSS
-        </a>
+      <div class="docs-bento-grid">
+        <article class="viking-card docs-bento-card docs-bento-full">
+          <h3 class="viking-card-title">FORJD is the data plane</h3>
+          <p class="viking-text-muted">
+            DEML owns identity, billing, consent, and learning UI. Sealed ingest, projections,
+            analytics, replay/DLQ, SIEM/SOAR, and ML execute exclusively in FORJD via tenant-bound
+            <code>fjsvc_</code> credentials. The Django BFF never forwards Firebase tokens upstream.
+          </p>
+        </article>
+        <article class="viking-card docs-bento-card">
+          <h3 class="viking-card-title">Pro entitlements</h3>
+          <p class="viking-text-muted">
+            Stripe-backed Pro gates premium BFF writes (exports, SIEM, projections run, playbooks).
+            Standard keeps core read/ingest/status/report paths.
+          </p>
+        </article>
+        <article class="viking-card docs-bento-card">
+          <h3 class="viking-card-title">Full archive</h3>
+          <p class="viking-text-muted">
+            Browse every Blue Notes dispatch on the marketing site, or follow the RSS feed.
+          </p>
+          <div class="blog-actions">
+            <a class="viking-btn viking-btn-outline" href="{{ marketing_url }}/blog/">
+              <span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
+              Browse archive
+            </a>
+            <a class="viking-btn viking-btn-ghost" href="{{ marketing_url }}/blog/rss.xml">
+              <span data-viking-icon="send" data-viking-icon-size="16" aria-hidden="true"></span>
+              RSS
+            </a>
+          </div>
+        </article>
       </div>
     </section>
   </div>

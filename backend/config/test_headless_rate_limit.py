@@ -96,3 +96,28 @@ def test_native_and_adapter_ingest_routes_share_the_ingest_quota() -> None:
 
   assert adapter == ("ingest", 7)
   assert native == adapter
+
+
+@override_settings(
+  DEML_HEADLESS_RATE_LIMIT_ENABLED=True,
+  DEML_PUBLIC_STATUS_RPM=2,
+  DEBUG=False,
+)
+@patch("config.middleware.consume_many")
+def test_middleware_limits_anonymous_public_status_by_ip(mock_consume_many) -> None:
+  mock_consume_many.return_value = (RateLimitDecision(False, 2, 0, 45),)
+  request = RequestFactory().get(
+    "/api/v1/system-status/status_pages",
+    REMOTE_ADDR="203.0.113.9",
+  )
+  request.user = SimpleNamespace(is_authenticated=False)
+
+  response = HeadlessRateLimitMiddleware(lambda _request: None).process_request(request)
+
+  assert response is not None
+  assert response.status_code == 429
+  assert response["Retry-After"] == "45"
+  scope_keys = mock_consume_many.call_args.kwargs["scope_keys"]
+  assert len(scope_keys) == 1
+  assert scope_keys[0] == hashed_scope("ip", "203.0.113.9", "public_status")
+  assert mock_consume_many.call_args.kwargs["capacity"] == 2

@@ -19,7 +19,10 @@ SERVICE_TOKEN = "fjsvc_deadbeef_test-secret"  # pragma: allowlist secret
 def _mapped_actor(username: str, role: str) -> tuple[Any, str]:
   user = User.objects.create_user(username=username)
   user.profile.role = role
-  user.profile.save(update_fields=["role"])
+  # Headless contract writes exercise Pro-gated actions; grant Pro for binding tests.
+  user.profile.tier = "Pro"
+  user.profile.subscription_active = True
+  user.profile.save(update_fields=["role", "tier", "subscription_active"])
   tenant_id = uuid4()
   ForjdTenantMapping.objects.create(
     deml_account_id=user.profile.account_id,

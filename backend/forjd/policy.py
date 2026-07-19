@@ -34,6 +34,7 @@ ADMIN_ROLES: Final[frozenset[str]] = frozenset({SECURITY_ADMIN})
 class ActionPolicy:
   roles: frozenset[str]
   privileged: bool = True
+  requires_pro: bool = False
 
 
 ACTION_POLICIES: Final[dict[str, ActionPolicy]] = {
@@ -41,19 +42,19 @@ ACTION_POLICIES: Final[dict[str, ActionPolicy]] = {
   # Any authenticated product user may file an issue report document.
   "report.write": ActionPolicy(READ_ROLES, privileged=False),
   "ingest.write": ActionPolicy(OPERATOR_ROLES),
-  "case.write": ActionPolicy(OPERATOR_ROLES),
-  "vulnerability.write": ActionPolicy(OPERATOR_ROLES),
+  "case.write": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
+  "vulnerability.write": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "replay.write": ActionPolicy(OPERATOR_ROLES),
-  "export.write": ActionPolicy(OPERATOR_ROLES),
-  "playbook.execute": ActionPolicy(OPERATOR_ROLES),
-  "projection.run": ActionPolicy(OPERATOR_ROLES),
+  "export.write": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
+  "playbook.execute": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
+  "projection.run": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "session.write": ActionPolicy(OPERATOR_ROLES),
-  "siem.signal.write": ActionPolicy(OPERATOR_ROLES),
+  "siem.signal.write": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "security-alert.write": ActionPolicy(OPERATOR_ROLES),
   "status.admin": ActionPolicy(ADMIN_ROLES),
-  "playbook.admin": ActionPolicy(ADMIN_ROLES),
+  "playbook.admin": ActionPolicy(ADMIN_ROLES, requires_pro=True),
   "integration.admin": ActionPolicy(ADMIN_ROLES),
-  "model.admin": ActionPolicy(ADMIN_ROLES),
+  "model.admin": ActionPolicy(ADMIN_ROLES, requires_pro=True),
   "domain.destructive": ActionPolicy(ADMIN_ROLES),
 }
 
@@ -63,6 +64,8 @@ class ForjdActorContext:
   user_id: int
   account_id: UUID
   role: str
+  tier: str = "Standard"
+  subscription_active: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,9 +102,11 @@ async def actor_for_request(request: HttpRequest) -> ForjdActorContext:
     lambda: (
       getattr(getattr(request.user, "profile", None), "account_id", None),
       getattr(getattr(request.user, "profile", None), "role", VIEWER),
+      getattr(getattr(request.user, "profile", None), "tier", "Standard"),
+      bool(getattr(getattr(request.user, "profile", None), "subscription_active", False)),
     )
   )()
-  account_id, role = profile_values
+  account_id, role, tier, subscription_active = profile_values
   if account_id is None:
     raise ForjdPolicyError(403, "The authenticated user has no DEML account", "account_required")
 
@@ -109,6 +114,8 @@ async def actor_for_request(request: HttpRequest) -> ForjdActorContext:
     user_id=int(request.user.id),
     account_id=account_id,
     role=str(role or VIEWER),
+    tier=str(tier or "Standard"),
+    subscription_active=subscription_active,
   )
   request._forjd_actor_context = actor
   return actor
@@ -132,6 +139,7 @@ async def record_forjd_audit(
     "forjd_action": action,
     "outcome": outcome,
     "role": actor.role,
+    "tier": actor.tier,
     "request_id": request_id,
   }
   if tenant_id is not None:
@@ -172,6 +180,17 @@ async def authorize_forjd_action(
       "The authenticated role is not authorized for this FORJD action",
       "forjd_action_forbidden",
     )
+  # --- Pro entitlement gate ---
+  if policy.requires_pro and not (actor.tier == "Pro" and actor.subscription_active):
+    await record_forjd_audit(
+      actor=actor,
+      request=request,
+      action=action,
+      outcome="denied",
+      status=403,
+      resource_id=resource_id,
+    )
+    raise ForjdPolicyError(403, "Pro subscription required", "pro_required")
   return actor
 
 
@@ -212,6 +231,10 @@ def action_for_native_request(method: str, target_path: str) -> str:
   return "domain.destructive"
 
 
+# Public adapters skip DEML end-user auth (FORJD may still require a service token).
+PUBLIC_ACTION: Final[str] = "public"
+
+
 def _resolve_decorated_action(
   request: HttpRequest,
   actions: str | Mapping[str, str],
@@ -231,6 +254,9 @@ def require_forjd_action(
     @wraps(view)
     async def wrapped(request: HttpRequest, *args: P.args, **kwargs: P.kwargs) -> HttpResponse:
       action = _resolve_decorated_action(request, actions)
+      # --- Public explore / status directory reads ---
+      if action == PUBLIC_ACTION:
+        return await view(request, *args, **kwargs)
       resource_id = next(
         (str(value) for key, value in kwargs.items() if key.endswith("_id")),
         request.path,
