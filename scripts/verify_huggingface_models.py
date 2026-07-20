@@ -16,8 +16,9 @@ import requests
 HUGGING_FACE_API_HOST: Final[str] = "huggingface.co"
 HUGGING_FACE_API_PREFIX: Final[str] = "/api"
 DEFAULT_MAX_AGE_HOURS: Final[float] = 36.0
+# Families published by FORJD's scheduled ml-training worker. CES is computed
+# analytically inside FORJD analytics (no torch artifact), so it is not listed.
 DEFAULT_REQUIRED_PREFIXES: Final[tuple[str, ...]] = (
-  "ces_models/",
   "sla_models/",
   "threat_models/",
   "temporal_models/",

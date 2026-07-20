@@ -2169,12 +2169,14 @@ Cleanup is **repair-first and fail-closed** on each side of the boundary: DEML n
 
 ### Billing & Account Lifecycle
 
-| Mechanism                            | Type      | Schedule                | Details                                                                                                                            |
-| ------------------------------------ | --------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `sync_subscriptions`                 | Scheduled | Daily (security_worker) | Stripe sweep: upgrades active subs, downgrades lapsed Pro users; preserves manual Pro grants (`tier=Pro`, no `stripe_customer_id`) |
-| Stripe webhooks                      | Real-time | On event                | `checkout.session.completed`, `customer.subscription.updated/deleted`                                                              |
-| `POST /api/v1/billing/sync`          | On-demand | User-initiated          | Manual subscription reconciliation                                                                                                 |
-| `DELETE /api/v1/auth/delete-account` | On-demand | User-initiated          | Saga calls FORJD tenant erase first; on success revokes DEML keys, best-effort Stripe cancel, deletes Firebase + Django user       |
+| Mechanism                            | Type      | Schedule                                              | Details                                                                                                                            |
+| ------------------------------------ | --------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `sync_subscriptions`                 | Scheduled | Daily (`daily_maintenance` sidecar under `start.py`)  | Stripe sweep: upgrades active subs, downgrades lapsed Pro users; preserves manual Pro grants (`tier=Pro`, no `stripe_customer_id`) |
+| Retention purge                      | Scheduled | Daily (`daily_maintenance` sidecar under `start.py`)  | Deletes expired browser sessions, spent auth-handoff tokens, and stale headless rate-limit buckets                                 |
+| Report outbox + lifecycle jobs       | Scheduled | Every 30s (`reconcile_forjd_reports --watch` sidecar) | Retries durable issue-report outbox rows against FORJD and completes pending account lifecycle jobs                                |
+| Stripe webhooks                      | Real-time | On event                                              | `checkout.session.completed`, `customer.subscription.updated/deleted`                                                              |
+| `POST /api/v1/billing/sync`          | On-demand | User-initiated                                        | Manual subscription reconciliation                                                                                                 |
+| `DELETE /api/v1/auth/delete-account` | On-demand | User-initiated                                        | Saga calls FORJD tenant erase first; on success revokes DEML keys, best-effort Stripe cancel, deletes Firebase + Django user       |
 
 There is **no** scheduled purge of dormant accounts or orphaned Stripe customers.
 

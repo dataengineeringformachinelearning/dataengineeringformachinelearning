@@ -113,22 +113,34 @@ def main() -> None:
   else:
     server_command = [python_bin, "-m", "daphne", *daphne_args]
 
-  # Durable issue-report outbox delivery is part of the control-plane boundary.
-  # FORJD's client_report_id contract makes overlapping machine retries safe.
-  worker_command = [
-    python_bin,
-    "manage.py",
-    "reconcile_forjd_reports",
-    "--watch",
-    "--interval",
-    "30",
-  ]
+  # Supervised sidecar workers. All are idempotent (leases / Stripe sweeps /
+  # retention deletes), so overlapping machines during rolling deploys are safe.
+  worker_commands = {
+    # Durable issue-report outbox + account lifecycle jobs (control plane).
+    "reconcile": [
+      python_bin,
+      "manage.py",
+      "reconcile_forjd_reports",
+      "--watch",
+      "--interval",
+      "30",
+    ],
+    # Daily Stripe entitlement sweep + identity-adjacent retention purge.
+    "maintenance": [
+      python_bin,
+      "manage.py",
+      "daily_maintenance",
+      "--watch",
+      "--interval",
+      "86400",
+    ],
+  }
   server = subprocess.Popen(server_command)
-  worker = subprocess.Popen(worker_command)
-  worker_restarts = 0
+  workers = {name: subprocess.Popen(cmd) for name, cmd in worker_commands.items()}
+  worker_restarts = dict.fromkeys(worker_commands, 0)
 
   def _shutdown(_signum: int, _frame: object) -> None:
-    for child in (server, worker):
+    for child in (server, *workers.values()):
       if child.poll() is None:
         child.terminate()
     raise SystemExit(0)
@@ -139,21 +151,23 @@ def main() -> None:
     while True:
       server_status = server.poll()
       if server_status is not None:
-        if worker.poll() is None:
-          worker.terminate()
+        for child in workers.values():
+          if child.poll() is None:
+            child.terminate()
         raise SystemExit(server_status or 1)
-      # Report outbox is best-effort — keep Daphne up and restart the worker.
-      if worker.poll() is not None:
-        worker_restarts += 1
-        print(
-          f"report worker exited code={worker.returncode}; restart #{worker_restarts}",
-          flush=True,
-        )
-        time.sleep(min(30, 2 * worker_restarts))
-        worker = subprocess.Popen(worker_command)
+      # Workers are best-effort — keep Daphne up and restart crashed workers.
+      for name, child in workers.items():
+        if child.poll() is not None:
+          worker_restarts[name] += 1
+          print(
+            f"{name} worker exited code={child.returncode}; " f"restart #{worker_restarts[name]}",
+            flush=True,
+          )
+          time.sleep(min(30, 2 * worker_restarts[name]))
+          workers[name] = subprocess.Popen(worker_commands[name])
       time.sleep(1)
   finally:
-    for child in (server, worker):
+    for child in (server, *workers.values()):
       if child.poll() is None:
         child.terminate()
 

@@ -173,8 +173,31 @@ that replaces the retired DEML-local aggregation loop. Every
 temporal forecast), and refreshes tenant `classical_anomaly` `ml_scores`
 (feeding `/api/v1/ml/threat-intel/report`) at most once per
 `ANALYTICS_ML_REFRESH_SECONDS`. DEML needs no cron: telemetry sealed through
-`/api/v1/ingest` becomes dashboard data automatically. Deeper models (LSTM-AE,
-transformer, forecasting, NorseSSN) stay on-demand via `POST /api/v1/ml/{id}/fit`.
+`/api/v1/ingest` becomes dashboard data automatically.
+
+Two more supervised FORJD workers complete the schedule (both in `GET /ready`):
+
+- **`ml-training`** — every `TRAINING_TICK_SECONDS` (default hourly) it retrains
+  the SLA regressor, threat model, and temporal forecasters for tenants whose
+  newest `training_runs` row is older than `TRAINING_REFRESH_SECONDS` (default
+  daily). With `HF_MODEL_REPO_ID` + `HF_TOKEN` set, fresh `.pt` artifacts are
+  published to the Hugging Face Hub under `sla_models/`, `threat_models/`, and
+  `temporal_models/` with hashed tenant namespacing (DEML's
+  `production-deployment-smoke.yml` verifies freshness every 6 hours).
+  Other families (LSTM-AE, transformer, NorseSSN) stay on-demand via
+  `POST /api/v1/ml/{id}/fit`.
+- **`retention`** — every `RETENTION_SWEEP_INTERVAL_SECONDS` (default hourly) it
+  deletes aged `telemetry_events` / `stream_results`
+  (`RETENTION_TELEMETRY_DAYS` / `RETENTION_RESULTS_DAYS`, default 90), expired
+  or revoked `crypto_sessions`, and completed ingest receipts older than
+  `RETENTION_RECEIPTS_DAYS` (default 30) in bounded batches. Export artifacts
+  are expired separately by the exports worker (`EXPORT_TTL_SECONDS`).
+
+On the DEML side, `backend/start.py` supervises two sidecar workers next to
+Daphne: `reconcile_forjd_reports --watch` (durable report outbox + account
+lifecycle jobs, every 30s) and `daily_maintenance --watch` (Stripe
+`sync_subscriptions` entitlement sweep + retention purge of expired browser
+sessions, auth-handoff tokens, and stale rate-limit buckets, daily).
 
 ## Live updates (Supabase Realtime → SSE bridge)
 
