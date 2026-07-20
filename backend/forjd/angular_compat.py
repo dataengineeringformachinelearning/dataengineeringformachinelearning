@@ -470,7 +470,64 @@ def deml_export_job(forjd_body: dict[str, Any]) -> dict[str, Any]:
   )
 
 
-# --- ML latest (dashboard polls an array) ---
+# --- ML latest SLA stat (MlService.fetchLatestStat expects TrainingResponse) ---
+def deml_sla_latest(overview_body: dict[str, Any]) -> dict[str, Any]:
+  """Shape FORJD analytics overview into the Angular ``TrainingResponse``."""
+  ces = overview_body.get("ces") if isinstance(overview_body.get("ces"), dict) else {}
+  sla = ces.get("ces_sla")
+  if sla is None:
+    sla = overview_body.get("uptime_pct")
+  return {
+    "status": "success",
+    "average_sla": float(sla) if sla is not None else None,
+    "created_at": None,
+  }
+
+
+# --- ML temporal forecast (status/explore gauge polls a single number) ---
+def deml_temporal_forecast(overview_body: dict[str, Any]) -> dict[str, Any]:
+  """Shape FORJD analytics overview into the Angular ``TemporalForecastResponse``."""
+  ces = overview_body.get("ces") if isinstance(overview_body.get("ces"), dict) else {}
+  forecast = ces.get("spiking_temporal_forecast")
+  if forecast is None:
+    forecast = overview_body.get("spiking_temporal_forecast")
+  return {
+    "status": "success",
+    "spiking_temporal_forecast": float(forecast) if forecast is not None else None,
+    "uses_norse": False,
+    "created_at": None,
+  }
+
+
+# --- Threat report (status/explore pages poll anomaly stats from ML scores) ---
+def deml_threat_report(scores_body: dict[str, Any]) -> dict[str, Any]:
+  """Shape FORJD ``/api/v1/ml/scores`` into the Angular ``ThreatReportResponse``."""
+  scores = scores_body.get("scores")
+  rows = [row for row in scores if isinstance(row, dict)] if isinstance(scores, list) else []
+  if not rows:
+    return {
+      "status": "success",
+      "anomaly_score": None,
+      "top_location": None,
+      "location_weight": None,
+      "suspicious_ratio": None,
+      "created_at": None,
+      "message": "No threat intelligence reports available",
+    }
+  numeric = [float(row.get("score") or 0.0) for row in rows]
+  anomalies = sum(1 for row in rows if row.get("is_anomaly"))
+  newest = rows[0].get("created_at")
+  return {
+    "status": "success",
+    "anomaly_score": max(numeric),
+    "top_location": None,
+    "location_weight": None,
+    "suspicious_ratio": anomalies / len(rows),
+    "created_at": str(newest) if newest else None,
+  }
+
+
+# --- ML latest (legacy array shape; kept for catalog fallbacks) ---
 def deml_ml_latest(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
   scores = forjd_body.get("scores")
   if not isinstance(scores, list):

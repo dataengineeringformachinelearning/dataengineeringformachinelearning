@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Final, Literal
 from urllib.parse import quote, urlsplit
@@ -20,18 +21,20 @@ from forjd.angular_compat import (
   deml_export_jobs,
   deml_incident_case,
   deml_incident_cases,
-  deml_ml_latest,
   deml_playbook,
   deml_playbook_execution,
   deml_playbook_runs,
   deml_playbooks,
   deml_siem_signals,
+  deml_sla_latest,
   deml_status_incident,
   deml_status_incidents,
   deml_status_page,
   deml_status_pages,
   deml_status_service,
   deml_status_services,
+  deml_temporal_forecast,
+  deml_threat_report,
   deml_vulnerabilities,
   deml_vulnerability,
   empty_analytics_overview,
@@ -1785,45 +1788,95 @@ async def export_download_proxy(request: HttpRequest, export_id: str) -> HttpRes
   )
 
 
-@require_forjd_action("read")
-async def ml_latest_proxy(request: HttpRequest) -> HttpResponse:
+async def _overview_shaped_read(
+  request: HttpRequest,
+  shape: Callable[[dict[str, Any]], dict[str, Any]],
+  *,
+  invalid_detail: str,
+) -> HttpResponse:
+  """Fetch FORJD analytics overview and shape it for an Angular ML endpoint."""
   if request.method != "GET":
     return JsonResponse({"detail": "Method not allowed"}, status=405)
   try:
     credential = await _read_credential_or_none(request)
     if credential is None or not reads_from_forjd():
-      return JsonResponse([], status=200, safe=False)
+      return JsonResponse(shape({}), status=200)
     client = _client_for_credential(credential)
-    _body, query_string = _bound_request(request, credential.tenant_id, "query")
+    # Angular passes status_page_id; the overview is tenant-wide, so bind the
+    # tenant and drop page-local params FORJD does not accept.
     response = await client.proxy(
       "GET",
-      "/api/v1/ml/scores",
-      query_string=query_string,
+      "/api/v1/analytics/overview",
+      query_string=f"tenant_id={credential.tenant_id}",
       request_id=request_id_from(request),
     )
     if response.status >= 400:
-      # Fall back to catalog if scores empty/unavailable.
-      catalog = await client.proxy(
-        "GET",
-        "/api/v1/ml/models",
-        request_id=request_id_from(request),
-      )
-      if catalog.status < 400:
-        upstream = json.loads(catalog.body)
-        if isinstance(upstream, dict):
-          return JsonResponse(deml_ml_latest(upstream), status=200, safe=False)
       if empty_read_fallback_enabled() and response.status >= 500:
-        return JsonResponse([], status=200, safe=False)
+        return JsonResponse(shape({}), status=200)
       return _upstream_error_response(response)
     upstream = json.loads(response.body)
     if not isinstance(upstream, dict):
-      raise AdapterError(502, "FORJD returned invalid ml scores")
-    return JsonResponse(deml_ml_latest(upstream), status=200, safe=False)
+      raise AdapterError(502, invalid_detail)
+    return JsonResponse(shape(upstream), status=200)
   except AdapterError as exc:
     return _adapter_error_response(exc)
   except ForjdError as exc:
     if empty_read_fallback_enabled() and exc.status >= 500:
-      return JsonResponse([], status=200, safe=False)
+      return JsonResponse(shape({}), status=200)
+    return _forjd_error_response(exc)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return _adapter_error_response(AdapterError(502, invalid_detail))
+
+
+@require_forjd_action("read")
+async def ml_latest_proxy(request: HttpRequest) -> HttpResponse:
+  """GET /api/v1/ml/latest — SLA stat (Angular ``TrainingResponse``)."""
+  return await _overview_shaped_read(
+    request,
+    deml_sla_latest,
+    invalid_detail="FORJD returned an invalid analytics overview",
+  )
+
+
+@require_forjd_action("read")
+async def ml_temporal_forecast_proxy(request: HttpRequest) -> HttpResponse:
+  """GET /api/v1/ml/temporal-forecast — spike gauge (``TemporalForecastResponse``)."""
+  return await _overview_shaped_read(
+    request,
+    deml_temporal_forecast,
+    invalid_detail="FORJD returned an invalid analytics overview",
+  )
+
+
+@require_forjd_action("read")
+async def ml_threat_report_proxy(request: HttpRequest) -> HttpResponse:
+  """GET /api/v1/ml/threat-intel/report — anomaly stats (``ThreatReportResponse``)."""
+  if request.method != "GET":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  try:
+    credential = await _read_credential_or_none(request)
+    if credential is None or not reads_from_forjd():
+      return JsonResponse(deml_threat_report({}), status=200)
+    client = _client_for_credential(credential)
+    response = await client.proxy(
+      "GET",
+      "/api/v1/ml/scores",
+      query_string=f"tenant_id={credential.tenant_id}&limit=50",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      if empty_read_fallback_enabled() and response.status >= 500:
+        return JsonResponse(deml_threat_report({}), status=200)
+      return _upstream_error_response(response)
+    upstream = json.loads(response.body)
+    if not isinstance(upstream, dict):
+      raise AdapterError(502, "FORJD returned invalid ml scores")
+    return JsonResponse(deml_threat_report(upstream), status=200)
+  except AdapterError as exc:
+    return _adapter_error_response(exc)
+  except ForjdError as exc:
+    if empty_read_fallback_enabled() and exc.status >= 500:
+      return JsonResponse(deml_threat_report({}), status=200)
     return _forjd_error_response(exc)
   except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
     return _adapter_error_response(AdapterError(502, "FORJD returned invalid ml scores"))

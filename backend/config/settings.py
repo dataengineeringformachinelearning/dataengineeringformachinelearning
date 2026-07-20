@@ -75,21 +75,8 @@ def _parse_service_account(raw_value: str | None) -> dict | None:
     return None
 
 
-# Write GCP service account JSON from environment variable to a file if provided
-gcp_sa_json = os.getenv("GCP_SERVICE_ACCOUNT_JSON")
-if gcp_sa_json:
-  parsed_gcp = _parse_service_account(gcp_sa_json)
-  if parsed_gcp:
-    try:
-      import tempfile
-
-      fd, temp_credentials_path = tempfile.mkstemp(suffix=".json", prefix="gcp-sa-")
-      with os.fdopen(fd, "w") as f:
-        json.dump(parsed_gcp, f)
-      os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
-    except Exception as e:
-      logging.getLogger("django").warning("Failed to write GCP JSON file: %s", e)
-
+# Google Cloud application-default credentials were retired with the GCP data
+# plane (Cloud Logging / OTel). Firebase Admin below is the only Google client.
 
 import sentry_sdk
 
@@ -187,6 +174,12 @@ FORJD_RESPONSE_MAX_BYTES = get_int("FORJD_RESPONSE_MAX_BYTES", 2 * 1024 * 1024)
 FORJD_READ_RETRY_ATTEMPTS = get_int("FORJD_READ_RETRY_ATTEMPTS", 3)
 FORJD_RETRY_BASE_SECONDS = get_float("FORJD_RETRY_BASE_SECONDS", 0.1)
 FORJD_RETRY_MAX_SECONDS = get_float("FORJD_RETRY_MAX_SECONDS", 2.0)
+# Live updates lane — SSE bridge over FORJD's projection cursor feed
+# (Supabase Realtime publishes stream_results upstream; browsers never hold
+# Supabase or fjsvc_ credentials, so Django holds the tenant-bound poll).
+DEML_LIVE_UPDATES_ENABLED = get_bool("DEML_LIVE_UPDATES_ENABLED", True)
+DEML_LIVE_POLL_SECONDS = get_float("DEML_LIVE_POLL_SECONDS", 10.0)
+DEML_LIVE_STREAM_MAX_SECONDS = get_float("DEML_LIVE_STREAM_MAX_SECONDS", 300.0)
 
 
 # Application definition
@@ -424,23 +417,8 @@ LOGGING = {
   },
 }
 
-GCP_LOGGING_ENABLED = os.getenv("GCP_LOGGING_ENABLED", "False").lower() == "true"
-if GCP_LOGGING_ENABLED:
-  try:
-    import google.cloud.logging
-
-    gcp_client = google.cloud.logging.Client()
-    LOGGING["handlers"]["gcp"] = {
-      "class": "google.cloud.logging.handlers.CloudLoggingHandler",
-      "client": gcp_client,
-      "name": "audit_logs",
-    }
-    LOGGING["loggers"]["monitor.audit"]["handlers"].append("gcp")
-  except Exception as e:
-    import logging
-
-    logging.getLogger("django").warning("Failed to initialize Google Cloud Logging: %s", e)
-
+# Audit logs persist in Postgres and stream to stdout as structured JSON.
+# The optional Google Cloud Logging sink was retired with the GCP data plane.
 
 # Migration Linter Configuration
 MIGRATION_LINTER_OPTIONS = {

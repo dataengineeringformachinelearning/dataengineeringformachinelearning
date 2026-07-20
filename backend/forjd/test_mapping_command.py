@@ -38,7 +38,7 @@ def test_map_forjd_tenant_stores_only_a_secret_reference() -> None:
 def test_map_forjd_tenant_rejects_a_plaintext_token() -> None:
   user = User.objects.create_user(username="mapping-secret-test")
 
-  with pytest.raises(CommandError, match="must name"):
+  with pytest.raises(CommandError, match="must be env:FORJD_SERVICE_TOKEN"):
     call_command(
       "map_forjd_tenant",
       str(user.profile.account_id),

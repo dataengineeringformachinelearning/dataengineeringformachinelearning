@@ -222,7 +222,6 @@ def validate_encrypted_transport_config() -> None:
   if redis_url and not redis_url.lower().startswith("rediss://"):
     raise RuntimeError("production REDIS_URL must use rediss:// with certificate verification.")
 
-  for name in ("OTEL_EXPORTER_OTLP_ENDPOINT", "FORJD_API_URL"):
-    value = get_str(name)
-    if value and not value.lower().startswith("https://"):
-      raise RuntimeError(f"production {name} must use https://.")
+  forjd_api_url = get_str("FORJD_API_URL")
+  if forjd_api_url and not forjd_api_url.lower().startswith("https://"):
+    raise RuntimeError("production FORJD_API_URL must use https://.")

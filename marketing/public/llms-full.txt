@@ -1645,7 +1645,7 @@ Every hostname, FORJD API URL, and cross-site URL is **env-driven** — never ha
 
 Before creating services, prepare:
 
-1. **Secrets** in Cloud Run Variables or [Infisical](https://infisical.com/) (recommended for SOC 2 / CMMC): `SECRET_KEY`, `FIREBASE_SERVICE_ACCOUNT_JSON`, `GCP_SERVICE_ACCOUNT_JSON`, Stripe, Resend, threat-intel API keys, `HF_TOKEN`, `SENTRY_DSN`.
+1. **Secrets** in Fly secrets or [Infisical](https://infisical.com/) (recommended for SOC 2 / CMMC): `SECRET_KEY`, `FIREBASE_SERVICE_ACCOUNT_JSON`, `ENCRYPTION_MASTER_KEY`, Stripe, Resend, threat-intel API keys, `SENTRY_DSN`.
 2. **Cross-site URL trio** (same names on backend, frontend, and marketing builds):
 
 | Variable        | Production value                                | Purpose                        |
@@ -1738,9 +1738,9 @@ Django + Ninja API — auth, billing, consent, FORJD BFF adapters, monitor.
 | **OAuth / AI**      | `GOOGLE_API_KEY`, `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REDIRECT_URI` |
 | **Threat intel**    | `ABUSEIPDB_API_KEY`, `IPINFO_API_KEY`, `OTX_API_KEY`, `ISAC_API_KEY`, `CISA_TAXII_ENDPOINT`           |
 | **Email / alerts**  | `RESEND_API_KEY`, `ALERT_EMAIL_TARGET`, `ALERT_EMAIL_FROM`, `DISCORD_WEBHOOK_URL`                     |
-| **Observability**   | `SENTRY_DSN`, `SENTRY_SEND_PII=false`, `STRUCTURED_LOGS=true`, `GCP_LOGGING_ENABLED`                  |
+| **Observability**   | `SENTRY_DSN`, `SENTRY_SEND_PII=false`, `STRUCTURED_LOGS=true`                                         |
 | **Billing**         | `STRIPE_PUBLIC_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`                                     |
-| **ML / encryption** | `HF_TOKEN`, `HF_REPO_ID`, `GCP_KMS_*`, `GCP_SERVICE_ACCOUNT_JSON`                                     |
+| **ML / encryption** | `ENCRYPTION_MASTER_KEY` (envelope encryption for FORJD credentials); ML executes in FORJD             |
 | **CVE pipeline**    | `SCANNER_SERVICE_URL`, `CPE_GUESSER_URL`, `FORJD_API_URL`, `CVE_DICT_DB_URL`                          |
 | **Dark web OSINT**  | `TOR_PROXY_URL=socks5h://FORJD OSINT routing.internal:9050`                                           |
 
@@ -2715,16 +2715,17 @@ Appendix C still documents an alternate Cloud Run topology that once assumed an 
 
 ### Now: what we do
 
-| Concern            | Steady-state FORJD plane                                                         |
-| ------------------ | -------------------------------------------------------------------------------- |
-| Signal shape       | Client-sealed AES-256-GCM envelopes (`key_id` + ciphertext + routing metadata)   |
-| Ingest edge        | Angular/API → Django BFF (Firebase or `deml_…` key) → FORJD `/api/v1/ingest`     |
-| Buffering          | FORJD Postgres outbox + Dragonfly streams (inside FORJD)                         |
-| Analytics / CES    | FORJD durable `stream_results` + analytics APIs via Django adapters              |
-| Durable processing | FORJD workflows, engine roles, Prefect soft-fail where configured                |
-| Product reads      | Stable DEML paths; Django adapts only allowlisted FORJD routes                   |
-| Auth to data plane | Tenant-bound opaque `fjsvc_` service token; secret **ref** in DEML Postgres      |
-| Failure mode       | Typed `503` / `forjd_degraded` (or explicit `degraded: true` fallback envelopes) |
+| Concern            | Steady-state FORJD plane                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Signal shape       | Client-sealed AES-256-GCM envelopes (`key_id` + ciphertext + routing metadata)                                                                                                        |
+| Ingest edge        | Angular/API → Django BFF (Firebase or `deml_…` key) → FORJD `/api/v1/ingest`                                                                                                          |
+| Buffering          | FORJD Postgres outbox + Dragonfly streams (inside FORJD)                                                                                                                              |
+| Analytics / CES    | FORJD durable `stream_results` + continuous `analytics-rollup` worker (hourly `aggregated_analytics` + `ml_scores` refresh) + analytics APIs via Django adapters                      |
+| Durable processing | FORJD workflows, engine roles, Prefect soft-fail where configured                                                                                                                     |
+| Product reads      | Stable DEML paths; Django adapts only allowlisted FORJD routes                                                                                                                        |
+| Live updates       | Supabase Realtime publishes FORJD results; Django bridges the projection cursor to browsers via SSE (`/api/v1/analytics/live`) — browsers never hold Supabase or `fjsvc_` credentials |
+| Auth to data plane | Tenant-bound opaque `fjsvc_` service token; secret **ref** in DEML Postgres                                                                                                           |
+| Failure mode       | Typed `503` / `forjd_degraded` (or explicit `degraded: true` fallback envelopes)                                                                                                      |
 
 DEML owns identity, profiles, roles, Stripe billing, consent, learning content, API credentials, and the Angular surface. FORJD owns sealed intake, streaming, projections, analytics, ML, SIEM/SOAR, reports, replay, DLQ, and tenant erase. Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md). Ownership appendix: [Appendix T](#appendix-t-data-plane-ownership-forjd). Observability chapter (steady state): [Chapter 8](#chapter-8-enhancing-observability).
 

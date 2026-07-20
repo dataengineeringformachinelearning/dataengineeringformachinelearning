@@ -14,6 +14,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Title, Meta } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 import {
   VikingCard,
   VikingChart,
@@ -43,6 +44,7 @@ import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { MonitorService } from '../../services/monitor.service';
 import { OnboardingService } from '../../services/onboarding.service';
+import { LiveUpdatesService } from '../../services/live-updates.service';
 import {
   UnifiedSelect,
   SelectOption,
@@ -115,6 +117,7 @@ export class Dashboard implements OnInit, OnDestroy {
   public authService = inject(AuthService);
   private monitorService = inject(MonitorService);
   private onboardingService = inject(OnboardingService);
+  private liveUpdates = inject(LiveUpdatesService);
 
   activeTab = signal<DashboardTab>('overview');
   isLoading = signal(true);
@@ -150,6 +153,8 @@ export class Dashboard implements OnInit, OnDestroy {
   siteOptions: SelectOption[] = [{ value: 'All', label: 'All Sites' }];
 
   private intervalId: ReturnType<typeof setInterval> | undefined;
+  private liveRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+  private liveSub: Subscription | undefined;
 
   openVulnCount = computed(
     () =>
@@ -258,12 +263,29 @@ export class Dashboard implements OnInit, OnDestroy {
     });
 
     if (this.isBrowser) {
+      // Fallback cadence; the live SSE lane below triggers delta-driven refreshes.
       this.intervalId = setInterval(() => this.refreshData(), 60000);
+      this.liveSub = this.liveUpdates.updates$.subscribe(evt => {
+        if (evt.type === 'projections') this.scheduleLiveRefresh();
+      });
+      this.liveUpdates.start();
     }
   }
 
   ngOnDestroy() {
     if (this.intervalId) clearInterval(this.intervalId);
+    if (this.liveRefreshTimer) clearTimeout(this.liveRefreshTimer);
+    this.liveSub?.unsubscribe();
+    this.liveUpdates.stop();
+  }
+
+  /** Debounce live change ticks so bursts collapse into one reload. */
+  private scheduleLiveRefresh() {
+    if (this.liveRefreshTimer) return;
+    this.liveRefreshTimer = setTimeout(() => {
+      this.liveRefreshTimer = undefined;
+      this.refreshData();
+    }, 2000);
   }
 
   setTab(tab: DashboardTab) {

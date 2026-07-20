@@ -1166,41 +1166,10 @@
           };
 
           try {
-            // Plaintext /api/v1/telemetry/endpoints was retired. Sealed ingest is
-            // /api/v1/ingest via the Django FORJD BFF; widgets use OTel when configured.
+            // Plaintext /api/v1/telemetry/endpoints and the OTel Collector lane were
+            // retired. Sealed ingest via the Django FORJD BFF (/api/v1/ingest) is the
+            // only supported telemetry path; widgets never export traces directly.
             void telemetryPayload;
-
-            // Dynamically load OpenTelemetry SDK via ESM to send traces to OTel Collector.
-            // Only runs when data-otel-url is explicitly set on the script tag — skipping it
-            // prevents spurious OPTIONS/POST requests to the page origin (e.g. 404 on telemetry.deml.app).
-            try {
-              const scriptTag = findWidgetScript(pageId);
-              const otelUrl = scriptTag?.getAttribute('data-otel-url') ?? '';
-
-              if (otelUrl) {
-                const { WebTracerProvider } =
-                  await import('https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1');
-                const { OTLPTraceExporter } =
-                  await import('https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1');
-                const { BatchSpanProcessor } =
-                  await import('https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1');
-
-                const provider = new WebTracerProvider();
-
-                const exporter = new OTLPTraceExporter({ url: otelUrl });
-                provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-                provider.register();
-
-                const tracer = provider.getTracer('widget-telemetry');
-                const span = tracer.startSpan('page_load');
-                span.setAttribute('fcp_ms', fcpTime);
-                span.setAttribute('response_time_ms', responseTimeMs);
-                span.setAttribute('client_ip', this.clientIp);
-                span.end();
-              }
-            } catch (otelErr) {
-              console.warn('Failed to initialize OpenTelemetry', otelErr);
-            }
           } catch (e) {
             console.warn('Threat analysis telemetry reporting offline', e);
           }

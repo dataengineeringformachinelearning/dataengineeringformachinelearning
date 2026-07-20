@@ -16,7 +16,10 @@ from forjd.angular_compat import (
   deml_ml_latest,
   deml_playbook_action_result,
   deml_playbook_runs,
+  deml_sla_latest,
   deml_status_pages,
+  deml_temporal_forecast,
+  deml_threat_report,
   deml_vulnerabilities,
   empty_capability_envelope,
 )
@@ -118,6 +121,40 @@ def test_deml_export_jobs_and_ml_latest() -> None:
   scores = deml_ml_latest({"scores": [{"id": "s1", "model_id": "m1", "score": 0.9}]})
   assert isinstance(scores, list)
   assert len(scores) >= 1
+
+
+def test_deml_sla_latest_shapes_training_response() -> None:
+  body = deml_sla_latest({"ces": {"ces_sla": 99.5}, "uptime_pct": 98.0})
+  assert body == {"status": "success", "average_sla": 99.5, "created_at": None}
+  fallback = deml_sla_latest({"uptime_pct": 98.0})
+  assert fallback["average_sla"] == 98.0
+  empty = deml_sla_latest({})
+  assert empty["average_sla"] is None
+
+
+def test_deml_temporal_forecast_shapes_gauge_response() -> None:
+  body = deml_temporal_forecast({"ces": {"spiking_temporal_forecast": 12.5}})
+  assert body["status"] == "success"
+  assert body["spiking_temporal_forecast"] == 12.5
+  assert deml_temporal_forecast({})["spiking_temporal_forecast"] is None
+
+
+def test_deml_threat_report_from_scores() -> None:
+  body = deml_threat_report(
+    {
+      "scores": [
+        {"score": 0.9, "is_anomaly": True, "created_at": "2026-07-19T00:00:00Z"},
+        {"score": 0.1, "is_anomaly": False, "created_at": "2026-07-18T00:00:00Z"},
+      ]
+    }
+  )
+  assert body["anomaly_score"] == 0.9
+  assert body["suspicious_ratio"] == 0.5
+  assert body["created_at"] == "2026-07-19T00:00:00Z"
+  empty = deml_threat_report({})
+  assert empty["status"] == "success"
+  assert empty["anomaly_score"] is None
+  assert "message" in empty
 
 
 def test_deml_playbook_runs_preserves_safe_action_results() -> None:

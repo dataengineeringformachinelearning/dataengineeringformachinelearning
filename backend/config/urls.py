@@ -11,6 +11,7 @@ if "uuid" in converters.REGISTERED_CONVERTERS:
   del converters.REGISTERED_CONVERTERS["uuid"]
 converters.get_converters.cache_clear()
 
+from forjd.live import live_updates_stream
 from forjd.views import (
   analytics_overview_proxy,
   analytics_tenants_proxy,
@@ -25,6 +26,8 @@ from forjd.views import (
   ingest_processing_status_proxy,
   integrations_security_alert_proxy,
   ml_latest_proxy,
+  ml_temporal_forecast_proxy,
+  ml_threat_report_proxy,
   native_forjd_proxy,
   native_status_page_proxy,
   playbook_action_ack_proxy,
@@ -154,6 +157,11 @@ urlpatterns = [
     "api/v1/analytics/tenants",
     analytics_tenants_proxy,
     name="forjd-analytics-tenants-adapter",
+  ),
+  path(
+    "api/v1/analytics/live",
+    live_updates_stream,
+    name="forjd-analytics-live-stream",
   ),
   path(
     "api/v1/analytics/incidents/<str:case_id>",
@@ -354,6 +362,16 @@ urlpatterns = [
     "api/v1/ml/latest",
     ml_latest_proxy,
     name="forjd-ml-latest-adapter",
+  ),
+  path(
+    "api/v1/ml/temporal-forecast",
+    ml_temporal_forecast_proxy,
+    name="forjd-ml-temporal-forecast-adapter",
+  ),
+  path(
+    "api/v1/ml/threat-intel/report",
+    ml_threat_report_proxy,
+    name="forjd-ml-threat-report-adapter",
   ),
   path(
     "api/v1/integrations/security-alert",

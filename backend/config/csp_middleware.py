@@ -16,7 +16,7 @@ _CSP_SCRIPT_SRC = (
 _CSP_CONNECT_SRC = (
   "'self' "
   "https://cdn.jsdelivr.net https://*.jsdelivr.net "
-  "https://*.googleapis.com https://*.firebaseio.com "
+  "https://*.googleapis.com "
   "https://static.cloudflareinsights.com https://cloudflareinsights.com "
   "https://*.cloudflareinsights.com "
   "https://*.algolia.net https://*.algolianet.com https://*.algolia.io "

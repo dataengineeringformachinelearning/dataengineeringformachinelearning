@@ -121,6 +121,7 @@ ciphertext, Firebase tokens, API keys, or `fjsvc_` credentials.
 | Ingest processing  | `GET /api/v1/ingest/processing/{batch_id}`                        | same tenant-bound path                                                                          |
 | Projections        | `GET /api/v1/projections`                                         | `/api/v1/projections`                                                                           |
 | Analytics overview | `GET /api/v1/analytics/overview`                                  | `/api/v1/analytics/overview`                                                                    |
+| Live updates (SSE) | `GET /api/v1/projections?since=` (cursor poll)                    | `GET /api/v1/analytics/live` (Server-Sent Events)                                               |
 | Tenant selector    | DEML account mapping                                              | `GET /api/v1/analytics/tenants`                                                                 |
 | Incident cases     | `GET/POST/PATCH /api/v1/soc/cases[/id]`                           | `/api/v1/analytics/incidents[/id]`                                                              |
 | SOAR playbooks     | `/api/v1/playbooks[/id][/execute]`                                | `/api/v1/analytics/playbooks[/id][/execute]`                                                    |
@@ -134,7 +135,9 @@ ciphertext, Firebase tokens, API keys, or `fjsvc_` credentials.
 | Crypto sessions    | `/api/v1/sessions/*`                                              | `/api/v1/sessions/*`                                                                            |
 | Replay / DLQ       | `/api/v1/replay/*`                                                | `/api/v1/replay/*`                                                                              |
 | Exports            | `GET/POST /api/v1/exports`, `GET /api/v1/exports/{id}[/download]` | `/api/v1/exports[/id][/download]`                                                               |
-| ML latest          | `GET /api/v1/ml/scores` (fallback models)                         | `/api/v1/ml/latest`                                                                             |
+| ML SLA stat        | `GET /api/v1/analytics/overview` (CES SLA)                        | `GET /api/v1/ml/latest` (Angular `TrainingResponse`)                                            |
+| Temporal forecast  | `GET /api/v1/analytics/overview` (CES spike score)                | `GET /api/v1/ml/temporal-forecast`                                                              |
+| Threat report      | `GET /api/v1/ml/scores` (anomaly stats)                           | `GET /api/v1/ml/threat-intel/report`                                                            |
 | Security alert     | `POST /api/v1/integrations/security-alert`                        | same path                                                                                       |
 | Report documents   | `POST/GET /api/v1/reports/documents`                              | `POST /api/v1/agent/report-issue`                                                               |
 | Tenant erase       | `POST /api/v1/tenants/{id}/erase`                                 | account deletion saga                                                                           |
@@ -159,6 +162,54 @@ characters), and optional object `metadata`; retry accepts an empty object. Both
 body/query tenant overrides, inject the authenticated account's mapped tenant, require
 `playbook.execute`, and obey `FORJD_WRITE_MODE`. DEML forwards each control command once;
 FORJD owns idempotent acknowledgement and durable webhook scheduling/attempt limits.
+
+## Continuous analytics and ML (FORJD-side)
+
+FORJD runs a supervised `analytics-rollup` worker (visible in `GET /ready`)
+that replaces the retired DEML-local aggregation loop. Every
+`ANALYTICS_ROLLUP_INTERVAL_SECONDS` (default 300) it finds tenants with fresh
+`stream_results`, upserts current + previous hour buckets into
+`aggregated_analytics` (feeding `/api/v1/analytics/overview`, CES, and the
+temporal forecast), and refreshes tenant `classical_anomaly` `ml_scores`
+(feeding `/api/v1/ml/threat-intel/report`) at most once per
+`ANALYTICS_ML_REFRESH_SECONDS`. DEML needs no cron: telemetry sealed through
+`/api/v1/ingest` becomes dashboard data automatically. Deeper models (LSTM-AE,
+transformer, forecasting, NorseSSN) stay on-demand via `POST /api/v1/ml/{id}/fit`.
+
+## Live updates (Supabase Realtime → SSE bridge)
+
+FORJD persists results in Supabase Postgres and publishes `stream_results` /
+`ml_scores` to the `supabase_realtime` publication (FORJD `sql/015`–`016`).
+DEML end users hold Firebase tokens — never Supabase JWTs or `fjsvc_` — so the
+browser cannot subscribe to Supabase Realtime directly (RLS keys off
+`auth.uid()` and tenant membership). The supported live lane is the Django SSE
+bridge:
+
+```http
+GET /api/v1/analytics/live        (text/event-stream)
+```
+
+Django authorizes the caller (read role), resolves the mapped tenant
+credential, and holds one bounded FORJD cursor poll
+(`GET /api/v1/projections?tenant_id=&since=`). The stream emits `ready`,
+`projections` (`{count, cursor}` change ticks — never projection payloads,
+ciphertext, or credentials), keepalive comments, and a terminal `end` event;
+clients reconnect with backoff. Upstream outages emit a typed `degraded` event.
+Angular subscribes through `LiveUpdatesService` and refreshes dashboards via
+the existing authenticated read adapters; 60-second polling remains as
+fallback. Tune with `DEML_LIVE_UPDATES_ENABLED`, `DEML_LIVE_POLL_SECONDS`, and
+`DEML_LIVE_STREAM_MAX_SECONDS`.
+
+## Serverless and data-plane hosting
+
+Firebase is **Auth-only** at DEML (plus optional static Hosting for the
+marketing site). There are no Firebase Cloud Functions, no Firestore, no
+Firebase Realtime Database, and no Firebase Storage in the product path — the
+retired GCP logging sink and OpenTelemetry collector lanes were removed with
+the data-plane cutover. Serverless logic lives as Supabase Edge Functions in
+the FORJD repository (`supabase/functions/`, e.g. `peer-sessions`); results,
+reports, ML scores, and pgvector embeddings live in FORJD's Supabase Postgres
+and are consumed through FORJD HTTP APIs with tenant-bound `fjsvc_` tokens.
 
 ## Failure and cutover semantics
 
@@ -233,6 +284,9 @@ DEML_HEADLESS_INGEST_RPM=120
 DEML_HEADLESS_WRITE_RPM=300
 DEML_HEADLESS_READ_RPM=1200
 ENABLE_LEGACY_PLAINTEXT_TELEMETRY=false
+DEML_LIVE_UPDATES_ENABLED=true
+DEML_LIVE_POLL_SECONDS=10
+DEML_LIVE_STREAM_MAX_SECONDS=300
 ```
 
 DEML enables FORJD's optional integration catalog as a deployment profile. Copy

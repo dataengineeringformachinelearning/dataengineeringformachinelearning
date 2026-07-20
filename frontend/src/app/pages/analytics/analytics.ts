@@ -38,7 +38,9 @@ import {
   VikingChartEmptyState,
   VikingSectionTemplate,
 } from '@dataengineeringformachinelearning/viking-ui';
+import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
+import { LiveUpdatesService } from '../../services/live-updates.service';
 import {
   UnifiedSelect,
   SelectOption,
@@ -193,6 +195,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private liveUpdates = inject(LiveUpdatesService);
 
   public p99Latency = 0;
   public uptimePercent = 0;
@@ -275,6 +278,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public map: L.Map | undefined;
   private intervalId: ReturnType<typeof setInterval> | undefined;
   private exportPollId: ReturnType<typeof setInterval> | undefined;
+  private liveRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+  private liveSub: Subscription | undefined;
   private readonly onVisibilityChange = (): void => {
     if (document.hidden) {
       this.stopAnalyticsPolling();
@@ -551,7 +556,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       this.loadTenants();
       this.loadExports();
       document.addEventListener('visibilitychange', this.onVisibilityChange);
+      // 60s polling stays as fallback; the live SSE lane drives delta refreshes.
       this.startAnalyticsPolling();
+      this.liveSub = this.liveUpdates.updates$.subscribe(evt => {
+        if (evt.type === 'projections') this.scheduleLiveRefresh();
+      });
+      this.liveUpdates.start();
     }
   }
 
@@ -563,10 +573,26 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     if (this.exportPollId) {
       clearInterval(this.exportPollId);
     }
+    if (this.liveRefreshTimer) {
+      clearTimeout(this.liveRefreshTimer);
+    }
+    this.liveSub?.unsubscribe();
+    this.liveUpdates.stop();
     if (this.map) {
       this.map.remove();
       this.map = undefined;
     }
+  }
+
+  /** Debounce live change ticks so bursts collapse into one reload. */
+  private scheduleLiveRefresh(): void {
+    if (this.liveRefreshTimer || document.hidden) {
+      return;
+    }
+    this.liveRefreshTimer = setTimeout(() => {
+      this.liveRefreshTimer = undefined;
+      this.loadAnalyticsData();
+    }, 2000);
   }
 
   public loadExports(): void {
