@@ -1,6 +1,11 @@
 # DEML Rate Limit
 
-Dragonfly/Redis sliding window rate limiting with security-focused COGS optimization.
+Standalone Redis/Dragonfly sliding-window rate limiting for optional deployments.
+
+**Not used by the DEML control plane.** Production DEML (`deml-backend`) enforces
+API quotas via Postgres-backed `HeadlessRateLimitBucket` (`config/headless_rate_limit.py`).
+`REDIS_URL` is forbidden on the primary Fly backend profile. Use this package only
+when you deliberately run a Redis-adjacent edge quota service outside DEML.
 
 ## Installation
 

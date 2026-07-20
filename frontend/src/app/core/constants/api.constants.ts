@@ -19,8 +19,6 @@ export const API_ENDPOINTS = {
   TELEMETRY: {
     SEALED_INGEST: `${environment.backendUrl}/api/v1/ingest`,
     SEALED_BATCH: `${environment.backendUrl}/api/v1/ingest/events:batch`,
-    /** Deprecated and disabled by default; payloads on this route are not E2EE. */
-    ENDPOINTS: `${environment.backendUrl}/api/v1/telemetry/endpoints`,
     COOKIE_CONSENT: `${environment.backendUrl}/api/v1/telemetry/cookie-consent`,
   },
   ANALYTICS: {

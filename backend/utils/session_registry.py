@@ -147,22 +147,21 @@ def notify_force_logout(
   session_id: str | None = None,
   reason: str = "revoked",
 ) -> None:
-  """Best-effort Channels notify (InMemoryChannelLayer; WS route optional)."""
-  del session_id  # reserved for future consumer payload
+  """Record a force-logout intent.
+
+  Sessions are authoritative in Postgres (`BrowserSession`). There is no
+  WebSocket consumer on the control plane; clients discover revocation on the
+  next authenticated request. Channel-layer fan-out was removed with the
+  unused Dragonfly/WS path.
+  """
   if not firebase_uid:
     return
-  try:
-    from asgiref.sync import async_to_sync
-    from channels.layers import get_channel_layer
-
-    layer = get_channel_layer()
-    if layer:
-      async_to_sync(layer.group_send)(
-        f"session_user_{firebase_uid}",
-        {"type": "session.force_logout", "reason": reason},
-      )
-  except Exception as exc:
-    logger.debug("notify_force_logout skipped: %s", exc)
+  logger.info(
+    "force_logout requested uid=%s session_id=%s reason=%s",
+    firebase_uid,
+    session_id or "",
+    reason,
+  )
 
 
 def purge_expired_sessions() -> int:

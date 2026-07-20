@@ -23,7 +23,7 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OnboardingService } from '../../services/onboarding.service';
-import { VikingDialogService } from '../../services/viking-dialog.service';
+import { VikingDialogService } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 
 const STEPS = ['welcome', 'site', 'endpoint', 'publish', 'done'] as const;

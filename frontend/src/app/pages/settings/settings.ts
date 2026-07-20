@@ -36,7 +36,7 @@ import {
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { VikingDialogService } from '../../services/viking-dialog.service';
+import { VikingDialogService } from '@dataengineeringformachinelearning/viking-ui';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
 import { apiErrorMessage } from '../../core/utils/api-error.utils';

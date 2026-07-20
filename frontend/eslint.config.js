@@ -6,10 +6,6 @@ const angular = require('angular-eslint');
 
 module.exports = defineConfig([
   {
-    // Ignore generated OpenAPI client code (produces many unused imports/vars)
-    ignores: ['src/app/api/**'],
-  },
-  {
     files: ['**/*.ts'],
     extends: [
       eslint.configs.recommended,

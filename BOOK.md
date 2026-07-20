@@ -1245,7 +1245,7 @@ Deep within my Django backend architecture, I deploy a fleet of long-lived, asyn
 
 ### GitHub Actions Workflows
 
-While my internal Django workers manage the live operational state of the application, I leverage GitHub Actions and external bots strictly for structural, code-level audits, static analysis, and dependency maintenance:
+While the DEML Django control plane and FORJD data plane manage live operational state, I leverage GitHub Actions and external bots strictly for structural, code-level audits, static analysis, and dependency maintenance:
 
 - **Weekly:** The Renovate Bot continuously scans my dependency graphs. Every week, it automatically generates perfectly formatted Pull Requests to update outdated Python packages and npm modules, ensuring I continually benefit from the latest upstream performance enhancements and security patches.
 - **Monthly (30-Day Cycle):** I enforce a scheduled GitHub Action that runs deep Semgrep security scans across the entire repository. This workflow also cryptographically verifies the integrity of my dependency lockfiles (`npm audit` and `uv lock`), ensuring my software supply chain has not been compromised.
@@ -1378,7 +1378,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Design-system delivery & governance**: [Storybook](https://storybook.js.org/) component documentation, [Chromatic](https://www.chromatic.com/) visual regression publication, and [Trust Controls](https://www.trustcontrols.ai/) as a directional security/control-governance reference. Viking-UI remains an original zero-runtime implementation; reference component libraries are not production dependencies.
 - **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
-- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
+- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data plane**: [PostgreSQL](https://www.postgresql.org/) (DEML identity), [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (sealed streaming engine), [Dragonfly](https://dragonflydb.io/) (FORJD), [Polars](https://pola.rs/)
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [Appendix Z](#appendix-z-integration-guides)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
@@ -2686,14 +2686,21 @@ As the platform evolved to handle enterprise-scale ingestion across numerous act
 
 ### How We Did This
 
-1. **Redis-Backed Rate Limiting Middleware**:
-   We implemented a highly efficient sliding-window rate limiter utilizing our existing Dragonfly (Redis) cache. When a request hits the `/api/v1/ingest` or `/api/v1/predict` endpoint, the middleware identifies the tenant via their API key, retrieves their assigned tier limits, and uses a Redis `ZSET` to track requests within the last rolling 60 seconds. This decentralized approach ensures minimal latency and high availability across distributed workers.
+1. **Postgres-Backed Headless Rate Limiting**:
+   DEML enforces control-plane quotas with Postgres-backed token buckets
+   (`HeadlessRateLimitBucket` / `config/headless_rate_limit.py`). When a request hits
+   `/api/v1/ingest` or other headless routes, middleware scopes the bucket by hashed
+   account/API-key identifiers—no Redis/`REDIS_URL` on the primary Fly backend.
+   Optional Redis sliding-window helpers live only in the standalone `deml-rate-limit`
+   package for non-DEML deployments.
 
 2. **Stripe Billing Integration**:
    The backend incorporates a dedicated `billing` router designed to interface securely with Stripe. The system handles checkout session creation and listens to asynchronous Stripe Webhooks to update the `Tenant` model's active subscription status securely in the background.
 
 3. **Real-Time Usage Analytics**:
-   Transparency is critical for trust. To provide tenants with a clear view of their API consumption, the `get_analytics_overview` endpoint was extended. It natively queries the Redis pipeline to retrieve the exact count of requests executed in the current minute, bundling this alongside the quota. The Angular frontend dynamically renders this within a dedicated 'API USAGE' statistics panel on the main Analytics dashboard, updating seamlessly with the existing telemetry polling loop.
+   Transparency is critical for trust. Usage and quota views surface via the BFF → FORJD
+   analytics path and headless rate-limit remaining headers where applicable. The Angular
+   frontend renders consumption on the Analytics dashboard without a DEML-local Redis pipeline.
 
 ## Appendix J: Software Bill of Materials (SBOM)
 
@@ -2707,18 +2714,17 @@ This document outlines the dependencies and libraries used in this project.
 
 #### Dependencies
 
-- `@angular/common`: ^22.0.0
-- `@angular/compiler`: ^22.0.0
-- `@angular/core`: ^22.0.0
-- `@angular/forms`: ^22.0.0
-- `@angular/platform-browser`: ^22.0.0
-- `@angular/platform-server`: ^22.0.0
-- `@angular/router`: ^22.0.0
-- `@angular/ssr`: ^22.0.0
+- `@angular/common`: 22.0.5
+- `@angular/compiler`: 22.0.5
+- `@angular/core`: 22.0.5
+- `@angular/forms`: 22.0.5
+- `@angular/platform-browser`: 22.0.5
+- `@angular/router`: 22.0.5
 - `@dataengineeringformachinelearning/viking-ui`: ^9.7.0
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
-- `express`: ^5.1.0
+- `@vercel/analytics`: ^2.0.1
+- `@vercel/speed-insights`: ^2.0.0
 - `firebase`: ^12.14.0
 - `leaflet`: ^1.9.4
 - `rxjs`: ~7.8.0
@@ -2729,13 +2735,11 @@ This document outlines the dependencies and libraries used in this project.
 
 - `@analogjs/vite-plugin-angular`: ^2.6.2
 - `@analogjs/vitest-angular`: ^2.6.1
-- `@angular/build`: ^22.0.0
-- `@angular/cli`: ^22.0.0
-- `@angular/compiler-cli`: ^22.0.0
-- `@angular/platform-browser-dynamic`: ^22.0.0
+- `@angular/build`: 22.0.5
+- `@angular/cli`: 22.0.5
+- `@angular/compiler-cli`: 22.0.5
+- `@angular/platform-browser-dynamic`: 22.0.5
 - `@eslint/js`: ^10.0.1
-- `@openapitools/openapi-generator-cli`: ^2.39.0
-- `@types/express`: ^5.0.1
 - `@types/leaflet`: ^1.9.21
 - `@types/node`: ^20.17.19
 - `@typescript-eslint/utils`: ^8.56.1
@@ -2749,54 +2753,42 @@ This document outlines the dependencies and libraries used in this project.
 - `typescript-eslint`: 8.56.1
 - `vitest`: ^4.1.9
 
+> CSR-only on Vercel: no `@angular/ssr` / `express` SSR server. OpenAPI schema is
+> dumped to `frontend/openapi.json`; the generated Angular client was removed.
+
 ---
 
 ### Backend (Python / Django)
 
 **Path:** `/backend/requirements.txt`
 
+Control-plane only (no local torch/sklearn/ML stack — ML runs in FORJD). ASGI via
+Daphne without Django Channels/WebSockets.
+
 #### Dependencies
 
-- `asgiref`==3.11.1
-- `dj-database-url`==3.1.2
+- `asgiref==3.11.1`
+- `dj-database-url==3.1.2`
 - `opentelemetry-distro`
 - `opentelemetry-instrumentation-django`
 - `opentelemetry-exporter-otlp`
-- `Django`==5.2.15
-- `django-migration-linter`==6.0.0
-- `django-cors-headers`==4.6.0
-- `numpy`==1.26.4
-- `polars`==1.41.2
-- `psycopg2-binary`==2.9.11
-- `python-dotenv`==1.2.2
-- `scikit-learn`==1.9.0
-- `scipy`==1.17.1
-- `torch`==2.12.0
-- `whitenoise`==6.12.0
-- `django-ninja`==1.3.0
-- `httpx`==0.12.0
-- `cramjam`>=2.8.0
-- `protobuf`==5.29.6
-- `pytest`==9.0.3
-- `pytest-django`==4.8.0
-- `firebase-admin`==6.6.0
-- `sentry-sdk`==2.62.0
-- `google-cloud-kms`==3.13.0
-- `google-cloud-logging`==3.16.0
-- `pytest-asyncio`>=0.24.0
-- `requests[socks]`
-- `resend`==2.4.0
-- `aiohttp`==3.9.5
-- `liboqs-python`==0.15.0
-- `huggingface-hub`>=0.23.0
-- `channels`>=4.0.0
-- `daphne`>=4.0.0
-- `channels-redis`>=4.2.0
-- `stripe`>=9.0.0
-- `redis`>=5.0.0
-- `norse`>=1.1.0
-- `wappalyzer`==2.0.1
-- `boto3`>=1.35.0
+- `Django==5.2.15`
+- `django-migration-linter==6.0.0`
+- `django-cors-headers==4.6.0`
+- `psycopg2-binary==2.9.11`
+- `python-dotenv==1.2.2`
+- `whitenoise==6.12.0`
+- `django-ninja==1.3.0`
+- `pytest==9.0.3`
+- `pytest-django==4.8.0`
+- `firebase-admin==6.6.0`
+- `sentry-sdk==2.62.0`
+- `google-cloud-logging==3.16.0`
+- `pytest-asyncio>=0.24.0`
+- `resend==2.4.0`
+- `aiohttp==3.9.5`
+- `daphne>=4.0.0`
+- `stripe>=9.0.0`
 
 ## Appendix K: Platform Maintenance Log
 

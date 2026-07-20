@@ -27,7 +27,6 @@ import {
 } from 'firebase/auth';
 
 import { SessionApiService } from './session-api.service';
-import { SessionWsService } from './session-ws.service';
 
 /** Expected MFA challenge — not an application error. */
 const isMfaRequiredError = (error: unknown): boolean =>
@@ -54,11 +53,10 @@ export class AuthService {
   public mfaEnrolled = signal<boolean>(false);
   /** Current ID token includes MFA verification (`amr` contains `mfa`). */
   public mfaVerifiedInSession = signal<boolean>(false);
-  /** Browser session id registered in Dragonfly session registry. */
+  /** Browser session id registered in Postgres session registry. */
   public sessionId = signal<string | null>(null);
   private http = inject(HttpClient);
   private sessionApi = inject(SessionApiService);
-  private sessionWs = inject(SessionWsService);
   public auth: any;
 
   private useMock =
@@ -146,7 +144,6 @@ export class AuthService {
             this.mfaEnrolled.set(false);
             this.mfaVerifiedInSession.set(false);
             this.clearMfaSessionFlag();
-            this.sessionWs.disconnect();
             this.sessionId.set(null);
           }
           this.isInitialized.set(true);
@@ -888,7 +885,7 @@ export class AuthService {
     }
   }
 
-  /** Register browser session in Dragonfly and open revoke WebSocket. */
+  /** Register browser session in the Postgres session registry. */
   private async bindServerSession(user: FirebaseUser): Promise<void> {
     if (typeof window === 'undefined' || this.useMock) {
       return;
@@ -905,7 +902,6 @@ export class AuthService {
       if (isNew) {
         sessionStorage.setItem('deml_session_id', id!);
       }
-      this.sessionWs.connect(token, id!);
     } catch (error) {
       console.warn('Session registry unavailable', error);
       // Clear bad/stale id so it doesn't cause 401s on subsequent calls
@@ -918,7 +914,6 @@ export class AuthService {
 
   /** Deregister current session server-side (best effort). */
   private async clearServerSession(revokeAll = false): Promise<void> {
-    this.sessionWs.disconnect();
     const id = this.sessionId();
     if (this.auth?.currentUser && id && !this.useMock) {
       try {

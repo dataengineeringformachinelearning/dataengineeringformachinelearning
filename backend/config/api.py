@@ -74,7 +74,7 @@ api.add_router("/forjd/", forjd_router)
 
 @api.get("/health", auth=None)
 def api_health(request: Any) -> dict[str, str]:
-  """Liveness — process is up (Fly/Railway health checks)."""
+  """Liveness — process is up (Fly health checks)."""
   return {"status": "ok", "role": "user-control-plane"}
 
 

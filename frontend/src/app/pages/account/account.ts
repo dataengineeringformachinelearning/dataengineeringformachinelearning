@@ -31,7 +31,7 @@ import {
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { VikingDialogService } from '../../services/viking-dialog.service';
+import { VikingDialogService } from '@dataengineeringformachinelearning/viking-ui';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
 import { environment } from '../../../environments/environment';
 import {

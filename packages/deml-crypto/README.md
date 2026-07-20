@@ -1,6 +1,10 @@
 # DEML Crypto
 
-AES-256-GCM + GCP KMS envelope encryption with DEK rotation.
+Standalone AES-256-GCM + GCP KMS envelope encryption with DEK rotation.
+
+**Published library** for external / multi-repo use. The DEML Django BFF does not
+import this package today; FORJD owns sealed AES-256-GCM envelopes at the data
+plane. Keep DEK/KEK handling free of pickle for any consumer that embeds models.
 
 ## Installation
 

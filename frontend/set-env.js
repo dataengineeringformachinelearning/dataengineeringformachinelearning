@@ -91,8 +91,6 @@ if (onVercel && !vercelFrontend) {
 
 const buildFrontendUrl = vercelFrontend;
 const forjdApiUrl = process.env.FORJD_API_URL ?? 'https://backend.forjd.co';
-const enableLegacyPlaintextTelemetry =
-  String(process.env.ENABLE_LEGACY_PLAINTEXT_TELEMETRY || '').toLowerCase() === 'true';
 
 const getBackendUrlCode = `
 const getBackendUrl = () => {
@@ -189,8 +187,6 @@ export const environment = {
   marketingUrl: getMarketingUrl(),
   /** Informational — data plane is reached via Django BFF, not from the browser. */
   forjdApiUrl: '${forjdApiUrl}',
-  /** Deprecated plaintext endpoint telemetry; sealed FORJD ingest is the supported lane. */
-  enableLegacyPlaintextTelemetry: ${enableLegacyPlaintextTelemetry},
   firebase: getFirebaseConfig(),
   sanity: {
     projectId: '${sanityProjectId}',

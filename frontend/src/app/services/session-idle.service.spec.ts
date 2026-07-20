@@ -2,7 +2,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { VikingDialogService } from './viking-dialog.service';
+import { VikingDialogService } from '@dataengineeringformachinelearning/viking-ui';
 import { AuthService } from './auth.service';
 import {
   SESSION_EVENT_STORAGE_KEY,

@@ -16,7 +16,7 @@
             "description": "OK"
           }
         },
-        "description": "Liveness \u2014 process is up (Fly/Railway health checks)."
+        "description": "Liveness \u2014 process is up (Fly health checks)."
       }
     },
     "/api/v1/ready": {

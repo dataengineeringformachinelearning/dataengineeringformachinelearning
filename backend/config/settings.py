@@ -145,7 +145,7 @@ from utils.env import (
 )
 from utils.tls import materialize_tls_file
 
-# Fail fast on Fly/Railway/production if SECRET_KEY, DEBUG, or DATABASE_URL are insecure.
+# Fail fast on Fly/production if SECRET_KEY, DEBUG, or DATABASE_URL are insecure.
 validate_production_config()
 configure_database_url()
 
@@ -245,13 +245,6 @@ DEML_HEADLESS_WRITE_RPM = get_int("DEML_HEADLESS_WRITE_RPM", default=300)
 DEML_HEADLESS_READ_RPM = get_int("DEML_HEADLESS_READ_RPM", default=1200)
 # Anonymous explore/status directory reads (IP-hashed; separate from headless auth quotas).
 DEML_PUBLIC_STATUS_RPM = get_int("DEML_PUBLIC_STATUS_RPM", default=60)
-
-# Channels — in-process layer (force-logout best-effort).
-CHANNEL_LAYERS = {
-  "default": {
-    "BACKEND": "channels.layers.InMemoryChannelLayer",
-  },
-}
 
 
 # Database

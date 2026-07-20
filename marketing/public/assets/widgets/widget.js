@@ -1166,12 +1166,9 @@
           };
 
           try {
-            // Send legacy payload to backend for threat analysis
-            await fetchWithTimeout(`${backendUrl}/api/v1/telemetry/endpoints`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(telemetryPayload),
-            });
+            // Plaintext /api/v1/telemetry/endpoints was retired. Sealed ingest is
+            // /api/v1/ingest via the Django FORJD BFF; widgets use OTel when configured.
+            void telemetryPayload;
 
             // Dynamically load OpenTelemetry SDK via ESM to send traces to OTel Collector.
             // Only runs when data-otel-url is explicitly set on the script tag — skipping it

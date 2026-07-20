@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Dump Django Ninja OpenAPI schema to frontend/openapi.json for client codegen."""
+"""Dump Django Ninja OpenAPI schema to frontend/openapi.json.
+
+Schema is kept for API docs and contract inspection. The Angular OpenAPI
+client under frontend/src/app/api was retired; the app uses hand-rolled
+HttpClient services instead.
+"""
 
 from __future__ import annotations
 

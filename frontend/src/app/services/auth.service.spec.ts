@@ -3,15 +3,9 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { SessionApiService } from './session-api.service';
-import { SessionWsService } from './session-ws.service';
 import { environment } from '../../environments/environment';
 import { credentialsInterceptor } from '../interceptors/credentials.interceptor';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-
-const sessionWsMock = {
-  connect: vi.fn(),
-  disconnect: vi.fn(),
-};
 
 const sessionApiMock = {
   register: vi.fn(async () => undefined),
@@ -20,7 +14,6 @@ const sessionApiMock = {
 
 const authTestProviders = [
   AuthService,
-  { provide: SessionWsService, useValue: sessionWsMock },
   { provide: SessionApiService, useValue: sessionApiMock },
   provideHttpClient(withInterceptors([credentialsInterceptor])),
   provideHttpClientTesting(),

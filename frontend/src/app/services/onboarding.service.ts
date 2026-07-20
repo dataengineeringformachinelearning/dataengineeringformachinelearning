@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { VikingDialogService } from './viking-dialog.service';
+import { VikingDialogService } from '@dataengineeringformachinelearning/viking-ui';
 
 const SKIP_KEY = 'deml_onboarding_skipped';
 const COMPLETE_KEY = 'deml_onboarding_complete';

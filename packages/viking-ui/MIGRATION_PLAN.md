@@ -1,5 +1,9 @@
 # Viking-UI Rebuild Plan
 
+> **Status: complete.** `packages/viking-ui` is the universal source of truth.
+> This plan is retained as historical guidance only — do not re-open migration
+> workstreams against it; follow THEME.md / AGENTS.md for ongoing changes.
+
 ## 1. Establish The Universal Package
 
 - Make `packages/viking-ui` the source of truth for tokens, static CSS, Web Components, framework-neutral utilities, package metadata, and Angular wrappers.

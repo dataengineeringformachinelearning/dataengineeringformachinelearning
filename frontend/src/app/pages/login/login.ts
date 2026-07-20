@@ -340,11 +340,6 @@ export class Login implements OnInit, OnDestroy {
     return this.recaptchaVerifier;
   }
 
-  /** @deprecated Prefer ensureRecaptcha(); kept for call-site compatibility. */
-  initRecaptcha(): void {
-    void this.ensureRecaptcha().catch(e => logFirebaseAuthError('Login reCAPTCHA init', e));
-  }
-
   handleSuccess(): void {
     const action = this.route.snapshot.queryParams['action'];
     if (action === 'checkout') {
