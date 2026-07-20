@@ -54,6 +54,14 @@ def test_home_and_documentation_landing_copy(client: Client) -> None:
   home_body = home.content.decode()
   assert "Documentation" in home_body
   assert "Swagger UI" in home_body
+  assert (
+    'content="User control-plane API for the DEML learning platform and its secure FORJD data handoff."'
+    in home_body
+  )
+  # Meta description must stay in <head>; bare text leaks above the navbar.
+  pre_main = home_body.split("<main", 1)[0]
+  body_chunk = pre_main.split("<body", 1)[-1]
+  assert "User control-plane API" not in body_chunk
 
   docs = client.get("/documentation")
   assert docs.status_code == 200

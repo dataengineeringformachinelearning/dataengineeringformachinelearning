@@ -225,7 +225,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public threatLevel = 0;
   public slaLevel = 0;
   public stabilityLevel = 0;
-  public temporalForecast = 50;
+  public temporalForecast = 0;
   public honeypotScore = 0;
   public latestBenchmarkScore: number | null = null;
   public latestBenchmark: BenchmarkSummary | null = null;
@@ -390,17 +390,17 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.slaLevel = ces?.sla || 0;
           this.stabilityLevel = ces?.stability || 0;
           this.temporalForecast =
-            response.data?.spiking_temporal_forecast || ces?.spiking_temporal_forecast || 50;
-          this.honeypotScore = response.data?.honeypot_score || 0;
+            response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0;
+          this.honeypotScore = response.data?.honeypot_score ?? 0;
           this.latestBenchmarkScore = ces?.latest_benchmark_score ?? null;
           this.latestBenchmark = ces?.latest_benchmark ?? null;
           this.benchmarkSummary = benchmarking?.current_scope ?? null;
           this.platformBenchmarkSummary = benchmarking?.platform_reference ?? null;
 
-          this.p99Latency = user_metrics?.p99_latency_ms || 0;
-          this.uptimePercent = user_metrics?.uptime_percent || 0;
-          this.totalRequests = user_metrics?.total_requests_24h || 0;
-          this.activeIncidents = user_metrics?.active_incidents || 0;
+          this.p99Latency = user_metrics?.p99_latency_ms ?? 0;
+          this.uptimePercent = user_metrics?.uptime_percent ?? 0;
+          this.totalRequests = user_metrics?.total_requests_24h ?? 0;
+          this.activeIncidents = user_metrics?.active_incidents ?? 0;
 
           this.widgetInteractions = user_metrics?.widget_interactions || 0;
           this.uniqueVisitors = user_metrics?.unique_visitors || 0;

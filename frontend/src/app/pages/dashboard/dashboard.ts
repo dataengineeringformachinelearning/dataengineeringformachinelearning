@@ -35,6 +35,7 @@ import {
   VikingChartCardHeader,
   VikingSection,
   VikingSpinner,
+  VikingCallout,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
@@ -96,6 +97,7 @@ type BenchmarkSummary = {
     VikingChartCardHeader,
     VikingSection,
     VikingSpinner,
+    VikingCallout,
   ],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -116,6 +118,11 @@ export class Dashboard implements OnInit, OnDestroy {
 
   activeTab = signal<DashboardTab>('overview');
   isLoading = signal(true);
+  /** True only after a successful overview payload is applied. */
+  metricsReady = signal(false);
+  /** Distinguishes FORJD outages from honest empty telemetry. */
+  metricsDegraded = signal(false);
+  loadError = signal<string | null>(null);
 
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
   uptimeSeries = signal<VikingChartSeries[]>(toVikingLineSeries('Uptime (%)', [], 'success'));
@@ -166,6 +173,7 @@ export class Dashboard implements OnInit, OnDestroy {
   );
 
   healthScore = computed(() => {
+    if (!this.metricsReady() || this.metricsDegraded()) return null;
     const threatPenalty = Math.min(this.threatLevel, 100) * 0.35;
     const stabilityBonus = Math.min(this.stabilityLevel, 100) * 0.35;
     const vulnPenalty = Math.min(this.openVulnCount() * 8, 30);
@@ -176,6 +184,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   healthLabel = computed(() => {
     const score = this.healthScore();
+    if (score === null) return 'Awaiting';
     if (score >= 85) return 'Healthy';
     if (score >= 65) return 'Watch';
     if (score >= 40) return 'At Risk';
@@ -184,6 +193,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   healthGaugeTone = computed<'amber' | 'danger' | 'info' | 'success'>(() => {
     const label = this.healthLabel();
+    if (label === 'Awaiting') return 'info';
     if (label === 'At Risk') return 'amber';
     if (label === 'Critical') return 'danger';
     if (label === 'Watch') return 'info';
@@ -332,6 +342,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   private loadAnalyticsData() {
     this.isLoading.set(true);
+    this.loadError.set(null);
     let url = `${environment.backendUrl}/api/v1/analytics/overview`;
     const params: string[] = [];
     if (this.selectedTenantId) params.push(`tenant_id=${this.selectedTenantId}`);
@@ -343,18 +354,26 @@ export class Dashboard implements OnInit, OnDestroy {
     this.http.get<any>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
+          const degraded = response?.degraded === true || response?.code === 'forjd_degraded';
           const { benchmarking, ces, user_metrics } = response.data;
-          this.cesLevel = ces?.level || 0;
-          this.threatLevel = ces?.threat || 0;
-          this.slaLevel = ces?.sla || 0;
-          this.stabilityLevel = ces?.stability || 0;
+          this.cesLevel = ces?.level ?? 0;
+          this.threatLevel = ces?.threat ?? 0;
+          this.slaLevel = ces?.sla ?? 0;
+          this.stabilityLevel = ces?.stability ?? 0;
           this.temporalForecast.set(ces?.spiking_temporal_forecast ?? 0);
-          this.p99Latency = user_metrics?.p99_latency_ms || 0;
-          this.uptimePercent = user_metrics?.uptime_percent || 0;
-          this.totalRequests = user_metrics?.total_requests_24h || 0;
-          this.activeIncidents = user_metrics?.active_incidents || 0;
-          this.uniqueVisitors = user_metrics?.unique_visitors || 0;
+          this.p99Latency = user_metrics?.p99_latency_ms ?? 0;
+          this.uptimePercent = user_metrics?.uptime_percent ?? 0;
+          this.totalRequests = user_metrics?.total_requests_24h ?? 0;
+          this.activeIncidents = user_metrics?.active_incidents ?? 0;
+          this.uniqueVisitors = user_metrics?.unique_visitors ?? 0;
           this.benchmarkSummary = benchmarking?.current_scope ?? null;
+          this.metricsReady.set(!degraded);
+          this.metricsDegraded.set(degraded);
+          this.loadError.set(
+            degraded
+              ? 'Monitoring is running in fallback mode. Live FORJD analytics are unavailable.'
+              : null,
+          );
 
           if (user_metrics?.available_sites) {
             this.siteOptions = [
@@ -407,7 +426,19 @@ export class Dashboard implements OnInit, OnDestroy {
         this.isLoading.set(false);
         this.cdr.markForCheck();
       },
-      error: () => {
+      error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
+        this.metricsReady.set(false);
+        this.metricsDegraded.set(true);
+        const code = err?.error?.code;
+        const detail = err?.error?.detail;
+        if (err?.status === 503 || code === 'forjd_degraded') {
+          this.loadError.set(
+            detail ||
+              'FORJD analytics is unavailable for this account. Check tenant mapping and try again.',
+          );
+        } else {
+          this.loadError.set(detail || 'Unable to load dashboard analytics.');
+        }
         this.isLoading.set(false);
         this.cdr.markForCheck();
       },

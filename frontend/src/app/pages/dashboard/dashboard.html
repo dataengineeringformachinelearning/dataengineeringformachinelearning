@@ -26,6 +26,16 @@
     }
   </viking-page-header>
 
+  @if (loadError()) {
+  <viking-callout tone="warning" heading="Monitoring degraded"> {{ loadError() }} </viking-callout>
+  } @else if (!setupComplete() && !isLoading()) {
+  <viking-callout tone="accent" heading="Connect a site to begin">
+    Add a monitored endpoint in Sites so latency, uptime, and threat telemetry can populate this
+    command center.
+    <a routerLink="/sites" class="viking-link">Go to Sites</a>
+  </viking-callout>
+  }
+
   <viking-tabs [value]="activeTab()" (valueChange)="setTab($any($event))">
     <viking-tab value="overview">
       <viking-app-icon name="dashboard" [ariaHidden]="true" />
@@ -49,9 +59,11 @@
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
             <viking-card class="health-card kpi-card" [compact]="true">
               <div class="health-gauge">
-                <viking-gauge-arc [value]="healthScore()" [tone]="healthGaugeTone()" />
+                <viking-gauge-arc [value]="healthScore() ?? 0" [tone]="healthGaugeTone()" />
                 <div class="health-gauge-center">
-                  <span class="health-value">{{ healthScore() }}</span>
+                  <span class="health-value"
+                    >{{ healthScore() === null ? '—' : healthScore() }}</span
+                  >
                   <span class="health-label">{{ healthLabel() }}</span>
                 </div>
               </div>
@@ -97,7 +109,7 @@
                 </span>
                 <div class="kpi-card-meta">
                   <span class="kpi-label">Spiking Temporal Forecast</span>
-                  <span class="kpi-value">{{ (temporalForecast() || 50) | number:'1.0-0' }}%</span>
+                  <span class="kpi-value">{{ temporalForecast() | number:'1.0-0' }}%</span>
                 </div>
               </div>
               <div class="kpi-sparkline-slot">

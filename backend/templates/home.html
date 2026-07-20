@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}DEML Learning Platform API{% endblock %}
-{% block meta_description %}User control-plane API for the DEML learning platform and its secure FORJD data handoff.{% endblock %}
+{% block meta_description %}
+<meta
+  name="description"
+  content="User control-plane API for the DEML learning platform and its secure FORJD data handoff."
+/>
+{% endblock %}
 {% block og_description %}Identity, account, billing, learning interactions, and sealed FORJD handoff.{% endblock %}
 {% block twitter_description %}Identity, account, billing, learning interactions, and sealed FORJD handoff.{% endblock %}
 {% block meta_keywords %}DEML learning platform, Django user API, FORJD{% endblock %}
@@ -21,7 +26,7 @@
         <span data-viking-icon="file" data-viking-icon-size="16" aria-hidden="true"></span>
         Documentation
       </a>
-      <a class="viking-btn viking-btn-outline" href="/api/v1/docs">
+      <a class="viking-btn viking-btn-filled" href="/api/v1/docs">
         <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
         Swagger UI
       </a>

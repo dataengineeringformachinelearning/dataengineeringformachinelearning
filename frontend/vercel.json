@@ -4,7 +4,12 @@
   "outputDirectory": "dist/frontend/browser",
   "framework": null,
   "installCommand": "npm install --legacy-peer-deps --no-workspaces",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/((?!.*\\.(?:js|mjs|css|map|png|jpe?g|gif|ico|svg|webp|woff2?|json|webmanifest|txt|xml)$).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/service-worker.js",

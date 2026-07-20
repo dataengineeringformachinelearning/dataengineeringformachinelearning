@@ -6,7 +6,7 @@ import {
   ChangeDetectionStrategy,
   PLATFORM_ID,
 } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, NavigationError } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { AuthService } from './services/auth.service';
@@ -25,6 +25,7 @@ import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
 import { CommandPalette } from './components/command-palette/command-palette';
 import { SessionStateService } from './services/session-state.service';
+import { reloadOnceOnChunkError } from './core/chunk-load-recovery';
 
 @Component({
   selector: 'app-root',
@@ -61,8 +62,20 @@ export class App implements OnInit {
       this.isAuthStatusPage.set(window.location.pathname.startsWith('/auth-status'));
     }
     this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
+      .pipe(
+        filter(
+          (event): event is NavigationEnd | NavigationError =>
+            event instanceof NavigationEnd || event instanceof NavigationError,
+        ),
+      )
+      .subscribe((event: NavigationEnd | NavigationError) => {
+        if (event instanceof NavigationError) {
+          if (isPlatformBrowser(this.platformId)) {
+            reloadOnceOnChunkError(event.error);
+          }
+          return;
+        }
+
         const url = event.urlAfterRedirects || event.url || '';
         this.pageMeta.applyForUrl(url);
         this.checkDeepLinkActions();

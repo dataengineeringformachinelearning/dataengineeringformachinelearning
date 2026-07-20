@@ -30,6 +30,8 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
     {
       "total_requests": 10,
       "active_incidents": 1,
+      "threats_detected": 2,
+      "unique_visitors": 4,
       "p99_latency_ms": 42.0,
       "uptime_pct": 99.5,
       "ces": {
@@ -37,12 +39,24 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
         "ces_threat": 10,
         "ces_sla": 90,
         "ces_stability": 85,
+        "spiking_temporal_forecast": 12.5,
       },
+      "time_series": [{"label": "10:00", "latency": 42.0, "requests": 10}],
+      "uptime_series": [{"label": "10:00", "uptime": 99.5}],
+      "threat_series": [{"label": "10:00", "count": 2}],
+      "threat_severity": [{"severity": "Detected", "count": 2}],
     }
   )
   assert body["status"] == "success"
+  assert body["degraded"] is False
   assert body["data"]["ces"]["level"] == 80
+  assert body["data"]["ces"]["spiking_temporal_forecast"] == 12.5
   assert body["data"]["user_metrics"]["total_requests_24h"] == 10
+  assert body["data"]["user_metrics"]["unique_visitors"] == 4
+  assert body["data"]["user_metrics"]["time_series"][0]["latency"] == 42.0
+  assert body["data"]["user_metrics"]["uptime_series"][0]["uptime"] == 99.5
+  assert body["data"]["user_metrics"]["security_alerts"][0]["count"] == 2
+  assert body["data"]["user_metrics"]["threat_severity"][0]["count"] == 2
 
 
 def test_deml_status_pages_sets_deml_user_id() -> None:

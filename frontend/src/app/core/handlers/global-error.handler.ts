@@ -2,6 +2,7 @@ import { ErrorHandler, Injectable, Injector, PLATFORM_ID, inject } from '@angula
 import { isPlatformBrowser } from '@angular/common';
 import { VikingToastService } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
+import { isChunkLoadError, reloadOnceOnChunkError } from '../chunk-load-recovery';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
@@ -9,10 +10,14 @@ export class GlobalErrorHandler implements ErrorHandler {
   private readonly injector = inject(Injector);
 
   handleError(error: unknown): void {
+    if (isPlatformBrowser(this.platformId) && reloadOnceOnChunkError(error)) {
+      return;
+    }
+
     void this.captureInMonitoring(error);
     console.error('GlobalErrorHandler caught an error:', error);
 
-    if (isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId) && !isChunkLoadError(error)) {
       queueMicrotask(() => {
         this.injector.get(VikingToastService).show({
           heading: 'System Error',
@@ -26,6 +31,10 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   private async captureInMonitoring(error: unknown): Promise<void> {
     if (!environment.sentryDsn || !isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    // Chunk skew storms Sentry; recovery reload handles it locally.
+    if (isChunkLoadError(error)) {
       return;
     }
 

@@ -325,111 +325,113 @@
       </p>
     </header>
 
-    @if (availableSites.length > 0) {
-    <div class="filter-group-mobile">
-      <app-unified-select
-        id="siteSelect"
-        label="Filter by Site:"
-        width="half"
-        [options]="siteOptions"
-        [value]="selectedSite || 'All'"
-        (valueChange)="onSiteChange($event)"
-      ></app-unified-select>
-    </div>
-    }
-    <viking-panel-grid [columns]="2">
-      <viking-metric-card
-        label="API usage (last minute)"
-        [value]="formatCount(apiUsageCurrent) + ' / ' + formatCount(apiUsageQuota)"
-        sublabel="Requests within the current quota window"
-        icon="analytics"
-      />
-      <viking-metric-card
-        label="P99 latency"
-        [value]="(p99Latency | number:'1.2-2') + ' ms'"
-        sublabel="99th percentile response time"
-        icon="speed"
-        tone="info"
-      />
-      <viking-metric-card
-        label="Service uptime"
-        [value]="(uptimePercent | number:'1.2-2') + '%'"
-        sublabel="Availability across monitored services"
-        icon="heart"
-        tone="success"
-      />
-      <viking-metric-card
-        label="Total requests"
-        [value]="formatCount(totalRequests)"
-        sublabel="Requests observed in the last 24 hours"
-        icon="network"
-      />
-      <viking-metric-card
-        label="Active incidents"
-        [value]="activeIncidents"
-        sublabel="Open reliability and security events"
-        icon="warning"
-        [tone]="activeIncidents > 0 ? 'danger' : 'success'"
-      />
-      <viking-metric-card
-        label="Widget interactions"
-        [value]="formatCount(widgetInteractions)"
-        sublabel="Tracked user interactions"
-        icon="bolt"
-      />
-      <viking-metric-card
-        label="Unique visitors"
-        [value]="formatCount(uniqueVisitors)"
-        sublabel="Distinct visitors in the reporting window"
-        icon="user"
-      />
-      <viking-metric-card
-        label="Cookie consents"
-        [value]="formatCount(cookieConsents)"
-        sublabel="Analytics and marketing consent events"
-        icon="cookie"
-        tone="success"
-      />
-    </viking-panel-grid>
-
-    <!-- ACTIVE PROVIDERS CHIPS -->
-    @if (activeProviders.length > 0) {
-    <div class="active-providers-row">
-      <span class="active-providers-label">Active Providers:</span>
-      @for (provider of activeProviders; track provider) {
-      <viking-badge tone="accent" size="sm">{{ provider }}</viking-badge>
+    <viking-stack class="analytics-metrics-stack" spacing="compact">
+      @if (availableSites.length > 0) {
+      <div class="filter-group-mobile">
+        <app-unified-select
+          id="siteSelect"
+          label="Filter by Site:"
+          width="half"
+          [options]="siteOptions"
+          [value]="selectedSite || 'All'"
+          (valueChange)="onSiteChange($event)"
+        ></app-unified-select>
+      </div>
       }
-    </div>
-    }
+      <viking-panel-grid [columns]="2">
+        <viking-metric-card
+          label="API usage (last minute)"
+          [value]="formatCount(apiUsageCurrent) + ' / ' + formatCount(apiUsageQuota)"
+          sublabel="Requests within the current quota window"
+          icon="analytics"
+        />
+        <viking-metric-card
+          label="P99 latency"
+          [value]="(p99Latency | number:'1.2-2') + ' ms'"
+          sublabel="99th percentile response time"
+          icon="speed"
+          tone="info"
+        />
+        <viking-metric-card
+          label="Service uptime"
+          [value]="(uptimePercent | number:'1.2-2') + '%'"
+          sublabel="Availability across monitored services"
+          icon="heart"
+          tone="success"
+        />
+        <viking-metric-card
+          label="Total requests"
+          [value]="formatCount(totalRequests)"
+          sublabel="Requests observed in the last 24 hours"
+          icon="network"
+        />
+        <viking-metric-card
+          label="Active incidents"
+          [value]="activeIncidents"
+          sublabel="Open reliability and security events"
+          icon="warning"
+          [tone]="activeIncidents > 0 ? 'danger' : 'success'"
+        />
+        <viking-metric-card
+          label="Widget interactions"
+          [value]="formatCount(widgetInteractions)"
+          sublabel="Tracked user interactions"
+          icon="bolt"
+        />
+        <viking-metric-card
+          label="Unique visitors"
+          [value]="formatCount(uniqueVisitors)"
+          sublabel="Distinct visitors in the reporting window"
+          icon="user"
+        />
+        <viking-metric-card
+          label="Cookie consents"
+          [value]="formatCount(cookieConsents)"
+          sublabel="Analytics and marketing consent events"
+          icon="cookie"
+          tone="success"
+        />
+      </viking-panel-grid>
 
-    <viking-chart-panel>
-      <viking-chart-card-header
-        title="System Latency (Last 24h)"
-        [hasData]="hasLatencyData()"
-        [value]="p99Latency + ' ms'"
-        [trend]="latencyTrend"
-        emptyLabel="Awaiting signal"
-      />
-
-      @if (hasLatencyData()) {
-      <viking-chart
-        kind="line"
-        [series]="latencySeries()"
-        [categories]="latencyCategories()"
-        label="System Latency (Last 24h)"
-        [showArea]="true"
-        curve="smooth"
-        [fill]="true"
-        [zoomable]="true"
-      />
-      } @else {
-      <viking-chart-empty-state
-        icon="globe"
-        title="No Telemetry Signal"
-        description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
-      />
+      <!-- ACTIVE PROVIDERS CHIPS -->
+      @if (activeProviders.length > 0) {
+      <div class="active-providers-row">
+        <span class="active-providers-label">Active Providers:</span>
+        @for (provider of activeProviders; track provider) {
+        <viking-badge tone="accent" size="sm">{{ provider }}</viking-badge>
+        }
+      </div>
       }
-    </viking-chart-panel>
+
+      <viking-chart-panel>
+        <viking-chart-card-header
+          title="System Latency (Last 24h)"
+          [hasData]="hasLatencyData()"
+          [value]="p99Latency + ' ms'"
+          [trend]="latencyTrend"
+          emptyLabel="Awaiting signal"
+        />
+
+        @if (hasLatencyData()) {
+        <viking-chart
+          kind="line"
+          [series]="latencySeries()"
+          [categories]="latencyCategories()"
+          label="System Latency (Last 24h)"
+          [showArea]="true"
+          curve="smooth"
+          [fill]="true"
+          [zoomable]="true"
+        />
+        } @else {
+        <viking-chart-empty-state
+          icon="globe"
+          title="No Telemetry Signal"
+          description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
+        />
+        }
+      </viking-chart-panel>
+    </viking-stack>
   </viking-section>
 
   <viking-section>

@@ -393,6 +393,13 @@ button.viking-btn-subtle {
   @include viking-btn-subtle;
 }
 
+.viking-btn-filled,
+a.viking-btn-filled,
+button.viking-btn-filled {
+  @include viking-btn-base;
+  @include viking-btn-filled;
+}
+
 // Component variant class aliases (global fallback when styles bleed outside encapsulation)
 .viking-btn.viking-outline {
   @include viking-btn-outline;

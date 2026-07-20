@@ -17,10 +17,59 @@ def _label(value: Any, default: str) -> str:
   return str(value or default).replace("_", " ").replace("-", " ").title()
 
 
+def _as_list(value: Any) -> list[Any]:
+  return value if isinstance(value, list) else []
+
+
+def _series_points(rows: list[Any], *, value_key: str, out_key: str) -> list[dict[str, Any]]:
+  points: list[dict[str, Any]] = []
+  for row in rows:
+    if not isinstance(row, dict):
+      continue
+    label = str(row.get("label") or row.get("time") or "")
+    points.append(
+      {
+        "label": label,
+        "time": label,
+        out_key: row.get(value_key) if row.get(value_key) is not None else 0,
+      }
+    )
+  return points
+
+
 # --- Analytics overview (dashboard / analytics / vulnerabilities pages) ---
 def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
   """Shape FORJD ``/api/v1/analytics/overview`` into the Angular CES envelope."""
   ces_raw = forjd_body.get("ces") if isinstance(forjd_body.get("ces"), dict) else {}
+  time_series = _series_points(
+    _as_list(forjd_body.get("time_series")), value_key="latency", out_key="latency"
+  )
+  for idx, row in enumerate(_as_list(forjd_body.get("time_series"))):
+    if isinstance(row, dict) and idx < len(time_series):
+      time_series[idx]["requests"] = int(row.get("requests") or 0)
+
+  uptime_series = _series_points(
+    _as_list(forjd_body.get("uptime_series")), value_key="uptime", out_key="uptime"
+  )
+  security_alerts = _series_points(
+    _as_list(forjd_body.get("threat_series")), value_key="count", out_key="count"
+  )
+
+  threat_severity: list[dict[str, Any]] = []
+  for row in _as_list(forjd_body.get("threat_severity")):
+    if not isinstance(row, dict):
+      continue
+    threat_severity.append(
+      {
+        "severity": str(row.get("severity") or "Detected"),
+        "count": int(row.get("count") or 0),
+      }
+    )
+
+  forecast = ces_raw.get("spiking_temporal_forecast")
+  if forecast is None:
+    forecast = forjd_body.get("spiking_temporal_forecast")
+
   return {
     "status": "success",
     "data": {
@@ -30,30 +79,38 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
         "threat": float(ces_raw.get("ces_threat") or 0),
         "sla": float(ces_raw.get("ces_sla") or 0),
         "stability": float(ces_raw.get("ces_stability") or 0),
-        "spiking_temporal_forecast": 0,
+        "spiking_temporal_forecast": float(forecast or 0),
       },
       "user_metrics": {
         "p99_latency_ms": float(forjd_body.get("p99_latency_ms") or 0),
         "uptime_percent": float(forjd_body.get("uptime_pct") or 0),
         "total_requests_24h": int(forjd_body.get("total_requests") or 0),
         "active_incidents": int(forjd_body.get("active_incidents") or 0),
-        "unique_visitors": 0,
-        "available_sites": [],
-        "time_series": [],
-        "uptime_series": [],
-        "threat_severity": [],
-        "security_alerts": [],
+        "threats_detected_24h": int(forjd_body.get("threats_detected") or 0),
+        "unique_visitors": int(forjd_body.get("unique_visitors") or 0),
+        "available_sites": [
+          str(site)
+          for site in _as_list(forjd_body.get("available_sites"))
+          if site is not None and str(site).strip()
+        ],
+        "time_series": time_series,
+        "uptime_series": uptime_series,
+        "threat_severity": threat_severity,
+        "security_alerts": security_alerts,
       },
     },
     "source": "forjd",
+    "degraded": False,
   }
 
 
 def empty_analytics_overview() -> dict[str, Any]:
-  return deml_analytics_overview(
+  body = deml_analytics_overview(
     {
       "total_requests": 0,
       "active_incidents": 0,
+      "threats_detected": 0,
+      "unique_visitors": 0,
       "p99_latency_ms": 0,
       "uptime_pct": 100.0,
       "ces": {
@@ -61,9 +118,18 @@ def empty_analytics_overview() -> dict[str, Any]:
         "ces_threat": 0,
         "ces_sla": 0,
         "ces_stability": 0,
+        "spiking_temporal_forecast": 0,
       },
+      "time_series": [],
+      "uptime_series": [],
+      "threat_series": [],
+      "threat_severity": [],
     }
   )
+  body["degraded"] = True
+  body["source"] = "deml_forjd_fallback"
+  body["code"] = "forjd_read_fallback"
+  return body
 
 
 # --- Status pages list (MonitorService expects a JSON array) ---
