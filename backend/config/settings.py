@@ -169,6 +169,11 @@ ALLOWED_HOSTS = [
 FORJD_API_URL = get_str("FORJD_API_URL", "https://backend.forjd.co")
 FORJD_SERVICE_TOKEN = get_str("FORJD_SERVICE_TOKEN", "")
 FORJD_TENANT_ID = get_str("FORJD_TENANT_ID", "")
+# Bootstrap token for auto-provisioning per-account FORJD tenants (not fjsvc_).
+FORJD_PROVISION_TOKEN = get_str("FORJD_PROVISION_TOKEN", "")
+# Optional platform API key when FORJD has API_KEY set on mutating routes.
+FORJD_API_KEY = get_str("FORJD_API_KEY", "")
+ENCRYPTION_MASTER_KEY = get_str("ENCRYPTION_MASTER_KEY", "")
 # FORJD write/read modes — see docs/FORJD_INTEGRATION.md. Phase overrides modes when set.
 # Phase: 0=dual-write/empty-read, 1=dual-write/forjd-read, 2|3=forjd-only.
 FORJD_CUTOVER_PHASE = get_str("FORJD_CUTOVER_PHASE", "")

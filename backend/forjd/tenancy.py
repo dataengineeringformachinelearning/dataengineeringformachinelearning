@@ -12,10 +12,15 @@ from django.conf import settings
 from monitor.models import ForjdTenantMapping
 
 from forjd.client import is_forjd_service_token
+from forjd.secrets import is_sealed_ref
 
 DEFAULT_SERVICE_TOKEN_SECRET_REF: Final[str] = "env:FORJD_SERVICE_TOKEN"
 _SERVICE_TOKEN_ENV_PATTERN: Final[re.Pattern[str]] = re.compile(
   r"FORJD_SERVICE_TOKEN(?:_[A-Z0-9_]+)?\Z"
+)
+_SEALED_REF_PATTERN: Final[re.Pattern[str]] = re.compile(
+  r"\Asealed:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\Z",
+  re.IGNORECASE,
 )
 
 
@@ -30,21 +35,26 @@ class ForjdTenantCredential:
 
 
 def validate_service_token_secret_ref(secret_ref: str) -> str:
-  prefix, separator, env_name = secret_ref.strip().partition(":")
+  """Accept ``env:FORJD_SERVICE_TOKEN[_SUFFIX]`` or ``sealed:<uuid>`` refs."""
+  raw = secret_ref.strip()
+  if is_sealed_ref(raw):
+    if not _SEALED_REF_PATTERN.fullmatch(raw):
+      raise ForjdTenantConfigurationError("FORJD sealed token reference must be sealed:<uuid>")
+    return raw
+  prefix, separator, env_name = raw.partition(":")
   if separator != ":" or prefix != "env" or not _SERVICE_TOKEN_ENV_PATTERN.fullmatch(env_name):
     raise ForjdTenantConfigurationError(
-      "FORJD service token reference must name a FORJD_SERVICE_TOKEN environment variable"
+      "FORJD service token reference must be env:FORJD_SERVICE_TOKEN* or sealed:<uuid>"
     )
   return f"env:{env_name}"
 
 
-def _resolve_service_token(secret_ref: str) -> str:
-  normalized_secret_ref = validate_service_token_secret_ref(secret_ref)
-  env_name = normalized_secret_ref.removeprefix("env:")
+def _resolve_env_service_token(secret_ref: str) -> str:
+  env_name = secret_ref.removeprefix("env:")
 
   # Prefer Django settings for the default ref so tests / local settings win
   # over a polluted process environment.
-  if normalized_secret_ref == DEFAULT_SERVICE_TOKEN_SECRET_REF:
+  if secret_ref == DEFAULT_SERVICE_TOKEN_SECRET_REF:
     token = str(getattr(settings, "FORJD_SERVICE_TOKEN", "")).strip()
     if not token:
       token = os.getenv(env_name, "").strip()
@@ -57,6 +67,18 @@ def _resolve_service_token(secret_ref: str) -> str:
   return token
 
 
+def _resolve_service_token(secret_ref: str) -> str:
+  normalized = validate_service_token_secret_ref(secret_ref)
+  if is_sealed_ref(normalized):
+    from forjd.provision import resolve_sealed_service_token
+
+    token = resolve_sealed_service_token(normalized)
+    if not is_forjd_service_token(token):
+      raise ForjdTenantConfigurationError("FORJD service token has an invalid format")
+    return token
+  return _resolve_env_service_token(normalized)
+
+
 def _expected_tenant_env_name(secret_ref: str) -> str:
   """Map env:FORJD_SERVICE_TOKEN[_SUFFIX] → FORJD_TENANT_ID[_SUFFIX]."""
   env_name = secret_ref.removeprefix("env:")
@@ -67,7 +89,9 @@ def _expected_tenant_env_name(secret_ref: str) -> str:
 
 
 def _require_tenant_env_match(tenant_id: UUID, secret_ref: str) -> None:
-  """Bind each service-token ref to a matching FORJD_TENANT_ID[_SUFFIX] value."""
+  """Bind each env-backed service-token ref to a matching FORJD_TENANT_ID value."""
+  if is_sealed_ref(secret_ref):
+    return
   tenant_env = _expected_tenant_env_name(secret_ref)
   if secret_ref == DEFAULT_SERVICE_TOKEN_SECRET_REF:
     configured = str(getattr(settings, "FORJD_TENANT_ID", "")).strip()

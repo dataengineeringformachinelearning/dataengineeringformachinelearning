@@ -201,8 +201,14 @@ async def resolve_request_credential(request: Any) -> ForjdTenantCredential:
 
   try:
     return await sync_to_async(resolve_forjd_tenant_credential)(actor.account_id)
-  except ForjdTenantConfigurationError as exc:
-    raise HttpError(503, "FORJD tenant service credential is unavailable") from exc
+  except ForjdTenantConfigurationError:
+    try:
+      from forjd.client import ForjdError
+      from forjd.provision import ForjdProvisionError, ensure_forjd_tenant_credential
+
+      return await ensure_forjd_tenant_credential(actor.account_id)
+    except (ForjdTenantConfigurationError, ForjdProvisionError, ForjdError) as exc:
+      raise HttpError(503, "FORJD tenant service credential is unavailable") from exc
 
 
 def require_mapped_tenant(payload_tenant_id: UUID, credential: ForjdTenantCredential) -> None:

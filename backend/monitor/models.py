@@ -153,6 +153,28 @@ class UserProfile(models.Model):
     db_table = "user_profiles"
 
 
+class ForjdServiceCredential(models.Model):
+  """Sealed per-account FORJD ``fjsvc_`` token (ciphertext only)."""
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  deml_account_id = models.UUIDField(db_index=True)
+  forjd_tenant_id = models.UUIDField(db_index=True)
+  ciphertext = models.TextField()
+  encrypted_dek = models.TextField()
+  is_active = models.BooleanField(default=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "forjd_service_credentials"
+    indexes = [
+      models.Index(fields=["deml_account_id", "-created_at"], name="forjd_svc_cred_acct_idx"),
+    ]
+
+  def __str__(self) -> str:
+    return f"sealed:{self.id} account={self.deml_account_id}"
+
+
 class ForjdTenantMapping(models.Model):
   """Bind one DEML account to one tenant-scoped FORJD service credential."""
 
@@ -171,13 +193,18 @@ class ForjdTenantMapping(models.Model):
     db_table = "forjd_tenant_mappings"
     constraints = [
       models.CheckConstraint(
-        condition=models.Q(service_token_secret_ref__startswith="env:FORJD_SERVICE_TOKEN"),
-        name="forjd_tenant_mapping_secret_ref_env_only",
+        condition=(
+          models.Q(
+            service_token_secret_ref__startswith="env:FORJD_SERVICE_TOKEN"  # pragma: allowlist secret
+          )
+          | models.Q(service_token_secret_ref__startswith="sealed:")  # pragma: allowlist secret
+        ),
+        name="forjd_tenant_mapping_secret_ref_safe",
       ),
     ]
 
   def clean(self) -> None:
-    """Reject plaintext tokens — only env:FORJD_SERVICE_TOKEN[_SUFFIX] refs."""
+    """Reject plaintext tokens — only env: or sealed: refs."""
     from django.core.exceptions import ValidationError
     from forjd.tenancy import ForjdTenantConfigurationError, validate_service_token_secret_ref
 
@@ -191,7 +218,11 @@ class ForjdTenantMapping(models.Model):
     _opaque_prefix = "fj" + "svc_"
     if _opaque_prefix in self.service_token_secret_ref.lower():
       raise ValidationError(
-        {"service_token_secret_ref": ("Must be an env: reference, never a plaintext credential")}
+        {
+          "service_token_secret_ref": (
+            "Must be an env: or sealed: reference, never a plaintext credential"
+          )
+        }
       )
 
   def save(self, *args: object, **kwargs: object) -> None:
@@ -247,8 +278,13 @@ class ForjdTenantAssociation(models.Model):
         name="forjd_tenant_assoc_identity_uniq",
       ),
       models.CheckConstraint(
-        condition=models.Q(service_token_secret_ref__startswith="env:FORJD_SERVICE_TOKEN"),
-        name="forjd_tenant_assoc_secret_ref_env_only",
+        condition=(
+          models.Q(
+            service_token_secret_ref__startswith="env:FORJD_SERVICE_TOKEN"  # pragma: allowlist secret
+          )
+          | models.Q(service_token_secret_ref__startswith="sealed:")  # pragma: allowlist secret
+        ),
+        name="forjd_tenant_assoc_secret_ref_safe",
       ),
     ]
 

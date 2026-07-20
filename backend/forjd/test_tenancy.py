@@ -110,6 +110,39 @@ def test_unmapped_account_fails_closed() -> None:
 
 
 @pytest.mark.django_db
+@override_settings(
+  SECRET_KEY="test-secret-key-for-sealed-tokens"  # pragma: allowlist secret
+)
+def test_resolves_sealed_service_token() -> None:
+  from monitor.models import ForjdServiceCredential
+
+  from forjd.secrets import seal_service_token, sealed_ref
+
+  account_id = uuid4()
+  tenant_id = uuid4()
+  credential_id = uuid4()
+  ciphertext, encrypted_dek = seal_service_token(
+    "fjsvc_abcd1234_sealed-secret"  # pragma: allowlist secret
+  )
+  ForjdServiceCredential.objects.create(
+    id=credential_id,
+    deml_account_id=account_id,
+    forjd_tenant_id=tenant_id,
+    ciphertext=ciphertext,
+    encrypted_dek=encrypted_dek,
+  )
+  ForjdTenantMapping.objects.create(
+    deml_account_id=account_id,
+    forjd_tenant_id=tenant_id,
+    service_token_secret_ref=sealed_ref(str(credential_id)),
+  )
+
+  credential = resolve_forjd_tenant_credential(account_id)
+  assert credential.tenant_id == tenant_id
+  assert credential.service_token == "fjsvc_abcd1234_sealed-secret"  # pragma: allowlist secret
+
+
+@pytest.mark.django_db
 def test_per_tenant_token_requires_matching_tenant_env() -> None:
   account_id = uuid4()
   tenant_id = uuid4()

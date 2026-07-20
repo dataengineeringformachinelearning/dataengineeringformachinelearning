@@ -73,13 +73,21 @@ surfaces FORJD's correlation id as `X-FORJD-Request-ID`.
 deml_account_id -> forjd_tenant_id -> service_token_secret_ref
 ```
 
-The database stores a secret reference, not the `fjsvc_` token. Body/query `tenant_id`
-must equal the mapped tenant or fail closed.
+End users authenticate only to DEML (Firebase). They never call FORJD or hold
+`fjsvc_` tokens. On the first FORJD-backed BFF call, DEML auto-provisions a
+tenant via `POST /api/v1/partner/provision` (`FORJD_PROVISION_TOKEN`), seals the
+minted token in `forjd_service_credentials`, and stores
+`service_token_secret_ref=sealed:<uuid>`.
+
+Ops may still bind a shared platform credential manually:
 
 ```shell
 python manage.py map_forjd_tenant <deml-account-uuid> <forjd-tenant-uuid> \
   --service-token-secret-ref env:FORJD_SERVICE_TOKEN
 ```
+
+Body/query `tenant_id` must equal the mapped tenant or fail closed. Set
+`FORJD_PROVISION_TOKEN` on both `forjd-backend` and `deml-backend`.
 
 ## DEML authentication and authorization
 
