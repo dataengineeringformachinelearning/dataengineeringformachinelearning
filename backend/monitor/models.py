@@ -380,6 +380,43 @@ class APIKey(models.Model):
     )
 
 
+# --- Third-party analytics integrations (control plane; sealed credentials) ---
+class AnalyticsIntegration(models.Model):
+  """Account-scoped analytics provider link (GA / Clarity / Cloudflare).
+
+  Credentials are sealed with the platform KEK envelope (see ``forjd.secrets``);
+  plaintext keys/tokens are never persisted or returned by the API. The retired
+  pre-FORJD ``analytics_integrations`` table is deliberately left untouched for
+  its rollback window (migration 0053); this model owns the replacement
+  ``analytics_provider_integrations`` table.
+  """
+
+  class Provider(models.TextChoices):
+    GOOGLE = "google", "Google Analytics"
+    MICROSOFT = "microsoft", "Microsoft Clarity"
+    CLOUDFLARE = "cloudflare", "Cloudflare Analytics"
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="analytics_integrations")
+  account_id = models.UUIDField(db_index=True)
+  provider = models.CharField(max_length=32, choices=Provider.choices)
+  credentials_ciphertext = models.TextField()
+  credentials_dek = models.TextField()
+  active = models.BooleanField(default=True)
+  last_sync = models.DateTimeField(null=True, blank=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "analytics_provider_integrations"
+    constraints = [
+      models.UniqueConstraint(fields=["account_id", "provider"], name="analytics_integration_uniq"),
+    ]
+
+  def __str__(self) -> str:
+    return f"{self.provider} integration for account={self.account_id}"
+
+
 class HeadlessRateLimitBucket(models.Model):
   """Replica-safe token bucket for DEML's headless FORJD control plane."""
 
@@ -467,6 +504,7 @@ def user_model_names() -> tuple[str, ...]:
       ForjdTenantMapping,
       ForjdTenantAssociation,
       APIKey,
+      AnalyticsIntegration,
       UserLifecycleJob,
     )
   )

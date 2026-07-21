@@ -341,6 +341,11 @@ FRONTEND_URL = get_str("FRONTEND_URL")
 BACKEND_URL = get_str("BACKEND_URL")
 MARKETING_URL: Final[str] = get_str("MARKETING_URL")
 
+# Google Analytics OAuth (analytics integrations; empty disables the connect flow)
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
+GOOGLE_OAUTH_REDIRECT_URI = os.getenv("GOOGLE_OAUTH_REDIRECT_URI", "")
+
 # Stripe Settings
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")

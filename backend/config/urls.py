@@ -48,6 +48,14 @@ from forjd.views import (
   vulnerabilities_list_proxy,
   vulnerability_detail_proxy,
 )
+from monitor.integrations import (
+  clarity_save,
+  cloudflare_save,
+  google_auth_url,
+  google_callback,
+  integration_delete,
+  integrations_list,
+)
 from monitor.views import cookie_consent, newsletter
 
 from .api import api
@@ -377,6 +385,37 @@ urlpatterns = [
     "api/v1/integrations/security-alert",
     integrations_security_alert_proxy,
     name="forjd-integrations-security-alert-adapter",
+  ),
+  # --- Analytics integrations (DEML-local sealed credentials; GA / Clarity / Cloudflare) ---
+  path(
+    "api/v1/system-status/integrations",
+    integrations_list,
+    name="analytics-integrations-list",
+  ),
+  path(
+    "api/v1/system-status/integrations/google/auth-url",
+    google_auth_url,
+    name="analytics-integrations-google-auth-url",
+  ),
+  path(
+    "api/v1/system-status/integrations/google/callback",
+    google_callback,
+    name="analytics-integrations-google-callback",
+  ),
+  path(
+    "api/v1/system-status/integrations/clarity",
+    clarity_save,
+    name="analytics-integrations-clarity",
+  ),
+  path(
+    "api/v1/system-status/integrations/cloudflare",
+    cloudflare_save,
+    name="analytics-integrations-cloudflare",
+  ),
+  path(
+    "api/v1/system-status/integrations/<str:integration_id>",
+    integration_delete,
+    name="analytics-integrations-delete",
   ),
   re_path(
     r"^api/v1/(?P<capability>system-status|analytics|telemetry|ml|exports|integrations|model)(?:/.*)?$",
