@@ -6,7 +6,7 @@ while the BFF proxies tenant-scoped FORJD routes.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Final
 
 
 def _timestamp(value: Any) -> str:
@@ -15,6 +15,29 @@ def _timestamp(value: Any) -> str:
 
 def _label(value: Any, default: str) -> str:
   return str(value or default).replace("_", " ").replace("-", " ").title()
+
+
+# --- Status labels (FORJD lowercase enums → legacy Angular Title Case) ---
+# Angular pages, the sidebar, and the embed widget compare against the legacy
+# DEML labels ("Resolved", "Outage", "Degraded"), so map FORJD's enums here.
+_SERVICE_STATUS_LABELS: Final[dict[str, str]] = {
+  "operational": "Operational",
+  "degraded": "Degraded",
+  "partial_outage": "Degraded",
+  "major_outage": "Outage",
+  "outage": "Outage",
+  "down": "Outage",
+  "maintenance": "Maintenance",
+}
+
+
+def _service_status_label(value: Any) -> str:
+  key = str(value or "operational").strip().lower().replace(" ", "_").replace("-", "_")
+  return _SERVICE_STATUS_LABELS.get(key, _label(value, "Operational"))
+
+
+def _incident_status_label(value: Any) -> str:
+  return _label(value, "Investigating")
 
 
 def _as_list(value: Any) -> list[Any]:
@@ -181,7 +204,7 @@ def deml_status_services(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
         "url": str(row.get("description") or ""),
         "status_page_id": str(row.get("page_id") or ""),
         "created_at": updated.isoformat() if hasattr(updated, "isoformat") else str(updated or ""),
-        "status": str(row.get("status") or "operational"),
+        "status": _service_status_label(row.get("status")),
         "sla": None,
       }
     )
@@ -200,7 +223,7 @@ def deml_status_service(forjd_body: dict[str, Any]) -> dict[str, Any]:
       "url": "",
       "status_page_id": "",
       "created_at": "",
-      "status": "operational",
+      "status": "Operational",
     }
   )
 
@@ -220,7 +243,7 @@ def deml_status_incidents(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
         "id": str(row.get("id") or ""),
         "title": str(row.get("title") or ""),
         "message": str(row.get("body") or ""),
-        "status": str(row.get("status") or "investigating"),
+        "status": _incident_status_label(row.get("status")),
         "status_page_id": str(row.get("page_id") or ""),
         "created_at": started_s,
         "updated_at": started_s,
@@ -239,7 +262,7 @@ def deml_status_incident(forjd_body: dict[str, Any]) -> dict[str, Any]:
       "id": "",
       "title": "",
       "message": "",
-      "status": "investigating",
+      "status": "Investigating",
       "status_page_id": "",
       "created_at": "",
       "updated_at": "",

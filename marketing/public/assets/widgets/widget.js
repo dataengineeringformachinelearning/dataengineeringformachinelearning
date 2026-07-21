@@ -530,6 +530,36 @@
   const statusPageUrl = (frontendHost, slug) =>
     `${normalizeStatusAppHost(frontendHost)}/status/${slug}`;
 
+  // --- Status identifiers (self-heal legacy embeds after slug migrations) ---
+  const slugifyIdentifier = value =>
+    String(value || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  // --- Status semantics (FORJD lowercase enums and legacy Title Case) ---
+  const statusKey = value =>
+    String(value || '')
+      .toLowerCase()
+      .replace(/[\s-]+/g, '_');
+
+  const isResolvedIncident = incident => statusKey(incident && incident.status) === 'resolved';
+
+  const serviceStatusVariant = status => {
+    const key = statusKey(status);
+    if (key === 'outage' || key === 'major_outage' || key === 'down') return 'outage';
+    if (key === 'degraded' || key === 'partial_outage' || key === 'partial') return 'degraded';
+    if (key === 'maintenance') return 'maintenance';
+    return 'operational';
+  };
+
+  const incidentStatusLabel = status => {
+    const text = String(status || 'Investigating')
+      .replace(/[_-]+/g, ' ')
+      .trim();
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
+
   const resolveFrontendHost = ({ explicit, backendUrl, scriptOrigin }) => {
     if (explicit) {
       return normalizeStatusAppHost(explicit);
@@ -1186,7 +1216,7 @@
 
         // Fetch and cache status parameters defensively (5 minute TTL)
         const fetchStatus = async () => {
-          const cacheKey = `deml_status_cache_v2_${pageId}`;
+          const cacheKey = `deml_status_cache_v3_${pageId}`;
           try {
             const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
@@ -1201,67 +1231,110 @@
             }
           } catch {}
 
-          try {
-            let page = null;
-            const slugApiUrl = `${backendUrl}/api/v1/system-status/status_pages/slug/${pageId}`;
+          // Public slug lookup; a 404 returns null so fallbacks can run.
+          const fetchPageBySlug = async slugCandidate => {
             try {
-              const res = await fetchWithTimeout(slugApiUrl);
+              const res = await fetchWithTimeout(
+                `${backendUrl}/api/v1/system-status/status_pages/slug/${encodeURIComponent(slugCandidate)}`,
+              );
               if (res.ok) {
-                page = await res.json();
+                return await res.json();
               }
-            } catch (e) {
-              // Network error, ignore and try fallback
+            } catch {
+              // Network error — fall through to the next candidate / directory.
+            }
+            return null;
+          };
+
+          try {
+            // 1. Exact embed identifier, then normalized fallbacks. The host
+            //    slug self-heals embeds whose slug changed during migration
+            //    (e.g. data-page-id="joealongi" → published slug "joealongi-dev").
+            const hostSlug = slugifyIdentifier(window.location.hostname.replace(/^www\./, ''));
+            const candidates = [
+              ...new Set([pageId, slugifyIdentifier(pageId), hostSlug].filter(Boolean)),
+            ];
+            let page = null;
+            for (const candidate of candidates) {
+              page = await fetchPageBySlug(candidate);
+              if (page) break;
             }
 
             if (!page) {
-              // Fallback to fetching the list
+              // 2. Published directory fallback: match id/slug, then
+              //    normalized slug or title, then the embedding hostname.
               const listApiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
               const res = await fetchWithTimeout(listApiUrl);
-              if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data)) {
-                  page = data.find(p => p.id === pageId || p.slug === pageId);
-                }
+              if (!res.ok) {
+                throw new Error('Status directory unavailable');
+              }
+              const data = await res.json();
+              if (Array.isArray(data)) {
+                const wanted = slugifyIdentifier(pageId);
+                page =
+                  data.find(p => p.id === pageId || p.slug === pageId) ||
+                  data.find(
+                    p =>
+                      slugifyIdentifier(p.slug) === wanted || slugifyIdentifier(p.title) === wanted,
+                  ) ||
+                  data.find(
+                    p =>
+                      slugifyIdentifier(p.slug) === hostSlug ||
+                      slugifyIdentifier(p.title) === hostSlug,
+                  ) ||
+                  null;
               }
             }
 
             if (page) {
-              const href = statusPageUrl(frontendHost, page.slug);
+              const href = statusPageUrl(frontendHost, page.slug || pageId);
               widgetLink.href = href;
 
               let color = 'var(--color-success, var(--viking-green-500))';
               let textContent = 'All Systems Operational';
 
               try {
-                const [incidentsRes, servicesRes] = await Promise.all([
-                  fetchWithTimeout(
-                    `${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`,
-                  ),
-                  fetchWithTimeout(
-                    `${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`,
-                  ),
-                ]);
+                // The public slug payload embeds services/incidents; only call
+                // the per-page endpoints when the arrays are missing.
+                let incidents = Array.isArray(page.incidents) ? page.incidents : null;
+                let services = Array.isArray(page.services) ? page.services : null;
 
-                if (incidentsRes.ok && servicesRes.ok) {
-                  const incidents = await incidentsRes.json();
-                  const services = await servicesRes.json();
-
-                  if (Array.isArray(incidents) && Array.isArray(services)) {
-                    const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
-                    const outages = services.filter(s => s.status === 'Outage');
-                    const degraded = services.filter(s => s.status === 'Degraded');
-
-                    if (activeIncidents.length > 0) {
-                      color = 'var(--color-error, var(--viking-crimson-500))';
-                      textContent = `Incident: ${activeIncidents[0].status}`;
-                    } else if (outages.length > 0) {
-                      color = 'var(--color-error, var(--viking-crimson-500))';
-                      textContent = 'Service Outage';
-                    } else if (degraded.length > 0) {
-                      color = 'var(--color-warning, var(--viking-gold-500))';
-                      textContent = 'Degraded Performance';
-                    }
+                if (!incidents || !services) {
+                  const [incidentsRes, servicesRes] = await Promise.all([
+                    fetchWithTimeout(
+                      `${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`,
+                    ),
+                    fetchWithTimeout(
+                      `${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`,
+                    ),
+                  ]);
+                  if (!incidents && incidentsRes.ok) {
+                    const fetched = await incidentsRes.json();
+                    if (Array.isArray(fetched)) incidents = fetched;
                   }
+                  if (!services && servicesRes.ok) {
+                    const fetched = await servicesRes.json();
+                    if (Array.isArray(fetched)) services = fetched;
+                  }
+                }
+
+                const activeIncidents = (incidents || []).filter(inc => !isResolvedIncident(inc));
+                const outages = (services || []).filter(
+                  s => serviceStatusVariant(s.status) === 'outage',
+                );
+                const degraded = (services || []).filter(
+                  s => serviceStatusVariant(s.status) === 'degraded',
+                );
+
+                if (activeIncidents.length > 0) {
+                  color = 'var(--color-error, var(--viking-crimson-500))';
+                  textContent = `Incident: ${incidentStatusLabel(activeIncidents[0].status)}`;
+                } else if (outages.length > 0) {
+                  color = 'var(--color-error, var(--viking-crimson-500))';
+                  textContent = 'Service Outage';
+                } else if (degraded.length > 0) {
+                  color = 'var(--color-warning, var(--viking-gold-500))';
+                  textContent = 'Degraded Performance';
                 }
               } catch (err) {
                 console.warn('Failed to fetch incidents or services for widget', err);
@@ -1280,6 +1353,7 @@
                 );
               } catch {}
             } else {
+              // Published directory reachable but no page matches this embed.
               dot.style.backgroundColor = 'var(--color-error, var(--viking-crimson-500))';
               text.innerText = 'Status Page Not Found';
             }

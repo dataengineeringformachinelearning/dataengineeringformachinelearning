@@ -453,11 +453,160 @@ def test_public_status_page_reshapes_embedded_services_for_angular(
       "url": "Angular application",
       "status_page_id": "page-1",
       "created_at": "2026-07-19T00:00:00+00:00",
-      "status": "operational",
+      "status": "Operational",
       "sla": None,
     }
   ]
   assert payload["incidents"] == []
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient")
+def test_public_status_page_maps_forjd_status_enums_to_legacy_labels(
+  mock_client: MagicMock,
+  client: Client,
+) -> None:
+  """FORJD lowercase enums must surface as the legacy Angular/widget labels."""
+  mock_proxy = AsyncMock()
+  mock_proxy.return_value = ForjdResponse(
+    status=200,
+    body=json.dumps(
+      {
+        "ok": True,
+        "page": {
+          "id": "page-1",
+          "slug": "joealongi-dev",
+          "title": "joealongi.dev",
+          "is_published": True,
+          "services": [
+            {
+              "id": "svc-1",
+              "name": "Primary Site",
+              "status": "major_outage",
+              "description": "https://joealongi.dev",
+              "updated_at": "2026-07-19T00:00:00+00:00",
+            },
+            {
+              "id": "svc-2",
+              "name": "API Gateway",
+              "status": "partial_outage",
+              "description": "https://api.deml.app",
+              "updated_at": "2026-07-19T00:00:00+00:00",
+            },
+          ],
+          "incidents": [
+            {
+              "id": "inc-1",
+              "title": "Historic outage",
+              "status": "resolved",
+              "body": "Resolved after failover.",
+              "started_at": "2026-07-18T00:00:00+00:00",
+            },
+            {
+              "id": "inc-2",
+              "title": "Elevated latency",
+              "status": "investigating",
+              "body": "Looking into it.",
+              "started_at": "2026-07-19T00:00:00+00:00",
+            },
+          ],
+        },
+      }
+    ).encode(),
+    content_type="application/json",
+  )
+  mock_client.return_value.proxy = mock_proxy
+
+  with override_settings(FORJD_SERVICE_TOKEN="", FORJD_TENANT_ID=""):
+    response = client.get("/api/v1/system-status/status_pages/slug/joealongi-dev")
+
+  assert response.status_code == 200
+  payload = response.json()
+  assert [service["status"] for service in payload["services"]] == ["Outage", "Degraded"]
+  assert [incident["status"] for incident in payload["incidents"]] == [
+    "Resolved",
+    "Investigating",
+  ]
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient")
+def test_public_status_page_unknown_slug_returns_clean_404(
+  mock_client: MagicMock,
+  client: Client,
+) -> None:
+  """Unpublished or unknown slugs surface FORJD's 404 as a clean widget error."""
+  mock_proxy = AsyncMock()
+  mock_proxy.return_value = ForjdResponse(
+    status=404,
+    body=b'{"detail":"status page not found"}',
+    content_type="application/json",
+  )
+  mock_client.return_value.proxy = mock_proxy
+
+  with override_settings(FORJD_SERVICE_TOKEN="", FORJD_TENANT_ID=""):
+    response = client.get("/api/v1/system-status/status_pages/slug/joealongi")
+
+  assert response.status_code == 404
+  body = response.json()
+  assert body["detail"] == "status page not found"
+  assert body["code"] == "forjd_request_rejected"
+  assert body["source"] == "forjd"
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
+def test_status_incident_create_normalizes_legacy_title_case_status(
+  mock_proxy: AsyncMock,
+  client: Client,
+) -> None:
+  """Angular sends Title Case statuses; FORJD requires lowercase enums."""
+  user = User.objects.create_user(username="statusadmin")
+  user.profile.role = "Security Admin"
+  user.profile.tier = "Pro"
+  user.profile.subscription_active = True
+  user.profile.save(update_fields=["role", "tier", "subscription_active"])
+  tenant_id = uuid4()
+  ForjdTenantMapping.objects.create(
+    deml_account_id=user.profile.account_id,
+    forjd_tenant_id=tenant_id,
+  )
+  mock_proxy.return_value = ForjdResponse(
+    status=200,
+    body=json.dumps(
+      {
+        "ok": True,
+        "incident": {
+          "id": "inc-1",
+          "title": "Historic outage",
+          "status": "resolved",
+          "body": "Resolved after failover.",
+          "started_at": "2026-07-18T00:00:00+00:00",
+        },
+      }
+    ).encode(),
+    content_type="application/json",
+  )
+
+  with override_settings(
+    FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+    FORJD_TENANT_ID=str(tenant_id),
+  ):
+    response = client.post(
+      "/api/v1/system-status/status_pages/page-1/incidents",
+      data={
+        "title": "Historic outage",
+        "message": "Resolved after failover.",
+        "status": "Resolved",
+      },
+      content_type="application/json",
+      HTTP_AUTHORIZATION="Bearer mock-token-statusadmin-statusadmin@example.com",
+    )
+
+  assert response.status_code == 200
+  assert response.json()["status"] == "Resolved"
+  outbound = json.loads(mock_proxy.await_args.kwargs["body"])
+  assert outbound["status"] == "resolved"
 
 
 @pytest.mark.django_db

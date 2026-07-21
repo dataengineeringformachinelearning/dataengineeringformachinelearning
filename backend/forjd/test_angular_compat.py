@@ -17,7 +17,9 @@ from forjd.angular_compat import (
   deml_playbook_action_result,
   deml_playbook_runs,
   deml_sla_latest,
+  deml_status_incidents,
   deml_status_pages,
+  deml_status_services,
   deml_temporal_forecast,
   deml_threat_report,
   deml_vulnerabilities,
@@ -80,6 +82,42 @@ def test_deml_status_pages_sets_deml_user_id() -> None:
   )
   assert pages[0]["user_id"] == 7
   assert pages[0]["slug"] == "ops"
+
+
+def test_deml_status_services_maps_forjd_enums_to_legacy_labels() -> None:
+  rows = deml_status_services(
+    {
+      "services": [
+        {"id": "s1", "name": "Site", "status": "operational"},
+        {"id": "s2", "name": "API", "status": "degraded"},
+        {"id": "s3", "name": "Edge", "status": "partial_outage"},
+        {"id": "s4", "name": "Core", "status": "major_outage"},
+        {"id": "s5", "name": "Jobs", "status": "maintenance"},
+        {"id": "s6", "name": "Legacy", "status": "Outage"},
+      ]
+    }
+  )
+  assert [row["status"] for row in rows] == [
+    "Operational",
+    "Degraded",
+    "Degraded",
+    "Outage",
+    "Maintenance",
+    "Outage",
+  ]
+
+
+def test_deml_status_incidents_title_cases_statuses() -> None:
+  rows = deml_status_incidents(
+    {
+      "incidents": [
+        {"id": "i1", "title": "A", "status": "resolved", "started_at": "2026-07-18T00:00:00Z"},
+        {"id": "i2", "title": "B", "status": "investigating", "started_at": None},
+        {"id": "i3", "title": "C", "status": None, "started_at": None},
+      ]
+    }
+  )
+  assert [row["status"] for row in rows] == ["Resolved", "Investigating", "Investigating"]
 
 
 def test_empty_capability_get_envelopes() -> None:

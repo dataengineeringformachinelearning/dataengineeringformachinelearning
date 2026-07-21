@@ -1051,13 +1051,23 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
     credential = await _credential_for_request(request)
     client = _client_for_credential(credential)
     payload = _json_object(request)
-    # Angular sends {name, url}; map url → description.
+    # Angular sends {name, url}; map url → description. FORJD requires
+    # lowercase status enums, so normalize legacy Title Case inputs.
+    service_status = str(payload.get("status") or "operational").strip().lower().replace(" ", "_")
+    if service_status not in {
+      "operational",
+      "degraded",
+      "partial_outage",
+      "major_outage",
+      "maintenance",
+    }:
+      service_status = "operational"
     body = json.dumps(
       {
         "tenant_id": str(credential.tenant_id),
         "name": str(payload.get("name") or ""),
         "description": str(payload.get("url") or payload.get("description") or ""),
-        "status": str(payload.get("status") or "operational"),
+        "status": service_status,
       }
     ).encode()
     response = await client.proxy(
@@ -1149,8 +1159,8 @@ async def status_page_incidents_proxy(request: HttpRequest, page_id: str) -> Htt
     credential = await _credential_for_request(request)
     client = _client_for_credential(credential)
     payload = _json_object(request)
-    # Angular sends {title, message, status}.
-    status_val = str(payload.get("status") or "investigating")
+    # Angular sends {title, message, status} with legacy Title Case statuses.
+    status_val = str(payload.get("status") or "investigating").strip().lower()
     if status_val not in {"investigating", "identified", "monitoring", "resolved"}:
       status_val = "investigating"
     body = json.dumps(
