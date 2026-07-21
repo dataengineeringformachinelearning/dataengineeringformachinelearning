@@ -10,7 +10,7 @@ pinned: false
 license: apache-2.0
 ---
 
-# Data Engineering for AI Engineering and Cybersecurity: Developer Platform
+# Data Engineering for Machine Learning: Developer Platform
 
 [Acknowledgements & Technologies](#acknowledgements--technologies)
 
@@ -24,7 +24,7 @@ license: apache-2.0
 > on **Fly** (`deml-backend`), streaming engine on **FORJD** Fly + Supabase.
 > Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
-**Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
+**Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
 ---
 
@@ -132,7 +132,7 @@ The comprehensive technology acknowledgement and software inventory remain in
 ![GitHub Repo stars](https://img.shields.io/github/stars/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
 
 
-# Data Engineering for AI Engineering and Cybersecurity: The Book
+# Data Engineering for Machine Learning: The Book
 
 _Operational Intelligence for the New Digital Battlefield_
 
@@ -1240,7 +1240,7 @@ To fully weaponize this metadata, I engineered an Application-Level Zeek-equival
 
 As an application scales from a localized prototype into a globally distributed telemetry platform, the complexity of securing the perimeter increases exponentially. Security is not a state that can be permanently achieved; it is a continuous, dynamic process that requires meticulous orchestration between automated scanning tools and human engineering teams. When vulnerability scanners flag an exposed dependency or an anomalous network event is detected, relying on informal communication channels like Slack or unprioritized email threads is a recipe for disaster. To resolve security concerns efficiently and with mathematical precision, I must institutionalize my response mechanisms.
 
-To achieve this, I architected an integrated Kanban board workflow directly into my internal operational dashboards. This is not merely a generic task tracker; it is a specialized security operations center (SOC) interface. When my automated tools—such as Semgrep or Trivy—detect a critical vulnerability, they autonomously generate a ticket, append the relevant CVE data, map the blast radius within my architectural topology, and place the ticket into the "Triage" column. This ensures that my engineering team operates with immediate, contextualized situational awareness, triaging and deploying countermeasures before a theoretical vulnerability can be exploited in the wild.
+To achieve this, I architected an integrated Kanban board workflow directly into my internal operational dashboards. This is not merely a generic task tracker; it is a specialized security operations center (SOC) interface. Two streams feed it: FORJD's CVE/CPE enrichment pipeline autonomously generates tickets from technology discovered on verified sites—appending the relevant CVE data and placing each ticket into the "Triage" column—while supply-chain findings from CI gates (Semgrep, Trivy, Renovate) are triaged into the same board by threat-context review. This ensures that my engineering team operates with immediate, contextualized situational awareness, triaging and deploying countermeasures before a theoretical vulnerability can be exploited in the wild.
 
 However, a platform’s quality is not solely defined by the rigors of its backend security protocols. The human experience—the interface through which operators interact with the system—must reflect the same level of uncompromising excellence. An application that is secure but visually abrasive or confusing will ultimately erode user trust. Therefore, I heavily refined the User Interface (UI) to align with my philosophy of precision engineering.
 
@@ -3011,7 +3011,7 @@ Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/s
 
 ## Appendix N: Concept of Operations (Operator Quick Reference)
 
-**Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
+**Platform:** Data Engineering for Machine Learning (DEML)
 **Last aligned:** July 2026 (sealed FORJD projections; multi-runtime compute)
 **Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
 **Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
@@ -3317,7 +3317,7 @@ FORJD export storage is S3-compatible. **Pin image tags**, smoke-test presign af
 
 ## Appendix P: Platform Features
 
-The Data Engineering for AI Engineering and Cybersecurity (DEML) Platform provides a comprehensive ecosystem built for robust observability, AI intelligence, data engineering, and security.
+The Data Engineering for Machine Learning (DEML) Platform provides a comprehensive ecosystem built for robust observability, AI intelligence, data engineering, and security.
 
 ## Concept of Operations (CONOPS)
 
@@ -3656,7 +3656,7 @@ The former Railway data-plane services (relay, scheduler, probe, normalizer, ing
 
 ## Appendix U: DEML Platform Technology Stack
 
-**Data Engineering for AI Engineering and Cybersecurity (DEML)** is built on modern, battle-tested infrastructure. This document provides the technical details for platform contributors and operators.
+**Data Engineering for Machine Learning (DEML)** is built on modern, battle-tested infrastructure. This document provides the technical details for platform contributors and operators.
 
 ## Compute & Deployment
 
@@ -4923,7 +4923,7 @@ curl https://backend.deml.app/api/v1/integrations/tensorflow \
 > Production operations: [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md) and
 > [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md).
 
-**Abstract:** This paper specifies the architecture of the Data Engineering for AI Engineering and Cybersecurity (DEML) platform—a multi-tenant observability, AI intelligence, and threat-analytics system engineered for the new digital battlefield. The design unifies sealed high-throughput ingest through FORJD, AI/ML-forecasted service levels, automated STIX 2.1 indicator federation, model lifecycle management, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are durable and idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
+**Abstract:** This paper specifies the architecture of the Data Engineering for Machine Learning (DEML) platform—a multi-tenant observability, AI intelligence, and threat-analytics system engineered for the new digital battlefield. The design unifies sealed high-throughput ingest through FORJD, AI/ML-forecasted service levels, automated STIX 2.1 indicator federation, model lifecycle management, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are durable and idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
 
 **Published:** July 2026
 **Author:** Joe Alongi [(ORCID: 0009-0007-2401-2603)](https://orcid.org/0009-0007-2401-2603)
@@ -5000,7 +5000,7 @@ _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strate
 
 **Visibility** enables defenders to observe activity across network, application, and data layers and to reconstruct events over time. DEML forwards sealed telemetry to FORJD; FORJD owns processing, durable projections, and analytics retention. Edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments signals at the DEML perimeter before sealed forward. Django BFF adapters surface FORJD projections and analytics to Angular, while the public `platform-status` sentinel provides continuous operational witness. Immutable audit records support SIEM correlation. Threat findings and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the time-series depth required for campaign reconstruction.
 
-**Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and durable Postgres-backed schedule buckets provide a repeatable rhythm for model retraining, key-policy checks, retention, and dependency maintenance without restart-driven duplicates.
+**Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Supply-chain scanning (Semgrep, Trivy, Renovate) gates CI, while FORJD's CVE/CPE enrichment pipeline auto-populates the tenant vulnerability triage board from verified-site technology discovery; secrets are injected at runtime (Fly/GitHub secrets) with AES-256-GCM envelope encryption (per-credential DEKs sealed under a platform KEK) for stored service tokens. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and durable Postgres-backed schedule buckets provide a repeatable rhythm for model retraining, key-policy checks, retention, and dependency maintenance without restart-driven duplicates.
 
 **Survivability** allows essential services to persist during attack, compromise, and recovery. The sealed FORJD path decouples DEML control-plane transactions from data-plane processing: Angular seals envelopes, Django terminates Firebase Auth and forwards with `fjsvc_`, and FORJD materializes durable projections with replay/DLQ for poison or failed work. When FORJD is unreachable, identity and billing remain available while data-plane calls fail closed. UUID-scoped multi-tenancy, distroless least-privilege containers, and rolling Vercel/Fly deploys constrain lateral movement and support graceful degradation. Explicit degraded operational modes defined in Section 2.4 keep the control plane operable while operators restore FORJD.
 
@@ -5078,7 +5078,7 @@ Drawing architectural inspiration from established industry platforms—IBM X-Fo
 
 Using TAXII 2.1 and REST protocols, indicators route natively to federal databases such as CISA AIS (Automated Indicator Sharing) and industry hubs including MS-ISAC and IT-ISAC. A sandbox mode safely executes simulated transmissions locally unless live credentials are provisioned—protecting public feeds from indicator pollution.
 
-To support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 readiness, the platform implements end-to-end security architecture: TLS 1.3 in-transit and GCP KMS-backed envelope encryption at-rest with 30-day rotation; immutable audit logging streamed to centralized Google Cloud Logging buckets for SIEM ingestion; granular RBAC (Viewer, Operator, Security Admin); hardened Google distroless container images under least-privilege non-root policies; strict Content-Security-Policy (CSP) and HSTS headers; and continuous vulnerability guarding via Semgrep, Renovate, Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets, and Django Migration Linter.
+To support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 readiness, the platform implements end-to-end security architecture: TLS 1.3 in-transit and AES-256-GCM envelope encryption at-rest for stored credentials (per-credential DEKs sealed under a platform KEK); metadata-only audit events persisted in Postgres alongside structured stdout logging for SIEM ingestion; automated 30-day data retention sweeps on the FORJD data plane; granular RBAC (Viewer, Operator, Security Admin); hardened Google distroless container images under least-privilege non-root policies; strict Content-Security-Policy (CSP) and HSTS headers; and continuous vulnerability guarding via Semgrep, Renovate, Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets, and Django Migration Linter.
 
 ## 9. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
 

@@ -1,6 +1,6 @@
 # Contributing to Viking-UI
 
-Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is the open-source design system for [Data Engineering for AI Engineering and Cybersecurity (DEML)](https://dataengineeringformachinelearning.com) — Apache-2.0, framework-agnostic, and token-driven.
+Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is the open-source design system for [Data Engineering for Machine Learning (DEML)](https://dataengineeringformachinelearning.com) — Apache-2.0, framework-agnostic, and token-driven.
 
 **Live docs:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)
 

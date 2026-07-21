@@ -168,7 +168,7 @@ def send_alert_email(subject: str, message: str):
             <!-- Footer -->
             <div class="footer">
               <p>
-                &copy; 2026 Data Engineering for AI Engineering and Cybersecurity Platform.<br>
+                &copy; 2026 Data Engineering for Machine Learning Platform.<br>
                 Automated System Notification.
               </p>
               <p>

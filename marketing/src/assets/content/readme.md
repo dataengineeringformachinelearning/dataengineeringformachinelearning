@@ -10,7 +10,7 @@ pinned: false
 license: apache-2.0
 ---
 
-# Data Engineering for AI Engineering and Cybersecurity: Developer Platform
+# Data Engineering for Machine Learning: Developer Platform
 
 [Acknowledgements & Technologies](#acknowledgements--technologies)
 
@@ -24,7 +24,7 @@ license: apache-2.0
 > on **Fly** (`deml-backend`), streaming engine on **FORJD** Fly + Supabase.
 > Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
-**Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
+**Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
 ---
 

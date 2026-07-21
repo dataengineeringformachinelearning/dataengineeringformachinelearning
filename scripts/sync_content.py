@@ -116,9 +116,9 @@ def sync_readme():
 
     # Sync llms.txt for frontend and marketing (site-specific headers)
     marketing_llms_path = os.path.join(root_dir, "marketing", "public", "llms.txt")
-    frontend_llms = """# Data Engineering for AI Engineering and Cybersecurity (DEML APP)
+    frontend_llms = """# Data Engineering for Machine Learning (DEML APP)
 
-Developer Portal, API Gateway, and the Book on Data Engineering for AI Engineering and Cybersecurity by Joe Alongi.
+Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
 
 ## Homepage
 /
@@ -137,9 +137,9 @@ https://github.com/joealongi/dataengineeringformachinelearning
 - Backend API: https://backend.deml.app/api/v1/docs
 - Marketing site: https://dataengineeringformachinelearning.com
 """
-    marketing_llms = """# Data Engineering for AI Engineering and Cybersecurity
+    marketing_llms = """# Data Engineering for Machine Learning
 
-Developer Portal, API Gateway, and the Book on Data Engineering for AI Engineering and Cybersecurity by Joe Alongi.
+Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
 
 ## Homepage
 /

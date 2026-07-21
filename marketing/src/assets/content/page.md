@@ -1095,7 +1095,7 @@ To fully weaponize this metadata, I engineered an Application-Level Zeek-equival
 
 As an application scales from a localized prototype into a globally distributed telemetry platform, the complexity of securing the perimeter increases exponentially. Security is not a state that can be permanently achieved; it is a continuous, dynamic process that requires meticulous orchestration between automated scanning tools and human engineering teams. When vulnerability scanners flag an exposed dependency or an anomalous network event is detected, relying on informal communication channels like Slack or unprioritized email threads is a recipe for disaster. To resolve security concerns efficiently and with mathematical precision, I must institutionalize my response mechanisms.
 
-To achieve this, I architected an integrated Kanban board workflow directly into my internal operational dashboards. This is not merely a generic task tracker; it is a specialized security operations center (SOC) interface. When my automated tools—such as Semgrep or Trivy—detect a critical vulnerability, they autonomously generate a ticket, append the relevant CVE data, map the blast radius within my architectural topology, and place the ticket into the "Triage" column. This ensures that my engineering team operates with immediate, contextualized situational awareness, triaging and deploying countermeasures before a theoretical vulnerability can be exploited in the wild.
+To achieve this, I architected an integrated Kanban board workflow directly into my internal operational dashboards. This is not merely a generic task tracker; it is a specialized security operations center (SOC) interface. Two streams feed it: FORJD's CVE/CPE enrichment pipeline autonomously generates tickets from technology discovered on verified sites—appending the relevant CVE data and placing each ticket into the "Triage" column—while supply-chain findings from CI gates (Semgrep, Trivy, Renovate) are triaged into the same board by threat-context review. This ensures that my engineering team operates with immediate, contextualized situational awareness, triaging and deploying countermeasures before a theoretical vulnerability can be exploited in the wild.
 
 However, a platform’s quality is not solely defined by the rigors of its backend security protocols. The human experience—the interface through which operators interact with the system—must reflect the same level of uncompromising excellence. An application that is secure but visually abrasive or confusing will ultimately erode user trust. Therefore, I heavily refined the User Interface (UI) to align with my philosophy of precision engineering.
 
@@ -2866,7 +2866,7 @@ Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/s
 
 ## Appendix N: Concept of Operations (Operator Quick Reference)
 
-**Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
+**Platform:** Data Engineering for Machine Learning (DEML)
 **Last aligned:** July 2026 (sealed FORJD projections; multi-runtime compute)
 **Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
 **Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
@@ -3172,7 +3172,7 @@ FORJD export storage is S3-compatible. **Pin image tags**, smoke-test presign af
 
 ## Appendix P: Platform Features
 
-The Data Engineering for AI Engineering and Cybersecurity (DEML) Platform provides a comprehensive ecosystem built for robust observability, AI intelligence, data engineering, and security.
+The Data Engineering for Machine Learning (DEML) Platform provides a comprehensive ecosystem built for robust observability, AI intelligence, data engineering, and security.
 
 ## Concept of Operations (CONOPS)
 
@@ -3511,7 +3511,7 @@ The former Railway data-plane services (relay, scheduler, probe, normalizer, ing
 
 ## Appendix U: DEML Platform Technology Stack
 
-**Data Engineering for AI Engineering and Cybersecurity (DEML)** is built on modern, battle-tested infrastructure. This document provides the technical details for platform contributors and operators.
+**Data Engineering for Machine Learning (DEML)** is built on modern, battle-tested infrastructure. This document provides the technical details for platform contributors and operators.
 
 ## Compute & Deployment
 

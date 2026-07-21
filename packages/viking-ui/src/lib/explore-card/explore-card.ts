@@ -287,7 +287,7 @@ export class ExploreCardMetricItemComponent {
  * @example
  * ```html
  * <viking-explore-card
- *   title="Data Engineering for AI Engineering and Cybersecurity"
+ *   title="Data Engineering for Machine Learning"
  *   description="Real-time platform status for DEML services."
  *   href="/status/platform-status"
  *   [proVerified]="true"

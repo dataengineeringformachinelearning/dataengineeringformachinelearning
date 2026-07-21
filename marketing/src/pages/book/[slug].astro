@@ -16,7 +16,7 @@ export function getStaticPaths() {
 const { chapter, chapters } = Astro.props;
 const { MARKETING_URL } = siteEnv();
 const pageTitle = `${chapter.title} - The Book - DEML Platform`;
-const pageDescription = `Chapter from Data Engineering for AI Engineering and Cybersecurity: ${chapter.title}`;
+const pageDescription = `Chapter from Data Engineering for Machine Learning: ${chapter.title}`;
 const bookJsonLdPayload = bookJsonLd(
   pageTitle,
   pageDescription,
@@ -104,7 +104,7 @@ const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
                     <div class="book-cover-label">Interactive Guide</div>
                     <VikingIcon name="drakkar" size={72} color="accent" class="book-cover-logo" />
                     <h1 class="book-cover-title">
-                      Data Engineering<br />for AI Engineering and Cybersecurity
+                      Data Engineering<br />for Machine Learning
                     </h1>
                     <p class="book-cover-subtitle">Building High-Throughput Event Platforms</p>
                     <div class="book-cover-footer">

@@ -1859,7 +1859,7 @@ a.status-pill {
             <div class="footer-compliance-row">
               <div class="copyright-info">
                 <span class="copyright-text">
-                  Copyright \xA9 ${r} Data Engineering for AI Engineering and Cybersecurity by
+                  Copyright \xA9 ${r} Data Engineering for Machine Learning by
                   <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>.
                   All rights reserved.
                 </span>
@@ -2422,7 +2422,7 @@ viking-suite-command-palette {
     `}getDashboardHref(t){return this.getAttribute("dashboard-href")??`${t.app}/dashboard`}render(){let t=si(this),i=li(this),r=k(this,"authenticated"),a=this.renderNavLinks(t,i,r),n=mt(t,i),s=`${rt()}K`;this.shadow.innerHTML=`
       <header class="suite-header" data-menu-open="${String(this.menuOpen)}">
         <div class="suite-header__bar">
-          <a class="suite-header__brand" href="${o(n)}" aria-label="Data Engineering for AI Engineering and Cybersecurity home">
+          <a class="suite-header__brand" href="${o(n)}" aria-label="Data Engineering for Machine Learning home">
             <span class="suite-header__mark" aria-hidden="true">
               ${u("drakkar",28,"suite-header__brand-icon")}
             </span>

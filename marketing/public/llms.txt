@@ -1,6 +1,6 @@
-# Data Engineering for AI Engineering and Cybersecurity
+# Data Engineering for Machine Learning
 
-Developer Portal, API Gateway, and the Book on Data Engineering for AI Engineering and Cybersecurity by Joe Alongi.
+Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
 
 ## Homepage
 /
