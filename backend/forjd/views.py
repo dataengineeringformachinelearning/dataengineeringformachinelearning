@@ -1246,7 +1246,14 @@ async def analytics_tenants_proxy(request: HttpRequest) -> HttpResponse:
     credential = await _read_credential_or_none(request)
     if credential is None or not reads_from_forjd():
       return JsonResponse(
-        {"status": "success", "data": [], "source": "deml_forjd_fallback"}, status=200
+        {
+          "status": "success",
+          "data": [],
+          "source": "deml_forjd_fallback",
+          "degraded": True,
+          "code": "forjd_read_fallback",
+        },
+        status=200,
       )
     return JsonResponse(
       {

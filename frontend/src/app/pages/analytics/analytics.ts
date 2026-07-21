@@ -36,6 +36,7 @@ import {
   VikingChartPanel,
   VikingChartCardHeader,
   VikingChartEmptyState,
+  VikingCallout,
   VikingSectionTemplate,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { Subscription } from 'rxjs';
@@ -184,6 +185,7 @@ type BenchmarkRollup = {
     VikingChartPanel,
     VikingChartCardHeader,
     VikingChartEmptyState,
+    VikingCallout,
     VikingSectionTemplate,
   ],
   templateUrl: './analytics.html',
@@ -198,7 +200,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private liveUpdates = inject(LiveUpdatesService);
 
   public p99Latency = 0;
-  public uptimePercent = 0;
+  public uptimePercent: number | null = 0;
   public totalRequests = 0;
   public activeIncidents = 0;
   public widgetInteractions = 0;
@@ -206,6 +208,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public cookieConsents = 0;
   public activeProviders: string[] = [];
   public isLoading = true;
+  metricsDegraded = signal(false);
+  loadError = signal<string | null>(null);
 
   public apiUsageCurrent = 0;
   public apiUsageQuota = 60;
@@ -381,6 +385,17 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       next: response => {
         if (response.status === 'success' && response.data) {
           const { benchmarking, ces, user_metrics } = response.data;
+          const degraded =
+            response?.degraded === true ||
+            response?.code === 'forjd_read_fallback' ||
+            response?.code === 'forjd_degraded' ||
+            user_metrics?.data_available === false;
+          this.metricsDegraded.set(degraded);
+          this.loadError.set(
+            degraded
+              ? 'Analytics is running in fallback mode. Live FORJD rollups are unavailable.'
+              : null,
+          );
 
           if (user_metrics?.available_sites) {
             this.availableSites = user_metrics.available_sites;
@@ -390,36 +405,40 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ];
           }
 
-          this.cesLevel = ces?.level || 0;
-          this.threatLevel = ces?.threat || 0;
-          this.slaLevel = ces?.sla || 0;
-          this.stabilityLevel = ces?.stability || 0;
-          this.temporalForecast =
-            response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0;
-          this.honeypotScore = response.data?.honeypot_score ?? 0;
-          this.latestBenchmarkScore = ces?.latest_benchmark_score ?? null;
-          this.latestBenchmark = ces?.latest_benchmark ?? null;
-          this.benchmarkSummary = benchmarking?.current_scope ?? null;
-          this.platformBenchmarkSummary = benchmarking?.platform_reference ?? null;
+          this.cesLevel = degraded ? 0 : ces?.level || 0;
+          this.threatLevel = degraded ? 0 : ces?.threat || 0;
+          this.slaLevel = degraded ? 0 : ces?.sla || 0;
+          this.stabilityLevel = degraded ? 0 : ces?.stability || 0;
+          this.temporalForecast = degraded
+            ? 0
+            : (response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0);
+          this.honeypotScore = degraded ? 0 : (response.data?.honeypot_score ?? 0);
+          this.latestBenchmarkScore = degraded ? null : (ces?.latest_benchmark_score ?? null);
+          this.latestBenchmark = degraded ? null : (ces?.latest_benchmark ?? null);
+          this.benchmarkSummary = degraded ? null : (benchmarking?.current_scope ?? null);
+          this.platformBenchmarkSummary = degraded
+            ? null
+            : (benchmarking?.platform_reference ?? null);
 
-          this.p99Latency = user_metrics?.p99_latency_ms ?? 0;
-          this.uptimePercent = user_metrics?.uptime_percent ?? 0;
-          this.totalRequests = user_metrics?.total_requests_24h ?? 0;
-          this.activeIncidents = user_metrics?.active_incidents ?? 0;
+          this.p99Latency = degraded ? 0 : (user_metrics?.p99_latency_ms ?? 0);
+          this.uptimePercent = degraded ? null : (user_metrics?.uptime_percent ?? null);
+          this.totalRequests = degraded ? 0 : (user_metrics?.total_requests_24h ?? 0);
+          this.activeIncidents = degraded ? 0 : (user_metrics?.active_incidents ?? 0);
 
-          this.widgetInteractions = user_metrics?.widget_interactions || 0;
-          this.uniqueVisitors = user_metrics?.unique_visitors || 0;
-          this.cookieConsents =
-            (user_metrics?.cookie_consents?.analytical || 0) +
-            (user_metrics?.cookie_consents?.marketing || 0);
-          this.activeProviders = user_metrics?.active_providers || [];
+          this.widgetInteractions = degraded ? 0 : user_metrics?.widget_interactions || 0;
+          this.uniqueVisitors = degraded ? 0 : user_metrics?.unique_visitors || 0;
+          this.cookieConsents = degraded
+            ? 0
+            : (user_metrics?.cookie_consents?.analytical || 0) +
+              (user_metrics?.cookie_consents?.marketing || 0);
+          this.activeProviders = degraded ? [] : user_metrics?.active_providers || [];
 
-          if (user_metrics?.api_usage) {
+          if (!degraded && user_metrics?.api_usage) {
             this.apiUsageCurrent = user_metrics.api_usage.usage_current_minute || 0;
             this.apiUsageQuota = user_metrics.api_usage.quota_per_minute || 60;
           }
 
-          const timeSeries = user_metrics?.time_series || [];
+          const timeSeries = degraded ? [] : user_metrics?.time_series || [];
           this.latencyCategories.set(
             timeSeries.map((d: { label?: string; time?: string }) =>
               String(d.label ?? d.time ?? '').slice(-5),
@@ -522,6 +541,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       },
       error: err => {
         console.error('Failed to load analytics data', err);
+        this.metricsDegraded.set(true);
+        this.loadError.set('Unable to load analytics from FORJD.');
+        this.uptimePercent = null;
         this.isLoading = false;
         this.cdr.detectChanges();
       },

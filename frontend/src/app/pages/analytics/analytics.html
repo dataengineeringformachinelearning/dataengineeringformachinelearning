@@ -9,6 +9,10 @@
     backNavLabel="Return to dashboard performance view"
   />
 
+  @if (loadError()) {
+  <viking-callout tone="warning" heading="Analytics degraded"> {{ loadError() }} </viking-callout>
+  }
+
   <viking-section>
     <viking-section-template
       class="analytics-export-card"
@@ -354,7 +358,7 @@
         />
         <viking-metric-card
           label="Service uptime"
-          [value]="(uptimePercent | number:'1.2-2') + '%'"
+          [value]="uptimePercent == null ? '—' : (uptimePercent | number:'1.2-2') + '%'"
           sublabel="Availability across monitored services"
           icon="heart"
           tone="success"
@@ -634,7 +638,7 @@
           <viking-chart-card-header
             title="HTTP Status Distribution"
             [hasData]="hasStatusStackedData() || hasStatusData()"
-            [value]="uptimePercent + '%'"
+            [value]="uptimePercent == null ? '—' : uptimePercent + '%'"
             [trend]="statusTrend"
             emptyLabel="Awaiting signal"
           />

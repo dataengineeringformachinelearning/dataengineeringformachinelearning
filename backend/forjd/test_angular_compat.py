@@ -23,6 +23,7 @@ from forjd.angular_compat import (
   deml_temporal_forecast,
   deml_threat_report,
   deml_vulnerabilities,
+  empty_analytics_overview,
   empty_capability_envelope,
 )
 from forjd.client import ForjdError, ForjdResponse
@@ -62,6 +63,15 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
   assert body["data"]["user_metrics"]["uptime_series"][0]["uptime"] == 99.5
   assert body["data"]["user_metrics"]["security_alerts"][0]["count"] == 2
   assert body["data"]["user_metrics"]["threat_severity"][0]["count"] == 2
+
+
+def test_empty_analytics_overview_is_degraded_not_healthy() -> None:
+  body = empty_analytics_overview()
+  assert body["degraded"] is True
+  assert body["code"] == "forjd_read_fallback"
+  assert body["data"]["user_metrics"]["uptime_percent"] is None
+  assert body["data"]["user_metrics"]["data_available"] is False
+  assert body["data"]["ces"]["level"] == 0
 
 
 def test_deml_status_pages_sets_deml_user_id() -> None:

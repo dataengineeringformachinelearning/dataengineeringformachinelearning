@@ -83,6 +83,28 @@ export class Explore implements OnInit {
     if (active.length > 0) {
       return active[0].status;
     }
+    const services = this.servicesMap()[page.id] || [];
+    const normalized = (status?: string | null) =>
+      (status || 'operational').toLowerCase().replace(/[\s-]+/g, '_');
+    if (
+      services.some(service => {
+        const value = normalized(service.status);
+        return value === 'outage' || value === 'major_outage' || value === 'down';
+      })
+    ) {
+      return 'Outage';
+    }
+    if (
+      services.some(service => {
+        const value = normalized(service.status);
+        return value === 'degraded' || value === 'partial_outage' || value === 'partial';
+      })
+    ) {
+      return 'Degraded';
+    }
+    if (services.some(service => normalized(service.status) === 'maintenance')) {
+      return 'Maintenance';
+    }
     return 'operational';
   }
 
@@ -161,15 +183,8 @@ export class Explore implements OnInit {
     if (history.length > 0) {
       return toUptimeHistoryDataPoints(history);
     }
-
-    return Array.from({ length: 30 }, (_, index) => {
-      const date = new Date('2026-06-08T00:00:00Z');
-      date.setUTCDate(date.getUTCDate() + index);
-      return {
-        date: date.toISOString().slice(0, 10),
-        status: index === page.title.length % 23 ? 'partial' : 'up',
-      };
-    });
+    // Never invent uptime history — empty means "no projection yet".
+    return [];
   }
 
   constructor() {

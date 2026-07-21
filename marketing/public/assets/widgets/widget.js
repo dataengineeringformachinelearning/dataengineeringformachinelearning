@@ -1247,12 +1247,10 @@
           };
 
           try {
-            // 1. Exact embed identifier, then normalized fallbacks. The host
-            //    slug self-heals embeds whose slug changed during migration
-            //    (e.g. data-page-id="joealongi" → published slug "joealongi-dev").
-            const hostSlug = slugifyIdentifier(window.location.hostname.replace(/^www\./, ''));
+            // Exact embed identifier only — never bind another published page
+            // via hostname or title fuzzy match (cross-tenant / wrong-page risk).
             const candidates = [
-              ...new Set([pageId, slugifyIdentifier(pageId), hostSlug].filter(Boolean)),
+              ...new Set([pageId, slugifyIdentifier(pageId)].filter(Boolean)),
             ];
             let page = null;
             for (const candidate of candidates) {
@@ -1261,8 +1259,7 @@
             }
 
             if (!page) {
-              // 2. Published directory fallback: match id/slug, then
-              //    normalized slug or title, then the embedding hostname.
+              // Published directory: exact id/slug, then normalized slug only.
               const listApiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
               const res = await fetchWithTimeout(listApiUrl);
               if (!res.ok) {
@@ -1273,15 +1270,7 @@
                 const wanted = slugifyIdentifier(pageId);
                 page =
                   data.find(p => p.id === pageId || p.slug === pageId) ||
-                  data.find(
-                    p =>
-                      slugifyIdentifier(p.slug) === wanted || slugifyIdentifier(p.title) === wanted,
-                  ) ||
-                  data.find(
-                    p =>
-                      slugifyIdentifier(p.slug) === hostSlug ||
-                      slugifyIdentifier(p.title) === hostSlug,
-                  ) ||
+                  data.find(p => slugifyIdentifier(p.slug) === wanted) ||
                   null;
               }
             }

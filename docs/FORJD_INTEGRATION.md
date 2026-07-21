@@ -179,10 +179,9 @@ FORJD owns idempotent acknowledgement and durable webhook scheduling/attempt lim
 
 ## Continuous analytics and ML (FORJD-side)
 
-FORJD runs a supervised `analytics-rollup` worker (visible in `GET /ready`)
-that replaces the retired DEML-local aggregation loop. Every
-`ANALYTICS_ROLLUP_INTERVAL_SECONDS` (default 300) it finds tenants with fresh
-`stream_results`, upserts current + previous hour buckets into
+FORJD runs a supervised `analytics-rollup` worker (visible in `GET /ready`).
+Every `ANALYTICS_ROLLUP_INTERVAL_SECONDS` (default 300) it finds tenants with
+fresh `stream_results`, upserts current + previous hour buckets into
 `aggregated_analytics` (feeding `/api/v1/analytics/overview`, CES, and the
 temporal forecast), and refreshes tenant `classical_anomaly` `ml_scores`
 (feeding `/api/v1/ml/threat-intel/report`) at most once per
@@ -241,12 +240,11 @@ fallback. Tune with `DEML_LIVE_UPDATES_ENABLED`, `DEML_LIVE_POLL_SECONDS`, and
 
 Firebase is **Auth-only** at DEML (plus optional static Hosting for the
 marketing site). There are no Firebase Cloud Functions, no Firestore, no
-Firebase Realtime Database, and no Firebase Storage in the product path — the
-retired GCP logging sink and OpenTelemetry collector lanes were removed with
-the data-plane cutover. Serverless logic lives as Supabase Edge Functions in
-the FORJD repository (`supabase/functions/`, e.g. `peer-sessions`); results,
-reports, ML scores, and pgvector embeddings live in FORJD's Supabase Postgres
-and are consumed through FORJD HTTP APIs with tenant-bound `fjsvc_` tokens.
+Firebase Realtime Database, and no Firebase Storage in the product path.
+Serverless logic lives as Supabase Edge Functions in the FORJD repository
+(`supabase/functions/`, e.g. `peer-sessions`); results, reports, ML scores, and
+pgvector embeddings live in FORJD's Supabase Postgres and are consumed through
+FORJD HTTP APIs with tenant-bound `fjsvc_` tokens.
 
 ## Failure and cutover semantics
 
@@ -273,9 +271,9 @@ through the crypto-session API.
 The generated Angular FORJD client accepts an already sealed `SealedEvent` at
 `/api/v1/ingest`. Application code must obtain/register the FORJD crypto-session key,
 seal the event locally, and submit only the envelope plus allowlisted routing metadata.
-The legacy plaintext response-timing interceptor is disabled by default. If temporarily
-enabled for migration, its browser queue holds at most 100 events / 256 KiB, expires
-after 24 hours, and is purged when the feature is disabled. This legacy lane is not E2EE.
+Plaintext response-timing telemetry is disabled (`ENABLE_LEGACY_PLAINTEXT_TELEMETRY`
+defaults off) and must not be treated as E2EE. Production traffic uses sealed envelopes
+only.
 
 ## Report documents
 

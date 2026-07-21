@@ -14,8 +14,8 @@ Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
   Identity, profiles, roles, billing, consent, API credentials, issue reports,
   learning/library content, and account lifecycle remain local.
 - FORJD owns sealed intake, streaming, transformation, projections, analytics, ML,
-  threat processing, replay, and DLQ. The retired DEML-local OpenTelemetry /
-  ClickHouse / Redpanda plane must not return — see BOOK.md Chapter 34.
+  threat processing, replay, and DLQ. FORJD is the exclusive data plane; do not
+  introduce DEML-local stream brokers, OLAP warehouses, or parallel projection workers.
 - DEML calls FORJD with a tenant-bound opaque `fjsvc_` service token. It never calls
   an OAuth token endpoint, uses Supabase `service_role`, or forwards Firebase
   end-user tokens.
@@ -29,8 +29,10 @@ Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md),
 [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md).
 
-**Steady-state flags (`deml-backend`):** `FORJD_WRITE_MODE=forjd`,
-`FORJD_READ_MODE=forjd` (or `FORJD_CUTOVER_PHASE=2`).
+**Steady-state flags (`deml-backend`):** `FORJD_WRITE_MODE=forjd` and
+`FORJD_READ_MODE=forjd` are the production defaults (`FORJD_CUTOVER_PHASE=2`
+is an equivalent legacy alias). These flags must remain set in all production
+and staging deployments.
 
 ## Core Philosophy
 
@@ -52,14 +54,23 @@ Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 - **Future-Proof:** Plan for PQC and FORJD-backed ML. Use `state_dict` only
   (no pickle) if any local model artifacts remain.
 
-## Code Quality & Tooling
+## Quality gates
 
-- **Frontend:** Prettier + ESLint; `@axe-core/cli` via `scripts/run_axe.js`
-  (WCAG 2.1 AA); mobile-first `.page-inner-wrapper`; Viking-UI only
-  ([THEME.md](THEME.md), [.cursorrules](.cursorrules)); distroless Node containers.
-- **Backend (Python/Django):** Ruff; `uv` / `uvx pre-commit`; Postgres with UUID
-  PKs; AES-256-GCM + GCP KMS for secrets; no pickle for models.
-- **General:** `scripts/git_flow.py`, `scripts/sync_content.py`, Semgrep/Trivy in CI.
+| Layer | Command |
+|-------|---------|
+| Theme / a11y | `node scripts/enforce-theme.js` · `node scripts/run_axe.js` · `node scripts/check_mobile_first.js` |
+| Frontend | `cd frontend && npm run lint && npm test && npm run test:viking-ui` |
+| Backend | `cd backend && pytest` (touched modules) · Ruff via pre-commit |
+| Full | `uvx pre-commit run --all-files` · root `npm run quality` |
+| CI | `.github/workflows/quality-gates.yml`, `ci-tests.yml`, `e2e-smoke.yml` |
+
+- **Frontend:** Prettier + ESLint; WCAG 2.1 AA; Viking-UI only
+  ([THEME.md](THEME.md), [.cursorrules](.cursorrules)).
+- **Backend (Python/Django):** Ruff; `uv` / `uvx pre-commit`; Postgres UUID PKs;
+  AES-256-GCM + GCP KMS for secrets; no pickle for models.
+- **Security:** Semgrep/Trivy/gitleaks in pre-push; Firebase Auth at DEML edge;
+  sealed E2EE + tenant-bound `fjsvc_` to FORJD; Postgres headless rate limits.
+- Partner engine quality gates: see FORJD `AGENTS.md` (backend / engine / frontend CI).
 
 ## Architecture & Data Principles
 

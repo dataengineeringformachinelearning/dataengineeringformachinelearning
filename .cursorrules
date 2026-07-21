@@ -315,10 +315,13 @@ Build like reusable flight hardware — every line earns its mass:
 
 ## Platform invariants (from AGENTS.md — do not break)
 
-- FORJD is the universal secure streaming engine; DEML does not run a local stream plane
+- FORJD is the exclusive data plane; never introduce DEML-local brokers, OLAP warehouses, or parallel projection workers
 - DEML owns identity, Angular UI, billing, consent, and learning content only
+- Firebase is Auth-only at DEML — never Firestore/Storage/Functions as a data plane
+- Sealed E2EE envelopes + tenant-bound `fjsvc_` to FORJD; never forward Firebase/`deml_` tokens
 - UUID PKs everywhere; no pickle for ML models
 - Dynamic CORS via database registration
-- Run `uvx pre-commit run --all-files` before committing
+- Production flags: `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd`
+- Quality gates: see AGENTS.md → **Quality gates**; run `uvx pre-commit run --all-files` before committing
 
 When architectural UI patterns change, update **BOOK.md** first, then sync via `scripts/sync_content.py`.

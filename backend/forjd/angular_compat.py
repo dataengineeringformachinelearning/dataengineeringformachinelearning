@@ -106,11 +106,16 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
       },
       "user_metrics": {
         "p99_latency_ms": float(forjd_body.get("p99_latency_ms") or 0),
-        "uptime_percent": float(forjd_body.get("uptime_pct") or 0),
+        "uptime_percent": (
+          None
+          if forjd_body.get("uptime_pct") is None
+          else float(forjd_body.get("uptime_pct") or 0)
+        ),
         "total_requests_24h": int(forjd_body.get("total_requests") or 0),
         "active_incidents": int(forjd_body.get("active_incidents") or 0),
         "threats_detected_24h": int(forjd_body.get("threats_detected") or 0),
         "unique_visitors": int(forjd_body.get("unique_visitors") or 0),
+        "data_available": forjd_body.get("data_available") is not False,
         "available_sites": [
           str(site)
           for site in _as_list(forjd_body.get("available_sites"))
@@ -135,7 +140,8 @@ def empty_analytics_overview() -> dict[str, Any]:
       "threats_detected": 0,
       "unique_visitors": 0,
       "p99_latency_ms": 0,
-      "uptime_pct": 100.0,
+      "uptime_pct": None,
+      "data_available": False,
       "ces": {
         "ces_level": 0,
         "ces_threat": 0,
