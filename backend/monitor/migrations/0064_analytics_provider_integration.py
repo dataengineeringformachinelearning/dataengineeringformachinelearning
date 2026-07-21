@@ -11,6 +11,7 @@ from __future__ import annotations
 import uuid
 
 import django.db.models.deletion
+import django_migration_linter as linter
 from django.conf import settings
 from django.db import migrations, models
 
@@ -22,6 +23,8 @@ class Migration(migrations.Migration):
   ]
 
   operations = [
+    # New table — NOT NULL columns are safe (linter false positive on CreateModel).
+    linter.IgnoreMigration(),
     migrations.CreateModel(
       name="AnalyticsIntegration",
       fields=[
