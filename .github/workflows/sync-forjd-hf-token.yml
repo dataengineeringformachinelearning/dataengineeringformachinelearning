@@ -1,0 +1,25 @@
+# Ops utility: copy this repo's HF_TOKEN secret to the forjd-backend Fly app so
+# FORJD's scheduled ml-training worker can publish model artifacts to the Hub.
+# Manual dispatch only; requires FLY_FORJD_DEPLOY_TOKEN (scoped deploy token).
+name: Sync HF token to FORJD backend
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync-secret:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Set HF_TOKEN on forjd-backend
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_FORJD_DEPLOY_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          test -n "$HF_TOKEN" || { echo "HF_TOKEN secret is empty" >&2; exit 1; }
+          flyctl secrets set HF_TOKEN="$HF_TOKEN" -a forjd-backend
