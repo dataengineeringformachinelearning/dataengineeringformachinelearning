@@ -25,7 +25,10 @@ describe('auth-status document isolation', () => {
     expect(vercelSource).toContain('X-Content-Type-Options');
     expect(vercelSource).toContain('X-Frame-Options');
     expect(vercelSource).toContain('Strict-Transport-Security');
-    // Catch-all SPA source after the auth-status-specific rule.
-    expect(vercelSource).toMatch(/"source": "\/\(\.\*\)"/);
+    // Last matching header wins on Vercel — auth-status must follow catch-all.
+    const catchAll = vercelSource.lastIndexOf('"source": "/(.*)"');
+    const authStatus = vercelSource.lastIndexOf('"source": "/auth-status"');
+    expect(catchAll).toBeGreaterThan(-1);
+    expect(authStatus).toBeGreaterThan(catchAll);
   });
 });
