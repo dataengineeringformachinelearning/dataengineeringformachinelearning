@@ -11,6 +11,10 @@ from urllib.parse import quote, urlsplit
 from uuid import UUID, uuid4
 
 from asgiref.sync import sync_to_async
+from config.csrf_header_auth import (
+  authorization_header_required,
+  csrf_exempt_require_header_auth,
+)
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from pydantic import ValidationError
@@ -231,33 +235,8 @@ def _json_object(request: HttpRequest) -> dict[str, object]:
   return payload
 
 
-def _authorization_header_required(request: HttpRequest) -> JsonResponse | None:
-  """Keep CSRF-exempt control actions independent of cookie/session state."""
-  authorization = str(request.META.get("HTTP_AUTHORIZATION") or "").strip()
-  scheme, separator, credential = authorization.partition(" ")
-  credential = credential.strip()
-  authentication_type = str(getattr(request, "authentication_type", "") or "")
-  if authentication_type == "firebase" and separator and scheme.lower() == "bearer" and credential:
-    return None
-  if authentication_type == "api_key" and separator and credential:
-    valid_scheme = scheme.lower() == "apikey" or (
-      scheme.lower() == "bearer" and credential.startswith("deml_")
-    )
-    api_key = getattr(request, "deml_api_key", None)
-    if valid_scheme and api_key is not None and api_key.verify_key(credential):
-      return None
-  if authentication_type == "api_key":
-    explicit_api_key = str(request.META.get("HTTP_X_API_KEY") or "").strip()
-    api_key = getattr(request, "deml_api_key", None)
-    if explicit_api_key and api_key is not None and api_key.verify_key(explicit_api_key):
-      return None
-  return JsonResponse(
-    {
-      "detail": "Authorization header required",
-      "code": "authorization_header_required",
-    },
-    status=401,
-  )
+# Shared gate for CSRF-exempt SOAR controls (see config.csrf_header_auth).
+_authorization_header_required = authorization_header_required
 
 
 def _uuid_path(value: str, field_name: str) -> str:
@@ -1473,7 +1452,7 @@ async def playbook_runs_proxy(request: HttpRequest) -> HttpResponse:
   return JsonResponse(deml_playbook_runs(result), status=200, safe=False)
 
 
-@csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
+@csrf_exempt_require_header_auth
 @require_forjd_action("playbook.execute")
 async def playbook_action_ack_proxy(
   request: HttpRequest,
@@ -1482,8 +1461,6 @@ async def playbook_action_ack_proxy(
 ) -> HttpResponse:
   if request.method != "POST":
     return JsonResponse({"detail": "Method not allowed"}, status=405)
-  if auth_error := _authorization_header_required(request):
-    return auth_error
   if request.META.get("QUERY_STRING"):
     return JsonResponse({"detail": "Query parameters are not supported"}, status=400)
   try:
@@ -1509,7 +1486,7 @@ async def playbook_action_ack_proxy(
   return JsonResponse(deml_playbook_execution(result), status=200)
 
 
-@csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
+@csrf_exempt_require_header_auth
 @require_forjd_action("playbook.execute")
 async def playbook_action_retry_proxy(
   request: HttpRequest,
@@ -1518,8 +1495,6 @@ async def playbook_action_retry_proxy(
 ) -> HttpResponse:
   if request.method != "POST":
     return JsonResponse({"detail": "Method not allowed"}, status=405)
-  if auth_error := _authorization_header_required(request):
-    return auth_error
   if request.META.get("QUERY_STRING"):
     return JsonResponse({"detail": "Query parameters are not supported"}, status=400)
   try:

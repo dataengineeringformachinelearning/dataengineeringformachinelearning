@@ -69,3 +69,14 @@ Integration contract: [`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md).
 | Ingest / projections / ML   | BFF → FORJD                           | Owns storage + processing                      |
 | Learning content / progress | Local                                 | Optional future contract                       |
 | Tenant erase                | Calls FORJD erase then local teardown | `POST /api/v1/tenants/{id}/erase`              |
+| CSRF                        | Django CSRF + header auth for exempt  | Header credentials only                        |
+| XSS                         | Vercel/nginx CSP + Django CSP HTML    | API CSP + landing SPA CSP                      |
+
+## E2. CSRF / XSS smoke
+
+| Step | Assertion                                                                                                                       |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------- |
+| E2.1 | Playbook ack/retry without `Authorization` / `X-API-Key` returns `401 authorization_header_required` even with a session cookie |
+| E2.2 | Same routes succeed with Firebase Bearer or `deml_` API key under `Client(enforce_csrf_checks=True)`                            |
+| E2.3 | `https://deml.app` responses include `Content-Security-Policy` and `X-Content-Type-Options`                                     |
+| E2.4 | Django HTML responses include CSP from `config.csp_middleware`                                                                  |

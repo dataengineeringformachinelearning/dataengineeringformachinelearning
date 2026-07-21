@@ -37,6 +37,9 @@ npx vercel env add MARKETING_URL production --value 'https://dataengineeringform
 # Also set FIREBASE_* web config (see docs/VERCEL.md)
 
 npx vercel deploy --prod --yes
+
+# Confirm SPA XSS headers (site-wide CSP from vercel.json)
+curl -sI https://deml.app | grep -Ei 'content-security-policy|x-content-type-options'
 ```
 
 | Setting        | Value                              |
@@ -47,6 +50,8 @@ npx vercel deploy --prod --yes
 | Domain         | `deml.app` → Vercel project `deml` |
 
 **Never** set `BACKEND_URL` to `backend.forjd.co` or localhost.
+
+Browser CSRF/XSS model: [`SECURITY_BROWSER.md`](./SECURITY_BROWSER.md).
 
 ---
 

@@ -60,6 +60,18 @@ fly secrets set \
 
 Add Firebase Authorized Domains for `deml.app` and `*.vercel.app` if using previews.
 
+### SPA security headers (XSS)
+
+`frontend/vercel.json` applies **site-wide** CSP and browser hardening
+(`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, HSTS,
+`Permissions-Policy`) on all routes. `/auth-status` keeps a stricter CSP that
+limits `frame-ancestors` to DEML-owned surfaces for the cross-site auth bridge.
+
+CSRF for the product SPA is primarily **header auth** (Firebase Bearer via the
+credentials interceptor). Django `CsrfViewMiddleware` remains on for cookie-backed
+paths; SOAR controls use `csrf_exempt_require_header_auth` (see
+`docs/FORJD_INTEGRATION.md`).
+
 ## Deploy
 
 ```bash

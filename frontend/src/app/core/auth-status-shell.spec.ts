@@ -18,4 +18,14 @@ describe('auth-status document isolation', () => {
     expect(vercelSource).toContain('no-store, no-transform');
     expect(vercelSource).toContain('Content-Security-Policy');
   });
+
+  it('ships site-wide CSP and browser hardening headers on Vercel', () => {
+    expect(vercelSource).toContain("base-uri 'self'");
+    expect(vercelSource).toContain("object-src 'none'");
+    expect(vercelSource).toContain('X-Content-Type-Options');
+    expect(vercelSource).toContain('X-Frame-Options');
+    expect(vercelSource).toContain('Strict-Transport-Security');
+    // Catch-all SPA source after the auth-status-specific rule.
+    expect(vercelSource).toMatch(/"source": "\/\(\.\*\)"/);
+  });
 });

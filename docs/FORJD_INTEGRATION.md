@@ -17,11 +17,25 @@ Firebase or DEML API-key credentials, never uses Supabase `service_role`, never 
 to FORJD Postgres or Dragonfly, and never places plaintext lesson content, answers,
 personal information, scores, learner IDs, or course IDs in ingest metadata.
 
-The SOAR action acknowledgement and explicit retry routes are stricter: because they
-are CSRF-exempt control operations, they require a verified non-cookie credential and
-never accept cookie/session authentication. A DEML API key remains usable through
-`X-API-Key: deml_…`, `Authorization: ApiKey deml_…`, or
+The SOAR action acknowledgement and explicit retry routes are stricter: they use
+`csrf_exempt_require_header_auth` (`backend/config/csrf_header_auth.py`) so they
+remain CSRF-exempt for headless clients while requiring a verified non-cookie
+credential and never accepting cookie/session authentication. A DEML API key remains
+usable through `X-API-Key: deml_…`, `Authorization: ApiKey deml_…`, or
 `Authorization: Bearer deml_…`.
+
+### CSRF vs XSS at the DEML boundary
+
+| Surface                            | CSRF                                                                            | XSS                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Django session / form paths        | `CsrfViewMiddleware` + `CSRF_TRUSTED_ORIGINS`                                   | CSP middleware on HTML, nosniff, frame options                                                |
+| SPA → Django BFF                   | Firebase Bearer (or `deml_` API key); not cookie-only writes for FORJD adapters | Site-wide CSP + hardening headers on Vercel (`frontend/vercel.json`), nginx, Firebase Hosting |
+| SOAR ack/retry + headless controls | CSRF-exempt **only** with `Authorization` / `X-API-Key` gate                    | Same as SPA/BFF; responses are JSON                                                           |
+| FORJD upstream                     | N/A at browser (BFF holds `fjsvc_`)                                             | FORJD API CSP is independent                                                                  |
+
+Rule: new `@csrf_exempt` write views that can mutate tenant state must compose
+`csrf_exempt_require_header_auth` (or call `authorization_header_required`) and must
+not grant authority from a session cookie alone.
 
 Run reads preserve FORJD's immutable, allowlisted configuration for
 control-plane actions (`email_alert`, `block_ip`, and `revoke_api_key`) so an
