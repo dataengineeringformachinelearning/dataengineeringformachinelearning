@@ -70,8 +70,7 @@ export const ROUTE_PAGE_META: Record<string, PageMeta> = {
   },
   vulnerabilities: {
     title: 'Threat Matrix & Vulnerability Center - DEML APP',
-    description:
-      'Unified triage for Semgrep, Trivy, and behavioral threat findings across your estate.',
+    description: 'Unified triage for CVE and behavioral threat findings across your estate.',
     robots: NOINDEX,
     ogType: 'website',
   },
