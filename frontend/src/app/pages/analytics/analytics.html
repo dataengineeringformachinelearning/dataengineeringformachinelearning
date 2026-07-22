@@ -88,7 +88,7 @@
                 <th scope="col">Size</th>
                 <th scope="col">Created</th>
                 <th scope="col">
-                  <span class="sr-only">Download</span>
+                  <span class="sr-only">Actions</span>
                 </th>
               </tr>
             </thead>
@@ -104,16 +104,30 @@
                 <td>{{ job.created_at | date: 'short' }}</td>
                 <td>
                   @let action = getExportActionPresentation(job);
-                  <viking-button
-                    [variant]="action.variant"
-                    type="button"
-                    [compact]="true"
-                    [loading]="action.loading"
-                    [disabled]="action.disabled"
-                    (pressed)="downloadExport(job.id)"
-                  >
-                    {{ action.label }}
-                  </viking-button>
+                  <div class="viking-cluster">
+                    <viking-button
+                      [variant]="action.variant"
+                      type="button"
+                      [square]="true"
+                      [compact]="true"
+                      icon="download"
+                      [label]="action.label"
+                      [loading]="action.loading"
+                      [disabled]="action.disabled"
+                      (pressed)="downloadExport(job.id)"
+                    />
+                    <viking-button
+                      variant="ghost"
+                      type="button"
+                      [square]="true"
+                      [compact]="true"
+                      icon="trash"
+                      label="Delete export"
+                      [loading]="exportDeletingId === job.id"
+                      [disabled]="exportDeletingId === job.id"
+                      (pressed)="deleteExport(job.id)"
+                    />
+                  </div>
                 </td>
               </tr>
               }

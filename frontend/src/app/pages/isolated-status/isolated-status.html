@@ -93,7 +93,7 @@
               <viking-metric-card
                 icon="clock"
                 label="P99 Latency"
-                [value]="(p99LatencyMap()[page.id] ?? 0) + 'ms'"
+                [value]="formatLatencyMs(p99LatencyMap()[page.id])"
                 sublabel="Last 24 hours"
                 tone="info"
               />
@@ -106,14 +106,14 @@
               <viking-metric-card
                 icon="server"
                 label="Cumulative SLA"
-                [value]="(((page.cumulative_sla ?? 0) | number:'1.2-2') ?? '0.00') + '%'"
+                [value]="formatUptimePct(page.cumulative_sla ?? page.overall_uptime)"
                 sublabel="Based on real telemetry"
                 tone="success"
               />
               <viking-metric-card
                 icon="trending-up"
                 label="Predicted SLA"
-                [value]="(((mlService.latestStats()[page.id] ?? 0) | number:'1.2-2') ?? '0.00') + '%'"
+                [value]="formatUptimePct(mlService.latestStats()[page.id])"
                 sublabel="30-day forecast via ML"
               />
             </div>
@@ -191,23 +191,27 @@
                   <viking-metric-card
                     icon="clock"
                     label="Response Time"
-                    [value]="(p99LatencyMap()[page.id] ?? 0) + 'ms'"
+                    [value]="formatLatencyMs(service.p99_latency ?? p99LatencyMap()[page.id])"
                     sublabel="Latest observation"
                     tone="info"
                   />
                   <viking-metric-card
                     icon="shield-check"
                     label="Uptime"
-                    [value]="((serviceUptime(page, service) | number:'1.2-2') ?? '100.00') + '%'"
+                    [value]="formatUptimePct(serviceUptime(page, service))"
                     sublabel="30-day SLA"
                     tone="success"
                   />
                 </div>
 
                 <viking-uptime-history
-                  [segments]="page.uptime_history || []"
+                  [data]="serviceHistory(page, service)"
                   [percentage]="serviceUptime(page, service)"
-                  [statusSummary]="((serviceUptime(page, service) | number:'1.2-2') ?? '100.00') + '% SLA'"
+                  [statusSummary]="
+                    serviceUptime(page, service) === null
+                      ? 'Awaiting probe history'
+                      : '30-day SLA'
+                  "
                   label="Uptime"
                 />
               </article>
@@ -219,9 +223,15 @@
           <section class="viking-status-section-block" aria-labelledby="uptime-heading">
             <h3 class="viking-status-section-heading" id="uptime-heading">Platform Uptime</h3>
             <viking-uptime-history
-              [segments]="page.uptime_history || []"
-              [percentage]="page.overall_uptime ?? page.cumulative_sla ?? 0"
-              [statusSummary]="globalPageStatus() === 'Operational' ? 'No current issues' : globalPageStatus()"
+              [data]="pageHistory(page)"
+              [percentage]="page.overall_uptime ?? page.cumulative_sla ?? null"
+              [statusSummary]="
+                (page.overall_uptime ?? page.cumulative_sla) == null
+                  ? 'Awaiting probe history'
+                  : globalPageStatus() === 'Operational'
+                    ? 'No current issues'
+                    : globalPageStatus()
+              "
               label="30-day uptime"
             />
           </section>

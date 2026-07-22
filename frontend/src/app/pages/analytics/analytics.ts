@@ -4,11 +4,9 @@ import {
   effect,
   signal,
   computed,
-  afterNextRender,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   PLATFORM_ID,
-  OnInit,
   OnDestroy,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -18,6 +16,7 @@ import {
   VikingChart,
   VikingBadge,
   VikingButton,
+  VikingCallout,
   VikingChartSeries,
   VikingField,
   VikingFormGrid,
@@ -36,11 +35,11 @@ import {
   VikingChartPanel,
   VikingChartCardHeader,
   VikingChartEmptyState,
-  VikingCallout,
   VikingSectionTemplate,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
+import { AuthService } from '../../services/auth.service';
 import { LiveUpdatesService } from '../../services/live-updates.service';
 import {
   UnifiedSelect,
@@ -167,6 +166,7 @@ type BenchmarkRollup = {
     VikingChart,
     VikingBadge,
     VikingButton,
+    VikingCallout,
     VikingField,
     VikingFormGrid,
     VikingFormSection,
@@ -185,19 +185,20 @@ type BenchmarkRollup = {
     VikingChartPanel,
     VikingChartCardHeader,
     VikingChartEmptyState,
-    VikingCallout,
     VikingSectionTemplate,
   ],
   templateUrl: './analytics.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnalyticsComponent implements OnInit, OnDestroy {
+export class AnalyticsComponent implements OnDestroy {
   public readonly getExportActionPresentation = getExportActionPresentation;
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private liveUpdates = inject(LiveUpdatesService);
+  private analyticsBootstrapped = false;
 
   public p99Latency = 0;
   public uptimePercent: number | null = 0;
@@ -301,6 +302,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public exportDays = 7;
   public exportBusy = false;
   public exportMessage = '';
+  public exportDeletingId: string | null = null;
   public exportsList: ExportJobRow[] = [];
   private exportIdempotencyKey: string | null = null;
   private exportRequestFingerprint = '';
@@ -337,8 +339,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       this.updateMapTheme();
     });
 
-    afterNextRender(() => {
-      // Data is loaded in ngOnInit to prevent duplicate requests
+    // Wait for Firebase session restore so overview/export GETs include Bearer auth.
+    effect(() => {
+      if (!this.isBrowser || this.analyticsBootstrapped || !this.authService.isInitialized()) {
+        return;
+      }
+      this.analyticsBootstrapped = true;
+      this.loadTenants();
+      this.loadExports();
+      document.addEventListener('visibilitychange', this.onVisibilityChange);
+      this.startAnalyticsPolling();
+      this.liveSub = this.liveUpdates.updates$.subscribe(evt => {
+        if (evt.type === 'projections') this.scheduleLiveRefresh();
+      });
+      this.liveUpdates.start();
     });
   }
 
@@ -369,6 +383,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private loadAnalyticsData() {
     this.isLoading = true;
+    this.loadError.set(null);
     let url = `${environment.backendUrl}/api/v1/analytics/overview`;
     const params = [];
     if (this.selectedTenantId) {
@@ -405,10 +420,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ];
           }
 
-          this.cesLevel = degraded ? 0 : ces?.level || 0;
-          this.threatLevel = degraded ? 0 : ces?.threat || 0;
-          this.slaLevel = degraded ? 0 : ces?.sla || 0;
-          this.stabilityLevel = degraded ? 0 : ces?.stability || 0;
+          this.cesLevel = degraded ? 0 : (ces?.level ?? 0);
+          this.threatLevel = degraded ? 0 : (ces?.threat ?? 0);
+          this.slaLevel = degraded ? 0 : (ces?.sla ?? 0);
+          this.stabilityLevel = degraded ? 0 : (ces?.stability ?? 0);
           this.temporalForecast = degraded
             ? 0
             : (response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0);
@@ -472,7 +487,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             this.initMap();
           }
 
-          const reqFreq = user_metrics?.request_frequency || [];
+          // Prefer dedicated request_frequency; fall back to time_series.requests.
+          const reqFreq =
+            user_metrics?.request_frequency?.length > 0
+              ? user_metrics.request_frequency
+              : timeSeries;
           this.frequencyCategories.set(
             reqFreq.map((d: { label?: string; time?: string }) =>
               String(d.label ?? d.time ?? '').slice(-5),
@@ -535,17 +554,31 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
               'warning',
             ),
           );
+        } else {
+          this.metricsDegraded.set(true);
+          this.loadError.set('Analytics overview returned an unexpected response.');
         }
         this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
-      error: err => {
+      error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
         console.error('Failed to load analytics data', err);
         this.metricsDegraded.set(true);
-        this.loadError.set('Unable to load analytics from FORJD.');
         this.uptimePercent = null;
+        const code = err?.error?.code;
+        const detail = err?.error?.detail;
+        if (err?.status === 503 || code === 'forjd_degraded') {
+          this.loadError.set(
+            detail ||
+              'FORJD analytics is unavailable for this account. Check tenant mapping and try again.',
+          );
+        } else if (err?.status === 401 || err?.status === 403) {
+          this.loadError.set(detail || 'Sign in again to load analytics.');
+        } else {
+          this.loadError.set(detail || 'Unable to load analytics from FORJD.');
+        }
         this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
     });
   }
@@ -571,20 +604,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.loadAnalyticsData();
       },
     });
-  }
-
-  ngOnInit() {
-    if (this.isBrowser) {
-      this.loadTenants();
-      this.loadExports();
-      document.addEventListener('visibilitychange', this.onVisibilityChange);
-      // 60s polling stays as fallback; the live SSE lane drives delta refreshes.
-      this.startAnalyticsPolling();
-      this.liveSub = this.liveUpdates.updates$.subscribe(evt => {
-        if (evt.type === 'projections') this.scheduleLiveRefresh();
-      });
-      this.liveUpdates.start();
-    }
   }
 
   ngOnDestroy() {
@@ -701,6 +720,29 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         },
       });
+  }
+
+  // --- Export deletion ---
+  public deleteExport(jobId: string): void {
+    if (!jobId || this.exportDeletingId) {
+      return;
+    }
+    this.exportDeletingId = jobId;
+    this.exportMessage = '';
+    this.http.delete<{ ok?: boolean }>(API_ENDPOINTS.EXPORTS.DETAIL(jobId)).subscribe({
+      next: () => {
+        this.exportsList = this.exportsList.filter(job => job.id !== jobId);
+        this.exportDeletingId = null;
+        this.exportMessage = 'Export deleted';
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.exportDeletingId = null;
+        const detail = err?.error?.detail || err?.error?.message || 'Delete unavailable';
+        this.exportMessage = String(detail);
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   private startAnalyticsPolling(): void {

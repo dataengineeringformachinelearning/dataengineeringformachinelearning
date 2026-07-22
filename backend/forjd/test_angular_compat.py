@@ -60,9 +60,13 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
   assert body["data"]["user_metrics"]["total_requests_24h"] == 10
   assert body["data"]["user_metrics"]["unique_visitors"] == 4
   assert body["data"]["user_metrics"]["time_series"][0]["latency"] == 42.0
+  assert body["data"]["user_metrics"]["request_frequency"][0]["requests"] == 10
   assert body["data"]["user_metrics"]["uptime_series"][0]["uptime"] == 99.5
   assert body["data"]["user_metrics"]["security_alerts"][0]["count"] == 2
   assert body["data"]["user_metrics"]["threat_severity"][0]["count"] == 2
+  assert body["data"]["user_metrics"]["origin_distribution"] == []
+  assert body["data"]["user_metrics"]["http_statuses"] == []
+  assert body["data"]["user_metrics"]["endpoint_counts"] == []
 
 
 def test_empty_analytics_overview_is_degraded_not_healthy() -> None:
@@ -92,6 +96,58 @@ def test_deml_status_pages_sets_deml_user_id() -> None:
   )
   assert pages[0]["user_id"] == 7
   assert pages[0]["slug"] == "ops"
+
+
+def test_deml_status_page_passes_through_uptime_history() -> None:
+  from forjd.angular_compat import deml_status_page
+
+  page = deml_status_page(
+    {
+      "id": "p1",
+      "title": "Ops",
+      "slug": "ops",
+      "description": "",
+      "is_published": True,
+      "created_at": "2026-07-18T00:00:00Z",
+      "overall_uptime": 99.5,
+      "cumulative_sla": 99.5,
+      "p99_latency": 12.5,
+      "total_requests": 42,
+      "uptime_history": [
+        {"date": "2026-07-18", "status": "up", "uptime": 100},
+        {"date": "2026-07-19", "status": "no_data", "uptime": None},
+      ],
+    },
+    deml_user_id=None,
+  )
+  assert page["overall_uptime"] == 99.5
+  assert page["p99_latency"] == 12.5
+  assert page["total_requests"] == 42
+  assert page["uptime_history"] == [
+    {"date": "2026-07-18", "status": "up", "uptime": 100.0},
+    {"date": "2026-07-19", "status": "no_data", "uptime": None},
+  ]
+
+
+def test_deml_status_services_passes_through_sla_and_history() -> None:
+  rows = deml_status_services(
+    {
+      "services": [
+        {
+          "id": "s1",
+          "name": "Site",
+          "status": "operational",
+          "description": "https://example.com",
+          "sla": 99.9,
+          "p99_latency": 14,
+          "uptime_history": [{"date": "2026-07-18", "status": "up", "uptime": 100}],
+        }
+      ]
+    }
+  )
+  assert rows[0]["sla"] == 99.9
+  assert rows[0]["p99_latency"] == 14.0
+  assert rows[0]["uptime_history"][0]["status"] == "up"
 
 
 def test_deml_status_services_maps_forjd_enums_to_legacy_labels() -> None:

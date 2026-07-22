@@ -64,10 +64,12 @@ def _series_points(rows: list[Any], *, value_key: str, out_key: str) -> list[dic
 def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
   """Shape FORJD ``/api/v1/analytics/overview`` into the Angular CES envelope."""
   ces_raw = forjd_body.get("ces") if isinstance(forjd_body.get("ces"), dict) else {}
-  time_series = _series_points(
-    _as_list(forjd_body.get("time_series")), value_key="latency", out_key="latency"
-  )
-  for idx, row in enumerate(_as_list(forjd_body.get("time_series"))):
+  raw_time_series = _as_list(forjd_body.get("time_series"))
+  time_series = _series_points(raw_time_series, value_key="latency", out_key="latency")
+  # Angular Request Frequency chart still reads ``request_frequency``; FORJD
+  # only emits requests on ``time_series`` — mirror them for the product UI.
+  request_frequency = _series_points(raw_time_series, value_key="requests", out_key="requests")
+  for idx, row in enumerate(raw_time_series):
     if isinstance(row, dict) and idx < len(time_series):
       time_series[idx]["requests"] = int(row.get("requests") or 0)
 
@@ -107,9 +109,7 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
       "user_metrics": {
         "p99_latency_ms": float(forjd_body.get("p99_latency_ms") or 0),
         "uptime_percent": (
-          None
-          if forjd_body.get("uptime_pct") is None
-          else float(forjd_body.get("uptime_pct") or 0)
+          None if forjd_body.get("uptime_pct") is None else float(forjd_body.get("uptime_pct") or 0)
         ),
         "total_requests_24h": int(forjd_body.get("total_requests") or 0),
         "active_incidents": int(forjd_body.get("active_incidents") or 0),
@@ -122,9 +122,14 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
           if site is not None and str(site).strip()
         ],
         "time_series": time_series,
+        "request_frequency": request_frequency,
         "uptime_series": uptime_series,
         "threat_severity": threat_severity,
         "security_alerts": security_alerts,
+        # Geo / HTTP / per-endpoint breakdowns are not in FORJD overview yet.
+        "origin_distribution": [],
+        "http_statuses": [],
+        "endpoint_counts": [],
       },
     },
     "source": "forjd",
@@ -162,6 +167,31 @@ def empty_analytics_overview() -> dict[str, Any]:
 
 
 # --- Status pages list (MonitorService expects a JSON array) ---
+def _optional_number(value: Any) -> float | None:
+  if value is None or value == "":
+    return None
+  try:
+    return float(value)
+  except (TypeError, ValueError):
+    return None
+
+
+def _uptime_history_points(value: Any) -> list[dict[str, Any]]:
+  if not isinstance(value, list):
+    return []
+  out: list[dict[str, Any]] = []
+  for row in value:
+    if not isinstance(row, dict):
+      continue
+    date = str(row.get("date") or "").strip()
+    status = str(row.get("status") or "no_data").strip() or "no_data"
+    if not date:
+      continue
+    uptime = _optional_number(row.get("uptime"))
+    out.append({"date": date, "status": status, "uptime": uptime})
+  return out
+
+
 def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[str, Any]:
   created = page.get("created_at")
   return {
@@ -172,12 +202,18 @@ def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[
     "is_published": bool(page.get("is_published")),
     "created_at": created.isoformat() if hasattr(created, "isoformat") else str(created or ""),
     "user_id": deml_user_id,
-    "overall_uptime": None,
-    "cumulative_sla": None,
-    "uptime_history": [],
-    "p99_latency": None,
-    "total_requests": None,
-    "threats_detected_24h": None,
+    "overall_uptime": _optional_number(page.get("overall_uptime")),
+    "cumulative_sla": _optional_number(page.get("cumulative_sla")),
+    "uptime_history": _uptime_history_points(page.get("uptime_history")),
+    "p99_latency": _optional_number(page.get("p99_latency")),
+    "total_requests": (
+      int(page["total_requests"]) if isinstance(page.get("total_requests"), int | float) else None
+    ),
+    "threats_detected_24h": (
+      int(page["threats_detected_24h"])
+      if isinstance(page.get("threats_detected_24h"), int | float)
+      else None
+    ),
   }
 
 
@@ -207,11 +243,13 @@ def deml_status_services(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
       {
         "id": str(row.get("id") or ""),
         "name": str(row.get("name") or ""),
-        "url": str(row.get("description") or ""),
-        "status_page_id": str(row.get("page_id") or ""),
+        "url": str(row.get("description") or row.get("url") or ""),
+        "status_page_id": str(row.get("page_id") or row.get("status_page_id") or ""),
         "created_at": updated.isoformat() if hasattr(updated, "isoformat") else str(updated or ""),
         "status": _service_status_label(row.get("status")),
-        "sla": None,
+        "sla": _optional_number(row.get("sla")),
+        "uptime_history": _uptime_history_points(row.get("uptime_history")),
+        "p99_latency": _optional_number(row.get("p99_latency")),
       }
     )
   return out

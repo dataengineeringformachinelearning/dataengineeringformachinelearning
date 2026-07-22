@@ -742,6 +742,13 @@ async def native_status_page_proxy(request: HttpRequest, slug: str) -> HttpRespo
     row["status_page_id"] = row["status_page_id"] or page_id
   page["services"] = services
   page["incidents"] = incidents
+  # Normalize KPI / history fields Angular binds on IsolatedStatus.
+  compat = deml_status_page(page, deml_user_id=None)
+  page["overall_uptime"] = compat["overall_uptime"]
+  page["cumulative_sla"] = compat["cumulative_sla"]
+  page["uptime_history"] = compat["uptime_history"]
+  page["p99_latency"] = compat["p99_latency"]
+  page["total_requests"] = compat["total_requests"]
   return JsonResponse(page, status=response.status_code)
 
 
@@ -1030,7 +1037,8 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
     credential = await _credential_for_request(request)
     client = _client_for_credential(credential)
     payload = _json_object(request)
-    # Angular sends {name, url}; map url → description. FORJD requires
+    # Angular sends {name, url}; map url → description + probe_url so the
+    # FORJD health pinger can accumulate uptime history. FORJD requires
     # lowercase status enums, so normalize legacy Title Case inputs.
     service_status = str(payload.get("status") or "operational").strip().lower().replace(" ", "_")
     if service_status not in {
@@ -1041,11 +1049,13 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
       "maintenance",
     }:
       service_status = "operational"
+    service_url = str(payload.get("url") or payload.get("description") or "").strip()
     body = json.dumps(
       {
         "tenant_id": str(credential.tenant_id),
         "name": str(payload.get("name") or ""),
-        "description": str(payload.get("url") or payload.get("description") or ""),
+        "description": service_url,
+        "probe_url": service_url or None,
         "status": service_status,
       }
     ).encode()
@@ -1732,12 +1742,14 @@ async def exports_collection_proxy(request: HttpRequest) -> HttpResponse:
     return _adapter_error_response(AdapterError(502, "FORJD returned invalid export job"))
 
 
-@require_forjd_action("read")
+@csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
+@require_forjd_action({"GET": "read", "DELETE": "export.write"})
 async def export_detail_proxy(
   request: HttpRequest,
   export_id: str,
 ) -> HttpResponse:
-  if request.method != "GET":
+  """GET status / DELETE job — Angular ``/api/v1/exports/{id}``."""
+  if request.method not in {"GET", "DELETE"}:
     return JsonResponse({"detail": "Method not allowed"}, status=405)
   result = await _typed_json_call(
     request,
@@ -1748,6 +1760,8 @@ async def export_detail_proxy(
     return result
   if result is None:
     return _adapter_error_response(AdapterError(503, "FORJD export status is unavailable"))
+  if request.method == "DELETE":
+    return JsonResponse({"ok": True}, status=200)
   return JsonResponse(deml_export_job(result), status=200)
 
 

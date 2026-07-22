@@ -42,7 +42,9 @@ export interface MonitoredServiceData {
   status_page_id: string;
   created_at: string;
   status?: string;
-  sla?: number;
+  sla?: number | null;
+  uptime_history?: { date: string; status: string; uptime: number | null }[];
+  p99_latency?: number | null;
 }
 
 export interface IncidentData {

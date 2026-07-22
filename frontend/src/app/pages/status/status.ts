@@ -36,7 +36,7 @@ import { RouterModule, Router } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { SanityService } from '../../services/sanity.service';
 import { formatServiceName } from '../../core/utils/formatter.utils';
-import { toUptimeHistoryDataPoints } from '../../core/utils/uptime.utils';
+import { resolveUptimeHistory } from '../../core/utils/uptime.utils';
 
 import { timeout } from 'rxjs';
 
@@ -172,24 +172,12 @@ export class Status implements OnInit {
 
   dashboardHistory = (
     page: StatusPageData,
-    _service?: Pick<MonitoredServiceData, 'name'>,
+    service?: Pick<MonitoredServiceData, 'name' | 'uptime_history'>,
   ): UptimeHistoryDataPoint[] => {
-    const source = page.uptime_history ?? [];
-    if (source.length > 0) {
-      return toUptimeHistoryDataPoints(source);
-    }
-
-    return toUptimeHistoryDataPoints(
-      Array.from({ length: 30 }, (_, index) => {
-        const date = new Date();
-        date.setUTCHours(0, 0, 0, 0);
-        date.setUTCDate(date.getUTCDate() - 29 + index);
-        return {
-          date: date.toISOString().slice(0, 10),
-          status: 'no_data',
-        };
-      }),
-    );
+    const source = service?.uptime_history?.length
+      ? service.uptime_history
+      : (page.uptime_history ?? []);
+    return resolveUptimeHistory(source);
   };
 
   dashboardServices = (page: StatusPageData): StatusDashboardService[] => {

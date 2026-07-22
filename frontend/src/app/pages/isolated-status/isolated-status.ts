@@ -13,7 +13,11 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { MonitorService, StatusPageData } from '../../services/monitor.service';
+import {
+  MonitorService,
+  type MonitoredServiceData,
+  type StatusPageData,
+} from '../../services/monitor.service';
 import { MlService, ThreatReportResponse } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
@@ -28,10 +32,15 @@ import {
   VikingStatusSection,
   VikingUptimeHistory,
 } from '@dataengineeringformachinelearning/viking-ui';
-import type { VikingChartSeries, VikingTone } from '@dataengineeringformachinelearning/viking-ui';
+import type {
+  UptimeHistoryDataPoint,
+  VikingChartSeries,
+  VikingTone,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatServiceName } from '../../core/utils/formatter.utils';
+import { resolveUptimeHistory } from '../../core/utils/uptime.utils';
 import { SanityService } from '../../services/sanity.service';
 import { StatusCta } from '../../components/status-cta/status-cta';
 
@@ -78,8 +87,8 @@ export class IsolatedStatus implements OnInit {
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
-  p99LatencyMap = signal<Record<string, number>>({ 'loading-placeholder': 0 });
-  totalRequestsMap = signal<Record<string, number>>({ 'loading-placeholder': 0 });
+  p99LatencyMap = signal<Record<string, number | null>>({});
+  totalRequestsMap = signal<Record<string, number>>({});
   simulatedThreatReportMap = signal<Record<string, ThreatReportResponse>>({
     'loading-placeholder': {
       status: 'success',
@@ -187,8 +196,14 @@ export class IsolatedStatus implements OnInit {
       .subscribe({
         next: page => {
           this.statusPages.set([page]);
-          this.p99LatencyMap.update(m => ({ ...m, [page.id]: page.p99_latency ?? 0 }));
-          this.totalRequestsMap.update(m => ({ ...m, [page.id]: page.total_requests ?? 0 }));
+          this.p99LatencyMap.update(m => ({
+            ...m,
+            [page.id]: page.p99_latency ?? null,
+          }));
+          this.totalRequestsMap.update(m => ({
+            ...m,
+            [page.id]: page.total_requests ?? 0,
+          }));
           this.simulatedThreatReportMap.update(m => ({
             ...m,
             [page.id]: {
@@ -278,6 +293,27 @@ export class IsolatedStatus implements OnInit {
     return [{ name: 'Availability', tone: 'accent', data: values }];
   }
 
+  pageHistory(page: StatusPageData): UptimeHistoryDataPoint[] {
+    return resolveUptimeHistory(page.uptime_history);
+  }
+
+  serviceHistory(page: StatusPageData, service: MonitoredServiceData): UptimeHistoryDataPoint[] {
+    const source = service.uptime_history?.length
+      ? service.uptime_history
+      : (page.uptime_history ?? []);
+    return resolveUptimeHistory(source);
+  }
+
+  formatLatencyMs(value?: number | null): string {
+    if (value === null || value === undefined) return '—';
+    return `${value}ms`;
+  }
+
+  formatUptimePct(value?: number | null): string {
+    if (value === null || value === undefined) return '—';
+    return `${value.toFixed(2)}%`;
+  }
+
   protected statusVariant(
     status?: string | null,
   ): 'operational' | 'degraded' | 'outage' | 'maintenance' {
@@ -295,8 +331,8 @@ export class IsolatedStatus implements OnInit {
     return 'Some services are currently experiencing downtime.';
   }
 
-  protected serviceUptime(page: StatusPageData, service: { sla?: number | null }): number {
-    return service.sla ?? page.overall_uptime ?? page.cumulative_sla ?? 100;
+  protected serviceUptime(page: StatusPageData, service: { sla?: number | null }): number | null {
+    return service.sla ?? page.overall_uptime ?? page.cumulative_sla ?? null;
   }
 
   protected announcementTone(severity?: string | null): 'accent' | 'warning' | 'danger' | 'muted' {

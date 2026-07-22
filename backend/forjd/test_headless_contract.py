@@ -764,6 +764,40 @@ def test_export_create_detail_and_signed_download_are_tenant_bound(
 @pytest.mark.django_db
 @override_settings(
   FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_READ_MODE="forjd",
+  FORJD_WRITE_MODE="forjd",
+  FORJD_CUTOVER_PHASE="",
+)
+@patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
+def test_export_delete_is_tenant_bound(
+  mock_proxy: AsyncMock,
+  client: Client,
+) -> None:
+  username = "exportdeletecontract"
+  _user, tenant_id = _mapped_actor(username, "Operator")
+  job_id = "22222222-2222-2222-2222-222222222222"
+  mock_proxy.return_value = ForjdResponse(
+    status=200,
+    body=json.dumps({"ok": True, "id": job_id}).encode(),
+    content_type="application/json",
+  )
+
+  with override_settings(FORJD_TENANT_ID=tenant_id):
+    response = client.delete(
+      f"/api/v1/exports/{job_id}",
+      HTTP_AUTHORIZATION=_authorization(username),
+    )
+
+  assert response.status_code == 200
+  assert response.json()["ok"] is True
+  assert mock_proxy.await_args.args[0] == "DELETE"
+  assert mock_proxy.await_args.args[1] == f"/api/v1/exports/{job_id}"
+  assert f"tenant_id={tenant_id}" in mock_proxy.await_args.kwargs["query_string"]
+
+
+@pytest.mark.django_db
+@override_settings(
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
   FORJD_WRITE_MODE="forjd",
   FORJD_CUTOVER_PHASE="",
 )
