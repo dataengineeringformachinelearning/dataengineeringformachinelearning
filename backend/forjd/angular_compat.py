@@ -126,10 +126,16 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
         "uptime_series": uptime_series,
         "threat_severity": threat_severity,
         "security_alerts": security_alerts,
-        # Geo / HTTP / per-endpoint breakdowns are not in FORJD overview yet.
-        "origin_distribution": [],
-        "http_statuses": [],
-        "endpoint_counts": [],
+        # Routing-tag charts from FORJD rollup metadata (region/label/component).
+        "origin_distribution": [
+          row for row in _as_list(forjd_body.get("origin_distribution")) if isinstance(row, dict)
+        ],
+        "http_statuses": [
+          row for row in _as_list(forjd_body.get("http_statuses")) if isinstance(row, dict)
+        ],
+        "endpoint_counts": [
+          row for row in _as_list(forjd_body.get("endpoint_counts")) if isinstance(row, dict)
+        ],
       },
     },
     "source": "forjd",

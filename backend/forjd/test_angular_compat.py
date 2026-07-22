@@ -51,6 +51,9 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
       "uptime_series": [{"label": "10:00", "uptime": 99.5}],
       "threat_series": [{"label": "10:00", "count": 2}],
       "threat_severity": [{"severity": "Detected", "count": 2}],
+      "origin_distribution": [{"region": "iad", "count": 5}],
+      "http_statuses": [{"status": "2xx", "count": 9}],
+      "endpoint_counts": [{"endpoint": "analytics.overview", "count": 3}],
     }
   )
   assert body["status"] == "success"
@@ -64,9 +67,9 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
   assert body["data"]["user_metrics"]["uptime_series"][0]["uptime"] == 99.5
   assert body["data"]["user_metrics"]["security_alerts"][0]["count"] == 2
   assert body["data"]["user_metrics"]["threat_severity"][0]["count"] == 2
-  assert body["data"]["user_metrics"]["origin_distribution"] == []
-  assert body["data"]["user_metrics"]["http_statuses"] == []
-  assert body["data"]["user_metrics"]["endpoint_counts"] == []
+  assert body["data"]["user_metrics"]["origin_distribution"][0]["region"] == "iad"
+  assert body["data"]["user_metrics"]["http_statuses"][0]["status"] == "2xx"
+  assert body["data"]["user_metrics"]["endpoint_counts"][0]["endpoint"] == "analytics.overview"
 
 
 def test_empty_analytics_overview_is_degraded_not_healthy() -> None:

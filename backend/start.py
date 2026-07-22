@@ -134,6 +134,17 @@ def main() -> None:
       "--interval",
       "86400",
     ],
+    # Sealed platform heartbeats so FORJD analytics-rollup / ml-training stay fed.
+    "sealed_heartbeat": [
+      python_bin,
+      "manage.py",
+      "sealed_telemetry_heartbeat",
+      "--watch",
+      "--interval",
+      "300",
+      "--count",
+      "6",
+    ],
   }
   server = subprocess.Popen(server_command)
   workers = {name: subprocess.Popen(cmd) for name, cmd in worker_commands.items()}
@@ -160,7 +171,7 @@ def main() -> None:
         if child.poll() is not None:
           worker_restarts[name] += 1
           print(
-            f"{name} worker exited code={child.returncode}; " f"restart #{worker_restarts[name]}",
+            f"{name} worker exited code={child.returncode}; restart #{worker_restarts[name]}",
             flush=True,
           )
           time.sleep(min(30, 2 * worker_restarts[name]))
