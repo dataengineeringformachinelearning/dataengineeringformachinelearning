@@ -298,8 +298,8 @@ async def _seal_provider_metrics(
 ) -> bool:
   try:
     credential = resolve_forjd_tenant_credential(account_id)
-  except ForjdTenantConfigurationError as exc:
-    logger.warning("analytics sync skip account=%s: %s", account_id, exc)
+  except ForjdTenantConfigurationError:
+    logger.warning("analytics sync skip unmapped account=%s", account_id)
     return False
   client = client_for_credential(credential)
   region = _region_for_provider(provider)
