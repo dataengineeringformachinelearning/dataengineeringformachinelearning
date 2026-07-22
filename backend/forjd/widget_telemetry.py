@@ -147,7 +147,7 @@ async def widget_telemetry_proxy(request: HttpRequest) -> JsonResponse:
       status=503,
     )
   except ForjdTenantConfigurationError:
-    logger.warning("widget credential unavailable slug=%s", slug)
+    logger.warning("widget tenant mapping unavailable slug=%s", slug)
     return JsonResponse(
       {"ok": True, "accepted": False, "code": "credential_unavailable"}, status=202
     )

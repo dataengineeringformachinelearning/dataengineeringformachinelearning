@@ -337,7 +337,7 @@ def sync_integration(integration: AnalyticsIntegration) -> SyncResult:
   try:
     creds = open_integration_credentials(integration)
   except Exception as exc:
-    logger.exception("open credentials failed id=%s", integration.id)
+    logger.exception("open provider integration failed id=%s", integration.id)
     return SyncResult(provider, str(account_id), False, f"open_failed:{exc}")
 
   if provider == AnalyticsIntegration.Provider.GOOGLE:
