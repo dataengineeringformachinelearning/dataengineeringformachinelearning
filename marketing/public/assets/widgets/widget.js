@@ -1274,9 +1274,7 @@
           try {
             // Exact embed identifier only — never bind another published page
             // via hostname or title fuzzy match (cross-tenant / wrong-page risk).
-            const candidates = [
-              ...new Set([pageId, slugifyIdentifier(pageId)].filter(Boolean)),
-            ];
+            const candidates = [...new Set([pageId, slugifyIdentifier(pageId)].filter(Boolean))];
             let page = null;
             for (const candidate of candidates) {
               page = await fetchPageBySlug(candidate);
