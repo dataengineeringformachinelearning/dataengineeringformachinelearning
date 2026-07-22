@@ -1196,10 +1196,35 @@
           };
 
           try {
-            // Plaintext /api/v1/telemetry/endpoints and the OTel Collector lane were
-            // retired. Sealed ingest via the Django FORJD BFF (/api/v1/ingest) is the
-            // only supported telemetry path; widgets never export traces directly.
-            void telemetryPayload;
+            // Anonymous embeds cannot hold fjsvc_ tokens. DEML seals server-side
+            // via the public widget-telemetry adapter (ciphertext-only to FORJD).
+            if (!backendUrl) {
+              return;
+            }
+            const deviceKey = 'deml_widget_device_id';
+            let deviceId = '';
+            try {
+              deviceId = String(localStorage.getItem(deviceKey) || '');
+              if (!deviceId) {
+                deviceId = `w-${Math.random().toString(36).slice(2, 12)}`;
+                localStorage.setItem(deviceKey, deviceId);
+              }
+            } catch {
+              deviceId = `w-${Date.now().toString(36)}`;
+            }
+            await fetchWithTimeout(`${backendUrl}/api/v1/system-status/widget-telemetry`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                slug: pageId,
+                page_id: pageId,
+                response_time_ms: Number(telemetryPayload.response_time_ms) || 0,
+                status_code: Number(telemetryPayload.status_code) || 200,
+                region: 'browser',
+                device_id: deviceId,
+              }),
+              timeout: 6000,
+            });
           } catch (e) {
             console.warn('Threat analysis telemetry reporting offline', e);
           }
@@ -1249,9 +1274,7 @@
           try {
             // Exact embed identifier only — never bind another published page
             // via hostname or title fuzzy match (cross-tenant / wrong-page risk).
-            const candidates = [
-              ...new Set([pageId, slugifyIdentifier(pageId)].filter(Boolean)),
-            ];
+            const candidates = [...new Set([pageId, slugifyIdentifier(pageId)].filter(Boolean))];
             let page = null;
             for (const candidate of candidates) {
               page = await fetchPageBySlug(candidate);

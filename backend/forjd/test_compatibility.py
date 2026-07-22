@@ -394,14 +394,14 @@ def test_public_status_page_unwraps_forjd_response_for_existing_angular_shape(
     response = client.get("/api/v1/system-status/status_pages/slug/public-page")
 
   assert response.status_code == 200
-  assert response.json() == {
-    "id": "page-1",
-    "slug": "public-page",
-    "title": "Public",
-    "services": [],
-    "incidents": [],
-  }
-  assert "tenant_id" not in response.json()
+  body = response.json()
+  assert body["id"] == "page-1"
+  assert body["slug"] == "public-page"
+  assert body["title"] == "Public"
+  assert body["services"] == []
+  assert body["incidents"] == []
+  assert body["uptime_history"] == []
+  assert "tenant_id" not in body
   mock_client.assert_called_once_with(use_service_auth=False)
   assert mock_proxy.await_args.args == ("GET", "/api/v1/status/pages/slug/public-page")
 
@@ -455,6 +455,8 @@ def test_public_status_page_reshapes_embedded_services_for_angular(
       "created_at": "2026-07-19T00:00:00+00:00",
       "status": "Operational",
       "sla": None,
+      "uptime_history": [],
+      "p99_latency": None,
     }
   ]
   assert payload["incidents"] == []

@@ -128,34 +128,38 @@ ciphertext, Firebase tokens, API keys, or `fjsvc_` credentials.
 
 ## Native FORJD APIs (BFF-adapted)
 
-| Capability         | Native FORJD route                                                | Stable DEML path                                                                                |
-| ------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Contract probe     | `GET /api/v1/capabilities`                                        | `GET /api/v1/forjd/capabilities`                                                                |
-| Sealed ingest      | `POST /api/v1/ingest`                                             | `/api/v1/ingest` (+ batch)                                                                      |
-| Ingest processing  | `GET /api/v1/ingest/processing/{batch_id}`                        | same tenant-bound path                                                                          |
-| Projections        | `GET /api/v1/projections`                                         | `/api/v1/projections`                                                                           |
-| Analytics overview | `GET /api/v1/analytics/overview`                                  | `/api/v1/analytics/overview`                                                                    |
-| Live updates (SSE) | `GET /api/v1/projections?since=` (cursor poll)                    | `GET /api/v1/analytics/live` (Server-Sent Events)                                               |
-| Tenant selector    | DEML account mapping                                              | `GET /api/v1/analytics/tenants`                                                                 |
-| Incident cases     | `GET/POST/PATCH /api/v1/soc/cases[/id]`                           | `/api/v1/analytics/incidents[/id]`                                                              |
-| SOAR playbooks     | `/api/v1/playbooks[/id][/execute]`                                | `/api/v1/analytics/playbooks[/id][/execute]`                                                    |
-| Playbook runs      | `GET /api/v1/playbooks/runs`                                      | `GET /api/v1/analytics/playbook-runs`                                                           |
-| Action acknowledge | `POST /api/v1/playbooks/runs/{run}/actions/{action}/ack`          | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/ack`                               |
-| Action retry       | `POST /api/v1/playbooks/runs/{run}/actions/{action}/retry`        | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/retry`                             |
-| SIEM signals       | `GET/POST /api/v1/siem/signals`                                   | `GET/POST /api/v1/siem/signals`                                                                 |
-| Vulnerabilities    | `GET/POST/PATCH /api/v1/vulnerabilities[/id]`                     | `/api/v1/agent/vulnerabilities[/id]`                                                            |
-| Compliance         | `GET /api/v1/compliance/soc`                                      | `GET /api/v1/ml/compliance/soc-status`                                                          |
-| Status pages       | `GET /api/v1/status/pages`                                        | `/api/v1/system-status/status_pages` (anonymous explore: published-only via platform `FORJD_*`) |
-| Crypto sessions    | `/api/v1/sessions/*`                                              | `/api/v1/sessions/*`                                                                            |
-| Replay / DLQ       | `/api/v1/replay/*`                                                | `/api/v1/replay/*`                                                                              |
-| Exports            | `GET/POST /api/v1/exports`, `GET /api/v1/exports/{id}[/download]` | `/api/v1/exports[/id][/download]`                                                               |
-| ML SLA stat        | `GET /api/v1/analytics/overview` (CES SLA)                        | `GET /api/v1/ml/latest` (Angular `TrainingResponse`)                                            |
-| Temporal forecast  | `GET /api/v1/analytics/overview` (CES spike score)                | `GET /api/v1/ml/temporal-forecast`                                                              |
-| Threat report      | `GET /api/v1/ml/scores` (anomaly stats)                           | `GET /api/v1/ml/threat-intel/report`                                                            |
-| Security alert     | `POST /api/v1/integrations/security-alert`                        | same path                                                                                       |
-| Report documents   | `POST/GET /api/v1/reports/documents`                              | `POST /api/v1/agent/report-issue`                                                               |
-| Tenant erase       | `POST /api/v1/tenants/{id}/erase`                                 | account deletion saga                                                                           |
-| Health             | `GET /health`, `GET /ready`                                       | proxied / local ready                                                                           |
+| Capability           | Native FORJD route                                                | Stable DEML path                                                                                |
+| -------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Contract probe       | `GET /api/v1/capabilities`                                        | `GET /api/v1/forjd/capabilities`                                                                |
+| Sealed ingest        | `POST /api/v1/ingest`                                             | `/api/v1/ingest` (+ batch)                                                                      |
+| Ingest processing    | `GET /api/v1/ingest/processing/{batch_id}`                        | same tenant-bound path                                                                          |
+| Projections          | `GET /api/v1/projections`                                         | `/api/v1/projections`                                                                           |
+| Analytics overview   | `GET /api/v1/analytics/overview`                                  | `/api/v1/analytics/overview`                                                                    |
+| Live updates (SSE)   | `GET /api/v1/projections?since=` (cursor poll)                    | `GET /api/v1/analytics/live` (Server-Sent Events)                                               |
+| Tenant selector      | DEML account mapping                                              | `GET /api/v1/analytics/tenants`                                                                 |
+| Incident cases       | `GET/POST/PATCH /api/v1/soc/cases[/id]`                           | `/api/v1/analytics/incidents[/id]`                                                              |
+| SOAR playbooks       | `/api/v1/playbooks[/id][/execute]`                                | `/api/v1/analytics/playbooks[/id][/execute]`                                                    |
+| Playbook runs        | `GET /api/v1/playbooks/runs`                                      | `GET /api/v1/analytics/playbook-runs`                                                           |
+| Action acknowledge   | `POST /api/v1/playbooks/runs/{run}/actions/{action}/ack`          | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/ack`                               |
+| Action retry         | `POST /api/v1/playbooks/runs/{run}/actions/{action}/retry`        | `POST /api/v1/analytics/playbook-runs/{run}/actions/{action}/retry`                             |
+| SIEM signals         | `GET/POST /api/v1/siem/signals`                                   | `GET/POST /api/v1/siem/signals`                                                                 |
+| Vulnerabilities      | `GET/POST/PATCH /api/v1/vulnerabilities[/id]`                     | `/api/v1/agent/vulnerabilities[/id]`                                                            |
+| Compliance           | `GET /api/v1/compliance/soc`                                      | `GET /api/v1/ml/compliance/soc-status`                                                          |
+| Status pages         | `GET /api/v1/status/pages`                                        | `/api/v1/system-status/status_pages` (anonymous explore: published-only via platform `FORJD_*`) |
+| Crypto sessions      | `/api/v1/sessions/*`                                              | `/api/v1/sessions/*`                                                                            |
+| Replay / DLQ         | `/api/v1/replay/*`                                                | `/api/v1/replay/*`                                                                              |
+| Exports              | `GET/POST /api/v1/exports`, `GET /api/v1/exports/{id}[/download]` | `/api/v1/exports[/id][/download]`                                                               |
+| ML SLA stat          | `GET /api/v1/analytics/overview` (CES SLA)                        | `GET /api/v1/ml/latest` (Angular `TrainingResponse`)                                            |
+| Temporal forecast    | `GET /api/v1/analytics/overview` (CES spike score)                | `GET /api/v1/ml/temporal-forecast`                                                              |
+| Threat report        | `GET /api/v1/ml/scores` (anomaly stats)                           | `GET /api/v1/ml/threat-intel/report`                                                            |
+| ML train             | `POST /api/v1/ml/{model_id}/fit`                                  | `POST /api/v1/ml/train`, `POST /api/v1/ml/threat-intel/train`                                   |
+| Predict / score      | `POST /api/v1/ml/{model_id}/score`                                | `POST /api/v1/predict`                                                                          |
+| Discovered endpoints | `GET /api/v1/discovered-endpoints`                                | `GET /api/v1/system-status/endpoints`                                                           |
+| Widget telemetry     | sealed `POST /api/v1/ingest` (DEML seals server-side)             | `POST /api/v1/system-status/widget-telemetry` (public, IP rate-limited)                         |
+| Security alert       | `POST /api/v1/integrations/security-alert`                        | same path                                                                                       |
+| Report documents     | `POST/GET /api/v1/reports/documents`                              | `POST /api/v1/agent/report-issue`                                                               |
+| Tenant erase         | `POST /api/v1/tenants/{id}/erase`                                 | account deletion saga                                                                           |
+| Health               | `GET /health`, `GET /ready`                                       | proxied / local ready                                                                           |
 
 FORJD collection APIs are limit-based. Sealed batches contain at most 25 events and
 canonical ingest request bodies are capped at 8 MiB; DEML applies the same limits without

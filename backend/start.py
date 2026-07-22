@@ -145,6 +145,15 @@ def main() -> None:
       "--count",
       "6",
     ],
+    # Pull linked GA / Clarity / Cloudflare rollups and seal them into FORJD.
+    "analytics_sync": [
+      python_bin,
+      "manage.py",
+      "sync_analytics_integrations",
+      "--watch",
+      "--interval",
+      "3600",
+    ],
   }
   server = subprocess.Popen(server_command)
   workers = {name: subprocess.Popen(cmd) for name, cmd in worker_commands.items()}

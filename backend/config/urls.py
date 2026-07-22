@@ -17,10 +17,12 @@ from forjd.views import (
   analytics_tenants_proxy,
   compliance_soc_proxy,
   dlq_retry_proxy,
+  endpoints_list_proxy,
   export_detail_proxy,
   export_download_proxy,
   exports_collection_proxy,
   forjd_capabilities_proxy,
+  forjd_tenant_proxy,
   incident_case_detail_proxy,
   incident_cases_proxy,
   ingest_processing_status_proxy,
@@ -28,6 +30,8 @@ from forjd.views import (
   ml_latest_proxy,
   ml_temporal_forecast_proxy,
   ml_threat_report_proxy,
+  ml_threat_train_proxy,
+  ml_train_proxy,
   native_forjd_proxy,
   native_status_page_proxy,
   playbook_action_ack_proxy,
@@ -36,6 +40,7 @@ from forjd.views import (
   playbook_execute_proxy,
   playbook_runs_proxy,
   playbooks_proxy,
+  predict_proxy,
   session_revoke_proxy,
   siem_signals_proxy,
   status_incident_delete_proxy,
@@ -48,6 +53,7 @@ from forjd.views import (
   vulnerabilities_list_proxy,
   vulnerability_detail_proxy,
 )
+from forjd.widget_telemetry import widget_telemetry_proxy
 from monitor.integrations import (
   clarity_save,
   cloudflare_save,
@@ -75,6 +81,11 @@ urlpatterns = [
     "api/v1/forjd/capabilities",
     forjd_capabilities_proxy,
     name="forjd-capabilities-adapter",
+  ),
+  path(
+    "api/v1/forjd/tenant",
+    forjd_tenant_proxy,
+    name="forjd-tenant-adapter",
   ),
   path(
     "api/v1/system-status/health",
@@ -380,6 +391,36 @@ urlpatterns = [
     "api/v1/ml/threat-intel/report",
     ml_threat_report_proxy,
     name="forjd-ml-threat-report-adapter",
+  ),
+  path(
+    "api/v1/ml/train",
+    ml_train_proxy,
+    name="forjd-ml-train-adapter",
+  ),
+  path(
+    "api/v1/ml/threat-intel/train",
+    ml_threat_train_proxy,
+    name="forjd-ml-threat-train-adapter",
+  ),
+  path(
+    "api/v1/predict",
+    predict_proxy,
+    name="forjd-predict-adapter",
+  ),
+  path(
+    "api/v1/system-status/endpoints",
+    endpoints_list_proxy,
+    name="forjd-endpoints-adapter",
+  ),
+  path(
+    "api/v1/system-status/endpoints/",
+    endpoints_list_proxy,
+    name="forjd-endpoints-adapter-slash",
+  ),
+  path(
+    "api/v1/system-status/widget-telemetry",
+    widget_telemetry_proxy,
+    name="forjd-widget-telemetry",
   ),
   path(
     "api/v1/integrations/security-alert",

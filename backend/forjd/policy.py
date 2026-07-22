@@ -55,6 +55,9 @@ ACTION_POLICIES: Final[dict[str, ActionPolicy]] = {
   "playbook.admin": ActionPolicy(ADMIN_ROLES, requires_pro=True),
   "integration.admin": ActionPolicy(ADMIN_ROLES),
   "model.admin": ActionPolicy(ADMIN_ROLES, requires_pro=True),
+  # Operator+Pro can train/score via BFF (FORJD still enforces ml:write scopes).
+  "ml.train": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
+  "ml.score": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "domain.destructive": ActionPolicy(ADMIN_ROLES),
 }
 

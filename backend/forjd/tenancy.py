@@ -152,3 +152,18 @@ def resolve_forjd_snapshot_credential(
     tenant_id=tenant_id,
     service_token=_resolve_service_token(secret_ref),
   )
+
+
+def resolve_forjd_tenant_credential_by_tenant(
+  forjd_tenant_id: UUID,
+  *,
+  allow_inactive: bool = False,
+) -> ForjdTenantCredential:
+  """Reverse-lookup: FORJD tenant UUID → active DEML mapping credential."""
+  qs = ForjdTenantMapping.objects.filter(forjd_tenant_id=forjd_tenant_id)
+  mapping = qs.filter(is_active=True).first()
+  if mapping is None and allow_inactive:
+    mapping = qs.order_by("-updated_at").first()
+  if mapping is None:
+    raise ForjdTenantConfigurationError("No DEML account is mapped to this FORJD tenant")
+  return resolve_forjd_tenant_credential(mapping.deml_account_id, allow_inactive=allow_inactive)

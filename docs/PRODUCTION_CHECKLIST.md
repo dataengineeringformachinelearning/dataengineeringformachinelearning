@@ -17,7 +17,7 @@ Integration contract: [`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md).
 
 | Step | Action                                                                                                                                                                                                                                                   |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A1   | Apply FORJD SQL `003`–`025`; confirm migration checksums and `/ready` (including private object storage and worker contracts)                                                                                                                            |
+| A1   | Apply FORJD SQL `003`–`026`; confirm migration checksums and `/ready` (including private object storage and worker contracts)                                                                                                                            |
 | A2   | Map account → FORJD tenant + secret ref                                                                                                                                                                                                                  |
 | A3   | Set `FORJD_API_URL`, `FORJD_SERVICE_TOKEN`, `FORJD_TENANT_ID`                                                                                                                                                                                            |
 | A4   | Set `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd`                                                                                                                                                                                                    |
@@ -26,15 +26,15 @@ Integration contract: [`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md).
 
 ## B. Fly + Vercel
 
-| Step | Action                                                                                                                  |
-| ---- | ----------------------------------------------------------------------------------------------------------------------- |
-| B1   | Deploy Django (`docs/FLY.md`); confirm `monitor` migrations through `0062` and the supervised report-outbox worker      |
-| B2   | Deploy Angular (`docs/VERCEL.md`, `BACKEND_URL=https://backend.deml.app`)                                               |
-| B3   | Confirm Firebase Auth → Django only                                                                                     |
-| B4   | Confirm headless keys use `deml_…` via `X-API-Key` or Bearer and are accepted only on integration routes                |
-| B5   | Keep `ENABLE_LEGACY_PLAINTEXT_TELEMETRY=false`; verify the browser has no legacy queue                                  |
-| B6   | Set and load-test `DEML_HEADLESS_{INGEST,WRITE,READ}_RPM` and `DEML_PUBLIC_STATUS_RPM` for the production database size |
-| B7   | Confirm Stripe webhook + `python manage.py sync_subscriptions`; checkout binds `client_reference_id` / customer id only |
+| Step | Action                                                                                                                                                                                         |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1   | Deploy Django (`docs/FLY.md`); confirm `monitor` migrations through `0064` (sealed credentials + analytics integrations) and supervised workers (report-outbox, maintenance, sealed heartbeat) |
+| B2   | Deploy Angular (`docs/VERCEL.md`, `BACKEND_URL=https://backend.deml.app`)                                                                                                                      |
+| B3   | Confirm Firebase Auth → Django only                                                                                                                                                            |
+| B4   | Confirm headless keys use `deml_…` via `X-API-Key` or Bearer and are accepted only on integration routes                                                                                       |
+| B5   | Keep `ENABLE_LEGACY_PLAINTEXT_TELEMETRY=false`; verify the browser has no legacy queue                                                                                                         |
+| B6   | Set and load-test `DEML_HEADLESS_{INGEST,WRITE,READ}_RPM` and `DEML_PUBLIC_STATUS_RPM` for the production database size                                                                        |
+| B7   | Confirm Stripe webhook + `python manage.py sync_subscriptions`; checkout binds `client_reference_id` / customer id only                                                                        |
 
 ## C. Smoke
 

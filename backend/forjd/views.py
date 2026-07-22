@@ -21,6 +21,7 @@ from pydantic import ValidationError
 
 from forjd.angular_compat import (
   deml_analytics_overview,
+  deml_discovered_endpoints,
   deml_export_job,
   deml_export_jobs,
   deml_incident_case,
@@ -71,6 +72,7 @@ from forjd.policy import (
   ForjdActorContext,
   ForjdPolicyError,
   action_for_native_request,
+  actor_for_request,
   authorize_forjd_action,
   is_privileged_action,
   policy_error_response,
@@ -813,6 +815,57 @@ async def forjd_capabilities_proxy(request: HttpRequest) -> HttpResponse:
   return result
 
 
+# --- DEML control-plane metrics merged into FORJD analytics overview ---
+@sync_to_async
+def _deml_control_plane_metrics(account_id: UUID | None) -> dict[str, Any]:
+  """Cookie consents, linked analytics providers, and API-key usage (DEML-local)."""
+  if account_id is None:
+    return {}
+  from django.contrib.auth.models import User
+  from monitor.models import AnalyticsIntegration, APIKey, CookieConsent
+
+  user_ids = list(User.objects.filter(profile__account_id=account_id).values_list("id", flat=True))
+  consent_qs = CookieConsent.objects.filter(user_id__in=user_ids)
+  analytical = consent_qs.filter(analytical=True).count()
+  marketing = consent_qs.filter(marketing=True).count()
+
+  providers = list(
+    AnalyticsIntegration.objects.filter(account_id=account_id)
+    .values_list("provider", flat=True)
+    .distinct()
+  )
+  key_count = APIKey.objects.filter(user_id__in=user_ids, is_active=True).count()
+  return {
+    "widget_interactions": int(analytical + marketing),
+    "cookie_consents": {"analytical": int(analytical), "marketing": int(marketing)},
+    "active_providers": [str(p) for p in providers if p],
+    "api_usage": {
+      "usage_current_minute": 0,
+      "quota_per_minute": 60 * max(1, key_count),
+    },
+    "benchmarking": {"current_scope": None},
+  }
+
+
+async def _honeypot_score_for(credential: ForjdTenantCredential, request: HttpRequest) -> float:
+  try:
+    client = _client_for_credential(credential)
+    response = await client.proxy(
+      "GET",
+      "/api/v1/honeypots/analyze",
+      query_string=f"tenant_id={credential.tenant_id}",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      return 0.0
+    body = json.loads(response.body or b"{}")
+    if isinstance(body, dict):
+      return float(body.get("honeypot_score") or 0)
+  except (ForjdError, TypeError, ValueError, json.JSONDecodeError):
+    return 0.0
+  return 0.0
+
+
 # --- Angular-shaped adapters (FORJD native → deml.app contracts) ---
 @require_forjd_action("read")
 async def analytics_overview_proxy(request: HttpRequest) -> HttpResponse:
@@ -840,9 +893,17 @@ async def analytics_overview_proxy(request: HttpRequest) -> HttpResponse:
     upstream = json.loads(response.body)
     if not isinstance(upstream, dict):
       raise AdapterError(502, "FORJD returned an invalid analytics overview")
+    actor = await actor_for_request(request)
+    deml_metrics = await _deml_control_plane_metrics(actor.account_id)
+    honeypot = await _honeypot_score_for(credential, request)
+    deml_metrics["honeypot_score"] = honeypot
+    upstream["deml_control_plane"] = deml_metrics
+    upstream["honeypot_score"] = honeypot
     return JsonResponse(deml_analytics_overview(upstream), status=200)
   except AdapterError as exc:
     return _adapter_error_response(exc)
+  except ForjdPolicyError as exc:
+    return policy_error_response(exc)
   except ForjdError as exc:
     if empty_read_fallback_enabled() and exc.status >= 500:
       return JsonResponse(empty_analytics_overview(), status=200)
@@ -1897,6 +1958,223 @@ async def integrations_security_alert_proxy(request: HttpRequest) -> HttpRespons
     allowed_methods=("POST",),
     tenant_binding="body",
   )
+
+
+@require_forjd_action("read")
+async def forjd_tenant_proxy(request: HttpRequest) -> HttpResponse:
+  """GET /api/v1/forjd/tenant — mapped FORJD tenant for browser seal clients."""
+  if request.method != "GET":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  try:
+    credential = await _credential_for_request(request)
+  except AdapterError as exc:
+    return _adapter_error_response(exc)
+  return JsonResponse(
+    {"status": "success", "tenant_id": str(credential.tenant_id), "source": "forjd"},
+    status=200,
+  )
+
+
+@require_forjd_action("read")
+async def endpoints_list_proxy(request: HttpRequest) -> HttpResponse:
+  """GET /api/v1/system-status/endpoints → FORJD discovered-endpoints."""
+  if request.method != "GET":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  try:
+    credential = await _read_credential_or_none(request)
+    if credential is None or not reads_from_forjd():
+      return JsonResponse([], status=200, safe=False)
+    client = _client_for_credential(credential)
+    response = await client.proxy(
+      "GET",
+      "/api/v1/discovered-endpoints",
+      query_string=f"tenant_id={credential.tenant_id}&limit=100",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      if empty_read_fallback_enabled() and response.status >= 500:
+        return JsonResponse([], status=200, safe=False)
+      return _upstream_error_response(response)
+    upstream = json.loads(response.body or b"{}")
+    if not isinstance(upstream, dict):
+      raise AdapterError(502, "FORJD returned invalid discovered endpoints")
+    return JsonResponse(deml_discovered_endpoints(upstream), status=200, safe=False)
+  except AdapterError as exc:
+    return _adapter_error_response(exc)
+  except ForjdError as exc:
+    if empty_read_fallback_enabled() and exc.status >= 500:
+      return JsonResponse([], status=200, safe=False)
+    return _forjd_error_response(exc)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return _adapter_error_response(AdapterError(502, "FORJD returned invalid discovered endpoints"))
+
+
+@csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
+@require_forjd_action("ml.train")
+async def ml_train_proxy(request: HttpRequest) -> HttpResponse:
+  """POST /api/v1/ml/train → FORJD classical_anomaly / forecasting fit."""
+  if request.method != "POST":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  if not writes_enabled():
+    return JsonResponse(
+      {"detail": "FORJD writes are disabled", "code": "forjd_writes_disabled"},
+      status=503,
+    )
+  try:
+    credential = await _credential_for_request(request)
+    client = _client_for_credential(credential)
+    # Prefer SLA/forecasting family; fall back to classical anomaly.
+    for model_id in ("forecasting", "classical_anomaly"):
+      response = await client.proxy(
+        "POST",
+        f"/api/v1/ml/{model_id}/fit",
+        body=json.dumps({"tenant_id": str(credential.tenant_id)}, separators=(",", ":")).encode(),
+        content_type="application/json",
+        request_id=request_id_from(request),
+      )
+      if response.status < 400:
+        upstream = json.loads(response.body or b"{}")
+        overview = await client.proxy(
+          "GET",
+          "/api/v1/analytics/overview",
+          query_string=f"tenant_id={credential.tenant_id}",
+          request_id=request_id_from(request),
+        )
+        overview_body: dict[str, Any] = {}
+        if overview.status < 400:
+          try:
+            loaded = json.loads(overview.body or b"{}")
+            if isinstance(loaded, dict):
+              overview_body = loaded
+          except (TypeError, json.JSONDecodeError):
+            overview_body = {}
+        shaped = deml_sla_latest(overview_body)
+        shaped["message"] = f"Training accepted for {model_id}"
+        shaped["run_id"] = str(
+          (upstream.get("run") or {}).get("id")
+          if isinstance(upstream.get("run"), dict)
+          else upstream.get("id") or model_id
+        )
+        return JsonResponse(shaped, status=200)
+    return _upstream_error_response(response)
+  except AdapterError as exc:
+    return _adapter_error_response(exc)
+  except ForjdError as exc:
+    return _forjd_error_response(exc)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return _adapter_error_response(AdapterError(502, "FORJD returned an invalid train response"))
+
+
+@csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
+@require_forjd_action("ml.train")
+async def ml_threat_train_proxy(request: HttpRequest) -> HttpResponse:
+  """POST /api/v1/ml/threat-intel/train → FORJD threat_ensemble fit."""
+  if request.method != "POST":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  if not writes_enabled():
+    return JsonResponse(
+      {"detail": "FORJD writes are disabled", "code": "forjd_writes_disabled"},
+      status=503,
+    )
+  try:
+    credential = await _credential_for_request(request)
+    client = _client_for_credential(credential)
+    response = await client.proxy(
+      "POST",
+      "/api/v1/ml/threat_ensemble/fit",
+      body=json.dumps({"tenant_id": str(credential.tenant_id)}, separators=(",", ":")).encode(),
+      content_type="application/json",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      return _upstream_error_response(response)
+    scores = await client.proxy(
+      "GET",
+      "/api/v1/ml/scores",
+      query_string=f"tenant_id={credential.tenant_id}&limit=50",
+      request_id=request_id_from(request),
+    )
+    body: dict[str, Any] = {}
+    if scores.status < 400:
+      try:
+        loaded = json.loads(scores.body or b"{}")
+        if isinstance(loaded, dict):
+          body = loaded
+      except (TypeError, json.JSONDecodeError):
+        body = {}
+    shaped = deml_threat_report(body)
+    shaped["message"] = "Threat model training accepted"
+    return JsonResponse(shaped, status=200)
+  except AdapterError as exc:
+    return _adapter_error_response(exc)
+  except ForjdError as exc:
+    return _forjd_error_response(exc)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return _adapter_error_response(AdapterError(502, "FORJD returned an invalid train response"))
+
+
+@csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt
+@require_forjd_action("ml.score")
+async def predict_proxy(request: HttpRequest) -> HttpResponse:
+  """POST /api/v1/predict → FORJD classical_anomaly score (enterprise integrators)."""
+  if request.method != "POST":
+    return JsonResponse({"detail": "Method not allowed"}, status=405)
+  if not writes_enabled():
+    return JsonResponse(
+      {"detail": "FORJD writes are disabled", "code": "forjd_writes_disabled"},
+      status=503,
+    )
+  try:
+    credential = await _credential_for_request(request)
+    client = _client_for_credential(credential)
+    try:
+      inbound = json.loads(request.body or b"{}")
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+      inbound = {}
+    if not isinstance(inbound, dict):
+      inbound = {}
+    outbound: dict[str, Any] = {"tenant_id": str(credential.tenant_id)}
+    if isinstance(inbound.get("features"), list):
+      outbound["features"] = inbound["features"]
+    if isinstance(inbound.get("series"), list):
+      outbound["series"] = inbound["series"]
+    model_id = str(inbound.get("model_id") or inbound.get("model") or "classical_anomaly")
+    if model_id not in {
+      "classical_anomaly",
+      "threat_ensemble",
+      "lstm_autoencoder",
+      "transformer_anomaly",
+      "forecasting",
+      "norse_ssn",
+    }:
+      model_id = "classical_anomaly"
+    response = await client.proxy(
+      "POST",
+      f"/api/v1/ml/{model_id}/score",
+      body=json.dumps(outbound, separators=(",", ":")).encode(),
+      content_type="application/json",
+      request_id=request_id_from(request),
+    )
+    if response.status >= 400:
+      return _upstream_error_response(response)
+    upstream = json.loads(response.body or b"{}")
+    if not isinstance(upstream, dict):
+      raise AdapterError(502, "FORJD returned an invalid predict response")
+    return JsonResponse(
+      {
+        "status": "success",
+        "model_id": model_id,
+        "prediction": upstream.get("result") or upstream.get("score") or upstream,
+        "source": "forjd",
+      },
+      status=200,
+    )
+  except AdapterError as exc:
+    return _adapter_error_response(exc)
+  except ForjdError as exc:
+    return _forjd_error_response(exc)
+  except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+    return _adapter_error_response(AdapterError(502, "FORJD returned an invalid predict response"))
 
 
 async def unsupported_forjd_proxy(

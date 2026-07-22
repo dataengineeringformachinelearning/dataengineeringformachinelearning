@@ -95,16 +95,37 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
   if forecast is None:
     forecast = forjd_body.get("spiking_temporal_forecast")
 
+  deml_metrics = forjd_body.get("deml_control_plane")
+  deml_metrics = deml_metrics if isinstance(deml_metrics, dict) else {}
+  honeypot_score = forjd_body.get("honeypot_score")
+  if honeypot_score is None:
+    honeypot_score = deml_metrics.get("honeypot_score", 0)
+
+  forjd_benchmarking = forjd_body.get("benchmarking")
+  if not isinstance(forjd_benchmarking, dict):
+    forjd_benchmarking = deml_metrics.get("benchmarking")
+  if not isinstance(forjd_benchmarking, dict):
+    forjd_benchmarking = {"current_scope": None, "platform_reference": None}
+  latest_benchmark = ces_raw.get("latest_benchmark")
+  if not isinstance(latest_benchmark, dict):
+    latest_benchmark = forjd_benchmarking.get("current_scope")
+  latest_benchmark_score = ces_raw.get("latest_benchmark_score")
+  if latest_benchmark_score is None and isinstance(latest_benchmark, dict):
+    latest_benchmark_score = latest_benchmark.get("score_percent")
+
   return {
     "status": "success",
     "data": {
-      "benchmarking": {"current_scope": None},
+      "benchmarking": forjd_benchmarking,
+      "honeypot_score": float(honeypot_score or 0),
       "ces": {
         "level": float(ces_raw.get("ces_level") or 0),
         "threat": float(ces_raw.get("ces_threat") or 0),
         "sla": float(ces_raw.get("ces_sla") or 0),
         "stability": float(ces_raw.get("ces_stability") or 0),
         "spiking_temporal_forecast": float(forecast or 0),
+        "latest_benchmark_score": latest_benchmark_score,
+        "latest_benchmark": latest_benchmark,
       },
       "user_metrics": {
         "p99_latency_ms": float(forjd_body.get("p99_latency_ms") or 0),
@@ -136,11 +157,53 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
         "endpoint_counts": [
           row for row in _as_list(forjd_body.get("endpoint_counts")) if isinstance(row, dict)
         ],
+        # DEML control-plane metrics (never from FORJD sealed plane).
+        "widget_interactions": int(deml_metrics.get("widget_interactions") or 0),
+        "cookie_consents": deml_metrics.get("cookie_consents")
+        if isinstance(deml_metrics.get("cookie_consents"), dict)
+        else {"analytical": 0, "marketing": 0},
+        "active_providers": [
+          str(p)
+          for p in _as_list(deml_metrics.get("active_providers"))
+          if p is not None and str(p).strip()
+        ],
+        "api_usage": deml_metrics.get("api_usage")
+        if isinstance(deml_metrics.get("api_usage"), dict)
+        else {"usage_current_minute": 0, "quota_per_minute": 60},
       },
     },
     "source": "forjd",
     "degraded": False,
   }
+
+
+def deml_discovered_endpoints(forjd_body: dict[str, Any]) -> list[dict[str, Any]]:
+  """Shape FORJD discovered-endpoints / assets into Angular EndpointData[]."""
+  rows = forjd_body.get("endpoints")
+  if not isinstance(rows, list):
+    rows = forjd_body.get("assets")
+  if not isinstance(rows, list):
+    rows = forjd_body.get("items")
+  if not isinstance(rows, list):
+    return []
+  out: list[dict[str, Any]] = []
+  for row in rows:
+    if not isinstance(row, dict):
+      continue
+    url = str(row.get("url") or row.get("endpoint") or row.get("name") or "")
+    created = row.get("created_at") or row.get("last_seen_at") or row.get("updated_at") or ""
+    out.append(
+      {
+        "id": str(row.get("id") or ""),
+        "url": url,
+        "last_tested": created.isoformat() if hasattr(created, "isoformat") else str(created or ""),
+        "status_code": int(row.get("status_code") or row.get("http_status") or 0),
+        "response_time": str(row.get("response_time") or row.get("latency_ms") or ""),
+        "ip_address": str(row.get("ip_address") or row.get("ip") or ""),
+        "is_active": bool(row.get("is_active", True)),
+      }
+    )
+  return out
 
 
 def empty_analytics_overview() -> dict[str, Any]:
