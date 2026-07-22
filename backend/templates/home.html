@@ -21,6 +21,15 @@
     <p class="viking-text-muted backend-hero-lead">
       Learning platform API — identity, billing, and sealed FORJD handoff.
     </p>
+
+    <div class="backend-probe-chips" aria-label="API probes and references">
+      <a class="viking-badge viking-badge-subtle" href="/api/v1/health">Health</a>
+      <a class="viking-badge viking-badge-subtle" href="/api/v1/ready">Ready</a>
+      <a class="viking-badge viking-badge-accent" href="/documentation">Docs</a>
+      <a class="viking-badge viking-badge-subtle" href="/api/v1/docs">Swagger</a>
+      <a class="viking-badge viking-badge-subtle" href="/api/v1/openapi.json">OpenAPI</a>
+    </div>
+
     <div class="backend-hero-cta">
       <a class="viking-btn viking-btn-primary" href="/documentation">
         <span data-viking-icon="file" data-viking-icon-size="16" aria-hidden="true"></span>
@@ -30,6 +39,63 @@
         <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
         Swagger UI
       </a>
+      <a class="viking-btn viking-btn-outline" href="{{ frontend_url }}/">
+        <span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
+        Open app
+      </a>
+    </div>
+  </section>
+
+  <section class="viking-section backend-feature-showcase" aria-labelledby="control-plane-title">
+    <header class="backend-status-preview-header">
+      <p class="viking-label">What this edge owns</p>
+      <h2 id="control-plane-title" class="viking-heading viking-heading-sm">Control plane, not data plane</h2>
+    </header>
+    <div class="backend-landing-panels">
+      <article class="backend-feature-panel">
+        <div class="backend-feature-icon" aria-hidden="true">
+          <span data-viking-icon="user" data-viking-icon-size="20" data-viking-icon-color="accent"></span>
+        </div>
+        <h3 class="viking-heading viking-heading-sm">Identity &amp; accounts</h3>
+        <p class="viking-text-muted">
+          Firebase-authenticated sessions, profiles, roles, and account lifecycle stay on DEML.
+        </p>
+      </article>
+      <article class="backend-feature-panel">
+        <div class="backend-feature-icon" aria-hidden="true">
+          <span data-viking-icon="shield" data-viking-icon-size="20" data-viking-icon-color="accent"></span>
+        </div>
+        <h3 class="viking-heading viking-heading-sm">Sealed FORJD handoff</h3>
+        <p class="viking-text-muted">
+          Tenant-bound <code>fjsvc_</code> credentials call FORJD. End-user tokens never leave this edge.
+        </p>
+      </article>
+      <article class="backend-feature-panel">
+        <div class="backend-feature-icon" aria-hidden="true">
+          <span data-viking-icon="file" data-viking-icon-size="20" data-viking-icon-color="accent"></span>
+        </div>
+        <h3 class="viking-heading viking-heading-sm">Billing &amp; learning</h3>
+        <p class="viking-text-muted">
+          Subscriptions, consent, and learning interactions remain local to the DEML control plane.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="viking-section backend-landing-meta" aria-label="Service references">
+    <div class="backend-landing-meta-grid">
+      <div>
+        <p class="viking-label">API</p>
+        <p class="viking-text-muted"><code>backend.deml.app</code></p>
+      </div>
+      <div>
+        <p class="viking-label">Data plane</p>
+        <p class="viking-text-muted"><a href="https://backend.forjd.co/">FORJD</a></p>
+      </div>
+      <div>
+        <p class="viking-label">Product</p>
+        <p class="viking-text-muted"><a href="{{ marketing_url }}/">deml.app</a></p>
+      </div>
     </div>
   </section>
 </main>

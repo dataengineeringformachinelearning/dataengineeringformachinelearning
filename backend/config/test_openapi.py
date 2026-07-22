@@ -54,6 +54,9 @@ def test_home_and_documentation_landing_copy(client: Client) -> None:
   home_body = home.content.decode()
   assert "Documentation" in home_body
   assert "Swagger UI" in home_body
+  assert 'href="/api/v1/health"' in home_body
+  assert 'href="/api/v1/ready"' in home_body
+  assert "Control plane, not data plane" in home_body
   assert (
     'content="User control-plane API for the DEML learning platform and its secure FORJD data handoff."'
     in home_body
