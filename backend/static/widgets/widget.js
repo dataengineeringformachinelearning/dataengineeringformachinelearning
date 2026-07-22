@@ -537,6 +537,40 @@
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
 
+  // Exact, slugified, and domain-stem candidates (joealongi.dev → joealongi-dev, joealongi).
+  const statusSlugCandidates = value => {
+    const raw = String(value || '')
+      .trim()
+      .toLowerCase();
+    const out = [];
+    const add = candidate => {
+      if (candidate && !out.includes(candidate)) out.push(candidate);
+    };
+    add(raw);
+    add(slugifyIdentifier(raw));
+    if (raw.includes('.')) {
+      add(slugifyIdentifier(raw.split('.')[0]));
+    }
+    return out;
+  };
+
+  // Unique published-directory match for stem embeds (joealongi → joealongi-dev).
+  const matchPublishedStatusPage = (pages, identifier) => {
+    if (!Array.isArray(pages) || !identifier) return null;
+    const wanted = String(identifier).trim();
+    const wantedSlug = slugifyIdentifier(wanted);
+    const exact =
+      pages.find(p => p && (p.id === wanted || p.slug === wanted)) ||
+      pages.find(p => p && slugifyIdentifier(p.slug) === wantedSlug) ||
+      null;
+    if (exact) return exact;
+    if (wantedSlug.length < 3) return null;
+    const prefixHits = pages.filter(
+      p => p && (p.slug === wantedSlug || String(p.slug || '').startsWith(`${wantedSlug}-`)),
+    );
+    return prefixHits.length === 1 ? prefixHits[0] : null;
+  };
+
   // --- Status semantics (FORJD lowercase enums and legacy Title Case) ---
   const statusKey = value =>
     String(value || '')
@@ -1272,9 +1306,9 @@
           };
 
           try {
-            // Exact embed identifier only — never bind another published page
-            // via hostname or title fuzzy match (cross-tenant / wrong-page risk).
-            const candidates = [...new Set([pageId, slugifyIdentifier(pageId)].filter(Boolean))];
+            // Exact / slugified / domain-stem candidates only — never bind via
+            // hostname or title fuzzy match (cross-tenant / wrong-page risk).
+            const candidates = statusSlugCandidates(pageId);
             let page = null;
             for (const candidate of candidates) {
               page = await fetchPageBySlug(candidate);
@@ -1282,20 +1316,14 @@
             }
 
             if (!page) {
-              // Published directory: exact id/slug, then normalized slug only.
+              // Published directory: exact id/slug, then unique stem prefix.
               const listApiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
               const res = await fetchWithTimeout(listApiUrl);
               if (!res.ok) {
                 throw new Error('Status directory unavailable');
               }
               const data = await res.json();
-              if (Array.isArray(data)) {
-                const wanted = slugifyIdentifier(pageId);
-                page =
-                  data.find(p => p.id === pageId || p.slug === pageId) ||
-                  data.find(p => slugifyIdentifier(p.slug) === wanted) ||
-                  null;
-              }
+              page = matchPublishedStatusPage(data, pageId);
             }
 
             if (page) {

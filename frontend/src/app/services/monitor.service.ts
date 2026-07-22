@@ -113,8 +113,9 @@ export class MonitorService {
   }
 
   getStatusPageBySlug(slug: string) {
+    // BFF resolves domain-style / stem aliases (joealongi.dev → joealongi-dev).
     return this.http.get<StatusPageData>(
-      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/slug/${slug}`,
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/slug/${encodeURIComponent(slug)}`,
       { withCredentials: true },
     );
   }

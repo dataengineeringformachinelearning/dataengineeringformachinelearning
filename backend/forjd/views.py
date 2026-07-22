@@ -44,6 +44,8 @@ from forjd.angular_compat import (
   deml_vulnerability,
   empty_analytics_overview,
   empty_capability_envelope,
+  match_published_status_page,
+  public_status_slug_candidates,
 )
 from forjd.api import (
   SealedEvent,
@@ -713,29 +715,12 @@ async def native_forjd_proxy(
     return _forjd_error_response(exc)
 
 
-async def native_status_page_proxy(request: HttpRequest, slug: str) -> HttpResponse:
-  response = await native_forjd_proxy(
-    request,
-    target_path=f"/api/v1/status/pages/slug/{quote(slug, safe='')}",
-    allowed_methods=("GET",),
-    public=True,
-  )
-  if response.status_code >= 400:
-    return response
-  try:
-    upstream = json.loads(response.content)
-    page = upstream["page"]
-  except (KeyError, TypeError, UnicodeDecodeError, json.JSONDecodeError):
-    return _adapter_error_response(
-      AdapterError(502, "FORJD returned an invalid public status-page response")
-    )
-  if not isinstance(page, dict):
-    return _adapter_error_response(
-      AdapterError(502, "FORJD returned an invalid public status-page response")
-    )
+def _reshape_public_status_page(page: dict[str, Any], *, status_code: int = 200) -> JsonResponse:
+  """Angular-stable public slug payload (ciphertext-free; no tenant_id)."""
   # Anonymous visitors cannot hit the authed services/incidents adapters, so
   # reshape the embedded FORJD arrays into the Angular contracts inline.
   # Never echo FORJD tenant_id on the public slug surface (enumeration risk).
+  page = dict(page)
   page.pop("tenant_id", None)
   page_id = str(page.get("id") or "")
   services = deml_status_services(page)
@@ -751,7 +736,79 @@ async def native_status_page_proxy(request: HttpRequest, slug: str) -> HttpRespo
   page["uptime_history"] = compat["uptime_history"]
   page["p99_latency"] = compat["p99_latency"]
   page["total_requests"] = compat["total_requests"]
-  return JsonResponse(page, status=response.status_code)
+  return JsonResponse(page, status=status_code)
+
+
+async def native_status_page_proxy(request: HttpRequest, slug: str) -> HttpResponse:
+  # Try exact + slugified + domain-stem candidates so legacy embeds
+  # (``joealongi`` / ``joealongi.dev``) resolve to ``joealongi-dev``.
+  candidates = public_status_slug_candidates(slug) or [slug.strip().lower()]
+  last_error: HttpResponse | None = None
+  for candidate in candidates:
+    response = await native_forjd_proxy(
+      request,
+      target_path=f"/api/v1/status/pages/slug/{quote(candidate, safe='')}",
+      allowed_methods=("GET",),
+      public=True,
+    )
+    if response.status_code < 400:
+      try:
+        upstream = json.loads(response.content)
+        page = upstream["page"]
+      except (KeyError, TypeError, UnicodeDecodeError, json.JSONDecodeError):
+        return _adapter_error_response(
+          AdapterError(502, "FORJD returned an invalid public status-page response")
+        )
+      if not isinstance(page, dict):
+        return _adapter_error_response(
+          AdapterError(502, "FORJD returned an invalid public status-page response")
+        )
+      return _reshape_public_status_page(page, status_code=response.status_code)
+    last_error = response
+
+  # Directory unique-prefix self-heal when FORJD exact slug still 404s
+  # (pre-deploy FORJD or stem-only embeds like data-page-id="joealongi").
+  if last_error is not None and last_error.status_code == 404:
+    try:
+      client, _deml_user_id, published_only = await _status_directory_read_client(request)
+      if client is not None:
+        directory_response = await client.proxy(
+          "GET",
+          "/api/v1/status/pages",
+          body=None,
+          query_string=f"tenant_id={client.tenant_id}",
+          content_type="application/json",
+          request_id=request_id_from(request),
+        )
+        if directory_response.status < 400:
+          upstream = json.loads(directory_response.body)
+          if isinstance(upstream, dict):
+            pages = deml_status_pages(upstream, deml_user_id=None)
+            if published_only:
+              pages = _published_directory_pages(pages)
+            matched = match_published_status_page(pages, identifier=slug)
+            canonical = str((matched or {}).get("slug") or "")
+            if canonical and canonical not in candidates:
+              response = await native_forjd_proxy(
+                request,
+                target_path=f"/api/v1/status/pages/slug/{quote(canonical, safe='')}",
+                allowed_methods=("GET",),
+                public=True,
+              )
+              if response.status_code < 400:
+                try:
+                  page_body = json.loads(response.content)
+                  page = page_body["page"]
+                except (KeyError, TypeError, UnicodeDecodeError, json.JSONDecodeError):
+                  return _adapter_error_response(
+                    AdapterError(502, "FORJD returned an invalid public status-page response")
+                  )
+                if isinstance(page, dict):
+                  return _reshape_public_status_page(page, status_code=response.status_code)
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError, AdapterError, ForjdError):
+      pass
+
+  return last_error or _adapter_error_response(AdapterError(404, "status page not found"))
 
 
 async def forjd_capabilities_proxy(request: HttpRequest) -> HttpResponse:

@@ -25,6 +25,8 @@ from forjd.angular_compat import (
   deml_vulnerabilities,
   empty_analytics_overview,
   empty_capability_envelope,
+  match_published_status_page,
+  public_status_slug_candidates,
 )
 from forjd.client import ForjdError, ForjdResponse
 
@@ -98,7 +100,20 @@ def test_deml_status_pages_sets_deml_user_id() -> None:
     deml_user_id=7,
   )
   assert pages[0]["user_id"] == 7
-  assert pages[0]["slug"] == "ops"
+
+
+def test_public_status_slug_candidates_domain_and_stem() -> None:
+  assert public_status_slug_candidates("joealongi.dev") == ["joealongi-dev", "joealongi"]
+  assert public_status_slug_candidates("joealongi-dev") == ["joealongi-dev"]
+
+
+def test_match_published_status_page_unique_prefix() -> None:
+  pages = [
+    {"id": "1", "slug": "joealongi-dev", "title": "joealongi.dev", "is_published": True},
+    {"id": "2", "slug": "platform-status", "title": "Platform", "is_published": True},
+  ]
+  assert match_published_status_page(pages, identifier="joealongi")["slug"] == "joealongi-dev"
+  assert match_published_status_page(pages, identifier="missing") is None
 
 
 def test_deml_status_page_passes_through_uptime_history() -> None:

@@ -547,13 +547,129 @@ def test_public_status_page_unknown_slug_returns_clean_404(
   mock_client.return_value.proxy = mock_proxy
 
   with override_settings(FORJD_SERVICE_TOKEN="", FORJD_TENANT_ID=""):
-    response = client.get("/api/v1/system-status/status_pages/slug/joealongi")
+    response = client.get("/api/v1/system-status/status_pages/slug/missing-page")
 
   assert response.status_code == 404
   body = response.json()
   assert body["detail"] == "status page not found"
   assert body["code"] == "forjd_request_rejected"
   assert body["source"] == "forjd"
+
+
+@pytest.mark.django_db
+@override_settings(
+  FORJD_CUTOVER_PHASE="2",
+  FORJD_READ_MODE="forjd",
+  FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+  FORJD_TENANT_ID="ded3e76a-64ca-44c9-aa90-cb6a4868fc4f",
+)
+@patch("forjd.views.ForjdClient")
+def test_public_status_page_resolves_domain_style_slug_alias(
+  mock_client: MagicMock,
+  client: Client,
+) -> None:
+  """Domain-style URLs (joealongi.dev) resolve to the hyphenated FORJD slug."""
+  page_body = json.dumps(
+    {
+      "ok": True,
+      "page": {
+        "id": "page-1",
+        "slug": "joealongi-dev",
+        "title": "joealongi.dev",
+        "is_published": True,
+        "services": [],
+        "incidents": [],
+      },
+    }
+  ).encode()
+
+  async def _proxy(_method: str, path: str, **_kwargs: object) -> ForjdResponse:
+    if path == "/api/v1/status/pages/slug/joealongi-dev":
+      return ForjdResponse(status=200, body=page_body, content_type="application/json")
+    return ForjdResponse(
+      status=404,
+      body=b'{"detail":"status page not found"}',
+      content_type="application/json",
+    )
+
+  mock_proxy = AsyncMock(side_effect=_proxy)
+  mock_client.return_value.proxy = mock_proxy
+  mock_client.return_value.tenant_id = "ded3e76a-64ca-44c9-aa90-cb6a4868fc4f"
+
+  response = client.get("/api/v1/system-status/status_pages/slug/joealongi.dev")
+
+  assert response.status_code == 200
+  assert response.json()["slug"] == "joealongi-dev"
+  assert mock_proxy.await_args.args[:2] == ("GET", "/api/v1/status/pages/slug/joealongi-dev")
+
+
+@pytest.mark.django_db
+@override_settings(
+  FORJD_CUTOVER_PHASE="2",
+  FORJD_READ_MODE="forjd",
+  FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+  FORJD_TENANT_ID="ded3e76a-64ca-44c9-aa90-cb6a4868fc4f",
+)
+@patch("forjd.views.ForjdClient")
+def test_public_status_page_resolves_legacy_embed_stem(
+  mock_client: MagicMock,
+  client: Client,
+) -> None:
+  """Legacy widget embeds (data-page-id=joealongi) resolve via unique prefix."""
+  page_body = json.dumps(
+    {
+      "ok": True,
+      "page": {
+        "id": "page-1",
+        "slug": "joealongi-dev",
+        "title": "joealongi.dev",
+        "is_published": True,
+        "services": [],
+        "incidents": [],
+      },
+    }
+  ).encode()
+  directory_body = json.dumps(
+    {
+      "ok": True,
+      "pages": [
+        {
+          "id": "page-1",
+          "slug": "joealongi-dev",
+          "title": "joealongi.dev",
+          "is_published": True,
+          "created_at": "2026-07-19T00:00:00Z",
+        },
+        {
+          "id": "page-platform",
+          "slug": "platform-status",
+          "title": "Platform Status",
+          "is_published": True,
+          "created_at": "2026-07-19T00:00:00Z",
+        },
+      ],
+    }
+  ).encode()
+
+  async def _proxy(_method: str, path: str, **_kwargs: object) -> ForjdResponse:
+    if path == "/api/v1/status/pages/slug/joealongi-dev":
+      return ForjdResponse(status=200, body=page_body, content_type="application/json")
+    if path == "/api/v1/status/pages":
+      return ForjdResponse(status=200, body=directory_body, content_type="application/json")
+    return ForjdResponse(
+      status=404,
+      body=b'{"detail":"status page not found"}',
+      content_type="application/json",
+    )
+
+  mock_proxy = AsyncMock(side_effect=_proxy)
+  mock_client.return_value.proxy = mock_proxy
+  mock_client.return_value.tenant_id = "ded3e76a-64ca-44c9-aa90-cb6a4868fc4f"
+
+  response = client.get("/api/v1/system-status/status_pages/slug/joealongi")
+
+  assert response.status_code == 200
+  assert response.json()["slug"] == "joealongi-dev"
 
 
 @pytest.mark.django_db

@@ -53,6 +53,14 @@ function b64ToBytes(b64: string): Uint8Array {
   return out;
 }
 
+// --- WebCrypto BufferSource (ArrayBuffer-backed copy) ---
+/** Copy into a real ArrayBuffer — Uint8Array defaults to ArrayBufferLike (SharedArrayBuffer). */
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  return copy.buffer;
+}
+
 async function sha256Hex(data: ArrayBuffer): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(digest))
@@ -153,15 +161,24 @@ export async function sealPayload(
   },
 ): Promise<SealedEnvelope> {
   const keyBytes = b64ToBytes(options.keyB64);
-  const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, [
-    'encrypt',
-  ]);
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    toArrayBuffer(keyBytes),
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt'],
+  );
   const nonce = crypto.getRandomValues(new Uint8Array(GCM_NONCE_BYTES));
   const aad = new TextEncoder().encode(`${options.tenantId}|${options.clientEventId}`);
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv: nonce, additionalData: aad, tagLength: 128 },
+    {
+      name: 'AES-GCM',
+      iv: toArrayBuffer(nonce),
+      additionalData: toArrayBuffer(aad),
+      tagLength: 128,
+    },
     cryptoKey,
-    plaintext,
+    toArrayBuffer(plaintext),
   );
   return {
     algo: 'aes-256-gcm',

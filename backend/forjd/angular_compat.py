@@ -6,11 +6,77 @@ while the BFF proxies tenant-scoped FORJD routes.
 
 from __future__ import annotations
 
+import re
 from typing import Any, Final
+
+_SLUG_RE: Final[re.Pattern[str]] = re.compile(r"^[a-z0-9][a-z0-9-]{1,62}$")
 
 
 def _timestamp(value: Any) -> str:
   return value.isoformat() if hasattr(value, "isoformat") else str(value or "")
+
+
+# --- Public status slug aliases (legacy embeds / domain-style URLs) ---
+def slugify_status_identifier(value: str) -> str:
+  """Normalize free-form identifiers to FORJD slug charset."""
+  return re.sub(r"[^a-z0-9]+", "-", (value or "").strip().lower()).strip("-")
+
+
+def public_status_slug_candidates(raw: str) -> list[str]:
+  """Exact, slugified, and domain-stem candidates for published-page lookup."""
+  text = (raw or "").strip().lower()
+  out: list[str] = []
+
+  def _add(candidate: str) -> None:
+    if candidate and candidate not in out and _SLUG_RE.match(candidate):
+      out.append(candidate)
+
+  _add(text)
+  slugified = slugify_status_identifier(text)
+  _add(slugified)
+  if "." in text:
+    _add(slugify_status_identifier(text.split(".", 1)[0]))
+  return out
+
+
+def match_published_status_page(
+  pages: list[dict[str, Any]],
+  *,
+  identifier: str,
+) -> dict[str, Any] | None:
+  """Resolve a legacy embed id against the public published directory.
+
+  Prefers exact id/slug, then slugified equality, then a unique prefix match
+  (``joealongi`` → ``joealongi-dev``) when only one published page fits.
+  """
+  wanted = (identifier or "").strip()
+  if not wanted:
+    return None
+  wanted_slug = slugify_status_identifier(wanted)
+  for page in pages:
+    if not isinstance(page, dict):
+      continue
+    if str(page.get("id") or "") == wanted or str(page.get("slug") or "") == wanted:
+      return page
+  for page in pages:
+    if not isinstance(page, dict):
+      continue
+    if slugify_status_identifier(str(page.get("slug") or "")) == wanted_slug:
+      return page
+  if len(wanted_slug) < 3:
+    return None
+  prefix_hits = [
+    page
+    for page in pages
+    if isinstance(page, dict)
+    and (
+      str(page.get("slug") or "") == wanted_slug
+      or str(page.get("slug") or "").startswith(f"{wanted_slug}-")
+    )
+  ]
+  if len(prefix_hits) == 1:
+    return prefix_hits[0]
+  return None
 
 
 def _label(value: Any, default: str) -> str:
