@@ -7,10 +7,11 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "sanity": "^6.0.0",
-    "styled-components": "^6.4.2"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sanity": "^6.6.0",
+    "styled-components": "^6.4.4",
+    "ws": "^8.21.0"
   },
   "overrides": {
     "js-yaml": "^4.1.1",

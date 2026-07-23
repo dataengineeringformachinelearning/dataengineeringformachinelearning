@@ -4,11 +4,9 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef,
   effect,
   computed,
-  afterNextRender,
-  Injector,
+  untracked,
 } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
@@ -50,10 +48,9 @@ export class Explore implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private titleService = inject(Title);
   private metaService = inject(Meta);
-  private injector = inject(Injector);
+  private hasLoaded = false;
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
@@ -193,15 +190,10 @@ export class Explore implements OnInit {
   }
 
   constructor() {
-    afterNextRender(() => {
-      effect(
-        () => {
-          if (this.authService.isInitialized()) {
-            this.loadData();
-          }
-        },
-        { injector: this.injector },
-      );
+    effect(() => {
+      if (this.hasLoaded || !this.authService.isInitialized()) return;
+      this.hasLoaded = true;
+      untracked(() => this.loadData());
     });
   }
 
@@ -245,7 +237,6 @@ export class Explore implements OnInit {
             this.monitorService.fetchAllServices(pages);
           }
           this.isLoading.set(false);
-          this.cdr.markForCheck();
         };
         if (hydrations.length === 0) {
           applyPages([]);
@@ -260,7 +251,6 @@ export class Explore implements OnInit {
         this.statusPages.set([]);
         this.loadFailed.set(true);
         this.isLoading.set(false);
-        this.cdr.markForCheck();
       },
     });
   }

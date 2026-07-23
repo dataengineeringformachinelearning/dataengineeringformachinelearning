@@ -1,12 +1,9 @@
-import 'zone.js';
-import 'zone.js/testing';
-import { getTestBed } from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
+import '@angular/compiler';
+import '@analogjs/vitest-angular/setup-snapshots';
+import '@analogjs/vitest-angular/setup-serializers';
+import { setupTestBed } from '@analogjs/vitest-angular/setup-testbed';
 
-getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+setupTestBed();
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

@@ -33,27 +33,10 @@
   overflow-x: clip;
 }
 
-@media (min-width: 960px) {
+@media (min-width: 1024px) {
   .isolated-status-page .isolated-status-shell,
   .dashboard-page-container.isolated-status-page .page-inner-wrapper {
     max-width: min(100%, var(--viking-container-max-width, 1260px));
-  }
-}
-
-/* Status directory cards: avoid horizontal chop; stack metrics cleanly */
-.dashboard-page-container .status-directory-grid {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-@media (min-width: 901px) {
-  .dashboard-page-container .status-directory-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1200px) {
-  .dashboard-page-container .status-directory-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -101,7 +84,7 @@ app-status-cta.isolated-status-cta {
   text-align: left;
   overflow: visible;
 
-  @media (min-width: 901px) {
+  @media (min-width: 1024px) {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   }
 }
@@ -122,7 +105,7 @@ app-status-cta.isolated-status-cta {
 
 /* Split CTA: features stay single-column so the mockup can breathe */
 .empty-state-premium.status-cta-layout .features-list {
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     grid-template-columns: 1fr;
   }
 }
@@ -186,7 +169,7 @@ app-status-cta.isolated-status-cta {
   text-align: left;
   width: 100%;
 
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -277,7 +260,7 @@ app-status-cta.isolated-status-cta {
 .dashboard-page-container .viking-page-header-actions {
   width: 100%;
 
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     width: auto;
   }
 }
@@ -330,7 +313,7 @@ app-status-cta.isolated-status-cta {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--viking-space-2);
 
-  @media (min-width: 901px) {
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -368,7 +351,7 @@ app-status-cta.isolated-status-cta {
     "metrics";
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .dashboard-page-container .overview-grid {
     grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
     grid-template-areas:
@@ -378,7 +361,7 @@ app-status-cta.isolated-status-cta {
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .dashboard-page-container .overview-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
@@ -397,7 +380,7 @@ app-status-cta.isolated-status-cta {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1280px) {
   .dashboard-page-container .kpi-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -466,13 +449,13 @@ app-status-cta.isolated-status-cta {
   grid-template-columns: minmax(0, 1fr);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .dashboard-page-container .ces-gauge-cluster {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1280px) {
   .dashboard-page-container .ces-gauge-cluster {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -502,7 +485,7 @@ app-status-cta.isolated-status-cta {
   margin-bottom: var(--viking-page-stack-gap);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .dashboard-page-container .ml-stat-panels-row,
   .dashboard-page-container .stat-panels-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

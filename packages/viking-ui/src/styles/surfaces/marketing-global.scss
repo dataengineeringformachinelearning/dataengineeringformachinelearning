@@ -174,7 +174,7 @@ main.main {
   padding: var(--viking-space-2);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   main.main {
     padding: var(--viking-space-8) var(--viking-space-3);
   }
@@ -250,7 +250,7 @@ main.main {
   box-shadow: var(--viking-shadow-sm);
   margin-top: var(--viking-space-4);
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     padding: var(--viking-space-8-5) var(--viking-space-4);
   }
 
@@ -447,7 +447,7 @@ main.main {
   display: none;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .dashboard-layout {
     grid-template-columns: auto 1fr;
   }
@@ -472,7 +472,7 @@ main.main {
   width: 100%;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .grid-layout {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -634,7 +634,7 @@ select option:checked {
   position: relative;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .dashboard-wrapper {
     flex-direction: row;
   }
@@ -739,7 +739,7 @@ select option:checked {
   width: 100%;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .mfa-phone-row,
   .mfa-verify-stack {
     flex-direction: row;
@@ -794,7 +794,7 @@ select option:checked {
   border-radius: var(--viking-radius-md);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .mfa-status-enrolled,
   .mfa-feedback-stack {
     flex-direction: row;

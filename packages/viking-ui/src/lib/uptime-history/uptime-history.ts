@@ -163,19 +163,9 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         border-radius: var(--viking-radius);
       }
 
-      /* Mobile: ensure minimum segment width for readability */
-      @media (max-width: 480px) {
-        .uptime-history-bar {
-          gap: var(--viking-space-px);
-        }
-        .uptime-history-segment {
-          min-width: 2.5px;
-        }
-      }
-
       .uptime-history-bar viking-uptime-bar {
         flex: 1 1 0;
-        min-width: 4px;
+        min-width: 2.5px;
         border-radius: var(--viking-radius);
       }
 
@@ -183,9 +173,16 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         position: relative;
         display: flex;
         flex: 1 1 0;
-        min-width: 4px;
+        min-width: 2.5px;
         height: 100%;
         border-radius: var(--viking-radius);
+      }
+
+      @media (min-width: 640px) {
+        .uptime-history-bar viking-uptime-bar,
+        .uptime-history-segment {
+          min-width: 4px;
+        }
       }
 
       .uptime-history-segment:focus-visible {

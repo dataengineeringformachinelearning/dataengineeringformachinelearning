@@ -220,7 +220,7 @@
           [data]="pageHistory(page)"
           [percentage]="page.overall_uptime ?? page.cumulative_sla ?? null"
           [statusSummary]="
-                (page.overall_uptime ?? page.cumulative_sla) == null
+                (page.overall_uptime ?? page.cumulative_sla ?? null) === null
                   ? 'Awaiting probe history'
                   : globalPageStatus() === 'Operational'
                     ? 'No current issues'

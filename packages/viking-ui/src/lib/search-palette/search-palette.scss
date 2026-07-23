@@ -15,13 +15,17 @@
   -webkit-backdrop-filter: blur(8px);
   border: none;
   cursor: default;
-  animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-out);
+  animation: viking-backdrop-in var(--viking-duration-fast)
+    var(--viking-ease-out);
 }
 
 .viking-search-palette {
   display: flex;
   flex-direction: column;
-  background: var(--viking-surface-glass, color-mix(in srgb, var(--viking-surface) 82%, transparent));
+  background: var(
+    --viking-surface-glass,
+    color-mix(in srgb, var(--viking-surface) 82%, transparent)
+  );
   backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
   -webkit-backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
   border: 1px solid var(--viking-border-strong);
@@ -38,7 +42,7 @@
 }
 
 .viking-search-palette::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
@@ -256,7 +260,7 @@
   gap: var(--viking-space-1);
 }
 
-@media (min-width: 481px) {
+@media (min-width: 640px) {
   ::ng-deep .viking-search-suggestions-grid {
     grid-template-columns: 1fr 1fr;
   }

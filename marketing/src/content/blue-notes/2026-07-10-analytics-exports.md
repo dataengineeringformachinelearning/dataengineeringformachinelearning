@@ -9,8 +9,12 @@ categories:
   - Exports
 ---
 
+## Export execution
+
 Account-scoped export requests enter through Django and execute in FORJD.
 Downloads use FORJD-backed export APIs adapted to Angular paths. DEML does not
 run a local object-store export worker.
+
+## Integration guide
 
 See [docs/FORJD_INTEGRATION.md](../../../docs/FORJD_INTEGRATION.md).

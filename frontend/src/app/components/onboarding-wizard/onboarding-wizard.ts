@@ -3,7 +3,6 @@ import {
   inject,
   signal,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   afterNextRender,
   computed,
 } from '@angular/core';
@@ -52,7 +51,6 @@ export class OnboardingWizard {
   private settingsService = inject(SettingsService);
   private authService = inject(AuthService);
   private onboardingService = inject(OnboardingService);
-  private cdr = inject(ChangeDetectorRef);
 
   protected readonly open = computed(() => this.vikingDialog.active()?.kind === 'onboarding');
 
@@ -93,7 +91,6 @@ export class OnboardingWizard {
         } else {
           this.currentStep.set('publish');
         }
-        this.cdr.markForCheck();
       }
     });
   }
@@ -146,12 +143,10 @@ export class OnboardingWizard {
           this.refreshPages();
           this.isBusy.set(false);
           this.goNext();
-          this.cdr.markForCheck();
         },
         error: () => {
           this.isBusy.set(false);
           this.errorMessage.set('Could not create site. The slug may already be taken.');
-          this.cdr.markForCheck();
         },
       });
   }
@@ -177,12 +172,10 @@ export class OnboardingWizard {
         next: () => {
           this.isBusy.set(false);
           this.goNext();
-          this.cdr.markForCheck();
         },
         error: () => {
           this.isBusy.set(false);
           this.errorMessage.set('Could not add endpoint. Check the URL and try again.');
-          this.cdr.markForCheck();
         },
       });
   }
@@ -211,12 +204,10 @@ export class OnboardingWizard {
           this.isBusy.set(false);
           this.onboardingService.markComplete();
           this.goNext();
-          this.cdr.markForCheck();
         },
         error: () => {
           this.isBusy.set(false);
           this.errorMessage.set('Could not update publish settings.');
-          this.cdr.markForCheck();
         },
       });
   }
@@ -249,9 +240,7 @@ export class OnboardingWizard {
       this.copiedWidget.set(true);
       setTimeout(() => {
         this.copiedWidget.set(false);
-        this.cdr.markForCheck();
       }, 2000);
-      this.cdr.markForCheck();
     } catch {
       this.errorMessage.set('Could not copy to clipboard.');
     }
@@ -264,7 +253,6 @@ export class OnboardingWizard {
         const uid = this.authService.currentUserId();
         const myPages = data.filter(p => p.user_id === uid && p.slug !== 'platform-status');
         this.settingsService.statusPages.set(myPages);
-        this.cdr.markForCheck();
       },
     });
   }

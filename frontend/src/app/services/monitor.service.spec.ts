@@ -69,6 +69,19 @@ describe('MonitorService', () => {
     req.flush(mockPages);
   });
 
+  it('coalesces concurrent status-page requests without caching stale results', () => {
+    const results: number[] = [];
+    service.getStatusPages().subscribe(pages => results.push(pages.length));
+    service.getStatusPages().subscribe(pages => results.push(pages.length));
+
+    const first = httpMock.expectOne(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES);
+    first.flush([]);
+    expect(results).toEqual([0, 0]);
+
+    service.getStatusPages().subscribe();
+    httpMock.expectOne(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES).flush([]);
+  });
+
   it('should create a status page', () => {
     const payload = { title: 'New Page', slug: 'new-slug' };
     const mockCreated = {

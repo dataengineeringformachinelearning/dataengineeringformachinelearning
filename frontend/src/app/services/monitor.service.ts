@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { finalize, Observable, shareReplay } from 'rxjs';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
 
 export interface EndpointData {
@@ -67,6 +68,7 @@ export interface IncidentData {
 })
 export class MonitorService {
   private http = inject(HttpClient);
+  private statusPagesInFlight?: Observable<StatusPageData[]>;
 
   public incidentsMap = signal<Record<string, IncidentData[]>>({});
   public servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
@@ -129,10 +131,18 @@ export class MonitorService {
     return this.http.get<EndpointData[]>(API_ENDPOINTS.SYSTEM_STATUS.ENDPOINTS);
   }
 
-  getStatusPages() {
-    return this.http.get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, {
-      withCredentials: true,
-    });
+  getStatusPages(): Observable<StatusPageData[]> {
+    if (this.statusPagesInFlight) return this.statusPagesInFlight;
+
+    this.statusPagesInFlight = this.http
+      .get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, {
+        withCredentials: true,
+      })
+      .pipe(
+        finalize(() => (this.statusPagesInFlight = undefined)),
+        shareReplay({ bufferSize: 1, refCount: false }),
+      );
+    return this.statusPagesInFlight;
   }
 
   getStatusPageBySlug(slug: string) {

@@ -4,7 +4,6 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef,
   computed,
   effect,
   afterNextRender,
@@ -73,7 +72,6 @@ export class IsolatedStatus implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private titleService = inject(Title);
@@ -189,7 +187,6 @@ export class IsolatedStatus implements OnInit {
       this.statusPages.set([this.loadingPlaceholder]);
       this.isLoading.set(false);
       this.loadFailed.set(false);
-      this.cdr.markForCheck();
       return;
     }
     this.monitorService
@@ -226,7 +223,6 @@ export class IsolatedStatus implements OnInit {
           });
 
           this.isLoading.set(false);
-          this.cdr.markForCheck();
         },
         error: err => {
           if (err instanceof HttpErrorResponse) {
@@ -243,7 +239,6 @@ export class IsolatedStatus implements OnInit {
           this.statusPages.set([]);
           this.loadFailed.set(true);
           this.isLoading.set(false);
-          this.cdr.markForCheck();
         },
       });
   }

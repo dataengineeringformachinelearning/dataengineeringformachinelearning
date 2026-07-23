@@ -7,7 +7,6 @@ import {
   output,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { VikingIcon } from "../icon/icon";
 
 export interface VikingCollectionPreference {
   id: string;
@@ -26,7 +25,7 @@ export type VikingCollectionPreferenceSection = "table" | "density" | "sticky";
 @Component({
   selector: "viking-collection-preferences",
   standalone: true,
-  imports: [FormsModule, VikingIcon],
+  imports: [FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="viking-collection-preferences">

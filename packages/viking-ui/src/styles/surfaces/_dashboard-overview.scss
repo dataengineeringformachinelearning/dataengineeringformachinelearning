@@ -33,7 +33,7 @@
     "threats"
     "metrics";
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
       "setup setup"
@@ -41,7 +41,7 @@
       "threats metrics";
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     grid-template-columns: 280px 1fr 1fr;
     grid-template-areas:
       "setup setup setup"
@@ -75,7 +75,7 @@
   flex: 1;
   min-width: 0;
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     min-width: 220px;
   }
 
@@ -155,11 +155,11 @@ viking-card.health-card.kpi-card {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--viking-space-3);
 
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 1180px) {
+  @media (min-width: 1280px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -656,7 +656,7 @@ viking-card.overview-panel {
   gap: var(--viking-space-2);
   grid-column: 1 / -1;
 
-  @media (min-width: 480px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -718,7 +718,7 @@ viking-card.overview-panel {
 .security-panel {
   grid-column: 1 / -1;
 
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     grid-column: span 1;
   }
 }

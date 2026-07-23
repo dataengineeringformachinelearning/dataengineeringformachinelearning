@@ -1,12 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Optional,
+  inject,
   input,
   model,
   output,
 } from "@angular/core";
-import { VIKING_TOGGLE_GROUP, VikingToggleGroup } from "./toggle-group";
+import { VIKING_TOGGLE_GROUP } from "./toggle-group";
 
 /**
  * viking-toggle — pressed-state button toggle.
@@ -71,7 +71,7 @@ import { VIKING_TOGGLE_GROUP, VikingToggleGroup } from "./toggle-group";
   ],
 })
 export class VikingToggle {
-  constructor(@Optional() private readonly group: VikingToggleGroup | null) {}
+  private readonly group = inject(VIKING_TOGGLE_GROUP, { optional: true });
 
   readonly pressed = model(false);
   readonly value = input<string>("");

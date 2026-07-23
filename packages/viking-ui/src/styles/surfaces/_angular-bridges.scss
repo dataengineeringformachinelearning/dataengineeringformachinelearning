@@ -15,7 +15,8 @@ app-root {
 }
 
 .app-layout > viking-app-layout {
-  min-height: 0;
+  min-height: calc(100vh - var(--viking-navbar-height));
+  min-height: calc(100dvh - var(--viking-navbar-height));
 }
 
 .app-layout > viking-app-layout > .viking-app-layout__main {
@@ -32,7 +33,7 @@ app-unified-select viking-field {
   width: 100%;
 }
 
-/* Angular application bootstrap shell. */
+/* Angular application shell. */
 .main-content {
   flex: 1;
   display: flex;
@@ -40,42 +41,6 @@ app-unified-select viking-field {
   width: 100%;
   margin: 0;
   padding: 0;
-}
-
-.global-auth-loader {
-  position: fixed;
-  inset: 0;
-  z-index: var(--viking-z-overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--viking-bg);
-  transition: background-color var(--viking-duration) var(--viking-ease-default);
-}
-
-.loader-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--viking-space-3);
-  width: min(100%, var(--viking-space-24));
-  max-width: calc(100% - var(--viking-space-4));
-  padding: var(--viking-card-padding);
-  text-align: center;
-  background: var(--viking-surface);
-  border: var(--viking-border-width) var(--viking-border-style)
-    var(--viking-border);
-  border-radius: var(--viking-radius-lg);
-  box-shadow: var(--viking-shadow-md);
-}
-
-.loader-text {
-  margin: 0;
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-base);
-  font-weight: var(--viking-font-weight-medium);
-  letter-spacing: var(--viking-letter-spacing-normal);
 }
 
 /* Firebase challenge UI must sit above application overlays. */

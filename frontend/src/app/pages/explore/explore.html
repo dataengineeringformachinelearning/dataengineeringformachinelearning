@@ -7,8 +7,7 @@
     </p>
   </viking-page-header>
 
-  <!-- Always stacked (single column) for dense status cards.
-           These cards have too much information (metrics + uptime + status) to render side-by-side. -->
+  <!-- Dense cards stack by default and switch to two columns only at the xl tier. -->
   <div class="status-directory-grid">
     @for (page of displayPages(); track page.id) {
     <viking-explore-card

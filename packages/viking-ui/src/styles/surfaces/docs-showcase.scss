@@ -61,7 +61,7 @@
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .showcase-hero {
     grid-template-columns: 1.15fr 1fr;
     gap: var(--viking-space-6);
@@ -782,7 +782,7 @@
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .showcase-related-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -861,7 +861,7 @@
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .api-prop-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1164,7 +1164,7 @@
   gap: var(--viking-space-3);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .landing-preview-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1308,7 +1308,7 @@ viking-card-wc.landing-doctrine-card > * {
   box-shadow: var(--viking-shadow-md);
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .landing-playground-band {
     grid-template-columns: 1fr minmax(18rem, 0.72fr);
   }
@@ -1844,7 +1844,7 @@ viking-card-wc.landing-doctrine-card > * {
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .architecture-pattern {
     flex-direction: row;
     align-items: center;
@@ -1863,7 +1863,7 @@ viking-card-wc.landing-doctrine-card > * {
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .playground-layout {
     grid-template-columns: minmax(280px, 360px) 1fr;
   }
@@ -2055,7 +2055,7 @@ viking-card-wc.landing-doctrine-card > * {
   overflow-x: auto;
 }
 
-@media (min-width: 37.5rem) {
+@media (min-width: 640px) {
   .component-showcase-footer,
   .component-showcase-frameworks {
     align-items: center;

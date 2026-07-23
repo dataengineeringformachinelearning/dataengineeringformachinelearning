@@ -42,7 +42,11 @@
             "loader": {
               ".md": "text"
             },
-            "styles": ["public/assets/viking-app.css", "leaflet/dist/leaflet.css"],
+            "styles": [
+              "public/assets/viking-app.css",
+              "leaflet/dist/leaflet.css",
+              "src/styles.scss"
+            ],
             "security": {
               "allowedHosts": [
                 "dataengineeringformachinelearning.com",

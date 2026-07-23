@@ -3,12 +3,17 @@ import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { from, switchMap } from 'rxjs';
 
+type TokenUser = {
+  getIdToken(): Promise<string>;
+};
+
 export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const firebaseAuth = authService?.auth;
+  const currentUser = firebaseAuth?.currentUser as TokenUser | null | undefined;
 
-  if (firebaseAuth && firebaseAuth.currentUser) {
-    return from((firebaseAuth.currentUser as any).getIdToken() as Promise<string>).pipe(
+  if (currentUser) {
+    return from(currentUser.getIdToken()).pipe(
       switchMap((token: string) => {
         const headers: Record<string, string> = {
           Authorization: `Bearer ${token}`,

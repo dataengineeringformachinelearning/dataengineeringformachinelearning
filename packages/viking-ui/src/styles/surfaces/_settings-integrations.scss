@@ -219,7 +219,7 @@ viking-card-header {
   gap: var(--viking-space-2, 16px);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .form-row {
     flex-direction: row;
     align-items: center;
@@ -297,7 +297,7 @@ viking-card-header {
   min-width: 11rem;
   width: 100%;
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     width: auto;
   }
 }
@@ -325,7 +325,7 @@ viking-card-header {
     margin: 0;
     width: 100%;
 
-    @media (min-width: 600px) {
+    @media (min-width: 640px) {
       width: auto;
       align-self: flex-start;
     }
@@ -355,7 +355,7 @@ viking-card-header {
   gap: var(--viking-space-2, 16px);
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .dashboard-topbar {
     padding: var(--viking-space-3, 24px) var(--viking-space-4, 32px);
   }
@@ -441,7 +441,7 @@ viking-card-header {
     gap: var(--viking-space-2, 16px);
     width: 100%;
 
-    @media (min-width: 600px) {
+    @media (min-width: 640px) {
       flex-direction: row;
       align-items: flex-end;
     }
@@ -454,7 +454,7 @@ viking-card-header {
       flex: 1;
       min-width: 0;
 
-      @media (min-width: 600px) {
+      @media (min-width: 640px) {
         flex-direction: row;
         align-items: flex-end;
       }
@@ -469,7 +469,7 @@ viking-card-header {
       flex-shrink: 0;
       width: 100%;
 
-      @media (min-width: 600px) {
+      @media (min-width: 640px) {
         width: auto;
         align-self: flex-end;
       }
@@ -484,7 +484,7 @@ viking-card-header {
   gap: var(--viking-space-2, 16px);
   width: 100%;
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     flex-direction: row;
     align-items: flex-end;
   }
@@ -493,7 +493,7 @@ viking-card-header {
     flex-shrink: 0;
     width: 100%;
 
-    @media (min-width: 600px) {
+    @media (min-width: 640px) {
       width: auto;
       align-self: flex-end;
     }
@@ -507,7 +507,7 @@ viking-card-header {
   flex: 1;
   min-width: 0;
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     flex-direction: row;
     align-items: flex-end;
   }
@@ -652,7 +652,7 @@ viking-card-header {
     align-self: stretch;
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
@@ -666,7 +666,7 @@ viking-card-header {
 }
 
 .simple-inline-form {
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     flex-direction: row;
     align-items: flex-end;
     gap: var(--viking-space-2, 16px);

@@ -113,9 +113,17 @@
   overflow: visible;
   flex-shrink: 0;
   padding: 0;
-  min-height: 36px;
+  min-width: var(--viking-touch-target-min, 44px);
+  min-height: var(--viking-touch-target-min, 44px);
   line-height: 1;
   transition: filter 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .navbar-brand {
+    min-width: 36px;
+    min-height: 36px;
+  }
 }
 
 .navbar-title {
@@ -1442,7 +1450,9 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .aa-Item[aria-selected="true"] .aa-ItemWrapper,
 .algolia-autocomplete-host .aa-Item:hover .aa-ItemLink,
 .algolia-autocomplete-host .aa-Item:hover .aa-ItemWrapper,
-.algolia-autocomplete-host .ais-AutocompleteIndexItem[aria-selected="true"] .ais-ItemTemplate,
+.algolia-autocomplete-host
+  .ais-AutocompleteIndexItem[aria-selected="true"]
+  .ais-ItemTemplate,
 .algolia-autocomplete-host .ais-AutocompleteIndexItem:hover .ais-ItemTemplate {
   background: var(
     --viking-accent-soft,
@@ -1692,7 +1702,7 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
 }
 
 // Compact desktop — icon-only nav labels when the bar is still tight.
-@container viking-navbar (min-width: 880px) and (max-width: 1120px) {
+@container viking-navbar (min-width: 768px) {
   .nav-btn {
     padding: 0 var(--viking-space-1, 8px) !important;
     gap: 0 !important;
@@ -1712,12 +1722,21 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
 }
 
 // Full desktop — restore nav link labels and spacing.
-@container viking-navbar (min-width: 1121px) {
+@container viking-navbar (min-width: 1280px) {
   .nav-btn {
     padding: 0 var(--viking-space-2, 16px) !important;
     gap: var(--viking-space-1) !important;
     font-size: var(--viking-font-size, 16px) !important;
     letter-spacing: 0.08em !important;
+  }
+
+  .nav-btn > span {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
   }
 }
 

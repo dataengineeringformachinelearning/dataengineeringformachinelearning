@@ -21,11 +21,16 @@
 .mockup-window {
   background: var(--viking-charcoal-800, var(--viking-surface));
   border: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 54%, transparent);
+    color-mix(
+      in srgb,
+      var(--viking-metallic-400, var(--viking-border)) 54%,
+      transparent
+    );
   border-radius: 16px;
   overflow: hidden;
   box-shadow:
-    0 24px 64px color-mix(in srgb, var(--viking-charcoal-900, #000) 40%, transparent),
+    0 24px 64px
+      color-mix(in srgb, var(--viking-charcoal-900, #000) 40%, transparent),
     0 0 0 1px color-mix(in srgb, var(--viking-accent) 15%, transparent);
   /* Slight positive X so the right edge stays visible when angled */
   transform: rotateY(-8deg) rotateX(3deg) translateX(7%) scale(1.02);
@@ -42,7 +47,11 @@
     border-radius: inherit;
     pointer-events: none;
     border: 1px solid
-      color-mix(in srgb, var(--viking-metallic-500, var(--viking-border)) 28%, transparent);
+      color-mix(
+        in srgb,
+        var(--viking-metallic-500, var(--viking-border)) 28%,
+        transparent
+      );
     box-shadow: inset 0 1px 0
       color-mix(in srgb, var(--viking-white, #fff) 7%, transparent);
     opacity: 0.75;
@@ -84,7 +93,11 @@
   padding: var(--viking-space-2) var(--viking-space-2);
   background: var(--viking-charcoal-900, var(--viking-surface-alt));
   border-bottom: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 42%, transparent);
+    color-mix(
+      in srgb,
+      var(--viking-metallic-400, var(--viking-border)) 42%,
+      transparent
+    );
 
   .mockup-dot,
   .viking-page-mockup-dot {
@@ -135,7 +148,11 @@
   flex-direction: column;
   gap: var(--viking-space-2);
   border-right: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 36%, transparent);
+    color-mix(
+      in srgb,
+      var(--viking-metallic-400, var(--viking-border)) 36%,
+      transparent
+    );
   background: var(--viking-charcoal-900, var(--viking-surface-alt));
   flex-shrink: 0;
 
@@ -168,7 +185,7 @@
   grid-template-columns: 1fr;
   gap: var(--viking-space-2);
 
-  @media (min-width: 480px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -177,14 +194,19 @@
 .mockup-gauge {
   background: var(--viking-charcoal-700, var(--viking-surface-alt));
   border: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 42%, transparent);
+    color-mix(
+      in srgb,
+      var(--viking-metallic-400, var(--viking-border)) 42%,
+      transparent
+    );
   border-radius: var(--viking-radius-lg);
   padding: var(--viking-card-padding-compact, var(--viking-space-2));
   text-align: center;
 
   &.primary {
     border-color: var(--viking-accent);
-    box-shadow: 0 0 16px color-mix(in srgb, var(--viking-accent) 25%, transparent);
+    box-shadow: 0 0 16px
+      color-mix(in srgb, var(--viking-accent) 25%, transparent);
   }
 
   .gauge-label,
@@ -216,7 +238,11 @@
   background: var(--viking-charcoal-950, var(--viking-bg));
   border-radius: var(--viking-radius-lg);
   border: 1px solid
-    color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 36%, transparent);
+    color-mix(
+      in srgb,
+      var(--viking-metallic-400, var(--viking-border)) 36%,
+      transparent
+    );
   min-height: 100px;
 
   .chart-bar,
@@ -326,7 +352,7 @@
   grid-template-columns: 1fr;
   gap: var(--viking-space-2);
 
-  @media (min-width: 480px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -334,7 +360,11 @@
   .viking-page-mockup-stat {
     background: var(--viking-charcoal-700, var(--viking-surface-alt));
     border: 1px solid
-      color-mix(in srgb, var(--viking-metallic-400, var(--viking-border)) 42%, transparent);
+      color-mix(
+        in srgb,
+        var(--viking-metallic-400, var(--viking-border)) 42%,
+        transparent
+      );
     border-radius: var(--viking-radius-lg);
     padding: var(--viking-card-padding-compact, var(--viking-space-2));
 
@@ -384,7 +414,7 @@
   padding: var(--viking-space-3) var(--viking-space-4);
 }
 
-@media (min-width: 641px) {
+@media (min-width: 640px) {
   .viking-page-mockup--showcase {
     padding: var(--viking-space-4) var(--viking-space-6);
   }

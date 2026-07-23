@@ -40,7 +40,7 @@
   </div>
   }
 
-  <viking-tabs [value]="activeTab()" (valueChange)="setTab($any($event))">
+  <viking-tabs [value]="activeTab()" (valueChange)="setTab($event)">
     <viking-tab value="overview">
       <viking-app-icon name="dashboard" [ariaHidden]="true" />
       Overview

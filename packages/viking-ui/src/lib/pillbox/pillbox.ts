@@ -44,7 +44,7 @@ import { VikingIcon } from "../icon/icon";
         [value]="draft()"
         [disabled]="disabled() || formDisabled()"
         [attr.aria-label]="label() || placeholder() || 'Add tag'"
-        (input)="draft.set($any($event.target).value)"
+        (input)="onDraftInput($event)"
         (keydown)="onKeydown($event)"
         (blur)="onTouched()"
       />
@@ -131,6 +131,12 @@ export class VikingPillbox extends VikingControl<string[]> {
   writeValue(value: string[]): void {
     this.values.set(value ?? []);
   }
+
+  protected onDraftInput = (event: Event): void => {
+    if (event.target instanceof HTMLInputElement) {
+      this.draft.set(event.target.value);
+    }
+  };
 
   protected onKeydown = (event: KeyboardEvent): void => {
     if (event.key === "Enter" || event.key === ",") {

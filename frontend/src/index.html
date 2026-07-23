@@ -146,28 +146,41 @@
       (() => {
         if (window.location.pathname.startsWith('/auth-status')) return;
 
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = (...args) => window.dataLayer.push(args);
+        let loaded = false;
+        const loadAnalytics = () => {
+          if (loaded) return;
+          loaded = true;
 
-        const googleTag = document.createElement('script');
-        googleTag.async = true;
-        googleTag.src = 'https://www.googletagmanager.com/gtag/js?id=G-0K0KTS30EY';
-        document.head.appendChild(googleTag);
-        window.gtag('js', new Date());
-        window.gtag('config', 'G-0K0KTS30EY', {
-          cookie_flags: 'SameSite=None;Secure;Partitioned',
-        });
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = (...args) => window.dataLayer.push(args);
 
-        window.clarity =
-          window.clarity ||
-          ((...args) => {
-            window.clarity.q = window.clarity.q || [];
-            window.clarity.q.push(args);
+          const googleTag = document.createElement('script');
+          googleTag.async = true;
+          googleTag.src = 'https://www.googletagmanager.com/gtag/js?id=G-0K0KTS30EY';
+          document.head.appendChild(googleTag);
+          window.gtag('js', new Date());
+          window.gtag('config', 'G-0K0KTS30EY', {
+            cookie_flags: 'SameSite=None;Secure;Partitioned',
           });
-        const clarityTag = document.createElement('script');
-        clarityTag.async = true;
-        clarityTag.src = 'https://www.clarity.ms/tag/xddv4klojn';
-        document.head.appendChild(clarityTag);
+
+          window.clarity =
+            window.clarity ||
+            ((...args) => {
+              window.clarity.q = window.clarity.q || [];
+              window.clarity.q.push(args);
+            });
+          const clarityTag = document.createElement('script');
+          clarityTag.async = true;
+          clarityTag.src = 'https://www.clarity.ms/tag/xddv4klojn';
+          document.head.appendChild(clarityTag);
+        };
+
+        for (const event of ['pointerdown', 'keydown']) {
+          window.addEventListener(event, loadAnalytics, { once: true, passive: true });
+        }
+        window.addEventListener('load', () => window.setTimeout(loadAnalytics, 5000), {
+          once: true,
+        });
       })();
     </script>
   </head>

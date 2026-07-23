@@ -55,7 +55,6 @@ import {
   toVikingLineSeries,
   toVikingStackedStatusSeries,
 } from '../../core/chart-data.util';
-import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import * as L from 'leaflet';
 
 export type ExportJobRow = {
@@ -133,16 +132,6 @@ export const buildExportRequestPayload = (
   return payload;
 };
 
-type BenchmarkSummary = {
-  model_type: string;
-  mae: number;
-  rmse: number;
-  accuracy_percent: number | null;
-  dataset_size: number;
-  evaluation_status: 'measured' | 'insufficient_data';
-  created_at: string;
-};
-
 type BenchmarkRollup = {
   score_percent: number | null;
   accuracy_percent: number | null;
@@ -153,6 +142,86 @@ type BenchmarkRollup = {
   measured_models: number;
   evaluation_status: 'measured' | 'insufficient_data';
   created_at: string | null;
+};
+
+type AnalyticsTenant = {
+  id: string;
+  name: string;
+  is_platform: boolean;
+};
+
+type TenantListResponse = {
+  status: string;
+  data?: AnalyticsTenant[];
+};
+
+type TimeSeriesPoint = {
+  label?: string;
+  time?: string;
+  latency: number;
+  requests: number;
+};
+
+type RequestFrequencyPoint = {
+  label?: string;
+  time?: string;
+  requests: number;
+};
+
+type OriginMapPoint = {
+  count: number;
+  lat?: number | string;
+  latitude?: number | string;
+  lng?: number | string;
+  lon?: number | string;
+  longitude?: number | string;
+  origin?: string;
+  region?: string;
+  country?: string;
+  name?: string;
+};
+
+type AnalyticsOverviewResponse = {
+  status: string;
+  degraded?: boolean;
+  code?: string;
+  data?: {
+    benchmarking?: {
+      current_scope?: BenchmarkRollup | null;
+      platform_reference?: BenchmarkRollup | null;
+    };
+    honeypot_score?: number;
+    spiking_temporal_forecast?: number;
+    ces?: {
+      level?: number;
+      threat?: number;
+      sla?: number;
+      stability?: number;
+      spiking_temporal_forecast?: number;
+      latest_benchmark_score?: number | null;
+      latest_benchmark?: BenchmarkRollup | null;
+    };
+    user_metrics?: {
+      data_available?: boolean;
+      available_sites?: string[];
+      p99_latency_ms?: number;
+      uptime_percent?: number | null;
+      total_requests_24h?: number;
+      active_incidents?: number;
+      widget_interactions?: number;
+      unique_visitors?: number;
+      cookie_consents?: { analytical?: number; marketing?: number };
+      active_providers?: string[];
+      api_usage?: { usage_current_minute?: number; quota_per_minute?: number };
+      time_series?: TimeSeriesPoint[];
+      request_frequency?: RequestFrequencyPoint[];
+      origin_distribution?: OriginMapPoint[];
+      http_statuses?: { status?: string | number; code?: string | number; count: number }[];
+      endpoint_counts?: { endpoint?: string; path?: string; count: number }[];
+      threat_severity?: { severity: string; count: number }[];
+      security_alerts?: { label?: string; type?: string; count: number }[];
+    };
+  };
 };
 
 @Component({
@@ -223,7 +292,7 @@ export class AnalyticsComponent implements OnDestroy {
   public threatTrend = signal('');
   public anomalyTrend = signal('');
 
-  public tenants = signal<any[]>([]);
+  public tenants = signal<AnalyticsTenant[]>([]);
   public selectedTenantId = signal<string | null>(null);
   public availableSites = signal<string[]>([]);
   public siteOptions = signal<SelectOption[]>([{ value: 'All', label: 'All Sites' }]);
@@ -237,7 +306,7 @@ export class AnalyticsComponent implements OnDestroy {
   public temporalForecast = signal(0);
   public honeypotScore = signal(0);
   public latestBenchmarkScore = signal<number | null>(null);
-  public latestBenchmark = signal<BenchmarkSummary | null>(null);
+  public latestBenchmark = signal<BenchmarkRollup | null>(null);
   public benchmarkSummary = signal<BenchmarkRollup | null>(null);
   public platformBenchmarkSummary = signal<BenchmarkRollup | null>(null);
 
@@ -281,7 +350,7 @@ export class AnalyticsComponent implements OnDestroy {
     hasChartValues(this.securityAlertsSeries().flatMap(series => series.data)),
   );
 
-  public originMapData = signal<any[]>([]);
+  public originMapData = signal<OriginMapPoint[]>([]);
   public map: L.Map | undefined;
   private intervalId: ReturnType<typeof setInterval> | undefined;
   private exportPollId: ReturnType<typeof setInterval> | undefined;
@@ -408,7 +477,7 @@ export class AnalyticsComponent implements OnDestroy {
       url += '?' + params.join('&');
     }
 
-    this.http.get<any>(url).subscribe({
+    this.http.get<AnalyticsOverviewResponse>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const { benchmarking, ces, user_metrics } = response.data;
@@ -488,7 +557,7 @@ export class AnalyticsComponent implements OnDestroy {
           const origins = user_metrics?.origin_distribution || [];
           this.originMapData.set(origins);
 
-          const topOrigins = [...origins].sort((a: any, b: any) => b.count - a.count).slice(0, 5);
+          const topOrigins = [...origins].sort((a, b) => b.count - a.count).slice(0, 5);
           this.topRegionsCategories.set(
             topOrigins.map((d: { region?: string; country?: string; name?: string }) =>
               String(d.region ?? d.country ?? d.name ?? '—').slice(0, 8),
@@ -507,10 +576,8 @@ export class AnalyticsComponent implements OnDestroy {
           }
 
           // Prefer dedicated request_frequency; fall back to time_series.requests.
-          const reqFreq =
-            user_metrics?.request_frequency?.length > 0
-              ? user_metrics.request_frequency
-              : timeSeries;
+          const requestFrequency = user_metrics?.request_frequency ?? [];
+          const reqFreq = requestFrequency.length > 0 ? requestFrequency : timeSeries;
           this.frequencyCategories.set(
             reqFreq.map((d: { label?: string; time?: string }) =>
               String(d.label ?? d.time ?? '').slice(-5),
@@ -601,18 +668,18 @@ export class AnalyticsComponent implements OnDestroy {
   }
 
   private loadTenants() {
-    this.http.get<any>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
+    this.http.get<TenantListResponse>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           this.tenants.set(response.data);
           this.tenantOptions.set(
-            response.data.map((t: any) => ({
-              value: t.id,
-              label: t.is_platform ? `${t.name} (Global)` : t.name,
+            response.data.map(tenant => ({
+              value: tenant.id,
+              label: tenant.is_platform ? `${tenant.name} (Global)` : tenant.name,
             })),
           );
           if (!this.selectedTenantId() && response.data.length > 0) {
-            const userTenant = response.data.find((t: any) => !t.is_platform);
+            const userTenant = response.data.find(tenant => !tenant.is_platform);
             this.selectedTenantId.set(userTenant ? userTenant.id : response.data[0].id);
           }
         }

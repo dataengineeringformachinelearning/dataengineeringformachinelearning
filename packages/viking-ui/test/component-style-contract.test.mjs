@@ -64,7 +64,10 @@ test("major component categories consume the shared SaaS contracts", () => {
     /--viking-component-radius:\s*var\(--viking-radius\)/,
   );
   assert.match(variables, /--viking-component-surface-radius:/);
-  assert.match(variables, /--viking-navigation-item-height:\s*40px/);
+  assert.match(
+    variables,
+    /--viking-navigation-item-height:\s*var\(--viking-touch-target-min\)/,
+  );
   assert.match(forms, /background:\s*var\(--viking-component-bg-inset\)/);
   assert.match(buttons, /border-radius:\s*var\(--viking-component-radius\)/);
   assert.match(table, /var\(--viking-table-cell-padding-y\)/);
@@ -147,7 +150,6 @@ test("the application bundle keeps Angular surfaces complete without static-site
 
   for (const selector of [
     ".main-content",
-    ".global-auth-loader",
     ".grecaptcha-badge",
     ".full-width",
     ".api-key-reveal",
@@ -160,6 +162,7 @@ test("the application bundle keeps Angular surfaces complete without static-site
     assert.match(angularBridges, new RegExp(`\\${selector}\\b`));
   }
 
+  assert.doesNotMatch(angularBridges, /\.global-auth-loader\b/);
   assert.doesNotMatch(marketingGlobal, /\.global-auth-loader\b/);
   assert.doesNotMatch(marketingGlobal, /app-root\s*\{/);
   assert.doesNotMatch(marketingGlobal, /\.success-container\b/);
@@ -167,7 +170,7 @@ test("the application bundle keeps Angular surfaces complete without static-site
   assert.equal(tokens.zIndex.externalChallenge, 2147483647);
 });
 
-test("canonical pill radii do not cycle through legacy aliases", () => {
+test("canonical core tokens do not cycle through legacy aliases", () => {
   const coreStyles = readPackageFile("src", "styles", "viking-ui.scss");
   const variables = readPackageFile("src", "styles", "_variables.scss");
   const legacyAliases = readPackageFile(
@@ -177,17 +180,26 @@ test("canonical pill radii do not cycle through legacy aliases", () => {
   );
 
   assert.match(variables, /--viking-radius-pill:\s*999px/);
+  assert.match(variables, /--viking-navbar-height:\s*var\(--viking-space-7\)/);
   assert.match(
     legacyAliases,
     /--border-radius-pill:\s*var\(--viking-radius-pill\)/,
+  );
+  assert.match(
+    legacyAliases,
+    /--navbar-height:\s*var\(--viking-navbar-height\)/,
   );
   assert.doesNotMatch(
     coreStyles,
     /--viking-radius-pill:\s*var\(--border-radius-pill/,
   );
+  assert.doesNotMatch(
+    coreStyles,
+    /--viking-navbar-height:\s*var\(--navbar-height/,
+  );
 });
 
-test("loading indicators stay circular and the full-page loader uses the branded spinner", () => {
+test("loading indicators stay circular and public routes do not wait on auth", () => {
   const spinner = readPackageFile(
     "src",
     "styles",
@@ -228,10 +240,8 @@ test("loading indicators stay circular and the full-page loader uses the branded
     staticPrimitives,
     /\.viking-spinner-static\s*\{[\s\S]*aspect-ratio:\s*1\s*\/\s*1;/,
   );
-  assert.match(
-    appTemplate,
-    /<viking-spinner \[size\]="80" \[branded\]="true" label="Securing your session" \/>/,
-  );
+  assert.match(appTemplate, /<div class="app-layout">/);
+  assert.doesNotMatch(appTemplate, /global-auth-loader|Securing your session/);
   assert.doesNotMatch(frontendSource, /class="(?:spinner|premium-spinner)"/);
 });
 

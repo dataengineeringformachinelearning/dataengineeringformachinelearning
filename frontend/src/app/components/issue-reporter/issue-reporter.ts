@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -26,6 +26,8 @@ import { API_ENDPOINTS } from '../../core/constants/api.constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IssueReporter {
+  private readonly http = inject(HttpClient);
+
   isOpen = signal(false);
   isSubmitting = signal(false);
   issueDescription = signal('');
@@ -34,8 +36,6 @@ export class IssueReporter {
   // Track only error classes; never capture console values or error messages.
   private recentErrors: string[] = [];
   private pendingClientReportId: string | null = null;
-
-  constructor(private http: HttpClient) {}
 
   private recordErrorClass(value: unknown): void {
     // Never serialize console arguments/messages: they commonly contain URLs,

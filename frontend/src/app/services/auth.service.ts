@@ -24,16 +24,131 @@ import {
   unlink,
   updateEmail,
   updatePassword,
+  type ApplicationVerifier,
+  type Auth,
+  type AuthProvider,
+  type MultiFactorError,
+  type MultiFactorInfo,
+  type MultiFactorResolver,
+  type UserCredential,
 } from 'firebase/auth';
 
 import { SessionApiService } from './session-api.service';
 
+type AuthUserResponse = {
+  status: string;
+  user_id: number | null;
+  role: string | null;
+};
+
+type HandoffResponse = { status: string; token?: string };
+type LoginCredentials = { username: string; password: string };
+type RegistrationCredentials = LoginCredentials & { email: string };
+type ResetPasswordPayload = { token: string; new_password: string };
+type LoginResult = { success: boolean; error?: string; resolver?: MultiFactorResolver };
+type MockUser = { username: string; email: string; role: string; id: number };
+
+const firebaseErrorCode = (error: unknown): string | undefined => {
+  if (!error || typeof error !== 'object' || !('code' in error)) return undefined;
+  return typeof error.code === 'string' ? error.code : undefined;
+};
+
 /** Expected MFA challenge — not an application error. */
-const isMfaRequiredError = (error: unknown): boolean =>
-  !!error &&
-  typeof error === 'object' &&
-  'code' in error &&
-  (error as { code?: string }).code === 'auth/multi-factor-auth-required';
+const isMfaRequiredError = (error: unknown): error is MultiFactorError =>
+  firebaseErrorCode(error) === 'auth/multi-factor-auth-required';
+
+const parseMockUser = (storedUser: string | null): MockUser | null => {
+  if (!storedUser) return null;
+  try {
+    const user: unknown = JSON.parse(storedUser);
+    if (
+      !user ||
+      typeof user !== 'object' ||
+      !('username' in user) ||
+      typeof user.username !== 'string' ||
+      !('email' in user) ||
+      typeof user.email !== 'string'
+    ) {
+      return null;
+    }
+    return {
+      username: user.username,
+      email: user.email,
+      role: 'role' in user && typeof user.role === 'string' ? user.role : 'Operator',
+      id: 'id' in user && typeof user.id === 'number' ? user.id : 1,
+    };
+  } catch {
+    return null;
+  }
+};
+
+const createMockFirebaseUser = (user: MockUser): FirebaseUser => {
+  const token = `mock-token-${user.username}-${user.email}`;
+  return {
+    displayName: user.username,
+    email: user.email,
+    phoneNumber: null,
+    photoURL: null,
+    providerId: 'password',
+    uid: `mock-${user.id}`,
+    emailVerified: true,
+    isAnonymous: false,
+    metadata: {},
+    providerData: [],
+    refreshToken: '',
+    tenantId: null,
+    delete: async () => undefined,
+    getIdToken: async () => token,
+    getIdTokenResult: async () => ({
+      authTime: '',
+      expirationTime: '',
+      issuedAtTime: '',
+      signInProvider: 'password',
+      signInSecondFactor: null,
+      token,
+      claims: {},
+    }),
+    reload: async () => undefined,
+    toJSON: () => ({ ...user }),
+  };
+};
+
+const mockAuthUnavailable = (): never => {
+  throw new Error('Firebase Auth SDK operations are unavailable in mock mode');
+};
+
+class MockAuth implements Auth {
+  readonly isMock = true;
+  readonly currentUser: FirebaseUser;
+  readonly emulatorConfig = null;
+  readonly name = 'mock';
+  readonly settings: Auth['settings'] = { appVerificationDisabledForTesting: true };
+  languageCode: string | null = null;
+  tenantId: string | null = null;
+
+  constructor(user: MockUser) {
+    this.currentUser = createMockFirebaseUser(user);
+  }
+
+  get app(): Auth['app'] {
+    return mockAuthUnavailable();
+  }
+
+  get config(): Auth['config'] {
+    return mockAuthUnavailable();
+  }
+
+  setPersistence: Auth['setPersistence'] = async () => mockAuthUnavailable();
+  onAuthStateChanged: Auth['onAuthStateChanged'] = () => mockAuthUnavailable();
+  beforeAuthStateChanged: Auth['beforeAuthStateChanged'] = () => mockAuthUnavailable();
+  onIdTokenChanged: Auth['onIdTokenChanged'] = () => mockAuthUnavailable();
+  authStateReady: Auth['authStateReady'] = async () => undefined;
+  updateCurrentUser: Auth['updateCurrentUser'] = async () => mockAuthUnavailable();
+  useDeviceLanguage: Auth['useDeviceLanguage'] = () => undefined;
+  signOut: Auth['signOut'] = async () => undefined;
+}
+
+const isMockAuth = (auth: Auth | MockAuth): auth is MockAuth => auth instanceof MockAuth;
 
 export type AccountDeletionResult =
   | { status: 'completed' }
@@ -57,10 +172,24 @@ export class AuthService {
   public sessionId = signal<string | null>(null);
   private http = inject(HttpClient);
   private sessionApi = inject(SessionApiService);
-  public auth: any;
+  public auth: Auth | MockAuth | null = null;
 
   private useMock =
     typeof window !== 'undefined' && environment.firebase.apiKey === 'PLACEHOLDER_API_KEY'; // pragma: allowlist secret
+
+  private requireFirebaseAuth(): Auth {
+    const auth = this.auth;
+    if (!auth || isMockAuth(auth)) {
+      throw new Error('Firebase Auth not initialized');
+    }
+    return auth;
+  }
+
+  private requireFirebaseUser(): FirebaseUser {
+    const user = this.requireFirebaseAuth().currentUser;
+    if (!user) throw new Error('No user is currently logged in.');
+    return user;
+  }
 
   private syncCrossSiteAuthCache(): void {
     if (typeof window === 'undefined') return;
@@ -81,19 +210,12 @@ export class AuthService {
   constructor() {
     if (typeof window !== 'undefined') {
       if (this.useMock) {
-        const mockUserStr = localStorage.getItem('mock_user');
-        if (mockUserStr) {
-          const user = JSON.parse(mockUserStr);
-          this.auth = {
-            currentUser: {
-              getIdToken: async () => `mock-token-${user.username}-${user.email}`,
-              displayName: user.username,
-              email: user.email,
-            },
-          };
+        const user = parseMockUser(localStorage.getItem('mock_user'));
+        if (user) {
+          this.auth = new MockAuth(user);
           this.isAuthenticated.set(true);
-          this.currentUserId.set(user.id || 1);
-          this.currentUserRole.set(user.role || 'Operator');
+          this.currentUserId.set(user.id);
+          this.currentUserRole.set(user.role);
         } else {
           this.auth = null;
           this.isAuthenticated.set(false);
@@ -105,15 +227,16 @@ export class AuthService {
         this.syncCrossSiteAuthCache();
       } else {
         const app = getApps().length === 0 ? initializeApp(environment.firebase) : getApp();
-        this.auth = getAuth(app);
+        const auth = getAuth(app);
+        this.auth = auth;
 
-        onAuthStateChanged(this.auth, async (user: FirebaseUser | null) => {
+        onAuthStateChanged(auth, async (user: FirebaseUser | null) => {
           if (user) {
             try {
               const token = await user.getIdToken();
-              const res: any = await firstValueFrom(
+              const res = await firstValueFrom(
                 this.http
-                  .get(`${environment.backendUrl}/api/v1/auth/user`, {
+                  .get<AuthUserResponse>(`${environment.backendUrl}/api/v1/auth/user`, {
                     headers: { Authorization: `Bearer ${token}` },
                   })
                   .pipe(timeout(20000)),
@@ -129,7 +252,7 @@ export class AuthService {
               }
               await this.refreshMfaState();
               await this.bindServerSession(user);
-            } catch (e: any) {
+            } catch (e: unknown) {
               console.error('Failed to sync auth with backend', e);
               this.isAuthenticated.set(false);
               this.currentUserId.set(null);
@@ -160,13 +283,12 @@ export class AuthService {
   async checkAuth() {
     this.isProcessing.set(true);
     if (this.useMock) {
-      const mockUserStr = localStorage.getItem('mock_user');
-      if (mockUserStr) {
-        const user = JSON.parse(mockUserStr);
+      const user = parseMockUser(localStorage.getItem('mock_user'));
+      if (user) {
         try {
           const token = `mock-token-${user.username}-${user.email}`;
-          const res: any = await firstValueFrom(
-            this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+          const res = await firstValueFrom(
+            this.http.get<AuthUserResponse>(`${environment.backendUrl}/api/v1/auth/user`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
           );
@@ -175,10 +297,10 @@ export class AuthService {
             this.currentUserId.set(res.user_id);
             this.currentUserRole.set(res.role);
           }
-        } catch (_e: any) {
+        } catch {
           this.isAuthenticated.set(true);
-          this.currentUserId.set(user.id || 1);
-          this.currentUserRole.set(user.role || 'Operator');
+          this.currentUserId.set(user.id);
+          this.currentUserRole.set(user.role);
         }
       } else {
         this.isAuthenticated.set(false);
@@ -199,8 +321,8 @@ export class AuthService {
     if (user) {
       try {
         const token = await user.getIdToken();
-        const res: any = await firstValueFrom(
-          this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+        const res = await firstValueFrom(
+          this.http.get<AuthUserResponse>(`${environment.backendUrl}/api/v1/auth/user`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         );
@@ -213,7 +335,7 @@ export class AuthService {
           this.currentUserId.set(null);
           this.currentUserRole.set(null);
         }
-      } catch (_e: any) {
+      } catch {
         this.isAuthenticated.set(false);
         this.currentUserId.set(null);
         this.currentUserRole.set(null);
@@ -226,7 +348,7 @@ export class AuthService {
     this.isProcessing.set(false);
   }
 
-  async login(credentials: any): Promise<{ success: boolean; error?: string; resolver?: any }> {
+  async login(credentials: LoginCredentials): Promise<LoginResult> {
     this.isProcessing.set(true);
     if (this.useMock) {
       const email = credentials.username || 'user@example.com';
@@ -235,17 +357,11 @@ export class AuthService {
         email === 'admin@dataengineeringformachinelearning.com' ? 'Security Admin' : 'Operator';
       const mockUser = { username, email, role, id: 1 };
       localStorage.setItem('mock_user', JSON.stringify(mockUser));
-      this.auth = {
-        currentUser: {
-          getIdToken: async () => `mock-token-${username}-${email}`,
-          displayName: username,
-          email: email,
-        },
-      };
+      this.auth = new MockAuth(mockUser);
       try {
         const token = `mock-token-${username}-${email}`;
-        const res: any = await firstValueFrom(
-          this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+        const res = await firstValueFrom(
+          this.http.get<AuthUserResponse>(`${environment.backendUrl}/api/v1/auth/user`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         );
@@ -254,7 +370,7 @@ export class AuthService {
           this.currentUserId.set(res.user_id);
           this.currentUserRole.set(res.role);
         }
-      } catch (_e: any) {
+      } catch {
         this.isAuthenticated.set(true);
         this.currentUserId.set(1);
         this.currentUserRole.set(role);
@@ -263,30 +379,32 @@ export class AuthService {
       return { success: true };
     }
     try {
-      if (!this.auth) throw new Error('Firebase Auth not initialized');
+      const auth = this.requireFirebaseAuth();
       // Treat credentials.username as the login email
-      await signInWithEmailAndPassword(this.auth, credentials.username, credentials.password);
+      await signInWithEmailAndPassword(auth, credentials.username, credentials.password);
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       this.isProcessing.set(false);
+      const code = firebaseErrorCode(e);
       if (!isMfaRequiredError(e)) {
-        console.warn('[Auth] Email login failed:', e?.code ?? 'unknown');
+        console.warn('[Auth] Email login failed:', code ?? 'unknown');
       }
-      if (e?.code === 'auth/multi-factor-auth-required') {
+      const auth = this.auth;
+      if (isMfaRequiredError(e) && auth && !isMockAuth(auth)) {
         return {
           success: false,
           error: 'MFA_REQUIRED',
-          resolver: getMultiFactorResolver(this.auth, e),
+          resolver: getMultiFactorResolver(auth, e),
         };
       }
       let errorMsg: string;
-      if (e?.code) {
-        if (e.code === 'auth/invalid-email' || e.code === 'auth/invalid-credential') {
+      if (code) {
+        if (code === 'auth/invalid-email' || code === 'auth/invalid-credential') {
           errorMsg = 'Invalid email or password.';
-        } else if (e.code === 'auth/user-not-found') {
+        } else if (code === 'auth/user-not-found') {
           errorMsg = 'User does not exist.';
-        } else if (e.code === 'auth/wrong-password') {
+        } else if (code === 'auth/wrong-password') {
           errorMsg = 'Incorrect password.';
         } else {
           errorMsg = 'An error occurred during sign in. Please try again.';
@@ -298,15 +416,17 @@ export class AuthService {
     }
   }
 
-  async register(credentials: any): Promise<{ success: boolean; error?: string }> {
+  async register(
+    credentials: RegistrationCredentials,
+  ): Promise<{ success: boolean; error?: string }> {
     this.isProcessing.set(true);
     if (this.useMock) {
       return this.login({ username: credentials.email, password: credentials.password });
     }
     try {
-      if (!this.auth) throw new Error('Firebase Auth not initialized');
+      const auth = this.requireFirebaseAuth();
       const userCredential = await createUserWithEmailAndPassword(
-        this.auth,
+        auth,
         credentials.email,
         credentials.password,
       );
@@ -323,16 +443,17 @@ export class AuthService {
       }
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       this.isProcessing.set(false);
       console.error(e);
+      const code = firebaseErrorCode(e);
       let errorMsg: string;
-      if (e?.code) {
-        if (e.code === 'auth/email-already-in-use') {
+      if (code) {
+        if (code === 'auth/email-already-in-use') {
           errorMsg = 'Email already in use.';
-        } else if (e.code === 'auth/weak-password') {
+        } else if (code === 'auth/weak-password') {
           errorMsg = 'Password is too weak. Must be at least 6 characters.';
-        } else if (e.code === 'auth/invalid-email') {
+        } else if (code === 'auth/invalid-email') {
           errorMsg = 'Invalid email address format.';
         } else {
           errorMsg = 'An error occurred during registration. Please try again.';
@@ -361,15 +482,16 @@ export class AuthService {
       return;
     }
     try {
-      if (this.auth) {
-        await signOut(this.auth);
+      const auth = this.auth;
+      if (auth && !isMockAuth(auth)) {
+        await signOut(auth);
       }
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
       this.currentUserRole.set(null);
       this.isProcessing.set(false);
       this.syncCrossSiteAuthCache();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
@@ -423,40 +545,44 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     try {
-      if (!this.auth) return false;
-      await sendPasswordResetEmail(this.auth, email);
+      const auth = this.auth;
+      if (!auth || isMockAuth(auth)) return false;
+      await sendPasswordResetEmail(auth, email);
       return true;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       return false;
     }
   }
 
-  async resetPassword(payload: any) {
+  async resetPassword(payload: ResetPasswordPayload) {
     try {
-      if (!this.auth) return false;
-      await confirmPasswordReset(this.auth, payload.token, payload.new_password);
+      const auth = this.auth;
+      if (!auth || isMockAuth(auth)) return false;
+      await confirmPasswordReset(auth, payload.token, payload.new_password);
       return true;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       return false;
     }
   }
 
   async updateUserEmail(newEmail: string) {
-    if (!this.auth.currentUser) throw new Error('No user logged in');
+    if (!this.auth?.currentUser) throw new Error('No user logged in');
     try {
-      await updateEmail(this.auth.currentUser, newEmail);
+      const user = this.requireFirebaseUser();
+      await updateEmail(user, newEmail);
       return { status: 'success' };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
+      const code = firebaseErrorCode(e);
       let errorMsg = 'Failed to update email.';
-      if (e.code === 'auth/requires-recent-login') {
+      if (code === 'auth/requires-recent-login') {
         errorMsg =
           'This operation is sensitive and requires recent authentication. Please log out and log back in before retrying.';
-      } else if (e.code === 'auth/email-already-in-use') {
+      } else if (code === 'auth/email-already-in-use') {
         errorMsg = 'This email is already in use by another account.';
-      } else if (e.code === 'auth/invalid-email') {
+      } else if (code === 'auth/invalid-email') {
         errorMsg = 'Invalid email address.';
       }
       return { status: 'error', message: errorMsg };
@@ -464,17 +590,19 @@ export class AuthService {
   }
 
   async updateUserPassword(newPassword: string) {
-    if (!this.auth.currentUser) throw new Error('No user logged in');
+    if (!this.auth?.currentUser) throw new Error('No user logged in');
     try {
-      await updatePassword(this.auth.currentUser, newPassword);
+      const user = this.requireFirebaseUser();
+      await updatePassword(user, newPassword);
       return { status: 'success' };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
+      const code = firebaseErrorCode(e);
       let errorMsg = 'Failed to update password.';
-      if (e.code === 'auth/requires-recent-login') {
+      if (code === 'auth/requires-recent-login') {
         errorMsg =
           'This operation is sensitive and requires recent authentication. Please log out and log back in before retrying.';
-      } else if (e.code === 'auth/weak-password') {
+      } else if (code === 'auth/weak-password') {
         errorMsg = 'Password should be at least 6 characters.';
       }
       return { status: 'error', message: errorMsg };
@@ -488,7 +616,7 @@ export class AuthService {
    * Survives soft navigations; cleared on logout.
    */
   markMfaSessionVerified(uid?: string | null): void {
-    const userUid = uid || (this.auth?.currentUser as FirebaseUser | null | undefined)?.uid;
+    const userUid = uid || this.auth?.currentUser?.uid;
     if (!userUid || typeof sessionStorage === 'undefined') {
       this.mfaVerifiedInSession.set(true);
       return;
@@ -601,7 +729,14 @@ export class AuthService {
   }
 
   async refreshMfaState(forceToken = false): Promise<void> {
-    const user = this.auth?.currentUser as FirebaseUser | null | undefined;
+    const auth = this.auth;
+    if (auth && isMockAuth(auth)) {
+      this.mfaEnrolled.set(false);
+      this.mfaVerifiedInSession.set(false);
+      this.clearMfaSessionFlag();
+      return;
+    }
+    const user = auth?.currentUser;
     if (!user) {
       this.mfaEnrolled.set(false);
       this.mfaVerifiedInSession.set(false);
@@ -650,7 +785,7 @@ export class AuthService {
       console.warn('MFA state refresh skipped:', e);
       // Do not clobber enrolled / session-verified state on transient token errors.
       try {
-        const u = this.auth?.currentUser as FirebaseUser | null | undefined;
+        const u = this.auth?.currentUser;
         if (u) {
           this.mfaEnrolled.set(multiFactor(u).enrolledFactors.length > 0);
           if (this.hasMfaSessionFlag(u.uid)) {
@@ -668,28 +803,31 @@ export class AuthService {
     }
   }
 
-  async sendMfaEnrollmentCode(phoneNumber: string, recaptchaVerifier: any): Promise<string> {
-    if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
-    const session = await multiFactor(this.auth.currentUser).getSession();
+  async sendMfaEnrollmentCode(
+    phoneNumber: string,
+    recaptchaVerifier: ApplicationVerifier,
+  ): Promise<string> {
+    const auth = this.requireFirebaseAuth();
+    const user = this.requireFirebaseUser();
+    const session = await multiFactor(user).getSession();
     const phoneInfoOptions = { phoneNumber, session };
-    const phoneAuthProvider = new PhoneAuthProvider(this.auth);
+    const phoneAuthProvider = new PhoneAuthProvider(auth);
     return await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier);
   }
 
   async confirmMfaEnrollment(verificationId: string, verificationCode: string): Promise<void> {
-    if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
+    const user = this.requireFirebaseUser();
     const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
     const assertion = PhoneMultiFactorGenerator.assertion(cred);
-    await multiFactor(this.auth.currentUser).enroll(assertion, 'SMS Phone MFA');
+    await multiFactor(user).enroll(assertion, 'SMS Phone MFA');
     await this.refreshMfaState(true);
   }
 
-  async unenrollMfa(factorInfo: any): Promise<void> {
-    if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
-    await multiFactor(this.auth.currentUser).unenroll(factorInfo);
+  async unenrollMfa(factorInfo: MultiFactorInfo | string): Promise<void> {
+    await multiFactor(this.requireFirebaseUser()).unenroll(factorInfo);
   }
 
-  private async signInWithPopupCentered(provider: any): Promise<any> {
+  private async signInWithPopupCentered(provider: AuthProvider): Promise<UserCredential> {
     const originalOpen = window.open;
     window.open = function (url?: string | URL, target?: string, features?: string) {
       if (features) {
@@ -717,26 +855,25 @@ export class AuthService {
     };
 
     try {
-      return await signInWithPopup(this.auth, provider);
+      return await signInWithPopup(this.requireFirebaseAuth(), provider);
     } finally {
       window.open = originalOpen;
     }
   }
 
-  async loginWithApple(): Promise<{ success: boolean; error?: string; resolver?: any }> {
+  async loginWithApple(): Promise<LoginResult> {
     this.isProcessing.set(true);
     if (this.useMock) {
       return this.login({ username: 'apple-user@example.com', password: 'password' }); // pragma: allowlist secret
     }
     try {
-      if (!this.auth) throw new Error('Firebase Auth not initialized');
       const provider = new OAuthProvider('apple.com');
       const userCredential = await this.signInWithPopupCentered(provider);
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
-        const res: any = await firstValueFrom(
-          this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+        const res = await firstValueFrom(
+          this.http.get<AuthUserResponse>(`${environment.backendUrl}/api/v1/auth/user`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         );
@@ -747,36 +884,37 @@ export class AuthService {
 
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       this.isProcessing.set(false);
+      const code = firebaseErrorCode(e);
       if (!isMfaRequiredError(e)) {
-        console.warn('[Auth] Apple sign-in failed:', e?.code ?? 'unknown');
+        console.warn('[Auth] Apple sign-in failed:', code ?? 'unknown');
       }
-      if (e?.code === 'auth/multi-factor-auth-required') {
+      const auth = this.auth;
+      if (isMfaRequiredError(e) && auth && !isMockAuth(auth)) {
         return {
           success: false,
           error: 'MFA_REQUIRED',
-          resolver: getMultiFactorResolver(this.auth, e),
+          resolver: getMultiFactorResolver(auth, e),
         };
       }
       return { success: false, error: 'Apple Sign-In failed. Please try again.' };
     }
   }
 
-  async loginWithGoogle(): Promise<{ success: boolean; error?: string; resolver?: any }> {
+  async loginWithGoogle(): Promise<LoginResult> {
     this.isProcessing.set(true);
     if (this.useMock) {
       return this.login({ username: 'google-user@example.com', password: 'password' }); // pragma: allowlist secret
     }
     try {
-      if (!this.auth) throw new Error('Firebase Auth not initialized');
       const provider = new GoogleAuthProvider();
       const userCredential = await this.signInWithPopupCentered(provider);
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
-        const res: any = await firstValueFrom(
-          this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+        const res = await firstValueFrom(
+          this.http.get<AuthUserResponse>(`${environment.backendUrl}/api/v1/auth/user`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         );
@@ -787,16 +925,18 @@ export class AuthService {
 
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       this.isProcessing.set(false);
+      const code = firebaseErrorCode(e);
       if (!isMfaRequiredError(e)) {
-        console.warn('[Auth] Google sign-in failed:', e?.code ?? 'unknown');
+        console.warn('[Auth] Google sign-in failed:', code ?? 'unknown');
       }
-      if (e?.code === 'auth/multi-factor-auth-required') {
+      const auth = this.auth;
+      if (isMfaRequiredError(e) && auth && !isMockAuth(auth)) {
         return {
           success: false,
           error: 'MFA_REQUIRED',
-          resolver: getMultiFactorResolver(this.auth, e),
+          resolver: getMultiFactorResolver(auth, e),
         };
       }
       return { success: false, error: 'Google Sign-In failed. Please try again.' };
@@ -805,13 +945,12 @@ export class AuthService {
 
   async linkGoogleAccount(): Promise<{ success: boolean; error?: string }> {
     try {
-      if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
       const provider = new GoogleAuthProvider();
-      await linkWithPopup(this.auth.currentUser, provider);
+      await linkWithPopup(this.requireFirebaseUser(), provider);
       return { success: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      if (e?.code === 'auth/credential-already-in-use') {
+      if (firebaseErrorCode(e) === 'auth/credential-already-in-use') {
         return {
           success: false,
           error:
@@ -824,13 +963,12 @@ export class AuthService {
 
   async linkAppleAccount(): Promise<{ success: boolean; error?: string }> {
     try {
-      if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
       const provider = new OAuthProvider('apple.com');
-      await linkWithPopup(this.auth.currentUser, provider);
+      await linkWithPopup(this.requireFirebaseUser(), provider);
       return { success: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      if (e?.code === 'auth/credential-already-in-use') {
+      if (firebaseErrorCode(e) === 'auth/credential-already-in-use') {
         return {
           success: false,
           error:
@@ -843,10 +981,9 @@ export class AuthService {
 
   async unlinkProvider(providerId: string): Promise<{ success: boolean; error?: string }> {
     try {
-      if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
-      await unlink(this.auth.currentUser, providerId);
+      await unlink(this.requireFirebaseUser(), providerId);
       return { success: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       return { success: false, error: `Failed to unlink ${providerId}. Please try again.` };
     }
@@ -861,8 +998,8 @@ export class AuthService {
     this.isProcessing.set(true);
     try {
       const fbToken = await this.auth.currentUser.getIdToken();
-      const res: any = await firstValueFrom(
-        this.http.post(
+      const res = await firstValueFrom(
+        this.http.post<HandoffResponse>(
           `${environment.backendUrl}/api/v1/auth/handoff/generate`,
           {},
           {
@@ -877,7 +1014,7 @@ export class AuthService {
       } else {
         window.location.href = targetUrl;
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Failed to generate handoff token', e);
       window.location.href = targetUrl;
     } finally {

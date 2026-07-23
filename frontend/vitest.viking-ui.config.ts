@@ -1,11 +1,20 @@
 import angular from '@analogjs/vite-plugin-angular';
 import { defineConfig } from 'vitest/config';
 
-// Dedicated config for the @dataengineeringformachinelearning/viking-ui library. Unlike the app config
-// (which stubs component templates), the library tests compile real templates
-// via the Analog Angular plugin so signal-based inputs/models work under test.
+// Keep Viking-UI's source tests isolated with their own TypeScript program while
+// compiling the same real Angular templates used by the application tests.
 export default defineConfig({
   plugins: [angular({ tsconfig: '../packages/viking-ui/tsconfig.spec.json' })],
+  resolve: {
+    dedupe: [
+      '@angular/common',
+      '@angular/compiler',
+      '@angular/core',
+      '@angular/forms',
+      '@angular/platform-browser',
+      '@angular/router',
+    ],
+  },
   test: {
     globals: true,
     environment: 'jsdom',

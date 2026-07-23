@@ -189,7 +189,7 @@
 }
 
 /* Ensure queue/detail panels fill height on tablet+ */
-@media (min-width: 760px) {
+@media (min-width: 768px) {
   .triage-grid {
     align-items: stretch;
   }
@@ -201,7 +201,7 @@
 }
 
 /* Tablet and wider: restore the full matrix cell size. */
-@media (min-width: 480px) {
+@media (min-width: 640px) {
   .matrix-cell {
     width: var(--viking-space-8);
     height: var(--viking-space-8);

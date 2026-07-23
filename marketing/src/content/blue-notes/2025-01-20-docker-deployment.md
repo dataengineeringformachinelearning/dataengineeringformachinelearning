@@ -8,8 +8,12 @@ categories:
   - Deploy
 ---
 
+## Deployment model
+
 DEML ships distroless containers for the Django BFF and related control-plane
 services. Production Angular runs on Vercel; Django runs on Fly. Sealed streaming
 and processing stay on FORJD.
+
+## Operations guides
 
 See [docs/FLY.md](../../../docs/FLY.md) and [docs/VERCEL.md](../../../docs/VERCEL.md).

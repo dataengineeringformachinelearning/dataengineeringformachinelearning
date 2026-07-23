@@ -16,6 +16,8 @@ import {
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 
+type BillingSyncResponse = { active: boolean };
+
 @Component({
   selector: 'app-success',
   standalone: true,
@@ -43,17 +45,19 @@ export class Success implements OnInit {
   }
 
   private syncSubscription() {
-    this.http.post(`${environment.backendUrl}/api/v1/billing/sync`, {}).subscribe({
-      next: (res: any) => {
-        this.isSyncing = false;
-        this.syncSuccess = res.active;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.isSyncing = false;
-        this.syncSuccess = false;
-        this.cdr.markForCheck();
-      },
-    });
+    this.http
+      .post<BillingSyncResponse>(`${environment.backendUrl}/api/v1/billing/sync`, {})
+      .subscribe({
+        next: res => {
+          this.isSyncing = false;
+          this.syncSuccess = res.active;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.isSyncing = false;
+          this.syncSuccess = false;
+          this.cdr.markForCheck();
+        },
+      });
   }
 }

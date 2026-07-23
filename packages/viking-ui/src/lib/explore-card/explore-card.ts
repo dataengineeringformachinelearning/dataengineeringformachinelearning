@@ -204,7 +204,7 @@ const segmentToDataPoint = (
         max-width: 100%;
       }
 
-      @media (min-width: 480px) {
+      @media (min-width: 640px) {
         :host {
           grid-template-columns: minmax(0, 1fr) minmax(4rem, max-content);
           align-items: center;
@@ -432,7 +432,7 @@ export class ExploreCardMetricItemComponent {
       }
 
       /* The card responds to its own width, not the browser viewport. */
-      @container viking-explore-card (min-width: 42rem) {
+      @container viking-explore-card (min-width: 640px) {
         .viking-explore-card-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: var(--viking-space-3);

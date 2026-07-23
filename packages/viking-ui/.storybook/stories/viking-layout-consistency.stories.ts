@@ -51,7 +51,7 @@ const meta: Meta<typeof renderConsistency> = {
   tags: ["autodocs"],
   render: renderConsistency,
   parameters: {
-    chromatic: { viewports: [390, 768, 1440] },
+    chromatic: { viewports: [375, 640, 768, 1024, 1280] },
     docs: {
       description: {
         component:

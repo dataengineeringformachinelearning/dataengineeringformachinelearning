@@ -90,7 +90,7 @@ import {
         flex-wrap: wrap;
         align-items: flex-start;
         justify-content: space-between;
-        gap: var(--viking-space-3);
+        gap: var(--viking-space-4);
         padding: var(--viking-space-4);
         border-bottom: 1px solid var(--viking-border);
         background: color-mix(
@@ -118,7 +118,7 @@ import {
       .viking-status-section-title {
         margin: 0;
         color: var(--viking-text);
-        font-size: var(--viking-font-size-2xl);
+        font-size: var(--viking-font-size-xl);
         font-weight: var(--viking-font-weight-bold);
         line-height: var(--viking-line-height-tight);
       }
@@ -172,8 +172,8 @@ import {
 
       .viking-status-section-content ::ng-deep .viking-status-section-block {
         display: grid;
-        gap: var(--viking-space-6);
-        padding: var(--viking-space-5);
+        gap: var(--viking-space-4);
+        padding: var(--viking-space-4);
         border-top: 1px solid var(--viking-border-subtle);
       }
 
@@ -248,6 +248,19 @@ import {
 
       /* md breakpoint: 2-col for grids, start 2-col for dense metrics */
       @media (min-width: 768px) {
+        .viking-status-section-hero {
+          gap: var(--viking-space-3);
+        }
+
+        .viking-status-section-title {
+          font-size: var(--viking-font-size-2xl);
+        }
+
+        .viking-status-section-content ::ng-deep .viking-status-section-block {
+          gap: var(--viking-space-6);
+          padding: var(--viking-space-5);
+        }
+
         .viking-status-section-content ::ng-deep .viking-status-section-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: var(--viking-space-5);
@@ -258,18 +271,6 @@ import {
           .viking-status-section-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: var(--viking-space-5);
-        }
-      }
-
-      @media (max-width: 767px) {
-        .viking-status-section-hero,
-        .viking-status-section-content ::ng-deep .viking-status-section-block {
-          padding: var(--viking-space-4);
-          gap: var(--viking-space-4);
-        }
-
-        .viking-status-section-title {
-          font-size: var(--viking-font-size-xl);
         }
       }
     `,

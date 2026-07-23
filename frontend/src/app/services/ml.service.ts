@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import type { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
 import type { StatusPageData } from './monitor.service';
 
@@ -215,21 +216,21 @@ export class MlService {
     });
   }
 
-  fetchStixReport(statusPageId?: string) {
+  fetchStixReport(statusPageId?: string): Observable<unknown> {
     const baseUrl = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/stix');
     const url = statusPageId ? `${baseUrl}?status_page_id=${statusPageId}` : baseUrl;
-    return this.http.get<any>(url);
+    return this.http.get<unknown>(url);
   }
 
-  submitToIsac(destination: string, statusPageId?: string) {
+  submitToIsac(destination: string, statusPageId?: string): Observable<unknown> {
     const url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/submit-isac');
     const body = { destination, status_page_id: statusPageId || null };
-    return this.http.post<any>(url, body);
+    return this.http.post<unknown>(url, body);
   }
 
-  fetchSocStatus() {
+  fetchSocStatus(): Observable<unknown> {
     const url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/compliance/soc-status');
-    return this.http.get<any>(url);
+    return this.http.get<unknown>(url);
   }
 }
 

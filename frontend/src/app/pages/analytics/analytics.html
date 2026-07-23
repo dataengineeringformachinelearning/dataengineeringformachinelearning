@@ -303,8 +303,9 @@
           <viking-app-icon name="info" />
           @if (latestBenchmark()?.evaluation_status === 'measured') {
           <span>
-            {{ latestBenchmark()?.model_type | uppercase }} · n={{ latestBenchmark()?.dataset_size
-            }} · accuracy {{ latestBenchmark()?.accuracy_percent | number:'1.1-1' }}%
+            {{ latestBenchmark()?.models_evaluated }} model {{ latestBenchmark()?.models_evaluated
+            === 1 ? 'type' : 'types' }} · n={{ latestBenchmark()?.dataset_size }} · score {{
+            formatOptionalPercent(latestBenchmark()?.score_percent) }}
           </span>
           } @else {
           <span>Insufficient observations for a measured benchmark</span>
@@ -376,7 +377,7 @@
         />
         <viking-metric-card
           label="Service uptime"
-          [value]="uptimePercent() == null ? '—' : (uptimePercent() | number:'1.2-2') + '%'"
+          [value]="uptimePercent() === null ? '—' : (uptimePercent() | number:'1.2-2') + '%'"
           sublabel="Availability across monitored services"
           icon="heart"
           tone="success"
@@ -666,7 +667,7 @@
           <viking-chart-card-header
             title="HTTP Status Distribution"
             [hasData]="hasStatusStackedData() || hasStatusData()"
-            [value]="uptimePercent() == null ? '—' : uptimePercent() + '%'"
+            [value]="uptimePercent() === null ? '—' : uptimePercent() + '%'"
             [trend]="statusTrend()"
             emptyLabel="Awaiting signal"
           />

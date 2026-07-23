@@ -30,7 +30,7 @@
   position: relative;
   z-index: 10;
   overflow: visible;
-  @media (min-width: 960px) {
+  @media (min-width: 1024px) {
     grid-template-columns: 1fr 1.15fr;
     gap: var(--viking-space-6);
   }
@@ -307,7 +307,7 @@
     gap: var(--viking-space-4);
   }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -438,11 +438,11 @@
   padding: 0;
   margin: 0;
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: 960px) {
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -591,7 +591,7 @@
   border-bottom: 1px solid var(--viking-border);
   position: relative;
 
-  @media (min-width: 901px) {
+  @media (min-width: 1024px) {
     grid-template-columns: 1fr 1fr;
     gap: var(--viking-space-8);
     padding: var(--viking-space-9) 0;
@@ -632,7 +632,7 @@
   }
 
   &.reversed {
-    @media (min-width: 901px) {
+    @media (min-width: 1024px) {
       .showcase-band-copy {
         order: 2;
       }
@@ -762,12 +762,12 @@
   gap: var(--viking-space-2);
   margin-bottom: var(--viking-space-3);
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--viking-space-2);
   }
 
-  @media (min-width: 901px) {
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -864,7 +864,7 @@
   gap: var(--viking-space-5);
   align-items: center;
 
-  @media (min-width: 901px) {
+  @media (min-width: 1024px) {
     grid-template-columns: 1fr 1fr;
     gap: var(--viking-space-8);
   }
@@ -1012,7 +1012,7 @@
   margin: 0 auto;
   padding-top: var(--viking-space-3);
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     flex-direction: row;
     flex-wrap: wrap;
   }
@@ -1036,7 +1036,7 @@
     flex-direction: column;
     text-align: left;
 
-    @media (min-width: 600px) {
+    @media (min-width: 640px) {
       flex: 1;
       min-width: 260px;
       max-width: 360px;
@@ -1557,7 +1557,7 @@
   background: var(--viking-surface);
 }
 
-@media (min-width: 37.5rem) {
+@media (min-width: 640px) {
   .hero-stats,
   .hero-copy .cta-group {
     width: min(100%, var(--viking-content-readable-max-width));

@@ -4,7 +4,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["vitest/globals"]
+    "rootDir": "..",
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]
+  "include": ["src/**/*.d.ts", "src/**/*.spec.ts", "../packages/viking-ui/src/**/*.ts"],
+  "exclude": ["../packages/viking-ui/src/**/*.spec.ts"]
 }
