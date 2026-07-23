@@ -729,13 +729,18 @@ def _reshape_public_status_page(page: dict[str, Any], *, status_code: int = 200)
     row["status_page_id"] = row["status_page_id"] or page_id
   page["services"] = services
   page["incidents"] = incidents
-  # Normalize KPI / history fields Angular binds on IsolatedStatus.
+  # Normalize KPI / history / intelligence fields Angular binds on IsolatedStatus.
   compat = deml_status_page(page, deml_user_id=None)
   page["overall_uptime"] = compat["overall_uptime"]
   page["cumulative_sla"] = compat["cumulative_sla"]
   page["uptime_history"] = compat["uptime_history"]
   page["p99_latency"] = compat["p99_latency"]
   page["total_requests"] = compat["total_requests"]
+  page["threats_detected_24h"] = compat["threats_detected_24h"]
+  page["spiking_temporal_forecast"] = compat["spiking_temporal_forecast"]
+  page["threat_anomaly_score"] = compat["threat_anomaly_score"]
+  page["threat_suspicious_ratio"] = compat["threat_suspicious_ratio"]
+  page["uses_norse"] = compat["uses_norse"]
   return JsonResponse(page, status=status_code)
 
 

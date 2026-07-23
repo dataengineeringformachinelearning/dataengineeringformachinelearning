@@ -349,6 +349,11 @@ def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[
       if isinstance(page.get("threats_detected_24h"), int | float)
       else None
     ),
+    # Public intelligence (ciphertext-free) — explore/status seed ML gauges without auth.
+    "spiking_temporal_forecast": _optional_number(page.get("spiking_temporal_forecast")),
+    "threat_anomaly_score": _optional_number(page.get("threat_anomaly_score")),
+    "threat_suspicious_ratio": _optional_number(page.get("threat_suspicious_ratio")),
+    "uses_norse": (bool(page["uses_norse"]) if isinstance(page.get("uses_norse"), bool) else None),
   }
 
 
@@ -693,10 +698,13 @@ def deml_temporal_forecast(overview_body: dict[str, Any]) -> dict[str, Any]:
   forecast = ces.get("spiking_temporal_forecast")
   if forecast is None:
     forecast = overview_body.get("spiking_temporal_forecast")
+  uses_norse = ces.get("uses_norse")
+  if uses_norse is None:
+    uses_norse = overview_body.get("uses_norse")
   return {
     "status": "success",
     "spiking_temporal_forecast": float(forecast) if forecast is not None else None,
-    "uses_norse": False,
+    "uses_norse": bool(uses_norse) if isinstance(uses_norse, bool) else False,
     "created_at": None,
   }
 

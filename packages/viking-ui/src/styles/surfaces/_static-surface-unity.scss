@@ -135,7 +135,8 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .backend-feature-showcase {
+  /* Unified showcase anatomy only — do not hijack backend-landing panels. */
+  .backend-feature-showcase:has(> .viking-unified-section-header) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

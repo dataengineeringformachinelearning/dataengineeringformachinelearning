@@ -204,31 +204,18 @@ export class IsolatedStatus implements OnInit {
             ...m,
             [page.id]: page.total_requests ?? 0,
           }));
-          this.simulatedThreatReportMap.update(m => ({
-            ...m,
-            [page.id]: {
-              status: 'success',
-              suspicious_ratio: 0,
-              anomaly_score: 0,
-              top_location: 'N/A',
-              location_weight: 0,
-              created_at: null,
-              message: 'Pending telemetry',
-            },
-          }));
-
-          // Public slug payload embeds services/incidents; the authed list
-          // adapters return [] for anonymous visitors and would clobber them.
+          // Public slug payload embeds services/incidents + intelligence KPIs.
           this.monitorService.seedFromEmbeddedPage(page);
+          this.mlService.seedFromStatusPage(page);
           if (this.authService.isAuthenticated()) {
             this.monitorService.fetchAllIncidents([page]);
             this.monitorService.fetchAllServices([page]);
+            runInInjectionContext(this.injector, () => {
+              this.mlService.fetchLatestStat(page.id);
+              this.mlService.fetchThreatReport(page.id);
+              this.mlService.fetchTemporalForecast(page.id);
+            });
           }
-          runInInjectionContext(this.injector, () => {
-            this.mlService.fetchLatestStat(page.id);
-            this.mlService.fetchThreatReport(page.id);
-            this.mlService.fetchTemporalForecast(page.id);
-          });
 
           this.titleService.setTitle(`${page.title} Status - DEML APP`);
           this.metaService.updateTag({
@@ -312,6 +299,16 @@ export class IsolatedStatus implements OnInit {
   formatUptimePct(value?: number | null): string {
     if (value === null || value === undefined) return '—';
     return `${value.toFixed(2)}%`;
+  }
+
+  formatOptionalScore(value?: number | null): string {
+    if (value === null || value === undefined) return '—';
+    return value.toFixed(2);
+  }
+
+  formatOptionalPercentRatio(value?: number | null): string {
+    if (value === null || value === undefined) return '—';
+    return `${(value * 100).toFixed(2)}%`;
   }
 
   protected statusVariant(

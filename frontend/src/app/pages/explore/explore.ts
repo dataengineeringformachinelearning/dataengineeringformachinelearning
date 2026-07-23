@@ -27,6 +27,8 @@ import type {
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { toUptimeHistoryDataPoints } from '../../core/utils/uptime.utils';
 @Component({
@@ -128,12 +130,12 @@ export class Explore implements OnInit {
     return `/status/${page.slug}`;
   }
 
-  cumulativeSla(page: StatusPageData): number {
-    return page.cumulative_sla ?? page.overall_uptime ?? 0;
+  cumulativeSla(page: StatusPageData): number | null {
+    return page.cumulative_sla ?? page.overall_uptime ?? null;
   }
 
-  overallUptime(page: StatusPageData): number {
-    return page.overall_uptime ?? page.cumulative_sla ?? 0;
+  overallUptime(page: StatusPageData): number | null {
+    return page.overall_uptime ?? page.cumulative_sla ?? null;
   }
 
   norseSnnLabel(page: StatusPageData): string {
@@ -145,33 +147,36 @@ export class Explore implements OnInit {
 
   exploreMetrics(page: StatusPageData): ExploreCardMetric[] {
     const threatReport = this.mlService.latestThreatReports()[page.id];
-    const spikeRisk = this.mlService.latestTemporalForecasts()[page.id] ?? 0;
+    const spikeRisk = this.mlService.latestTemporalForecasts()[page.id];
+    const sla = this.cumulativeSla(page);
+    const latency = page.p99_latency;
+    const anomaly = threatReport?.anomaly_score;
     return [
       {
         icon: 'server',
         label: 'Cumulative SLA',
-        value: `${this.cumulativeSla(page).toFixed(2)}%`,
+        value: sla == null ? '—' : `${sla.toFixed(2)}%`,
         sublabel: 'Based on real telemetry',
         tone: 'success',
       },
       {
         icon: 'clock',
         label: 'P99 Latency',
-        value: `${page.p99_latency ?? 0}ms`,
+        value: latency == null ? '—' : `${latency}ms`,
         sublabel: 'Last 24h',
         tone: 'info',
       },
       {
         icon: 'trending-up',
         label: 'Spike Risk',
-        value: spikeRisk.toFixed(2),
+        value: spikeRisk == null ? '—' : spikeRisk.toFixed(2),
         sublabel: 'Dynamic Temporal Forecasting',
-        tone: spikeRisk > 65 ? 'warning' : 'default',
+        tone: spikeRisk != null && spikeRisk > 65 ? 'warning' : 'default',
       },
       {
         icon: 'shield',
         label: 'Threat Anomaly',
-        value: `${((threatReport?.anomaly_score ?? 0) * 100).toFixed(2)}%`,
+        value: anomaly == null ? '—' : `${(anomaly * 100).toFixed(2)}%`,
         sublabel: this.norseSnnLabel(page),
         tone: 'default',
       },
@@ -217,18 +222,39 @@ export class Explore implements OnInit {
         // Under /explore we show all public status pages, including the main 'platform-status' system page
         if (!Array.isArray(data)) return;
         const publicPages = data.filter(p => p.is_published || p.slug === 'platform-status');
-        this.statusPages.set(publicPages);
-        this.monitorService.fetchAllIncidents(publicPages);
-        this.monitorService.fetchAllServices(publicPages);
-
-        for (const page of publicPages) {
-          this.mlService.fetchLatestStat(page.id);
-          this.mlService.fetchThreatReport(page.id);
-          this.mlService.fetchTemporalForecast(page.id);
+        // Directory list may omit KPIs — hydrate each card from the public slug DTO.
+        const hydrations = publicPages.map(page =>
+          this.monitorService.getStatusPageBySlug(page.slug).pipe(
+            map(hydrated => ({ ...page, ...hydrated, id: hydrated.id || page.id })),
+            catchError(() => of(page)),
+          ),
+        );
+        const applyPages = (pages: StatusPageData[]) => {
+          this.statusPages.set(pages);
+          for (const page of pages) {
+            this.monitorService.seedFromEmbeddedPage(page);
+            this.mlService.seedFromStatusPage(page);
+            if (this.authService.isAuthenticated()) {
+              this.mlService.fetchLatestStat(page.id);
+              this.mlService.fetchThreatReport(page.id);
+              this.mlService.fetchTemporalForecast(page.id);
+            }
+          }
+          if (this.authService.isAuthenticated()) {
+            this.monitorService.fetchAllIncidents(pages);
+            this.monitorService.fetchAllServices(pages);
+          }
+          this.isLoading.set(false);
+          this.cdr.markForCheck();
+        };
+        if (hydrations.length === 0) {
+          applyPages([]);
+          return;
         }
-
-        this.isLoading.set(false);
-        this.cdr.markForCheck();
+        forkJoin(hydrations).subscribe({
+          next: applyPages,
+          error: () => applyPages(publicPages),
+        });
       },
       error: () => {
         this.statusPages.set([]);

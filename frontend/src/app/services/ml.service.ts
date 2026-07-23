@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
+import type { StatusPageData } from './monitor.service';
 
 export interface TrainingResponse {
   status: string;
@@ -31,6 +32,50 @@ export class MlService {
   public latestTemporalUsesNorse = signal<Record<string, boolean | null>>({});
   public isTraining = signal<boolean>(false);
   public trainError = signal<string | null>(null);
+
+  /** Seed gauges from public status-page intelligence (no auth required). */
+  seedFromStatusPage(page: StatusPageData): void {
+    const pageId = page.id;
+    if (!pageId) return;
+    if (page.spiking_temporal_forecast !== null && page.spiking_temporal_forecast !== undefined) {
+      this.latestTemporalForecasts.update(forecasts => ({
+        ...forecasts,
+        [pageId]: page.spiking_temporal_forecast as number,
+      }));
+    }
+    if (page.uses_norse !== null && page.uses_norse !== undefined) {
+      this.latestTemporalUsesNorse.update(flags => ({
+        ...flags,
+        [pageId]: page.uses_norse as boolean,
+      }));
+    }
+    if (
+      page.threat_anomaly_score !== null ||
+      page.threat_suspicious_ratio !== null ||
+      page.cumulative_sla !== null ||
+      page.overall_uptime !== null
+    ) {
+      const sla = page.cumulative_sla ?? page.overall_uptime ?? null;
+      if (sla !== null && sla !== undefined) {
+        this.latestStats.update(stats => ({ ...stats, [pageId]: sla }));
+      }
+      this.latestThreatReports.update(reports => ({
+        ...reports,
+        [pageId]: this.normalizeThreatReport({
+          status: 'success',
+          anomaly_score: page.threat_anomaly_score ?? null,
+          suspicious_ratio: page.threat_suspicious_ratio ?? null,
+          top_location: 'N/A',
+          location_weight: 0,
+          created_at: null,
+          message:
+            page.threat_anomaly_score == null && page.threat_suspicious_ratio == null
+              ? 'Pending telemetry'
+              : undefined,
+        }),
+      }));
+    }
+  }
 
   fetchLatestStat(statusPageId?: string): void {
     const url = statusPageId
@@ -108,10 +153,10 @@ export class MlService {
   private normalizeThreatReport(data: ThreatReportResponse): ThreatReportResponse {
     return {
       status: data.status,
-      anomaly_score: data.anomaly_score ?? 0,
+      anomaly_score: data.anomaly_score ?? null,
       top_location: data.top_location ?? 'N/A',
-      location_weight: data.location_weight ?? 0,
-      suspicious_ratio: data.suspicious_ratio ?? 0,
+      location_weight: data.location_weight ?? null,
+      suspicious_ratio: data.suspicious_ratio ?? null,
       created_at: data.created_at ?? null,
       message: data.message,
     };

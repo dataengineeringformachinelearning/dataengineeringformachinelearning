@@ -23,9 +23,9 @@ body {
 .backend-landing-shell {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--viking-page-section-gap);
-  min-height: calc(100dvh - var(--viking-navbar-height, 64px) - var(--viking-space-8, 4rem));
+  min-height: 0;
   padding-block: var(--viking-page-section-gap);
 }
 
@@ -227,10 +227,16 @@ body {
 /* Feature showcase with styled panels */
 .backend-feature-showcase {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-5);
   max-width: var(--viking-container-max-width, 1260px);
   margin-inline: auto;
   width: 100%;
+
+  > .backend-status-preview-header,
+  > .backend-landing-panels {
+    grid-column: 1 / -1;
+  }
 }
 
 .backend-feature-panel {
@@ -345,7 +351,7 @@ body {
 }
 
 .backend-landing-meta {
-  margin-top: auto;
+  margin-top: var(--viking-space-5);
   padding-top: var(--viking-space-5);
   border-top: var(--viking-border-width) var(--viking-border-style) var(--viking-border);
   width: 100%;

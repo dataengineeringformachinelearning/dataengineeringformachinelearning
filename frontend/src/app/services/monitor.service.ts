@@ -27,9 +27,14 @@ export interface StatusPageData {
   cumulative_sla?: number;
   overall_uptime?: number;
   uptime_history?: { date: string; status: string; uptime: number | null }[];
-  p99_latency?: number;
-  total_requests?: number;
-  threats_detected_24h?: number;
+  p99_latency?: number | null;
+  total_requests?: number | null;
+  threats_detected_24h?: number | null;
+  /** Public intelligence (ciphertext-free) for explore/status ML gauges. */
+  spiking_temporal_forecast?: number | null;
+  threat_anomaly_score?: number | null;
+  threat_suspicious_ratio?: number | null;
+  uses_norse?: boolean | null;
   /** Embedded on the public slug payload so anonymous visitors see services. */
   services?: MonitoredServiceData[];
   incidents?: IncidentData[];
@@ -95,7 +100,25 @@ export class MonitorService {
     pages.forEach(page => {
       this.getServices(page.id).subscribe({
         next: services => {
-          this.servicesMap.update(map => ({ ...map, [page.id]: services }));
+          // Preserve embedded public telemetry when the authed list omits KPIs.
+          const prior = this.servicesMap()[page.id] || [];
+          const priorById = new Map(prior.map(service => [service.id, service]));
+          const merged = services.map(service => {
+            const embedded = priorById.get(service.id);
+            if (!embedded) return service;
+            return {
+              ...service,
+              sla: service.sla ?? embedded.sla ?? null,
+              uptime_history: service.uptime_history?.length
+                ? service.uptime_history
+                : embedded.uptime_history,
+              p99_latency:
+                service.p99_latency !== null && service.p99_latency !== undefined
+                  ? service.p99_latency
+                  : (embedded.p99_latency ?? null),
+            };
+          });
+          this.servicesMap.update(map => ({ ...map, [page.id]: merged }));
         },
         error: err => console.error('Error fetching services for status page:', page.id, err),
       });

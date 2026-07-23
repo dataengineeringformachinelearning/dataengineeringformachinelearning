@@ -144,19 +144,19 @@
               <viking-metric-card
                 icon="trending-up"
                 label="Spike Risk"
-                [value]="(((mlService.latestTemporalForecasts()[page.id] ?? 0) | number:'1.1-2') ?? '0')"
+                [value]="formatOptionalScore(mlService.latestTemporalForecasts()[page.id])"
                 sublabel="Telemetry sequence score"
               />
               <viking-metric-card
                 icon="shield"
                 label="Cumulative TA"
-                [value]="((getThreatReport(page.id)?.suspicious_ratio ?? 0) * 100 | number:'1.1-2') + '%'"
+                [value]="formatOptionalPercentRatio(getThreatReport(page.id)?.suspicious_ratio)"
                 sublabel="Based on real telemetry"
               />
               <viking-metric-card
                 icon="activity"
                 label="Predicted TA"
-                [value]="((getThreatReport(page.id)?.anomaly_score ?? 0) * 100 | number:'1.1-2') + '%'"
+                [value]="formatOptionalPercentRatio(getThreatReport(page.id)?.anomaly_score)"
                 sublabel="30-day threat forecast"
               />
             </div>
