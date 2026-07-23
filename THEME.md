@@ -5,7 +5,7 @@
 | Property                                                                                      | Stack                          | Theme entry point                                               |
 | --------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------------------------- |
 | [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com)        | Marketing (Astro)              | `/assets/viking-ui.css` + this document                         |
-| [deml.app](https://deml.app)                                                                  | Angular SSR frontend           | `@dataengineeringformachinelearning/viking-ui` Angular wrappers |
+| [deml.app](https://deml.app)                                                                  | Angular 22+ CSR (Vercel)       | `@dataengineeringformachinelearning/viking-ui` Angular wrappers |
 | [backend.deml.app](https://backend.deml.app)                                                  | Django API + templates         | `backend/static/viking-ui.css`                                  |
 | Swagger / OpenAPI UI                                                                          | Django Ninja docs              | Same tokens via static CSS                                      |
 | Marketing site                                                                                | `marketing/`                   | `marketing/public/assets/viking-ui.css`                         |
@@ -14,6 +14,8 @@
 
 **Canonical implementation:** `packages/viking-ui/` (tokens, static CSS, Web Components, utility exports, package metadata, and Angular wrappers)
 **Compiled artifacts:** `packages/viking-ui/dist/` (`design-tokens.css`, `viking-components.css`, `viking-ui.css`, `web-components.js`, `viking-ui-elements.js`, `icons.js`, `site-drakkar.js`, `widget.js`, `viking-tokens.json`)
+
+Product UI architecture (Angular 22+ Signals, Django SSE live updates, FORJD data plane) lives in [BOOK.md § CONOPS](BOOK.md#concept-of-operations-conops) and [Chapter 32](BOOK.md#chapter-32-viking-ui--the-zero-dependency-ui-kit); this file owns visual tokens only.
 
 ## Viking-UI Styling Ownership Law
 

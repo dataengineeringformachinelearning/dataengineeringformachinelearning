@@ -39,12 +39,12 @@ license: apache-2.0
 
 ### Product surfaces (`deml.app`)
 
-| Route                 | Purpose             |
-| --------------------- | ------------------- |
-| `/dashboard`          | CES / KPI overview  |
-| `/analytics`          | Telemetry & threats |
-| `/status`, `/explore` | Public status pages |
-| `/settings`           | Account management  |
+| Route                 | Purpose                                                                 |
+| --------------------- | ----------------------------------------------------------------------- |
+| `/dashboard`          | CES / KPI overview (Signals + Django SSE live ticks)                    |
+| `/analytics`          | Telemetry & threats (FORJD projections via BFF; `LiveUpdatesService`)   |
+| `/status`, `/explore` | Public status pages (FORJD status APIs proxied by Django)               |
+| `/settings`           | Account / billing / consent (DEML Postgres; Firebase Auth + MFA writes) |
 
 ### Native macOS security workbench
 
@@ -60,13 +60,15 @@ security model and build instructions.
 
 ## Core Capabilities
 
-- **Sealed FORJD projections**: Django BFF forwards sealed telemetry; FORJD materializes durable read models
-- **High-Throughput Ingestion**: Sub-second telemetry dispatch with micro-batch aggregation
+- **Sealed FORJD projections**: Django BFF forwards sealed telemetry with tenant-bound `fjsvc_` (browser never holds service tokens); FORJD materializes durable read models
+- **FORJD data plane stack**: FastAPI + Prefect 3 + Pathway streams + Polars batch LazyFrames + Rust `forjd-engine` (DEML does not run Pathway/Airflow)
+- **High-Throughput Ingestion**: Sub-second sealed dispatch with durable FORJD outbox semantics
+- **Live dashboards**: Angular 22+ Signals + Django SSE (`/api/v1/analytics/live`) — `{count, cursor}` ticks only; `latestEvent` / `degraded` callouts; not Firestore
 - **Account Isolation**: Strict tenant separation without cross-account data exposure
 - **Aggregate Threat Modeling**: Collective anomaly baselines without raw data sharing
-- **Predictive SLAs**: Machine learning forecasts service-level breach trajectories
+- **Predictive SLAs**: Machine learning forecasts service-level breach trajectories (executed in FORJD)
 - **SIEM/SOAR Federation**: STIX 2.1 threat intelligence export
-- **WCAG 2.1 AA Design**: Premium Viking-UI theme across all surfaces ([THEME.md](THEME.md))
+- **WCAG 2.1 AA Design**: Premium Viking-UI theme across all surfaces ([THEME.md](THEME.md)); not FORJD `forjd-ui`
 - **Readable Metric Layouts**: Dense Viking-UI cards use a two-column maximum (6/12 each), equal-height rows, and single-line operational labels
 - **Canonical Brand Assets**: DEML artwork uses brand navy `#070C20` and brand blue `#0078FF`, governed and synchronized through Viking-UI
 
@@ -122,7 +124,7 @@ quality bars; their component runtimes and source are not bundled into Viking-UI
 - **Design systems and UI references:** [Material Design 3](https://m3.material.io/) for adaptive foundations and accessibility; [Flux UI](https://fluxui.dev/) for composable, responsive layouts; [Spartan](https://spartan.ng/) for accessible Angular primitives and signal-first ergonomics; [shadcn/ui](https://ui.shadcn.com/) for open composition, blocks, and clear component anatomy; and [Cloudscape Design System](https://cloudscape.design/) for AWS-scale responsive application patterns, accessibility guidance, and operational density.
 - **Security and governance reference:** [Trust Controls](https://www.trustcontrols.ai/) for control-oriented product governance and evidence-minded security UX.
 - **Design-system delivery:** [Storybook](https://storybook.js.org/) for component documentation and accessibility review; [Chromatic](https://www.chromatic.com/) for published visual regression evidence; [axe-core](https://github.com/dequelabs/axe-core) for automated WCAG checks; and [Inter](https://rsms.me/inter/) for self-hosted variable typography.
-- **Core application stack:** [Angular](https://angular.dev/), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Firebase](https://firebase.google.com/), [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (sealed data plane), [Fly.io](https://fly.io/), [Vercel](https://vercel.com/), [OpenTelemetry](https://opentelemetry.io/), and [Firecrawl](https://www.firecrawl.dev/) for verified public-site technology evidence.
+- **Core application stack:** [Angular](https://angular.dev/) 22+ (Signals + Viking-UI), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Firebase](https://firebase.google.com/) Auth-only, [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (FastAPI / Prefect / Pathway / Polars / Rust sealed data plane), [Fly.io](https://fly.io/), [Vercel](https://vercel.com/), [OpenTelemetry](https://opentelemetry.io/) (optional control-plane observability only), and [Firecrawl](https://www.firecrawl.dev/) for verified public-site technology evidence.
 
 The comprehensive technology acknowledgement and software inventory remain in
 [BOOK.md](BOOK.md#acknowledgements--technologies) and the generated SBOM.

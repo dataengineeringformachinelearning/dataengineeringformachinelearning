@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingBadge } from '@dataengineeringformachinelearning/viking-ui';
 
 @Component({
@@ -6,7 +6,7 @@ import { VikingBadge } from '@dataengineeringformachinelearning/viking-ui';
   standalone: true,
   imports: [VikingBadge],
   template: `
-    @if (show) {
+    @if (show()) {
       <viking-badge
         tone="accent"
         title="Pro subscriber — verified status page"
@@ -19,5 +19,5 @@ import { VikingBadge } from '@dataengineeringformachinelearning/viking-ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProVerifiedBadge {
-  @Input() show = false;
+  readonly show = input(false);
 }

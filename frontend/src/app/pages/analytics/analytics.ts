@@ -4,7 +4,6 @@ import {
   effect,
   signal,
   computed,
-  ChangeDetectorRef,
   ChangeDetectionStrategy,
   PLATFORM_ID,
   OnDestroy,
@@ -18,6 +17,7 @@ import {
   VikingButton,
   VikingCallout,
   VikingChartSeries,
+  VikingSpinner,
   VikingField,
   VikingFormGrid,
   VikingFormSection,
@@ -37,10 +37,10 @@ import {
   VikingChartEmptyState,
   VikingSectionTemplate,
 } from '@dataengineeringformachinelearning/viking-ui';
-import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
 import { LiveUpdatesService } from '../../services/live-updates.service';
+import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import {
   UnifiedSelect,
   SelectOption,
@@ -55,7 +55,6 @@ import {
   toVikingLineSeries,
   toVikingStackedStatusSeries,
 } from '../../core/chart-data.util';
-import { environment } from '../../../environments/environment';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import * as L from 'leaflet';
 
@@ -167,6 +166,7 @@ type BenchmarkRollup = {
     VikingBadge,
     VikingButton,
     VikingCallout,
+    VikingSpinner,
     VikingField,
     VikingFormGrid,
     VikingFormSection,
@@ -195,51 +195,53 @@ export class AnalyticsComponent implements OnDestroy {
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
   private authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private liveUpdates = inject(LiveUpdatesService);
   private analyticsBootstrapped = false;
 
-  public p99Latency = 0;
-  public uptimePercent: number | null = 0;
-  public totalRequests = 0;
-  public activeIncidents = 0;
-  public widgetInteractions = 0;
-  public uniqueVisitors = 0;
-  public cookieConsents = 0;
-  public activeProviders: string[] = [];
-  public isLoading = true;
+  // --- Metric / filter signals ---
+  public p99Latency = signal(0);
+  public uptimePercent = signal<number | null>(0);
+  public totalRequests = signal(0);
+  public activeIncidents = signal(0);
+  public widgetInteractions = signal(0);
+  public uniqueVisitors = signal(0);
+  public cookieConsents = signal(0);
+  public activeProviders = signal<string[]>([]);
+  public isLoading = signal(true);
   metricsDegraded = signal(false);
   loadError = signal<string | null>(null);
 
-  public apiUsageCurrent = 0;
-  public apiUsageQuota = 60;
+  public apiUsageCurrent = signal(0);
+  public apiUsageQuota = signal(60);
 
-  public latencyTrend = '';
-  public originTrend = '';
-  public frequencyTrend = '';
-  public endpointTrend = '';
-  public statusTrend = '';
-  public threatTrend = '';
-  public anomalyTrend = '';
+  public latencyTrend = signal('');
+  public originTrend = signal('');
+  public frequencyTrend = signal('');
+  public endpointTrend = signal('');
+  public statusTrend = signal('');
+  public threatTrend = signal('');
+  public anomalyTrend = signal('');
 
-  public tenants: any[] = [];
-  public selectedTenantId: string | null = null;
-  public availableSites: string[] = [];
-  public siteOptions: SelectOption[] = [{ value: 'All', label: 'All Sites' }];
-  public selectedSite: string | null = null;
+  public tenants = signal<any[]>([]);
+  public selectedTenantId = signal<string | null>(null);
+  public availableSites = signal<string[]>([]);
+  public siteOptions = signal<SelectOption[]>([{ value: 'All', label: 'All Sites' }]);
+  public selectedSite = signal<string | null>(null);
+  public tenantOptions = signal<SelectOption[]>([]);
 
-  public cesLevel = 0;
-  public threatLevel = 0;
-  public slaLevel = 0;
-  public stabilityLevel = 0;
-  public temporalForecast = 0;
-  public honeypotScore = 0;
-  public latestBenchmarkScore: number | null = null;
-  public latestBenchmark: BenchmarkSummary | null = null;
-  public benchmarkSummary: BenchmarkRollup | null = null;
-  public platformBenchmarkSummary: BenchmarkRollup | null = null;
+  public cesLevel = signal(0);
+  public threatLevel = signal(0);
+  public slaLevel = signal(0);
+  public stabilityLevel = signal(0);
+  public temporalForecast = signal(0);
+  public honeypotScore = signal(0);
+  public latestBenchmarkScore = signal<number | null>(null);
+  public latestBenchmark = signal<BenchmarkSummary | null>(null);
+  public benchmarkSummary = signal<BenchmarkRollup | null>(null);
+  public platformBenchmarkSummary = signal<BenchmarkRollup | null>(null);
 
+  // --- Chart series (already signal-based) ---
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
   frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
   statusSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Count', []));
@@ -279,12 +281,11 @@ export class AnalyticsComponent implements OnDestroy {
     hasChartValues(this.securityAlertsSeries().flatMap(series => series.data)),
   );
 
-  public originMapData: any[] = [];
+  public originMapData = signal<any[]>([]);
   public map: L.Map | undefined;
   private intervalId: ReturnType<typeof setInterval> | undefined;
   private exportPollId: ReturnType<typeof setInterval> | undefined;
   private liveRefreshTimer: ReturnType<typeof setTimeout> | undefined;
-  private liveSub: Subscription | undefined;
   private readonly onVisibilityChange = (): void => {
     if (document.hidden) {
       this.stopAnalyticsPolling();
@@ -295,15 +296,14 @@ export class AnalyticsComponent implements OnDestroy {
     this.startAnalyticsPolling();
   };
 
-  public tenantOptions: SelectOption[] = [];
-
-  public exportKind = 'analytics';
-  public exportFormat = 'csv';
-  public exportDays = 7;
-  public exportBusy = false;
-  public exportMessage = '';
-  public exportDeletingId: string | null = null;
-  public exportsList: ExportJobRow[] = [];
+  // --- Export job signals ---
+  public exportKind = signal('analytics');
+  public exportFormat = signal('csv');
+  public exportDays = signal(7);
+  public exportBusy = signal(false);
+  public exportMessage = signal('');
+  public exportDeletingId = signal<string | null>(null);
+  public exportsList = signal<ExportJobRow[]>([]);
   private exportIdempotencyKey: string | null = null;
   private exportRequestFingerprint = '';
 
@@ -321,12 +321,12 @@ export class AnalyticsComponent implements OnDestroy {
   ];
 
   get exportDaysLabel(): string {
-    return String(this.exportDays);
+    return String(this.exportDays());
   }
 
   public onExportDaysChange(value: string): void {
     const n = Number.parseInt(value, 10);
-    this.exportDays = Number.isFinite(n) ? Math.min(90, Math.max(1, n)) : 7;
+    this.exportDays.set(Number.isFinite(n) ? Math.min(90, Math.max(1, n)) : 7);
   }
 
   get isDarkMode(): boolean {
@@ -349,10 +349,22 @@ export class AnalyticsComponent implements OnDestroy {
       this.loadExports();
       document.addEventListener('visibilitychange', this.onVisibilityChange);
       this.startAnalyticsPolling();
-      this.liveSub = this.liveUpdates.updates$.subscribe(evt => {
-        if (evt.type === 'projections') this.scheduleLiveRefresh();
-      });
       this.liveUpdates.start();
+    });
+
+    // Live FORJD→Django SSE: refresh overview when projections tick.
+    effect(() => {
+      const evt = this.liveUpdates.latestEvent();
+      if (evt?.type === 'projections') this.scheduleLiveRefresh();
+    });
+
+    // Typed SSE degraded frame — Viking callout without inventing empty metrics.
+    effect(() => {
+      if (!this.liveUpdates.degraded()) return;
+      this.metricsDegraded.set(true);
+      this.loadError.set(
+        'Live FORJD projection updates are unavailable. Showing the last successful overview.',
+      );
     });
   }
 
@@ -382,15 +394,15 @@ export class AnalyticsComponent implements OnDestroy {
   }
 
   private loadAnalyticsData() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.loadError.set(null);
-    let url = `${environment.backendUrl}/api/v1/analytics/overview`;
+    let url = API_ENDPOINTS.ANALYTICS.OVERVIEW;
     const params = [];
-    if (this.selectedTenantId) {
-      params.push(`tenant_id=${this.selectedTenantId}`);
+    if (this.selectedTenantId()) {
+      params.push(`tenant_id=${this.selectedTenantId()}`);
     }
-    if (this.selectedSite && this.selectedSite !== 'All') {
-      params.push(`site_url=${encodeURIComponent(this.selectedSite)}`);
+    if (this.selectedSite() && this.selectedSite() !== 'All') {
+      params.push(`site_url=${encodeURIComponent(this.selectedSite()!)}`);
     }
     if (params.length > 0) {
       url += '?' + params.join('&');
@@ -413,44 +425,51 @@ export class AnalyticsComponent implements OnDestroy {
           );
 
           if (user_metrics?.available_sites) {
-            this.availableSites = user_metrics.available_sites;
-            this.siteOptions = [
+            this.availableSites.set(user_metrics.available_sites);
+            this.siteOptions.set([
               { value: 'All', label: 'All Sites' },
-              ...this.availableSites.map(site => ({ value: site, label: site })),
-            ];
+              ...user_metrics.available_sites.map((site: string) => ({
+                value: site,
+                label: site,
+              })),
+            ]);
           }
 
-          this.cesLevel = degraded ? 0 : (ces?.level ?? 0);
-          this.threatLevel = degraded ? 0 : (ces?.threat ?? 0);
-          this.slaLevel = degraded ? 0 : (ces?.sla ?? 0);
-          this.stabilityLevel = degraded ? 0 : (ces?.stability ?? 0);
-          this.temporalForecast = degraded
-            ? 0
-            : (response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0);
-          this.honeypotScore = degraded ? 0 : (response.data?.honeypot_score ?? 0);
-          this.latestBenchmarkScore = degraded ? null : (ces?.latest_benchmark_score ?? null);
-          this.latestBenchmark = degraded ? null : (ces?.latest_benchmark ?? null);
-          this.benchmarkSummary = degraded ? null : (benchmarking?.current_scope ?? null);
-          this.platformBenchmarkSummary = degraded
-            ? null
-            : (benchmarking?.platform_reference ?? null);
+          this.cesLevel.set(degraded ? 0 : (ces?.level ?? 0));
+          this.threatLevel.set(degraded ? 0 : (ces?.threat ?? 0));
+          this.slaLevel.set(degraded ? 0 : (ces?.sla ?? 0));
+          this.stabilityLevel.set(degraded ? 0 : (ces?.stability ?? 0));
+          this.temporalForecast.set(
+            degraded
+              ? 0
+              : (response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0),
+          );
+          this.honeypotScore.set(degraded ? 0 : (response.data?.honeypot_score ?? 0));
+          this.latestBenchmarkScore.set(degraded ? null : (ces?.latest_benchmark_score ?? null));
+          this.latestBenchmark.set(degraded ? null : (ces?.latest_benchmark ?? null));
+          this.benchmarkSummary.set(degraded ? null : (benchmarking?.current_scope ?? null));
+          this.platformBenchmarkSummary.set(
+            degraded ? null : (benchmarking?.platform_reference ?? null),
+          );
 
-          this.p99Latency = degraded ? 0 : (user_metrics?.p99_latency_ms ?? 0);
-          this.uptimePercent = degraded ? null : (user_metrics?.uptime_percent ?? null);
-          this.totalRequests = degraded ? 0 : (user_metrics?.total_requests_24h ?? 0);
-          this.activeIncidents = degraded ? 0 : (user_metrics?.active_incidents ?? 0);
+          this.p99Latency.set(degraded ? 0 : (user_metrics?.p99_latency_ms ?? 0));
+          this.uptimePercent.set(degraded ? null : (user_metrics?.uptime_percent ?? null));
+          this.totalRequests.set(degraded ? 0 : (user_metrics?.total_requests_24h ?? 0));
+          this.activeIncidents.set(degraded ? 0 : (user_metrics?.active_incidents ?? 0));
 
-          this.widgetInteractions = degraded ? 0 : user_metrics?.widget_interactions || 0;
-          this.uniqueVisitors = degraded ? 0 : user_metrics?.unique_visitors || 0;
-          this.cookieConsents = degraded
-            ? 0
-            : (user_metrics?.cookie_consents?.analytical || 0) +
-              (user_metrics?.cookie_consents?.marketing || 0);
-          this.activeProviders = degraded ? [] : user_metrics?.active_providers || [];
+          this.widgetInteractions.set(degraded ? 0 : user_metrics?.widget_interactions || 0);
+          this.uniqueVisitors.set(degraded ? 0 : user_metrics?.unique_visitors || 0);
+          this.cookieConsents.set(
+            degraded
+              ? 0
+              : (user_metrics?.cookie_consents?.analytical || 0) +
+                  (user_metrics?.cookie_consents?.marketing || 0),
+          );
+          this.activeProviders.set(degraded ? [] : user_metrics?.active_providers || []);
 
           if (!degraded && user_metrics?.api_usage) {
-            this.apiUsageCurrent = user_metrics.api_usage.usage_current_minute || 0;
-            this.apiUsageQuota = user_metrics.api_usage.quota_per_minute || 60;
+            this.apiUsageCurrent.set(user_metrics.api_usage.usage_current_minute || 0);
+            this.apiUsageQuota.set(user_metrics.api_usage.quota_per_minute || 60);
           }
 
           const timeSeries = degraded ? [] : user_metrics?.time_series || [];
@@ -467,7 +486,7 @@ export class AnalyticsComponent implements OnDestroy {
           );
 
           const origins = user_metrics?.origin_distribution || [];
-          this.originMapData = origins;
+          this.originMapData.set(origins);
 
           const topOrigins = [...origins].sort((a: any, b: any) => b.count - a.count).slice(0, 5);
           this.topRegionsCategories.set(
@@ -558,13 +577,12 @@ export class AnalyticsComponent implements OnDestroy {
           this.metricsDegraded.set(true);
           this.loadError.set('Analytics overview returned an unexpected response.');
         }
-        this.isLoading = false;
-        this.cdr.markForCheck();
+        this.isLoading.set(false);
       },
       error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
         console.error('Failed to load analytics data', err);
         this.metricsDegraded.set(true);
-        this.uptimePercent = null;
+        this.uptimePercent.set(null);
         const code = err?.error?.code;
         const detail = err?.error?.detail;
         if (err?.status === 503 || code === 'forjd_degraded') {
@@ -577,24 +595,25 @@ export class AnalyticsComponent implements OnDestroy {
         } else {
           this.loadError.set(detail || 'Unable to load analytics from FORJD.');
         }
-        this.isLoading = false;
-        this.cdr.markForCheck();
+        this.isLoading.set(false);
       },
     });
   }
 
   private loadTenants() {
-    this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/tenants`).subscribe({
+    this.http.get<any>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
-          this.tenants = response.data;
-          this.tenantOptions = this.tenants.map((t: any) => ({
-            value: t.id,
-            label: t.is_platform ? `${t.name} (Global)` : t.name,
-          }));
-          if (!this.selectedTenantId && this.tenants.length > 0) {
-            const userTenant = this.tenants.find((t: any) => !t.is_platform);
-            this.selectedTenantId = userTenant ? userTenant.id : this.tenants[0].id;
+          this.tenants.set(response.data);
+          this.tenantOptions.set(
+            response.data.map((t: any) => ({
+              value: t.id,
+              label: t.is_platform ? `${t.name} (Global)` : t.name,
+            })),
+          );
+          if (!this.selectedTenantId() && response.data.length > 0) {
+            const userTenant = response.data.find((t: any) => !t.is_platform);
+            this.selectedTenantId.set(userTenant ? userTenant.id : response.data[0].id);
           }
         }
         this.loadAnalyticsData();
@@ -617,7 +636,6 @@ export class AnalyticsComponent implements OnDestroy {
     if (this.liveRefreshTimer) {
       clearTimeout(this.liveRefreshTimer);
     }
-    this.liveSub?.unsubscribe();
     this.liveUpdates.stop();
     if (this.map) {
       this.map.remove();
@@ -639,9 +657,9 @@ export class AnalyticsComponent implements OnDestroy {
   public loadExports(): void {
     this.http.get<ExportJobRow[]>(API_ENDPOINTS.EXPORTS.LIST).subscribe({
       next: rows => {
-        this.exportsList = Array.isArray(rows) ? rows : [];
-        this.cdr.markForCheck();
-        const pending = this.exportsList.some(isExportPending);
+        const list = Array.isArray(rows) ? rows : [];
+        this.exportsList.set(list);
+        const pending = list.some(isExportPending);
         if (pending && !this.exportPollId) {
           this.exportPollId = setInterval(() => this.loadExports(), 4000);
         }
@@ -652,20 +670,19 @@ export class AnalyticsComponent implements OnDestroy {
       },
       error: () => {
         // Storage may be offline in some envs; keep page usable.
-        this.exportsList = [];
-        this.cdr.markForCheck();
+        this.exportsList.set([]);
       },
     });
   }
 
   public requestExport(): void {
-    this.exportBusy = true;
-    this.exportMessage = '';
+    this.exportBusy.set(true);
+    this.exportMessage.set('');
     const payload = buildExportRequestPayload(
-      this.exportKind,
-      this.exportFormat,
-      this.exportDays,
-      this.selectedSite,
+      this.exportKind(),
+      this.exportFormat(),
+      this.exportDays(),
+      this.selectedSite(),
     );
     const fingerprint = JSON.stringify(payload);
     if (!this.exportIdempotencyKey || this.exportRequestFingerprint !== fingerprint) {
@@ -679,27 +696,25 @@ export class AnalyticsComponent implements OnDestroy {
       })
       .subscribe({
         next: job => {
-          this.exportBusy = false;
+          this.exportBusy.set(false);
           this.exportIdempotencyKey = null;
           this.exportRequestFingerprint = '';
           const jobId = job?.id ?? 'unknown';
-          this.exportMessage = `Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`;
+          this.exportMessage.set(`Export ${jobId.slice(0, 8)}… ${job?.status ?? 'unknown'}`);
           this.loadExports();
-          this.cdr.markForCheck();
         },
         error: err => {
-          this.exportBusy = false;
+          this.exportBusy.set(false);
           const detail =
             err?.error?.detail || err?.error?.message || err?.message || 'Export failed';
-          this.exportMessage = String(detail);
-          this.cdr.markForCheck();
+          this.exportMessage.set(String(detail));
         },
       });
   }
 
   public downloadExport(jobId: string): void {
     if (!jobId) {
-      this.exportMessage = 'Invalid export job ID';
+      this.exportMessage.set('Invalid export job ID');
       return;
     }
     this.http
@@ -710,37 +725,33 @@ export class AnalyticsComponent implements OnDestroy {
           if (downloadUrl && this.isBrowser) {
             window.location.assign(downloadUrl);
           } else {
-            this.exportMessage = 'Download URL not available';
-            this.cdr.markForCheck();
+            this.exportMessage.set('Download URL not available');
           }
         },
         error: err => {
           const detail = err?.error?.detail || err?.error?.message || 'Download unavailable';
-          this.exportMessage = String(detail);
-          this.cdr.markForCheck();
+          this.exportMessage.set(String(detail));
         },
       });
   }
 
   // --- Export deletion ---
   public deleteExport(jobId: string): void {
-    if (!jobId || this.exportDeletingId) {
+    if (!jobId || this.exportDeletingId()) {
       return;
     }
-    this.exportDeletingId = jobId;
-    this.exportMessage = '';
+    this.exportDeletingId.set(jobId);
+    this.exportMessage.set('');
     this.http.delete<{ ok?: boolean }>(API_ENDPOINTS.EXPORTS.DETAIL(jobId)).subscribe({
       next: () => {
-        this.exportsList = this.exportsList.filter(job => job.id !== jobId);
-        this.exportDeletingId = null;
-        this.exportMessage = 'Export deleted';
-        this.cdr.markForCheck();
+        this.exportsList.update(list => list.filter(job => job.id !== jobId));
+        this.exportDeletingId.set(null);
+        this.exportMessage.set('Export deleted');
       },
       error: err => {
-        this.exportDeletingId = null;
+        this.exportDeletingId.set(null);
         const detail = err?.error?.detail || err?.error?.message || 'Delete unavailable';
-        this.exportMessage = String(detail);
-        this.cdr.markForCheck();
+        this.exportMessage.set(String(detail));
       },
     });
   }
@@ -761,13 +772,13 @@ export class AnalyticsComponent implements OnDestroy {
   }
 
   public onTenantChange(tenantId: string): void {
-    this.selectedTenantId = tenantId;
-    this.selectedSite = 'All';
+    this.selectedTenantId.set(tenantId);
+    this.selectedSite.set('All');
     this.loadAnalyticsData();
   }
 
   public onSiteChange(site: string): void {
-    this.selectedSite = site;
+    this.selectedSite.set(site);
     this.loadAnalyticsData();
   }
 
@@ -788,7 +799,7 @@ export class AnalyticsComponent implements OnDestroy {
   }
 
   public benchmarkScoreSublabel(): string {
-    const reference = this.platformBenchmarkSummary?.score_percent;
+    const reference = this.platformBenchmarkSummary()?.score_percent;
     if (reference === null || reference === undefined) {
       return 'Runs with daily model training';
     }
@@ -888,7 +899,7 @@ export class AnalyticsComponent implements OnDestroy {
     const accent = this.resolveMapAccent();
     const points: L.LatLngExpression[] = [];
 
-    this.originMapData.forEach(loc => {
+    this.originMapData().forEach(loc => {
       const lat = Number(loc.lat ?? loc.latitude);
       const lng = Number(loc.lng ?? loc.lon ?? loc.longitude);
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) {

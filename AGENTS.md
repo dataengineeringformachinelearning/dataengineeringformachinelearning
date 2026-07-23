@@ -56,13 +56,13 @@ and staging deployments.
 
 ## Quality gates
 
-| Layer | Command |
-|-------|---------|
+| Layer        | Command                                                                                            |
+| ------------ | -------------------------------------------------------------------------------------------------- |
 | Theme / a11y | `node scripts/enforce-theme.js` · `node scripts/run_axe.js` · `node scripts/check_mobile_first.js` |
-| Frontend | `cd frontend && npm run lint && npm test && npm run test:viking-ui` |
-| Backend | `cd backend && pytest` (touched modules) · Ruff via pre-commit |
-| Full | `uvx pre-commit run --all-files` · root `npm run quality` |
-| CI | `.github/workflows/quality-gates.yml`, `ci-tests.yml`, `e2e-smoke.yml` |
+| Frontend     | `cd frontend && npm run lint && npm test && npm run test:viking-ui`                                |
+| Backend      | `cd backend && pytest` (touched modules) · Ruff via pre-commit                                     |
+| Full         | `uvx pre-commit run --all-files` · root `npm run quality`                                          |
+| CI           | `.github/workflows/quality-gates.yml`, `ci-tests.yml`, `e2e-smoke.yml`                             |
 
 - **Frontend:** Prettier + ESLint; WCAG 2.1 AA; Viking-UI only
   ([THEME.md](THEME.md), [.cursorrules](.cursorrules)).
@@ -85,8 +85,11 @@ and staging deployments.
 - **Multi-Tenancy:** Absolute isolation. Explicit
   `company_account → forjd_tenant_id` mapping. UUIDs everywhere.
 - **ML/Intelligence:** Executed in FORJD.
-- **UI/Frontend:** Full Angular surface; Signals; Viking-UI; Headless Sanity for
-  learning content.
+- **UI/Frontend:** Full Angular 22+ surface; Signals; Viking-UI (not FORJD
+  `forjd-ui`); Django SSE live updates (`LiveUpdatesService.latestEvent` /
+  `degraded` → `/api/v1/analytics/live`, ticks `{count, cursor}` only);
+  Headless Sanity for learning content. No Firestore product path. Browser
+  never holds `fjsvc_`.
 - **Security:** Firebase Auth + Django middleware for end users; never forward
   Firebase tokens to FORJD; FORJD token secret refs only; UUID PKs; ABAC + RBAC
   on DEML surfaces; FORJD enforces tenant binding + RLS.

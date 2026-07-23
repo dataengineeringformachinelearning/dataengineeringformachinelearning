@@ -31,13 +31,15 @@
   </viking-app-layout>
 
   <!-- Footer -->
-  <app-footer ngSkipHydration></app-footer>
+  <app-footer></app-footer>
 
-  <!-- Issue Reporter FAB -->
-  <app-issue-reporter ngSkipHydration></app-issue-reporter>
+  <!-- Deferred chrome — keeps the critical shell lean on first paint -->
+  @defer (on idle) {
+  <app-issue-reporter></app-issue-reporter>
   <app-confirm-dialog />
   <app-onboarding-wizard />
   <app-command-palette />
+  }
   <viking-toaster />
 </div>
 }

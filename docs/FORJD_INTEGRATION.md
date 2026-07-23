@@ -77,6 +77,20 @@ At runtime DEML authenticates only with the tenant-bound opaque credential:
 Authorization: Bearer fjsvc_<prefix>_<secret>
 ```
 
+Token / envelope flow (fail closed):
+
+```text
+Browser (Firebase JWT) → DEML Django BFF   (Angular never holds fjsvc_)
+                           |  seals / rewrites deml_* → threat_*
+                           |  Authorization: Bearer fjsvc_…
+                           v
+                      FORJD API (ciphertext-only)
+                           |
+                           v
+                 telemetry_events (ciphertext)
+                 stream_results / projections
+```
+
 FORJD rejects Supabase `service_role` tokens on application routes. It does not expose
 `POST /oauth/token`. DEML propagates a validated 8–128 character `X-Request-ID` and
 surfaces FORJD's correlation id as `X-FORJD-Request-ID`.
@@ -216,28 +230,46 @@ lifecycle jobs, every 30s) and `daily_maintenance --watch` (Stripe
 `sync_subscriptions` entitlement sweep + retention purge of expired browser
 sessions, auth-handoff tokens, and stale rate-limit buckets, daily).
 
+## Operator product paths (Angular → Django → FORJD)
+
+| Surface       | DEML route family                         | Upstream FORJD ownership                                     |
+| ------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| Dashboard     | `/dashboard` → `/api/v1/analytics/*`      | Analytics overview, CES aggregates, projection change ticks  |
+| Analytics     | `/analytics` + SSE live                   | Projections, ML scores, incidents/playbooks via BFF adapters |
+| Status        | `/status`, `/explore`, system-status APIs | `/api/v1/status/*` (published pages world-readable via BFF)  |
+| Settings      | `/settings`                               | DEML Postgres only (billing/consent/identity); no FORJD UI   |
+| Sealed ingest | `/api/v1/ingest` (+ batch)                | FastAPI ingest → Prefect/Pathway/Rust sealed pipeline        |
+
+FORJD internals that DEML never runs locally: **Prefect 3** (YAML workflows),
+**Pathway** (continuous/incremental streams), **Polars LazyFrames** (finite
+batch only), and the Rust **`forjd-engine`** sealed hot path. Do not document
+Airflow, DuckDB, or Polars-as-streaming on the DEML side.
+
 ## Live updates (Supabase Realtime → SSE bridge)
 
 FORJD persists results in Supabase Postgres and publishes `stream_results` /
 `ml_scores` to the `supabase_realtime` publication (FORJD `sql/015`–`016`).
 DEML end users hold Firebase tokens — never Supabase JWTs or `fjsvc_` — so the
 browser cannot subscribe to Supabase Realtime directly (RLS keys off
-`auth.uid()` and tenant membership). The supported live lane is the Django SSE
-bridge:
+`auth.uid()` and tenant membership). Firestore is not used. The supported live
+lane is the Django SSE bridge:
 
 ```http
 GET /api/v1/analytics/live        (text/event-stream)
 ```
 
 Django authorizes the caller (read role), resolves the mapped tenant
-credential, and holds one bounded FORJD cursor poll
+credential, and holds one bounded FORJD cursor poll with `fjsvc_`
 (`GET /api/v1/projections?tenant_id=&since=`). The stream emits `ready`,
 `projections` (`{count, cursor}` change ticks — never projection payloads,
 ciphertext, or credentials), keepalive comments, and a terminal `end` event;
-clients reconnect with backoff. Upstream outages emit a typed `degraded` event.
-Angular subscribes through `LiveUpdatesService` and refreshes dashboards via
-the existing authenticated read adapters; 60-second polling remains as
-fallback. Tune with `DEML_LIVE_UPDATES_ENABLED`, `DEML_LIVE_POLL_SECONDS`, and
+clients reconnect with backoff. Auth / policy failures return `401`/`403` with
+`code=forjd_forbidden` (not treated as data-plane outage). Upstream outages emit
+a typed SSE `degraded` event and REST paths return `503` with
+`code=forjd_degraded`. Angular binds `LiveUpdatesService.latestEvent` and
+`degraded` for Viking callouts, then refreshes dashboards via authenticated
+read adapters; 60-second polling remains as fallback. Tune with
+`DEML_LIVE_UPDATES_ENABLED`, `DEML_LIVE_POLL_SECONDS`, and
 `DEML_LIVE_STREAM_MAX_SECONDS`.
 
 ## Serverless and data-plane hosting

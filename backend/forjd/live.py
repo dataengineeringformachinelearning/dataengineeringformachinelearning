@@ -155,11 +155,21 @@ async def live_updates_stream(request: HttpRequest) -> StreamingHttpResponse | J
   try:
     # _credential_for_request authorizes the "read" action before resolving
     # the tenant-bound service credential (auto-provisioning when unmapped).
+    # Policy denials are wrapped as AdapterError — map 401/403 distinctly from
+    # upstream/mapping outages so Angular never treats auth as forjd_degraded.
     credential = await _credential_for_request(request)
   except ForjdPolicyError as exc:
     return policy_error_response(exc)
   except AdapterError as exc:
-    return JsonResponse({"detail": exc.detail, "code": "forjd_degraded"}, status=exc.status)
+    if exc.status in {401, 403}:
+      return JsonResponse(
+        {"detail": exc.detail, "code": "forjd_forbidden", "source": "deml"},
+        status=exc.status,
+      )
+    return JsonResponse(
+      {"detail": exc.detail, "code": "forjd_degraded", "source": "forjd"},
+      status=503,
+    )
 
   from forjd.api import request_id_from
 

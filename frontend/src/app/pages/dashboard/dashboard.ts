@@ -6,15 +6,15 @@ import {
   signal,
   computed,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   afterNextRender,
   PLATFORM_ID,
+  effect,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Title, Meta } from '@angular/platform-browser';
-import { Subscription } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   VikingCard,
   VikingChart,
@@ -38,7 +38,7 @@ import {
   VikingSpinner,
   VikingCallout,
 } from '@dataengineeringformachinelearning/viking-ui';
-import { environment } from '../../../environments/environment';
+import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
@@ -110,7 +110,6 @@ export class Dashboard implements OnInit, OnDestroy {
   private router = inject(Router);
   private titleService = inject(Title);
   private metaService = inject(Meta);
-  private cdr = inject(ChangeDetectorRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   public vulnService = inject(VulnerabilityService);
   public settingsService = inject(SettingsService);
@@ -135,26 +134,28 @@ export class Dashboard implements OnInit, OnDestroy {
   securityAlertSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Anomalies', [], 'warning'));
   threatDonutSegments = signal<VikingDonutSegment[]>([]);
 
-  // Analytics metrics
-  threatLevel = 0;
-  cesLevel = 0;
-  stabilityLevel = 0;
-  slaLevel = 0;
-  p99Latency = 0;
-  uptimePercent = 0;
-  totalRequests = 0;
-  activeIncidents = 0;
-  uniqueVisitors = 0;
-  benchmarkSummary: BenchmarkSummary | null = null;
+  // --- Analytics metrics (signal-owned for zoneless / OnPush) ---
+  threatLevel = signal(0);
+  cesLevel = signal(0);
+  stabilityLevel = signal(0);
+  slaLevel = signal(0);
+  p99Latency = signal(0);
+  uptimePercent = signal(0);
+  totalRequests = signal(0);
+  activeIncidents = signal(0);
+  uniqueVisitors = signal(0);
+  benchmarkSummary = signal<BenchmarkSummary | null>(null);
 
-  selectedTenantId: string | null = null;
-  selectedSite: string | null = null;
-  tenantOptions: SelectOption[] = [];
-  siteOptions: SelectOption[] = [{ value: 'All', label: 'All Sites' }];
+  selectedTenantId = signal<string | null>(null);
+  selectedSite = signal<string | null>(null);
+  tenantOptions = signal<SelectOption[]>([]);
+  siteOptions = signal<SelectOption[]>([{ value: 'All', label: 'All Sites' }]);
 
   private intervalId: ReturnType<typeof setInterval> | undefined;
   private liveRefreshTimer: ReturnType<typeof setTimeout> | undefined;
-  private liveSub: Subscription | undefined;
+  private readonly queryParams = toSignal(this.route.queryParamMap, {
+    requireSync: true,
+  });
 
   openVulnCount = computed(
     () =>
@@ -179,8 +180,8 @@ export class Dashboard implements OnInit, OnDestroy {
 
   healthScore = computed(() => {
     if (!this.metricsReady() || this.metricsDegraded()) return null;
-    const threatPenalty = Math.min(this.threatLevel, 100) * 0.35;
-    const stabilityBonus = Math.min(this.stabilityLevel, 100) * 0.35;
+    const threatPenalty = Math.min(this.threatLevel(), 100) * 0.35;
+    const stabilityBonus = Math.min(this.stabilityLevel(), 100) * 0.35;
     const vulnPenalty = Math.min(this.openVulnCount() * 8, 30);
     return Math.round(
       Math.max(0, Math.min(100, stabilityBonus + (100 - threatPenalty) * 0.3 - vulnPenalty + 15)),
@@ -236,10 +237,37 @@ export class Dashboard implements OnInit, OnDestroy {
   );
 
   constructor() {
+    effect(() => {
+      const params = this.queryParams();
+      const tab = params.get('tab') as DashboardTab | null;
+      if (tab === 'performance' || tab === 'security' || tab === 'overview') {
+        this.activeTab.set(tab);
+      }
+      if (params.get('setup') === '1' && this.isBrowser) {
+        setTimeout(() => this.openOnboardingWizard(), 300);
+      }
+    });
+
+    effect(() => {
+      const evt = this.liveUpdates.latestEvent();
+      if (evt?.type === 'projections') this.scheduleLiveRefresh();
+    });
+
+    // Typed SSE degraded frame from Django→FORJD cursor bridge.
+    effect(() => {
+      if (!this.liveUpdates.degraded()) return;
+      this.metricsDegraded.set(true);
+      this.loadError.set(
+        'Live FORJD projection updates are unavailable. Showing the last successful overview.',
+      );
+    });
+
     afterNextRender(() => {
       if (this.isBrowser) {
         this.loadTenants();
         this.loadUserPages();
+        this.intervalId = setInterval(() => this.refreshData(), 60000);
+        this.liveUpdates.start();
       }
     });
   }
@@ -250,32 +278,11 @@ export class Dashboard implements OnInit, OnDestroy {
       name: 'description',
       content: 'Unified security and performance dashboard for your monitored sites.',
     });
-
-    this.route.queryParamMap.subscribe(params => {
-      const tab = params.get('tab') as DashboardTab | null;
-      if (tab === 'performance' || tab === 'security' || tab === 'overview') {
-        this.activeTab.set(tab);
-      }
-      if (params.get('setup') === '1' && this.isBrowser) {
-        setTimeout(() => this.openOnboardingWizard(), 300);
-      }
-      this.cdr.markForCheck();
-    });
-
-    if (this.isBrowser) {
-      // Fallback cadence; the live SSE lane below triggers delta-driven refreshes.
-      this.intervalId = setInterval(() => this.refreshData(), 60000);
-      this.liveSub = this.liveUpdates.updates$.subscribe(evt => {
-        if (evt.type === 'projections') this.scheduleLiveRefresh();
-      });
-      this.liveUpdates.start();
-    }
   }
 
   ngOnDestroy() {
     if (this.intervalId) clearInterval(this.intervalId);
     if (this.liveRefreshTimer) clearTimeout(this.liveRefreshTimer);
-    this.liveSub?.unsubscribe();
     this.liveUpdates.stop();
   }
 
@@ -301,7 +308,6 @@ export class Dashboard implements OnInit, OnDestroy {
   openOnboardingWizard() {
     void this.onboardingService.openWizard()?.then(() => {
       this.loadUserPages(false);
-      this.cdr.markForCheck();
     });
   }
 
@@ -320,7 +326,6 @@ export class Dashboard implements OnInit, OnDestroy {
             setTimeout(() => this.openOnboardingWizard(), 400);
           }
         }
-        this.cdr.markForCheck();
       },
     });
   }
@@ -328,36 +333,37 @@ export class Dashboard implements OnInit, OnDestroy {
   private refreshData() {
     this.loadAnalyticsData();
     this.vulnService.fetchVulnerabilities(
-      this.selectedTenantId || undefined,
-      this.selectedSite || undefined,
+      this.selectedTenantId() || undefined,
+      this.selectedSite() || undefined,
     );
   }
 
   private loadTenants() {
-    this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/tenants`).subscribe({
+    this.http.get<any>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const tenants = response.data;
-          this.tenantOptions = tenants.map((t: any) => ({
-            value: t.id,
-            label: t.is_platform ? `${t.name} (Global)` : t.name,
-          }));
-          if (!this.selectedTenantId && tenants.length > 0) {
+          this.tenantOptions.set(
+            tenants.map((t: any) => ({
+              value: t.id,
+              label: t.is_platform ? `${t.name} (Global)` : t.name,
+            })),
+          );
+          if (!this.selectedTenantId() && tenants.length > 0) {
             const userTenant = tenants.find((t: any) => !t.is_platform);
-            this.selectedTenantId = userTenant ? userTenant.id : tenants[0].id;
+            this.selectedTenantId.set(userTenant ? userTenant.id : tenants[0].id);
           }
         }
         this.loadAnalyticsData();
         this.vulnService.fetchVulnerabilities(
-          this.selectedTenantId || undefined,
-          this.selectedSite || undefined,
+          this.selectedTenantId() || undefined,
+          this.selectedSite() || undefined,
         );
-        this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+        this.vulnService.fetchIncidents(this.selectedTenantId() || undefined);
       },
       error: () => {
         this.loadAnalyticsData();
         this.isLoading.set(false);
-        this.cdr.markForCheck();
       },
     });
   }
@@ -365,11 +371,13 @@ export class Dashboard implements OnInit, OnDestroy {
   private loadAnalyticsData() {
     this.isLoading.set(true);
     this.loadError.set(null);
-    let url = `${environment.backendUrl}/api/v1/analytics/overview`;
+    let url = API_ENDPOINTS.ANALYTICS.OVERVIEW;
     const params: string[] = [];
-    if (this.selectedTenantId) params.push(`tenant_id=${this.selectedTenantId}`);
-    if (this.selectedSite && this.selectedSite !== 'All') {
-      params.push(`site_url=${encodeURIComponent(this.selectedSite)}`);
+    const tenantId = this.selectedTenantId();
+    const site = this.selectedSite();
+    if (tenantId) params.push(`tenant_id=${tenantId}`);
+    if (site && site !== 'All') {
+      params.push(`site_url=${encodeURIComponent(site)}`);
     }
     if (params.length > 0) url += '?' + params.join('&');
 
@@ -378,17 +386,17 @@ export class Dashboard implements OnInit, OnDestroy {
         if (response.status === 'success' && response.data) {
           const degraded = response?.degraded === true || response?.code === 'forjd_degraded';
           const { benchmarking, ces, user_metrics } = response.data;
-          this.cesLevel = ces?.level ?? 0;
-          this.threatLevel = ces?.threat ?? 0;
-          this.slaLevel = ces?.sla ?? 0;
-          this.stabilityLevel = ces?.stability ?? 0;
+          this.cesLevel.set(ces?.level ?? 0);
+          this.threatLevel.set(ces?.threat ?? 0);
+          this.slaLevel.set(ces?.sla ?? 0);
+          this.stabilityLevel.set(ces?.stability ?? 0);
           this.temporalForecast.set(ces?.spiking_temporal_forecast ?? 0);
-          this.p99Latency = user_metrics?.p99_latency_ms ?? 0;
-          this.uptimePercent = user_metrics?.uptime_percent ?? 0;
-          this.totalRequests = user_metrics?.total_requests_24h ?? 0;
-          this.activeIncidents = user_metrics?.active_incidents ?? 0;
-          this.uniqueVisitors = user_metrics?.unique_visitors ?? 0;
-          this.benchmarkSummary = benchmarking?.current_scope ?? null;
+          this.p99Latency.set(user_metrics?.p99_latency_ms ?? 0);
+          this.uptimePercent.set(user_metrics?.uptime_percent ?? 0);
+          this.totalRequests.set(user_metrics?.total_requests_24h ?? 0);
+          this.activeIncidents.set(user_metrics?.active_incidents ?? 0);
+          this.uniqueVisitors.set(user_metrics?.unique_visitors ?? 0);
+          this.benchmarkSummary.set(benchmarking?.current_scope ?? null);
           this.metricsReady.set(!degraded);
           this.metricsDegraded.set(degraded);
           this.loadError.set(
@@ -398,10 +406,10 @@ export class Dashboard implements OnInit, OnDestroy {
           );
 
           if (user_metrics?.available_sites) {
-            this.siteOptions = [
+            this.siteOptions.set([
               { value: 'All', label: 'All Sites' },
-              ...user_metrics.available_sites.map((site: string) => ({ value: site, label: site })),
-            ];
+              ...user_metrics.available_sites.map((s: string) => ({ value: s, label: s })),
+            ]);
           }
 
           const timeSeries = user_metrics?.time_series || [];
@@ -446,7 +454,6 @@ export class Dashboard implements OnInit, OnDestroy {
           );
         }
         this.isLoading.set(false);
-        this.cdr.markForCheck();
       },
       error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
         this.metricsReady.set(false);
@@ -462,19 +469,18 @@ export class Dashboard implements OnInit, OnDestroy {
           this.loadError.set(detail || 'Unable to load dashboard analytics.');
         }
         this.isLoading.set(false);
-        this.cdr.markForCheck();
       },
     });
   }
 
   onTenantChange(tenantId: string) {
-    this.selectedTenantId = tenantId;
-    this.selectedSite = 'All';
+    this.selectedTenantId.set(tenantId);
+    this.selectedSite.set('All');
     this.refreshData();
   }
 
   onSiteChange(site: string) {
-    this.selectedSite = site;
+    this.selectedSite.set(site);
     this.refreshData();
   }
 
@@ -484,16 +490,16 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   benchmarkScoreLabel(): string {
-    const score = this.benchmarkSummary?.score_percent;
+    const score = this.benchmarkSummary()?.score_percent;
     return score === null || score === undefined ? 'Awaiting run' : `${score.toFixed(0)}%`;
   }
 
   benchmarkSampleLabel(): string {
-    return (this.benchmarkSummary?.dataset_size ?? 0).toLocaleString();
+    return (this.benchmarkSummary()?.dataset_size ?? 0).toLocaleString();
   }
 
   benchmarkSublabel(): string {
-    const samples = this.benchmarkSummary?.dataset_size ?? 0;
+    const samples = this.benchmarkSummary()?.dataset_size ?? 0;
     return samples > 0
       ? `${samples.toLocaleString()} validation samples`
       : 'Runs with daily model training';

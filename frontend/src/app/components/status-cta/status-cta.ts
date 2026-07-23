@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, input } from '@angular/core';
 
 import { Router } from '@angular/router';
 import {
@@ -17,18 +17,19 @@ import { AuthService } from '../../services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusCta {
-  public authService = inject(AuthService);
-  private router = inject(Router);
+  readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  @Input() title = 'Track your Services';
-  @Input() subtitle =
-    'Create and publish real-time status pages to monitor your APIs. Keep your users informed and track uptime statistics.';
-  @Input() badgeIcon = 'verified_user';
-  @Input() badgeText = 'API Monitoring Console';
-  @Input() mockupVariant: VikingPageMockupVariant = 'status';
-  @Input() showMockup = true;
+  readonly title = input('Track your Services');
+  readonly subtitle = input(
+    'Create and publish real-time status pages to monitor your APIs. Keep your users informed and track uptime statistics.',
+  );
+  readonly badgeIcon = input('verified_user');
+  readonly badgeText = input('API Monitoring Console');
+  readonly mockupVariant = input<VikingPageMockupVariant>('status');
+  readonly showMockup = input(true);
 
   login() {
-    this.router.navigate(['/login']);
+    void this.router.navigate(['/login']);
   }
 }

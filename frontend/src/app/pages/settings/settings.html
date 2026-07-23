@@ -9,7 +9,7 @@
   </viking-page-header>
 
   <div class="settings-stack">
-    @if (isViewer) {
+    @if (isViewer()) {
     <viking-callout
       class="alert-viewer-banner"
       tone="warning"
@@ -86,7 +86,7 @@
           label="Delete status page"
           (pressed)="deleteStatusPage(selectedPage()!.id)"
           class="delete-page-btn"
-          [disabled]="!canMutateSites"
+          [disabled]="!canMutateSites()"
         />
         } @if (!selectedPage()) {
         <viking-card-title icon="plus">Create Status Page</viking-card-title>
@@ -104,23 +104,25 @@
         </p>
         <viking-field label="Title" class="full-width">
           <viking-input
-            [(ngModel)]="newPageTitle"
+            [ngModel]="newPageTitle()"
+            (ngModelChange)="newPageTitle.set($event)"
             placeholder="e.g. My API Status"
-            [disabled]="!canMutateSites"
+            [disabled]="!canMutateSites()"
           />
         </viking-field>
         <viking-field label="Slug" class="full-width">
           <viking-input
-            [(ngModel)]="newPageSlug"
+            [ngModel]="newPageSlug()"
+            (ngModelChange)="newPageSlug.set($event)"
             placeholder="e.g. my-api"
-            [disabled]="!canMutateSites"
+            [disabled]="!canMutateSites()"
           />
         </viking-field>
         <viking-button
           variant="primary"
           type="button"
           (pressed)="createStatusPage()"
-          [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || !canMutateSites"
+          [disabled]="!newPageTitle() || !newPageSlug() || isCreatingPage() || !canMutateSites()"
           [loading]="isCreatingPage()"
           icon="plus"
           class="create-page-btn"
@@ -150,23 +152,25 @@
             <div class="platform-fallback-fields">
               <viking-field label="Title">
                 <viking-input
-                  [(ngModel)]="newPageTitle"
+                  [ngModel]="newPageTitle()"
+                  (ngModelChange)="newPageTitle.set($event)"
                   placeholder="e.g. My API Status"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
               <viking-field label="Slug">
                 <viking-input
-                  [(ngModel)]="newPageSlug"
+                  [ngModel]="newPageSlug()"
+                  (ngModelChange)="newPageSlug.set($event)"
                   placeholder="e.g. my-api"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
               <viking-button
                 variant="primary"
                 type="button"
                 (pressed)="createStatusPage()"
-                [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || !canMutateSites"
+                [disabled]="!newPageTitle() || !newPageSlug() || isCreatingPage() || !canMutateSites()"
                 [loading]="isCreatingPage()"
                 icon="plus"
               >
@@ -183,29 +187,36 @@
             <div class="form-row">
               <viking-field label="Title">
                 <viking-input
-                  [(ngModel)]="editTitle"
+                  [ngModel]="editTitle()"
+                  (ngModelChange)="editTitle.set($event)"
                   placeholder="e.g. My API Status"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
               <viking-field label="Slug">
                 <viking-input
-                  [(ngModel)]="editSlug"
+                  [ngModel]="editSlug()"
+                  (ngModelChange)="editSlug.set($event)"
                   placeholder="e.g. my-api"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
             </div>
             <viking-field label="Description" class="full-width">
               <viking-textarea
-                [(ngModel)]="editDescription"
+                [ngModel]="editDescription()"
+                (ngModelChange)="editDescription.set($event)"
                 [rows]="2"
                 placeholder="Description of this status page..."
-                [disabled]="!canMutateSites"
+                [disabled]="!canMutateSites()"
               />
             </viking-field>
             <div class="settings-actions">
-              <viking-checkbox [(ngModel)]="editIsPublished" [disabled]="!canMutateSites">
+              <viking-checkbox
+                [ngModel]="editIsPublished()"
+                (ngModelChange)="editIsPublished.set($event)"
+                [disabled]="!canMutateSites()"
+              >
                 Publish Status Page (makes it visible in the public Explore directory)
               </viking-checkbox>
               <viking-button
@@ -213,7 +224,7 @@
                 type="button"
                 class="save-settings-btn"
                 (pressed)="updateStatusPage()"
-                [disabled]="!editTitle || !editSlug || isUpdatingPage() || !canMutateSites"
+                [disabled]="!editTitle() || !editSlug() || isUpdatingPage() || !canMutateSites()"
                 [loading]="isUpdatingPage()"
               >
                 @if (!isUpdatingPage()) {
@@ -242,23 +253,26 @@
                 description="Measurement ID for this site’s host only (not all GA properties)"
               >
                 <viking-input
-                  [(ngModel)]="editGoogleAnalyticsId"
+                  [ngModel]="editGoogleAnalyticsId()"
+                  (ngModelChange)="editGoogleAnalyticsId.set($event)"
                   placeholder="e.g. G-XXXXXXX"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
               <viking-field label="Microsoft Clarity ID">
                 <viking-input
-                  [(ngModel)]="editMicrosoftClarityId"
+                  [ngModel]="editMicrosoftClarityId()"
+                  (ngModelChange)="editMicrosoftClarityId.set($event)"
                   placeholder="e.g. xxxxxxxx"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
               <viking-field label="Cloudflare Analytics ID">
                 <viking-input
-                  [(ngModel)]="editCloudflareAnalyticsId"
+                  [ngModel]="editCloudflareAnalyticsId()"
+                  (ngModelChange)="editCloudflareAnalyticsId.set($event)"
                   placeholder="e.g. xxxxxxxx"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
             </viking-form-grid>
@@ -268,7 +282,7 @@
                 type="button"
                 class="save-settings-btn"
                 (pressed)="updateStatusPage()"
-                [disabled]="!editTitle || !editSlug || isUpdatingPage() || !canMutateSites"
+                [disabled]="!editTitle() || !editSlug() || isUpdatingPage() || !canMutateSites()"
                 [loading]="isUpdatingPage()"
               >
                 @if (!isUpdatingPage()) {
@@ -285,17 +299,19 @@
             <div class="service-inputs-row">
               <viking-field label="Service Name">
                 <viking-input
-                  [(ngModel)]="newServiceName"
+                  [ngModel]="newServiceName()"
+                  (ngModelChange)="newServiceName.set($event)"
                   placeholder="e.g. Auth API"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
               <viking-field label="Health Check URL">
                 <viking-input
-                  [(ngModel)]="newServiceUrl"
+                  [ngModel]="newServiceUrl()"
+                  (ngModelChange)="newServiceUrl.set($event)"
                   placeholder="https://api.example.com/health"
                   icon="globe"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 />
               </viking-field>
             </div>
@@ -305,7 +321,7 @@
               class="add-service-btn"
               icon="plus"
               (pressed)="addService()"
-              [disabled]="!newServiceName || !newServiceUrl || isAddingService() || !canMutateSites"
+              [disabled]="!newServiceName() || !newServiceUrl() || isAddingService() || !canMutateSites()"
               [loading]="isAddingService()"
             >
               Add Service
@@ -325,7 +341,7 @@
                 icon="trash"
                 label="Delete service"
                 (pressed)="deleteService(service.id)"
-                [disabled]="!canMutateSites"
+                [disabled]="!canMutateSites()"
               />
             </div>
             } @if (services().length === 0) {
@@ -344,17 +360,19 @@
           <div class="incident-form">
             <viking-field label="Incident Title" class="full-width">
               <viking-input
-                [(ngModel)]="newIncidentTitle"
+                [ngModel]="newIncidentTitle()"
+                (ngModelChange)="newIncidentTitle.set($event)"
                 placeholder="e.g. API Degraded Performance"
-                [disabled]="!canMutateSites"
+                [disabled]="!canMutateSites()"
               />
             </viking-field>
             <viking-field label="Message / Update" class="full-width">
               <viking-textarea
-                [(ngModel)]="newIncidentMessage"
+                [ngModel]="newIncidentMessage()"
+                (ngModelChange)="newIncidentMessage.set($event)"
                 [rows]="2"
                 placeholder="Describe what is happening and what actions are being taken..."
-                [disabled]="!canMutateSites"
+                [disabled]="!canMutateSites()"
               />
             </viking-field>
             <div class="form-row-actions">
@@ -362,9 +380,9 @@
                 <app-unified-select
                   id="incident-status"
                   [options]="incidentStatusOptions"
-                  [value]="newIncidentStatus"
-                  (valueChange)="newIncidentStatus = $event"
-                  [disabled]="!canMutateSites"
+                  [value]="newIncidentStatus()"
+                  (valueChange)="newIncidentStatus.set($event)"
+                  [disabled]="!canMutateSites()"
                 ></app-unified-select>
               </div>
               <viking-button
@@ -373,7 +391,7 @@
                 class="post-incident-btn"
                 icon="bell"
                 (pressed)="addIncident()"
-                [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident() || !canMutateSites"
+                [disabled]="!newIncidentTitle() || !newIncidentMessage() || isAddingIncident() || !canMutateSites()"
                 [loading]="isAddingIncident()"
               >
                 Post Incident
@@ -396,7 +414,7 @@
                 icon="trash"
                 label="Delete incident"
                 (pressed)="deleteIncident(incident.id)"
-                [disabled]="!canMutateSites"
+                [disabled]="!canMutateSites()"
               />
             </div>
             } @if (incidents().length === 0) {
@@ -459,7 +477,7 @@
                   variant="danger"
                   type="button"
                   (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
-                  [disabled]="!canMutateSites"
+                  [disabled]="!canMutateSites()"
                 >
                   Disconnect
                 </viking-button>
@@ -468,7 +486,7 @@
                   variant="primary"
                   type="button"
                   (pressed)="connectGoogleAnalytics()"
-                  [disabled]="isConnectingGoogle() || !canMutateSites"
+                  [disabled]="isConnectingGoogle() || !canMutateSites()"
                   [loading]="isConnectingGoogle()"
                 >
                   Connect GA4 API
@@ -492,7 +510,7 @@
                     variant="danger"
                     type="button"
                     (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
-                    [disabled]="!canMutateSites"
+                    [disabled]="!canMutateSites()"
                   >
                     Disconnect
                   </viking-button>
@@ -504,17 +522,19 @@
                 <div class="inputs-group">
                   <viking-field label="Clarity Project ID">
                     <viking-input
-                      [(ngModel)]="clarityProjectId"
+                      [ngModel]="clarityProjectId()"
+                      (ngModelChange)="clarityProjectId.set($event)"
                       placeholder="Project ID"
-                      [disabled]="!canMutateSites"
+                      [disabled]="!canMutateSites()"
                     />
                   </viking-field>
                   <viking-field label="API Token / Key">
                     <viking-input
-                      [(ngModel)]="clarityApiKey"
+                      [ngModel]="clarityApiKey()"
+                      (ngModelChange)="clarityApiKey.set($event)"
                       type="password"
                       placeholder="Clarity API Key"
-                      [disabled]="!canMutateSites"
+                      [disabled]="!canMutateSites()"
                     />
                   </viking-field>
                 </div>
@@ -522,7 +542,7 @@
                   variant="primary"
                   type="button"
                   (pressed)="connectMicrosoftClarity()"
-                  [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity() || !canMutateSites"
+                  [disabled]="!clarityProjectId() || !clarityApiKey() || isConnectingClarity() || !canMutateSites()"
                   [loading]="isConnectingClarity()"
                 >
                   Connect API
@@ -547,7 +567,7 @@
                     variant="danger"
                     type="button"
                     (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
-                    [disabled]="!canMutateSites"
+                    [disabled]="!canMutateSites()"
                   >
                     Disconnect
                   </viking-button>
@@ -559,17 +579,19 @@
                 <div class="inputs-group">
                   <viking-field label="Cloudflare Account ID">
                     <viking-input
-                      [(ngModel)]="cloudflareProjectId"
+                      [ngModel]="cloudflareProjectId()"
+                      (ngModelChange)="cloudflareProjectId.set($event)"
                       placeholder="Account ID"
-                      [disabled]="!canMutateSites"
+                      [disabled]="!canMutateSites()"
                     />
                   </viking-field>
                   <viking-field label="API Token / Key">
                     <viking-input
-                      [(ngModel)]="cloudflareApiKey"
+                      [ngModel]="cloudflareApiKey()"
+                      (ngModelChange)="cloudflareApiKey.set($event)"
                       type="password"
                       placeholder="Cloudflare API Token"
-                      [disabled]="!canMutateSites"
+                      [disabled]="!canMutateSites()"
                     />
                   </viking-field>
                 </div>
@@ -577,7 +599,7 @@
                   variant="primary"
                   type="button"
                   (pressed)="connectCloudflare()"
-                  [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare() || !canMutateSites"
+                  [disabled]="!cloudflareProjectId() || !cloudflareApiKey() || isConnectingCloudflare() || !canMutateSites()"
                   [loading]="isConnectingCloudflare()"
                 >
                   Connect API

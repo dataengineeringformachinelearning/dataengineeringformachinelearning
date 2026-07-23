@@ -38,7 +38,7 @@ describe('MlService', () => {
 
     expect(service.latestThreatReports()['status-page-1']).toEqual({
       status: 'success',
-      anomaly_score: 0,
+      anomaly_score: null,
       suspicious_ratio: 0.42,
       top_location: 'United States',
       location_weight: 0.77,
@@ -65,10 +65,10 @@ describe('MlService', () => {
 
     expect(service.latestThreatReports()['status-page-2']).toEqual({
       status: 'success',
-      anomaly_score: 0,
-      suspicious_ratio: 0,
+      anomaly_score: null,
+      suspicious_ratio: null,
       top_location: 'N/A',
-      location_weight: 0,
+      location_weight: null,
       created_at: null,
       message: 'No threat intelligence reports available',
     });

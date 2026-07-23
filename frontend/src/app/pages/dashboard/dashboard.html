@@ -4,21 +4,21 @@
     title="Command Center"
     subtitle="Monitor performance, review threats, and triage vulnerabilities — all in one place."
   >
-    @if (tenantOptions.length > 0) {
+    @if (tenantOptions().length > 0) {
     <div vikingPageHeaderActions class="scope-filters">
       <app-unified-select
         id="dashboardTenant"
         label="Workspace"
-        [options]="tenantOptions"
-        [value]="selectedTenantId"
+        [options]="tenantOptions()"
+        [value]="selectedTenantId()"
         (valueChange)="onTenantChange($event)"
       ></app-unified-select>
-      @if (siteOptions.length > 1) {
+      @if (siteOptions().length > 1) {
       <app-unified-select
         id="dashboardSite"
         label="Site"
-        [options]="siteOptions"
-        [value]="selectedSite || 'All'"
+        [options]="siteOptions()"
+        [value]="selectedSite() || 'All'"
         (valueChange)="onSiteChange($event)"
       ></app-unified-select>
       }
@@ -34,6 +34,10 @@
     command center.
     <a routerLink="/sites" class="viking-link">Go to Sites</a>
   </viking-callout>
+  } @if (isLoading()) {
+  <div class="viking-stack" role="status" aria-live="polite" aria-busy="true">
+    <viking-spinner [size]="28" label="Loading command center" />
+  </div>
   }
 
   <viking-tabs [value]="activeTab()" (valueChange)="setTab($any($event))">
@@ -74,14 +78,14 @@
           </viking-grid-item>
 
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="kpi-card" [compact]="true" [class.alert]="threatLevel > 50">
+            <viking-card class="kpi-card" [compact]="true" [class.alert]="threatLevel() > 50">
               <div class="kpi-card-header">
                 <span class="kpi-icon-badge" aria-hidden="true">
                   <viking-app-icon name="security" />
                 </span>
                 <div class="kpi-card-meta">
                   <span class="kpi-label">Threat Exposure</span>
-                  <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
+                  <span class="kpi-value">{{ threatLevel() | number:'1.0-0' }}%</span>
                 </div>
               </div>
               <div class="kpi-sparkline-slot">
@@ -143,7 +147,7 @@
                 </span>
                 <div class="kpi-card-meta">
                   <span class="kpi-label">Uptime</span>
-                  <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
+                  <span class="kpi-value">{{ uptimePercent() | number:'1.1-1' }}%</span>
                 </div>
               </div>
               <div class="kpi-sparkline-slot">
@@ -164,14 +168,14 @@
           </viking-grid-item>
 
           <viking-grid-item [tabletSpan]="2" [desktopSpan]="1">
-            <viking-card class="kpi-card" [compact]="true" [class.alert]="activeIncidents > 0">
+            <viking-card class="kpi-card" [compact]="true" [class.alert]="activeIncidents() > 0">
               <div class="kpi-card-header">
                 <span class="kpi-icon-badge" aria-hidden="true">
                   <viking-app-icon name="report" />
                 </span>
                 <div class="kpi-card-meta">
                   <span class="kpi-label">Active Incidents</span>
-                  <span class="kpi-value">{{ activeIncidents }}</span>
+                  <span class="kpi-value">{{ activeIncidents() }}</span>
                 </div>
               </div>
               <div class="kpi-sparkline-slot">
@@ -253,19 +257,19 @@
                 <div class="snapshot-stats">
                   <div class="snapshot-stat">
                     <span class="snapshot-label">P99 Latency</span>
-                    <span class="snapshot-value">{{ p99Latency | number:'1.0-0' }} ms</span>
+                    <span class="snapshot-value">{{ p99Latency() | number:'1.0-0' }} ms</span>
                   </div>
                   <div class="snapshot-stat">
                     <span class="snapshot-label">Requests (24h)</span>
-                    <span class="snapshot-value">{{ totalRequests | number }}</span>
+                    <span class="snapshot-value">{{ totalRequests() | number }}</span>
                   </div>
                   <div class="snapshot-stat">
                     <span class="snapshot-label">Visitors</span>
-                    <span class="snapshot-value">{{ uniqueVisitors | number }}</span>
+                    <span class="snapshot-value">{{ uniqueVisitors() | number }}</span>
                   </div>
                   <div class="snapshot-stat">
                     <span class="snapshot-label">Platform Score</span>
-                    <span class="snapshot-value">{{ cesLevel | number:'1.0-0' }}</span>
+                    <span class="snapshot-value">{{ cesLevel() | number:'1.0-0' }}</span>
                   </div>
                   <div class="snapshot-stat">
                     <span class="snapshot-label">Model Benchmark</span>
@@ -304,10 +308,13 @@
         <viking-metric-row>
           <viking-metric-card
             label="Network Stability"
-            [value]="(stabilityLevel | number:'1.0-0') + '%'"
+            [value]="(stabilityLevel() | number:'1.0-0') + '%'"
           />
-          <viking-metric-card label="SLA Forecast" [value]="(slaLevel | number:'1.0-0') + '%'" />
-          <viking-metric-card label="P99 Latency" [value]="(p99Latency | number:'1.0-0') + ' ms'" />
+          <viking-metric-card label="SLA Forecast" [value]="(slaLevel() | number:'1.0-0') + '%'" />
+          <viking-metric-card
+            label="P99 Latency"
+            [value]="(p99Latency() | number:'1.0-0') + ' ms'"
+          />
           <viking-metric-card
             label="Model Benchmark"
             [value]="benchmarkScoreLabel()"
@@ -321,7 +328,7 @@
               <viking-chart-card-header
                 title="Latency Trend (24h)"
                 [hasData]="hasLatencyData()"
-                [value]="p99Latency + ' ms'"
+                [value]="p99Latency() + ' ms'"
                 emptyLabel="Awaiting signal"
               />
               @if (hasLatencyData()) {
@@ -407,7 +414,10 @@
         <viking-metric-row>
           <viking-metric-card label="Open Threats" variant="warning" [value]="openVulnCount()" />
           <viking-metric-card label="Critical" variant="critical" [value]="criticalVulnCount()" />
-          <viking-metric-card label="Threat Level" [value]="(threatLevel | number:'1.0-0') + '%'" />
+          <viking-metric-card
+            label="Threat Level"
+            [value]="(threatLevel() | number:'1.0-0') + '%'"
+          />
         </viking-metric-row>
 
         <viking-panel-grid [columns]="2">

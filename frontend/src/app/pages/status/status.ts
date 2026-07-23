@@ -4,7 +4,6 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef,
   effect,
   computed,
   afterNextRender,
@@ -24,6 +23,7 @@ import {
   VikingCallout,
   VikingPageHeader,
   VikingPageTemplate,
+  VikingSpinner,
   VikingStatusDashboard,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type {
@@ -48,6 +48,7 @@ import { timeout } from 'rxjs';
     VikingCallout,
     VikingPageHeader,
     VikingPageTemplate,
+    VikingSpinner,
     VikingStatusDashboard,
     RouterModule,
     StatusCta,
@@ -59,7 +60,6 @@ export class Status implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private titleService = inject(Title);
   private metaService = inject(Meta);
@@ -139,36 +139,42 @@ export class Status implements OnInit {
     return service.sla ?? page.overall_uptime ?? page.cumulative_sla ?? 100;
   }
 
-  dashboardMetrics = (page: StatusPageData): StatusDashboardMetric[] => [
-    {
-      icon: 'server',
-      label: 'SLA',
-      value: `${((page.cumulative_sla ?? page.overall_uptime ?? 100) || 0).toFixed(2)}%`,
-      sublabel: 'Current service level',
-      tone: 'success',
-    },
-    {
-      icon: 'clock',
-      label: 'Latency',
-      value: `${page.p99_latency ?? 0}ms`,
-      sublabel: 'Latest observation',
-      tone: 'info',
-    },
-    {
-      icon: 'trending-up',
-      label: 'Predicted SLA',
-      value: `${(this.mlService.latestStats()[page.id] ?? 0).toFixed(2)}%`,
-      sublabel: '30-day forecast',
-      tone: 'default',
-    },
-    {
-      icon: 'bar-chart',
-      label: 'Requests',
-      value: `${page.total_requests ?? 0}`,
-      sublabel: 'Last 24 hours',
-      tone: 'default',
-    },
-  ];
+  dashboardMetrics = (page: StatusPageData): StatusDashboardMetric[] => {
+    const sla = page.cumulative_sla ?? page.overall_uptime;
+    const latency = page.p99_latency;
+    const predicted = this.mlService.latestStats()[page.id];
+    const requests = page.total_requests;
+    return [
+      {
+        icon: 'server',
+        label: 'SLA',
+        value: sla == null ? '—' : `${sla.toFixed(2)}%`,
+        sublabel: 'Current service level',
+        tone: 'success',
+      },
+      {
+        icon: 'clock',
+        label: 'Latency',
+        value: latency == null ? '—' : `${latency}ms`,
+        sublabel: 'Latest observation',
+        tone: 'info',
+      },
+      {
+        icon: 'trending-up',
+        label: 'Predicted SLA',
+        value: predicted == null ? '—' : `${predicted.toFixed(2)}%`,
+        sublabel: '30-day forecast',
+        tone: 'default',
+      },
+      {
+        icon: 'bar-chart',
+        label: 'Requests',
+        value: requests == null ? '—' : `${requests}`,
+        sublabel: 'Last 24 hours',
+        tone: 'default',
+      },
+    ];
+  };
 
   dashboardHistory = (
     page: StatusPageData,
@@ -306,7 +312,6 @@ export class Status implements OnInit {
       this.statusPages.set([this.loadingPlaceholder]);
       this.isLoading.set(false);
       this.loadFailed.set(false);
-      this.cdr.markForCheck();
       return;
     }
     if (this.authService.isAuthenticated()) {
@@ -329,24 +334,24 @@ export class Status implements OnInit {
             this.statusPages.set(sorted);
             this.monitorService.fetchAllIncidents(sorted);
             this.monitorService.fetchAllServices(sorted);
-            sorted.forEach(page => {
+            for (const page of sorted) {
+              this.monitorService.seedFromEmbeddedPage(page);
+              this.mlService.seedFromStatusPage(page);
               this.mlService.fetchLatestStat(page.id);
               this.mlService.fetchThreatReport(page.id);
               this.mlService.fetchTemporalForecast(page.id);
-            });
+            }
             this.isLoading.set(false);
-            this.cdr.markForCheck();
           },
           error: err => {
             console.error('Error fetching pages:', err);
             this.statusPages.set([]);
             this.loadFailed.set(true);
             this.isLoading.set(false);
-            this.cdr.markForCheck();
           },
         });
     } else {
-      this.router.navigate(['/status/platform-status']);
+      void this.router.navigate(['/status/platform-status']);
     }
   }
 

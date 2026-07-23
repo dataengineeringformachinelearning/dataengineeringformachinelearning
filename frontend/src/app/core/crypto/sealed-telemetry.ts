@@ -7,6 +7,7 @@
  */
 
 import { environment } from '../../../environments/environment';
+import { API_ENDPOINTS } from '../constants/api.constants';
 
 const GCM_NONCE_BYTES = 12;
 const AES_KEY_BYTES = 32;
@@ -101,7 +102,7 @@ function saveCachedSession(session: CachedSession): void {
 }
 
 export async function resolveForjdTenantId(authToken: string): Promise<string> {
-  const res = await fetch(`${environment.backendUrl}/api/v1/forjd/tenant`, {
+  const res = await fetch(API_ENDPOINTS.FORJD.TENANT, {
     method: 'GET',
     headers: { Authorization: `Bearer ${authToken}` },
   });
@@ -125,7 +126,7 @@ export async function ensureCryptoSession(
   const keyBytes = crypto.getRandomValues(new Uint8Array(AES_KEY_BYTES));
   const identityPublicKey = await generateX25519PublicB64();
 
-  const res = await fetch(`${environment.backendUrl}/api/v1/sessions`, {
+  const res = await fetch(API_ENDPOINTS.SESSIONS.ROOT, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authToken}`,
@@ -228,7 +229,7 @@ export async function sealAndIngest(
     metadata: safeMeta,
   };
 
-  const res = await fetch(`${environment.backendUrl}/api/v1/ingest`, {
+  const res = await fetch(API_ENDPOINTS.TELEMETRY.SEALED_INGEST, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authToken}`,

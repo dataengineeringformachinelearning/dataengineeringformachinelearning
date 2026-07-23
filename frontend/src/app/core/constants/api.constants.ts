@@ -1,5 +1,12 @@
 import { environment } from '../../../environments/environment';
 
+/**
+ * Stable DEML Django BFF paths used by Angular.
+ *
+ * The browser never calls FORJD and never holds ``fjsvc_`` tokens. All FORJD
+ * data-plane work is adapted through these Django routes (see
+ * docs/FORJD_INTEGRATION.md).
+ */
 export const API_ENDPOINTS = {
   ML: {
     LATEST: `${environment.backendUrl}/api/v1/ml/latest`,
@@ -21,7 +28,19 @@ export const API_ENDPOINTS = {
     SEALED_BATCH: `${environment.backendUrl}/api/v1/ingest/events:batch`,
     COOKIE_CONSENT: `${environment.backendUrl}/api/v1/telemetry/cookie-consent`,
   },
+  SESSIONS: {
+    ROOT: `${environment.backendUrl}/api/v1/sessions`,
+  },
+  FORJD: {
+    /** Mapped FORJD tenant id for the authenticated DEML account (never the token). */
+    TENANT: `${environment.backendUrl}/api/v1/forjd/tenant`,
+    CAPABILITIES: `${environment.backendUrl}/api/v1/forjd/capabilities`,
+  },
   ANALYTICS: {
+    OVERVIEW: `${environment.backendUrl}/api/v1/analytics/overview`,
+    TENANTS: `${environment.backendUrl}/api/v1/analytics/tenants`,
+    /** Django SSE bridge over FORJD projection cursor polls — not Firestore. */
+    LIVE: `${environment.backendUrl}/api/v1/analytics/live`,
     INCIDENTS: `${environment.backendUrl}/api/v1/analytics/incidents`,
     PLAYBOOKS: `${environment.backendUrl}/api/v1/analytics/playbooks`,
   },

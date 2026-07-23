@@ -162,3 +162,26 @@ def test_live_stream_degrades_typed_on_upstream_failure(
 
   assert "event: degraded" in body
   assert '"code":"forjd_degraded"' in body
+
+
+@pytest.mark.django_db
+@override_settings(FORJD_SERVICE_TOKEN=SERVICE_TOKEN, FORJD_READ_MODE="forjd")
+@patch("forjd.live._credential_for_request", new_callable=AsyncMock)
+def test_live_stream_maps_auth_failures_distinctly_from_degraded(
+  mock_credential: AsyncMock,
+  client: Client,
+) -> None:
+  """Auth/policy denials must not be labeled forjd_degraded (Angular UX)."""
+  from forjd.views import AdapterError
+
+  username = f"live{uuid4().hex[:8]}"
+  _user, tenant_id = _mapped_actor(username)
+  mock_credential.side_effect = AdapterError(403, "role not authorized")
+
+  with override_settings(FORJD_TENANT_ID=tenant_id):
+    response = client.get(LIVE_PATH, HTTP_AUTHORIZATION=_authorization(username))
+
+  assert response.status_code == 403
+  payload = json.loads(response.content)
+  assert payload.get("code") == "forjd_forbidden"
+  assert payload.get("code") != "forjd_degraded"

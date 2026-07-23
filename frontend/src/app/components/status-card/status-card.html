@@ -1,50 +1,50 @@
 <viking-status-card
-  [attr.id]="page.slug"
-  [title]="page.title"
-  [subtitle]="page.description || 'Monitoring core services'"
-  [status]="getPageStatus()"
-  [statusTone]="statusTone"
+  [attr.id]="page().slug"
+  [title]="page().title"
+  [subtitle]="page().description || 'Monitoring core services'"
+  [status]="pageStatus()"
+  [statusTone]="statusTone()"
   [statusDot]="true"
-  [compact]="isCompact"
-  [href]="linkHeader ? getPageUrl() : ''"
+  [compact]="isCompact()"
+  [href]="linkHeader() ? pageUrl() : ''"
 >
   <div class="status-card-actions">
-    <app-pro-verified-badge [show]="!!page.is_pro_verified"></app-pro-verified-badge>
-    <viking-status-pill [tone]="statusTone" [dot]="true">{{ getPageStatus() }}</viking-status-pill>
+    <app-pro-verified-badge [show]="!!page().is_pro_verified"></app-pro-verified-badge>
+    <viking-status-pill [tone]="statusTone()" [dot]="true">{{ pageStatus() }}</viking-status-pill>
   </div>
 
-  @if (isCompact) {
+  @if (isCompact()) {
   <div class="status-summary-grid">
     <viking-status-metric-row
       icon="server"
       title="Cumulative SLA"
       subtitle="Based on real telemetry"
-      [value]="(cumulativeSla | number:'1.2-2') + '%'"
+      [value]="(cumulativeSla() | number: '1.2-2') + '%'"
     />
     <viking-status-metric-row
       icon="clock"
       title="P99 Latency"
       subtitle="Last 24h"
-      [value]="p99Latency + 'ms'"
+      [value]="p99Latency() + 'ms'"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Spike Risk"
       subtitle="Dynamic Temporal Forecasting (0-100)"
-      [value]="(predictedTemporalForecastValue | number:'1.1-2') ?? '0'"
+      [value]="(predictedTemporalForecastValue() | number: '1.1-2') ?? '0'"
     />
     <viking-status-metric-row
       icon="bolt"
       title="Dynamic Temporal Forecasting"
       subtitle="Temporal inference engine"
-      [value]="norseSnnLabel"
+      [value]="norseSnnLabel()"
     />
   </div>
 
   <viking-uptime-history
-    [segments]="page.uptime_history || []"
-    [percentage]="overallUptime"
-    [statusSummary]="uptimeSummary"
+    [segments]="page().uptime_history || []"
+    [percentage]="overallUptime()"
+    [statusSummary]="uptimeSummary()"
     [compact]="true"
     [showLegend]="false"
   />
@@ -54,13 +54,13 @@
       icon="server"
       title="Cumulative SLA"
       subtitle="Based on real telemetry"
-      [value]="(cumulativeSla | number:'1.2-2') + '%'"
+      [value]="(cumulativeSla() | number: '1.2-2') + '%'"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Predicted SLA"
       subtitle="30-day forecast via ML"
-      [value]="(predictedSlaValue | number:'1.2-2') + '%'"
+      [value]="(predictedSlaValue() | number: '1.2-2') + '%'"
     />
   </div>
 
@@ -69,13 +69,13 @@
       icon="clock"
       title="P99 Latency"
       subtitle="Last 24h"
-      [value]="p99Latency + 'ms'"
+      [value]="p99Latency() + 'ms'"
     />
     <viking-status-metric-row
       icon="bar-chart"
       title="Total Requests"
       subtitle="Last 24h"
-      [value]="(totalRequests | number) ?? '0'"
+      [value]="(totalRequests() | number) ?? '0'"
     />
   </div>
 
@@ -84,13 +84,13 @@
       icon="shield"
       title="Cumulative TA"
       subtitle="Based on real telemetry"
-      [value]="(suspiciousRatio * 100 | number:'1.1-2') + '%'"
+      [value]="(suspiciousRatio() * 100 | number: '1.1-2') + '%'"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Predicted TA"
       subtitle="30-day threat forecast via ML"
-      [value]="(anomalyScore * 100 | number:'1.1-2') + '%'"
+      [value]="(anomalyScore() * 100 | number: '1.1-2') + '%'"
     />
   </div>
 
@@ -99,32 +99,32 @@
       icon="bolt"
       title="Dynamic Temporal Forecasting"
       subtitle="Temporal inference engine"
-      [value]="norseSnnLabel"
+      [value]="norseSnnLabel()"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Spike Risk Score"
       subtitle="Dynamic Temporal Forecasting on telemetry sequences"
-      [value]="(predictedTemporalForecastValue | number:'1.1-2') ?? '0'"
+      [value]="(predictedTemporalForecastValue() | number: '1.1-2') ?? '0'"
     />
   </div>
 
   <viking-card class="status-chart-panel">
     <viking-heading [level]="3" size="lg">Availability Trend</viking-heading>
     <p class="hud-subtitle">Last 30 days — higher is better</p>
-    <viking-chart kind="line" [series]="latencyChartSeries" [showArea]="true" [fill]="true" />
+    <viking-chart kind="line" [series]="latencyChartSeries()" [showArea]="true" [fill]="true" />
   </viking-card>
 
   <viking-uptime-history
-    [segments]="page.uptime_history || []"
-    [percentage]="overallUptime"
-    [statusSummary]="uptimeSummary"
+    [segments]="page().uptime_history || []"
+    [percentage]="overallUptime()"
+    [statusSummary]="uptimeSummary()"
     label="Uptime"
     [showLegend]="true"
   />
-  } @if (showIncidents && activeIncidents.length > 0) {
+  } @if (showIncidents() && activeIncidents().length > 0) {
   <div class="status-incidents-list">
-    @for (incident of activeIncidents; track incident.id || incident.title) {
+    @for (incident of activeIncidents(); track incident.id || incident.title) {
     <viking-card [compact]="true">
       <strong>{{ incident.status }}</strong>
       <span>{{ incident.title }}</span>
@@ -132,12 +132,12 @@
     </viking-card>
     }
   </div>
-  } @if (showViewButton) {
+  } @if (showViewButton()) {
   <div class="status-card-footer-action">
     <viking-button
       variant="primary"
       [fullWidth]="true"
-      [href]="getPageUrl()"
+      [href]="pageUrl()"
       iconTrailing="arrow-right"
     >
       View Dedicated Page

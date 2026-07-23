@@ -37,21 +37,21 @@ This section specifies how the DEML platform is **operated** in production: vend
 
 Deliver account-isolated observability, predictive SLA forecasting, and threat analytics through two clear planes:
 
-- **Control plane (DEML)** — Firebase Auth, Django BFF, Postgres identity/billing/consent/learning, Angular UI
-- **Data plane (FORJD)** — sealed ingest, workflows, durable projections, analytics, ML, replay/DLQ via tenant-bound `fjsvc_` tokens
+- **Control plane (DEML)** — Firebase Auth, Django BFF, Postgres identity/billing/consent/learning, Angular 22+ Signals + Viking-UI
+- **Data plane (FORJD)** — FastAPI + Prefect 3 + Pathway streams + Polars batch + Rust `forjd-engine`; sealed ingest, durable projections, analytics, ML, replay/DLQ via tenant-bound `fjsvc_` tokens held only by Django
 
 ### 2.2 Operational environment
 
-| Plane             | Technology                          | Role                                                                |
-| ----------------- | ----------------------------------- | ------------------------------------------------------------------- |
-| Product UI        | Vercel (`deml.app`)                 | Angular SPA; calls Django only                                      |
-| Control plane API | Fly.io `deml-backend`               | Django BFF: auth, billing, consent, learning, FORJD adapters        |
-| Data plane        | FORJD on Fly + Supabase + Dragonfly | Sealed ingest, projections, analytics, ML, replay/DLQ, tenant erase |
-| Identity          | Firebase Auth                       | JWT perimeter at Django; MFA-verified session on site mutations     |
-| Marketing         | Astro marketing site                | Landing and documentation                                           |
-| Security controls | AES-256-GCM + platform audit sinks  | Field encryption for secrets; sealed envelopes on the wire to FORJD |
-| Billing           | Stripe                              | Standard → Pro checkout, webhooks, reconciliation                   |
-| Artifacts         | FORJD ML surfaces                   | Training and scoring execute in FORJD                               |
+| Plane             | Technology                          | Role                                                                   |
+| ----------------- | ----------------------------------- | ---------------------------------------------------------------------- |
+| Product UI        | Vercel (`deml.app`)                 | Angular 22+ Signals SPA + Viking-UI; calls Django only; SSE live ticks |
+| Control plane API | Fly.io `deml-backend`               | Django BFF: auth, billing, consent, learning, FORJD adapters, SSE      |
+| Data plane        | FORJD on Fly + Supabase + Dragonfly | FastAPI/Prefect/Pathway/Polars/Rust; projections, analytics, ML, erase |
+| Identity          | Firebase Auth                       | JWT perimeter at Django; Auth-only (no Firestore product path)         |
+| Marketing         | Astro marketing site                | Landing and documentation                                              |
+| Security controls | AES-256-GCM + platform audit sinks  | Field encryption for secrets; sealed envelopes on the wire to FORJD    |
+| Billing           | Stripe                              | Standard → Pro checkout, webhooks, reconciliation                      |
+| Artifacts         | FORJD ML surfaces                   | Training and scoring execute in FORJD                                  |
 
 Production hosts are Vercel + Fly Django + FORJD. Symmetrical account → FORJD tenant mapping is invariant. See [BOOK.md CONOPS](BOOK.md#concept-of-operations-conops), [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md), and [BOOK.md § Appendix Q](BOOK.md#appendix-q-deml-glossary).
 
@@ -66,12 +66,13 @@ Every production transport is cryptographically authenticated: HTTPS/HSTS at pub
 
 ### 2.4 Operational modes
 
-| Mode             | Trigger                       | Behavior                                                                                                  |
-| ---------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Normal           | All services healthy          | Angular → Django (Firebase JWT) → FORJD (`fjsvc_` + sealed envelope); projections and analytics available |
-| Degraded (FORJD) | FORJD unreachable / auth fail | Control plane stays up; data-plane calls fail closed or return empty-stable responses                     |
-| Degraded (auth)  | Firebase/MFA issues           | Settings mutations locked until fresh MFA; identity repair via Firebase console                           |
-| Maintenance      | `main` merge / FORJD deploy   | Rolling Vercel/Fly deploys; FORJD deploys independently                                                   |
+| Mode             | Trigger                            | Behavior                                                                                                  |
+| ---------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Normal           | All services healthy               | Angular → Django (Firebase JWT) → FORJD (`fjsvc_` + sealed envelope); projections and analytics available |
+| Degraded (FORJD) | FORJD unreachable / mapping fail   | Control plane stays up; data-plane calls return `503` + `forjd_degraded`; SSE emits typed `degraded`      |
+| Forbidden (BFF)  | Auth / policy denial on FORJD path | `401`/`403` + `forjd_forbidden` — not treated as outage; fix role/mapping                                 |
+| Degraded (auth)  | Firebase/MFA issues                | Settings mutations locked until fresh MFA; identity repair via Firebase console                           |
+| Maintenance      | `main` merge / FORJD deploy        | Rolling Vercel/Fly deploys; FORJD deploys independently                                                   |
 
 ### 2.5 Maintenance cadence (summary)
 
@@ -96,16 +97,27 @@ _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strate
 
 The platform implements a **sealed FORJD ingest** architecture for client telemetry with production-grade reliability:
 
+**Token / envelope flow (fail closed):**
+
+```text
+Browser (Firebase JWT) → DEML Django BFF   (Angular never holds fjsvc_)
+                           |  seals / rewrites deml_* → threat_*
+                           |  Authorization: Bearer fjsvc_…
+                           v
+                      FORJD API (ciphertext-only)
+```
+
 - **Commands** (event ingestion): Angular seals AES-256-GCM envelopes and calls Django with a Firebase JWT. Django verifies auth, resolves `account → forjd_tenant → secret_ref`, rewrites product-local workflow ids when needed, and forwards to FORJD `POST /api/v1/ingest` with `Authorization: Bearer fjsvc_…`.
-- **Data plane**: FORJD owns workflows, sealed pipeline execution, durable `stream_results` projections, analytics, ML, and replay/DLQ. Independent failure domains prevent processing pressure from stalling DEML identity or billing.
+- **Data plane**: FORJD owns Prefect workflows, Pathway/Rust sealed pipeline execution, Polars batch transforms, durable `stream_results` projections, analytics, ML, and replay/DLQ. Independent failure domains prevent processing pressure from stalling DEML identity or billing.
 - **Projections**: FORJD materializes idempotent read models; DEML surfaces them through BFF adapters on established Angular paths.
 - **Queries**: Angular never calls FORJD or FORJD storage directly—product reads go Angular → Django → FORJD API.
+- **Live updates**: Browser → `GET /api/v1/analytics/live` (SSE) → Django polls FORJD projections with `fjsvc_`. Frames are ticks only (`{count, cursor}`) — never payloads. Angular binds `LiveUpdatesService.latestEvent` / `degraded` and refreshes REST adapters. Auth → `forjd_forbidden`; outages → `503` + `forjd_degraded`.
 
 ```mermaid
 flowchart TB
  subgraph Frontend
  L[Astro Landing Page]
- A[Angular Client]
+ A[Angular 22+ Signals]
  end
 
  subgraph "DEML Control Plane"
@@ -117,14 +129,21 @@ flowchart TB
  end
 
  subgraph "FORJD Data Plane"
- FJ[FORJD API]
+ FJ[FORJD FastAPI]
+ PREF[Prefect 3]
+ PATH[Pathway streams]
+ POL[Polars LazyFrames]
  SB[(Supabase)]
  DF[(Dragonfly)]
- ENG[FORJD Engine]
+ ENG[Rust forjd-engine]
  end
 
  A -->|Firebase JWT + sealed envelope| B
+ A -->|SSE live ticks| B
  B -->|fjsvc_ sealed ingest| FJ
+ FJ --> PREF
+ FJ --> PATH
+ FJ --> POL
  FJ --> SB
  FJ --> DF
  FJ --> ENG
@@ -132,15 +151,21 @@ flowchart TB
  B -.->|projections analytics ML| FJ
 ```
 
-This design provides non-blocking client feedback on the control plane while FORJD guarantees durable processing semantics. Sealed metadata is a routing-tag allowlist only; plaintext belongs inside ciphertext. See [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+This design provides non-blocking client feedback on the control plane while FORJD guarantees durable processing semantics. Sealed metadata is a routing-tag allowlist only; plaintext belongs inside ciphertext. The browser never holds `fjsvc_` tokens and never uses Firestore as a data plane. Live dashboard ticks use Django SSE (`GET /api/v1/analytics/live`) over a bounded FORJD projection cursor—`{count, cursor}` only—then REST adapters hydrate payloads; Viking callouts bind typed `degraded` / `forjd_degraded` states rather than inventing empty-healthy metrics. See [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
-FORJD’s sealed pipeline and engine roles achieve high-throughput dispatch without a DEML-local broker. Observability and OLAP-style analytics retention live in FORJD so the DEML Postgres transactional database remains focused on identity, billing, consent, and learning.
+FORJD’s sealed pipeline and engine roles achieve high-throughput dispatch without a DEML-local broker or Airflow orchestrator on the control plane. Observability and OLAP-style analytics retention live in FORJD so the DEML Postgres transactional database remains focused on identity, billing, consent, and learning.
 
-## 5. Asynchronous Batch Processing with Polars
+## 5. Streaming vs Batch Inside FORJD (Pathway + Polars)
 
-Row-by-row processing of streaming events introduces significant database write amplification. DEML forwards sealed telemetry to FORJD; FORJD owns stream processing and may aggregate finite batches with Polars—a multi-threaded DataFrame engine written in Rust—for offline transforms and reports.
+Row-by-row persistence of streaming events introduces significant write amplification. DEML forwards sealed telemetry to FORJD and does **not** run Pathway, Polars, or Prefect locally.
 
-Batched computation of historical uptime graphs (30-day intervals) and cumulative SLA and threat records reduces disk I/O by over 80% compared to per-event persistence.
+Inside FORJD:
+
+- **Pathway** (with the Rust sealed hot path) owns continuous / incremental stream processing and durable projection materialization.
+- **Polars LazyFrames** own finite batch DataFrames—ETL, reports, offline transforms, and historical rollups—never as a substitute for streaming jobs.
+- **Prefect 3** orchestrates YAML workflows around that sealed pipeline.
+
+Batched computation of historical uptime graphs (30-day intervals) and cumulative SLA and threat records reduces disk I/O by over 80% compared to per-event persistence on the control plane.
 
 ## 6. Extensible Deep Learning Pipeline
 

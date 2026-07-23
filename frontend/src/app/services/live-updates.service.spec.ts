@@ -30,6 +30,11 @@ describe('parseSseFrames', () => {
     expect(rest).toBe('');
   });
 
+  it('parses typed degraded frames from the Django SSE bridge', () => {
+    const { events } = parseSseFrames('event: degraded\ndata: {"code":"forjd_degraded"}\n\n');
+    expect(events).toEqual([{ type: 'degraded', data: { code: 'forjd_degraded' } }]);
+  });
+
   it('defaults the event type to message when only data is present', () => {
     const { events } = parseSseFrames('data: {"ok":true}\n\n');
     expect(events).toEqual([{ type: 'message', data: { ok: true } }]);

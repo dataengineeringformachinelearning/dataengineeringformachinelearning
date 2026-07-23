@@ -1,4 +1,11 @@
-import { Component, HostListener, OnInit, effect } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+  effect,
+  inject,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -35,16 +42,15 @@ export const resolveParentOrigin = (explicitOrigin: string | null, referrer: str
 @Component({
   selector: 'app-auth-status',
   standalone: true,
-  template: ` <div hidden aria-hidden="true">Auth status checker for cross-site iframe</div> `,
-  styles: [],
+  template: `<div hidden aria-hidden="true">Auth status checker for cross-site iframe</div>`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthStatus implements OnInit {
+  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
   private parentOrigin = '';
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly route: ActivatedRoute,
-  ) {
+  constructor() {
     effect(() => {
       if (!this.parentOrigin) return;
       if (!this.authService.isInitialized() || this.authService.isProcessing()) {

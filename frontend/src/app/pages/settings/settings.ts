@@ -4,7 +4,7 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef,
+  computed,
   effect,
   afterNextRender,
 } from '@angular/core';
@@ -75,7 +75,6 @@ export class Settings implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private vikingDialog = inject(VikingDialogService);
@@ -86,14 +85,12 @@ export class Settings implements OnInit {
   statusPages = this.settingsService.statusPages;
   selectedPage = this.settingsService.selectedPage;
 
-  get isViewer(): boolean {
-    return this.authService.currentUserRole() === 'Viewer';
-  }
+  readonly isViewer = computed(() => this.authService.currentUserRole() === 'Viewer');
 
   /** True when the user may create/update/delete sites (Viewer excluded, MFA session required). */
-  get canMutateSites(): boolean {
-    return !this.isViewer && this.authService.mfaVerifiedInSession();
-  }
+  readonly canMutateSites = computed(
+    () => !this.isViewer() && this.authService.mfaVerifiedInSession(),
+  );
 
   private readonly docsBase = `${environment.marketingUrl ?? 'https://dataengineeringformachinelearning.com'}/documentation`;
 
@@ -106,13 +103,14 @@ export class Settings implements OnInit {
     { name: 'AWS Redshift', icon: 'aws-redshift', guide: this.docsBase },
   ] as const;
 
-  editTitle = '';
-  editSlug = '';
-  editDescription = '';
-  editIsPublished = false;
-  editGoogleAnalyticsId = '';
-  editMicrosoftClarityId = '';
-  editCloudflareAnalyticsId = '';
+  // --- Edit form state ---
+  editTitle = signal('');
+  editSlug = signal('');
+  editDescription = signal('');
+  editIsPublished = signal(false);
+  editGoogleAnalyticsId = signal('');
+  editMicrosoftClarityId = signal('');
+  editCloudflareAnalyticsId = signal('');
   services = signal<MonitoredServiceData[]>([]);
 
   integrations = signal<IntegrationData[]>([]);
@@ -121,21 +119,22 @@ export class Settings implements OnInit {
   isConnectingGoogle = signal<boolean>(false);
   isConnectingClarity = signal<boolean>(false);
   isConnectingCloudflare = signal<boolean>(false);
-  clarityProjectId = '';
-  clarityApiKey = '';
-  cloudflareProjectId = '';
-  cloudflareApiKey = '';
+  clarityProjectId = signal('');
+  clarityApiKey = signal('');
+  cloudflareProjectId = signal('');
+  cloudflareApiKey = signal('');
 
-  newPageTitle = '';
-  newPageSlug = '';
-  newServiceName = '';
-  newServiceUrl = '';
+  // --- Create / add form state ---
+  newPageTitle = signal('');
+  newPageSlug = signal('');
+  newServiceName = signal('');
+  newServiceUrl = signal('');
 
   incidents = signal<any[]>([]);
 
-  newIncidentTitle = '';
-  newIncidentMessage = '';
-  newIncidentStatus = 'Investigating';
+  newIncidentTitle = signal('');
+  newIncidentMessage = signal('');
+  newIncidentStatus = signal('Investigating');
   public incidentStatusOptions: SelectOption[] = [
     { value: 'Investigating', label: 'Investigating' },
     { value: 'Identified', label: 'Identified' },
@@ -157,7 +156,6 @@ export class Settings implements OnInit {
       await this.authService.refreshMfaState(true);
     } finally {
       this.isRefreshingMfa.set(false);
-      this.cdr.markForCheck();
     }
   }
 
@@ -179,33 +177,29 @@ export class Settings implements OnInit {
       }
     });
 
-    effect(
-      () => {
-        const page = this.selectedPage();
-        if (page) {
-          this.loadServices(page.id);
-          this.loadIncidents(page.id);
-          this.editTitle = page.title;
-          this.editSlug = page.slug;
-          this.editDescription = page.description || '';
-          this.editIsPublished = page.is_published || false;
-          this.editGoogleAnalyticsId = page.google_analytics_id || '';
-          this.editMicrosoftClarityId = page.microsoft_clarity_id || '';
-          this.editCloudflareAnalyticsId = page.cloudflare_analytics_id || '';
-        } else {
-          this.editTitle = '';
-          this.editSlug = '';
-          this.editDescription = '';
-          this.editIsPublished = false;
-          this.editGoogleAnalyticsId = '';
-          this.editMicrosoftClarityId = '';
-          this.editCloudflareAnalyticsId = '';
-          this.services.set([]);
-        }
-        this.cdr.markForCheck();
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const page = this.selectedPage();
+      if (page) {
+        this.loadServices(page.id);
+        this.loadIncidents(page.id);
+        this.editTitle.set(page.title);
+        this.editSlug.set(page.slug);
+        this.editDescription.set(page.description || '');
+        this.editIsPublished.set(page.is_published || false);
+        this.editGoogleAnalyticsId.set(page.google_analytics_id || '');
+        this.editMicrosoftClarityId.set(page.microsoft_clarity_id || '');
+        this.editCloudflareAnalyticsId.set(page.cloudflare_analytics_id || '');
+      } else {
+        this.editTitle.set('');
+        this.editSlug.set('');
+        this.editDescription.set('');
+        this.editIsPublished.set(false);
+        this.editGoogleAnalyticsId.set('');
+        this.editMicrosoftClarityId.set('');
+        this.editCloudflareAnalyticsId.set('');
+        this.services.set([]);
+      }
+    });
   }
 
   getWidgetCode(): string {
@@ -239,9 +233,7 @@ export class Settings implements OnInit {
         this.copied.set(true);
         setTimeout(() => {
           this.copied.set(false);
-          this.cdr.markForCheck();
         }, 2000);
-        this.cdr.markForCheck();
       } catch (err) {
         console.error('Failed to copy', err);
       }
@@ -265,7 +257,6 @@ export class Settings implements OnInit {
           } else {
             this.integrations.set([]);
           }
-          this.cdr.markForCheck();
         },
         error: err => console.error('Error fetching integrations:', err),
       });
@@ -310,15 +301,15 @@ export class Settings implements OnInit {
   }
 
   createStatusPage() {
-    if (this.newPageTitle && this.newPageSlug) {
+    if (this.newPageTitle() && this.newPageSlug()) {
       this.isCreatingPage.set(true);
       this.monitorService
-        .createStatusPage({ title: this.newPageTitle, slug: this.newPageSlug })
+        .createStatusPage({ title: this.newPageTitle(), slug: this.newPageSlug() })
         .subscribe({
           next: page => {
             this.loadStatusPages();
-            this.newPageTitle = '';
-            this.newPageSlug = '';
+            this.newPageTitle.set('');
+            this.newPageSlug.set('');
             this.selectPage(page);
             this.isCreatingPage.set(false);
           },
@@ -375,19 +366,19 @@ export class Settings implements OnInit {
 
   updateStatusPage() {
     const page = this.selectedPage();
-    const slug = this.editSlug.trim();
-    const title = this.editTitle.trim();
+    const slug = this.editSlug().trim();
+    const title = this.editTitle().trim();
     if (page && title && slug) {
       this.isUpdatingPage.set(true);
       this.monitorService
         .updateStatusPage(page.id, {
           title,
           slug,
-          description: this.editDescription,
-          is_published: this.editIsPublished,
-          google_analytics_id: this.editGoogleAnalyticsId || undefined,
-          microsoft_clarity_id: this.editMicrosoftClarityId || undefined,
-          cloudflare_analytics_id: this.editCloudflareAnalyticsId || undefined,
+          description: this.editDescription(),
+          is_published: this.editIsPublished(),
+          google_analytics_id: this.editGoogleAnalyticsId() || undefined,
+          microsoft_clarity_id: this.editMicrosoftClarityId() || undefined,
+          cloudflare_analytics_id: this.editCloudflareAnalyticsId() || undefined,
         })
         .subscribe({
           next: async updated => {
@@ -423,7 +414,6 @@ export class Settings implements OnInit {
     this.monitorService.getServices(pageId).subscribe({
       next: data => {
         this.services.set(data);
-        this.cdr.markForCheck();
       },
       error: err => console.error('Error fetching services:', err),
     });
@@ -433,7 +423,6 @@ export class Settings implements OnInit {
     this.monitorService.getIncidents(pageId).subscribe({
       next: data => {
         this.incidents.set(data);
-        this.cdr.markForCheck();
       },
       error: err => console.error('Error fetching incidents:', err),
     });
@@ -441,10 +430,10 @@ export class Settings implements OnInit {
 
   async addService() {
     const page = this.selectedPage();
-    if (page && this.newServiceName && this.newServiceUrl) {
+    if (page && this.newServiceName() && this.newServiceUrl()) {
       // Check if URL is already used in current services
       const urlExists = this.services().some(
-        s => s.url.toLowerCase() === this.newServiceUrl.toLowerCase(),
+        s => s.url.toLowerCase() === this.newServiceUrl().toLowerCase(),
       );
       if (urlExists) {
         await this.vikingDialog.openConfirm({
@@ -459,12 +448,12 @@ export class Settings implements OnInit {
 
       this.isAddingService.set(true);
       this.monitorService
-        .addService(page.id, { name: this.newServiceName, url: this.newServiceUrl })
+        .addService(page.id, { name: this.newServiceName(), url: this.newServiceUrl() })
         .subscribe({
           next: () => {
             this.loadServices(page.id);
-            this.newServiceName = '';
-            this.newServiceUrl = '';
+            this.newServiceName.set('');
+            this.newServiceUrl.set('');
             this.isAddingService.set(false);
           },
           error: async err => {
@@ -504,20 +493,20 @@ export class Settings implements OnInit {
 
   addIncident() {
     const page = this.selectedPage();
-    if (page && this.newIncidentTitle && this.newIncidentMessage && this.newIncidentStatus) {
+    if (page && this.newIncidentTitle() && this.newIncidentMessage() && this.newIncidentStatus()) {
       this.isAddingIncident.set(true);
       this.monitorService
         .createIncident(page.id, {
-          title: this.newIncidentTitle,
-          message: this.newIncidentMessage,
-          status: this.newIncidentStatus,
+          title: this.newIncidentTitle(),
+          message: this.newIncidentMessage(),
+          status: this.newIncidentStatus(),
         })
         .subscribe({
           next: () => {
             this.loadIncidents(page.id);
-            this.newIncidentTitle = '';
-            this.newIncidentMessage = '';
-            this.newIncidentStatus = 'Investigating';
+            this.newIncidentTitle.set('');
+            this.newIncidentMessage.set('');
+            this.newIncidentStatus.set('Investigating');
             this.isAddingIncident.set(false);
           },
           error: async err => {
@@ -606,20 +595,19 @@ export class Settings implements OnInit {
   }
 
   connectMicrosoftClarity() {
-    if (this.clarityProjectId && this.clarityApiKey) {
+    if (this.clarityProjectId() && this.clarityApiKey()) {
       this.isConnectingClarity.set(true);
       this.monitorService
         .saveClarityIntegration({
-          project_id: this.clarityProjectId,
-          api_key: this.clarityApiKey,
+          project_id: this.clarityProjectId(),
+          api_key: this.clarityApiKey(),
         })
         .subscribe({
           next: () => {
             this.loadIntegrations();
-            this.clarityProjectId = '';
-            this.clarityApiKey = '';
+            this.clarityProjectId.set('');
+            this.clarityApiKey.set('');
             this.isConnectingClarity.set(false);
-            this.cdr.markForCheck();
           },
           error: err => {
             console.error('Error saving clarity integration:', err);
@@ -630,20 +618,19 @@ export class Settings implements OnInit {
   }
 
   connectCloudflare() {
-    if (this.cloudflareProjectId && this.cloudflareApiKey) {
+    if (this.cloudflareProjectId() && this.cloudflareApiKey()) {
       this.isConnectingCloudflare.set(true);
       this.monitorService
         .saveCloudflareIntegration({
-          project_id: this.cloudflareProjectId,
-          api_key: this.cloudflareApiKey,
+          project_id: this.cloudflareProjectId(),
+          api_key: this.cloudflareApiKey(),
         })
         .subscribe({
           next: () => {
             this.loadIntegrations();
-            this.cloudflareProjectId = '';
-            this.cloudflareApiKey = '';
+            this.cloudflareProjectId.set('');
+            this.cloudflareApiKey.set('');
             this.isConnectingCloudflare.set(false);
-            this.cdr.markForCheck();
           },
           error: err => {
             console.error('Error saving cloudflare integration:', err);

@@ -4,9 +4,9 @@ import {
   HttpEventType,
   HttpResponse,
 } from '@angular/common/http';
-import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
+import { Injectable, OnDestroy, inject, signal } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { API_ENDPOINTS } from '../core/constants/api.constants';
 
 // --- SSE frame types ---
 export interface LiveUpdateEvent {
@@ -41,19 +41,21 @@ export function parseSseFrames(buffer: string): { events: LiveUpdateEvent[]; res
 /**
  * Live dashboard updates over the Django BFF SSE lane (/api/v1/analytics/live).
  *
- * Upstream, Supabase Realtime publishes FORJD's stream_results; Django holds the
- * tenant-bound cursor poll and pushes change ticks. The browser never holds
- * Supabase or fjsvc_ credentials — auth is the same Firebase bearer used by
- * every other API call (credentials interceptor). Events carry counts and
- * cursors only; pages reload data through their existing authenticated APIs.
+ * Zoneless-friendly: emits via Subject without NgZone.run. Callers that still
+ * subscribe to ``updates$`` should prefer reading ``latestEvent`` / effects once
+ * pages are fully signalized.
  */
 @Injectable({ providedIn: 'root' })
 export class LiveUpdatesService implements OnDestroy {
   private http = inject(HttpClient);
-  private zone = inject(NgZone);
 
   private readonly updatesSubject = new Subject<LiveUpdateEvent>();
   readonly updates$: Observable<LiveUpdateEvent> = this.updatesSubject.asObservable();
+  /** Most recent SSE event — preferred for Signal/effect consumers. */
+  readonly latestEvent = signal<LiveUpdateEvent | null>(null);
+  readonly connected = signal(false);
+  /** True after a typed SSE ``degraded`` frame (FORJD cursor poll outage). */
+  readonly degraded = signal(false);
 
   private streamSub: Subscription | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -82,6 +84,7 @@ export class LiveUpdatesService implements OnDestroy {
     this.active = false;
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.disconnect();
+    this.connected.set(false);
   }
 
   ngOnDestroy(): void {
@@ -95,7 +98,7 @@ export class LiveUpdatesService implements OnDestroy {
     this.buffer = '';
 
     this.streamSub = this.http
-      .get(`${environment.backendUrl}/api/v1/analytics/live`, {
+      .get(API_ENDPOINTS.ANALYTICS.LIVE, {
         observe: 'events',
         responseType: 'text',
         reportProgress: true,
@@ -103,18 +106,21 @@ export class LiveUpdatesService implements OnDestroy {
       .subscribe({
         next: event => {
           if (event.type === HttpEventType.DownloadProgress) {
-            // partialText is cumulative; only parse the newly received tail.
             const partial = (event as HttpDownloadProgressEvent).partialText ?? '';
             this.buffer += partial.slice(this.consumed);
             this.consumed = partial.length;
             this.emitFrames();
           } else if (event.type === HttpEventType.Response) {
-            // Server closed a bounded stream normally — reconnect promptly.
             const ok = (event as HttpResponse<string>).status === 200;
+            this.connected.set(false);
             this.scheduleReconnect(ok ? 1000 : this.nextBackoff());
           }
         },
-        error: () => this.scheduleReconnect(this.nextBackoff()),
+        error: () => {
+          this.connected.set(false);
+          this.degraded.set(true);
+          this.scheduleReconnect(this.nextBackoff());
+        },
       });
   }
 
@@ -122,8 +128,16 @@ export class LiveUpdatesService implements OnDestroy {
     const { events, rest } = parseSseFrames(this.buffer);
     this.buffer = rest;
     for (const evt of events) {
-      if (evt.type === 'ready') this.backoffMs = 2000; // healthy stream resets backoff
-      this.zone.run(() => this.updatesSubject.next(evt));
+      if (evt.type === 'ready') {
+        this.backoffMs = 2000;
+        this.connected.set(true);
+        this.degraded.set(false);
+      } else if (evt.type === 'degraded') {
+        this.connected.set(false);
+        this.degraded.set(true);
+      }
+      this.latestEvent.set(evt);
+      this.updatesSubject.next(evt);
     }
   }
 

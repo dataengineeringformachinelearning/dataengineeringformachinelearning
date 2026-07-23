@@ -14,7 +14,11 @@
       }
     </viking-page-header>
 
-    @for (page of displayPages(); track page.id) {
+    @if (isLoading() && !loadFailed()) {
+    <div class="viking-stack" role="status" aria-live="polite" aria-busy="true">
+      <viking-spinner [size]="28" label="Loading system status" />
+    </div>
+    } @for (page of displayPages(); track page.id) {
     <viking-status-dashboard
       [title]="page.title"
       [description]="statusDescription(page.id)"

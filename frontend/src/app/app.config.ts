@@ -12,6 +12,9 @@ import { routes } from './app.routes';
 import { GlobalErrorHandler } from './core/handlers/global-error.handler';
 
 // CSR-only (Vercel static). Hydration providers removed with Angular SSR.
+// Zoneless (provideZonelessChangeDetection) lands in Phase 2 once remaining
+// markForCheck / NgZone call sites on analytics/settings/account are cleared —
+// see frontend/MODERNIZATION.md.
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
