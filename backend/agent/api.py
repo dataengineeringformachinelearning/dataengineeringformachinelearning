@@ -262,9 +262,14 @@ async def deliver_bug_report(report: BugReport, *, account_id: UUID | None = Non
     raise BugReportDeadLetterError("Bug report is dead-lettered")
   if report.delivery_status == BugReport.DeliveryStatus.DELIVERED and report.forjd_document_id:
     return report.forjd_document_id
-  if report.forjd_tenant_id is None or not report.forjd_service_token_secret_ref:
+  if (
+    report.account_id is None
+    or report.forjd_tenant_id is None
+    or not report.forjd_service_token_secret_ref
+  ):
     raise ForjdTenantConfigurationError("Report has no durable FORJD destination snapshot")
   credential = await sync_to_async(resolve_forjd_snapshot_credential)(
+    report.account_id,
     report.forjd_tenant_id,
     report.forjd_service_token_secret_ref,
   )

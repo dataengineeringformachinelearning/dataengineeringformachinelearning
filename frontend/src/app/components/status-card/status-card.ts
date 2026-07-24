@@ -15,6 +15,13 @@ import type { VikingChartSeries } from '@dataengineeringformachinelearning/vikin
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
 import { ThreatReportResponse } from '../../services/ml.service';
 import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
+import {
+  formatTemporalScore,
+  temporalEngineDetail,
+  temporalEngineLabel,
+  temporalRiskLabel,
+  type TemporalInsight,
+} from '../../core/utils/temporal.utils';
 
 export type StatusCardVariant = 'compact' | 'full';
 
@@ -40,8 +47,12 @@ export class StatusCard {
   readonly page = input.required<StatusPageData>();
   readonly services = input<MonitoredServiceData[]>([]);
   readonly predictedSla = input<number | null | undefined>(null);
-  readonly predictedTemporalForecast = input<number | null | undefined>(null);
-  readonly usesNorse = input<boolean | null | undefined>(null);
+  readonly predictedTemporalForecast = input<number | null | undefined>(undefined);
+  readonly temporalStatus = input<string | null | undefined>(undefined);
+  readonly temporalBackend = input<string | null | undefined>(undefined);
+  readonly temporalSampleCount = input<number | null | undefined>(undefined);
+  readonly temporalScoredAt = input<string | null | undefined>(undefined);
+  readonly usesNorse = input<boolean | null | undefined>(undefined);
   readonly threatReport = input<ThreatReportResponse | null>(null);
   readonly incidents = input<IncidentData[]>([]);
   readonly showViewButton = input(false);
@@ -69,14 +80,29 @@ export class StatusCard {
   readonly totalRequests = computed(() => this.page()?.total_requests ?? 0);
   readonly cumulativeSla = computed(() => this.page()?.cumulative_sla ?? 0);
   readonly predictedSlaValue = computed(() => this.predictedSla() ?? 0);
-  readonly predictedTemporalForecastValue = computed(() => this.predictedTemporalForecast() ?? 0);
-
-  readonly norseSnnLabel = computed(() => {
+  readonly temporalInsight = computed<TemporalInsight>(() => {
+    const page = this.page();
+    const forecast = this.predictedTemporalForecast();
+    const status = this.temporalStatus();
+    const backend = this.temporalBackend();
+    const sampleCount = this.temporalSampleCount();
+    const scoredAt = this.temporalScoredAt();
     const usesNorse = this.usesNorse();
-    if (usesNorse === true) return 'Active';
-    if (usesNorse === false) return 'MLP Fallback';
-    return 'Pending';
+    return {
+      forecast: forecast !== undefined ? forecast : (page.spiking_temporal_forecast ?? null),
+      status: status !== undefined ? status : (page.temporal_status ?? null),
+      backend: backend !== undefined ? backend : (page.temporal_backend ?? null),
+      sampleCount: sampleCount !== undefined ? sampleCount : (page.temporal_sample_count ?? null),
+      scoredAt: scoredAt !== undefined ? scoredAt : (page.temporal_scored_at ?? null),
+      usesNorse: usesNorse !== undefined ? usesNorse : (page.uses_norse ?? null),
+    };
   });
+  readonly predictedTemporalForecastValue = computed(() =>
+    formatTemporalScore(this.temporalInsight()),
+  );
+  readonly temporalEngineLabel = computed(() => temporalEngineLabel(this.temporalInsight()));
+  readonly temporalEngineDetail = computed(() => temporalEngineDetail(this.temporalInsight()));
+  readonly temporalRiskLabel = computed(() => temporalRiskLabel(this.temporalInsight()));
 
   readonly suspiciousRatio = computed(() => this.threatReport()?.suspicious_ratio ?? 0);
   readonly anomalyScore = computed(() => this.threatReport()?.anomaly_score ?? 0);

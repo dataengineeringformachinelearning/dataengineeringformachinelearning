@@ -5,16 +5,24 @@
 export const formatServiceName = (name: string): string => {
   if (!name) return '';
 
-  const lowercase = name.toLowerCase().trim();
+  const trimmed = name.trim();
+  const lowercase = trimmed.toLowerCase();
   if (lowercase === 'django web server') {
     return 'Django Web Server';
   }
+  // Human-authored labels are already the source of truth. Only normalize
+  // legacy route-derived names containing separators or generated UUIDs.
+  if (!trimmed.includes(' - ') && !/[/_-]/.test(trimmed) && !/[0-9a-f]{8}-/i.test(trimmed)) {
+    return trimmed;
+  }
   // Extract a short suffix from UUID if present to provide clear, unique context
-  const uuidMatch = name.match(/([0-9a-f]{8})-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+  const uuidMatch = trimmed.match(
+    /([0-9a-f]{8})-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i,
+  );
   const suffix = uuidMatch ? ` (${uuidMatch[1].toLowerCase()})` : '';
 
-  const parts = name.split(' - ');
-  const cleanPart = parts.length > 1 ? parts.slice(1).join(' - ').trim() : name;
+  const parts = trimmed.split(' - ');
+  const cleanPart = parts.length > 1 ? parts.slice(1).join(' - ').trim() : trimmed;
 
   const words = cleanPart.split(/[\s/_-]+/);
   const skipWords = new Set(['api', 'v1', 'v2', 'system']);

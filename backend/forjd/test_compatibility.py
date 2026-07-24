@@ -111,6 +111,79 @@ def test_authenticated_adapter_uses_native_path_and_mapped_tenant(
 
 @pytest.mark.django_db
 @patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
+def test_threat_report_reads_only_classical_anomaly_scores(
+  mock_proxy: AsyncMock,
+  client: Client,
+) -> None:
+  tenant_id = _mapped_user("threatreader")
+  mock_proxy.return_value = ForjdResponse(
+    status=200,
+    body=b'{"ok": true, "scores": []}',
+    content_type="application/json",
+  )
+
+  with override_settings(
+    FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+    FORJD_TENANT_ID=str(tenant_id),
+  ):
+    response = client.get(
+      "/api/v1/ml/threat-intel/report",
+      HTTP_AUTHORIZATION="Bearer mock-token-threatreader-threatreader@example.com",
+    )
+
+  assert response.status_code == 200
+  call = mock_proxy.await_args
+  assert call.args == ("GET", "/api/v1/ml/scores")
+  assert parse_qs(call.kwargs["query_string"]) == {
+    "tenant_id": [str(tenant_id)],
+    "family": ["classical_anomaly"],
+    "limit": ["50"],
+  }
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
+def test_threat_training_reads_only_threat_ensemble_scores(
+  mock_proxy: AsyncMock,
+  client: Client,
+) -> None:
+  tenant_id = _mapped_user("threattrainer")
+  mock_proxy.side_effect = [
+    ForjdResponse(
+      status=200,
+      body=b'{"ok": true}',
+      content_type="application/json",
+    ),
+    ForjdResponse(
+      status=200,
+      body=b'{"ok": true, "scores": []}',
+      content_type="application/json",
+    ),
+  ]
+
+  with override_settings(
+    FORJD_SERVICE_TOKEN="fjsvc_deadbeef_test-secret",
+    FORJD_TENANT_ID=str(tenant_id),
+  ):
+    response = client.post(
+      "/api/v1/ml/threat-intel/train",
+      data={},
+      content_type="application/json",
+      HTTP_AUTHORIZATION="Bearer mock-token-threattrainer-threattrainer@example.com",
+    )
+
+  assert response.status_code == 200
+  score_call = mock_proxy.await_args_list[1]
+  assert score_call.args == ("GET", "/api/v1/ml/scores")
+  assert parse_qs(score_call.kwargs["query_string"]) == {
+    "tenant_id": [str(tenant_id)],
+    "family": ["threat_ensemble"],
+    "limit": ["50"],
+  }
+
+
+@pytest.mark.django_db
+@patch("forjd.views.ForjdClient.proxy", new_callable=AsyncMock)
 def test_adapter_rejects_cross_tenant_query(
   mock_proxy: AsyncMock,
   client: Client,
@@ -423,6 +496,12 @@ def test_public_status_page_reshapes_embedded_services_for_angular(
           "id": "page-1",
           "slug": "public-page",
           "title": "Public",
+          "spiking_temporal_forecast": 0,
+          "temporal_status": "ready",
+          "temporal_backend": "gru_mlp",
+          "temporal_sample_count": 128,
+          "temporal_scored_at": "2026-07-23T00:00:00Z",
+          "uses_norse": False,
           "services": [
             {
               "id": "svc-1",
@@ -460,6 +539,13 @@ def test_public_status_page_reshapes_embedded_services_for_angular(
     }
   ]
   assert payload["incidents"] == []
+  assert payload["spiking_temporal_forecast"] == 0
+  assert payload["temporal_status"] == "ready"
+  assert payload["temporal_backend"] == "gru_mlp"
+  assert payload["temporal_sample_count"] == 128
+  assert payload["temporal_scored_at"] == "2026-07-23T00:00:00Z"
+  assert payload["uses_norse"] is False
+  assert "tenant_id" not in payload
 
 
 @pytest.mark.django_db
@@ -492,7 +578,7 @@ def test_public_status_page_maps_forjd_status_enums_to_legacy_labels(
               "id": "svc-2",
               "name": "API Gateway",
               "status": "partial_outage",
-              "description": "https://api.deml.app",
+              "description": "https://backend.deml.app/api/v1/health",
               "updated_at": "2026-07-19T00:00:00+00:00",
             },
           ],

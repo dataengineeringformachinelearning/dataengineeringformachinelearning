@@ -33,6 +33,10 @@ export interface StatusPageData {
   threats_detected_24h?: number | null;
   /** Public intelligence (ciphertext-free) for explore/status ML gauges. */
   spiking_temporal_forecast?: number | null;
+  temporal_status?: string | null;
+  temporal_backend?: string | null;
+  temporal_sample_count?: number | null;
+  temporal_scored_at?: string | null;
   threat_anomaly_score?: number | null;
   threat_suspicious_ratio?: number | null;
   uses_norse?: boolean | null;
@@ -62,6 +66,11 @@ export interface IncidentData {
   created_at: string;
   updated_at: string;
 }
+
+export const publicStatusPageTag = (slug: string): string => {
+  if (slug === 'loading') return 'Loading';
+  return slug === 'platform-status' ? 'Platform Status' : 'Public Status Page';
+};
 
 @Injectable({
   providedIn: 'root',

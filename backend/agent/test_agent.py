@@ -244,6 +244,7 @@ async def test_report_retry_keeps_enqueued_tenant_after_account_remap() -> None:
     await deliver_bug_report(report, account_id=ACCOUNT_ID)
 
   resolve.assert_called_once_with(
+    ACCOUNT_ID,
     old_tenant,
     "env:FORJD_SERVICE_TOKEN_CUSTOMER_A",
   )

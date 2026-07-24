@@ -42,6 +42,51 @@ def mock_verify_token() -> Any:
 
 
 @pytest.mark.django_db
+def test_firebase_uid_does_not_rebind_an_account_with_the_same_email() -> None:
+  from account.lifecycle import ensure_user_from_firebase
+
+  existing = User.objects.create_user(username="original-uid", email="shared@example.com")
+  existing_account_id = existing.profile.account_id
+
+  user, profile, created = ensure_user_from_firebase(
+    {"uid": "different-uid", "email": "shared@example.com", "name": "Different User"}
+  )
+
+  existing.refresh_from_db()
+  assert created is True
+  assert user.pk != existing.pk
+  assert user.username == "different-uid"
+  assert profile.account_id != existing_account_id
+  assert existing.username == "original-uid"
+
+
+@pytest.mark.django_db
+def test_firebase_identity_requires_a_uid() -> None:
+  from account.lifecycle import ensure_user_from_firebase
+
+  with pytest.raises(ValueError, match="UID"):
+    ensure_user_from_firebase({"email": "missing-uid@example.com"})
+
+
+@pytest.mark.django_db
+def test_same_firebase_uid_keeps_one_account_when_email_changes() -> None:
+  from account.lifecycle import ensure_user_from_firebase
+
+  first_user, first_profile, first_created = ensure_user_from_firebase(
+    {"uid": "stable-uid", "email": "first@example.com"}
+  )
+  second_user, second_profile, second_created = ensure_user_from_firebase(
+    {"uid": "stable-uid", "email": "second@example.com"}
+  )
+
+  assert first_created is True
+  assert second_created is False
+  assert second_user.pk == first_user.pk
+  assert second_profile.account_id == first_profile.account_id
+  assert second_user.email == "second@example.com"
+
+
+@pytest.mark.django_db
 def test_register_health_probe(client: Client) -> None:
   response = client.get("/api/v1/auth/register")
   assert response.status_code == 200
@@ -784,7 +829,8 @@ def test_forjd_erase_closes_loop_owned_connector() -> None:
       {
         "tenant_id": str(tenant_id),
         "service_token_secret_ref": "env:FORJD_SERVICE_TOKEN",
-      }
+      },
+      uuid4(),
     )
 
   assert erased is True

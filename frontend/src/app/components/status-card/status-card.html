@@ -30,14 +30,14 @@
     <viking-status-metric-row
       icon="trending-up"
       title="Spike Risk"
-      subtitle="Dynamic Temporal Forecasting (0-100)"
-      [value]="(predictedTemporalForecastValue() | number: '1.1-2') ?? '0'"
+      [subtitle]="temporalRiskLabel()"
+      [value]="predictedTemporalForecastValue()"
     />
     <viking-status-metric-row
       icon="bolt"
       title="Dynamic Temporal Forecasting"
-      subtitle="Temporal inference engine"
-      [value]="norseSnnLabel()"
+      [subtitle]="temporalEngineDetail()"
+      [value]="temporalEngineLabel()"
     />
   </div>
 
@@ -98,14 +98,14 @@
     <viking-status-metric-row
       icon="bolt"
       title="Dynamic Temporal Forecasting"
-      subtitle="Temporal inference engine"
-      [value]="norseSnnLabel()"
+      [subtitle]="temporalEngineDetail()"
+      [value]="temporalEngineLabel()"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Spike Risk Score"
-      subtitle="Dynamic Temporal Forecasting on telemetry sequences"
-      [value]="(predictedTemporalForecastValue() | number: '1.1-2') ?? '0'"
+      [subtitle]="temporalRiskLabel()"
+      [value]="predictedTemporalForecastValue()"
     />
   </div>
 

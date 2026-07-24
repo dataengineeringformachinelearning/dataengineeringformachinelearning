@@ -1,8 +1,9 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
 import type { StatusPageData } from './monitor.service';
+import type { TemporalInsight } from '../core/utils/temporal.utils';
 
 export interface TrainingResponse {
   status: string;
@@ -17,7 +18,11 @@ export interface TemporalForecastResponse {
   status: string;
   message?: string;
   spiking_temporal_forecast: number | null;
-  uses_norse?: boolean;
+  temporal_status?: string | null;
+  temporal_backend?: string | null;
+  temporal_sample_count?: number | null;
+  temporal_scored_at?: string | null;
+  uses_norse?: boolean | null;
   created_at?: string | null;
 }
 
@@ -29,8 +34,21 @@ export class MlService {
 
   public latestStat = signal<number | null>(null);
   public latestStats = signal<Record<string, number | null>>({});
-  public latestTemporalForecasts = signal<Record<string, number | null>>({});
-  public latestTemporalUsesNorse = signal<Record<string, boolean | null>>({});
+  public latestTemporalInsights = signal<Record<string, TemporalInsight>>({});
+  public latestTemporalForecasts = computed<Record<string, number | null>>(() => {
+    const forecasts: Record<string, number | null> = {};
+    for (const [pageId, insight] of Object.entries(this.latestTemporalInsights())) {
+      forecasts[pageId] = insight.forecast;
+    }
+    return forecasts;
+  });
+  public latestTemporalUsesNorse = computed<Record<string, boolean | null>>(() => {
+    const flags: Record<string, boolean | null> = {};
+    for (const [pageId, insight] of Object.entries(this.latestTemporalInsights())) {
+      flags[pageId] = insight.usesNorse;
+    }
+    return flags;
+  });
   public isTraining = signal<boolean>(false);
   public trainError = signal<string | null>(null);
 
@@ -38,28 +56,18 @@ export class MlService {
   seedFromStatusPage(page: StatusPageData): void {
     const pageId = page.id;
     if (!pageId) return;
-    if (page.spiking_temporal_forecast !== null && page.spiking_temporal_forecast !== undefined) {
-      this.latestTemporalForecasts.update(forecasts => ({
-        ...forecasts,
-        [pageId]: page.spiking_temporal_forecast as number,
-      }));
-    }
-    if (page.uses_norse !== null && page.uses_norse !== undefined) {
-      this.latestTemporalUsesNorse.update(flags => ({
-        ...flags,
-        [pageId]: page.uses_norse as boolean,
-      }));
-    }
-    if (
-      page.threat_anomaly_score !== null ||
-      page.threat_suspicious_ratio !== null ||
-      page.cumulative_sla !== null ||
-      page.overall_uptime !== null
-    ) {
-      const sla = page.cumulative_sla ?? page.overall_uptime ?? null;
-      if (sla !== null && sla !== undefined) {
-        this.latestStats.update(stats => ({ ...stats, [pageId]: sla }));
-      }
+    this.latestTemporalInsights.update(insights => ({
+      ...insights,
+      [pageId]: {
+        forecast: page.spiking_temporal_forecast ?? null,
+        status: page.temporal_status ?? null,
+        backend: page.temporal_backend ?? null,
+        sampleCount: page.temporal_sample_count ?? null,
+        scoredAt: page.temporal_scored_at ?? null,
+        usesNorse: page.uses_norse ?? null,
+      },
+    }));
+    if (page.threat_anomaly_score != null || page.threat_suspicious_ratio != null) {
       this.latestThreatReports.update(reports => ({
         ...reports,
         [pageId]: this.normalizeThreatReport({
@@ -109,14 +117,31 @@ export class MlService {
             ? data.spiking_temporal_forecast
             : null;
         if (statusPageId) {
-          this.latestTemporalForecasts.update(forecasts => ({
-            ...forecasts,
-            [statusPageId]: forecast,
-          }));
-          this.latestTemporalUsesNorse.update(flags => ({
-            ...flags,
-            [statusPageId]:
-              data.uses_norse !== undefined && data.uses_norse !== null ? data.uses_norse : null,
+          const prior = this.latestTemporalInsights()[statusPageId];
+          const hasOwn = (key: keyof TemporalForecastResponse): boolean =>
+            Object.prototype.hasOwnProperty.call(data, key);
+          this.latestTemporalInsights.update(insights => ({
+            ...insights,
+            [statusPageId]: {
+              forecast,
+              status: hasOwn('temporal_status')
+                ? (data.temporal_status ?? null)
+                : (prior?.status ?? null),
+              backend: hasOwn('temporal_backend')
+                ? (data.temporal_backend ?? null)
+                : (prior?.backend ?? null),
+              sampleCount: hasOwn('temporal_sample_count')
+                ? (data.temporal_sample_count ?? null)
+                : (prior?.sampleCount ?? null),
+              scoredAt: hasOwn('temporal_scored_at')
+                ? (data.temporal_scored_at ?? null)
+                : hasOwn('created_at')
+                  ? (data.created_at ?? null)
+                  : (prior?.scoredAt ?? null),
+              usesNorse: hasOwn('uses_norse')
+                ? (data.uses_norse ?? null)
+                : (prior?.usesNorse ?? null),
+            },
           }));
         }
       },

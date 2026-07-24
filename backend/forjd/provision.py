@@ -11,12 +11,12 @@ from typing import Any
 from uuid import UUID, uuid4
 
 import aiohttp
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync, sync_to_async
 from django.conf import settings
 from django.db import transaction
-from monitor.models import ForjdServiceCredential, ForjdTenantMapping
+from monitor.models import ForjdServiceCredential, ForjdTenantMapping, UserProfile
 
-from forjd.client import ForjdError, redact_forjd_secrets
+from forjd.client import ForjdError, is_forjd_service_token, redact_forjd_secrets
 from forjd.secrets import is_sealed_ref, open_service_token, seal_service_token, sealed_ref
 from forjd.tenancy import (
   ForjdTenantConfigurationError,
@@ -95,6 +95,11 @@ def _persist_mapping(
   ciphertext, encrypted_dek = seal_service_token(service_token)
   credential_id = uuid4()
   with transaction.atomic():
+    ForjdServiceCredential.objects.filter(
+      deml_account_id=account_id,
+      forjd_tenant_id=tenant_id,
+      is_active=True,
+    ).update(is_active=False)
     ForjdServiceCredential.objects.create(
       id=credential_id,
       deml_account_id=account_id,
@@ -102,7 +107,9 @@ def _persist_mapping(
       ciphertext=ciphertext,
       encrypted_dek=encrypted_dek,
     )
-    mapping = ForjdTenantMapping.objects.filter(deml_account_id=account_id).first()
+    mapping = (
+      ForjdTenantMapping.objects.select_for_update().filter(deml_account_id=account_id).first()
+    )
     if mapping is None:
       mapping = ForjdTenantMapping.objects.create(
         deml_account_id=account_id,
@@ -118,8 +125,65 @@ def _persist_mapping(
   return mapping
 
 
+def _provision_account_credential(
+  account_id: UUID,
+  *,
+  remint_if_exists: bool,
+) -> ForjdTenantCredential:
+  """Serialize one account's partner provision call behind its profile row."""
+  with transaction.atomic():
+    try:
+      UserProfile.objects.select_for_update().only("pk").get(account_id=account_id)
+    except UserProfile.DoesNotExist as exc:
+      raise ForjdTenantConfigurationError("This DEML account does not exist") from exc
+
+    # Another automatic request may have completed provisioning while this
+    # caller waited. Explicit recovery deliberately rotates the credential.
+    if not remint_if_exists:
+      try:
+        return resolve_forjd_tenant_credential(account_id)
+      except ForjdTenantConfigurationError:
+        pass
+
+    body = async_to_sync(_call_partner_provision)(
+      external_ref=_external_ref(account_id),
+      remint_if_exists=remint_if_exists,
+    )
+    token = ((body.get("service_account") or {}) if isinstance(body, dict) else {}).get("token")
+    if not token:
+      detail = (
+        "partner provision returned an existing tenant without a service token; "
+        "explicit credential recovery is required"
+        if not remint_if_exists
+        else "partner credential recovery did not return a service token"
+      )
+      raise ForjdProvisionError(detail)
+    if not is_forjd_service_token(str(token)):
+      raise ForjdProvisionError("partner provision returned an invalid service token")
+
+    tenant_raw = (body.get("tenant") or {}).get("id")
+    try:
+      tenant_id = UUID(str(tenant_raw))
+    except (TypeError, ValueError) as exc:
+      raise ForjdProvisionError("partner provision returned an invalid tenant id") from exc
+
+    _persist_mapping(
+      account_id=account_id,
+      tenant_id=tenant_id,
+      service_token=str(token),
+    )
+    logger.info(
+      "forjd_provisioned account_id=%s tenant_id=%s created=%s reminted=%s",
+      account_id,
+      tenant_id,
+      body.get("created"),
+      body.get("reminted"),
+    )
+    return resolve_forjd_tenant_credential(account_id)
+
+
 async def ensure_forjd_tenant_credential(account_id: UUID) -> ForjdTenantCredential:
-  """Return a usable credential, provisioning a FORJD tenant when needed."""
+  """Return a usable credential, provisioning at most once per DEML account."""
   try:
     return await sync_to_async(resolve_forjd_tenant_credential)(account_id)
   except ForjdTenantConfigurationError:
@@ -128,41 +192,37 @@ async def ensure_forjd_tenant_credential(account_id: UUID) -> ForjdTenantCredent
   if not provision_configured():
     raise ForjdTenantConfigurationError("This DEML account is not mapped to an active FORJD tenant")
 
-  external_ref = _external_ref(account_id)
-  body = await _call_partner_provision(external_ref=external_ref, remint_if_exists=False)
-  token = ((body.get("service_account") or {}) if isinstance(body, dict) else {}).get("token")
-  if not token:
-    body = await _call_partner_provision(external_ref=external_ref, remint_if_exists=True)
-    token = ((body.get("service_account") or {}) if isinstance(body, dict) else {}).get("token")
-  if not token:
-    raise ForjdProvisionError("partner provision did not return a service token")
-
-  tenant_raw = (body.get("tenant") or {}).get("id")
-  try:
-    tenant_id = UUID(str(tenant_raw))
-  except (TypeError, ValueError) as exc:
-    raise ForjdProvisionError("partner provision returned an invalid tenant id") from exc
-
-  await sync_to_async(_persist_mapping)(
-    account_id=account_id,
-    tenant_id=tenant_id,
-    service_token=str(token),
-  )
-  logger.info(
-    "forjd_provisioned account_id=%s tenant_id=%s created=%s reminted=%s",
+  return await sync_to_async(_provision_account_credential, thread_sensitive=True)(
     account_id,
-    tenant_id,
-    body.get("created"),
-    body.get("reminted"),
+    remint_if_exists=False,
   )
-  return await sync_to_async(resolve_forjd_tenant_credential)(account_id)
 
 
-def resolve_sealed_service_token(secret_ref: str) -> str:
+async def recover_forjd_tenant_credential(account_id: UUID) -> ForjdTenantCredential:
+  """Explicitly remint a missing/broken credential for an existing FORJD tenant."""
+  if not provision_configured():
+    raise ForjdTenantConfigurationError("FORJD partner provisioning is not configured")
+  return await sync_to_async(_provision_account_credential, thread_sensitive=True)(
+    account_id,
+    remint_if_exists=True,
+  )
+
+
+def resolve_sealed_service_token(
+  secret_ref: str,
+  *,
+  expected_account_id: UUID,
+  expected_tenant_id: UUID,
+) -> str:
   if not is_sealed_ref(secret_ref):
     raise ForjdTenantConfigurationError("not a sealed service token reference")
   credential_id = secret_ref.removeprefix("sealed:")
-  row = ForjdServiceCredential.objects.filter(id=credential_id, is_active=True).first()
+  row = ForjdServiceCredential.objects.filter(
+    id=credential_id,
+    deml_account_id=expected_account_id,
+    forjd_tenant_id=expected_tenant_id,
+    is_active=True,
+  ).first()
   if row is None:
     raise ForjdTenantConfigurationError("sealed FORJD service credential is unavailable")
   return open_service_token(row.ciphertext, row.encrypted_dek)

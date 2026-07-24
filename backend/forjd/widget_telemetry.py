@@ -56,6 +56,7 @@ def _credential_for_tenant(tenant_id: UUID) -> ForjdTenantCredential | None:
     except ForjdTenantConfigurationError:
       try:
         return resolve_forjd_snapshot_credential(
+          mapping.deml_account_id,
           mapping.forjd_tenant_id,
           mapping.service_token_secret_ref,
         )

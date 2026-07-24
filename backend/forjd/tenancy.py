@@ -67,12 +67,21 @@ def _resolve_env_service_token(secret_ref: str) -> str:
   return token
 
 
-def _resolve_service_token(secret_ref: str) -> str:
+def _resolve_service_token(
+  secret_ref: str,
+  *,
+  expected_account_id: UUID,
+  expected_tenant_id: UUID,
+) -> str:
   normalized = validate_service_token_secret_ref(secret_ref)
   if is_sealed_ref(normalized):
     from forjd.provision import resolve_sealed_service_token
 
-    token = resolve_sealed_service_token(normalized)
+    token = resolve_sealed_service_token(
+      normalized,
+      expected_account_id=expected_account_id,
+      expected_tenant_id=expected_tenant_id,
+    )
     if not is_forjd_service_token(token):
       raise ForjdTenantConfigurationError("FORJD service token has an invalid format")
     return token
@@ -137,11 +146,16 @@ def resolve_forjd_tenant_credential(
 
   return ForjdTenantCredential(
     tenant_id=mapping.forjd_tenant_id,
-    service_token=_resolve_service_token(secret_ref),
+    service_token=_resolve_service_token(
+      secret_ref,
+      expected_account_id=account_id,
+      expected_tenant_id=mapping.forjd_tenant_id,
+    ),
   )
 
 
 def resolve_forjd_snapshot_credential(
+  account_id: UUID,
   tenant_id: UUID,
   service_token_secret_ref: str,
 ) -> ForjdTenantCredential:
@@ -150,7 +164,11 @@ def resolve_forjd_snapshot_credential(
   _require_tenant_env_match(tenant_id, secret_ref)
   return ForjdTenantCredential(
     tenant_id=tenant_id,
-    service_token=_resolve_service_token(secret_ref),
+    service_token=_resolve_service_token(
+      secret_ref,
+      expected_account_id=account_id,
+      expected_tenant_id=tenant_id,
+    ),
   )
 
 
