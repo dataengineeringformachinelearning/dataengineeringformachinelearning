@@ -31,6 +31,7 @@ import {
   normalizePhoneE164,
   phoneValidationError,
 } from '../../core/utils/phone.utils';
+import { resolvePostLoginTarget } from '../../core/utils/return-url.utils';
 import {
   ConfirmationResult,
   MultiFactorResolver,
@@ -369,7 +370,6 @@ export class Login implements OnInit, OnDestroy {
       }
       return;
     }
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     const marketingOrigin = (() => {
       try {
         return new URL(environment.marketingUrl).origin;
@@ -377,11 +377,16 @@ export class Login implements OnInit, OnDestroy {
         return '';
       }
     })();
-    if (returnUrl.startsWith('http') && marketingOrigin && returnUrl.startsWith(marketingOrigin)) {
-      void this.authService.navigateToMarketingSite(returnUrl);
+    const appOrigin = isPlatformBrowser(this.platformId) ? window.location.origin : '';
+    const target = resolvePostLoginTarget(this.route.snapshot.queryParams['returnUrl'], {
+      marketingOrigin,
+      appOrigin,
+    });
+    if (target.kind === 'external') {
+      void this.authService.navigateToMarketingSite(target.url);
       return;
     }
-    this.router.navigateByUrl(returnUrl);
+    void this.router.navigateByUrl(target.url);
   }
 
   private desktopRequest(): {

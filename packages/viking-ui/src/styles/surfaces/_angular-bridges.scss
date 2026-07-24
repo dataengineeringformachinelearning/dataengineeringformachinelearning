@@ -106,14 +106,26 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
   }
 }
 
+/* Host elements must stretch inside the flex main column so status cards can center. */
+app-not-found,
+app-success {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+}
+
 /* Success and not-found routes share one compact centered status recipe. */
 .not-found-container,
 .success-container {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
+  width: 100%;
   min-height: calc(
-    100vh - var(--viking-navbar-height) - var(--viking-space-16)
+    100dvh - var(--viking-navbar-height) - var(--viking-space-16)
   );
   padding: 0;
   box-sizing: border-box;
@@ -121,8 +133,14 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 
 .not-found-container .page-inner-wrapper,
 .success-container .page-inner-wrapper {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  max-width: var(--viking-form-narrow-max-width);
+  margin-inline: auto;
+  padding-block: var(--viking-space-3);
 }
 
 .not-found-card,
