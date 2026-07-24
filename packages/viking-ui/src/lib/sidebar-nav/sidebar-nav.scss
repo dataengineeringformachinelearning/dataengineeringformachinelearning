@@ -7,7 +7,7 @@
   gap: var(--viking-space-0-5);
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .viking-sidebar-nav {
     padding: var(--viking-space-2) var(--viking-space-1);
     flex-direction: column;
@@ -81,7 +81,7 @@
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .viking-sidebar-nav-link a {
     width: 100%;
     padding: var(--viking-space-1) var(--viking-space-2);
@@ -109,7 +109,7 @@
   box-sizing: border-box;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .viking-sidebar-nav-tree {
     flex: 0 0 auto;
     width: 100%;

@@ -48,6 +48,11 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
         "ces_sla": 90,
         "ces_stability": 85,
         "spiking_temporal_forecast": 12.5,
+        "temporal_status": "ready",
+        "temporal_backend": "norse_lif",
+        "temporal_sample_count": 128,
+        "temporal_scored_at": "2026-07-23T00:00:00Z",
+        "uses_norse": True,
       },
       "time_series": [{"label": "10:00", "latency": 42.0, "requests": 10}],
       "uptime_series": [{"label": "10:00", "uptime": 99.5}],
@@ -62,6 +67,10 @@ def test_deml_analytics_overview_maps_ces_fields() -> None:
   assert body["degraded"] is False
   assert body["data"]["ces"]["level"] == 80
   assert body["data"]["ces"]["spiking_temporal_forecast"] == 12.5
+  assert body["data"]["ces"]["temporal_status"] == "ready"
+  assert body["data"]["ces"]["temporal_backend"] == "norse_lif"
+  assert body["data"]["ces"]["temporal_sample_count"] == 128
+  assert body["data"]["ces"]["uses_norse"] is True
   assert body["data"]["user_metrics"]["total_requests_24h"] == 10
   assert body["data"]["user_metrics"]["unique_visitors"] == 4
   assert body["data"]["user_metrics"]["time_series"][0]["latency"] == 42.0
@@ -81,6 +90,8 @@ def test_empty_analytics_overview_is_degraded_not_healthy() -> None:
   assert body["data"]["user_metrics"]["uptime_percent"] is None
   assert body["data"]["user_metrics"]["data_available"] is False
   assert body["data"]["ces"]["level"] == 0
+  assert body["data"]["ces"]["spiking_temporal_forecast"] is None
+  assert body["data"]["ces"]["temporal_status"] == "unavailable"
 
 
 def test_deml_status_pages_sets_deml_user_id() -> None:
@@ -131,6 +142,11 @@ def test_deml_status_page_passes_through_uptime_history() -> None:
       "cumulative_sla": 99.5,
       "p99_latency": 12.5,
       "total_requests": 42,
+      "spiking_temporal_forecast": 0,
+      "temporal_status": "ready",
+      "temporal_backend": "gru_mlp",
+      "temporal_sample_count": 64,
+      "temporal_scored_at": "2026-07-23T00:00:00Z",
       "uptime_history": [
         {"date": "2026-07-18", "status": "up", "uptime": 100},
         {"date": "2026-07-19", "status": "no_data", "uptime": None},
@@ -141,6 +157,11 @@ def test_deml_status_page_passes_through_uptime_history() -> None:
   assert page["overall_uptime"] == 99.5
   assert page["p99_latency"] == 12.5
   assert page["total_requests"] == 42
+  assert page["spiking_temporal_forecast"] == 0
+  assert page["temporal_status"] == "ready"
+  assert page["temporal_backend"] == "gru_mlp"
+  assert page["temporal_sample_count"] == 64
+  assert page["temporal_scored_at"] == "2026-07-23T00:00:00Z"
   assert page["uptime_history"] == [
     {"date": "2026-07-18", "status": "up", "uptime": 100.0},
     {"date": "2026-07-19", "status": "no_data", "uptime": None},
@@ -246,19 +267,92 @@ def test_deml_export_jobs_and_ml_latest() -> None:
 
 
 def test_deml_sla_latest_shapes_training_response() -> None:
-  body = deml_sla_latest({"ces": {"ces_sla": 99.5}, "uptime_pct": 98.0})
-  assert body == {"status": "success", "average_sla": 99.5, "created_at": None}
-  fallback = deml_sla_latest({"uptime_pct": 98.0})
-  assert fallback["average_sla"] == 98.0
+  body = deml_sla_latest(
+    {
+      "ces": {"ces_sla": 99.5, "predicted_sla": 97.25},
+      "uptime_pct": 98.0,
+    }
+  )
+  assert body == {"status": "success", "average_sla": 97.25, "created_at": None}
+  current_only = deml_sla_latest({"ces": {"ces_sla": 99.5}, "uptime_pct": 98.0})
+  assert current_only["average_sla"] is None
+  fallback = deml_sla_latest({"average_sla": 96.0})
+  assert fallback["average_sla"] == 96.0
   empty = deml_sla_latest({})
   assert empty["average_sla"] is None
 
 
 def test_deml_temporal_forecast_shapes_gauge_response() -> None:
-  body = deml_temporal_forecast({"ces": {"spiking_temporal_forecast": 12.5}})
+  body = deml_temporal_forecast(
+    {
+      "ces": {
+        "spiking_temporal_forecast": 0,
+        "temporal_status": "ready",
+        "temporal_backend": "gru_mlp",
+        "temporal_sample_count": 128,
+        "temporal_scored_at": "2026-07-23T00:00:00Z",
+        "uses_norse": False,
+      }
+    }
+  )
   assert body["status"] == "success"
-  assert body["spiking_temporal_forecast"] == 12.5
-  assert deml_temporal_forecast({})["spiking_temporal_forecast"] is None
+  assert body["spiking_temporal_forecast"] == 0
+  assert body["temporal_status"] == "ready"
+  assert body["temporal_backend"] == "gru_mlp"
+  assert body["temporal_sample_count"] == 128
+  assert body["uses_norse"] is False
+  empty = deml_temporal_forecast({})
+  assert empty["spiking_temporal_forecast"] is None
+  assert empty["uses_norse"] is None
+  malformed = deml_temporal_forecast(
+    {
+      "ces": {
+        "spiking_temporal_forecast": True,
+        "temporal_status": {"unexpected": "object"},
+        "temporal_sample_count": -1,
+      }
+    }
+  )
+  assert malformed["spiking_temporal_forecast"] is None
+  assert malformed["temporal_status"] is None
+  assert malformed["temporal_sample_count"] is None
+
+
+def test_legacy_temporal_zero_remains_unqualified() -> None:
+  body = deml_temporal_forecast({"ces": {"spiking_temporal_forecast": 0, "uses_norse": False}})
+  assert body["spiking_temporal_forecast"] == 0
+  assert body["uses_norse"] is False
+  assert body["temporal_status"] is None
+  assert body["temporal_backend"] is None
+  assert body["temporal_sample_count"] is None
+  assert body["temporal_scored_at"] is None
+
+
+def test_deml_status_page_coerces_legacy_bare_zero_forecast() -> None:
+  from forjd.angular_compat import deml_status_page
+
+  page = deml_status_page(
+    {
+      "id": "p1",
+      "title": "joealongi.dev",
+      "slug": "joealongi-dev",
+      "description": "Public status for joealongi.dev and related services.",
+      "is_published": True,
+      "created_at": "2026-07-19T00:00:00Z",
+      "spiking_temporal_forecast": 0.0,
+      "uses_norse": False,
+      "threat_anomaly_score": 0.62,
+      "threat_suspicious_ratio": 0.32,
+    },
+    deml_user_id=None,
+  )
+  assert page["spiking_temporal_forecast"] is None
+  assert page["temporal_status"] == "insufficient_data"
+  assert page["temporal_backend"] is None
+  assert page["temporal_sample_count"] == 0
+  assert page["uses_norse"] is False
+  assert page["threat_anomaly_score"] == 0.62
+  assert page["threat_suspicious_ratio"] == 0.32
 
 
 def test_deml_threat_report_from_scores() -> None:
@@ -277,6 +371,18 @@ def test_deml_threat_report_from_scores() -> None:
   assert empty["status"] == "success"
   assert empty["anomaly_score"] is None
   assert "message" in empty
+
+
+def test_deml_threat_report_does_not_invent_zero_for_null_scores() -> None:
+  body = deml_threat_report(
+    {
+      "scores": [
+        {"score": None, "is_anomaly": False, "created_at": "2026-07-19T00:00:00Z"},
+      ]
+    }
+  )
+  assert body["anomaly_score"] is None
+  assert body["suspicious_ratio"] == 0
 
 
 def test_deml_playbook_runs_preserves_safe_action_results() -> None:

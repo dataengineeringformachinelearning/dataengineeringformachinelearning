@@ -8,8 +8,13 @@ categories:
   - FORJD
 ---
 
+## Product control plane
+
 DEML is the Firebase-authenticated user control plane and Angular product surface.
 Django owns identity, billing, consent, learning content, and BFF adapters.
+
+## Secure data plane
+
 [FORJD](https://github.com/dataengineeringformachinelearning/forjd) is the
 universal secure streaming engine: sealed ingest, projections, analytics, ML,
 and replay/DLQ via tenant-bound `fjsvc_` tokens.

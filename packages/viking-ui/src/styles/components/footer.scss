@@ -36,14 +36,14 @@
     );
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .viking-footer-directory,
   .footer-directory {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .viking-footer-directory,
   .footer-directory {
     grid-template-columns: repeat(4, 1fr);
@@ -71,6 +71,10 @@
 
 .viking-footer-list a,
 .footer-list a {
+  display: inline-flex;
+  align-items: center;
+  min-width: var(--viking-touch-target-min, 44px);
+  min-height: var(--viking-touch-target-min, 44px);
   font-size: var(--viking-font-size);
   color: var(
     --viking-text-muted,
@@ -125,6 +129,11 @@
 
 .viking-copyright-info a,
 .copyright-info a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--viking-touch-target-min, 44px);
+  min-height: var(--viking-touch-target-min, 44px);
   color: var(--viking-text-muted);
   text-decoration: none !important;
   border-bottom: 1px solid transparent;
@@ -137,6 +146,16 @@
 .copyright-info a:hover {
   color: var(--viking-text);
   border-bottom-color: var(--viking-text);
+}
+
+@media (min-width: 768px) {
+  .viking-footer-list a,
+  .footer-list a,
+  .viking-copyright-info a,
+  .copyright-info a {
+    min-width: 0;
+    min-height: auto;
+  }
 }
 
 .viking-usa-badge,

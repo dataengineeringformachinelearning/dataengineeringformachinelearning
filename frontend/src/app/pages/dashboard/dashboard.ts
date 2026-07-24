@@ -72,6 +72,45 @@ type BenchmarkSummary = {
   created_at: string | null;
 };
 
+type AnalyticsTenant = {
+  id: string;
+  name: string;
+  is_platform: boolean;
+};
+
+type TenantListResponse = {
+  status: string;
+  data?: AnalyticsTenant[];
+};
+
+type DashboardOverviewResponse = {
+  status: string;
+  degraded?: boolean;
+  code?: string;
+  data?: {
+    benchmarking?: { current_scope?: BenchmarkSummary | null };
+    ces?: {
+      level?: number;
+      threat?: number;
+      sla?: number;
+      stability?: number;
+      spiking_temporal_forecast?: number;
+    };
+    user_metrics?: {
+      p99_latency_ms?: number;
+      uptime_percent?: number | null;
+      total_requests_24h?: number;
+      active_incidents?: number;
+      unique_visitors?: number;
+      available_sites?: string[];
+      time_series?: { latency: number }[];
+      uptime_series?: { uptime: number }[];
+      threat_severity?: { severity: string; count: number }[];
+      security_alerts?: { count: number }[];
+    };
+  };
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -295,7 +334,8 @@ export class Dashboard implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  setTab(tab: DashboardTab) {
+  setTab(tab: string) {
+    if (tab !== 'overview' && tab !== 'performance' && tab !== 'security') return;
     this.activeTab.set(tab);
     this.router.navigate([], {
       relativeTo: this.route,
@@ -339,18 +379,18 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   private loadTenants() {
-    this.http.get<any>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
+    this.http.get<TenantListResponse>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const tenants = response.data;
           this.tenantOptions.set(
-            tenants.map((t: any) => ({
-              value: t.id,
-              label: t.is_platform ? `${t.name} (Global)` : t.name,
+            tenants.map(tenant => ({
+              value: tenant.id,
+              label: tenant.is_platform ? `${tenant.name} (Global)` : tenant.name,
             })),
           );
           if (!this.selectedTenantId() && tenants.length > 0) {
-            const userTenant = tenants.find((t: any) => !t.is_platform);
+            const userTenant = tenants.find(tenant => !tenant.is_platform);
             this.selectedTenantId.set(userTenant ? userTenant.id : tenants[0].id);
           }
         }
@@ -381,7 +421,7 @@ export class Dashboard implements OnInit, OnDestroy {
     }
     if (params.length > 0) url += '?' + params.join('&');
 
-    this.http.get<any>(url).subscribe({
+    this.http.get<DashboardOverviewResponse>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const degraded = response?.degraded === true || response?.code === 'forjd_degraded';

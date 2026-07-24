@@ -5,6 +5,7 @@ import {
   HostListener,
   ViewEncapsulation,
   computed,
+  inject,
   input,
   output,
   signal,
@@ -226,6 +227,8 @@ import {
   `,
 })
 export class VikingSiteNavbar {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly context = input<SiteDrakkarContext>("app");
   readonly urls = input<SiteUrls>(DEFAULT_SITE_URLS);
   readonly isAuthenticated = input<boolean>(false);
@@ -240,8 +243,6 @@ export class VikingSiteNavbar {
   readonly marketingNavigate = output<string>();
 
   protected readonly mobileMenuOpen = signal(false);
-
-  constructor(private readonly host: ElementRef<HTMLElement>) {}
 
   protected readonly navLinks = computed(() =>
     visibleNavLinks(SITE_NAV_LINKS, this.isAuthenticated()),

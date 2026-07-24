@@ -12,6 +12,12 @@ import { environment } from '../../../environments/environment';
 let lastEmitMs = 0;
 const MIN_EMIT_INTERVAL_MS = 15_000;
 
+export const sanitizeTelemetryComponent = (value: string): string =>
+  value
+    .replace(/[^A-Za-z0-9._:/-]/g, '')
+    .replace(/^[^A-Za-z0-9]+/, '')
+    .slice(0, 128) || 'spa';
+
 export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
   // Only instrument DEML backend JSON calls (skip assets / third parties / ingest itself).
   if (!req.url.startsWith(environment.backendUrl) || req.url.includes('/api/v1/ingest')) {
@@ -61,7 +67,7 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
                 ts: Date.now() / 1000,
               },
               {
-                component: path.replace(/[^A-Za-z0-9._:/-]/g, '').slice(0, 128) || 'spa',
+                component: sanitizeTelemetryComponent(path),
                 label: statusFamily,
                 channel: 'spa-interceptor',
                 region: 'browser',

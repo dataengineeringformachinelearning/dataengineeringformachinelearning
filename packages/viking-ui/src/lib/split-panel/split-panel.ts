@@ -81,7 +81,7 @@ export type VikingSplitPanelWidth = "compact" | "medium" | "large";
         top: 0;
         right: 0;
         height: 100vh;
-        width: var(--viking-split-panel-width, 480px);
+        width: 100vw;
         background: var(--viking-surface);
         border-left: 1px solid var(--viking-border-strong);
         display: flex;
@@ -172,19 +172,18 @@ export type VikingSplitPanelWidth = "compact" | "medium" | "large";
           var(--viking-ease-default);
       }
       /* Size variants */
-      .viking-split-panel--compact {
+      :host(.viking-split-panel--compact) {
         --viking-split-panel-width: 320px;
       }
-      .viking-split-panel--medium {
+      :host(.viking-split-panel--medium) {
         --viking-split-panel-width: 480px;
       }
-      .viking-split-panel--large {
+      :host(.viking-split-panel--large) {
         --viking-split-panel-width: 640px;
       }
-      @media (max-width: 640px) {
+      @media (min-width: 640px) {
         .viking-split-panel {
-          width: 100vw;
-          --viking-split-panel-width: 100vw;
+          width: var(--viking-split-panel-width, 480px);
         }
       }
       @media (prefers-reduced-motion: reduce) {

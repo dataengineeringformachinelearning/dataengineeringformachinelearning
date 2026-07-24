@@ -1,4 +1,9 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, ErrorHandler } from '@angular/core';
+import {
+  ApplicationConfig,
+  ErrorHandler,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
 // API client imports
@@ -11,13 +16,11 @@ import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { routes } from './app.routes';
 import { GlobalErrorHandler } from './core/handlers/global-error.handler';
 
-// CSR-only (Vercel static). Hydration providers removed with Angular SSR.
-// Zoneless (provideZonelessChangeDetection) lands in Phase 2 once remaining
-// markForCheck / NgZone call sites on analytics/settings/account are cleared —
-// see frontend/MODERNIZATION.md.
+// CSR-only (Vercel static). Hydration providers were removed with Angular SSR.
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideZonelessChangeDetection(),
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
     provideHttpClient(
       withFetch(),

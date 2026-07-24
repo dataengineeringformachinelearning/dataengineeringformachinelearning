@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  inject,
   input,
 } from "@angular/core";
 import { VikingSkeleton } from "../skeleton/skeleton";
@@ -118,11 +119,11 @@ import { VikingSkeleton } from "../skeleton/skeleton";
   ],
 })
 export class VikingCard {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly interactive = input<boolean>(false);
   readonly loading = input<boolean>(false);
   readonly compact = input<boolean>(false);
-
-  constructor(private readonly host: ElementRef<HTMLElement>) {}
 
   protected onActivate = (event: Event): void => {
     if (!this.interactive() || this.loading()) {

@@ -1,8 +1,9 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
+import { AuthService } from '../../services/auth.service';
 import { Footer } from './footer';
-
-import { RouterModule } from '@angular/router';
 
 describe('Footer', () => {
   let component: Footer;
@@ -10,7 +11,17 @@ describe('Footer', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Footer, RouterModule.forRoot([])],
+      imports: [Footer],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: {
+            isAuthenticated: signal(false),
+            navigateToMarketingSite: async (): Promise<void> => undefined,
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Footer);

@@ -32,7 +32,7 @@ import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon'
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { VikingDialogService } from '@dataengineeringformachinelearning/viking-ui';
-import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
+import { MultiFactorInfo, RecaptchaVerifier, UserInfo, multiFactor } from 'firebase/auth';
 import { environment } from '../../../environments/environment';
 import {
   logFirebaseAuthError,
@@ -42,6 +42,22 @@ import {
   phoneFormatHint,
   phoneValidationError,
 } from '../../core/utils/phone.utils';
+
+type ApiKeyRow = {
+  id: string;
+  name: string;
+  prefix: string;
+  created_at: string;
+};
+
+type BillingSyncResponse = {
+  active: boolean;
+  cancel_at_period_end?: boolean;
+};
+
+type CheckoutResponse = { checkout_url?: string };
+type SubscriptionUpdateResponse = { cancel_at_period_end: boolean };
+type ApiKeyGenerateResponse = { key: string };
 
 @Component({
   selector: 'app-account',
@@ -84,7 +100,7 @@ export class Account implements OnInit {
   }
 
   isDeletingAccount = signal<boolean>(false);
-  apiKeys = signal<any[]>([]);
+  apiKeys = signal<ApiKeyRow[]>([]);
   newApiKeyName = '';
   isGeneratingApiKey = signal<boolean>(false);
   newlyGeneratedKey = signal<string | null>(null);
@@ -94,12 +110,12 @@ export class Account implements OnInit {
   mfaVerificationCode = '';
   mfaVerificationId: string | null = null;
   isMfaEnrolled = signal<boolean>(false);
-  mfaEnrolledFactors = signal<any[]>([]);
+  mfaEnrolledFactors = signal<MultiFactorInfo[]>([]);
   isSendingMfaCode = signal<boolean>(false);
   isVerifyingMfaCode = signal<boolean>(false);
   mfaError = signal<string | null>(null);
   mfaSuccess = signal<string | null>(null);
-  mfaRecaptchaVerifier: any = null;
+  mfaRecaptchaVerifier: RecaptchaVerifier | null = null;
 
   isGoogleLinked = signal<boolean>(false);
   isAppleLinked = signal<boolean>(false);
@@ -149,16 +165,18 @@ export class Account implements OnInit {
 
   fetchSubscriptionStatus() {
     this.isBillingLoading.set(true);
-    this.http.post<any>(`${environment.backendUrl}/api/v1/billing/sync`, {}).subscribe({
-      next: res => {
-        this.subscriptionActive.set(res.active);
-        this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end || false);
-        this.isBillingLoading.set(false);
-      },
-      error: () => {
-        this.isBillingLoading.set(false);
-      },
-    });
+    this.http
+      .post<BillingSyncResponse>(`${environment.backendUrl}/api/v1/billing/sync`, {})
+      .subscribe({
+        next: res => {
+          this.subscriptionActive.set(res.active);
+          this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end || false);
+          this.isBillingLoading.set(false);
+        },
+        error: () => {
+          this.isBillingLoading.set(false);
+        },
+      });
   }
 
   async updateEmail() {
@@ -197,7 +215,10 @@ export class Account implements OnInit {
     this.isBillingLoading.set(true);
     this.billingError.set(null);
     this.http
-      .post<any>(`${environment.backendUrl}/api/v1/billing/create-checkout-session`, {})
+      .post<CheckoutResponse>(
+        `${environment.backendUrl}/api/v1/billing/create-checkout-session`,
+        {},
+      )
       .subscribe({
         next: res => {
           if (res.checkout_url) {
@@ -228,7 +249,10 @@ export class Account implements OnInit {
       this.isBillingLoading.set(true);
       this.billingError.set(null);
       this.http
-        .post<any>(`${environment.backendUrl}/api/v1/billing/cancel-subscription`, {})
+        .post<SubscriptionUpdateResponse>(
+          `${environment.backendUrl}/api/v1/billing/cancel-subscription`,
+          {},
+        )
         .subscribe({
           next: res => {
             this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end);
@@ -251,7 +275,10 @@ export class Account implements OnInit {
     this.isBillingLoading.set(true);
     this.billingError.set(null);
     this.http
-      .post<any>(`${environment.backendUrl}/api/v1/billing/resume-subscription`, {})
+      .post<SubscriptionUpdateResponse>(
+        `${environment.backendUrl}/api/v1/billing/resume-subscription`,
+        {},
+      )
       .subscribe({
         next: res => {
           this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end);
@@ -268,7 +295,7 @@ export class Account implements OnInit {
   }
 
   loadApiKeys() {
-    this.http.get<any[]>(`${environment.backendUrl}/api/v1/auth/api-keys`).subscribe({
+    this.http.get<ApiKeyRow[]>(`${environment.backendUrl}/api/v1/auth/api-keys`).subscribe({
       next: keys => {
         this.apiKeys.set(keys);
         this.cdr.markForCheck();
@@ -281,7 +308,7 @@ export class Account implements OnInit {
     if (!this.newApiKeyName) return;
     this.isGeneratingApiKey.set(true);
     this.http
-      .post<any>(`${environment.backendUrl}/api/v1/auth/api-keys/generate`, {
+      .post<ApiKeyGenerateResponse>(`${environment.backendUrl}/api/v1/auth/api-keys/generate`, {
         name: this.newApiKeyName,
       })
       .subscribe({
@@ -553,7 +580,9 @@ export class Account implements OnInit {
   checkLinkedProviders() {
     const user = this.authService.auth?.currentUser;
     if (user) {
-      const providers = user.providerData ? user.providerData.map((p: any) => p.providerId) : [];
+      const providers = user.providerData
+        ? user.providerData.map((provider: UserInfo) => provider.providerId)
+        : [];
       this.isGoogleLinked.set(providers.includes('google.com'));
       this.isAppleLinked.set(providers.includes('apple.com'));
       this.cdr.markForCheck();

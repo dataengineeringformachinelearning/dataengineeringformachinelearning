@@ -28,16 +28,6 @@ const preview: Preview = {
         ],
       },
     },
-    actions: {
-      handles: [
-        "viking-press",
-        "viking-change",
-        "viking-select",
-        "viking-query",
-        "viking-close",
-        "viking-theme-change",
-      ],
-    },
     a11y: {
       test: "default",
     },
@@ -48,19 +38,21 @@ const preview: Preview = {
     },
     layout: "fullscreen",
     backgrounds: {
-      default: "battlefield-surface",
-      values: [
-        {
+      options: {
+        battlefield: {
           name: "battlefield-surface",
           value: "var(--viking-bg)",
         },
-        { name: "machined-surface", value: "var(--viking-surface)" },
-        { name: "raised-panel", value: "var(--viking-surface-raised)" },
-      ],
+        machined: { name: "machined-surface", value: "var(--viking-surface)" },
+        raised: { name: "raised-panel", value: "var(--viking-surface-raised)" },
+      },
     },
     chromatic: {
-      viewports: [390, 768, 1440],
+      viewports: [375, 640, 768, 1024, 1280],
     },
+  },
+  initialGlobals: {
+    backgrounds: { value: "battlefield" },
   },
   tags: ["autodocs"],
   decorators: [

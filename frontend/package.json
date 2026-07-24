@@ -27,17 +27,17 @@
     "check:mobile-first": "node scripts/check_mobile_first.js"
   },
   "private": true,
-  "packageManager": "npm@11.6.0",
+  "packageManager": "npm@11.18.0",
   "engines": {
-    "node": ">=24.15.0"
+    "node": "^22.22.3 || ^24.15.0 || ^26.0.0"
   },
   "dependencies": {
-    "@angular/common": "22.0.5",
-    "@angular/compiler": "22.0.5",
-    "@angular/core": "22.0.5",
-    "@angular/forms": "22.0.5",
-    "@angular/platform-browser": "22.0.5",
-    "@angular/router": "22.0.5",
+    "@angular/common": "22.0.8",
+    "@angular/compiler": "22.0.8",
+    "@angular/core": "22.0.8",
+    "@angular/forms": "22.0.8",
+    "@angular/platform-browser": "22.0.8",
+    "@angular/router": "22.0.8",
     "@dataengineeringformachinelearning/viking-ui": "^9.7.0",
     "@sanity/client": "^7.22.1",
     "@sentry/angular": "^10.57.0",
@@ -46,28 +46,27 @@
     "firebase": "^12.14.0",
     "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "^0.16.2"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "^2.6.2",
     "@analogjs/vitest-angular": "^2.6.1",
-    "@angular/build": "22.0.5",
-    "@angular/cli": "22.0.5",
-    "@angular/compiler-cli": "22.0.5",
-    "@angular/platform-browser-dynamic": "22.0.5",
+    "@angular/build": "22.0.7",
+    "@angular/cli": "22.0.7",
+    "@angular/compiler-cli": "22.0.8",
     "@eslint/js": "^10.0.1",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^20.17.19",
-    "@typescript-eslint/utils": "^8.56.1",
-    "angular-eslint": "22.0.0",
+    "@typescript-eslint/types": "8.65.0",
+    "@typescript-eslint/utils": "^8.65.0",
+    "angular-eslint": "22.1.0",
     "cypress": "^15.0.0",
     "eslint": "^10.0.3",
     "jsdom": "^28.0.0",
     "lucide": "^1.23.0",
     "ng-packagr": "^22.0.0",
     "typescript": "~6.0.3",
-    "typescript-eslint": "8.56.1",
+    "typescript-eslint": "8.65.0",
     "vitest": "^4.1.9"
   },
   "overrides": {

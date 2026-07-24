@@ -6,6 +6,7 @@ import {
   computed,
   contentChildren,
   effect,
+  inject,
   input,
   model,
   output,
@@ -191,6 +192,8 @@ export class VikingAppLayoutDrawer {
   `,
 })
 export class VikingAppLayout {
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly hasSidebar = input<boolean>(false);
   readonly hasTools = input<boolean>(false);
   /** @deprecated Use hasTools. */
@@ -229,7 +232,7 @@ export class VikingAppLayout {
         ?.label() ?? this.drawerLabel(),
   );
 
-  constructor(destroyRef: DestroyRef) {
+  constructor() {
     effect(() => {
       const activeId = this.activeDrawerId();
       for (const drawer of this.drawers()) {
@@ -237,7 +240,7 @@ export class VikingAppLayout {
       }
     });
     afterNextRender(() => {
-      const desktopQuery = window.matchMedia("(min-width: 901px)");
+      const desktopQuery = window.matchMedia("(min-width: 1024px)");
       const syncSidebarForViewport = (
         event: MediaQueryList | MediaQueryListEvent,
       ): void => {
@@ -248,7 +251,7 @@ export class VikingAppLayout {
 
       syncSidebarForViewport(desktopQuery);
       desktopQuery.addEventListener("change", syncSidebarForViewport);
-      destroyRef.onDestroy(() => {
+      this.destroyRef.onDestroy(() => {
         desktopQuery.removeEventListener("change", syncSidebarForViewport);
       });
     });

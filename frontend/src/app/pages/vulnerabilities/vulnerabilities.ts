@@ -45,6 +45,21 @@ import {
   Playbook,
 } from '../../services/vulnerability.service';
 
+type AnalyticsTenant = {
+  id: string;
+  name: string;
+  is_platform: boolean;
+};
+
+type ApiEnvelope<T> = {
+  status: string;
+  data?: T;
+};
+
+type SiteOverview = {
+  user_metrics?: { available_sites?: string[] };
+};
+
 @Component({
   selector: 'app-vulnerabilities',
   standalone: true,
@@ -80,7 +95,7 @@ export class Vulnerabilities implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
 
-  public tenants: any[] = [];
+  public tenants: AnalyticsTenant[] = [];
   public tenantOptions: SelectOption[] = [];
   public selectedTenantId: string | null = null;
   public availableSites: string[] = [];
@@ -179,27 +194,29 @@ export class Vulnerabilities implements OnInit {
   }
 
   loadTenants() {
-    this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/tenants`).subscribe({
-      next: response => {
-        if (response.status === 'success' && response.data) {
-          this.tenants = response.data;
-          this.tenantOptions = this.tenants.map(t => ({
-            value: t.id,
-            label: `${t.name} ${t.is_platform ? '(Platform)' : ''}`.trim(),
-          }));
-          if (!this.selectedTenantId && this.tenants.length > 0) {
-            const platformTenant = this.tenants.find((t: any) => t.is_platform);
-            this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
+    this.http
+      .get<ApiEnvelope<AnalyticsTenant[]>>(`${environment.backendUrl}/api/v1/analytics/tenants`)
+      .subscribe({
+        next: response => {
+          if (response.status === 'success' && response.data) {
+            this.tenants = response.data;
+            this.tenantOptions = this.tenants.map(t => ({
+              value: t.id,
+              label: `${t.name} ${t.is_platform ? '(Platform)' : ''}`.trim(),
+            }));
+            if (!this.selectedTenantId && this.tenants.length > 0) {
+              const platformTenant = this.tenants.find(tenant => tenant.is_platform);
+              this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
+            }
+            this.loadAvailableSites();
+            this.loadVulnerabilities();
+            this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+            this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
+            this.cdr.markForCheck();
           }
-          this.loadAvailableSites();
-          this.loadVulnerabilities();
-          this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
-          this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
-          this.cdr.markForCheck();
-        }
-      },
-      error: err => console.error('Failed to load tenants', err),
-    });
+        },
+        error: err => console.error('Failed to load tenants', err),
+      });
   }
 
   loadAvailableSites() {
@@ -207,7 +224,7 @@ export class Vulnerabilities implements OnInit {
     if (this.selectedTenantId) {
       url += `?account_id=${this.selectedTenantId}`;
     }
-    this.http.get<any>(url).subscribe({
+    this.http.get<ApiEnvelope<SiteOverview>>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const { user_metrics } = response.data;
@@ -228,7 +245,7 @@ export class Vulnerabilities implements OnInit {
     });
   }
 
-  public onTenantChange(tenantId: any) {
+  public onTenantChange(tenantId: string) {
     this.selectedTenantId = tenantId;
     this.selectedSite = 'All'; // reset site selection when tenant changes
     this.loadAvailableSites();
@@ -237,7 +254,7 @@ export class Vulnerabilities implements OnInit {
     this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
   }
 
-  public onSiteChange(site: any) {
+  public onSiteChange(site: string) {
     this.selectedSite = site;
     this.loadVulnerabilities();
   }

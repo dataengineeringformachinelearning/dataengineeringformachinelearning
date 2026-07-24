@@ -15,6 +15,8 @@ import {
   StatusPageData,
   MonitoredServiceData,
   IntegrationData,
+  EndpointData,
+  IncidentData,
 } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
@@ -114,7 +116,7 @@ export class Settings implements OnInit {
   services = signal<MonitoredServiceData[]>([]);
 
   integrations = signal<IntegrationData[]>([]);
-  endpoints = signal<any[]>([]);
+  endpoints = signal<EndpointData[]>([]);
   endpointsActive = signal<number>(0);
   isConnectingGoogle = signal<boolean>(false);
   isConnectingClarity = signal<boolean>(false);
@@ -130,7 +132,7 @@ export class Settings implements OnInit {
   newServiceName = signal('');
   newServiceUrl = signal('');
 
-  incidents = signal<any[]>([]);
+  incidents = signal<IncidentData[]>([]);
 
   newIncidentTitle = signal('');
   newIncidentMessage = signal('');
@@ -268,7 +270,7 @@ export class Settings implements OnInit {
       this.monitorService.getAllEndpoints().subscribe({
         next: data => {
           if (Array.isArray(data)) {
-            const active = data.filter((d: any) => d.is_active).length;
+            const active = data.filter(endpoint => endpoint.is_active).length;
             this.endpoints.set(data);
             this.endpointsActive.set(active);
           } else {

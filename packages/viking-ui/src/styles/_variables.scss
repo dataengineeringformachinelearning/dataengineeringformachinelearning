@@ -313,12 +313,12 @@
   --viking-chart-padding: var(--viking-space-2) var(--viking-space-2);
 
   /* ── Breakpoints (mobile-first) ─────────────────────────────────────────── */
-  --viking-bp-sm: 600px;
+  --viking-bp-sm: 640px;
   --viking-bp-md: 768px;
-  --viking-bp-sidebar: 901px;
+  --viking-bp-sidebar: 1024px;
   --viking-bp-lg: 1024px;
-  --viking-bp-xl: 1440px;
-  --viking-bp-2xl: 1920px;
+  --viking-bp-xl: 1280px;
+  --viking-bp-2xl: 1280px;
 
   /* ── Motion ──────────────────────────────────────────────────────────────── */
   --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
@@ -360,10 +360,10 @@
   --viking-state-disabled-opacity: 0.48;
 
   /* ── Controls (heights on 8px grid; touch target remains WCAG 44px) ────── */
-  --viking-control-height: 40px;
+  --viking-touch-target-min: 44px;
+  --viking-control-height: var(--viking-touch-target-min);
   --viking-control-height-sm: 32px;
   --viking-control-height-xs: 24px;
-  --viking-touch-target-min: 44px;
   --viking-control-padding-x: var(--viking-space-2); /* 16px — on-grid */
   --viking-btn-min-width: 120px;
   --viking-select-panel-bg: var(--viking-surface-raised);
@@ -386,7 +386,7 @@
   --viking-badge-height: 24px;
   --viking-table-cell-padding-y: var(--viking-space-1-5);
   --viking-table-cell-padding-x: var(--viking-space-2);
-  --viking-navigation-item-height: 40px;
+  --viking-navigation-item-height: var(--viking-touch-target-min);
 
   /* ── Layout ────────────────────────────────────────────────────────────── */
   --viking-container-max-width: 1260px;

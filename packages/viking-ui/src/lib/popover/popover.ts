@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  inject,
   input,
   model,
 } from "@angular/core";
@@ -66,10 +67,10 @@ import {
   ],
 })
 export class VikingPopover {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly open = model<boolean>(false);
   readonly align = input<"start" | "end">("start");
-
-  constructor(private readonly host: ElementRef<HTMLElement>) {}
 
   /** Toggles when the (focusable, projected) trigger is activated. */
   protected onHostClick = (event: Event): void => {

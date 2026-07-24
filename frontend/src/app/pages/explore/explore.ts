@@ -4,11 +4,9 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef,
   effect,
   computed,
-  afterNextRender,
-  Injector,
+  untracked,
 } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
@@ -31,6 +29,11 @@ import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { toUptimeHistoryDataPoints } from '../../core/utils/uptime.utils';
+import {
+  formatTemporalScore,
+  temporalEngineLabel,
+  temporalRiskLabel,
+} from '../../core/utils/temporal.utils';
 @Component({
   selector: 'app-explore',
   standalone: true,
@@ -50,10 +53,9 @@ export class Explore implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private titleService = inject(Title);
   private metaService = inject(Meta);
-  private injector = inject(Injector);
+  private hasLoaded = false;
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
@@ -138,16 +140,12 @@ export class Explore implements OnInit {
     return page.overall_uptime ?? page.cumulative_sla ?? null;
   }
 
-  norseSnnLabel(page: StatusPageData): string {
-    const usesNorse = this.mlService.latestTemporalUsesNorse()[page.id];
-    if (usesNorse === true) return 'Active';
-    if (usesNorse === false) return 'MLP Fallback';
-    return 'Pending';
-  }
-
   exploreMetrics(page: StatusPageData): ExploreCardMetric[] {
     const threatReport = this.mlService.latestThreatReports()[page.id];
-    const spikeRisk = this.mlService.latestTemporalForecasts()[page.id];
+    const temporal = this.mlService.latestTemporalInsights()[page.id];
+    const spikeRisk = temporal?.forecast;
+    const riskLabel = temporalRiskLabel(temporal);
+    const engineLabel = temporalEngineLabel(temporal);
     const sla = this.cumulativeSla(page);
     const latency = page.p99_latency;
     const anomaly = threatReport?.anomaly_score;
@@ -169,15 +167,15 @@ export class Explore implements OnInit {
       {
         icon: 'trending-up',
         label: 'Spike Risk',
-        value: spikeRisk == null ? '—' : spikeRisk.toFixed(2),
-        sublabel: 'Dynamic Temporal Forecasting',
+        value: formatTemporalScore(temporal),
+        sublabel: riskLabel === engineLabel ? riskLabel : `${riskLabel} · ${engineLabel}`,
         tone: spikeRisk != null && spikeRisk > 65 ? 'warning' : 'default',
       },
       {
         icon: 'shield',
         label: 'Threat Anomaly',
         value: anomaly == null ? '—' : `${(anomaly * 100).toFixed(2)}%`,
-        sublabel: this.norseSnnLabel(page),
+        sublabel: 'Model-scored telemetry',
         tone: 'default',
       },
     ];
@@ -193,15 +191,10 @@ export class Explore implements OnInit {
   }
 
   constructor() {
-    afterNextRender(() => {
-      effect(
-        () => {
-          if (this.authService.isInitialized()) {
-            this.loadData();
-          }
-        },
-        { injector: this.injector },
-      );
+    effect(() => {
+      if (this.hasLoaded || !this.authService.isInitialized()) return;
+      this.hasLoaded = true;
+      untracked(() => this.loadData());
     });
   }
 
@@ -245,7 +238,6 @@ export class Explore implements OnInit {
             this.monitorService.fetchAllServices(pages);
           }
           this.isLoading.set(false);
-          this.cdr.markForCheck();
         };
         if (hydrations.length === 0) {
           applyPages([]);
@@ -260,7 +252,6 @@ export class Explore implements OnInit {
         this.statusPages.set([]);
         this.loadFailed.set(true);
         this.isLoading.set(false);
-        this.cdr.markForCheck();
       },
     });
   }

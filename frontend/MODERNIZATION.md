@@ -6,15 +6,15 @@
 
 ## Current baseline (2026-07-22)
 
-| Area                                             | Grade | Notes                                                            |
-| ------------------------------------------------ | :---: | ---------------------------------------------------------------- |
-| Angular 22.0.5 standalone + lazy `loadComponent` |   A   | 0 NgModules                                                      |
-| Signals in services                              |  B+   | Auth/ML/settings already signal-based                            |
-| Page state purity                                |  B−   | Hybrid class fields + `markForCheck`                             |
-| Zoneless                                         |   D   | `zone.js` present; `NgZone` in live-updates (Phase 1 removes it) |
-| `@defer`                                         |  F→C  | Phase 1 adds defer for analytics map + chrome                    |
-| Viking layout consistency                        |   B   | Dashboard/analytics strong; public shells catching up            |
-| App-local styles                                 |   A   | Zero component SCSS                                              |
+| Area                                             | Grade | Notes                                                     |
+| ------------------------------------------------ | :---: | --------------------------------------------------------- |
+| Angular 22.0.8 standalone + lazy `loadComponent` |   A   | 0 NgModules                                               |
+| Signals in services                              |  B+   | Auth/ML/settings already signal-based                     |
+| Page state purity                                |  B−   | Hybrid class fields + `markForCheck`                      |
+| Zoneless                                         |   A   | Explicit provider and zoneless Analog/Vitest TestBed      |
+| `@defer`                                         |   C   | Analytics map and noncritical chrome defer below the fold |
+| Viking layout consistency                        |   B   | Dashboard/analytics strong; public shells catching up     |
+| App-local styles                                 |   A   | Zero component SCSS                                       |
 
 ## Target architecture
 
@@ -52,13 +52,13 @@ viking-app-layout
 5. Align isolated-status shell to `viking-page-template`.
 6. Harden `auth-status` (OnPush, `inject()`, drop empty `styles`).
 7. Strip CSR leftovers (`ngSkipHydration`).
-8. Document zoneless enablement gate (Phase 2).
+8. ~~Document and enable zoneless change detection.~~
 
 ### Phase 2 — Signal purity + zoneless
 
 1. ~~Signalize analytics / settings~~ (done for `/dashboard`, `/analytics`, `/status`, `/settings`); account / vulnerabilities still hybrid.
 2. ~~Replace live ticks with `latestEvent` effects~~ on dashboard + analytics (Django BFF SSE — not Firestore).
-3. Enable `provideZonelessChangeDetection()`; drop `zone.js` from runtime + Vitest setup (gated on remaining `markForCheck` debt).
+3. ~~Enable `provideZonelessChangeDetection()` and remove `zone.js` from runtime and test dependencies.~~
 4. Convert remaining `@Input` / constructor DI.
 
 ### Phase 3 — Layout uniformity + mobile-first polish

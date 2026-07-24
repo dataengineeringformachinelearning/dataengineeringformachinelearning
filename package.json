@@ -2,7 +2,7 @@
   "name": "deml-platform",
   "private": true,
   "description": "DEML monorepo workspace scripts",
-  "packageManager": "npm@11.6.0",
+  "packageManager": "npm@11.18.0",
   "workspaces": [
     "packages/*",
     "frontend",
@@ -11,7 +11,7 @@
     "infrastructure/studio"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.22.3 || ^24.15.0 || ^26.0.0"
   },
   "scripts": {
     "sync": "python scripts/deml_tooling.py sync --all",

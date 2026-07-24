@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   Injectable,
+  inject,
   input,
   signal,
 } from "@angular/core";
@@ -87,20 +88,21 @@ export class VikingToastService {
     `
       :host {
         position: fixed;
-        bottom: var(--viking-space-3);
-        right: var(--viking-space-3);
+        bottom: var(--viking-space-2);
+        right: var(--viking-space-2);
+        left: var(--viking-space-2);
         display: flex;
         flex-direction: column;
         gap: var(--viking-space-1);
         z-index: var(--viking-z-toast);
-        max-width: min(414px, calc(100vw - var(--viking-space-4)));
+        max-width: none;
       }
-      @media (max-width: 767px) {
+      @media (min-width: 768px) {
         :host {
-          bottom: var(--viking-space-2);
-          right: var(--viking-space-2);
-          left: var(--viking-space-2);
-          max-width: none;
+          bottom: var(--viking-space-3);
+          right: var(--viking-space-3);
+          left: auto;
+          max-width: min(414px, calc(100vw - var(--viking-space-4)));
         }
       }
       :host(.viking-toaster-top) {
@@ -167,6 +169,10 @@ export class VikingToastService {
       }
       .viking-toast-close {
         display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: var(--viking-touch-target-min);
+        min-height: var(--viking-touch-target-min);
         border: none;
         background: transparent;
         color: var(--viking-text-muted);
@@ -187,9 +193,9 @@ export class VikingToastService {
   ],
 })
 export class VikingToaster {
-  readonly position = input<"bottom-end" | "top-end">("bottom-end");
+  protected readonly service = inject(VikingToastService);
 
-  constructor(protected readonly service: VikingToastService) {}
+  readonly position = input<"bottom-end" | "top-end">("bottom-end");
 
   protected toneIcon = (tone: string): VikingIconName =>
     TONE_ICONS[tone] ?? "info";

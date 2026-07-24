@@ -7,7 +7,7 @@ Modifications to this file are automatically discarded.
   <head>
     <meta charset="utf-8" />
     <meta
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
       name="viewport"
     />
     <meta content="noindex" name="robots" />
@@ -304,10 +304,9 @@ Modifications to this file are automatically discarded.
         -webkit-font-smoothing: antialiased;
       }
     </style>
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity — Sanity owns and updates this runtime bridge URL -->
     <script
       src="https://core.sanity-cdn.com/bridge.js"
-      integrity="sha384-70a+NtyerTpHXEhxSrL8zSPw9dqABLTdsQAOWeVw0nDwOo9kCldbNymunS8eytvh"
-      crossorigin="anonymous"
       async
       type="module"
       data-sanity-core

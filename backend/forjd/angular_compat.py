@@ -110,6 +110,38 @@ def _as_list(value: Any) -> list[Any]:
   return value if isinstance(value, list) else []
 
 
+def _optional_number(value: Any) -> float | None:
+  if value is None or value == "" or isinstance(value, bool):
+    return None
+  try:
+    return float(value)
+  except (TypeError, ValueError):
+    return None
+
+
+def _optional_int(value: Any) -> int | None:
+  if value is None or value == "" or isinstance(value, bool):
+    return None
+  if isinstance(value, float) and not value.is_integer():
+    return None
+  try:
+    parsed = int(value)
+  except (TypeError, ValueError):
+    return None
+  return parsed if parsed >= 0 else None
+
+
+def _optional_text(value: Any) -> str | None:
+  if value is None:
+    return None
+  if hasattr(value, "isoformat"):
+    value = value.isoformat()
+  if not isinstance(value, str):
+    return None
+  text = value.strip()
+  return text or None
+
+
 def _series_points(rows: list[Any], *, value_key: str, out_key: str) -> list[dict[str, Any]]:
   points: list[dict[str, Any]] = []
   for row in rows:
@@ -160,6 +192,21 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
   forecast = ces_raw.get("spiking_temporal_forecast")
   if forecast is None:
     forecast = forjd_body.get("spiking_temporal_forecast")
+  temporal_status = ces_raw.get("temporal_status")
+  if temporal_status is None:
+    temporal_status = forjd_body.get("temporal_status")
+  temporal_backend = ces_raw.get("temporal_backend")
+  if temporal_backend is None:
+    temporal_backend = forjd_body.get("temporal_backend")
+  temporal_sample_count = ces_raw.get("temporal_sample_count")
+  if temporal_sample_count is None:
+    temporal_sample_count = forjd_body.get("temporal_sample_count")
+  temporal_scored_at = ces_raw.get("temporal_scored_at")
+  if temporal_scored_at is None:
+    temporal_scored_at = forjd_body.get("temporal_scored_at")
+  uses_norse = ces_raw.get("uses_norse")
+  if uses_norse is None:
+    uses_norse = forjd_body.get("uses_norse")
 
   deml_metrics = forjd_body.get("deml_control_plane")
   deml_metrics = deml_metrics if isinstance(deml_metrics, dict) else {}
@@ -189,7 +236,12 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
         "threat": float(ces_raw.get("ces_threat") or 0),
         "sla": float(ces_raw.get("ces_sla") or 0),
         "stability": float(ces_raw.get("ces_stability") or 0),
-        "spiking_temporal_forecast": float(forecast or 0),
+        "spiking_temporal_forecast": _optional_number(forecast),
+        "temporal_status": _optional_text(temporal_status),
+        "temporal_backend": _optional_text(temporal_backend),
+        "temporal_sample_count": _optional_int(temporal_sample_count),
+        "temporal_scored_at": _optional_text(temporal_scored_at),
+        "uses_norse": (uses_norse if isinstance(uses_norse, bool) else None),
         "latest_benchmark_score": latest_benchmark_score,
         "latest_benchmark": latest_benchmark,
       },
@@ -287,7 +339,11 @@ def empty_analytics_overview() -> dict[str, Any]:
         "ces_threat": 0,
         "ces_sla": 0,
         "ces_stability": 0,
-        "spiking_temporal_forecast": 0,
+        "spiking_temporal_forecast": None,
+        "temporal_status": "unavailable",
+        "temporal_backend": None,
+        "temporal_sample_count": None,
+        "temporal_scored_at": None,
       },
       "time_series": [],
       "uptime_series": [],
@@ -302,15 +358,6 @@ def empty_analytics_overview() -> dict[str, Any]:
 
 
 # --- Status pages list (MonitorService expects a JSON array) ---
-def _optional_number(value: Any) -> float | None:
-  if value is None or value == "":
-    return None
-  try:
-    return float(value)
-  except (TypeError, ValueError):
-    return None
-
-
 def _uptime_history_points(value: Any) -> list[dict[str, Any]]:
   if not isinstance(value, list):
     return []
@@ -327,8 +374,38 @@ def _uptime_history_points(value: Any) -> list[dict[str, Any]]:
   return out
 
 
+def _normalize_public_temporal(page: dict[str, Any]) -> dict[str, Any]:
+  """Coerce legacy bare-zero forecasts into an honest collecting state.
+
+  Older FORJD builds emitted ``spiking_temporal_forecast: 0.0`` from the
+  analytics rollup heuristic without ``temporal_status`` / backend metadata.
+  Angular treats that as Spike Risk ``0.00`` instead of collecting telemetry.
+  """
+  forecast = _optional_number(page.get("spiking_temporal_forecast"))
+  status = _optional_text(page.get("temporal_status"))
+  backend = _optional_text(page.get("temporal_backend"))
+  sample_count = _optional_int(page.get("temporal_sample_count"))
+  scored_at = _optional_text(page.get("temporal_scored_at"))
+  uses_norse = bool(page["uses_norse"]) if isinstance(page.get("uses_norse"), bool) else None
+  # Bare zero with no inference provenance is not a scored ready signal.
+  if forecast == 0.0 and not status and not backend and not scored_at:
+    forecast = None
+    status = "insufficient_data"
+    sample_count = sample_count if sample_count is not None else 0
+    uses_norse = False if uses_norse is None else uses_norse
+  return {
+    "spiking_temporal_forecast": forecast,
+    "temporal_status": status,
+    "temporal_backend": backend,
+    "temporal_sample_count": sample_count,
+    "temporal_scored_at": scored_at,
+    "uses_norse": uses_norse,
+  }
+
+
 def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[str, Any]:
   created = page.get("created_at")
+  temporal = _normalize_public_temporal(page)
   return {
     "id": str(page.get("id") or ""),
     "title": str(page.get("title") or ""),
@@ -350,10 +427,9 @@ def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[
       else None
     ),
     # Public intelligence (ciphertext-free) — explore/status seed ML gauges without auth.
-    "spiking_temporal_forecast": _optional_number(page.get("spiking_temporal_forecast")),
+    **temporal,
     "threat_anomaly_score": _optional_number(page.get("threat_anomaly_score")),
     "threat_suspicious_ratio": _optional_number(page.get("threat_suspicious_ratio")),
-    "uses_norse": (bool(page["uses_norse"]) if isinstance(page.get("uses_norse"), bool) else None),
   }
 
 
@@ -679,14 +755,16 @@ def deml_export_job(forjd_body: dict[str, Any]) -> dict[str, Any]:
 
 # --- ML latest SLA stat (MlService.fetchLatestStat expects TrainingResponse) ---
 def deml_sla_latest(overview_body: dict[str, Any]) -> dict[str, Any]:
-  """Shape FORJD analytics overview into the Angular ``TrainingResponse``."""
+  """Expose only an explicit SLA prediction, never current availability."""
   ces = overview_body.get("ces") if isinstance(overview_body.get("ces"), dict) else {}
-  sla = ces.get("ces_sla")
+  sla = ces.get("predicted_sla")
   if sla is None:
-    sla = overview_body.get("uptime_pct")
+    sla = overview_body.get("predicted_sla")
+  if sla is None:
+    sla = overview_body.get("average_sla")
   return {
     "status": "success",
-    "average_sla": float(sla) if sla is not None else None,
+    "average_sla": _optional_number(sla),
     "created_at": None,
   }
 
@@ -701,11 +779,27 @@ def deml_temporal_forecast(overview_body: dict[str, Any]) -> dict[str, Any]:
   uses_norse = ces.get("uses_norse")
   if uses_norse is None:
     uses_norse = overview_body.get("uses_norse")
+  temporal_status = ces.get("temporal_status")
+  if temporal_status is None:
+    temporal_status = overview_body.get("temporal_status")
+  temporal_backend = ces.get("temporal_backend")
+  if temporal_backend is None:
+    temporal_backend = overview_body.get("temporal_backend")
+  temporal_sample_count = ces.get("temporal_sample_count")
+  if temporal_sample_count is None:
+    temporal_sample_count = overview_body.get("temporal_sample_count")
+  temporal_scored_at = ces.get("temporal_scored_at")
+  if temporal_scored_at is None:
+    temporal_scored_at = overview_body.get("temporal_scored_at")
   return {
     "status": "success",
-    "spiking_temporal_forecast": float(forecast) if forecast is not None else None,
-    "uses_norse": bool(uses_norse) if isinstance(uses_norse, bool) else False,
-    "created_at": None,
+    "spiking_temporal_forecast": _optional_number(forecast),
+    "temporal_status": _optional_text(temporal_status),
+    "temporal_backend": _optional_text(temporal_backend),
+    "temporal_sample_count": _optional_int(temporal_sample_count),
+    "temporal_scored_at": _optional_text(temporal_scored_at),
+    "uses_norse": uses_norse if isinstance(uses_norse, bool) else None,
+    "created_at": _optional_text(temporal_scored_at),
   }
 
 
@@ -724,12 +818,12 @@ def deml_threat_report(scores_body: dict[str, Any]) -> dict[str, Any]:
       "created_at": None,
       "message": "No threat intelligence reports available",
     }
-  numeric = [float(row.get("score") or 0.0) for row in rows]
+  numeric = [score for row in rows if (score := _optional_number(row.get("score"))) is not None]
   anomalies = sum(1 for row in rows if row.get("is_anomaly"))
   newest = rows[0].get("created_at")
   return {
     "status": "success",
-    "anomaly_score": max(numeric),
+    "anomaly_score": max(numeric) if numeric else None,
     "top_location": None,
     "location_weight": None,
     "suspicious_ratio": anomalies / len(rows),

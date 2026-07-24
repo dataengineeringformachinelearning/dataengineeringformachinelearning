@@ -2,8 +2,8 @@ import {
   DOCUMENT,
   Directive,
   ElementRef,
-  Inject,
   OnDestroy,
+  inject,
   input,
 } from "@angular/core";
 
@@ -26,10 +26,8 @@ let tooltipIdCounter = 0;
   },
 })
 export class VikingTooltip implements OnDestroy {
-  constructor(
-    private readonly host: ElementRef<HTMLElement>,
-    @Inject(DOCUMENT) private readonly document: Document,
-  ) {}
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly document = inject(DOCUMENT);
 
   readonly vikingTooltip = input.required<string>();
   readonly tooltipPosition = input<"top" | "bottom" | "left" | "right">("top");

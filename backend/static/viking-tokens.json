@@ -307,7 +307,7 @@
     }
   },
   "component": {
-    "controlHeight": "40px",
+    "controlHeight": "44px",
     "controlRadius": "8px",
     "surfaceRadius": "12px",
     "badgeHeight": "24px",
@@ -335,7 +335,7 @@
     "intrinsicItemCompact": "256px",
     "intrinsicItemDefault": "320px",
     "intrinsicItemWide": "384px",
-    "controlHeight": "40px",
+    "controlHeight": "44px",
     "controlHeightSm": "36px",
     "controlHeightXs": "28px",
     "btnMinWidth": "0",

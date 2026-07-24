@@ -180,7 +180,7 @@ html[data-theme="light"] .viking-app-sidebar-host {
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .dashboard-sidebar:not(.collapsed) {
     width: var(--viking-sidebar-width, 256px);
   }

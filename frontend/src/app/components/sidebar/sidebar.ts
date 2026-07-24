@@ -5,7 +5,6 @@ import {
   ChangeDetectionStrategy,
   signal,
   computed,
-  ChangeDetectorRef,
   HostListener,
 } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
@@ -48,7 +47,6 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 export class Sidebar implements OnInit {
   public authService = inject(AuthService);
   private monitorService = inject(MonitorService);
-  private cdr = inject(ChangeDetectorRef);
   public settingsService = inject(SettingsService);
   private router = inject(Router);
 
@@ -138,7 +136,6 @@ export class Sidebar implements OnInit {
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(() => {
         this.isSettingsActive.set(this.router.url.startsWith('/settings'));
-        this.cdr.markForCheck();
       });
     this.isSettingsActive.set(this.router.url.startsWith('/settings'));
 
@@ -151,7 +148,6 @@ export class Sidebar implements OnInit {
         } else {
           this.statusPages.set([]);
         }
-        this.cdr.markForCheck();
       },
       error: err => {
         console.error('Error fetching pages for sidebar:', err);

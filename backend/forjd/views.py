@@ -738,6 +738,10 @@ def _reshape_public_status_page(page: dict[str, Any], *, status_code: int = 200)
   page["total_requests"] = compat["total_requests"]
   page["threats_detected_24h"] = compat["threats_detected_24h"]
   page["spiking_temporal_forecast"] = compat["spiking_temporal_forecast"]
+  page["temporal_status"] = compat["temporal_status"]
+  page["temporal_backend"] = compat["temporal_backend"]
+  page["temporal_sample_count"] = compat["temporal_sample_count"]
+  page["temporal_scored_at"] = compat["temporal_scored_at"]
   page["threat_anomaly_score"] = compat["threat_anomaly_score"]
   page["threat_suspicious_ratio"] = compat["threat_suspicious_ratio"]
   page["uses_norse"] = compat["uses_norse"]
@@ -1990,7 +1994,7 @@ async def ml_threat_report_proxy(request: HttpRequest) -> HttpResponse:
     response = await client.proxy(
       "GET",
       "/api/v1/ml/scores",
-      query_string=f"tenant_id={credential.tenant_id}&limit=50",
+      query_string=(f"tenant_id={credential.tenant_id}&family=classical_anomaly&limit=50"),
       request_id=request_id_from(request),
     )
     if response.status >= 400:
@@ -2153,7 +2157,7 @@ async def ml_threat_train_proxy(request: HttpRequest) -> HttpResponse:
     scores = await client.proxy(
       "GET",
       "/api/v1/ml/scores",
-      query_string=f"tenant_id={credential.tenant_id}&limit=50",
+      query_string=f"tenant_id={credential.tenant_id}&family=threat_ensemble&limit=50",
       request_id=request_id_from(request),
     )
     body: dict[str, Any] = {}

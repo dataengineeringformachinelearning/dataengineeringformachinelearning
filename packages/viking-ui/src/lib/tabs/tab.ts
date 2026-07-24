@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Optional,
   computed,
+  inject,
   input,
 } from "@angular/core";
-import { VIKING_TABS, VikingTabs } from "./tabs";
+import { VIKING_TABS } from "./tabs";
 
 /**
  * viking-tab — tab trigger button inside viking-tabs.
@@ -40,8 +40,9 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
         align-items: center;
         justify-content: center;
         gap: var(--viking-space-2);
-        min-height: var(--viking-control-height-sm);
-        min-width: var(--viking-btn-min-width, 120px);
+        min-height: var(--viking-control-height);
+        min-width: max-content;
+        flex: 1 0 auto;
         padding: var(--viking-space-0-5) var(--viking-space-2);
         border: 1px solid transparent;
         border-radius: var(--viking-radius);
@@ -50,6 +51,7 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
         cursor: pointer;
         transition: var(--viking-transition-interactive);
         position: relative;
+        scroll-snap-align: start;
         -webkit-tap-highlight-color: transparent;
       }
       .viking-tab viking-app-icon,
@@ -61,13 +63,12 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
         justify-content: center;
         margin-inline-end: 0;
       }
-      @media (max-width: 767px) {
+      @media (min-width: 768px) {
         .viking-tab {
-          min-height: var(--viking-control-height);
-          flex: 1 0 auto;
-          min-width: max-content;
-          scroll-snap-align: start;
-          padding-inline: var(--viking-space-2);
+          min-height: var(--viking-control-height-sm);
+          min-width: var(--viking-btn-min-width, 120px);
+          flex: 0 1 auto;
+          scroll-snap-align: none;
         }
       }
       .viking-tab:hover:not(:disabled):not(.viking-active) {
@@ -99,7 +100,7 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
   ],
 })
 export class VikingTab {
-  constructor(@Optional() private readonly tabs: VikingTabs | null) {}
+  private readonly tabs = inject(VIKING_TABS, { optional: true });
 
   readonly value = input.required<string>();
   readonly disabled = input(false);

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { MonitorService } from './monitor.service';
+import { MonitorService, publicStatusPageTag } from './monitor.service';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
 
 describe('MonitorService', () => {
@@ -22,6 +22,12 @@ describe('MonitorService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('labels user pages separately from the platform page', () => {
+    expect(publicStatusPageTag('joealongi-dev')).toBe('Public Status Page');
+    expect(publicStatusPageTag('platform-status')).toBe('Platform Status');
+    expect(publicStatusPageTag('loading')).toBe('Loading');
   });
 
   it('should fetch all endpoints', () => {
@@ -67,6 +73,19 @@ describe('MonitorService', () => {
     const req = httpMock.expectOne(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES);
     expect(req.request.method).toBe('GET');
     req.flush(mockPages);
+  });
+
+  it('coalesces concurrent status-page requests without caching stale results', () => {
+    const results: number[] = [];
+    service.getStatusPages().subscribe(pages => results.push(pages.length));
+    service.getStatusPages().subscribe(pages => results.push(pages.length));
+
+    const first = httpMock.expectOne(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES);
+    first.flush([]);
+    expect(results).toEqual([0, 0]);
+
+    service.getStatusPages().subscribe();
+    httpMock.expectOne(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES).flush([]);
   });
 
   it('should create a status page', () => {

@@ -4,6 +4,7 @@ import {
   ElementRef,
   OnDestroy,
   effect,
+  inject,
   input,
   model,
   viewChild,
@@ -168,6 +169,7 @@ import { VikingIcon } from "../icon/icon";
   ],
 })
 export class VikingModal implements OnDestroy {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly dialogRef =
     viewChild.required<ElementRef<HTMLDialogElement>>("dialog");
 
@@ -175,14 +177,14 @@ export class VikingModal implements OnDestroy {
   readonly heading = input<string>("");
   readonly dismissible = input<boolean>(true);
 
-  constructor(host: ElementRef<HTMLElement>) {
+  constructor() {
     effect(() => {
       const dialog = this.dialogRef().nativeElement;
       // showModal is unavailable during SSR; the dialog stays closed there.
       if (typeof dialog.showModal !== "function") {
         return;
       }
-      if (this.open() && host.nativeElement.isConnected && !dialog.open) {
+      if (this.open() && this.host.nativeElement.isConnected && !dialog.open) {
         dialog.showModal();
       } else if (!this.open() && dialog.open) {
         dialog.close();

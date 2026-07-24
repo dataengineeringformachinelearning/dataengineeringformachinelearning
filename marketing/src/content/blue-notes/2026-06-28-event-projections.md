@@ -9,8 +9,12 @@ categories:
   - Status
 ---
 
+## Operational health
+
 Operators monitor sealed-path health through DEML’s public status surface and
 FORJD `/ready`. Angular never calls FORJD with Firebase tokens; Django terminates
 end-user auth and forwards with `fjsvc_`.
+
+## Production checklist
 
 See [docs/PRODUCTION_CHECKLIST.md](../../../docs/PRODUCTION_CHECKLIST.md).

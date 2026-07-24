@@ -8,8 +8,12 @@ categories:
   - Architecture
 ---
 
+## Execution boundary
+
 Django remains the DEML control plane for identity, billing, consent, and product
 APIs. High-frequency sealed processing runs in FORJD’s Rust engine
 (`forjd-engine`) behind tenant-bound `fjsvc_` credentials.
+
+## Integration guide
 
 See [docs/FORJD_INTEGRATION.md](../../../docs/FORJD_INTEGRATION.md).

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   registerVikingBadgeWc,
   registerVikingCalloutWc,
@@ -22,8 +22,16 @@ const registerAll = (): void => {
 describe("Viking Web Components v2", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockRejectedValue(new TypeError("Static config unavailable in tests")),
+    );
     registerAll();
   });
+
+  afterEach(() => vi.unstubAllGlobals());
 
   it("renders badge tones and emits viking-removed", () => {
     const badge = document.createElement("viking-badge-wc");
@@ -103,7 +111,7 @@ describe("Viking Web Components v2", () => {
       JSON.stringify([
         {
           title: "Components",
-          href: "/components",
+          href: "#",
           group: "Docs",
           keywords: ["primitives"],
         },
@@ -220,10 +228,9 @@ describe("Viking Web Components v2", () => {
     await Promise.resolve();
 
     suite.openPalette();
-    await Promise.resolve();
 
     const inner = suite.querySelector("viking-command-palette");
-    expect(inner?.hasAttribute("open")).toBe(true);
+    await vi.waitFor(() => expect(inner?.hasAttribute("open")).toBe(true));
 
     const itemsRaw = inner?.getAttribute("items") ?? "[]";
     const items = JSON.parse(itemsRaw) as { title: string }[];
@@ -258,14 +265,15 @@ describe("Viking Web Components v2", () => {
         detail: { isAuthenticated: true },
       }),
     );
-    await Promise.resolve();
-    await Promise.resolve();
-
-    const authenticatedItems = JSON.parse(
-      palette?.getAttribute("items") ?? "[]",
-    ) as { title: string }[];
-    expect(authenticatedItems.map((item) => item.title)).toContain("Dashboard");
-    expect(footer.textContent).toContain("Dashboard");
+    await vi.waitFor(() => {
+      const authenticatedItems = JSON.parse(
+        palette?.getAttribute("items") ?? "[]",
+      ) as { title: string }[];
+      expect(authenticatedItems.map((item) => item.title)).toContain(
+        "Dashboard",
+      );
+      expect(footer.textContent).toContain("Dashboard");
+    });
   });
 
   it("renders the suite header with shared navigation and opens search", async () => {
@@ -293,14 +301,14 @@ describe("Viking Web Components v2", () => {
     header.shadowRoot
       ?.querySelector<HTMLButtonElement>("[data-search-trigger]")
       ?.click();
-    await Promise.resolve();
-
     const palette = header.shadowRoot?.querySelector(
       "viking-suite-command-palette",
     );
     const commandPalette = palette?.querySelector("viking-command-palette");
     expect(opened).toBe(true);
-    expect(commandPalette?.hasAttribute("open")).toBe(true);
+    await vi.waitFor(() =>
+      expect(commandPalette?.hasAttribute("open")).toBe(true),
+    );
   });
 
   it("renders authenticated suite header menu actions", () => {

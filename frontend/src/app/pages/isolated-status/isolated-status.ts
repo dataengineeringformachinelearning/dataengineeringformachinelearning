@@ -4,7 +4,6 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef,
   computed,
   effect,
   afterNextRender,
@@ -15,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import {
   MonitorService,
+  publicStatusPageTag,
   type MonitoredServiceData,
   type StatusPageData,
 } from '../../services/monitor.service';
@@ -42,6 +42,12 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { resolveUptimeHistory } from '../../core/utils/uptime.utils';
+import {
+  formatTemporalScore,
+  temporalEngineDetail as getTemporalEngineDetail,
+  temporalEngineLabel as getTemporalEngineLabel,
+  temporalRiskLabel as getTemporalRiskLabel,
+} from '../../core/utils/temporal.utils';
 import { SanityService } from '../../services/sanity.service';
 import { StatusCta } from '../../components/status-cta/status-cta';
 
@@ -73,7 +79,6 @@ export class IsolatedStatus implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private titleService = inject(Title);
@@ -90,7 +95,7 @@ export class IsolatedStatus implements OnInit {
   servicesMap = this.monitorService.servicesMap;
 
   p99LatencyMap = signal<Record<string, number | null>>({});
-  totalRequestsMap = signal<Record<string, number>>({});
+  totalRequestsMap = signal<Record<string, number | null>>({});
   simulatedThreatReportMap = signal<Record<string, ThreatReportResponse>>({
     'loading-placeholder': {
       status: 'success',
@@ -106,10 +111,10 @@ export class IsolatedStatus implements OnInit {
   /** Skeleton card shown while the public status page loads. */
   loadingPlaceholder: StatusPageData = {
     id: 'loading-placeholder',
-    title: 'Platform Status Feed',
-    slug: 'platform-status',
-    description: 'Real-time telemetry and status monitoring for all machine learning pipelines.',
-    created_at: new Date().toISOString(),
+    title: 'Loading status page',
+    slug: 'loading',
+    description: 'Fetching current service status and telemetry.',
+    created_at: '',
     user_id: null,
   };
 
@@ -121,6 +126,7 @@ export class IsolatedStatus implements OnInit {
   });
 
   globalPageStatus = computed(() => {
+    if (this.isLoading()) return 'Loading';
     const pages = this.statusPages();
     if (pages.length === 0) return 'Operational';
     const pageId = pages[0].id;
@@ -184,14 +190,6 @@ export class IsolatedStatus implements OnInit {
   loadPage(slug: string) {
     this.isLoading.set(true);
     this.loadFailed.set(false);
-    const isCrawler = typeof navigator !== 'undefined' && navigator.webdriver;
-    if (isCrawler) {
-      this.statusPages.set([this.loadingPlaceholder]);
-      this.isLoading.set(false);
-      this.loadFailed.set(false);
-      this.cdr.markForCheck();
-      return;
-    }
     this.monitorService
       .getStatusPageBySlug(slug)
       .pipe(timeout(15000))
@@ -204,7 +202,7 @@ export class IsolatedStatus implements OnInit {
           }));
           this.totalRequestsMap.update(m => ({
             ...m,
-            [page.id]: page.total_requests ?? 0,
+            [page.id]: page.total_requests ?? null,
           }));
           // Public slug payload embeds services/incidents + intelligence KPIs.
           this.monitorService.seedFromEmbeddedPage(page);
@@ -226,7 +224,6 @@ export class IsolatedStatus implements OnInit {
           });
 
           this.isLoading.set(false);
-          this.cdr.markForCheck();
         },
         error: err => {
           if (err instanceof HttpErrorResponse) {
@@ -243,7 +240,6 @@ export class IsolatedStatus implements OnInit {
           this.statusPages.set([]);
           this.loadFailed.set(true);
           this.isLoading.set(false);
-          this.cdr.markForCheck();
         },
       });
   }
@@ -264,11 +260,24 @@ export class IsolatedStatus implements OnInit {
   statusUpdatedAt = (page: StatusPageData): string =>
     this.incidentsMap()[page.id]?.[0]?.updated_at ?? page.created_at;
 
-  norseSnnLabel(pageId: string): string {
-    const usesNorse = this.mlService.latestTemporalUsesNorse()[pageId];
-    if (usesNorse === true) return 'Active';
-    if (usesNorse === false) return 'MLP Fallback';
-    return 'Pending';
+  pageTag(page: StatusPageData): string {
+    return publicStatusPageTag(page.slug);
+  }
+
+  temporalEngineLabel(pageId: string): string {
+    return getTemporalEngineLabel(this.mlService.latestTemporalInsights()[pageId]);
+  }
+
+  temporalEngineDetail(pageId: string): string {
+    return getTemporalEngineDetail(this.mlService.latestTemporalInsights()[pageId]);
+  }
+
+  temporalRiskLabel(pageId: string): string {
+    return getTemporalRiskLabel(this.mlService.latestTemporalInsights()[pageId]);
+  }
+
+  temporalScore(pageId: string): string {
+    return formatTemporalScore(this.mlService.latestTemporalInsights()[pageId]);
   }
 
   availabilitySeries(page: StatusPageData): VikingChartSeries[] {
@@ -303,9 +312,9 @@ export class IsolatedStatus implements OnInit {
     return `${value.toFixed(2)}%`;
   }
 
-  formatOptionalScore(value?: number | null): string {
+  formatOptionalCount(value?: number | null): string {
     if (value === null || value === undefined) return '—';
-    return value.toFixed(2);
+    return value.toLocaleString();
   }
 
   formatOptionalPercentRatio(value?: number | null): string {
@@ -317,6 +326,7 @@ export class IsolatedStatus implements OnInit {
     status?: string | null,
   ): 'operational' | 'degraded' | 'outage' | 'maintenance' {
     const value = (status || 'Operational').toLowerCase();
+    if (value === 'loading') return 'maintenance';
     if (value === 'outage' || value === 'major outage' || value === 'down') return 'outage';
     if (value === 'degraded' || value === 'partial outage') return 'degraded';
     if (value === 'maintenance') return 'maintenance';
@@ -324,6 +334,7 @@ export class IsolatedStatus implements OnInit {
   }
 
   protected statusDescription(status: string): string {
+    if (status === 'Loading') return 'Fetching current status and telemetry.';
     if (status === 'Operational') return 'All systems are functioning normally.';
     if (status === 'Degraded') return 'Some services are experiencing degraded performance.';
     if (status === 'Maintenance') return 'Planned maintenance is currently in progress.';
@@ -343,6 +354,7 @@ export class IsolatedStatus implements OnInit {
   }
 
   protected globalStatusTone(status: string): VikingTone {
+    if (status === 'Loading') return 'muted';
     if (status === 'Outage') return 'danger';
     if (status === 'Degraded') return 'warning';
     return 'success';

@@ -7,7 +7,7 @@
   gap: var(--viking-dashboard-grid-gap, var(--viking-space-4));
   margin-top: var(--viking-space-4);
 
-  @media (min-width: 960px) {
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
 }

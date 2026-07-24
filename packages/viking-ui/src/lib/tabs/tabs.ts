@@ -37,7 +37,7 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
       }
       .viking-tabs-list {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: var(--viking-space-2);
         padding: var(--viking-space-2) var(--viking-space-2);
         border: 1px solid var(--viking-border);
@@ -55,6 +55,11 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
           inset 0 1px 0
             color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
         position: relative;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        overscroll-behavior-x: contain;
       }
       .viking-tabs-list::before {
         content: "";
@@ -75,17 +80,20 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
         );
         pointer-events: none;
       }
-      @media (max-width: 767px) {
+      .viking-tabs-list::-webkit-scrollbar {
+        display: none;
+      }
+      @media (min-width: 768px) {
         .viking-tabs-list {
-          flex-wrap: nowrap;
-          overflow-x: auto;
-          scroll-snap-type: x proximity;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-          overscroll-behavior-x: contain;
+          flex-wrap: wrap;
+          overflow-x: visible;
+          scroll-snap-type: none;
+          -webkit-overflow-scrolling: auto;
+          scrollbar-width: auto;
+          overscroll-behavior-x: auto;
         }
         .viking-tabs-list::-webkit-scrollbar {
-          display: none;
+          display: block;
         }
       }
     `,

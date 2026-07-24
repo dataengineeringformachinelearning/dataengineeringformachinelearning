@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  inject,
   input,
   model,
   signal,
@@ -106,16 +107,14 @@ import { VikingIcon } from "../icon/icon";
   ],
 })
 export class VikingDatePicker extends VikingControl<string | null> {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly value = model<string | null>(null);
   readonly placeholder = input<string>("Select date");
   readonly label = input<string>("");
   readonly disabled = input<boolean>(false);
 
   protected readonly open = signal(false);
-
-  constructor(private readonly host: ElementRef<HTMLElement>) {
-    super();
-  }
 
   writeValue(value: string | null): void {
     this.value.set(value);

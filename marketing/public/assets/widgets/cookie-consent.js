@@ -313,7 +313,7 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    @media (min-width: 577px) {
+    @media (min-width: 640px) {
       .deml-cookie-overlay {
         padding: 24px;
         justify-content: flex-end;

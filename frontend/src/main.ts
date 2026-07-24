@@ -9,10 +9,12 @@ import { environment } from './environments/environment';
 const MONITORING_IDLE_TIMEOUT_MS = 2_000;
 
 // Framework-agnostic Vercel Web Analytics + Speed Insights.
-// No-op locally; active on Vercel once Analytics / Speed Insights are enabled in the project.
-const vercelMode = isDevMode() ? 'development' : 'production';
-injectAnalytics({ mode: vercelMode });
-injectSpeedInsights({ framework: 'angular' });
+// Local static servers route unknown Vercel paths to index.html, so inject only on a real host.
+const localHosts = new Set(['localhost', '127.0.0.1', '[::1]']);
+if (typeof window !== 'undefined' && !localHosts.has(window.location.hostname)) {
+  injectAnalytics({ mode: isDevMode() ? 'development' : 'production' });
+  injectSpeedInsights({ framework: 'angular' });
+}
 
 const initializeMonitoring = async (): Promise<void> => {
   if (!environment.sentryDsn) {

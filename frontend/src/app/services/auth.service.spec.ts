@@ -40,7 +40,7 @@ vi.mock('firebase/auth', () => {
     sendPasswordResetEmail: () => Promise.resolve({}),
     confirmPasswordReset: () => Promise.resolve({}),
     updateProfile: () => Promise.resolve({}),
-    onAuthStateChanged: (auth: any, callback: any) => {
+    onAuthStateChanged: (_auth: unknown, callback: (user: unknown) => void) => {
       // Initial call triggers callback
       callback(null);
       return () => undefined;
@@ -154,6 +154,7 @@ describe('AuthService', () => {
   });
 
   it('distinguishes a request failure from the FORJD erasure blocker', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     service.isAuthenticated.set(true);
     service.currentUserId.set(42);
 
@@ -170,6 +171,8 @@ describe('AuthService', () => {
     });
     expect(service.isAuthenticated()).toBe(true);
     expect(service.currentUserId()).toBe(42);
+    expect(consoleError).toHaveBeenCalledOnce();
+    consoleError.mockRestore();
   });
 });
 

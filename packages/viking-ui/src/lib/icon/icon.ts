@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
 } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
@@ -215,6 +216,8 @@ const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);
   ],
 })
 export class VikingIcon {
+  private readonly sanitizer = inject(DomSanitizer);
+
   readonly name = input.required<VikingIconName | string>();
   /** Explicit pixel size — overridden by sizePreset when set. */
   readonly size = input<number | undefined>(undefined);
@@ -289,8 +292,6 @@ export class VikingIcon {
       `<svg class="viking-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="${this.viewBox()}" fill="${fill}"${fillRule} stroke="${stroke}" stroke-linecap="round" stroke-linejoin="round" style="width: ${size}px; height: ${size}px;" aria-hidden="true"><g>${html}</g></svg>`,
     );
   });
-
-  constructor(private readonly sanitizer: DomSanitizer) {}
 }
 
 /** Alias for consumers expecting VikingIconComponent. */

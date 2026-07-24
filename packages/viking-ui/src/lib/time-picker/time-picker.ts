@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   computed,
+  inject,
   input,
   model,
   signal,
@@ -151,6 +152,8 @@ import { VikingIcon } from "../icon/icon";
   ],
 })
 export class VikingTimePicker extends VikingControl<string | null> {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly value = model<string | null>(null);
   readonly placeholder = input<string>("Select time");
   readonly label = input<string>("");
@@ -158,7 +161,7 @@ export class VikingTimePicker extends VikingControl<string | null> {
   /** Minute granularity for generated slots. */
   readonly stepMinutes = input<number>(30);
 
-  constructor(private readonly host: ElementRef<HTMLElement>) {
+  constructor() {
     super();
   }
 

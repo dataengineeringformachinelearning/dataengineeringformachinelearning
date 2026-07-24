@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Optional,
+  inject,
   input,
   model,
   output,
@@ -68,10 +68,10 @@ import { VikingIconName } from "../../core/icons";
   ],
 })
 export class VikingDropdown {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly open = model<boolean>(false);
   readonly align = input<"start" | "end">("start");
-
-  constructor(private readonly host: ElementRef<HTMLElement>) {}
 
   /** Closes the menu; called by viking-menu-item on selection. */
   readonly close = (): void => {
@@ -172,7 +172,7 @@ export class VikingDropdown {
   ],
 })
 export class VikingMenuItem {
-  constructor(@Optional() private readonly dropdown: VikingDropdown | null) {}
+  private readonly dropdown = inject(VikingDropdown, { optional: true });
 
   readonly icon = input<VikingIconName | null>(null);
   readonly kbd = input<string | null>(null);

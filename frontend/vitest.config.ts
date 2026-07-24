@@ -1,7 +1,9 @@
+import angular from '@analogjs/vite-plugin-angular';
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  plugins: [angular({ tsconfig: './tsconfig.spec.json' })],
   resolve: {
     alias: {
       '@dataengineeringformachinelearning/viking-ui': path.resolve(
@@ -17,37 +19,6 @@ export default defineConfig({
       '@angular/router',
     ],
   },
-  esbuild: {
-    tsconfigRaw: {
-      compilerOptions: {
-        experimentalDecorators: true,
-      },
-    },
-  },
-  plugins: [
-    {
-      name: 'mock-angular-resources',
-      transform(code, id) {
-        if (id.endsWith('.ts')) {
-          let newCode = code;
-          // Replace templateUrl: './foo.html' with template: ''
-          newCode = newCode.replace(/templateUrl\s*:\s*['"`](.*?)['"`]/g, "template: ''");
-          // Replace styleUrl: './foo.scss' with styles: []
-          newCode = newCode.replace(/styleUrl\s*:\s*['"`](.*?)['"`]/g, 'styles: []');
-          newCode = newCode.replace(/styleUrls\s*:\s*\[([\s\S]*?)\]/g, 'styles: []');
-          return { code: newCode };
-        }
-        if (
-          id.endsWith('.html') ||
-          id.endsWith('.scss') ||
-          id.endsWith('.css') ||
-          id.endsWith('.md')
-        ) {
-          return { code: 'export default ""' };
-        }
-      },
-    },
-  ],
   test: {
     globals: true,
     environment: 'jsdom',

@@ -12,11 +12,11 @@
   align-items: stretch;
   grid-auto-rows: 1fr;
 
-  @media (min-width: 480px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 760px) {
+  @media (min-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -528,7 +528,7 @@
   gap: var(--viking-space-2);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     padding: var(--viking-space-7) var(--viking-space-4);
   }
 
@@ -594,7 +594,7 @@
      References prior: full-width stacked (removed narrow max-widths), moderate app rhythm vs marketing. */
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
   .viking-dashboard-layout,
   .dashboard-layout {
     grid-template-columns: auto 1fr; /* Sidebar + main, better alignment than flex */
@@ -816,7 +816,7 @@
   white-space: nowrap;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 640px) {
   .setup-banner {
     flex-direction: row;
     align-items: center;
@@ -830,7 +830,7 @@
   }
 }
 
-@media (min-width: 760px) {
+@media (min-width: 768px) {
   .triage-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
@@ -846,7 +846,7 @@
 
 /* overview-grid template areas + breakpoints live in surfaces/app-pages.scss
    (restored dashboard command-center layout). Keep page-shell free of competing tracks. */
-@media (min-width: 1180px) {
+@media (min-width: 1280px) {
   .detail-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -927,7 +927,7 @@
   gap: var(--viking-dashboard-grid-gap, var(--viking-space-4));
   margin-bottom: var(--viking-page-stack-gap, var(--viking-space-5));
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1000,12 +1000,10 @@
   font-weight: var(--viking-font-weight-medium, 500);
 }
 
-/* Public status directory (Explore page) — always stacked single column on all screen sizes.
-   These cards contain too much information (title + status + Pro badge + 4 metrics + uptime history + CTA)
-   to be rendered side-by-side. They become unreadable when narrow. */
+/* Public status directory — mobile-first, with a spacious two-column xl layout. */
 .status-directory-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-8);
   width: 100%;
 }
@@ -1149,14 +1147,17 @@ app-status-card.status-directory-card:hover {
   color: var(--viking-text-muted);
 }
 
-@media (min-width: 720px) {
+@media (min-width: 768px) {
   .status-summary-grid:not(.status-summary-grid-single) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* No multi-column variants — these cards are deliberately kept stacked on all screen sizes
-   for scannability (see comment on .status-directory-grid above). */
+@media (min-width: 1280px) {
+  .status-directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
 viking-card.status-section-card {
   gap: var(--viking-space-3);
@@ -1177,7 +1178,7 @@ viking-card.status-metric-grid-card > p {
   grid-column: 1 / -1;
 }
 
-@media (min-width: 760px) {
+@media (min-width: 768px) {
   viking-card.status-metric-grid-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1266,7 +1267,7 @@ viking-card.monitored-services-card {
   min-width: 0;
 }
 
-@media (min-width: 760px) {
+@media (min-width: 768px) {
   .status-panel-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1321,7 +1322,7 @@ viking-card.monitored-services-card {
   width: 100%;
   min-width: 0;
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1329,7 +1330,7 @@ viking-card.monitored-services-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 1180px) {
+  @media (min-width: 1280px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

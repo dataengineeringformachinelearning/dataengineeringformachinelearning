@@ -37,32 +37,34 @@ LIFECYCLE_RETRY_MAX_DELAY: Final[timedelta] = timedelta(hours=6)
 
 
 def ensure_user_from_firebase(decoded_token: dict[str, Any]) -> tuple[User, UserProfile, bool]:
-  uid = str(decoded_token.get("uid") or "")
+  uid = str(decoded_token.get("uid") or "").strip()
   email = str(decoded_token.get("email") or "").strip()
   name = str(decoded_token.get("name") or decoded_token.get("display_name") or "")
+  if not uid:
+    raise ValueError("Firebase token is missing a UID")
 
-  user = User.objects.filter(username=uid).first() if uid else None
-  if user is None and email:
-    user = User.objects.filter(email__iexact=email).first()
+  # Firebase UID is the immutable account key. Email is mutable and non-unique,
+  # so it must never rebind an existing Django account to a different identity.
+  with transaction.atomic():
+    user, created = User.objects.get_or_create(
+      username=uid,
+      defaults={"email": email, "first_name": name},
+    )
+    if created:
+      user.set_unusable_password()
+    user.email = email
+    user.first_name = name
+    user.save()
 
-  created = user is None
-  if user is None:
-    user = User.objects.create(username=uid or email or f"user-{uuid.uuid4().hex[:12]}")
-    user.set_unusable_password()
-
-  user.email = email
-  user.first_name = name
-  if uid:
-    user.username = uid
-  user.save()
-
-  profile, profile_created = UserProfile.objects.get_or_create(user=user)
-  identities = decoded_token.get("firebase", {}).get("identities", {})
-  linked_emails = list(identities.get("email", []))
-  if email and email not in linked_emails:
-    linked_emails.append(email)
-  profile.linked_emails = linked_emails
-  profile.save(update_fields=["linked_emails"])
+    profile, profile_created = UserProfile.objects.get_or_create(user=user)
+    firebase = decoded_token.get("firebase")
+    identities = firebase.get("identities", {}) if isinstance(firebase, dict) else {}
+    identity_emails = identities.get("email", []) if isinstance(identities, dict) else []
+    linked_emails = list(identity_emails) if isinstance(identity_emails, list) else []
+    if email and email not in linked_emails:
+      linked_emails.append(email)
+    profile.linked_emails = linked_emails
+    profile.save(update_fields=["linked_emails"])
   return user, profile, created or profile_created
 
 
@@ -154,7 +156,10 @@ def request_account_deletion(user: User, firebase_uid: str | None = None) -> Use
   return job
 
 
-def _erase_forjd_tenant(target: dict[str, str]) -> tuple[bool, str]:
+def _erase_forjd_tenant(
+  target: dict[str, str],
+  account_id: uuid.UUID,
+) -> tuple[bool, str]:
   """Erase one manifest target without consulting the mutable current mapping."""
   from forjd.client import ForjdClient, ForjdError, close_forjd_connector
   from forjd.tenancy import ForjdTenantConfigurationError, resolve_forjd_snapshot_credential
@@ -162,6 +167,7 @@ def _erase_forjd_tenant(target: dict[str, str]) -> tuple[bool, str]:
   try:
     tenant_id = uuid.UUID(str(target.get("tenant_id") or ""))
     credential = resolve_forjd_snapshot_credential(
+      account_id,
       tenant_id,
       str(target.get("service_token_secret_ref") or ""),
     )
@@ -558,7 +564,7 @@ def execute_deletion_job(job: UserLifecycleJob) -> bool:
     tenant_id = str(target.get("tenant_id") or "")
     if tenant_id in erased_tenant_ids:
       continue
-    erased, erase_error = _erase_forjd_tenant(target)
+    erased, erase_error = _erase_forjd_tenant(target, job.account_id)
     if not erased:
       _fail_job(
         job.id,

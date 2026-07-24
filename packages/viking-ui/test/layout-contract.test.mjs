@@ -363,7 +363,7 @@ test("dashboard overview keeps compact KPI rhythm and balanced status panels", (
   );
   assert.match(
     dashboard,
-    /<viking-gauge-arc \[value\]="healthScore\(\)" \[tone\]="healthGaugeTone\(\)" \/>/,
+    /<viking-gauge-arc \[value\]="healthScore\(\) \?\? 0" \[tone\]="healthGaugeTone\(\)" \/>/,
   );
   assert.match(
     overview,

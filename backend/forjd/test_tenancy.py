@@ -143,6 +143,64 @@ def test_resolves_sealed_service_token() -> None:
 
 
 @pytest.mark.django_db
+@override_settings(SECRET_KEY="test-secret-key-for-sealed-tokens")  # pragma: allowlist secret
+def test_rejects_sealed_credential_owned_by_another_account() -> None:
+  from monitor.models import ForjdServiceCredential
+
+  from forjd.secrets import seal_service_token, sealed_ref
+
+  owner_account_id = uuid4()
+  mapped_account_id = uuid4()
+  tenant_id = uuid4()
+  ciphertext, encrypted_dek = seal_service_token(
+    "fjsvc_abcd1234_cross-account-secret"  # pragma: allowlist secret
+  )
+  credential = ForjdServiceCredential.objects.create(
+    deml_account_id=owner_account_id,
+    forjd_tenant_id=tenant_id,
+    ciphertext=ciphertext,
+    encrypted_dek=encrypted_dek,
+  )
+  ForjdTenantMapping.objects.create(
+    deml_account_id=mapped_account_id,
+    forjd_tenant_id=tenant_id,
+    service_token_secret_ref=sealed_ref(str(credential.id)),
+  )
+
+  with pytest.raises(ForjdTenantConfigurationError, match="unavailable"):
+    resolve_forjd_tenant_credential(mapped_account_id)
+
+
+@pytest.mark.django_db
+@override_settings(SECRET_KEY="test-secret-key-for-sealed-tokens")  # pragma: allowlist secret
+def test_rejects_sealed_credential_owned_by_another_tenant() -> None:
+  from monitor.models import ForjdServiceCredential
+
+  from forjd.secrets import seal_service_token, sealed_ref
+
+  account_id = uuid4()
+  credential_tenant_id = uuid4()
+  mapped_tenant_id = uuid4()
+  ciphertext, encrypted_dek = seal_service_token(
+    "fjsvc_abcd1234_cross-tenant-secret"  # pragma: allowlist secret
+  )
+  credential = ForjdServiceCredential.objects.create(
+    deml_account_id=account_id,
+    forjd_tenant_id=credential_tenant_id,
+    ciphertext=ciphertext,
+    encrypted_dek=encrypted_dek,
+  )
+  ForjdTenantMapping.objects.create(
+    deml_account_id=account_id,
+    forjd_tenant_id=mapped_tenant_id,
+    service_token_secret_ref=sealed_ref(str(credential.id)),
+  )
+
+  with pytest.raises(ForjdTenantConfigurationError, match="unavailable"):
+    resolve_forjd_tenant_credential(account_id)
+
+
+@pytest.mark.django_db
 def test_per_tenant_token_requires_matching_tenant_env() -> None:
   account_id = uuid4()
   tenant_id = uuid4()

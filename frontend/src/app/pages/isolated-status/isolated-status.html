@@ -29,7 +29,7 @@
   </viking-callout>
   } } @for (page of displayPages(); track page.id) {
   <viking-page-header
-    tag="System Status Feed"
+    [tag]="pageTag(page)"
     [title]="page.title"
     [subtitle]="page.description || 'Monitoring core services and API integrations in real-time.'"
   />
@@ -41,7 +41,7 @@
       [description]="statusDescription(globalPageStatus())"
       [status]="statusVariant(globalPageStatus())"
       [statusLabel]="globalPageStatus()"
-      liveLabel="Live Predictions Active"
+      liveLabel="Live Status"
     >
       <section class="viking-status-section-block" aria-labelledby="announcements-heading">
         <h3 class="viking-status-section-heading" id="announcements-heading">
@@ -96,7 +96,7 @@
           <viking-metric-card
             icon="bar-chart"
             label="Total Requests"
-            [value]="((totalRequestsMap()[page.id] ?? 0) | number) ?? '0'"
+            [value]="formatOptionalCount(totalRequestsMap()[page.id])"
             sublabel="Last 24 hours"
           />
           <viking-metric-card
@@ -133,15 +133,15 @@
           <viking-metric-card
             icon="bolt"
             label="Dynamic Temporal Forecasting"
-            [value]="norseSnnLabel(page.id)"
-            sublabel="Temporal inference engine"
+            [value]="temporalEngineLabel(page.id)"
+            [sublabel]="temporalEngineDetail(page.id)"
             tone="info"
           />
           <viking-metric-card
             icon="trending-up"
             label="Spike Risk"
-            [value]="formatOptionalScore(mlService.latestTemporalForecasts()[page.id])"
-            sublabel="Telemetry sequence score"
+            [value]="temporalScore(page.id)"
+            [sublabel]="temporalRiskLabel(page.id)"
           />
           <viking-metric-card
             icon="shield"
@@ -162,7 +162,11 @@
         <h3 class="viking-status-section-heading" id="services-heading">
           Active Monitored Services
         </h3>
-        @if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
+        @if (isLoading()) {
+        <viking-callout tone="muted" heading="Loading Services">
+          Fetching monitored service health.
+        </viking-callout>
+        } @else if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
         <viking-callout tone="muted" heading="No Services">
           No monitored services configured for this page.
         </viking-callout>
@@ -220,7 +224,7 @@
           [data]="pageHistory(page)"
           [percentage]="page.overall_uptime ?? page.cumulative_sla ?? null"
           [statusSummary]="
-                (page.overall_uptime ?? page.cumulative_sla) == null
+                (page.overall_uptime ?? page.cumulative_sla ?? null) === null
                   ? 'Awaiting probe history'
                   : globalPageStatus() === 'Operational'
                     ? 'No current issues'

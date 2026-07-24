@@ -1,12 +1,5 @@
 @if (isAuthStatusPage()) {
 <router-outlet />
-} @else if (!authService.isInitialized()) {
-<div class="global-auth-loader" id="main-content" tabindex="-1" role="status" aria-live="polite">
-  <div class="loader-content">
-    <viking-spinner [size]="80" [branded]="true" label="Securing your session" />
-    <p class="loader-text">Securing your session...</p>
-  </div>
-</div>
 } @else {
 <div class="app-layout">
   <!-- Navbar -->
@@ -19,15 +12,16 @@
   >
     @if (isDashboardPage()) {
     <app-sidebar vikingAppLayoutSidebar></app-sidebar>
-    } @if (isDashboardPage()) {
-    <main vikingAppLayoutContent class="dashboard-content" id="main-content" tabindex="-1">
-      <router-outlet />
-    </main>
-    } @if (!isDashboardPage()) {
-    <main vikingAppLayoutContent class="main-content" id="main-content" tabindex="-1">
-      <router-outlet />
-    </main>
     }
+    <main
+      vikingAppLayoutContent
+      id="main-content"
+      tabindex="-1"
+      [class.dashboard-content]="isDashboardPage()"
+      [class.main-content]="!isDashboardPage()"
+    >
+      <router-outlet />
+    </main>
   </viking-app-layout>
 
   <!-- Footer -->

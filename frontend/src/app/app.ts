@@ -16,11 +16,7 @@ import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
 import { PageMetaService } from './services/page-meta.service';
 
-import {
-  VikingAppLayout,
-  VikingSpinner,
-  VikingToaster,
-} from '@dataengineeringformachinelearning/viking-ui';
+import { VikingAppLayout, VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
 import { CommandPalette } from './components/command-palette/command-palette';
@@ -35,7 +31,6 @@ import { reloadOnceOnChunkError } from './core/chunk-load-recovery';
     Sidebar,
     Footer,
     IssueReporter,
-    VikingSpinner,
     VikingToaster,
     VikingAppLayout,
     ConfirmDialog,
@@ -47,7 +42,7 @@ import { reloadOnceOnChunkError } from './core/chunk-load-recovery';
 })
 export class App implements OnInit {
   protected readonly title = signal('frontend');
-  public authService = inject(AuthService);
+  private authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private pageMeta = inject(PageMetaService);

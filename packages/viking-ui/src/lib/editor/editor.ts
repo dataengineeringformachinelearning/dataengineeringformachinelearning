@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   afterNextRender,
+  inject,
   input,
   model,
   viewChild,
@@ -128,7 +129,8 @@ const ACTIONS: EditorAction[] = [
 export class VikingEditor extends VikingControl<string> {
   private readonly surface =
     viewChild.required<ElementRef<HTMLElement>>("surface");
-  private readonly document: Document;
+  private readonly document =
+    inject<ElementRef<HTMLElement>>(ElementRef).nativeElement.ownerDocument;
 
   readonly value = model<string>("");
   readonly placeholder = input<string>("Start writing…");
@@ -136,9 +138,8 @@ export class VikingEditor extends VikingControl<string> {
 
   protected readonly actions = ACTIONS;
 
-  constructor(elementRef: ElementRef<HTMLElement>) {
+  constructor() {
     super();
-    this.document = elementRef.nativeElement.ownerDocument;
     afterNextRender(() => {
       if (this.value()) {
         this.surface().nativeElement.innerHTML = this.value();

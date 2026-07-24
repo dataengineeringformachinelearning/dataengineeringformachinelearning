@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
@@ -32,11 +32,26 @@ import {
   phoneValidationError,
 } from '../../core/utils/phone.utils';
 import {
+  ConfirmationResult,
+  MultiFactorResolver,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
 } from 'firebase/auth';
+
+type CheckoutResponse = { checkout_url?: string };
+type DesktopHandoffResponse = { status: string; token?: string };
+type AuthAttemptResult = { error?: string; resolver?: unknown };
+
+const isMultiFactorResolver = (value: unknown): value is MultiFactorResolver =>
+  value !== null &&
+  typeof value === 'object' &&
+  'hints' in value &&
+  Array.isArray(value.hints) &&
+  'session' in value &&
+  'resolveSignIn' in value &&
+  typeof value.resolveSignIn === 'function';
 
 @Component({
   selector: 'app-login',
@@ -55,7 +70,7 @@ import {
 })
 export class Login implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
-  private fb = inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
@@ -69,7 +84,10 @@ export class Login implements OnInit, OnDestroy {
         if (action === 'checkout') {
           this.isLoading.set(true);
           this.http
-            .post<any>(`${environment.backendUrl}/api/v1/billing/create-checkout-session`, {})
+            .post<CheckoutResponse>(
+              `${environment.backendUrl}/api/v1/billing/create-checkout-session`,
+              {},
+            )
             .subscribe({
               next: res => {
                 if (res.checkout_url) {
@@ -102,7 +120,7 @@ export class Login implements OnInit, OnDestroy {
   sessionExpired = signal<boolean>(false);
   isDesktopAuth = signal<boolean>(false);
 
-  loginForm: FormGroup = this.fb.group({
+  readonly loginForm = this.fb.nonNullable.group({
     username: ['', Validators.required],
     password: ['', Validators.required],
     email: [''],
@@ -110,11 +128,10 @@ export class Login implements OnInit, OnDestroy {
     verificationCode: [''],
   });
 
-  recaptchaVerifier: any;
-  confirmationResult: any;
-  resolver: any;
+  recaptchaVerifier: RecaptchaVerifier | null = null;
+  confirmationResult: ConfirmationResult | null = null;
+  resolver: MultiFactorResolver | null = null;
   verificationId = signal<string | null>(null);
-  uid = signal<string>('');
   token = signal<string>('');
 
   protected pageTitle = (): string => {
@@ -161,7 +178,6 @@ export class Login implements OnInit, OnDestroy {
       this.isDesktopAuth.set(Boolean(params['desktop_callback']));
       if (mode === 'reset') {
         this.isResetMode.set(true);
-        this.uid.set(params['uid'] || '');
         this.token.set(params['token'] || '');
         this.loginForm.get('username')?.clearValidators();
         this.loginForm.get('username')?.updateValueAndValidity();
@@ -279,7 +295,7 @@ export class Login implements OnInit, OnDestroy {
   }
 
   private readonly setMfaVerificationValidators = (): void => {
-    for (const controlName of ['username', 'password', 'email', 'phone']) {
+    for (const controlName of ['username', 'password', 'email', 'phone'] as const) {
       const control = this.loginForm.get(controlName);
       control?.clearValidators();
       control?.updateValueAndValidity();
@@ -308,7 +324,8 @@ export class Login implements OnInit, OnDestroy {
    * Always re-render after use or failure — Firebase invalidates the token once.
    */
   private async ensureRecaptcha(): Promise<InstanceType<typeof RecaptchaVerifier>> {
-    if (!this.authService.auth) {
+    const auth = this.authService.auth;
+    if (!auth) {
       throw new Error('Firebase Auth is not initialized');
     }
     if (this.recaptchaVerifier) {
@@ -325,7 +342,7 @@ export class Login implements OnInit, OnDestroy {
       );
       document.body.appendChild(element);
     }
-    this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
+    this.recaptchaVerifier = new RecaptchaVerifier(auth, element, {
       size: 'invisible',
       callback: () => undefined,
       'expired-callback': () => {
@@ -407,8 +424,8 @@ export class Login implements OnInit, OnDestroy {
     this.successMessage.set('Authentication complete. Returning to DEML Security Workbench…');
     try {
       const firebaseToken = await this.authService.auth.currentUser.getIdToken();
-      const response: any = await firstValueFrom(
-        this.http.post(
+      const response = await firstValueFrom(
+        this.http.post<DesktopHandoffResponse>(
           `${environment.backendUrl}/api/v1/auth/handoff/generate`,
           {
             code_challenge: request.codeChallenge,
@@ -435,7 +452,7 @@ export class Login implements OnInit, OnDestroy {
 
   async sendVerificationCode() {
     this.error.set(null);
-    const phoneNum = this.loginForm.value.phone;
+    const phoneNum = this.loginForm.controls.phone.value;
     const validationError = phoneValidationError(phoneNum ?? '');
     if (validationError) {
       this.error.set(validationError);
@@ -445,14 +462,14 @@ export class Login implements OnInit, OnDestroy {
     this.loginForm.patchValue({ phone: normalizedPhone });
     this.isLoading.set(true);
     try {
+      const auth = this.authService.auth;
+      if (!auth) {
+        throw new Error('Firebase Auth is not initialized');
+      }
       // Fresh verifier every send — used tokens cannot be reused.
       this.clearRecaptcha();
       const verifier = await this.ensureRecaptcha();
-      this.confirmationResult = await signInWithPhoneNumber(
-        this.authService.auth,
-        normalizedPhone,
-        verifier,
-      );
+      this.confirmationResult = await signInWithPhoneNumber(auth, normalizedPhone, verifier);
       this.codeSent.set(true);
       this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
       this.loginForm.get('verificationCode')?.updateValueAndValidity();
@@ -471,14 +488,15 @@ export class Login implements OnInit, OnDestroy {
 
   async verifyCode() {
     this.error.set(null);
-    const code = this.loginForm.value.verificationCode;
-    if (!code) {
+    const code = this.loginForm.controls.verificationCode.value;
+    const confirmationResult = this.confirmationResult;
+    if (!code || !confirmationResult) {
       this.error.set('Verification code is required.');
       return;
     }
     this.isLoading.set(true);
     try {
-      await this.confirmationResult.confirm(code);
+      await confirmationResult.confirm(code);
       this.handleSuccess();
     } catch (e: unknown) {
       logFirebaseAuthError('Phone OTP verify', e);
@@ -492,17 +510,25 @@ export class Login implements OnInit, OnDestroy {
     }
   }
 
-  async sendMfaVerificationCode(resolver: any) {
+  async sendMfaVerificationCode(resolver: MultiFactorResolver) {
     this.isLoading.set(true);
     this.error.set(null);
     try {
+      const auth = this.authService.auth;
+      if (!auth) {
+        throw new Error('Firebase Auth is not initialized');
+      }
       this.clearRecaptcha();
       const verifier = await this.ensureRecaptcha();
+      const multiFactorHint = resolver.hints[0];
+      if (!multiFactorHint) {
+        throw new Error('No enrolled MFA factor is available.');
+      }
       const phoneInfoOptions = {
-        multiFactorHint: resolver.hints[0],
+        multiFactorHint,
         session: resolver.session,
       };
-      const phoneAuthProvider = new PhoneAuthProvider(this.authService.auth);
+      const phoneAuthProvider = new PhoneAuthProvider(auth);
       const verifyId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, verifier);
       this.verificationId.set(verifyId);
       this.resolver = resolver;
@@ -524,9 +550,10 @@ export class Login implements OnInit, OnDestroy {
 
   async resolveMfa() {
     this.error.set(null);
-    const code = this.loginForm.value.verificationCode;
+    const code = this.loginForm.controls.verificationCode.value;
     const verifyId = this.verificationId();
-    if (!code || !verifyId) {
+    const resolver = this.resolver;
+    if (!code || !verifyId || !resolver) {
       this.error.set('Verification code is required.');
       return;
     }
@@ -534,7 +561,7 @@ export class Login implements OnInit, OnDestroy {
     try {
       const cred = PhoneAuthProvider.credential(verifyId, code);
       const assertion = PhoneMultiFactorGenerator.assertion(cred);
-      await this.resolver.resolveSignIn(assertion);
+      await resolver.resolveSignIn(assertion);
       // Force a new ID token so firebase.sign_in_second_factor / amr claims land.
       const user = this.authService.auth?.currentUser;
       if (user && typeof user.getIdToken === 'function') {
@@ -558,9 +585,22 @@ export class Login implements OnInit, OnDestroy {
     }
   }
 
+  private async handleMfaChallenge(result: AuthAttemptResult): Promise<boolean> {
+    if (result.error !== 'MFA_REQUIRED') {
+      return false;
+    }
+    if (!isMultiFactorResolver(result.resolver)) {
+      this.error.set('Multi-factor authentication could not be initialized. Please try again.');
+      return true;
+    }
+    await this.sendMfaVerificationCode(result.resolver);
+    return true;
+  }
+
   async onSubmit() {
     if (this.loginForm.invalid) return;
 
+    const formValue = this.loginForm.getRawValue();
     this.error.set(null);
     this.successMessage.set(null);
 
@@ -573,7 +613,7 @@ export class Login implements OnInit, OnDestroy {
 
     try {
       if (this.isForgotMode()) {
-        const email = this.loginForm.value.email;
+        const email = formValue.email;
         const success = await this.authService.forgotPassword(email);
         if (success) {
           this.successMessage.set(
@@ -583,9 +623,8 @@ export class Login implements OnInit, OnDestroy {
           this.error.set('Failed to submit request. Please try again.');
         }
       } else if (this.isResetMode()) {
-        const newPassword = this.loginForm.value.password;
+        const newPassword = formValue.password;
         const success = await this.authService.resetPassword({
-          uid: this.uid(),
           token: this.token(),
           new_password: newPassword,
         });
@@ -608,19 +647,19 @@ export class Login implements OnInit, OnDestroy {
       } else {
         const result = this.isRegisterMode()
           ? await this.authService.register({
-              username: this.loginForm.value.username,
-              password: this.loginForm.value.password,
-              email: this.loginForm.value.email,
+              username: formValue.username,
+              password: formValue.password,
+              email: formValue.email,
             })
           : await this.authService.login({
-              username: this.loginForm.value.username,
-              password: this.loginForm.value.password,
+              username: formValue.username,
+              password: formValue.password,
             });
 
         if (result.success) {
           this.handleSuccess();
-        } else if (result.error === 'MFA_REQUIRED') {
-          await this.sendMfaVerificationCode((result as any).resolver);
+        } else if (await this.handleMfaChallenge(result)) {
+          // MFA challenge initialized by the helper.
         } else {
           this.error.set(result.error || 'Authentication failed.');
         }
@@ -643,8 +682,8 @@ export class Login implements OnInit, OnDestroy {
       const result = await this.authService.loginWithApple();
       if (result.success) {
         this.handleSuccess();
-      } else if (result.error === 'MFA_REQUIRED') {
-        await this.sendMfaVerificationCode((result as any).resolver);
+      } else if (await this.handleMfaChallenge(result)) {
+        // MFA challenge initialized by the helper.
       } else {
         this.error.set(result.error || 'Apple Sign-In failed.');
       }
@@ -664,8 +703,8 @@ export class Login implements OnInit, OnDestroy {
       const result = await this.authService.loginWithGoogle();
       if (result.success) {
         this.handleSuccess();
-      } else if (result.error === 'MFA_REQUIRED') {
-        await this.sendMfaVerificationCode((result as any).resolver);
+      } else if (await this.handleMfaChallenge(result)) {
+        // MFA challenge initialized by the helper.
       } else {
         this.error.set(result.error || 'Google Sign-In failed.');
       }

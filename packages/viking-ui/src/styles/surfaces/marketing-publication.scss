@@ -233,7 +233,7 @@
       gap: 4px 24px;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 1024px) {
       grid-template-columns: repeat(3, 1fr);
     }
   }
@@ -529,7 +529,7 @@ a.book-toc-link.sidebar-search {
   min-height: var(--viking-space-5, 40px);
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1280px) {
   #book-app > .dashboard-sidebar {
     width: 24rem;
     padding-inline: var(--viking-space-3, 24px);
@@ -730,7 +730,7 @@ a.book-toc-link.sidebar-search {
   border-top: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-surface) 50%, transparent);
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     justify-content: space-between;
     padding: 16px 32px;
   }

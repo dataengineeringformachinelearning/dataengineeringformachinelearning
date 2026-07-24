@@ -384,6 +384,8 @@
     }
 
     .modal-footer {
+      align-items: stretch;
+      flex-direction: column-reverse;
       justify-content: flex-end;
       gap: var(--viking-space-2);
       border-top: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
@@ -401,6 +403,7 @@
       font-family: inherit;
       transition: var(--viking-transition-interactive);
       min-width: 100px;
+      width: 100%;
     }
 
     .btn:focus-visible {
@@ -491,20 +494,18 @@
       pointer-events: none !important;
     }
 
-    @media (min-width: 560px) {
+    @media (min-width: 640px) {
       .form-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-    }
 
-    @media (max-width: 520px) {
       .modal-footer {
-        align-items: stretch;
-        flex-direction: column-reverse;
+        align-items: center;
+        flex-direction: row;
       }
 
       .btn {
-        width: 100%;
+        width: auto;
       }
     }
   `;

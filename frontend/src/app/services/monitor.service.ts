@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { finalize, Observable, shareReplay } from 'rxjs';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
 
 export interface EndpointData {
@@ -32,6 +33,10 @@ export interface StatusPageData {
   threats_detected_24h?: number | null;
   /** Public intelligence (ciphertext-free) for explore/status ML gauges. */
   spiking_temporal_forecast?: number | null;
+  temporal_status?: string | null;
+  temporal_backend?: string | null;
+  temporal_sample_count?: number | null;
+  temporal_scored_at?: string | null;
   threat_anomaly_score?: number | null;
   threat_suspicious_ratio?: number | null;
   uses_norse?: boolean | null;
@@ -62,11 +67,17 @@ export interface IncidentData {
   updated_at: string;
 }
 
+export const publicStatusPageTag = (slug: string): string => {
+  if (slug === 'loading') return 'Loading';
+  return slug === 'platform-status' ? 'Platform Status' : 'Public Status Page';
+};
+
 @Injectable({
   providedIn: 'root',
 })
 export class MonitorService {
   private http = inject(HttpClient);
+  private statusPagesInFlight?: Observable<StatusPageData[]>;
 
   public incidentsMap = signal<Record<string, IncidentData[]>>({});
   public servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
@@ -129,10 +140,18 @@ export class MonitorService {
     return this.http.get<EndpointData[]>(API_ENDPOINTS.SYSTEM_STATUS.ENDPOINTS);
   }
 
-  getStatusPages() {
-    return this.http.get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, {
-      withCredentials: true,
-    });
+  getStatusPages(): Observable<StatusPageData[]> {
+    if (this.statusPagesInFlight) return this.statusPagesInFlight;
+
+    this.statusPagesInFlight = this.http
+      .get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, {
+        withCredentials: true,
+      })
+      .pipe(
+        finalize(() => (this.statusPagesInFlight = undefined)),
+        shareReplay({ bufferSize: 1, refCount: false }),
+      );
+    return this.statusPagesInFlight;
   }
 
   getStatusPageBySlug(slug: string) {

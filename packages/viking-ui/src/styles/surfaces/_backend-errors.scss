@@ -40,7 +40,7 @@ body.backend-404 .viking-cta-row {
   max-width: min(100%, 28rem);
   margin-inline: auto;
 
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;

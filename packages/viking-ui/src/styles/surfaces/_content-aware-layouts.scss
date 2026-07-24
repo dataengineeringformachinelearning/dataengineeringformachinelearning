@@ -26,14 +26,14 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-@container viking-app-page (min-width: 40rem) {
+@container viking-app-page (min-width: 640px) {
   .dashboard-page-container .kpi-grid,
   .dashboard-page-container .snapshot-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@container viking-app-page (min-width: 64rem) {
+@container viking-app-page (min-width: 1024px) {
   .dashboard-page-container .overview-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
     grid-template-areas:
@@ -64,7 +64,7 @@
   align-items: stretch;
 }
 
-@container viking-app-page (min-width: 72rem) {
+@container viking-app-page (min-width: 1280px) {
   .dashboard-page-container .triage-grid {
     grid-template-columns:
       minmax(calc(var(--viking-space-24) + var(--viking-space-12)), 0.9fr)
@@ -80,10 +80,8 @@
   }
 }
 
-/* Explore cards are information-dense. Keep one generous card per row; each
-   card chooses its own internal metric columns with component containers. */
+/* Explore cards choose their internal metric columns with component containers. */
 .dashboard-page-container .status-directory-grid {
-  grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-4);
 }
 

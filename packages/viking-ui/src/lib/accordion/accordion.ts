@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Optional,
+  inject,
   input,
   model,
 } from "@angular/core";
@@ -110,7 +110,7 @@ export class VikingAccordion {
   ],
 })
 export class VikingAccordionItem {
-  constructor(@Optional() private readonly accordion: VikingAccordion | null) {}
+  private readonly accordion = inject(VikingAccordion, { optional: true });
 
   readonly heading = input.required<string>();
   readonly expanded = model<boolean>(false);

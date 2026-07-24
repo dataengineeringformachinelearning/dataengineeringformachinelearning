@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   computed,
+  inject,
   input,
   model,
   output,
@@ -139,6 +140,8 @@ import { vikingUid } from "../../core/uid";
   ],
 })
 export class VikingAutocomplete extends VikingControl<string> {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly suggestions = input.required<string[]>();
   readonly value = model<string>("");
   readonly placeholder = input<string>("");
@@ -146,10 +149,6 @@ export class VikingAutocomplete extends VikingControl<string> {
   readonly disabled = input<boolean>(false);
 
   readonly selected = output<string>();
-
-  constructor(private readonly host: ElementRef<HTMLElement>) {
-    super();
-  }
 
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(0);

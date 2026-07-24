@@ -25,6 +25,8 @@ body.docs-body {
 }
 
 .skip-link {
+  display: inline-flex;
+  align-items: center;
   position: absolute;
   top: var(--viking-space-1);
   left: var(--viking-space-1);
@@ -33,6 +35,7 @@ body.docs-body {
   background: var(--viking-accent);
   color: var(--viking-accent-content);
   border-radius: var(--viking-radius);
+  min-height: var(--viking-touch-target-min, 44px);
   transform: translateY(-200%);
   transition: transform var(--viking-duration-fast) var(--viking-ease-out);
 }
