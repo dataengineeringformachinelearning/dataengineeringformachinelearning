@@ -255,7 +255,7 @@ const statusServices: StatusDashboardService[] = [
   },
   {
     name: "API Gateway",
-    url: "https://backend.deml.app/api/v1/health",
+    url: "https://api.joealongi.dev/health",
     status: "degraded",
     statusLabel: "Partial",
     latency: "212.08ms",

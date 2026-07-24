@@ -374,8 +374,38 @@ def _uptime_history_points(value: Any) -> list[dict[str, Any]]:
   return out
 
 
+def _normalize_public_temporal(page: dict[str, Any]) -> dict[str, Any]:
+  """Coerce legacy bare-zero forecasts into an honest collecting state.
+
+  Older FORJD builds emitted ``spiking_temporal_forecast: 0.0`` from the
+  analytics rollup heuristic without ``temporal_status`` / backend metadata.
+  Angular treats that as Spike Risk ``0.00`` instead of collecting telemetry.
+  """
+  forecast = _optional_number(page.get("spiking_temporal_forecast"))
+  status = _optional_text(page.get("temporal_status"))
+  backend = _optional_text(page.get("temporal_backend"))
+  sample_count = _optional_int(page.get("temporal_sample_count"))
+  scored_at = _optional_text(page.get("temporal_scored_at"))
+  uses_norse = bool(page["uses_norse"]) if isinstance(page.get("uses_norse"), bool) else None
+  # Bare zero with no inference provenance is not a scored ready signal.
+  if forecast == 0.0 and not status and not backend and not scored_at:
+    forecast = None
+    status = "insufficient_data"
+    sample_count = sample_count if sample_count is not None else 0
+    uses_norse = False if uses_norse is None else uses_norse
+  return {
+    "spiking_temporal_forecast": forecast,
+    "temporal_status": status,
+    "temporal_backend": backend,
+    "temporal_sample_count": sample_count,
+    "temporal_scored_at": scored_at,
+    "uses_norse": uses_norse,
+  }
+
+
 def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[str, Any]:
   created = page.get("created_at")
+  temporal = _normalize_public_temporal(page)
   return {
     "id": str(page.get("id") or ""),
     "title": str(page.get("title") or ""),
@@ -397,14 +427,9 @@ def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[
       else None
     ),
     # Public intelligence (ciphertext-free) — explore/status seed ML gauges without auth.
-    "spiking_temporal_forecast": _optional_number(page.get("spiking_temporal_forecast")),
-    "temporal_status": _optional_text(page.get("temporal_status")),
-    "temporal_backend": _optional_text(page.get("temporal_backend")),
-    "temporal_sample_count": _optional_int(page.get("temporal_sample_count")),
-    "temporal_scored_at": _optional_text(page.get("temporal_scored_at")),
+    **temporal,
     "threat_anomaly_score": _optional_number(page.get("threat_anomaly_score")),
     "threat_suspicious_ratio": _optional_number(page.get("threat_suspicious_ratio")),
-    "uses_norse": (bool(page["uses_norse"]) if isinstance(page.get("uses_norse"), bool) else None),
   }
 
 

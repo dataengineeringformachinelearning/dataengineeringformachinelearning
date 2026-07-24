@@ -328,6 +328,33 @@ def test_legacy_temporal_zero_remains_unqualified() -> None:
   assert body["temporal_scored_at"] is None
 
 
+def test_deml_status_page_coerces_legacy_bare_zero_forecast() -> None:
+  from forjd.angular_compat import deml_status_page
+
+  page = deml_status_page(
+    {
+      "id": "p1",
+      "title": "joealongi.dev",
+      "slug": "joealongi-dev",
+      "description": "Public status for joealongi.dev and related services.",
+      "is_published": True,
+      "created_at": "2026-07-19T00:00:00Z",
+      "spiking_temporal_forecast": 0.0,
+      "uses_norse": False,
+      "threat_anomaly_score": 0.62,
+      "threat_suspicious_ratio": 0.32,
+    },
+    deml_user_id=None,
+  )
+  assert page["spiking_temporal_forecast"] is None
+  assert page["temporal_status"] == "insufficient_data"
+  assert page["temporal_backend"] is None
+  assert page["temporal_sample_count"] == 0
+  assert page["uses_norse"] is False
+  assert page["threat_anomaly_score"] == 0.62
+  assert page["threat_suspicious_ratio"] == 0.32
+
+
 def test_deml_threat_report_from_scores() -> None:
   body = deml_threat_report(
     {
