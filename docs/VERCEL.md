@@ -163,14 +163,14 @@ Do not re-enable Angular SSR unless you restore `angular.json` `server` / `ssr` 
 
 ## Project: `marketing` (community Astro)
 
-| Setting        | Value                                   |
-| -------------- | --------------------------------------- |
-| Project name   | `marketing`                             |
-| Root Directory | `marketing`                             |
-| Config         | `marketing/vercel.json`                 |
-| Build          | `npm run build` → `dist`                |
-| Install        | `npm install --legacy-peer-deps`        |
-| Domain         | `dataengineeringformachinelearning.com` |
+| Setting        | Value                                            |
+| -------------- | ------------------------------------------------ |
+| Project name   | `marketing`                                      |
+| Root Directory | `marketing`                                      |
+| Config         | `marketing/vercel.json`                          |
+| Build          | `npm run build` → `dist`                         |
+| Install        | `npm install --legacy-peer-deps --no-workspaces` |
+| Domain         | `dataengineeringformachinelearning.com`          |
 
 Preserves `/status/:slug` → `deml.app` and redirects `/documentation` → `deml.app/#docs`.
 `VERCEL=1` skips the monorepo Viking package prebuild (uses published npm package).

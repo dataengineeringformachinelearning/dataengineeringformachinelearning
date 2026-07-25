@@ -1,10 +1,34 @@
 // @ts-check
-import { defineConfig } from "astro/config";
-import sitemap from "@astrojs/sitemap";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import sitemap from "@astrojs/sitemap";
+import { defineConfig } from "astro/config";
 
 const vikingUiDist = (file) =>
   fileURLToPath(new URL(`../packages/viking-ui/dist/${file}`, import.meta.url));
+
+/** Prefer monorepo dist when present; on Vercel use the published npm package. */
+const useLocalVikingUi = existsSync(vikingUiDist("icons.js"));
+
+const vikingUiAliases = useLocalVikingUi
+  ? {
+      "@dataengineeringformachinelearning/viking-ui/icons":
+        vikingUiDist("icons.js"),
+      "@dataengineeringformachinelearning/viking-ui/viking-ui.css":
+        vikingUiDist("viking-ui.css"),
+      "@dataengineeringformachinelearning/viking-ui/web-components.js":
+        vikingUiDist("web-components.js"),
+      "@dataengineeringformachinelearning/viking-ui/viking-ui-elements.js":
+        vikingUiDist("viking-ui-elements.js"),
+      "@dataengineeringformachinelearning/viking-ui/site-drakkar":
+        vikingUiDist("site-drakkar.js"),
+      "@dataengineeringformachinelearning/viking-ui/manifest": vikingUiDist(
+        "viking.manifest.json",
+      ),
+      "@dataengineeringformachinelearning/viking-ui/tokens.json":
+        vikingUiDist("viking-tokens.json"),
+    }
+  : {};
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,23 +45,7 @@ export default defineConfig({
     // Cursor - Grok 4.3
     envPrefix: ["PUBLIC_", "FRONTEND_", "BACKEND_", "MARKETING_"],
     resolve: {
-      alias: {
-        "@dataengineeringformachinelearning/viking-ui/icons":
-          vikingUiDist("icons.js"),
-        "@dataengineeringformachinelearning/viking-ui/viking-ui.css":
-          vikingUiDist("viking-ui.css"),
-        "@dataengineeringformachinelearning/viking-ui/web-components.js":
-          vikingUiDist("web-components.js"),
-        "@dataengineeringformachinelearning/viking-ui/viking-ui-elements.js":
-          vikingUiDist("viking-ui-elements.js"),
-        "@dataengineeringformachinelearning/viking-ui/site-drakkar":
-          vikingUiDist("site-drakkar.js"),
-        "@dataengineeringformachinelearning/viking-ui/manifest": vikingUiDist(
-          "viking.manifest.json",
-        ),
-        "@dataengineeringformachinelearning/viking-ui/tokens.json":
-          vikingUiDist("viking-tokens.json"),
-      },
+      alias: vikingUiAliases,
     },
   },
 });
