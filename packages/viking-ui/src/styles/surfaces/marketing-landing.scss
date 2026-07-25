@@ -5,9 +5,63 @@
   /* visible so angled hero mockup can overflow the right edge */
   overflow: visible;
   font-family: var(--viking-font-family);
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -12% -10% auto -10%;
+    height: min(70vh, 40rem);
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        65% 75% at 12% 18%,
+        color-mix(in srgb, var(--viking-accent) 22%, transparent),
+        transparent 68%
+      ),
+      radial-gradient(
+        45% 55% at 92% 8%,
+        color-mix(in srgb, var(--viking-accent-secondary) 12%, transparent),
+        transparent 62%
+      );
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.22;
+    background-image:
+      linear-gradient(
+        color-mix(in srgb, var(--viking-border) 70%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--viking-border) 70%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 30% 0%, black 0%, transparent 72%);
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 
   @media (min-width: 768px) {
     padding-block: var(--viking-space-9) var(--viking-space-8);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      opacity: 0.15;
+    }
   }
 }
 
@@ -30,6 +84,9 @@
   position: relative;
   z-index: 10;
   overflow: visible;
+  min-height: min(78dvh, 40rem);
+  animation: demlHeroIn var(--viking-duration-slow) var(--viking-ease-emphasized)
+    both;
   @media (min-width: 1024px) {
     grid-template-columns: 1fr 1.15fr;
     gap: var(--viking-space-6);
@@ -49,6 +106,17 @@
     opacity: 0.45;
     pointer-events: none;
   }
+}
+
+.hero-brand {
+  margin: 0;
+  font-family: var(--viking-font-family-mono, var(--viking-font-family));
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: var(--viking-font-weight-bold, 700);
+  letter-spacing: var(--viking-letter-spacing-caps, 0.06em);
+  text-transform: uppercase;
+  color: var(--viking-accent);
+  line-height: var(--viking-line-height-tight, 1.1);
 }
 
 .hero-copy {
@@ -211,6 +279,27 @@
   50% {
     box-shadow: 0 0 0 6px
       color-mix(in srgb, var(--viking-accent) 0%, transparent);
+  }
+}
+
+@keyframes demlHeroIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-showcase {
+    animation: none;
+  }
+
+  .pulse-dot {
+    animation: none;
   }
 }
 

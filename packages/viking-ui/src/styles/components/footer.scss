@@ -1,5 +1,6 @@
 .viking-footer,
 .mega-footer {
+  position: relative;
   background-color: var(
     --viking-surface,
     var(--card-bg, var(--viking-charcoal-950))
@@ -15,6 +16,21 @@
     --viking-text-muted,
     var(--text-muted, var(--viking-metallic-300))
   );
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: var(--viking-page-gutter, var(--viking-space-2));
+    width: min(8rem, 30%);
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--viking-accent) 55%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
 }
 
 .viking-footer-content,

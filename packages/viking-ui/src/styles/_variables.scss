@@ -176,6 +176,8 @@
   --viking-font-size-sm: 14px;
   --viking-font-size-ui: 14px;
   --viking-font-size-base: 16px;
+  /* Alias used widely in surface SCSS — keep in sync with base */
+  --viking-font-size: var(--viking-font-size-base);
   --viking-font-size-md: 18px;
   --viking-font-size-lg: 20px;
   --viking-font-size-xl: 24px;

@@ -33,12 +33,14 @@
       color-mix(in srgb, var(--viking-charcoal-900, #000) 40%, transparent),
     0 0 0 1px color-mix(in srgb, var(--viking-accent) 15%, transparent);
   /* Slight positive X so the right edge stays visible when angled */
-  transform: rotateY(-8deg) rotateX(3deg) translateX(7%) scale(1.02);
+  transform: rotateY(-10deg) rotateX(4deg) translateX(8%) scale(1.03);
   transform-origin: center left;
-  transition: transform 0.4s ease;
+  transition: transform var(--viking-duration-slow, 350ms)
+    var(--viking-ease-emphasized, cubic-bezier(0.2, 0, 0, 1));
   position: relative;
   width: 100%;
   min-width: min(100%, 22rem);
+  will-change: transform;
 
   &::before {
     content: "";
@@ -81,7 +83,19 @@
   }
 
   &:hover {
-    transform: rotateY(-2deg) rotateX(1deg) translateX(4%) scale(1.02);
+    transform: rotateY(-3deg) rotateX(1deg) translateX(4%) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-page-mockup-window,
+  .mockup-window {
+    transition: none;
+    will-change: auto;
+
+    &:hover {
+      transform: rotateY(-10deg) rotateX(4deg) translateX(8%) scale(1.03);
+    }
   }
 }
 

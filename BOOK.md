@@ -2423,11 +2423,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.2/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.2/dist/web-components.js"
 ></script>
 ```
 
@@ -2671,7 +2671,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/forms`: 22.0.5
 - `@angular/platform-browser`: 22.0.5
 - `@angular/router`: 22.0.5
-- `@dataengineeringformachinelearning/viking-ui`: ^9.7.1
+- `@dataengineeringformachinelearning/viking-ui`: ^9.7.2
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `@vercel/analytics`: ^2.0.1

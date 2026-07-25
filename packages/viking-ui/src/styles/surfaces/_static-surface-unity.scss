@@ -98,9 +98,8 @@
   margin: 0 !important;
   justify-self: stretch !important;
   text-align: left !important;
-  transform: none !important;
-  perspective: none !important;
-  border-radius: var(--viking-card-radius) !important;
+  /* Preserve page-mockup cinematic perspective/angle — do not flatten */
+  border-radius: var(--viking-card-radius);
 }
 
 .viking-unified-section-header {
