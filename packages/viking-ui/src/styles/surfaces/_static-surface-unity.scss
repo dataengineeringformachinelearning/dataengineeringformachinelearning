@@ -98,7 +98,7 @@
   margin: 0 !important;
   justify-self: stretch !important;
   text-align: left !important;
-  /* Preserve page-mockup cinematic perspective/angle — do not flatten */
+  overflow: hidden !important;
   border-radius: var(--viking-card-radius);
 }
 
@@ -145,8 +145,10 @@
   }
 }
 
+/* Two-column only when a hero panel exists (copy + mockup). Single-column
+ * community / FORJD-style heroes must not zigzag brand/title across columns. */
 @media (min-width: 1024px) {
-  .viking-unified-hero {
+  .viking-unified-hero:has(.viking-unified-hero-panel) {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
   }
 }

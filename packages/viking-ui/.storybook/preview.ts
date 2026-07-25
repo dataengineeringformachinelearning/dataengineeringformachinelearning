@@ -1,6 +1,7 @@
 import { registerVikingElements } from "../src/web/index";
 import type { Preview } from "@storybook/html";
 
+import "../dist/suite-fonts.css";
 import "../dist/suite-tokens.css";
 import "../dist/suite-components.css";
 import "../dist/design-tokens.css";

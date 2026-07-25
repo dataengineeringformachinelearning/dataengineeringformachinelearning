@@ -83,11 +83,13 @@ const suiteBackendSrc = path.join(
   "suite-backend.css",
 );
 const suiteDocsSrc = path.join(packageDir, "src", "tokens", "suite-docs.css");
+const suiteFontsSrc = path.join(packageDir, "src", "tokens", "suite-fonts.css");
 const suiteTokensCss = readFileSync(suiteTokensSrc, "utf8");
 const suiteComponentsCss = readFileSync(suiteComponentsSrc, "utf8");
 const suiteLandingCss = readFileSync(suiteLandingSrc, "utf8");
 const suiteBackendCss = readFileSync(suiteBackendSrc, "utf8");
 const suiteDocsCss = readFileSync(suiteDocsSrc, "utf8");
+const suiteFontsCss = readFileSync(suiteFontsSrc, "utf8");
 // Product surfaces: tokens → components → landing → backend (docs CSS is Storybook-only)
 const suiteBundle = `${suiteTokensCss}\n${suiteComponentsCss}\n${suiteLandingCss}\n${suiteBackendCss}`;
 
@@ -103,6 +105,7 @@ writeFileSync(path.join(outDir, "suite-components.css"), suiteComponentsCss);
 writeFileSync(path.join(outDir, "suite-landing.css"), suiteLandingCss);
 writeFileSync(path.join(outDir, "suite-backend.css"), suiteBackendCss);
 writeFileSync(path.join(outDir, "suite-docs.css"), suiteDocsCss);
+writeFileSync(path.join(outDir, "suite-fonts.css"), suiteFontsCss);
 writeFileSync(path.join(outDir, "design-tokens.css"), tokensCss);
 writeFileSync(path.join(outDir, "viking-components.css"), componentsCss);
 writeFileSync(path.join(outDir, "deml-components.css"), demlComponentsCss);

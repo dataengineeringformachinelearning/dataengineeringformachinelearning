@@ -69,8 +69,6 @@ export class ProductHome implements OnInit {
   protected readonly version = environment.version;
   protected readonly isAuthenticated = this.auth.isAuthenticated;
 
-  protected readonly p99Label = signal('P99 · live');
-  protected readonly threatsLabel = signal('Threats · live');
   protected readonly p99Value = signal('Live');
   protected readonly uptimeValue = signal('Live');
   protected readonly requestsValue = signal('Live');
@@ -246,12 +244,10 @@ export class ProductHome implements OnInit {
       );
       if (Number.isFinite(metrics.p99_latency)) {
         const ms = Math.round(metrics.p99_latency as number);
-        this.p99Label.set(`${ms}ms P99 · 24h`);
         this.p99Value.set(`${ms}ms`);
       }
       if (Number.isFinite(metrics.threats_detected_24h)) {
         const n = (metrics.threats_detected_24h as number).toLocaleString();
-        this.threatsLabel.set(`${n} threats · 24h`);
         this.threatsValue.set(n);
       }
       if (Number.isFinite(metrics.overall_uptime)) {
