@@ -224,6 +224,7 @@ export class IsolatedStatus implements OnInit {
           });
 
           this.isLoading.set(false);
+          this.isRetrying.set(false);
         },
         error: err => {
           if (err instanceof HttpErrorResponse) {
@@ -240,6 +241,7 @@ export class IsolatedStatus implements OnInit {
           this.statusPages.set([]);
           this.loadFailed.set(true);
           this.isLoading.set(false);
+          this.isRetrying.set(false);
         },
       });
   }
@@ -378,7 +380,14 @@ export class IsolatedStatus implements OnInit {
   isRetrying = signal<boolean>(false);
 
   retryLoad() {
+    const slug = this.slug();
     this.isRetrying.set(true);
-    window.location.reload();
+    if (!slug) {
+      this.isRetrying.set(false);
+      this.loadFailed.set(true);
+      this.loadErrorKind.set('not_found');
+      return;
+    }
+    this.loadPage(slug);
   }
 }

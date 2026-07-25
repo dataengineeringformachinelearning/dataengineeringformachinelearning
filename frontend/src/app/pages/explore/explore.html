@@ -23,16 +23,11 @@
       [uptimeSummary]="uptimeSummary(page)"
     />
     } @if (loadFailed()) {
-    <div class="status-error-state status-directory-card" role="alert">
-      <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />
-      <h2 class="error-title">Unable to Connect</h2>
-      <p class="error-subtitle">
-        We couldn't reach the status service. Verify the backend is running, then retry.
-      </p>
+    <viking-callout class="status-directory-card" tone="danger" heading="Unable to Connect">
+      <p>We couldn't reach the status service. Verify the backend is running, then retry.</p>
       <viking-button
         variant="primary"
         type="button"
-        class="retry-btn"
         icon="refresh"
         [loading]="isRetrying()"
         [disabled]="isRetrying()"
@@ -40,7 +35,7 @@
       >
         Retry Connection
       </viking-button>
-    </div>
+    </viking-callout>
     } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
     <app-status-cta
       class="status-directory-card"
@@ -48,7 +43,7 @@
       badgeText="Explore Directory"
       title="No Public Status Pages"
       subtitle="Users haven't published any status pages yet. Create and publish one in the management console!"
-      mockupVariant="explore"
+      [showMockup]="false"
     >
     </app-status-cta>
     }

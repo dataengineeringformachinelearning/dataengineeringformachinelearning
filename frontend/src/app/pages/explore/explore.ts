@@ -14,6 +14,7 @@ import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
   VikingButton,
+  VikingCallout,
   VikingExploreCard,
   VikingPageHeader,
   VikingPageTemplate,
@@ -39,6 +40,7 @@ import {
   standalone: true,
   imports: [
     VikingButton,
+    VikingCallout,
     VikingExploreCard,
     VikingPageHeader,
     VikingPageTemplate,
@@ -213,7 +215,13 @@ export class Explore implements OnInit {
     this.monitorService.getStatusPages().subscribe({
       next: data => {
         // Under /explore we show all public status pages, including the main 'platform-status' system page
-        if (!Array.isArray(data)) return;
+        if (!Array.isArray(data)) {
+          this.statusPages.set([]);
+          this.loadFailed.set(true);
+          this.isLoading.set(false);
+          this.isRetrying.set(false);
+          return;
+        }
         const publicPages = data.filter(p => p.is_published || p.slug === 'platform-status');
         // Directory list may omit KPIs — hydrate each card from the public slug DTO.
         const hydrations = publicPages.map(page =>
@@ -238,6 +246,7 @@ export class Explore implements OnInit {
             this.monitorService.fetchAllServices(pages);
           }
           this.isLoading.set(false);
+          this.isRetrying.set(false);
         };
         if (hydrations.length === 0) {
           applyPages([]);
@@ -252,6 +261,7 @@ export class Explore implements OnInit {
         this.statusPages.set([]);
         this.loadFailed.set(true);
         this.isLoading.set(false);
+        this.isRetrying.set(false);
       },
     });
   }
@@ -260,6 +270,6 @@ export class Explore implements OnInit {
 
   retryLoad() {
     this.isRetrying.set(true);
-    window.location.reload();
+    this.loadData();
   }
 }

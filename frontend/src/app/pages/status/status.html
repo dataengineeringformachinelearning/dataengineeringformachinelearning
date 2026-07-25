@@ -44,7 +44,7 @@
       </viking-button>
     </viking-callout>
     } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
-    <app-status-cta></app-status-cta>
+    <app-status-cta [showMockup]="false"></app-status-cta>
     }
   </div>
 </viking-page-template>

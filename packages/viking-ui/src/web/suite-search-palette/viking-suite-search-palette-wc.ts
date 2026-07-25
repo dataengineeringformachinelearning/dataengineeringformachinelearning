@@ -286,10 +286,15 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
     );
 
     try {
-      const response = await fetch("/assets/site-drakkar.json", {
-        cache: "no-cache",
-      });
-      if (response.ok) {
+      // Product apps serve under /assets/; Storybook also mounts dist at /.
+      const response =
+        (await fetch("/assets/site-drakkar.json", { cache: "no-cache" }).catch(
+          () => null,
+        )) ||
+        (await fetch("/site-drakkar.json", { cache: "no-cache" }).catch(
+          () => null,
+        ));
+      if (response?.ok) {
         // Config presence validates CDN path; curated builder remains SSoT.
         items = buildSuiteSearchItems(context, urls, {
           docsOrigin,

@@ -320,7 +320,13 @@ export class Status implements OnInit {
         .pipe(timeout(15000))
         .subscribe({
           next: data => {
-            if (!Array.isArray(data)) return;
+            if (!Array.isArray(data)) {
+              this.statusPages.set([]);
+              this.loadFailed.set(true);
+              this.isLoading.set(false);
+              this.isRetrying.set(false);
+              return;
+            }
             // Include user's own pages AND the platform status page
             const myPages = data.filter(
               p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status',
@@ -342,12 +348,14 @@ export class Status implements OnInit {
               this.mlService.fetchTemporalForecast(page.id);
             }
             this.isLoading.set(false);
+            this.isRetrying.set(false);
           },
           error: err => {
             console.error('Error fetching pages:', err);
             this.statusPages.set([]);
             this.loadFailed.set(true);
             this.isLoading.set(false);
+            this.isRetrying.set(false);
           },
         });
     } else {
@@ -359,6 +367,6 @@ export class Status implements OnInit {
 
   retryLoad() {
     this.isRetrying.set(true);
-    window.location.reload();
+    this.loadData();
   }
 }

@@ -99,21 +99,18 @@ const forjdApiUrl = process.env.FORJD_API_URL ?? 'https://backend.forjd.co';
 
 const getBackendUrlCode = `
 const getBackendUrl = () => {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host.includes('localhost') || host.includes('127.0.0.1')) {
-      return 'http://localhost:8000';
-    }
+  const host = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
+  if (isLocalHost) {
+    return 'http://localhost:8000';
   }
+  // Never honor a localhost bake-in on deml.app / Vercel preview hosts.
   const configured = '${buildBackendUrl}';
-  if (configured) {
+  const configuredIsLocal = /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?\\/?$/i.test(
+    configured || '',
+  );
+  if (configured && !configuredIsLocal) {
     return configured;
-  }
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host === 'deml.app' || host.endsWith('.deml.app') || host.endsWith('.vercel.app')) {
-      return 'https://backend.deml.app';
-    }
   }
   return 'https://backend.deml.app';
 };
@@ -121,24 +118,20 @@ const getBackendUrl = () => {
 
 const getFrontendUrlCode = `
 const getFrontendUrl = () => {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host.includes('localhost') || host.includes('127.0.0.1')) {
-      return window.location.origin;
-    }
+  const host = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
+  if (isLocalHost) {
+    return window.location.origin;
   }
   const configured = '${buildFrontendUrl}';
-  if (configured) {
+  const configuredIsLocal = /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?\\/?$/i.test(
+    configured || '',
+  );
+  if (configured && !configuredIsLocal) {
     return configured;
   }
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host === 'deml.app' || host.endsWith('.deml.app')) {
-      return 'https://deml.app';
-    }
-    if (host.endsWith('.vercel.app')) {
-      return window.location.origin;
-    }
+  if (host.endsWith('.vercel.app')) {
+    return window.location.origin;
   }
   return 'https://deml.app';
 };
@@ -146,20 +139,21 @@ const getFrontendUrl = () => {
 
 const getMarketingUrlCode = `
 const getMarketingUrl = () => {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host.includes('localhost') || host.includes('127.0.0.1')) {
-      return 'http://localhost:4321';
-    }
+  const host = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
+  if (isLocalHost) {
+    return 'http://localhost:4321';
   }
   const configured = '${buildMarketingUrl}';
-  if (configured) {
+  const configuredIsLocal = /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?\\/?$/i.test(
+    configured || '',
+  );
+  if (configured && !configuredIsLocal) {
     return configured;
   }
   return 'https://dataengineeringformachinelearning.com';
 };
 `;
-
 const envBody = production => `
 const getFirebaseConfig = () => {
   // Auth-only Firebase config — DEML stores no product data in Firebase.

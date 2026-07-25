@@ -27,7 +27,8 @@ export class StatusCta {
   readonly badgeIcon = input('verified_user');
   readonly badgeText = input('API Monitoring Console');
   readonly mockupVariant = input<VikingPageMockupVariant>('status');
-  readonly showMockup = input(true);
+  /** Decorative page-mockup SVG is off by default — avoid floating prototype chrome. */
+  readonly showMockup = input(false);
 
   login() {
     void this.router.navigate(['/login']);

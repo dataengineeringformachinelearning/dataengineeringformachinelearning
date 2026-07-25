@@ -10,8 +10,10 @@ const config: StorybookConfig = {
     name: "@storybook/html-vite",
     options: {},
   },
-  // dist includes suite-fonts.css + /fonts/inter (build:css copies faces first)
-  staticDirs: ["../dist"],
+  // dist includes suite-fonts.css + /fonts/inter (build:css copies faces first).
+  // Mount at both / and /assets so product fetch paths (/assets/site-drakkar.json)
+  // and font URLs (/fonts/inter/…) resolve in the Storybook iframe.
+  staticDirs: [{ from: "../dist", to: "/assets" }, "../dist"],
   docs: {
     autodocs: "tag",
   },
