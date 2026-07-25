@@ -2,11 +2,12 @@
 
 All DEML **static web** surfaces ship on Vercel. Django BFF remains on **Fly** (`deml-backend`). FORJD (Fly) + Supabase own the streaming engine. Firebase is **Auth-only** (no Firebase Hosting).
 
-| Project     | Root directory       | Public hostname                                 | Role                                        |
-| ----------- | -------------------- | ----------------------------------------------- | ------------------------------------------- |
-| `deml`      | `frontend`           | `https://deml.app`                              | Product showcase + Angular app              |
-| `marketing` | `marketing`          | `https://dataengineeringformachinelearning.com` | Community entry (Astro)                     |
-| `deml-ui`   | `packages/viking-ui` | `https://ui.deml.app`                           | Viking-UI Storybook only (`vercel.ui.json`) |
+| Project     | Root directory | Public hostname                                 | Role                           |
+| ----------- | -------------- | ----------------------------------------------- | ------------------------------ |
+| `deml`      | `frontend`     | `https://deml.app`                              | Product showcase + Angular app |
+| `marketing` | `marketing`    | `https://dataengineeringformachinelearning.com` | Community entry (Astro)        |
+
+Public Storybook hosting (`deml-ui` / `ui.deml.app`) is **retired**. Viking-UI components stay in `packages/viking-ui/`; run Storybook locally (`npm run storybook` / `build-storybook`) or via Chromatic.
 
 ## Project: `deml` (Angular product UI)
 
@@ -173,7 +174,7 @@ Do not re-enable Angular SSR unless you restore `angular.json` `server` / `ssr` 
 | Install        | `npm install --legacy-peer-deps --no-workspaces` |
 | Domain         | `dataengineeringformachinelearning.com`          |
 
-Preserves `/status/:slug` → `deml.app` and redirects `/documentation` → `deml.app/#docs`.
+Preserves `/status/:slug` → `deml.app` and redirects `/documentation` → `backend.deml.app/documentation`.
 `VERCEL=1` skips the monorepo Viking package prebuild (uses published npm package).
 
 ```bash
@@ -185,24 +186,12 @@ npx vercel env add MARKETING_URL production --value 'https://dataengineeringform
 npx vercel deploy --prod --yes
 ```
 
-## Project: `deml-ui` (Viking-UI Storybook)
+## Project: `deml-ui` (retired)
 
-Mirrors FORJD `ui.forjd.co`: Storybook static output at the site root (no Astro showcase).
+The Vercel project `deml-ui` and hostname `ui.deml.app` are removed. Do **not** recreate a Git-connected Storybook project from this repo.
 
-| Setting        | Value                                                                                              |
-| -------------- | -------------------------------------------------------------------------------------------------- |
-| Project name   | `deml-ui`                                                                                          |
-| Root Directory | `packages/viking-ui`                                                                               |
-| Config         | Copy/link `vercel.ui.json` as project `vercel.json`, or set build/output in the dashboard to match |
-| Build          | `npm run build-storybook`                                                                          |
-| Output         | `storybook-static`                                                                                 |
-| Domain         | `ui.deml.app`                                                                                      |
+- Components: `packages/viking-ui/`
+- Local Storybook: `npm run storybook --workspace @dataengineeringformachinelearning/viking-ui`
+- Visual review: Chromatic (CI / `publish-viking-ui` workflow)
 
-```bash
-cd packages/viking-ui
-cp vercel.ui.json vercel.json   # if the Vercel project expects vercel.json at root
-npx vercel link --project deml-ui --yes
-npx vercel deploy --prod --yes
-```
-
-Firebase Hosting workflows for marketing/`deml-ui` are retired no-ops.
+Firebase Hosting workflows for marketing/`deml-ui` remain retired no-ops.

@@ -27,7 +27,7 @@ import type {
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, timeout } from 'rxjs/operators';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { toUptimeHistoryDataPoints } from '../../core/utils/uptime.utils';
 import {
@@ -35,6 +35,14 @@ import {
   temporalEngineLabel,
   temporalRiskLabel,
 } from '../../core/utils/temporal.utils';
+import { ConnectivityService } from '../../services/connectivity.service';
+import {
+  OFFLINE_BODY,
+  OFFLINE_HEADING,
+  STATUS_CONNECT_BODY,
+  STATUS_CONNECT_HEADING,
+  STATUS_RETRY_LABEL,
+} from '../../core/continuity-copy';
 @Component({
   selector: 'app-explore',
   standalone: true,
@@ -55,9 +63,16 @@ export class Explore implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
+  readonly connectivity = inject(ConnectivityService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   private hasLoaded = false;
+
+  readonly connectHeading = STATUS_CONNECT_HEADING;
+  readonly connectBody = STATUS_CONNECT_BODY;
+  readonly offlineHeading = OFFLINE_HEADING;
+  readonly offlineBody = OFFLINE_BODY;
+  readonly retryLabel = STATUS_RETRY_LABEL;
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
@@ -212,58 +227,64 @@ export class Explore implements OnInit {
   loadData() {
     this.isLoading.set(true);
     this.loadFailed.set(false);
-    this.monitorService.getStatusPages().subscribe({
-      next: data => {
-        // Under /explore we show all public status pages, including the main 'platform-status' system page
-        if (!Array.isArray(data)) {
+    this.monitorService
+      .getStatusPages()
+      .pipe(timeout(15000))
+      .subscribe({
+        next: data => {
+          // Under /explore we show all public status pages, including the main 'platform-status' system page
+          if (!Array.isArray(data)) {
+            this.statusPages.set([]);
+            this.loadFailed.set(true);
+            this.isLoading.set(false);
+            this.isRetrying.set(false);
+            return;
+          }
+          const publicPages = data.filter(p => p.is_published || p.slug === 'platform-status');
+          // Directory list may omit KPIs — hydrate each card from the public slug DTO.
+          const hydrations = publicPages.map(page =>
+            this.monitorService.getStatusPageBySlug(page.slug).pipe(
+              map(hydrated => ({ ...page, ...hydrated, id: hydrated.id || page.id })),
+              catchError(() => {
+                console.warn('[explore] status page hydrate failed slug=%s', page.slug);
+                return of(page);
+              }),
+            ),
+          );
+          const applyPages = (pages: StatusPageData[]) => {
+            this.statusPages.set(pages);
+            for (const page of pages) {
+              this.monitorService.seedFromEmbeddedPage(page);
+              this.mlService.seedFromStatusPage(page);
+              if (this.authService.isAuthenticated()) {
+                this.mlService.fetchLatestStat(page.id);
+                this.mlService.fetchThreatReport(page.id);
+                this.mlService.fetchTemporalForecast(page.id);
+              }
+            }
+            if (this.authService.isAuthenticated()) {
+              this.monitorService.fetchAllIncidents(pages);
+              this.monitorService.fetchAllServices(pages);
+            }
+            this.isLoading.set(false);
+            this.isRetrying.set(false);
+          };
+          if (hydrations.length === 0) {
+            applyPages([]);
+            return;
+          }
+          forkJoin(hydrations).subscribe({
+            next: applyPages,
+            error: () => applyPages(publicPages),
+          });
+        },
+        error: () => {
           this.statusPages.set([]);
           this.loadFailed.set(true);
           this.isLoading.set(false);
           this.isRetrying.set(false);
-          return;
-        }
-        const publicPages = data.filter(p => p.is_published || p.slug === 'platform-status');
-        // Directory list may omit KPIs — hydrate each card from the public slug DTO.
-        const hydrations = publicPages.map(page =>
-          this.monitorService.getStatusPageBySlug(page.slug).pipe(
-            map(hydrated => ({ ...page, ...hydrated, id: hydrated.id || page.id })),
-            catchError(() => of(page)),
-          ),
-        );
-        const applyPages = (pages: StatusPageData[]) => {
-          this.statusPages.set(pages);
-          for (const page of pages) {
-            this.monitorService.seedFromEmbeddedPage(page);
-            this.mlService.seedFromStatusPage(page);
-            if (this.authService.isAuthenticated()) {
-              this.mlService.fetchLatestStat(page.id);
-              this.mlService.fetchThreatReport(page.id);
-              this.mlService.fetchTemporalForecast(page.id);
-            }
-          }
-          if (this.authService.isAuthenticated()) {
-            this.monitorService.fetchAllIncidents(pages);
-            this.monitorService.fetchAllServices(pages);
-          }
-          this.isLoading.set(false);
-          this.isRetrying.set(false);
-        };
-        if (hydrations.length === 0) {
-          applyPages([]);
-          return;
-        }
-        forkJoin(hydrations).subscribe({
-          next: applyPages,
-          error: () => applyPages(publicPages),
-        });
-      },
-      error: () => {
-        this.statusPages.set([]);
-        this.loadFailed.set(true);
-        this.isLoading.set(false);
-        this.isRetrying.set(false);
-      },
-    });
+        },
+      });
   }
 
   isRetrying = signal<boolean>(false);

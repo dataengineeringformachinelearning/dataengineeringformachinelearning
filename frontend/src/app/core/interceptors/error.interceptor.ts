@@ -1,24 +1,46 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+
+// --- Session recovery (avoid 401 logout loops) ---
+let handling401 = false;
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      let errorMessage: string;
-
-      if (error.error instanceof ErrorEvent) {
-        // Client-side or network error
-        errorMessage = `A network error occurred: ${error.error.message}`;
-      } else {
-        // Backend error
-        errorMessage = `Server returned code: ${error.status}, error message is: ${error.message}`;
+      const hadAuth = req.headers.has('Authorization');
+      if (
+        error.status === 401 &&
+        hadAuth &&
+        auth.isAuthenticated() &&
+        !handling401 &&
+        !req.url.includes('/api/v1/auth/')
+      ) {
+        handling401 = true;
+        const returnUrl = router.url && router.url !== '/login' ? router.url : '/dashboard';
+        void auth
+          .logout()
+          .catch(() => undefined)
+          .finally(() => {
+            handling401 = false;
+            void router.navigate(['/login'], {
+              queryParams: { returnUrl, reason: 'session' },
+            });
+          });
       }
 
-      // We can log it to the console or use a Toast/Snackbar service here
-      console.error('[Global Error Interceptor]', errorMessage);
+      if (error.status === 0 || error.error instanceof ErrorEvent) {
+        console.error('[Global Error Interceptor] Network error', error.message);
+      } else if (error.status >= 500) {
+        console.error('[Global Error Interceptor] Server error', error.status, error.message);
+      }
 
-      // Re-throw the error so it can be handled by the component if needed
       return throwError(() => error);
     }),
   );

@@ -235,10 +235,11 @@ describe("Viking Web Components v2", () => {
     const itemsRaw = inner?.getAttribute("items") ?? "[]";
     const items = JSON.parse(itemsRaw) as { title: string }[];
     const titles = items.map((item) => item.title);
-    expect(titles).toContain("Documentation");
+    expect(titles).not.toContain("Documentation");
     expect(titles).toContain("Privacy Policy");
     expect(titles).toContain("Whitepaper");
     expect(titles).toContain("Blue Notes");
+    expect(titles).toContain("Book");
   });
 
   it("refreshes suite search and footer links from shared auth state", async () => {
@@ -287,8 +288,8 @@ describe("Viking Web Components v2", () => {
     expect(
       header.shadowRoot?.querySelector(".suite-header__brand"),
     ).toBeTruthy();
-    expect(header.shadowRoot?.textContent).toContain("Explore");
-    expect(header.shadowRoot?.textContent).toContain("Documentation");
+    expect(header.shadowRoot?.textContent).toContain("Blue Notes");
+    expect(header.shadowRoot?.textContent).toContain("Book");
     expect(header.shadowRoot?.textContent).toContain("Sign In");
     expect(
       header.shadowRoot?.querySelector("viking-theme-toggle-wc"),

@@ -53,7 +53,7 @@ describe("buildSuiteSearchItems", () => {
     );
     expect(
       items.find((item) => item.title === "DEML product showcase")?.href,
-    ).toBe("https://deml.app/#docs");
+    ).toBe("https://deml.app/");
     expect(items.find((item) => item.title === "Whitepaper")?.href).toBe(
       "https://dataengineeringformachinelearning.com/whitepaper",
     );

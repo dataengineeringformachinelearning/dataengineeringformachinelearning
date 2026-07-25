@@ -7,9 +7,10 @@
     "build:sitemap": "node scripts/build_sitemap.mjs",
     "prestart": "npm run build:sitemap",
     "clean:cache": "rm -rf .angular/cache dist/viking-ui dist/frontend out-tsc",
+    "clean:frontend": "rm -rf dist/frontend",
     "start": "node set-env.js && ng serve",
-    "build": "node set-env.js && ng build",
-    "build:vercel": "node set-env.js && ng build --configuration production",
+    "build": "npm run clean:frontend && node set-env.js && ng build",
+    "build:vercel": "npm run clean:frontend && node set-env.js && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "pretest": "npm run build:sitemap",
     "test": "node set-env.js && vitest run",
@@ -71,6 +72,7 @@
   },
   "overrides": {
     "esbuild": "0.28.1",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "brace-expansion": "5.0.8"
   }
 }

@@ -65,8 +65,7 @@
 
   &:hover {
     border-color: var(--viking-border-strong);
-    transform: translateY(-2px);
-    box-shadow: var(--viking-shadow-hover);
+    box-shadow: var(--viking-shadow-sm);
   }
 
   &:focus-visible {

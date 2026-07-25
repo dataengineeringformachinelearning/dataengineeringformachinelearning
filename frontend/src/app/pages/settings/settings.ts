@@ -94,7 +94,7 @@ export class Settings implements OnInit {
     () => !this.isViewer() && this.authService.mfaVerifiedInSession(),
   );
 
-  private readonly docsBase = `${environment.marketingUrl ?? 'https://dataengineeringformachinelearning.com'}/documentation`;
+  private readonly docsBase = `${(environment.backendUrl ?? 'https://backend.deml.app').replace(/\/$/, '')}/documentation`;
 
   protected readonly platformIntegrations = [
     { name: 'Kubernetes', icon: 'kubernetes', guide: this.docsBase },

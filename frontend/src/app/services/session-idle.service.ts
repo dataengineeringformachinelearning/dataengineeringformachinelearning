@@ -331,7 +331,11 @@ export class SessionIdleService {
       await this.authService.logout();
     } finally {
       this.unbindActivityListeners();
-      void this.router.navigate(['/login'], { queryParams: { reason: 'timeout' } });
+      const returnUrl =
+        this.router.url && this.router.url !== '/login' ? this.router.url : undefined;
+      void this.router.navigate(['/login'], {
+        queryParams: returnUrl ? { reason: 'timeout', returnUrl } : { reason: 'timeout' },
+      });
     }
   }
 }

@@ -2,11 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { siteEnv } from '../lib/site-env';
 
-const { FRONTEND_URL } = siteEnv();
-const destination = `${FRONTEND_URL.replace(/\/$/, '')}/#docs`;
-const pageTitle = 'Developer Portal — moved to DEML';
+const { BACKEND_URL } = siteEnv();
+const destination = `${BACKEND_URL.replace(/\/$/, '')}/documentation`;
+const pageTitle = 'Developer Portal — DEML API docs';
 const pageDescription =
-  'DEML product documentation and quick start now live on the DEML product showcase.';
+  'DEML developer documentation, integrations, and API references on the control-plane backend.';
 ---
 
 <Layout title={pageTitle} description={pageDescription} robots="noindex, follow">
@@ -14,11 +14,11 @@ const pageDescription =
     <section class="community-hero" aria-labelledby="docs-redirect-title">
       <h1 id="docs-redirect-title">Documentation has moved</h1>
       <p>
-        Product docs and quick start now live on the
-        <a href={destination}>DEML product showcase</a>.
+        Product docs and integration guides now live on the
+        <a href={destination}>DEML developer portal</a>.
       </p>
       <p>
-        <a class="viking-btn viking-btn-primary" href={destination}>Continue to DEML</a>
+        <a class="viking-btn viking-btn-primary" href={destination}>Continue to documentation</a>
       </p>
     </section>
   </div>

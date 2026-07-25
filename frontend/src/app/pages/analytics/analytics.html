@@ -9,8 +9,34 @@
     backNavLabel="Return to dashboard performance view"
   />
 
-  @if (loadError()) {
-  <viking-callout tone="warning" heading="Analytics degraded"> {{ loadError() }} </viking-callout>
+  @if (connectivity.offline()) {
+  <viking-callout tone="warning" [heading]="offlineHeading">
+    <p>{{ offlineBody }}</p>
+    <viking-button
+      variant="primary"
+      type="button"
+      icon="refresh"
+      [loading]="isRetrying()"
+      [disabled]="isRetrying()"
+      (pressed)="retryLoad()"
+    >
+      {{ retryLabel }}
+    </viking-button>
+  </viking-callout>
+  } @else if (loadError()) {
+  <viking-callout tone="warning" heading="Analytics degraded">
+    <p>{{ loadError() }}</p>
+    <viking-button
+      variant="primary"
+      type="button"
+      icon="refresh"
+      [loading]="isRetrying()"
+      [disabled]="isRetrying()"
+      (pressed)="retryLoad()"
+    >
+      {{ retryLabel }}
+    </viking-button>
+  </viking-callout>
   } @if (isLoading()) {
   <div class="viking-stack" role="status" aria-live="polite" aria-busy="true">
     <viking-spinner [size]="28" label="Loading analytics" />

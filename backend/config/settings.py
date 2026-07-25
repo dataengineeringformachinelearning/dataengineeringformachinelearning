@@ -260,6 +260,8 @@ DEML_HEADLESS_WRITE_RPM = get_int("DEML_HEADLESS_WRITE_RPM", default=300)
 DEML_HEADLESS_READ_RPM = get_int("DEML_HEADLESS_READ_RPM", default=1200)
 # Anonymous explore/status directory reads (IP-hashed; separate from headless auth quotas).
 DEML_PUBLIC_STATUS_RPM = get_int("DEML_PUBLIC_STATUS_RPM", default=60)
+# Anonymous newsletter/consent POSTs (IP-hashed) — tighter than public status reads.
+DEML_PUBLIC_ANON_WRITE_RPM = get_int("DEML_PUBLIC_ANON_WRITE_RPM", default=20)
 
 
 # Database
@@ -367,9 +369,13 @@ GOOGLE_OAUTH_REDIRECT_URI = os.getenv("GOOGLE_OAUTH_REDIRECT_URI", "")
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
-STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "price_1TlgG2Er73F9pBqwItcWHIJf")
+STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "")
 
 # Security Headers & Cookie Settings — Antigravity - Claude Opus 4.6
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = False  # Angular/Ninja read CSRF from cookie for header injection
+CSRF_COOKIE_SAMESITE = "Lax"
 if not DEBUG:
   SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
   SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True").lower() == "true"

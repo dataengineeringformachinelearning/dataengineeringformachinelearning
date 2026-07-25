@@ -137,9 +137,8 @@ jobs:
         if: steps.ensure-release.outputs.published == 'true'
         run: npm run sync:design-system
 
-      - name: Note Storybook host (Vercel)
+      - name: Note Storybook hosting (retired)
         if: steps.ensure-release.outputs.published == 'true'
         run: |
-          echo "ui.deml.app is the Vercel project deml-ui"
-          echo "(packages/viking-ui/vercel.ui.json → storybook-static)."
-          echo "Firebase Hosting for deml-ui is retired."
+          echo "Public Storybook (ui.deml.app / deml-ui) is retired."
+          echo "Use local build-storybook or Chromatic for visual review."

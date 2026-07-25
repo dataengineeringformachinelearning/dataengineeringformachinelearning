@@ -52,41 +52,24 @@ app-status-cta.isolated-status-cta {
   margin-top: var(--viking-space-2);
 }
 
-/* Premium signup CTA — full-width of status column */
+/* Quiet empty CTA — single column, forjd.co-level calm */
 .empty-state-premium {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--viking-space-4);
+  gap: var(--viking-space-3);
   width: 100%;
   box-sizing: border-box;
-  padding: var(--viking-space-5) var(--viking-space-4);
+  padding: var(--viking-space-4);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-xl);
-  background:
-    linear-gradient(
-      165deg,
-      color-mix(in srgb, var(--viking-accent) 10%, transparent),
-      transparent 42%
-    ),
-    var(--viking-surface-recipe, var(--viking-surface));
-  box-shadow: var(--viking-shadow-md);
-  text-align: center;
-  overflow: visible;
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow: var(--viking-shadow-sm);
+  text-align: left;
 }
 
-/* Split CTA + product mockup for explore/status/platform pages */
 .empty-state-premium.status-cta-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--viking-space-5);
-  align-items: center;
-  text-align: left;
-  overflow: visible;
-
-  @media (min-width: 1024px) {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  }
+  display: block;
 }
 
 .status-cta-copy {
@@ -94,20 +77,6 @@ app-status-cta.isolated-status-cta {
   flex-direction: column;
   gap: var(--viking-space-3);
   min-width: 0;
-}
-
-.status-cta-mockup {
-  min-width: 0;
-  overflow: visible;
-  padding-inline-end: clamp(0.75rem, 5vw, 2.5rem);
-  margin-inline-end: clamp(-0.75rem, -2vw, -1.5rem);
-}
-
-/* Split CTA: features stay single-column so the mockup can breathe */
-.empty-state-premium.status-cta-layout .features-list {
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .empty-state-premium.status-cta-layout .status-badge-premium {

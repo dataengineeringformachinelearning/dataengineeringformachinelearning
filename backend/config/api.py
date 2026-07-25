@@ -78,29 +78,68 @@ def api_health(request: Any) -> dict[str, str]:
   return {"status": "ok", "role": "user-control-plane"}
 
 
-@api.get("/ready", auth=None)
+@api.get("/ready", auth=None, include_in_schema=False)
 def api_ready(request: Any) -> dict[str, Any]:
-  """Readiness — Postgres reachable; FORJD credentials present (not a live FORJD probe)."""
+  """Readiness — Postgres + FORJD credentials; lightweight FORJD /health probe."""
+  import http.client
+  from urllib.parse import urlparse
+
   from django.db import connection
   from ninja.errors import HttpError
 
   try:
     connection.ensure_connection()
   except Exception as exc:
-    raise HttpError(503, f"database unavailable: {exc}") from exc
+    logger.exception("ready: database unavailable")
+    # Never echo exception text to clients when DEBUG is off.
+    detail = f"database unavailable: {exc}" if settings.DEBUG else "database unavailable"
+    raise HttpError(503, detail) from exc
 
-  forjd_url = str(getattr(settings, "FORJD_API_URL", "") or "").strip()
+  forjd_url = str(getattr(settings, "FORJD_API_URL", "") or "").strip().rstrip("/")
   forjd_ok = forjd_url.lower().startswith("https://")
   token_set = bool(str(getattr(settings, "FORJD_SERVICE_TOKEN", "") or "").strip())
   tenant_set = bool(str(getattr(settings, "FORJD_TENANT_ID", "") or "").strip())
   if not forjd_ok or not token_set or not tenant_set:
+    # Boolean flags only — never log secret values.
+    logger.warning(
+      "ready: FORJD binding incomplete url_ok=%s svc_set=%s tenant_set=%s",
+      forjd_ok,
+      token_set,
+      tenant_set,
+    )
     raise HttpError(503, "FORJD control-plane credentials not configured")
+
+  # Soft probe — settings-owned HTTPS base + fixed /health (not user-controlled).
+  forjd_health = "unreachable"
+  try:
+    parsed = urlparse(f"{forjd_url}/health")
+    if parsed.scheme != "https" or not parsed.hostname:
+      raise ValueError("forjd_url_invalid")
+    # Python 3.12 verifies TLS by default; host is settings-owned, not request input.
+    # nosemgrep: python.lang.security.audit.httpsconnection-detected.httpsconnection-detected
+    conn = http.client.HTTPSConnection(parsed.hostname, parsed.port or 443, timeout=2.5)
+    try:
+      conn.request("GET", parsed.path or "/health", headers={"Accept": "application/json"})
+      resp = conn.getresponse()
+      forjd_health = "ok" if resp.status < 400 else "degraded"
+    finally:
+      conn.close()
+  except (TimeoutError, OSError, ValueError, http.client.HTTPException) as exc:
+    forjd_health = "unreachable"
+    logger.warning(
+      "ready: FORJD /health probe failed error_type=%s",
+      type(exc).__name__,
+    )
+
+  if forjd_health != "ok":
+    logger.warning("ready: FORJD health soft-degraded forjd_health=%s", forjd_health)
 
   return {
     "status": "ready",
     "role": "user-control-plane",
     "database": "ok",
-    "forjd_api_url": forjd_url.rstrip("/"),
+    "forjd_api_url": forjd_url,
     "forjd_token_configured": True,
     "forjd_tenant_configured": True,
+    "forjd_health": forjd_health,
   }

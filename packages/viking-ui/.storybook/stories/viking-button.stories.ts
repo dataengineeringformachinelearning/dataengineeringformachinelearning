@@ -153,7 +153,7 @@ export const AsLink: Story = {
     disabled: false,
     square: false,
     fullWidth: false,
-    href: "https://deml.app/#docs",
+    href: "https://deml.app/",
   },
 };
 

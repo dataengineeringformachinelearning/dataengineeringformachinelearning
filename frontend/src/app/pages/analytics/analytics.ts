@@ -42,10 +42,19 @@ import { AuthService } from '../../services/auth.service';
 import { LiveUpdatesService } from '../../services/live-updates.service';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import {
+  FORJD_FALLBACK_BODY,
+  FORJD_UNAVAILABLE_BODY,
+  LOAD_FAILED_BODY,
+  OFFLINE_BODY,
+  OFFLINE_HEADING,
+  STATUS_RETRY_LABEL,
+} from '../../core/continuity-copy';
+import {
   UnifiedSelect,
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
+import { ConnectivityService } from '../../services/connectivity.service';
 import {
   VikingDonutSegment,
   hasChartValues,
@@ -266,7 +275,12 @@ export class AnalyticsComponent implements OnDestroy {
   private authService = inject(AuthService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private liveUpdates = inject(LiveUpdatesService);
+  readonly connectivity = inject(ConnectivityService);
   private analyticsBootstrapped = false;
+
+  readonly offlineHeading = OFFLINE_HEADING;
+  readonly offlineBody = OFFLINE_BODY;
+  readonly retryLabel = STATUS_RETRY_LABEL;
 
   // --- Metric / filter signals ---
   public p99Latency = signal(0);
@@ -278,6 +292,7 @@ export class AnalyticsComponent implements OnDestroy {
   public cookieConsents = signal(0);
   public activeProviders = signal<string[]>([]);
   public isLoading = signal(true);
+  isRetrying = signal(false);
   metricsDegraded = signal(false);
   loadError = signal<string | null>(null);
 
@@ -431,9 +446,7 @@ export class AnalyticsComponent implements OnDestroy {
     effect(() => {
       if (!this.liveUpdates.degraded()) return;
       this.metricsDegraded.set(true);
-      this.loadError.set(
-        'Live FORJD projection updates are unavailable. Showing the last successful overview.',
-      );
+      this.loadError.set(FORJD_FALLBACK_BODY);
     });
   }
 
@@ -487,11 +500,7 @@ export class AnalyticsComponent implements OnDestroy {
             response?.code === 'forjd_degraded' ||
             user_metrics?.data_available === false;
           this.metricsDegraded.set(degraded);
-          this.loadError.set(
-            degraded
-              ? 'Analytics is running in fallback mode. Live FORJD rollups are unavailable.'
-              : null,
-          );
+          this.loadError.set(degraded ? FORJD_FALLBACK_BODY : null);
 
           if (user_metrics?.available_sites) {
             this.availableSites.set(user_metrics.available_sites);
@@ -645,6 +654,7 @@ export class AnalyticsComponent implements OnDestroy {
           this.loadError.set('Analytics overview returned an unexpected response.');
         }
         this.isLoading.set(false);
+        this.isRetrying.set(false);
       },
       error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
         console.error('Failed to load analytics data', err);
@@ -653,18 +663,21 @@ export class AnalyticsComponent implements OnDestroy {
         const code = err?.error?.code;
         const detail = err?.error?.detail;
         if (err?.status === 503 || code === 'forjd_degraded') {
-          this.loadError.set(
-            detail ||
-              'FORJD analytics is unavailable for this account. Check tenant mapping and try again.',
-          );
+          this.loadError.set(detail || FORJD_UNAVAILABLE_BODY);
         } else if (err?.status === 401 || err?.status === 403) {
           this.loadError.set(detail || 'Sign in again to load analytics.');
         } else {
-          this.loadError.set(detail || 'Unable to load analytics from FORJD.');
+          this.loadError.set(detail || LOAD_FAILED_BODY);
         }
         this.isLoading.set(false);
+        this.isRetrying.set(false);
       },
     });
+  }
+
+  retryLoad(): void {
+    this.isRetrying.set(true);
+    this.loadAnalyticsData();
   }
 
   private loadTenants() {

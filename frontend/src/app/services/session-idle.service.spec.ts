@@ -26,6 +26,7 @@ describe('SessionIdleService', () => {
     logout: vi.fn(async () => undefined),
   };
   const routerMock = {
+    url: '/dashboard',
     navigate: vi.fn(async () => true),
   };
 
@@ -89,8 +90,8 @@ describe('SessionIdleService', () => {
 
     await vi.advanceTimersByTimeAsync(1);
     expect(authMock.logout).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/'], {
-      queryParams: { reason: 'timeout' },
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: { reason: 'timeout', returnUrl: '/dashboard' },
     });
   });
 
@@ -101,8 +102,8 @@ describe('SessionIdleService', () => {
     await flushPromises();
 
     expect(authMock.logout).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/'], {
-      queryParams: { reason: 'timeout' },
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: { reason: 'timeout', returnUrl: '/dashboard' },
     });
   });
 

@@ -152,8 +152,17 @@ export class SessionStateService implements OnDestroy {
   private async forceLocalLogout(reason?: string): Promise<void> {
     this.sessionIdle.stop();
     await this.authService.logout();
-    const query = reason === 'timeout' ? { reason: 'timeout' } : undefined;
-    void this.router.navigate(['/login'], { queryParams: query });
+    const returnUrl = this.router.url && this.router.url !== '/login' ? this.router.url : undefined;
+    const query: Record<string, string> = {};
+    if (reason === 'timeout' || reason === 'session') {
+      query['reason'] = reason;
+    }
+    if (returnUrl) {
+      query['returnUrl'] = returnUrl;
+    }
+    void this.router.navigate(['/login'], {
+      queryParams: Object.keys(query).length ? query : undefined,
+    });
   }
 
   /** Server- or cross-tab initiated sign-out. */

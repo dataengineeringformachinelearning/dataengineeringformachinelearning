@@ -15,13 +15,13 @@ class StaticViewSitemap(Sitemap):
 
 
 class APIDocsSitemap(Sitemap):
-  """Expose the Swagger docs page for SEO crawlers."""
+  """API docs stay reachable for humans but are not advertised to crawlers."""
 
-  priority = 0.3
-  changefreq = "weekly"
+  priority = 0.1
+  changefreq = "yearly"
 
   def items(self):
-    return ["/api/v1/docs", "/api/v1/redoc"]
+    return []
 
   def location(self, item):
     return item

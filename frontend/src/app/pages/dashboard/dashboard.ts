@@ -39,12 +39,21 @@ import {
   VikingCallout,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
+import {
+  FORJD_FALLBACK_BODY,
+  FORJD_UNAVAILABLE_BODY,
+  LOAD_FAILED_BODY,
+  OFFLINE_BODY,
+  OFFLINE_HEADING,
+  STATUS_RETRY_LABEL,
+} from '../../core/continuity-copy';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { MonitorService } from '../../services/monitor.service';
 import { OnboardingService } from '../../services/onboarding.service';
 import { LiveUpdatesService } from '../../services/live-updates.service';
+import { ConnectivityService } from '../../services/connectivity.service';
 import {
   UnifiedSelect,
   SelectOption,
@@ -156,9 +165,15 @@ export class Dashboard implements OnInit, OnDestroy {
   private monitorService = inject(MonitorService);
   private onboardingService = inject(OnboardingService);
   private liveUpdates = inject(LiveUpdatesService);
+  readonly connectivity = inject(ConnectivityService);
+
+  readonly offlineHeading = OFFLINE_HEADING;
+  readonly offlineBody = OFFLINE_BODY;
+  readonly retryLabel = STATUS_RETRY_LABEL;
 
   activeTab = signal<DashboardTab>('overview');
   isLoading = signal(true);
+  isRetrying = signal(false);
   /** True only after a successful overview payload is applied. */
   metricsReady = signal(false);
   /** Distinguishes FORJD outages from honest empty telemetry. */
@@ -296,9 +311,7 @@ export class Dashboard implements OnInit, OnDestroy {
     effect(() => {
       if (!this.liveUpdates.degraded()) return;
       this.metricsDegraded.set(true);
-      this.loadError.set(
-        'Live FORJD projection updates are unavailable. Showing the last successful overview.',
-      );
+      this.loadError.set(FORJD_FALLBACK_BODY);
     });
 
     afterNextRender(() => {
@@ -367,7 +380,15 @@ export class Dashboard implements OnInit, OnDestroy {
           }
         }
       },
+      error: () => {
+        // Keep dashboard usable when the pages directory is unreachable.
+      },
     });
+  }
+
+  retryLoad() {
+    this.isRetrying.set(true);
+    this.refreshData();
   }
 
   private refreshData() {
@@ -439,11 +460,7 @@ export class Dashboard implements OnInit, OnDestroy {
           this.benchmarkSummary.set(benchmarking?.current_scope ?? null);
           this.metricsReady.set(!degraded);
           this.metricsDegraded.set(degraded);
-          this.loadError.set(
-            degraded
-              ? 'Monitoring is running in fallback mode. Live FORJD analytics are unavailable.'
-              : null,
-          );
+          this.loadError.set(degraded ? FORJD_FALLBACK_BODY : null);
 
           if (user_metrics?.available_sites) {
             this.siteOptions.set([
@@ -494,6 +511,7 @@ export class Dashboard implements OnInit, OnDestroy {
           );
         }
         this.isLoading.set(false);
+        this.isRetrying.set(false);
       },
       error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
         this.metricsReady.set(false);
@@ -501,14 +519,12 @@ export class Dashboard implements OnInit, OnDestroy {
         const code = err?.error?.code;
         const detail = err?.error?.detail;
         if (err?.status === 503 || code === 'forjd_degraded') {
-          this.loadError.set(
-            detail ||
-              'FORJD analytics is unavailable for this account. Check tenant mapping and try again.',
-          );
+          this.loadError.set(detail || FORJD_UNAVAILABLE_BODY);
         } else {
-          this.loadError.set(detail || 'Unable to load dashboard analytics.');
+          this.loadError.set(detail || LOAD_FAILED_BODY);
         }
         this.isLoading.set(false);
+        this.isRetrying.set(false);
       },
     });
   }

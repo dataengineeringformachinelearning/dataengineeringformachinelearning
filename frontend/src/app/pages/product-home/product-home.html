@@ -6,10 +6,13 @@
     class="suite-landing-hero viking-unified-hero landing__hero"
     aria-labelledby="main-title"
   >
-    <div class="suite-landing-badge hero-badge viking-unified-hero-badge">
+    <p class="suite-landing-badge hero-badge viking-unified-hero-badge">
       <span class="badge-dot pulse-dot" aria-hidden="true"></span>
-      <span class="badge-text">Learning · Control plane · v{{ version }}</span>
-    </div>
+      <span class="badge-text">
+        Learning · Control plane · v{{ version }} @if (controlPlaneReady() === 'degraded') { · FORJD
+        degraded } @else if (controlPlaneReady() === 'unreachable') { · API unreachable }
+      </span>
+    </p>
     <h1 class="hero-brand suite-landing-brand" id="main-title">DEML</h1>
     <p class="title viking-unified-hero-title suite-landing-headline">
       Operational intelligence for resilient AI systems
@@ -24,19 +27,12 @@
         routerLink="/dashboard"
         class="cta-button suite-btn viking-btn fj-btn"
         data-variant="primary"
+        >Open dashboard</a
       >
-        <span class="cta-content">
-          <viking-app-icon name="home" [size]="20" class="cta-icon" aria-hidden="true" />
-          <span class="cta-label">Open dashboard</span>
-        </span>
-      </a>
       } @else {
-      <a routerLink="/login" class="cta-button suite-btn viking-btn fj-btn" data-variant="primary">
-        <span class="cta-content">
-          <viking-app-icon name="rocket_launch" [size]="20" class="cta-icon" aria-hidden="true" />
-          <span class="cta-label">Get started</span>
-        </span>
-      </a>
+      <a routerLink="/login" class="cta-button suite-btn viking-btn fj-btn" data-variant="primary"
+        >Get started</a
+      >
       }
       <a
         href="https://forjd.co/"
@@ -44,23 +40,15 @@
         data-variant="outline"
         rel="noopener noreferrer"
         target="_blank"
+        >Open FORJD</a
       >
-        <span class="cta-content">
-          <viking-app-icon name="hub" [size]="20" class="cta-icon" aria-hidden="true" />
-          <span class="cta-label">Open FORJD</span>
-        </span>
-      </a>
       <a
         [href]="marketingUrl"
         class="cta-button suite-btn viking-btn fj-btn"
         data-variant="ghost"
         rel="noopener noreferrer"
+        >Community</a
       >
-        <span class="cta-content">
-          <viking-app-icon name="globe" [size]="20" class="cta-icon" aria-hidden="true" />
-          <span class="cta-label">Community</span>
-        </span>
-      </a>
     </div>
   </section>
 
@@ -68,37 +56,22 @@
     <header class="quick-start-header suite-landing-section-header viking-unified-section-header">
       <span class="section-tag suite-landing-tag">DEPLOYMENT SEQUENCE</span>
       <h2 id="quick-start-title" class="suite-landing-section-title">
-        Operational onboarding in four steps
+        Four steps to the control plane
       </h2>
       <p class="suite-landing-section-lede">
         Connect, observe, and act. The platform sustains projections, enrichment, and threat scoring
         autonomously.
       </p>
     </header>
-    <ol
-      class="quick-start-steps suite-landing-steps landing__steps viking-column-layout viking-column-layout--4"
-    >
+    <ol class="quick-start-steps suite-landing-steps landing__steps">
       @for (item of quickStartSteps; track item.step) {
       <li class="quick-start-step suite-landing-feature suite-card viking-card">
         <span class="step-number suite-landing-step-num" aria-hidden="true">{{ item.step }}</span>
-        <viking-app-icon [name]="item.icon" [size]="20" class="step-icon" />
         <h3>{{ item.title }}</h3>
         <p>{{ item.description }}</p>
       </li>
       }
     </ol>
-  </section>
-
-  <section class="integrations-strip" aria-label="Integrates with modern infrastructure">
-    <p class="strip-label">INTEGRATES WITH</p>
-    <div class="integration-logos">
-      @for (item of integrations; track item.name) {
-      <a routerLink="/" fragment="docs" class="integration-logo-item">
-        <viking-app-icon [name]="item.icon" [size]="20" />
-        <span>{{ item.name }}</span>
-      </a>
-      }
-    </div>
   </section>
 
   @for (cap of capabilities; track cap.title; let idx = $index) {
@@ -123,64 +96,20 @@
     <div class="showcase-band-visual" aria-hidden="true">
       <div class="visual-panel suite-card viking-card">
         <div class="visual-panel-header">
-          <viking-app-icon [name]="cap.icon" [size]="20" />
-          <span>{{ cap.title }}</span>
+          <span>{{ cap.panelTitle }}</span>
         </div>
-        <div class="visual-metrics suite-landing-metric-list">
+        <ul class="visual-metrics suite-landing-metric-list">
           @for (m of cap.metrics; track m.label) {
-          <div class="visual-metric">
+          <li class="visual-metric">
             <span class="metric-label">{{ m.label }}</span>
-            <span class="metric-value">{{ metricValue(m.key, m.staticValue) }}</span>
-            <span class="metric-trend" [class]="'trend-' + m.trend" aria-hidden="true">
-              {{ m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '—' }}
-            </span>
-          </div>
+            <strong class="metric-value">{{ metricValue(m.key, m.staticValue) }}</strong>
+          </li>
           }
-        </div>
+        </ul>
       </div>
     </div>
   </section>
   }
-
-  <section id="docs" class="quick-start-band" aria-labelledby="docs-title">
-    <header class="quick-start-header viking-unified-section-header">
-      <span class="section-tag">QUICK START</span>
-      <h2 id="docs-title">Docs & integrations</h2>
-      <p>
-        Product documentation lives with the showcase. OpenAPI contracts for DEML and FORJD are
-        linked below; community learning stays on the community site.
-      </p>
-    </header>
-    <div
-      class="quick-start-steps viking-column-layout viking-column-layout--2"
-      aria-label="Docs and API documentation"
-    >
-      @for (step of docsSteps; track step.title) {
-      <article class="quick-start-step viking-card">
-        <h3>{{ step.title }}</h3>
-        <p>{{ step.detail }}</p>
-        <a [routerLink]="step.href" class="showcase-link">Continue →</a>
-      </article>
-      } @for (doc of apiDocs; track doc.name) {
-      <article class="quick-start-step viking-card">
-        <h3>{{ doc.name }}</h3>
-        <p>{{ doc.detail }}</p>
-        <div class="showcase-link-row">
-          <a
-            [href]="doc.swaggerHref"
-            class="showcase-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Swagger →</a
-          >
-          <a [href]="doc.redocHref" class="showcase-link" target="_blank" rel="noopener noreferrer"
-            >ReDoc →</a
-          >
-        </div>
-      </article>
-      }
-    </div>
-  </section>
 
   <section class="security-pillars-band" aria-labelledby="security-pillars-title">
     <header class="security-pillars-header suite-landing-section-header">
@@ -190,13 +119,12 @@
       </h2>
       <p class="suite-landing-section-lede">
         Every layer — from command ingress to projection materialization — is encrypted, isolated,
-        and audited. Operators focus on models; the platform sustains the perimeter.
+        and audited.
       </p>
     </header>
     <ul class="security-pillars-grid suite-landing-grid landing__grid">
       @for (pillar of securityPillars; track pillar.label) {
       <li class="security-pillar suite-landing-feature suite-card viking-card">
-        <viking-app-icon [name]="pillar.icon" [size]="20" />
         <strong>{{ pillar.label }}</strong>
         <span>{{ pillar.detail }}</span>
       </li>
@@ -206,40 +134,62 @@
 
   <section class="pricing-showcase" aria-labelledby="pricing-title">
     <header class="pricing-header">
-      <span class="section-tag">API ACCESS</span>
-      <h2 id="pricing-title">Free, rate-limited access</h2>
-      <p>
+      <span class="section-tag suite-landing-tag">API ACCESS</span>
+      <h2 id="pricing-title" class="suite-landing-section-title">Free, rate-limited access</h2>
+      <p class="suite-landing-section-lede">
         Every account runs on the free plan with fair-use rate limits — no paid tiers and no
         checkout.
       </p>
     </header>
-    <div class="pricing-cards-container viking-column-layout viking-column-layout--1">
-      <div class="viking-card pricing-card standard-tier">
+    <div class="pricing-cards-container">
+      <div class="viking-card suite-card pricing-card standard-tier">
         <h3>Free plan</h3>
         <div class="price">$0</div>
         <ul class="features-list">
-          <li><viking-app-icon name="check" [size]="20" /> 60 requests / minute</li>
-          <li><viking-app-icon name="check" [size]="20" /> Core analytics &amp; status surfaces</li>
-          <li><viking-app-icon name="check" [size]="20" /> Community support</li>
+          <li>60 requests / minute</li>
+          <li>Core analytics &amp; status surfaces</li>
+          <li>Community support</li>
         </ul>
         @if (isAuthenticated()) {
         <a
           routerLink="/dashboard"
-          class="suite-btn viking-btn viking-btn-primary cta-button"
+          class="suite-btn viking-btn fj-btn cta-button"
           data-variant="primary"
+          >Open dashboard</a
         >
-          Open dashboard
-        </a>
         } @else {
-        <a
-          routerLink="/login"
-          class="suite-btn viking-btn viking-btn-primary cta-button"
-          data-variant="primary"
+        <a routerLink="/login" class="suite-btn viking-btn fj-btn cta-button" data-variant="primary"
+          >Get started free</a
         >
-          Get started free
-        </a>
         }
       </div>
     </div>
   </section>
+
+  <footer class="suite-landing-meta landing__meta">
+    <div>
+      <span>api</span
+      ><a [href]="backendUrl" target="_blank" rel="noopener noreferrer"
+        ><code>{{ backendUrl }}</code></a
+      >
+    </div>
+    <div>
+      <span>swagger</span
+      ><a [href]="demlDocsUrl" target="_blank" rel="noopener noreferrer"
+        ><code>/api/v1/docs</code></a
+      >
+    </div>
+    <div>
+      <span>redoc</span
+      ><a [href]="demlRedocUrl" target="_blank" rel="noopener noreferrer"
+        ><code>/api/v1/redoc</code></a
+      >
+    </div>
+    <div>
+      <span>forjd</span
+      ><a [href]="forjdDocsUrl" target="_blank" rel="noopener noreferrer"
+        ><code>backend.forjd.co</code></a
+      >
+    </div>
+  </footer>
 </div>

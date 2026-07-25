@@ -174,6 +174,10 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
         # This prevents chicken-egg 401s on initial bindServerSession.
         is_auth_handshake = request.path.startswith("/api/v1/auth/")
         if not is_auth_handshake and not is_session_valid(session_id, firebase_uid):
+          logger.warning(
+            "Firebase session revoked or expired uid_prefix=%s",
+            (firebase_uid or "")[:8] or "-",
+          )
           return JsonResponse({"detail": "Session revoked or expired"}, status=401)
         touch_session(session_id)
 
@@ -187,6 +191,17 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
 def _is_public_status_path(path: str) -> bool:
   normalized = path.rstrip("/") or "/"
   return normalized == "/api/v1/system-status" or normalized.startswith("/api/v1/system-status/")
+
+
+def _is_public_anon_write_path(path: str) -> bool:
+  """Unauthenticated mutating telemetry / newsletter surfaces (IP-hashed RPM)."""
+  normalized = path.rstrip("/") or "/"
+  return normalized in {
+    "/api/v1/telemetry/cookie-consent",
+    "/api/v1/telemetry/subscribe",
+    "/api/v1/users/consent",
+    "/api/v1/users/newsletter",
+  }
 
 
 class HeadlessRateLimitMiddleware(MiddlewareMixin):
@@ -203,6 +218,14 @@ class HeadlessRateLimitMiddleware(MiddlewareMixin):
         request,
         scope_keys=(hashed_scope("ip", get_client_ip(request) or "unknown", "public_status"),),
         capacity=int(settings.DEML_PUBLIC_STATUS_RPM),
+      )
+
+    # --- Anonymous newsletter / consent writes (IP-hashed) ---
+    if not authenticated and request.method == "POST" and _is_public_anon_write_path(request.path):
+      return self._consume_scopes(
+        request,
+        scope_keys=(hashed_scope("ip", get_client_ip(request) or "unknown", "public_anon_write"),),
+        capacity=int(getattr(settings, "DEML_PUBLIC_ANON_WRITE_RPM", 20)),
       )
 
     limit_bucket = _headless_limit_bucket(request)

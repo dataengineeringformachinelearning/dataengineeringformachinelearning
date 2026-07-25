@@ -77,10 +77,10 @@ def robots_txt(request: HttpRequest) -> HttpResponse:
     "User-agent: *",
     "Allow: /",
     "Allow: /documentation",
-    "Allow: /api/v1/docs",
-    "Allow: /api/v1/redoc",
-    "Allow: /api/v1/openapi.json",
     "Disallow: /api/",
+    "Disallow: /api/v1/docs",
+    "Disallow: /api/v1/redoc",
+    "Disallow: /api/v1/openapi.json",
     "",
     f"Sitemap: {sitemap_url}",
   ]

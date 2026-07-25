@@ -43,7 +43,7 @@ def test_unregistered_or_invalid_origin_fails_closed(origin: str) -> None:
 
 
 @pytest.mark.django_db
-@override_settings(CORS_ALLOWED_ORIGINS=[])
+@override_settings(DEBUG=True, CORS_ALLOWED_ORIGINS=[])
 @pytest.mark.parametrize(
   "origin",
   [
@@ -55,6 +55,14 @@ def test_unregistered_or_invalid_origin_fails_closed(origin: str) -> None:
 def test_platform_origins_are_always_allowed(origin: str) -> None:
   cache.clear()
   assert is_domain_registered(origin) is True
+
+
+@pytest.mark.django_db
+@override_settings(DEBUG=False, CORS_ALLOWED_ORIGINS=[])
+def test_localhost_not_auto_allowed_outside_debug() -> None:
+  cache.clear()
+  assert is_domain_registered("http://localhost:4200") is False
+  assert is_domain_registered("https://deml.app") is True
 
 
 @pytest.mark.django_db

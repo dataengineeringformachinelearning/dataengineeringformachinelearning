@@ -14,8 +14,8 @@
     <viking-button variant="primary" href="/login">Sign In</viking-button>
   </viking-callout>
   } @else {
-  <viking-callout tone="danger" heading="Unable to Connect">
-    <p>We couldn't reach the status service. Verify the backend is running, then retry.</p>
+  <viking-callout tone="danger" [heading]="connectHeading">
+    <p>{{ connectBody }}</p>
     <viking-button
       variant="primary"
       type="button"
@@ -24,7 +24,7 @@
       [disabled]="isRetrying()"
       (pressed)="retryLoad()"
     >
-      Retry Connection
+      {{ retryLabel }}
     </viking-button>
   </viking-callout>
   } } @for (page of displayPages(); track page.id) {
@@ -70,13 +70,8 @@
           {{ ann.body }}
         </viking-announcement-card>
         } } @else {
-        <viking-announcement-card
-          tone="info"
-          title="Sanity.io Integration Active"
-          publishedAt="2026-06-13"
-        >
-          We have successfully integrated Sanity.io as our Headless CMS for real-time status page
-          updates. Announcements are now served globally from edge CDNs for lightning-fast delivery.
+        <viking-announcement-card tone="info" title="No announcements">
+          There are no published system announcements right now.
         </viking-announcement-card>
         }
       </section>
@@ -258,7 +253,6 @@
       badgeText="Free public status page"
       title="Ship status pages that sell reliability"
       subtitle="Publish a public status surface with SLA forecasts, threat posture, and live telemetry — the same stack that powers this page."
-      mockupVariant="security-ops"
     ></app-status-cta>
   </div>
   <!-- close viking-stack for rhythm -->

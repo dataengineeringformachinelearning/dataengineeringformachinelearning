@@ -12,14 +12,12 @@ import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 
 type MetricKey = 'p99' | 'uptime' | 'requests' | 'threats' | 'static';
 
 type ShowcaseMetric = {
   label: string;
   key: MetricKey;
-  trend: 'up' | 'down' | 'stable';
   staticValue?: string;
 };
 
@@ -27,7 +25,7 @@ type ShowcaseCapability = {
   tag: string;
   title: string;
   description: string;
-  icon: string;
+  panelTitle: string;
   metrics: ShowcaseMetric[];
   linkHref: string;
   linkLabel: string;
@@ -35,25 +33,11 @@ type ShowcaseCapability = {
   authedLabel?: string;
 };
 
-type DocsStep = {
-  title: string;
-  detail: string;
-  href: string;
-  external?: boolean;
-};
-
-type ApiDocLink = {
-  name: string;
-  detail: string;
-  swaggerHref: string;
-  redocHref: string;
-};
-
-// --- Public DEML product showcase (former marketing homepage) ---
+// --- Public DEML product showcase (suite-landing parity with forjd.co) ---
 @Component({
   selector: 'app-product-home',
   standalone: true,
-  imports: [RouterLink, VikingAppIcon],
+  imports: [RouterLink],
   templateUrl: './product-home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -65,48 +49,40 @@ export class ProductHome implements OnInit {
   protected readonly marketingUrl = environment.marketingUrl;
   protected readonly backendUrl = environment.backendUrl;
   protected readonly forjdApiUrl = environment.forjdApiUrl;
+  protected readonly demlDocsUrl = `${environment.backendUrl}/api/v1/docs`;
+  protected readonly demlRedocUrl = `${environment.backendUrl}/api/v1/redoc`;
+  protected readonly forjdDocsUrl = `${environment.forjdApiUrl}/docs`;
   protected readonly version = environment.version;
   protected readonly isAuthenticated = this.auth.isAuthenticated;
 
-  protected readonly p99Value = signal('Live');
-  protected readonly uptimeValue = signal('Live');
-  protected readonly requestsValue = signal('Live');
-  protected readonly threatsValue = signal('Live');
+  protected readonly p99Value = signal('—');
+  protected readonly uptimeValue = signal('—');
+  protected readonly requestsValue = signal('—');
+  protected readonly threatsValue = signal('—');
+  /** Shared continuity signal: DEML `/api/v1/ready` (+ soft FORJD health). */
+  protected readonly controlPlaneReady = signal<'ok' | 'degraded' | 'unreachable'>('ok');
 
   protected readonly quickStartSteps = [
     {
       step: '01',
       title: 'Connect',
       description: 'Deploy one script tag or API key. No agent fleet to maintain.',
-      icon: 'link',
     },
     {
       step: '02',
       title: 'Observe',
       description: 'Telemetry, threat scores, and CVE posture surface in real time.',
-      icon: 'visibility',
     },
     {
       step: '03',
       title: 'Act',
       description: 'Triage incidents, contain anomalies, and sustain operational tempo.',
-      icon: 'shield',
     },
     {
       step: '04',
       title: 'Scale',
       description: 'Symmetrical pipelines for every tenant. Zero per-customer overhead.',
-      icon: 'trending_up',
     },
-  ] as const;
-
-  protected readonly integrations = [
-    { name: 'Kubernetes', icon: 'kubernetes' },
-    { name: 'TensorFlow', icon: 'tensorflow' },
-    { name: 'PyTorch', icon: 'pytorch' },
-    { name: 'Apache Spark', icon: 'apache-spark' },
-    { name: 'Databricks', icon: 'databricks' },
-    { name: 'AWS Redshift', icon: 'aws-redshift' },
   ] as const;
 
   protected readonly capabilities: ShowcaseCapability[] = [
@@ -115,25 +91,25 @@ export class ProductHome implements OnInit {
       title: 'Operational Visibility',
       description:
         'See performance, availability, and emerging risk in one live operational view. Fast updates turn subtle drift into an early warning before customers feel the impact.',
-      icon: 'analytics',
+      panelTitle: 'Live signals',
       metrics: [
-        { label: 'P99 Latency · 24h', key: 'p99', trend: 'down' },
-        { label: 'Uptime · 30d', key: 'uptime', trend: 'stable' },
-        { label: 'Requests · 24h', key: 'requests', trend: 'up' },
+        { label: 'P99 Latency · 24h', key: 'p99' },
+        { label: 'Uptime · 30d', key: 'uptime' },
+        { label: 'Requests · 24h', key: 'requests' },
       ],
-      linkHref: '/#docs',
-      linkLabel: 'Review integration specifications →',
+      linkHref: '/explore',
+      linkLabel: 'Explore public status →',
     },
     {
       tag: 'SECURITY',
       title: 'Threat Intelligence',
       description:
         'ML models score anomalies at ingress. Semgrep and Trivy findings consolidate into a unified triage board; high-confidence indicators serialize to STIX 2.1 for downstream SOAR and TAXII federation.',
-      icon: 'security',
+      panelTitle: 'Threat posture',
       metrics: [
-        { label: 'Threats Detected · 24h', key: 'threats', trend: 'down' },
-        { label: 'Threat Model', key: 'static', staticValue: 'Active', trend: 'stable' },
-        { label: 'Public Scope', key: 'static', staticValue: 'Tenant0', trend: 'stable' },
+        { label: 'Threats Detected · 24h', key: 'threats' },
+        { label: 'Threat Model', key: 'static', staticValue: 'Active' },
+        { label: 'Public Scope', key: 'static', staticValue: 'Tenant0' },
       ],
       linkHref: '/login',
       authedHref: '/vulnerabilities',
@@ -145,11 +121,11 @@ export class ProductHome implements OnInit {
       title: 'Event Projections',
       description:
         'Every operational change is durable, replayable, and reflected across live views without losing history. The same reliable path protects every customer workspace.',
-      icon: 'hub',
+      panelTitle: 'Projection path',
       metrics: [
-        { label: 'Observed Requests · 24h', key: 'requests', trend: 'up' },
-        { label: 'Outbox Delivery', key: 'static', staticValue: 'Durable', trend: 'stable' },
-        { label: 'Tenants', key: 'static', staticValue: 'Symmetrical', trend: 'stable' },
+        { label: 'Observed Requests · 24h', key: 'requests' },
+        { label: 'Outbox Delivery', key: 'static', staticValue: 'Durable' },
+        { label: 'Tenants', key: 'static', staticValue: 'Symmetrical' },
       ],
       linkHref: '/status/platform-status',
       linkLabel: 'Observe live projections →',
@@ -158,57 +134,26 @@ export class ProductHome implements OnInit {
 
   protected readonly securityPillars = [
     {
-      icon: 'lock',
       label: 'AES-256-GCM at rest',
       detail: 'Field-level encryption with KMS rotation every 90 days',
     },
     {
-      icon: 'fingerprint',
       label: 'UUID isolation',
       detail: 'No sequential identifiers. No cross-tenant data paths.',
     },
     {
-      icon: 'gpp_maybe',
       label: 'Behavioral enrichment',
       detail: 'ASN, ISP, and biometric signals at ingress',
     },
     {
-      icon: 'verified_user',
       label: 'Zero-trust perimeter',
       detail: 'Verified identity and policy checks on every protected action',
     },
   ] as const;
 
-  protected readonly docsSteps: DocsStep[] = [
-    {
-      title: 'Create an account',
-      detail: 'Sign in with Firebase Auth, then open your dashboard workspace.',
-      href: '/login',
-    },
-    {
-      title: 'Explore public status',
-      detail: 'Browse published status pages and the Tenant0 live projection.',
-      href: '/explore',
-    },
-  ];
-
-  protected readonly apiDocs: ApiDocLink[] = [
-    {
-      name: 'DEML API',
-      detail: 'Control-plane OpenAPI — identity, billing, and sealed FORJD handoff.',
-      swaggerHref: `${environment.backendUrl}/api/v1/docs`,
-      redocHref: `${environment.backendUrl}/api/v1/redoc`,
-    },
-    {
-      name: 'FORJD API',
-      detail: 'Data-plane OpenAPI — sealed ingest, projections, replay, and ML.',
-      swaggerHref: `${environment.forjdApiUrl}/docs`,
-      redocHref: `${environment.forjdApiUrl}/redoc`,
-    },
-  ];
-
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      void this.probeControlPlaneReady();
       void this.hydratePlatformMetrics();
     }
   }
@@ -227,6 +172,27 @@ export class ProductHome implements OnInit {
       return this.requestsValue();
     }
     return this.threatsValue();
+  }
+
+  private async probeControlPlaneReady(): Promise<void> {
+    try {
+      const ready = await firstValueFrom(
+        this.http.get<{ forjd_health?: string; status?: string }>(
+          `${this.backendUrl}/api/v1/ready`,
+        ),
+      );
+      const forjd = (ready.forjd_health || 'ok').toLowerCase();
+      if (forjd === 'ok') {
+        this.controlPlaneReady.set('ok');
+      } else if (forjd === 'degraded') {
+        this.controlPlaneReady.set('degraded');
+      } else {
+        this.controlPlaneReady.set('unreachable');
+      }
+    } catch {
+      this.controlPlaneReady.set('unreachable');
+      console.warn('[product-home] control-plane /ready unreachable');
+    }
   }
 
   private async hydratePlatformMetrics(): Promise<void> {
@@ -254,7 +220,12 @@ export class ProductHome implements OnInit {
         this.requestsValue.set((metrics.total_requests as number).toLocaleString());
       }
     } catch {
-      // Live Tenant0 metrics are optional on the public showcase.
+      // Showcase metrics are optional — keep dashes, never invent "Live" KPIs.
+      console.warn('[product-home] platform-status metrics unavailable');
+      this.p99Value.set('—');
+      this.uptimeValue.set('—');
+      this.requestsValue.set('—');
+      this.threatsValue.set('—');
     }
   }
 }

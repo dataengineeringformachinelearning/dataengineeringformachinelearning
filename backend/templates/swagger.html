@@ -42,7 +42,7 @@
         displayRequestDuration: true,
         defaultModelsExpandDepth: 0,
         tryItOutEnabled: true,
-        persistAuthorization: true,
+        persistAuthorization: false,
         requestInterceptor: (req) => {
           req.headers["X-CSRFToken"] = "{{ csrf_token|escapejs }}";
           return req;

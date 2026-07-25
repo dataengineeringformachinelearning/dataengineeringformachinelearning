@@ -10,11 +10,11 @@
 | -------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------ |
 | [forjd.co](https://forjd.co)                                                           | FORJD Angular landing          | forjd-ui → suite tokens              |
 | [backend.forjd.co](https://backend.forjd.co)                                           | FastAPI `/`, `/docs`, `/redoc` | suite tokens (no stock Swagger look) |
-| [ui.forjd.co](https://ui.forjd.co)                                                     | forjd-ui Storybook             | forjd-ui → suite tokens              |
 | [deml.app](https://deml.app)                                                           | Angular product                | viking-ui                            |
 | [backend.deml.app](https://backend.deml.app)                                           | Django + Swagger               | synced viking-ui.css                 |
-| [ui.deml.app](https://ui.deml.app)                                                     | Viking-UI Storybook            | viking-ui                            |
 | [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | Astro marketing                | synced viking-ui.css                 |
+
+Public Storybook hosts (`ui.deml.app`, `ui.forjd.co`) are retired; components + local Storybook/Chromatic remain.
 
 A user must not be able to tell which product surface they are on by chrome, buttons, cards, or typography. Product names and logos may differ; the design system must not.
 

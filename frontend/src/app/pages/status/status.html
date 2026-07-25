@@ -29,9 +29,12 @@
       [services]="dashboardServices(page)"
       [announcements]="dashboardAnnouncements(page)"
     />
-    } @if (loadFailed()) {
-    <viking-callout tone="danger" heading="Unable to Connect">
-      <p>We couldn't reach the status service. Verify the backend is running, then retry.</p>
+    } @if (connectivity.offline() || loadFailed()) {
+    <viking-callout
+      tone="danger"
+      [heading]="connectivity.offline() ? offlineHeading : connectHeading"
+    >
+      <p>{{ connectivity.offline() ? offlineBody : connectBody }}</p>
       <viking-button
         variant="primary"
         type="button"
@@ -40,11 +43,11 @@
         [disabled]="isRetrying()"
         (pressed)="retryLoad()"
       >
-        Retry Connection
+        {{ retryLabel }}
       </viking-button>
     </viking-callout>
-    } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
-    <app-status-cta [showMockup]="false"></app-status-cta>
+    } @if (!loadFailed() && !connectivity.offline() && !isLoading() && statusPages().length === 0) {
+    <app-status-cta></app-status-cta>
     }
   </div>
 </viking-page-template>

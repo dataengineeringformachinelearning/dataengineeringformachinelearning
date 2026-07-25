@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Final, Literal
 from urllib.parse import quote, urlsplit
 from uuid import UUID, uuid4
+
+logger = logging.getLogger(__name__)
 
 from asgiref.sync import sync_to_async
 from config.csrf_header_auth import (
@@ -405,6 +408,11 @@ def _adapter_error_response(exc: AdapterError) -> JsonResponse:
 
 def _forjd_error_response(exc: ForjdError) -> JsonResponse:
   if exc.status >= 500:
+    logger.warning(
+      "FORJD adapter 5xx status=%s request_id=%s",
+      exc.status,
+      exc.upstream_request_id or "-",
+    )
     result = JsonResponse(
       {
         "detail": "FORJD is temporarily unavailable",
@@ -425,6 +433,14 @@ def _forjd_error_response(exc: ForjdError) -> JsonResponse:
 
 def _upstream_error_response(response: ForjdResponse) -> JsonResponse:
   if response.status >= 500:
+    upstream_id = ""
+    if isinstance(getattr(response, "headers", None), dict):
+      upstream_id = str(response.headers.get("X-Request-ID") or "")
+    logger.warning(
+      "FORJD upstream 5xx status=%s request_id=%s",
+      response.status,
+      upstream_id or "-",
+    )
     result = JsonResponse(
       {
         "detail": "FORJD is temporarily unavailable",

@@ -385,7 +385,10 @@ def logout_session_endpoint(request, payload: LogoutIn):
       auth_mod = __import__("firebase_admin.auth", fromlist=["auth"])
       auth_mod.revoke_refresh_tokens(firebase_uid)
     except Exception:
-      pass
+      # Session registry already revoked; Firebase revoke is best-effort.
+      import logging
+
+      logging.getLogger(__name__).exception("Firebase session revoke failed uid=%s", firebase_uid)
   elif payload.session_id:
     revoke_session(payload.session_id, firebase_uid)
     notify_force_logout(firebase_uid, session_id=payload.session_id, reason="logout")

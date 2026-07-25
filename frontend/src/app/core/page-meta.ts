@@ -7,10 +7,10 @@ export interface PageMeta {
 }
 
 const DEFAULT_DESCRIPTION =
-  'A production-grade, multi-tenant platform for Data Engineering and Machine Learning. Monitor infrastructure, stream telemetry, and leverage advanced AI integrations.';
+  'DEML is the learning library and Firebase-authenticated control plane for FORJD — identity, billing, consent, dashboards, and status surfaces powered by FORJD sealed streaming.';
 
 const DEFAULT_KEYWORDS =
-  'data engineering, machine learning, MLOps, telemetry, threat intelligence, status pages, multi-tenant SaaS';
+  'DEML, FORJD, data engineering, machine learning, MLOps, control plane, sealed streaming, telemetry, threat intelligence, status pages';
 
 const INDEXABLE = 'index, follow';
 const NOINDEX = 'noindex, nofollow';
@@ -18,9 +18,9 @@ const NOINDEX = 'noindex, nofollow';
 /** Distinct document titles and descriptions per frontend route segment. */
 export const ROUTE_PAGE_META: Record<string, PageMeta> = {
   '': {
-    title: 'DEML — Operational Intelligence for Resilient AI Systems',
+    title: 'DEML — Learning & Control Plane for FORJD',
     description:
-      'Operational intelligence for resilient AI systems. See service health in real time, forecast reliability risks, and protect every customer workspace by design.',
+      'DEML is the learning library and Firebase-authenticated control plane for FORJD — identity, billing, consent, dashboards, and status surfaces powered by FORJD sealed streaming.',
     robots: INDEXABLE,
     keywords: `${DEFAULT_KEYWORDS}, product showcase, observability, SLA forecasting`,
     ogType: 'website',
@@ -28,7 +28,7 @@ export const ROUTE_PAGE_META: Record<string, PageMeta> = {
   login: {
     title: 'Sign In - DEML APP',
     description:
-      'Secure sign-in to the DEML application. Access your dashboard, telemetry, and threat intelligence workspace.',
+      'Secure sign-in to the DEML control plane for FORJD. Access dashboards, telemetry, and threat intelligence.',
     robots: INDEXABLE,
     keywords: `${DEFAULT_KEYWORDS}, sign in, authentication`,
     ogType: 'website',
@@ -43,7 +43,7 @@ export const ROUTE_PAGE_META: Record<string, PageMeta> = {
   explore: {
     title: 'Explore Public Status Pages - DEML APP',
     description:
-      'Browse public status pages and uptime monitors published on the DEML platform. Discover live service health dashboards.',
+      'Browse public status pages backed by FORJD projections. Discover live service health dashboards on the DEML control plane.',
     robots: INDEXABLE,
     keywords: `${DEFAULT_KEYWORDS}, public status pages, uptime monitors, service health`,
     ogType: 'website',
@@ -51,7 +51,7 @@ export const ROUTE_PAGE_META: Record<string, PageMeta> = {
   status: {
     title: 'Service Status Dashboard - DEML APP',
     description:
-      'Platform-wide service health, incident history, and uptime summaries for DEML infrastructure.',
+      'Platform-wide service health, incident history, and uptime summaries — DEML status surfaces powered by FORJD.',
     robots: INDEXABLE,
     keywords: `${DEFAULT_KEYWORDS}, service status, incident history, uptime`,
     ogType: 'website',

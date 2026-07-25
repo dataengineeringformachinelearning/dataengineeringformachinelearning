@@ -47,6 +47,7 @@ def test_viking_swagger_shell_is_served(client: Client) -> None:
   assert "backend-docs-topbar" in body
   assert 'href="/api/v1/redoc"' in body
   assert "defaultModelsExpandDepth: 0" in body
+  assert "persistAuthorization: false" in body
 
 
 @pytest.mark.django_db

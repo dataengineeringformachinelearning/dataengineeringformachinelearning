@@ -8,61 +8,18 @@
     <h3 class="empty-title">{{ title() }}</h3>
     <p class="empty-subtitle">{{ subtitle() }}</p>
 
-    <div class="features-list">
-      <div class="feature-item">
-        <viking-app-icon name="bolt" hostClass="feature-icon" />
-        <div class="feature-text">
-          <strong>High-Throughput Telemetry</strong>
-          <span>Turn high-volume operational signals into fast, actionable insights.</span>
-        </div>
-      </div>
-      <div class="feature-item">
-        <viking-app-icon name="security" hostClass="feature-icon" />
-        <div class="feature-text">
-          <strong>Aggregate Threat Modeling</strong>
-          <span>Leverage global data to detect anomalies and evaluate your telemetry.</span>
-        </div>
-      </div>
-      <div class="feature-item">
-        <viking-app-icon name="online_prediction" hostClass="feature-icon" />
-        <div class="feature-text">
-          <strong>Predictive SLAs</strong>
-          <span>Deep learning models dynamically forecast service level agreements.</span>
-        </div>
-      </div>
-    </div>
-
     <p class="empty-footer-text">Sign in or register to get started.</p>
 
     <div class="cta-actions">
       @if (!authService.isAuthenticated()) {
-      <viking-button
-        variant="primary"
-        type="button"
-        icon="rocket"
-        iconTrailing="arrow-right"
-        label="Get Started"
-        (pressed)="login()"
-      >
+      <viking-button variant="primary" type="button" label="Get Started" (pressed)="login()">
         Get Started
       </viking-button>
       } @if (authService.isAuthenticated()) {
-      <viking-button
-        variant="primary"
-        href="/settings"
-        icon="plus"
-        iconTrailing="arrow-right"
-        label="Create your own"
-      >
+      <viking-button variant="primary" href="/settings" label="Create your own">
         Create your own
       </viking-button>
       }
     </div>
   </div>
-
-  @if (showMockup()) {
-  <div class="status-cta-mockup page-mockup-stage">
-    <viking-page-mockup [variant]="mockupVariant()" [decorative]="true" />
-  </div>
-  }
 </div>

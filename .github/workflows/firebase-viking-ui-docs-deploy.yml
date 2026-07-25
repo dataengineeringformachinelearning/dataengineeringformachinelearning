@@ -1,5 +1,5 @@
-# Retired: ui.deml.app is Vercel project `deml-ui`
-# (packages/viking-ui/vercel.ui.json → Storybook static root).
+# Retired: public Storybook hosting (ui.deml.app / deml-ui) is removed.
+# Viking-UI components remain in packages/viking-ui; use local Storybook or Chromatic.
 
 name: Deploy Viking-UI Docs (retired)
 
@@ -10,7 +10,7 @@ jobs:
   retired:
     runs-on: ubuntu-latest
     steps:
-      - name: Firebase Hosting for Viking-UI docs retired
+      - name: Public Storybook hosting retired
         run: |
-          echo "Deploy Storybook via Vercel project ui (root packages/viking-ui)."
-          echo "Config: packages/viking-ui/vercel.ui.json"
+          echo "ui.deml.app / deml-ui Vercel project removed."
+          echo "Keep components in packages/viking-ui; run Storybook locally or Chromatic."

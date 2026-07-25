@@ -1,18 +1,14 @@
 import { Component, inject, ChangeDetectionStrategy, input } from '@angular/core';
 
 import { Router } from '@angular/router';
-import {
-  VikingButton,
-  VikingPageMockup,
-  type VikingPageMockupVariant,
-} from '@dataengineeringformachinelearning/viking-ui';
+import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-status-cta',
   standalone: true,
-  imports: [VikingButton, VikingAppIcon, VikingPageMockup],
+  imports: [VikingButton, VikingAppIcon],
   templateUrl: './status-cta.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -26,9 +22,6 @@ export class StatusCta {
   );
   readonly badgeIcon = input('verified_user');
   readonly badgeText = input('API Monitoring Console');
-  readonly mockupVariant = input<VikingPageMockupVariant>('status');
-  /** Decorative page-mockup SVG is off by default — avoid floating prototype chrome. */
-  readonly showMockup = input(false);
 
   login() {
     void this.router.navigate(['/login']);

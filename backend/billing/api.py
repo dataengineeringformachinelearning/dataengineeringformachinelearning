@@ -31,15 +31,14 @@ User = get_user_model()
 _PRO_CHECKOUT_ENABLED = False
 _PRO_CHECKOUT_DISABLED_MSG = "Pro purchases are currently unavailable"
 
-_DEFAULT_STRIPE_PRICE_ID = "price_1TlgG2Er73F9pBqwItcWHIJf"
 _ACTIVE_SUBSCRIPTION_STATUSES = frozenset({"active", "trialing"})
 
 
 def _stripe_price_id() -> str:
+  # Env/settings only — never fall back to a committed production price id.
   return (
     str(getattr(settings, "STRIPE_PRICE_ID", "") or "").strip()
     or str(os.getenv("STRIPE_PRICE_ID", "") or "").strip()
-    or _DEFAULT_STRIPE_PRICE_ID
   )
 
 

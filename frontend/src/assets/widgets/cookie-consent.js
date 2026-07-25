@@ -394,7 +394,7 @@
           <p id="cookie-desc" class="deml-cookie-description">
             Cookies are used to improve the browsing experience, analyze site traffic, and deliver
             personalized system status telemetry in compliance with global data protection laws (GDPR, CCPA).
-            Read the <a href="/privacy">Privacy Policy</a> to learn more.
+            Read the <a href="https://dataengineeringformachinelearning.com/privacy/">Privacy Policy</a> to learn more.
           </p>
           <div class="deml-cookie-form" id="deml-cookie-form">
             <div class="deml-pref-item">

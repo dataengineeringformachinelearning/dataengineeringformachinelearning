@@ -150,7 +150,7 @@ export class Login implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      if (params['reason'] === 'timeout') {
+      if (params['reason'] === 'timeout' || params['reason'] === 'session') {
         this.sessionExpired.set(true);
       }
       const mode = params['mode'];

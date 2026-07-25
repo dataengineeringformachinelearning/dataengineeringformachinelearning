@@ -4,13 +4,19 @@ import { AuthService } from '../services/auth.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, take } from 'rxjs/operators';
 
-export const authGuard: CanActivateFn = (_route, _state) => {
+const loginTree = (router: Router, returnUrl: string) =>
+  router.createUrlTree(['/login'], {
+    queryParams: returnUrl && returnUrl !== '/login' ? { returnUrl } : undefined,
+  });
+
+export const authGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const returnUrl = state.url || '/dashboard';
 
   // If already initialized, we can check synchronously
   if (authService.isInitialized()) {
-    return authService.isAuthenticated() ? true : router.parseUrl('/login');
+    return authService.isAuthenticated() ? true : loginTree(router, returnUrl);
   }
 
   // Otherwise wait for initialization
@@ -18,7 +24,7 @@ export const authGuard: CanActivateFn = (_route, _state) => {
     filter(initialized => initialized),
     take(1),
     map(() => {
-      return authService.isAuthenticated() ? true : router.parseUrl('/login');
+      return authService.isAuthenticated() ? true : loginTree(router, returnUrl);
     }),
   );
 };

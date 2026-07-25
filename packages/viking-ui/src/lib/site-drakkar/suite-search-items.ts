@@ -133,7 +133,7 @@ const resolveExtraHref = (
     case "Viking-UI Storybook":
       return "https://ui.deml.app/";
     case "DEML product showcase":
-      return `${urls.app.replace(/\/$/, "")}/#docs`;
+      return `${urls.app.replace(/\/$/, "")}/`;
     case "DEML Swagger":
       return `${urls.backend.replace(/\/$/, "")}/api/v1/docs`;
     case "DEML ReDoc":

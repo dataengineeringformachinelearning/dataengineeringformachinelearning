@@ -39,6 +39,14 @@ import { formatServiceName } from '../../core/utils/formatter.utils';
 import { resolveUptimeHistory } from '../../core/utils/uptime.utils';
 
 import { timeout } from 'rxjs';
+import { ConnectivityService } from '../../services/connectivity.service';
+import {
+  OFFLINE_BODY,
+  OFFLINE_HEADING,
+  STATUS_CONNECT_BODY,
+  STATUS_CONNECT_HEADING,
+  STATUS_RETRY_LABEL,
+} from '../../core/continuity-copy';
 
 @Component({
   selector: 'app-status',
@@ -60,11 +68,18 @@ export class Status implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
+  readonly connectivity = inject(ConnectivityService);
   private router = inject(Router);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public sanityService = inject(SanityService);
   private injector = inject(Injector);
+
+  readonly connectHeading = STATUS_CONNECT_HEADING;
+  readonly connectBody = STATUS_CONNECT_BODY;
+  readonly offlineHeading = OFFLINE_HEADING;
+  readonly offlineBody = OFFLINE_BODY;
+  readonly retryLabel = STATUS_RETRY_LABEL;
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
@@ -263,21 +278,14 @@ export class Status implements OnInit {
         publishedAt: incident.updated_at || incident.created_at,
       })) satisfies StatusDashboardAnnouncement[];
 
-    const combined = [...incidents, ...announcements].slice(0, 2);
-    if (combined.length > 0) return combined;
-
-    return [
-      {
-        tone: 'info',
-        title: 'Sanity.io Integration Active',
-        publishedAt: '2026-06-13',
-        body: 'Announcements are served globally from edge CDNs for lightning-fast status page updates.',
-      },
-    ];
+    // Honest empty: never invent a Sanity demo announcement.
+    return [...incidents, ...announcements].slice(0, 2);
   };
 
   login() {
-    this.router.navigate(['/login']);
+    void this.router.navigate(['/login'], {
+      queryParams: { returnUrl: '/status' },
+    });
   }
 
   constructor() {
@@ -359,6 +367,8 @@ export class Status implements OnInit {
           },
         });
     } else {
+      this.isLoading.set(false);
+      this.isRetrying.set(false);
       void this.router.navigate(['/status/platform-status']);
     }
   }

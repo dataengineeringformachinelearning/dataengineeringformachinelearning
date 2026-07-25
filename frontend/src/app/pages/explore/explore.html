@@ -22,9 +22,13 @@
       [uptimePercentage]="overallUptime(page)"
       [uptimeSummary]="uptimeSummary(page)"
     />
-    } @if (loadFailed()) {
-    <viking-callout class="status-directory-card" tone="danger" heading="Unable to Connect">
-      <p>We couldn't reach the status service. Verify the backend is running, then retry.</p>
+    } @if (connectivity.offline() || loadFailed()) {
+    <viking-callout
+      class="status-directory-card"
+      tone="danger"
+      [heading]="connectivity.offline() ? offlineHeading : connectHeading"
+    >
+      <p>{{ connectivity.offline() ? offlineBody : connectBody }}</p>
       <viking-button
         variant="primary"
         type="button"
@@ -33,17 +37,16 @@
         [disabled]="isRetrying()"
         (pressed)="retryLoad()"
       >
-        Retry Connection
+        {{ retryLabel }}
       </viking-button>
     </viking-callout>
-    } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
+    } @if (!loadFailed() && !connectivity.offline() && !isLoading() && statusPages().length === 0) {
     <app-status-cta
       class="status-directory-card"
       badgeIcon="explore"
       badgeText="Explore Directory"
       title="No Public Status Pages"
       subtitle="Users haven't published any status pages yet. Create and publish one in the management console!"
-      [showMockup]="false"
     >
     </app-status-cta>
     }

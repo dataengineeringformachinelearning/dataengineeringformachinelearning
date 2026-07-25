@@ -324,6 +324,10 @@ const DEMO_ANNOUNCEMENTS: StatusDashboardAnnouncement[] = [
                 >
                   {{ announcement.body }}
                 </viking-announcement-card>
+              } @empty {
+                <viking-announcement-card tone="info" title="No announcements">
+                  There are no published system announcements right now.
+                </viking-announcement-card>
               }
             </section>
           </viking-status-section>

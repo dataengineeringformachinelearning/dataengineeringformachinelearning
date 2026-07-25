@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
@@ -32,7 +34,7 @@ def record_consent(request: Any, payload: ConsentIn) -> dict[str, str]:
     analytical=payload.analytical,
     marketing=payload.marketing,
     ip_address=ip_address,
-    user_agent=request.META.get("HTTP_USER_AGENT", ""),
+    user_agent=(request.META.get("HTTP_USER_AGENT", "") or "")[:512],
   )
   return {"status": "recorded", "id": str(consent.id)}
 
@@ -41,8 +43,15 @@ def record_consent(request: Any, payload: ConsentIn) -> dict[str, str]:
 def subscribe(request: Any, payload: NewsletterIn) -> dict[str, str]:
   if not payload.consent_accepted:
     raise HttpError(400, "Consent is required")
+  email = (payload.email or "").strip()
+  if not email or len(email) > 254:
+    raise HttpError(400, "Valid email is required")
+  try:
+    validate_email(email)
+  except ValidationError as exc:
+    raise HttpError(400, "Valid email is required") from exc
   subscription, _ = NewsletterSubscription.objects.update_or_create(
-    email=payload.email,
+    email=email,
     defaults={"consent_accepted": True},
   )
   return {"status": "subscribed", "id": str(subscription.id)}

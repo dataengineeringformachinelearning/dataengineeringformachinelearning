@@ -16,17 +16,23 @@ logger = logging.getLogger(__name__)
 
 CACHE_TIMEOUT_SECONDS: Final[int] = 3600
 
-# Always-allowed product / local origins (not customer tenant domains).
-PLATFORM_HOSTNAMES: Final[frozenset[str]] = frozenset(
+# Always-allowed product origins (not customer tenant domains).
+# Localhost/loopback are DEBUG-only — never auto-allow in production.
+_PLATFORM_HOSTNAMES_PROD: Final[frozenset[str]] = frozenset(
   {
     "deml.app",
     "www.deml.app",
     "dataengineeringformachinelearning.com",
     "www.dataengineeringformachinelearning.com",
-    "localhost",
-    "127.0.0.1",
   }
 )
+_PLATFORM_HOSTNAMES_DEV: Final[frozenset[str]] = frozenset({"localhost", "127.0.0.1"})
+
+
+def _platform_hostnames() -> frozenset[str]:
+  if getattr(settings, "DEBUG", False):
+    return _PLATFORM_HOSTNAMES_PROD | _PLATFORM_HOSTNAMES_DEV
+  return _PLATFORM_HOSTNAMES_PROD
 
 
 def _origin_hostname(origin: str) -> str | None:
@@ -40,7 +46,7 @@ def _origin_hostname(origin: str) -> str | None:
 
 
 def _static_allowed_hostnames() -> set[str]:
-  hosts: set[str] = set(PLATFORM_HOSTNAMES)
+  hosts: set[str] = set(_platform_hostnames())
   for origin in getattr(settings, "CORS_ALLOWED_ORIGINS", []) or []:
     host = _origin_hostname(str(origin))
     if host is not None:

@@ -34,7 +34,7 @@ export function webSiteJsonLd(siteUrl: string) {
     name: SITE_NAME,
     url: siteUrl,
     description:
-      "Community for practitioners learning and building data engineering for machine learning — field notes, shared resources, and open reference platforms.",
+      "Community for learning data engineering for machine learning — FORJD sealed streaming, DEML control-plane companion, field notes, and open reference platforms.",
     author: { "@type": "Person", name: AUTHOR_NAME },
     publisher: { "@type": "Organization", name: SITE_NAME },
   };

@@ -26,8 +26,34 @@
     }
   </viking-page-header>
 
-  @if (loadError()) {
-  <viking-callout tone="warning" heading="Monitoring degraded"> {{ loadError() }} </viking-callout>
+  @if (connectivity.offline()) {
+  <viking-callout tone="warning" [heading]="offlineHeading">
+    <p>{{ offlineBody }}</p>
+    <viking-button
+      variant="primary"
+      type="button"
+      icon="refresh"
+      [loading]="isRetrying()"
+      [disabled]="isRetrying()"
+      (pressed)="retryLoad()"
+    >
+      {{ retryLabel }}
+    </viking-button>
+  </viking-callout>
+  } @else if (loadError()) {
+  <viking-callout tone="warning" heading="Monitoring degraded">
+    <p>{{ loadError() }}</p>
+    <viking-button
+      variant="primary"
+      type="button"
+      icon="refresh"
+      [loading]="isRetrying()"
+      [disabled]="isRetrying()"
+      (pressed)="retryLoad()"
+    >
+      {{ retryLabel }}
+    </viking-button>
+  </viking-callout>
   } @else if (!setupComplete() && !isLoading()) {
   <viking-callout tone="accent" heading="Connect a site to begin">
     Add a monitored endpoint in Sites so latency, uptime, and threat telemetry can populate this

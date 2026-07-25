@@ -2,22 +2,23 @@ from collections.abc import Callable
 
 from django.http import HttpRequest, HttpResponse
 
-# Shared third-party allowlists for HTML CSP (keep in sync with firebase.json + frontend/nginx.conf).
+# Shared third-party allowlists for HTML CSP (keep in sync with frontend/vercel.json + nginx.conf).
+# Prefer hashes/nonces later; keep 'unsafe-inline' for current shell scripts — no 'unsafe-eval'.
 _CSP_SCRIPT_SRC = (
-  "'self' 'unsafe-inline' 'unsafe-eval' "
-  "https://cdn.jsdelivr.net https://*.jsdelivr.net "
+  "'self' 'unsafe-inline' "
+  "https://cdn.jsdelivr.net "
   "https://apis.google.com https://*.firebaseapp.com "
   "https://www.googletagmanager.com https://*.googletagmanager.com "
   "https://www.clarity.ms https://*.clarity.ms "
-  "https://cdn.rollbar.com https://*.rollbar.com "
+  "https://cdn.rollbar.com "
   "https://browser.sentry-cdn.com https://js.sentry-cdn.com "
   "https://static.cloudflareinsights.com "
-  "https://experiences.cdn.algolia.com "
-  "https://ui.deml.app https://*.ui.deml.app"
+  "https://deml.app https://backend.deml.app https://ui.deml.app "
+  "https://dataengineeringformachinelearning.com"
 )
 _CSP_CONNECT_SRC = (
   "'self' "
-  "https://cdn.jsdelivr.net https://*.jsdelivr.net "
+  "https://cdn.jsdelivr.net "
   "https://*.googleapis.com "
   "https://static.cloudflareinsights.com https://cloudflareinsights.com "
   "https://*.cloudflareinsights.com "
@@ -65,11 +66,15 @@ class ContentSecurityPolicyMiddleware:
     if "text/html" in content_type:
       csp_policy = (
         "default-src 'self'; "
+        "base-uri 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "form-action 'self'; "
         "worker-src 'self' blob:; "
         f"script-src {_CSP_SCRIPT_SRC}; "
-        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.jsdelivr.net "
-        "https://deml.app https://*.deml.app "
-        "https://ui.deml.app https://*.ui.deml.app; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net "
+        "https://deml.app https://backend.deml.app https://ui.deml.app "
+        "https://dataengineeringformachinelearning.com; "
         "font-src 'self' data:; "
         f"connect-src {_CSP_CONNECT_SRC}; "
         f"img-src {_CSP_IMG_SRC}; "
@@ -80,6 +85,9 @@ class ContentSecurityPolicyMiddleware:
       response["X-Content-Type-Options"] = "nosniff"
       response["X-XSS-Protection"] = "1; mode=block"
       response["Referrer-Policy"] = "strict-origin-when-cross-origin"
-      response["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+      response["Permissions-Policy"] = (
+        "geolocation=(), microphone=(), camera=(), payment=(), usb=(), "
+        "bluetooth=(), interest-cohort=(), browsing-topics=()"
+      )
 
     return response

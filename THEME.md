@@ -5,15 +5,15 @@
 
 **Single source of truth** for visual design across all DEML surfaces:
 
-| Property                                                                               | Stack                          | Theme entry point                                               |
-| -------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------------------------- |
-| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | Community (Astro on Vercel)    | `/assets/viking-ui.css` + this document                         |
-| [deml.app](https://deml.app)                                                           | Angular 22+ CSR (Vercel)       | `@dataengineeringformachinelearning/viking-ui` Angular wrappers |
-| [backend.deml.app](https://backend.deml.app)                                           | Django API + templates         | `backend/static/viking-ui.css`                                  |
-| Swagger / OpenAPI UI                                                                   | Django Ninja docs              | Same tokens via static CSS                                      |
-| Community site                                                                         | `marketing/` (Vercel)          | `marketing/public/assets/viking-ui.css`                         |
-| Docs, Book & Whitepaper                                                                | Synced content + Drakkar shell | THEME.md tokens in prose and components                         |
-| [ui.deml.app](https://ui.deml.app/)                                                    | Viking-UI Storybook (Vercel)   | `packages/viking-ui/storybook-static` via `vercel.ui.json`      |
+| Property                                                                               | Stack                          | Theme entry point                                                      |
+| -------------------------------------------------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | Community (Astro on Vercel)    | `/assets/viking-ui.css` + this document                                |
+| [deml.app](https://deml.app)                                                           | Angular 22+ CSR (Vercel)       | `@dataengineeringformachinelearning/viking-ui` Angular wrappers        |
+| [backend.deml.app](https://backend.deml.app)                                           | Django API + templates         | `backend/static/viking-ui.css`                                         |
+| Swagger / OpenAPI UI                                                                   | Django Ninja docs              | Same tokens via static CSS                                             |
+| Community site                                                                         | `marketing/` (Vercel)          | `marketing/public/assets/viking-ui.css`                                |
+| Docs, Book & Whitepaper                                                                | Synced content + Drakkar shell | THEME.md tokens in prose and components                                |
+| Viking-UI Storybook (local / Chromatic)                                                | `packages/viking-ui`           | `npm run storybook` / `build-storybook` (public `ui.deml.app` retired) |
 
 **Canonical implementation:** `packages/viking-ui/` (tokens, static CSS, Web Components, utility exports, package metadata, and Angular wrappers)
 **Compiled artifacts:** `packages/viking-ui/dist/` (`design-tokens.css`, `viking-components.css`, `viking-ui.css`, `web-components.js`, `viking-ui-elements.js`, `icons.js`, `site-drakkar.js`, `widget.js`, `viking-tokens.json`)

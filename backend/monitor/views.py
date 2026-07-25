@@ -2,6 +2,8 @@
 
 import json
 
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,6 +18,8 @@ def cookie_consent(request: HttpRequest) -> JsonResponse:
     payload = json.loads(request.body or b"{}")
   except json.JSONDecodeError:
     return JsonResponse({"detail": "Invalid JSON"}, status=400)
+  if not isinstance(payload, dict):
+    return JsonResponse({"detail": "Invalid JSON"}, status=400)
   # This cross-site JSON endpoint derives no authority from a session cookie.
   user = (
     request.user
@@ -29,7 +33,7 @@ def cookie_consent(request: HttpRequest) -> JsonResponse:
     analytical=bool(payload.get("analytical", False)),
     marketing=bool(payload.get("marketing", False)),
     ip_address=forwarded_for.split(",")[0].strip() or request.META.get("REMOTE_ADDR"),
-    user_agent=request.META.get("HTTP_USER_AGENT", ""),
+    user_agent=(request.META.get("HTTP_USER_AGENT", "") or "")[:512],
   )
   return JsonResponse({"status": "success", "id": str(consent.id)})
 
@@ -42,10 +46,19 @@ def newsletter(request: HttpRequest) -> JsonResponse:
     payload = json.loads(request.body or b"{}")
   except json.JSONDecodeError:
     return JsonResponse({"detail": "Invalid JSON"}, status=400)
+  if not isinstance(payload, dict):
+    return JsonResponse({"detail": "Invalid JSON"}, status=400)
   if not payload.get("consent_accepted"):
     return JsonResponse({"detail": "Consent is required"}, status=400)
+  email = str(payload.get("email") or "").strip()
+  if not email or len(email) > 254:
+    return JsonResponse({"detail": "Valid email is required"}, status=400)
+  try:
+    validate_email(email)
+  except ValidationError:
+    return JsonResponse({"detail": "Valid email is required"}, status=400)
   subscription, _ = NewsletterSubscription.objects.update_or_create(
-    email=str(payload.get("email") or ""),
+    email=email,
     defaults={"consent_accepted": True},
   )
   return JsonResponse({"status": "success", "id": str(subscription.id)})

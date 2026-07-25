@@ -50,6 +50,11 @@ import {
 } from '../../core/utils/temporal.utils';
 import { SanityService } from '../../services/sanity.service';
 import { StatusCta } from '../../components/status-cta/status-cta';
+import {
+  STATUS_CONNECT_BODY,
+  STATUS_CONNECT_HEADING,
+  STATUS_RETRY_LABEL,
+} from '../../core/continuity-copy';
 
 import { timeout } from 'rxjs';
 
@@ -85,6 +90,10 @@ export class IsolatedStatus implements OnInit {
   private metaService = inject(Meta);
   public sanityService = inject(SanityService);
   private injector = inject(Injector);
+
+  readonly connectHeading = STATUS_CONNECT_HEADING;
+  readonly connectBody = STATUS_CONNECT_BODY;
+  readonly retryLabel = STATUS_RETRY_LABEL;
 
   formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);

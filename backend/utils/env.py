@@ -188,6 +188,18 @@ def validate_production_config() -> None:
     if not get_str("FORJD_TENANT_ID"):
       raise RuntimeError("Fly deploy requires FORJD_TENANT_ID (UUID).")
 
+  # Host header attacks — never ship wildcard ALLOWED_HOSTS on PaaS.
+  if is_paas_deploy():
+    raw_hosts = [
+      host.strip().strip('"').strip("'")
+      for host in os.getenv("ALLOWED_HOSTS", "").split(",")
+      if host.strip()
+    ]
+    if not raw_hosts or "*" in raw_hosts:
+      raise RuntimeError(
+        f"ALLOWED_HOSTS must be an explicit comma-separated host list on {host} (no '*')."
+      )
+
   validate_encrypted_transport_config()
 
 

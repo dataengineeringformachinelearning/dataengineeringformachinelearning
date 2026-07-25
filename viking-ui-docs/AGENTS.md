@@ -8,8 +8,8 @@ This is the **standalone Astro showcase** for Viking-UI. Do not merge this into 
 - Canonical library source (styles/tokens/web components and Angular wrappers) lives in `../packages/viking-ui/`.
 - This app **demonstrates** library primitives via CSS + Web Components; keep demo pages thin.
 - Component registry: `src/lib/component-registry.ts`
-- Public `ui.` host is **Storybook-only** on Vercel (`packages/viking-ui/` + `vercel.ui.json`). This Astro app is local/dev only.
-- **Production URL:** [ui.deml.app](https://ui.deml.app/) (Storybook)
+- Public Storybook hosting (`ui.deml.app` / Vercel `deml-ui`) is **retired**. This Astro app and Storybook are local/dev (or Chromatic) only.
+- Components remain in `../packages/viking-ui/`.
 
 ## Local dev
 
