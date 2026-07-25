@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+/** Root `/` is the public product showcase; authenticated visitors go to the dashboard. */
 export const rootGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -11,15 +12,9 @@ export const rootGuard: CanActivateFn = (_route, state) => {
     if (isAuthenticated) {
       return router.createUrlTree(['/dashboard'], { queryParams: reportBug });
     }
-    // Render login at / so SSR serves index.html meta (e.g. Algolia site verification).
-    const path = (state.url.split('?')[0] ?? '/').replace(/\/+$/, '') || '/';
-    if (path === '/') {
-      return true;
-    }
-    return router.createUrlTree(['/'], { queryParams: reportBug });
+    return true;
   };
 
-  // The login route is safe to render while Firebase restores its session.
-  // Its auth effect redirects returning users once initialization completes.
+  // Showcase may render while Firebase restores a session; login redirects once ready.
   return authService.isInitialized() ? getRedirectTarget(authService.isAuthenticated()) : true;
 };

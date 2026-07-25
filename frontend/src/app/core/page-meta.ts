@@ -18,11 +18,11 @@ const NOINDEX = 'noindex, nofollow';
 /** Distinct document titles and descriptions per frontend route segment. */
 export const ROUTE_PAGE_META: Record<string, PageMeta> = {
   '': {
-    title: 'Sign In - DEML APP',
+    title: 'DEML — Operational Intelligence for Resilient AI Systems',
     description:
-      'Secure sign-in to the DEML application. Access your dashboard, telemetry, and threat intelligence workspace.',
+      'Operational intelligence for resilient AI systems. See service health in real time, forecast reliability risks, and protect every customer workspace by design.',
     robots: INDEXABLE,
-    keywords: `${DEFAULT_KEYWORDS}, sign in, authentication`,
+    keywords: `${DEFAULT_KEYWORDS}, product showcase, observability, SLA forecasting`,
     ogType: 'website',
   },
   login: {

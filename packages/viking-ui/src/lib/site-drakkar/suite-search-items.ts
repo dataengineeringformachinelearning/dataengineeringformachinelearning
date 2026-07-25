@@ -87,16 +87,16 @@ const footerItem = (
 /** Static entries that are not derived from Drakkar nav/footer config. */
 const SUITE_SEARCH_EXTRAS: readonly Omit<SuiteSearchItem, "href">[] = [
   {
-    title: "Viking-UI Components",
-    snippet: "Browse the design system showcase",
+    title: "Viking-UI Storybook",
+    snippet: "Hosted Storybook for Viking-UI primitives",
     group: "Resources",
-    keywords: ["viking", "ui", "design system", "components", "showcase"],
+    keywords: ["viking", "ui", "design system", "components", "storybook"],
   },
   {
-    title: "Design tokens",
-    snippet: "Canonical --viking-* token matrix",
+    title: "DEML product showcase",
+    snippet: "Operational intelligence product home on deml.app",
     group: "Resources",
-    keywords: ["tokens", "theme", "css", "variables"],
+    keywords: ["deml", "product", "showcase", "docs", "quick start"],
   },
   {
     title: "API reference",
@@ -112,10 +112,10 @@ const resolveExtraHref = (
   urls: SiteUrls,
 ): string => {
   switch (extra.title) {
-    case "Viking-UI Components":
-      return "https://ui.dataengineeringformachinelearning.com/components";
-    case "Design tokens":
-      return "https://ui.dataengineeringformachinelearning.com/tokens";
+    case "Viking-UI Storybook":
+      return "https://ui.deml.app/";
+    case "DEML product showcase":
+      return `${urls.app.replace(/\/$/, "")}/#docs`;
     case "API reference":
       return `${urls.backend.replace(/\/$/, "")}/api/v1/docs`;
     default:
@@ -123,56 +123,14 @@ const resolveExtraHref = (
   }
 };
 
-/** Viking-UI docs site entries (ui.dataengineeringformachinelearning.com). */
+/** Viking-UI Storybook host entries (ui.deml.app). */
 const DOCS_SEARCH_EXTRAS: readonly SuiteSearchItem[] = [
   {
-    title: "Components",
-    href: "/components",
-    snippet: "Browse all documented primitives",
+    title: "Storybook home",
+    href: "/",
+    snippet: "Browse Viking-UI stories",
     group: "Viking-UI",
-    keywords: ["components", "showcase", "registry"],
-  },
-  {
-    title: "Playground",
-    href: "/playground",
-    snippet: "Live Web Component sandbox",
-    group: "Viking-UI",
-    keywords: ["playground", "sandbox", "demo"],
-  },
-  {
-    title: "Architecture",
-    href: "/architecture",
-    snippet: "CSS + WC + Angular layers",
-    group: "Viking-UI",
-    keywords: ["architecture", "layers", "web component"],
-  },
-  {
-    title: "Design tokens",
-    href: "/tokens",
-    snippet: "Canonical --viking-* token matrix",
-    group: "Viking-UI",
-    keywords: ["tokens", "theme", "css", "variables"],
-  },
-  {
-    title: "Theming",
-    href: "/theming",
-    snippet: "Light/dark mode and sync pipeline",
-    group: "Viking-UI",
-    keywords: ["theming", "dark", "light", "mode"],
-  },
-  {
-    title: "Framework guides",
-    href: "/frameworks",
-    snippet: "Angular, Astro, Django setup",
-    group: "Viking-UI",
-    keywords: ["frameworks", "angular", "astro", "django"],
-  },
-  {
-    title: "Contributing",
-    href: "/contributing",
-    snippet: "Extend the Viking-UI kit",
-    group: "Viking-UI",
-    keywords: ["contributing", "extend", "primitives"],
+    keywords: ["storybook", "components", "showcase", "registry"],
   },
 ];
 
@@ -210,32 +168,11 @@ export const buildSuiteSearchItems = (
   if (context === "app") {
     items.push(
       {
-        title: "Dashboard",
-        href: "/dashboard",
-        snippet: "CES overview, KPIs, and performance telemetry",
-        group: "App",
-        keywords: ["dashboard", "ces", "home", "overview", "kpi"],
-      },
-      {
-        title: "Analytics",
-        href: "/analytics",
-        snippet: "Latency, origins, threat charts, and gauges",
-        group: "App",
-        keywords: ["analytics", "charts", "latency", "map", "threat"],
-      },
-      {
         title: "Explore status pages",
         href: "/explore",
         snippet: "Public status directory",
         group: "App",
         keywords: ["explore", "status", "directory", "public"],
-      },
-      {
-        title: "Status pages",
-        href: "/status",
-        snippet: "Your published and draft status surfaces",
-        group: "App",
-        keywords: ["status", "pages", "uptime", "incidents"],
       },
       {
         title: "Platform status",
@@ -245,41 +182,6 @@ export const buildSuiteSearchItems = (
         keywords: ["platform-status", "tenant0", "health", "sla"],
       },
       {
-        title: "Vulnerabilities",
-        href: "/vulnerabilities",
-        snippet: "SOC triage and vulnerability Kanban",
-        group: "App",
-        keywords: ["vulnerabilities", "soc", "semgrep", "trivy", "kanban"],
-      },
-      {
-        title: "Account",
-        href: "/account",
-        snippet: "Profile, MFA enrollment, and linked accounts",
-        group: "App",
-        keywords: ["account", "profile", "mfa", "oauth"],
-      },
-      {
-        title: "Settings",
-        href: "/settings",
-        snippet: "Workspace domains, billing, and security",
-        group: "App",
-        keywords: ["settings", "sites", "workspace", "configuration"],
-      },
-      {
-        title: "Billing & subscription",
-        href: "/settings/billing",
-        snippet: "Manage plan, invoices, and payment methods",
-        group: "App",
-        keywords: ["billing", "stripe", "subscription", "payment"],
-      },
-      {
-        title: "Security settings",
-        href: "/settings/security",
-        snippet: "Keys, sessions, and access controls",
-        group: "App",
-        keywords: ["security", "keys", "auth", "rbac"],
-      },
-      {
         title: "Login",
         href: "/login",
         snippet: "Sign in or complete SMS MFA",
@@ -287,6 +189,67 @@ export const buildSuiteSearchItems = (
         keywords: ["login", "sign in", "auth", "mfa"],
       },
     );
+
+    if (authenticated) {
+      items.push(
+        {
+          title: "Dashboard",
+          href: "/dashboard",
+          snippet: "CES overview, KPIs, and performance telemetry",
+          group: "App",
+          keywords: ["dashboard", "ces", "home", "overview", "kpi"],
+        },
+        {
+          title: "Analytics",
+          href: "/analytics",
+          snippet: "Latency, origins, threat charts, and gauges",
+          group: "App",
+          keywords: ["analytics", "charts", "latency", "map", "threat"],
+        },
+        {
+          title: "Status pages",
+          href: "/status",
+          snippet: "Your published and draft status surfaces",
+          group: "App",
+          keywords: ["status", "pages", "uptime", "incidents"],
+        },
+        {
+          title: "Vulnerabilities",
+          href: "/vulnerabilities",
+          snippet: "SOC triage and vulnerability Kanban",
+          group: "App",
+          keywords: ["vulnerabilities", "soc", "semgrep", "trivy", "kanban"],
+        },
+        {
+          title: "Account",
+          href: "/account",
+          snippet: "Profile, MFA enrollment, and linked accounts",
+          group: "App",
+          keywords: ["account", "profile", "mfa", "oauth"],
+        },
+        {
+          title: "Settings",
+          href: "/settings",
+          snippet: "Workspace domains, billing, and security",
+          group: "App",
+          keywords: ["settings", "sites", "workspace", "configuration"],
+        },
+        {
+          title: "Billing & subscription",
+          href: "/settings/billing",
+          snippet: "Manage plan, invoices, and payment methods",
+          group: "App",
+          keywords: ["billing", "stripe", "subscription", "payment"],
+        },
+        {
+          title: "Security settings",
+          href: "/settings/security",
+          snippet: "Keys, sessions, and access controls",
+          group: "App",
+          keywords: ["security", "keys", "auth", "rbac"],
+        },
+      );
+    }
   }
 
   if (context === "backend") {
@@ -309,8 +272,7 @@ export const buildSuiteSearchItems = (
   }
 
   if (context === "docs") {
-    const docsOrigin =
-      options?.docsOrigin ?? "https://ui.dataengineeringformachinelearning.com";
+    const docsOrigin = options?.docsOrigin ?? "https://ui.deml.app";
     items.push(
       ...DOCS_SEARCH_EXTRAS.map((extra) => ({
         ...extra,

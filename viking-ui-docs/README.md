@@ -1,13 +1,11 @@
-# Viking-UI Docs
+# Viking-UI Docs (local Astro showcase)
 
-Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` design system — the canonical open-source documentation site for community adoption and contributions.
+Local/dev Astro showcase for `@dataengineeringformachinelearning/viking-ui`. **Not** the public `ui.` host.
 
-Publish target: **`@dataengineeringformachinelearning/viking-ui@9.7.0`**
+**Public UI host:** [ui.deml.app](https://ui.deml.app) is **Storybook-only** on Vercel (`packages/viking-ui/vercel.ui.json` → `storybook-static`), matching `ui.forjd.co`.
+
+Publish target: **`@dataengineeringformachinelearning/viking-ui@9.7.1`**
 Consolidation status: **single source of truth under `packages/viking-ui/`** for token SCSS, static CSS, Web Components, framework-neutral utilities, package metadata, and Angular wrappers.
-
-Showcase rendering follows the DEML premium restrained luxury aesthetic: machined control surfaces, disciplined contrast, and restrained accents for technical precision.
-
-**Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)
 
 ## What this site provides
 
@@ -88,7 +86,7 @@ Firebase Hosting site **`deml-ui`** — not marketing or deml.app.
 - **Astro 7** for static documentation
 - **viking-ui.css** + **web-components.js** / **viking-ui-elements.js** for live previews
 - Angular-free utility imports from `@dataengineeringformachinelearning/viking-ui/icons`, `/site-drakkar`, `/tokens.json`, and `/manifest`
-- **jsDelivr CDN alternative after publish**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js`
+- **jsDelivr CDN alternative after publish**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/web-components.js`
   (`@latest` resolves to this release after npm publication)
 - Token-only SCSS in `src/styles/` — no hardcoded hex
 

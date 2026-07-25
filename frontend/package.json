@@ -38,7 +38,7 @@
     "@angular/forms": "22.0.8",
     "@angular/platform-browser": "22.0.8",
     "@angular/router": "22.0.8",
-    "@dataengineeringformachinelearning/viking-ui": "^9.7.0",
+    "@dataengineeringformachinelearning/viking-ui": "^9.7.1",
     "@sanity/client": "^7.22.1",
     "@sentry/angular": "^10.57.0",
     "@vercel/analytics": "^2.0.1",

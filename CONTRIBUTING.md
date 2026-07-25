@@ -2,7 +2,7 @@
 
 Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is the open-source design system for [Data Engineering for Machine Learning (DEML)](https://dataengineeringformachinelearning.com) — Apache-2.0, framework-agnostic, and token-driven.
 
-**Live docs:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)
+**Live docs:** [ui.deml.app](https://ui.deml.app)
 
 ---
 
@@ -110,7 +110,7 @@ Update **THEME.md** and **BOOK.md** Chapter 32 together when governance or archi
 
 ## Adding a new component
 
-Follow the universal architecture (see [Architecture guide](https://ui.dataengineeringformachinelearning.com/architecture)):
+Follow the universal architecture (see [Architecture guide](https://ui.deml.app/architecture)):
 
 ### 1. CSS primitives (all surfaces)
 
@@ -224,7 +224,7 @@ By contributing, you agree that your contributions will be licensed under the [A
 
 ## Resources
 
-- [Viking-UI showcase](https://ui.dataengineeringformachinelearning.com)
+- [Viking-UI showcase](https://ui.deml.app)
 - [THEME.md](THEME.md) — token matrix
 - [BOOK.md Chapter 32](BOOK.md#chapter-32-viking-ui--the-zero-dependency-ui-kit) — architecture narrative
 - [AGENTS.md](AGENTS.md) — platform invariants

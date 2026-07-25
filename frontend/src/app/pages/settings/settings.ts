@@ -170,7 +170,7 @@ export class Settings implements OnInit {
     effect(() => {
       if (this.authService.isInitialized()) {
         if (!this.authService.isAuthenticated()) {
-          this.router.navigate(['/']);
+          this.router.navigate(['/login']);
         } else if (this.authService.currentUserId() !== null) {
           // Force token refresh so MFA second-factor claims are re-read after SMS login.
           void this.authService.refreshMfaState(true);
@@ -217,9 +217,9 @@ export class Settings implements OnInit {
     if (!page) return '';
     const statusAppUrl = this.getStatusAppUrl();
     const backendUrl = environment.backendUrl;
-    return `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
+    return `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/web-components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
   }
 
   /** Angular app origin — status pages and widget deep links (FRONTEND_URL). */

@@ -6,13 +6,13 @@ This package is the canonical Viking-UI library. For the full contribution guide
 
 ## Quick links
 
-| Topic                  | Location                                                                                     |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| Live docs & playground | [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com) |
-| Architecture           | [/architecture](https://ui.dataengineeringformachinelearning.com/architecture)               |
-| Theming                | [/theming](https://ui.dataengineeringformachinelearning.com/theming)                         |
-| Component gallery      | [/components](https://ui.dataengineeringformachinelearning.com/components)                   |
-| Token reference        | [THEME.md](../../THEME.md)                                                                   |
+| Topic                  | Location                                          |
+| ---------------------- | ------------------------------------------------- |
+| Live docs & playground | [ui.deml.app](https://ui.deml.app)                |
+| Architecture           | [/architecture](https://ui.deml.app/architecture) |
+| Theming                | [/theming](https://ui.deml.app/theming)           |
+| Component gallery      | [/components](https://ui.deml.app/components)     |
+| Token reference        | [THEME.md](../../THEME.md)                        |
 
 ## Library-specific paths
 

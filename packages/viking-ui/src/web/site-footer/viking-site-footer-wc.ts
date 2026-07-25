@@ -34,10 +34,7 @@ const detectContext = (): FooterContext => {
   if (host.startsWith("backend.")) {
     return "backend";
   }
-  if (
-    host.startsWith("ui.") ||
-    host.includes("ui.dataengineeringformachinelearning")
-  ) {
+  if (host.startsWith("ui.")) {
     return "docs";
   }
   if (host.includes("deml.app")) {

@@ -275,9 +275,7 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
     const context = readContext(this);
     const urls = readUrls(this);
     const docsOrigin =
-      context === "docs"
-        ? window.location.origin
-        : "https://ui.dataengineeringformachinelearning.com";
+      context === "docs" ? window.location.origin : "https://ui.deml.app";
     let items: VikingSearchPaletteItem[] = buildSuiteSearchItems(
       context,
       urls,
