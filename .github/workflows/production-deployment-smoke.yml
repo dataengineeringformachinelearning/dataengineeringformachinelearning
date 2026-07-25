@@ -28,7 +28,7 @@ jobs:
           EDGE_URLS: >-
             https://dataengineeringformachinelearning.com/
             https://deml.app/
-            https://ui.dataengineeringformachinelearning.com/
+            https://ui.deml.app/
             https://backend.deml.app/api/v1/system-status/health
         run: |
           for url in $EDGE_URLS; do

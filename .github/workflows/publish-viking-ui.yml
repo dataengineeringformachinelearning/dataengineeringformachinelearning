@@ -140,6 +140,6 @@ jobs:
       - name: Note Storybook host (Vercel)
         if: steps.ensure-release.outputs.published == 'true'
         run: |
-          echo "ui.dataengineeringformachinelearning.com is the Vercel project ui"
+          echo "ui.deml.app is the Vercel project deml-ui"
           echo "(packages/viking-ui/vercel.ui.json → storybook-static)."
           echo "Firebase Hosting for deml-ui is retired."

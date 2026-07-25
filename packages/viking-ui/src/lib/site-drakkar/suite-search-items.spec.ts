@@ -32,14 +32,14 @@ describe("buildSuiteSearchItems", () => {
 
   it("includes Storybook home for docs context", () => {
     const items = buildSuiteSearchItems("docs", urls, {
-      docsOrigin: "https://ui.dataengineeringformachinelearning.com",
+      docsOrigin: "https://ui.deml.app",
     });
     const titles = items.map((item) => item.title);
 
     expect(titles).toContain("Storybook home");
     expect(titles).toContain("Whitepaper");
     expect(items.find((item) => item.title === "Storybook home")?.href).toBe(
-      "https://ui.dataengineeringformachinelearning.com/",
+      "https://ui.deml.app/",
     );
     expect(
       items.find((item) => item.title === "DEML product showcase")?.href,

@@ -113,7 +113,7 @@ const resolveExtraHref = (
 ): string => {
   switch (extra.title) {
     case "Viking-UI Storybook":
-      return "https://ui.dataengineeringformachinelearning.com/";
+      return "https://ui.deml.app/";
     case "DEML product showcase":
       return `${urls.app.replace(/\/$/, "")}/#docs`;
     case "API reference":
@@ -123,7 +123,7 @@ const resolveExtraHref = (
   }
 };
 
-/** Viking-UI Storybook host entries (ui.dataengineeringformachinelearning.com). */
+/** Viking-UI Storybook host entries (ui.deml.app). */
 const DOCS_SEARCH_EXTRAS: readonly SuiteSearchItem[] = [
   {
     title: "Storybook home",
@@ -272,8 +272,7 @@ export const buildSuiteSearchItems = (
   }
 
   if (context === "docs") {
-    const docsOrigin =
-      options?.docsOrigin ?? "https://ui.dataengineeringformachinelearning.com";
+    const docsOrigin = options?.docsOrigin ?? "https://ui.deml.app";
     items.push(
       ...DOCS_SEARCH_EXTRAS.map((extra) => ({
         ...extra,

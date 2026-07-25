@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ui.dataengineeringformachinelearning.com/sitemap-index.xml
+Sitemap: https://ui.deml.app/sitemap-index.xml

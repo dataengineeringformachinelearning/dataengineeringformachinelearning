@@ -31,7 +31,7 @@ const INDEX_ORIGIN: Readonly<Record<string, string>> = {
     "https://dataengineeringformachinelearning.com",
   deml_app_pages: "https://deml.app",
   deml_backend_pages: "https://backend.deml.app",
-  "DEML UI": "https://ui.dataengineeringformachinelearning.com",
+  "DEML UI": "https://ui.deml.app",
 };
 
 const readConfig = (): AlgoliaConfig => {

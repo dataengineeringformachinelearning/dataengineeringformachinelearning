@@ -2,11 +2,11 @@
 
 All DEML **static web** surfaces ship on Vercel. Django BFF remains on **Fly** (`deml-backend`). FORJD (Fly) + Supabase own the streaming engine. Firebase is **Auth-only** (no Firebase Hosting).
 
-| Project     | Root directory       | Public hostname                                    | Role                                        |
-| ----------- | -------------------- | -------------------------------------------------- | ------------------------------------------- |
-| `deml`      | `frontend`           | `https://deml.app`                                 | Product showcase + Angular app              |
-| `marketing` | `marketing`          | `https://dataengineeringformachinelearning.com`    | Community entry (Astro)                     |
-| `ui`        | `packages/viking-ui` | `https://ui.dataengineeringformachinelearning.com` | Viking-UI Storybook only (`vercel.ui.json`) |
+| Project     | Root directory       | Public hostname                                 | Role                                        |
+| ----------- | -------------------- | ----------------------------------------------- | ------------------------------------------- |
+| `deml`      | `frontend`           | `https://deml.app`                              | Product showcase + Angular app              |
+| `marketing` | `marketing`          | `https://dataengineeringformachinelearning.com` | Community entry (Astro)                     |
+| `deml-ui`   | `packages/viking-ui` | `https://ui.deml.app`                           | Viking-UI Storybook only (`vercel.ui.json`) |
 
 ## Project: `deml` (Angular product UI)
 
@@ -184,23 +184,23 @@ npx vercel env add MARKETING_URL production --value 'https://dataengineeringform
 npx vercel deploy --prod --yes
 ```
 
-## Project: `ui` (Viking-UI Storybook)
+## Project: `deml-ui` (Viking-UI Storybook)
 
 Mirrors FORJD `ui.forjd.co`: Storybook static output at the site root (no Astro showcase).
 
 | Setting        | Value                                                                                              |
 | -------------- | -------------------------------------------------------------------------------------------------- |
-| Project name   | `ui`                                                                                               |
+| Project name   | `deml-ui`                                                                                          |
 | Root Directory | `packages/viking-ui`                                                                               |
 | Config         | Copy/link `vercel.ui.json` as project `vercel.json`, or set build/output in the dashboard to match |
 | Build          | `npm run build-storybook`                                                                          |
 | Output         | `storybook-static`                                                                                 |
-| Domain         | `ui.dataengineeringformachinelearning.com`                                                         |
+| Domain         | `ui.deml.app`                                                                                      |
 
 ```bash
 cd packages/viking-ui
 cp vercel.ui.json vercel.json   # if the Vercel project expects vercel.json at root
-npx vercel link --project ui --yes
+npx vercel link --project deml-ui --yes
 npx vercel deploy --prod --yes
 ```
 

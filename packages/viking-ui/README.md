@@ -344,7 +344,7 @@ when the available width cannot contain them.
 
 Storybook is the release-grade visual cockpit for the Web Component layer and
 publishing workflow. The release workflow embeds the same static build at
-[`ui.dataengineeringformachinelearning.com/storybook/`](https://ui.dataengineeringformachinelearning.com/storybook/)
+[`ui.deml.app/storybook/`](https://ui.deml.app/storybook/)
 and publishes its mobile, tablet, and desktop evidence to Chromatic.
 
 ```bash

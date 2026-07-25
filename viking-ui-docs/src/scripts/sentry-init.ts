@@ -1,5 +1,5 @@
 /**
- * Browser Sentry for the Viking-UI showcase (ui.dataengineeringformachinelearning.com).
+ * Browser Sentry for the Viking-UI showcase (ui.deml.app).
  * Client DSNs are public by design; override with PUBLIC_SENTRY_DSN at build time.
  */
 const DEFAULT_DSN =

@@ -9,7 +9,7 @@ This is the **standalone Astro showcase** for Viking-UI. Do not merge this into 
 - This app **demonstrates** library primitives via CSS + Web Components; keep demo pages thin.
 - Component registry: `src/lib/component-registry.ts`
 - Public `ui.` host is **Storybook-only** on Vercel (`packages/viking-ui/` + `vercel.ui.json`). This Astro app is local/dev only.
-- **Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/) (Storybook)
+- **Production URL:** [ui.deml.app](https://ui.deml.app/) (Storybook)
 
 ## Local dev
 

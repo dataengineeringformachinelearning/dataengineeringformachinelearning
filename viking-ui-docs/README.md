@@ -2,7 +2,7 @@
 
 Local/dev Astro showcase for `@dataengineeringformachinelearning/viking-ui`. **Not** the public `ui.` host.
 
-**Public UI host:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com) is **Storybook-only** on Vercel (`packages/viking-ui/vercel.ui.json` → `storybook-static`), matching `ui.forjd.co`.
+**Public UI host:** [ui.deml.app](https://ui.deml.app) is **Storybook-only** on Vercel (`packages/viking-ui/vercel.ui.json` → `storybook-static`), matching `ui.forjd.co`.
 
 Publish target: **`@dataengineeringformachinelearning/viking-ui@9.7.1`**
 Consolidation status: **single source of truth under `packages/viking-ui/`** for token SCSS, static CSS, Web Components, framework-neutral utilities, package metadata, and Angular wrappers.

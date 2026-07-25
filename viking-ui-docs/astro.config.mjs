@@ -7,7 +7,7 @@ const vikingUiDist = (file) =>
   fileURLToPath(new URL(`../packages/viking-ui/dist/${file}`, import.meta.url));
 
 export default defineConfig({
-  site: "https://ui.dataengineeringformachinelearning.com/",
+  site: "https://ui.deml.app/",
   integrations: [sitemap()],
   vite: {
     envPrefix: ["PUBLIC_"],

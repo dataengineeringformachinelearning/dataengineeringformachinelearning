@@ -4,7 +4,7 @@
   "sitemaps": [
     "https://deml.app/sitemap.xml",
     "https://deml.app/sitemap-index.xml",
-    "https://ui.dataengineeringformachinelearning.com/sitemap-index.xml"
+    "https://ui.deml.app/sitemap-index.xml"
   ],
   "crossDomainSitemaps": [
     "https://dataengineeringformachinelearning.com/sitemap-index.xml",

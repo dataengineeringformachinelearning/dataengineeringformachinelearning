@@ -4,7 +4,7 @@ import { isTrustedParentOrigin, resolveParentOrigin } from './auth-status';
 describe('AuthStatus origin validation', () => {
   it('accepts DEML-owned production and local origins', () => {
     expect(isTrustedParentOrigin('https://dataengineeringformachinelearning.com')).toBe(true);
-    expect(isTrustedParentOrigin('https://ui.dataengineeringformachinelearning.com')).toBe(true);
+    expect(isTrustedParentOrigin('https://ui.deml.app')).toBe(true);
     expect(isTrustedParentOrigin('https://backend.deml.app')).toBe(true);
     expect(isTrustedParentOrigin('http://localhost:4321')).toBe(true);
   });
@@ -18,9 +18,7 @@ describe('AuthStatus origin validation', () => {
   });
 
   it('uses a trusted referrer only when an explicit origin is unavailable', () => {
-    expect(
-      resolveParentOrigin(null, 'https://ui.dataengineeringformachinelearning.com/components'),
-    ).toBe('https://ui.dataengineeringformachinelearning.com');
+    expect(resolveParentOrigin(null, 'https://ui.deml.app/components')).toBe('https://ui.deml.app');
     expect(
       resolveParentOrigin('https://evil.example', 'https://backend.deml.app/api/v1/docs'),
     ).toBe('https://backend.deml.app');
