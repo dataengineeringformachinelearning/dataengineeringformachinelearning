@@ -978,6 +978,10 @@
 
 .pricing-header {
   margin-bottom: var(--viking-page-section-gap, var(--viking-space-6));
+  margin-inline: auto;
+  max-width: 28rem;
+  text-align: center;
+  align-items: center;
 
   .section-tag {
     font-size: 0.85rem;
@@ -999,6 +1003,7 @@
   p {
     color: var(--viking-text-muted);
     margin: 0;
+    max-width: none;
   }
 }
 

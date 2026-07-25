@@ -9,3 +9,6 @@ backend/templates/partials/site_footer.html
 
 # Django templates — Prettier splits {% block %} tags and breaks production
 backend/templates/**/*.html
+
+# Synced suite font face — keep token-source quotes; frontend Prettier singleQuote fights sync
+**/suite-fonts.css
