@@ -171,20 +171,17 @@
         linked below; community learning stays on the community site.
       </p>
     </header>
-    <ol class="quick-start-steps viking-column-layout viking-column-layout--2">
+    <div
+      class="quick-start-steps viking-column-layout viking-column-layout--2"
+      aria-label="Docs and API documentation"
+    >
       @for (step of docsSteps; track step.title) {
-      <li class="quick-start-step viking-card">
+      <article class="quick-start-step viking-card">
         <h3>{{ step.title }}</h3>
         <p>{{ step.detail }}</p>
         <a [routerLink]="step.href" class="showcase-link">Continue →</a>
-      </li>
-      }
-    </ol>
-    <div
-      class="quick-start-steps viking-column-layout viking-column-layout--2"
-      aria-label="API documentation"
-    >
-      @for (doc of apiDocs; track doc.name) {
+      </article>
+      } @for (doc of apiDocs; track doc.name) {
       <article class="quick-start-step viking-card">
         <h3>{{ doc.name }}</h3>
         <p>{{ doc.detail }}</p>

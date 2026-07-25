@@ -1107,25 +1107,21 @@
 }
 
 .pricing-cards-container {
-  display: flex;
+  display: grid;
   gap: var(--viking-space-4);
-  flex-direction: column;
-  align-items: center;
+  justify-items: center;
   justify-content: center;
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding-top: var(--viking-space-3);
 
-  @media (min-width: 640px) {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
   .pricing-card {
-    flex: 1 1 100%;
     width: 100%;
     min-width: 0;
-    max-width: 100%;
+    max-width: 28rem;
+    justify-self: center;
+    margin-inline: auto;
     padding: var(--viking-space-5) var(--viking-card-padding);
     border-radius: var(--viking-radius-xl);
     background: var(--viking-surface);
@@ -1139,13 +1135,6 @@
     display: flex;
     flex-direction: column;
     text-align: left;
-
-    @media (min-width: 640px) {
-      flex: 1;
-      min-width: 260px;
-      max-width: 360px;
-      width: auto;
-    }
 
     &:hover {
       transform: translateY(-2px);
@@ -1517,13 +1506,17 @@
   transform-origin: center;
 }
 
-.quick-start-steps,
-.pricing-cards-container {
+.quick-start-steps {
   grid-template-columns: repeat(
     auto-fit,
     minmax(min(100%, calc(var(--viking-space-16) + var(--viking-space-4))), 1fr)
   );
   gap: var(--viking-space-3);
+}
+
+.pricing-cards-container {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
 }
 
 .security-pillars-grid {
