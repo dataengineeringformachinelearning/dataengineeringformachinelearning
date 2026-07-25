@@ -53,6 +53,13 @@ def sync_design_system() -> None:
     os.path.join(docs_static_dir, "viking-ui.css"),
   ]
 
+  suite_fonts_src = os.path.join(dist_dir, "suite-fonts.css")
+  suite_fonts_targets = [
+    os.path.join(root_dir, "frontend", "public", "assets", "suite-fonts.css"),
+    os.path.join(root_dir, "marketing", "public", "assets", "suite-fonts.css"),
+    os.path.join(root_dir, "viking-ui-docs", "public", "assets", "suite-fonts.css"),
+  ]
+
   viking_app_css_targets = [
     os.path.join(root_dir, "frontend", "public", "assets", "viking-app.css"),
   ]
@@ -70,9 +77,14 @@ def sync_design_system() -> None:
     os.path.join(root_dir, "viking-ui-docs", "public", "assets", "viking-tokens.json"),
   ]
 
+  if not os.path.isfile(suite_fonts_src):
+    print(f"Expected build output missing: {suite_fonts_src}", file=sys.stderr)
+    sys.exit(1)
+
   for src, targets in (
     (dist_viking, viking_css_targets),
     (dist_viking_app, viking_app_css_targets),
+    (suite_fonts_src, suite_fonts_targets),
     (dist_elements, elements_targets),
     (dist_tokens_json, tokens_json_targets),
   ):
