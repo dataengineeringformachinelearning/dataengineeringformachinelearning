@@ -26,7 +26,6 @@ classifiers = [
 
 dependencies = [
     "cryptography>=41.0.0",
-    "google-cloud-kms>=3.0.0; extra == 'gcp'",
 ]
 
 [project.optional-dependencies]

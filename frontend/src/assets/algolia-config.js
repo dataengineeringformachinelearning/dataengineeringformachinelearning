@@ -2,7 +2,7 @@
 // Suite command palette queries these indexes live and navigates via hit.url.
 //
 // Crawler / indexing: keep sitemaps in the Algolia dashboard so app, marketing,
-// backend, and UI docs stay searchable after each deploy (Recrawl).
+// and backend stay searchable after each deploy (Recrawl). Public Storybook host retired.
 window.ALGOLIA_CONFIG = window.ALGOLIA_CONFIG || {
   appId: 'ZJAFYOSH2V',
   // nosemgrep: generic.secrets.security.detected-generic-api-key.detected-generic-api-key
@@ -13,19 +13,16 @@ window.ALGOLIA_CONFIG = window.ALGOLIA_CONFIG || {
     'dataengineeringformachinelearning_com_zjafyosh2v_pages',
     'deml_app_pages',
     'deml_backend_pages',
-    'DEML UI',
   ],
   domains: [
     'https://deml.app',
     'https://dataengineeringformachinelearning.com',
     'https://backend.deml.app',
-    'https://ui.deml.app',
   ],
   sitemaps: [
     'https://deml.app/sitemap.xml',
     'https://deml.app/sitemap-index.xml',
     'https://dataengineeringformachinelearning.com/sitemap-index.xml',
     'https://backend.deml.app/sitemap.xml',
-    'https://ui.deml.app/sitemap-index.xml',
   ],
 };

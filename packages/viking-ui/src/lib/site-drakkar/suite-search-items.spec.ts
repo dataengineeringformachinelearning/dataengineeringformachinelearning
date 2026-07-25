@@ -15,18 +15,18 @@ describe("buildSuiteSearchItems", () => {
     expect(titles).toContain("Blue Notes");
     expect(titles).toContain("Book");
     expect(titles).not.toContain("Documentation");
-    expect(titles).toContain("Viking-UI Storybook");
+    expect(titles).not.toContain("Viking-UI Storybook");
     expect(titles).toContain("DEML product showcase");
     expect(titles).toContain("DEML Swagger");
     expect(titles).toContain("DEML ReDoc");
-    expect(titles).toContain("FORJD Swagger");
-    expect(titles).toContain("FORJD ReDoc");
+    expect(titles).toContain("FORJD capabilities");
+    expect(titles).not.toContain("FORJD Swagger");
     expect(items.find((item) => item.title === "DEML Swagger")?.href).toBe(
       "https://backend.deml.app/api/v1/docs",
     );
-    expect(items.find((item) => item.title === "FORJD ReDoc")?.href).toBe(
-      "https://backend.forjd.co/redoc",
-    );
+    expect(
+      items.find((item) => item.title === "FORJD capabilities")?.href,
+    ).toBe("https://backend.forjd.co/api/v1/capabilities");
   });
 
   it("hides auth-gated nav until authenticated", () => {
@@ -38,25 +38,6 @@ describe("buildSuiteSearchItems", () => {
     expect(anonTitles).not.toContain("Dashboard");
     expect(authenticatedTitles).toContain("Dashboard");
     expect(authenticatedTitles).toContain("Account");
-  });
-
-  it("includes Storybook home for docs context", () => {
-    const items = buildSuiteSearchItems("docs", urls, {
-      docsOrigin: "https://ui.deml.app",
-    });
-    const titles = items.map((item) => item.title);
-
-    expect(titles).toContain("Storybook home");
-    expect(titles).toContain("Whitepaper");
-    expect(items.find((item) => item.title === "Storybook home")?.href).toBe(
-      "https://ui.deml.app/",
-    );
-    expect(
-      items.find((item) => item.title === "DEML product showcase")?.href,
-    ).toBe("https://deml.app/");
-    expect(items.find((item) => item.title === "Whitepaper")?.href).toBe(
-      "https://dataengineeringformachinelearning.com/whitepaper",
-    );
   });
 
   it("includes Settings shortcut for app context", () => {

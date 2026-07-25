@@ -2,7 +2,7 @@
 
 Local/dev Astro showcase for `@dataengineeringformachinelearning/viking-ui`. **Not** the public `ui.` host.
 
-**Public UI host:** [ui.deml.app](https://ui.deml.app) is **Storybook-only** on Vercel (`packages/viking-ui/vercel.ui.json` → `storybook-static`), matching `ui.forjd.co`.
+**Public Storybook hosting is retired.** Use local `npm run storybook` / Chromatic; this Astro app is a local/dev showcase only.
 
 Publish target: **`@dataengineeringformachinelearning/viking-ui@9.7.3`**
 Consolidation status: **single source of truth under `packages/viking-ui/`** for token SCSS, static CSS, Web Components, framework-neutral utilities, package metadata, and Angular wrappers.
@@ -79,7 +79,7 @@ python ../scripts/sync_design_system.py   # fan-out to all surfaces
 
 ## Deploy
 
-Firebase Hosting site **`deml-ui`** — not marketing or deml.app.
+Local/dev only — public Storybook/`deml-ui` hosting is retired. Use Chromatic for visual review.
 
 ## Stack
 

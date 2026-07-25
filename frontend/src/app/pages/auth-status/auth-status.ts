@@ -13,13 +13,19 @@ const TRUSTED_PARENT_HOSTS = [
   'localhost',
   '127.0.0.1',
   'dataengineeringformachinelearning.com',
-  'ui.deml.app',
   'deml.app',
+  'backend.deml.app',
 ];
+
+/** Retired Storybook host — still under *.deml.app DNS, never a trusted iframe parent. */
+const BLOCKED_PARENT_HOSTS = new Set(['ui.deml.app']);
 
 export const isTrustedParentOrigin = (origin: string): boolean => {
   try {
     const host = new URL(origin).hostname;
+    if (BLOCKED_PARENT_HOSTS.has(host) || host.endsWith('.ui.deml.app')) {
+      return false;
+    }
     return TRUSTED_PARENT_HOSTS.some(trusted => host === trusted || host.endsWith(`.${trusted}`));
   } catch {
     return false;

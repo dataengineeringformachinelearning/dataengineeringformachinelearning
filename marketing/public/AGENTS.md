@@ -62,7 +62,7 @@ and staging deployments.
 | Frontend     | `cd frontend && npm run lint && npm test && npm run test:viking-ui`                                |
 | Backend      | `cd backend && pytest` (touched modules) · Ruff via pre-commit                                     |
 | Full         | `uvx pre-commit run --all-files` · root `npm run quality`                                          |
-| CI           | `.github/workflows/quality-gates.yml`, `ci-tests.yml`, `e2e-smoke.yml`                             |
+| CI           | `.github/workflows/ci.yml`, `viking-ui.yml`, `production-smoke.yml`, `publish-*.yml`               |
 
 - **Frontend:** Prettier + ESLint; WCAG 2.1 AA; Viking-UI only
   ([THEME.md](THEME.md), [.cursorrules](.cursorrules)).

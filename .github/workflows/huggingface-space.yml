@@ -1,3 +1,5 @@
+# Mirror curated frontend/docs sources to the Hugging Face Space.
+
 name: Sync frontend mirror to Hugging Face Space
 
 on:
@@ -14,23 +16,28 @@ on:
       - ".github/workflows/huggingface-space.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: hugging-face-space-production
   cancel-in-progress: true
 
 jobs:
   sync-to-hub:
-    name: Upload frontend mirror with Hugging Face Xet
+    name: Upload frontend mirror
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Checkout repository and Git LFS assets
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 1
+          # LFS for tracked frontend binaries (e.g. marketing video assets under frontend/).
           lfs: true
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
 
       - name: Validate Hugging Face credentials
         env:

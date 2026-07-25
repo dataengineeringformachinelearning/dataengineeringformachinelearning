@@ -22,7 +22,6 @@ const DEFAULT_INDEXES: readonly string[] = [
   "dataengineeringformachinelearning_com_zjafyosh2v_pages",
   "deml_app_pages",
   "deml_backend_pages",
-  "DEML UI",
 ];
 
 /** Map crawler index names → public origin when hits only store path. */
@@ -31,7 +30,6 @@ const INDEX_ORIGIN: Readonly<Record<string, string>> = {
     "https://dataengineeringformachinelearning.com",
   deml_app_pages: "https://deml.app",
   deml_backend_pages: "https://backend.deml.app",
-  "DEML UI": "https://ui.deml.app",
 };
 
 const readConfig = (): AlgoliaConfig => {

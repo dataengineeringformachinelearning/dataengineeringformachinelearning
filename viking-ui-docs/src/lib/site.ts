@@ -3,7 +3,7 @@ export const SITE = {
   title: "Viking-UI — Precision Design System",
   description:
     "Framework-agnostic design system for DEML — composable primitives, token-driven styling, WCAG 2.1 AA by construction. Angular, Astro, Django, and Web Components.",
-  url: "https://ui.deml.app",
+  url: "https://deml.app",
   github:
     "https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning",
   npm: "@dataengineeringformachinelearning/viking-ui",

@@ -214,7 +214,7 @@ Two more supervised FORJD workers complete the schedule (both in `GET /ready`):
   daily). With `HF_MODEL_REPO_ID` + `HF_TOKEN` set, fresh `.pt` artifacts are
   published to the Hugging Face Hub under `sla_models/`, `threat_models/`, and
   `temporal_models/` with hashed tenant namespacing (DEML's
-  `production-deployment-smoke.yml` verifies freshness every 6 hours).
+  `production-smoke.yml` verifies freshness every 6 hours).
   Other families (LSTM-AE, transformer, NorseSSN) stay on-demand via
   `POST /api/v1/ml/{id}/fit`.
 - **`retention`** — every `RETENTION_SWEEP_INTERVAL_SECONDS` (default hourly) it

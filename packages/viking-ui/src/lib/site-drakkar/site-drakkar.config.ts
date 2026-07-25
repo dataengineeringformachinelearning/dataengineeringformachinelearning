@@ -154,15 +154,9 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         external: true,
       },
       {
-        label: "FORJD Swagger",
-        appHref: "https://backend.forjd.co/docs",
-        marketingHref: "https://backend.forjd.co/docs",
-        external: true,
-      },
-      {
-        label: "FORJD ReDoc",
-        appHref: "https://backend.forjd.co/redoc",
-        marketingHref: "https://backend.forjd.co/redoc",
+        label: "FORJD capabilities",
+        appHref: "https://backend.forjd.co/api/v1/capabilities",
+        marketingHref: "https://backend.forjd.co/api/v1/capabilities",
         external: true,
       },
     ],

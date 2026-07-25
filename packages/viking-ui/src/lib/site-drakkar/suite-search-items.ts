@@ -87,12 +87,6 @@ const footerItem = (
 /** Static entries that are not derived from Drakkar nav/footer config. */
 const SUITE_SEARCH_EXTRAS: readonly Omit<SuiteSearchItem, "href">[] = [
   {
-    title: "Viking-UI Storybook",
-    snippet: "Hosted Storybook for Viking-UI primitives",
-    group: "Resources",
-    keywords: ["viking", "ui", "design system", "components", "storybook"],
-  },
-  {
     title: "DEML product showcase",
     snippet: "Operational intelligence product home on deml.app",
     group: "Resources",
@@ -111,16 +105,10 @@ const SUITE_SEARCH_EXTRAS: readonly Omit<SuiteSearchItem, "href">[] = [
     keywords: ["api", "openapi", "redoc", "rest", "deml"],
   },
   {
-    title: "FORJD Swagger",
-    snippet: "Interactive FORJD data-plane OpenAPI",
+    title: "FORJD capabilities",
+    snippet: "Public FORJD capability matrix (data plane)",
     group: "Resources",
-    keywords: ["api", "openapi", "swagger", "forjd", "streaming"],
-  },
-  {
-    title: "FORJD ReDoc",
-    snippet: "Readable FORJD data-plane API reference",
-    group: "Resources",
-    keywords: ["api", "openapi", "redoc", "forjd", "streaming"],
+    keywords: ["api", "capabilities", "forjd", "streaming"],
   },
 ];
 
@@ -130,41 +118,21 @@ const resolveExtraHref = (
   urls: SiteUrls,
 ): string => {
   switch (extra.title) {
-    case "Viking-UI Storybook":
-      return "https://ui.deml.app/";
     case "DEML product showcase":
       return `${urls.app.replace(/\/$/, "")}/`;
     case "DEML Swagger":
       return `${urls.backend.replace(/\/$/, "")}/api/v1/docs`;
     case "DEML ReDoc":
       return `${urls.backend.replace(/\/$/, "")}/api/v1/redoc`;
-    case "FORJD Swagger":
-      return "https://backend.forjd.co/docs";
-    case "FORJD ReDoc":
-      return "https://backend.forjd.co/redoc";
+    case "FORJD capabilities":
+      return "https://backend.forjd.co/api/v1/capabilities";
     default:
       return context === "app" ? urls.app : urls.marketing;
   }
 };
 
-/** Viking-UI Storybook host entries (ui.deml.app). */
-const DOCS_SEARCH_EXTRAS: readonly SuiteSearchItem[] = [
-  {
-    title: "Storybook home",
-    href: "/",
-    snippet: "Browse Viking-UI stories",
-    group: "Viking-UI",
-    keywords: ["storybook", "components", "showcase", "registry"],
-  },
-];
-
-const resolveDocsHref = (href: string, docsOrigin: string): string =>
-  href.startsWith("http")
-    ? href
-    : `${docsOrigin.replace(/\/$/, "")}${href.startsWith("/") ? href : `/${href}`}`;
-
 /**
- * Builds curated command-palette links for deml.app, marketing, backend, and docs.
+ * Builds curated command-palette links for deml.app, marketing, and backend.
  * Used by the static widget and Angular `viking-suite-search-palette`.
  */
 export const buildSuiteSearchItems = (
@@ -292,16 +260,6 @@ export const buildSuiteSearchItems = (
         group: "Backend",
         keywords: ["redoc", "openapi", "docs", "api"],
       },
-    );
-  }
-
-  if (context === "docs") {
-    const docsOrigin = options?.docsOrigin ?? "https://ui.deml.app";
-    items.push(
-      ...DOCS_SEARCH_EXTRAS.map((extra) => ({
-        ...extra,
-        href: resolveDocsHref(extra.href, docsOrigin),
-      })),
     );
   }
 

@@ -53,20 +53,20 @@ CSP currently allows `'unsafe-inline'` for third-party and bootstrap scripts; ti
 
 ## CSP deepenings (2026-07)
 
-Enforced CSP across product (`frontend/vercel.json`, `frontend/nginx.conf`), marketing (`marketing/vercel.json`), Storybook (`packages/viking-ui/vercel.json` / `vercel.ui.json`), and Django HTML (`backend/config/csp_middleware.py`):
+Enforced CSP across product (`frontend/vercel.json`, `frontend/nginx.conf`), marketing (`marketing/vercel.json`), Storybook heads (`packages/viking-ui/.storybook/*-head.html`), and Django HTML (`backend/config/csp_middleware.py`):
 
-| Change                                                                                                                                                                | Status |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| Remove `https://esm.sh` from `script-src` / `connect-src`                                                                                                             | Done   |
-| Drop Algolia from `script-src` (keep `connect-src` API hosts)                                                                                                         | Done   |
-| Pin `https://cdn.jsdelivr.net` (no `*.jsdelivr.net`)                                                                                                                  | Done   |
-| Narrow product/marketing `script-src` to explicit DEML hosts (`deml.app`, `backend.deml.app`, `ui.deml.app`, marketing apex); broader `connect-src` kept for previews | Done   |
-| Add Vercel Analytics hosts (`va.vercel-scripts.com`, `vitals.vercel-insights.com`) on product CSP                                                                     | Done   |
-| Add `form-action 'self'`; product/marketing `frame-ancestors 'self'` (`/auth-status` keeps its cross-surface allowlist; Django HTML keeps `frame-ancestors 'none'`)   | Done   |
-| Django: no `'unsafe-eval'`; Storybook keeps `'unsafe-eval'` (required)                                                                                                | Done   |
-| Permissions-Policy denies `payment` / `usb` / `bluetooth` (aligned)                                                                                                   | Done   |
+| Change                                                                                                                                                              | Status |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Remove `https://esm.sh` from `script-src` / `connect-src`                                                                                                           | Done   |
+| Drop Algolia from `script-src` (keep `connect-src` API hosts)                                                                                                       | Done   |
+| Pin `https://cdn.jsdelivr.net` (no `*.jsdelivr.net`)                                                                                                                | Done   |
+| Narrow product/marketing `script-src` to explicit DEML hosts (`deml.app`, `backend.deml.app`, marketing apex); broader `connect-src` kept for previews              | Done   |
+| Add Vercel Analytics hosts (`va.vercel-scripts.com`, `vitals.vercel-insights.com`) on product CSP                                                                   | Done   |
+| Add `form-action 'self'`; product/marketing `frame-ancestors 'self'` (`/auth-status` keeps its cross-surface allowlist; Django HTML keeps `frame-ancestors 'none'`) | Done   |
+| Django: no `'unsafe-eval'`; Storybook keeps `'unsafe-eval'` (required)                                                                                              | Done   |
+| Permissions-Policy denies `payment` / `usb` / `bluetooth` (aligned)                                                                                                 | Done   |
 
-**Residual risk:** `'unsafe-inline'` remains on `script-src` / `style-src` for bootstrap shells, analytics snippets, and Swagger. That weakens XSS containment until nonce/hash CSP is rolled out. Product browser Sentry/Rollbar DSNs in build-time env are public client tokens by design — not server secrets. Public Storybook (`ui.deml.app`) no longer embeds GTM/Clarity/Sentry heads; Storybook CSP is self + `'unsafe-eval'` (Storybook runtime) + optional Vercel vitals only.
+**Residual risk:** `'unsafe-inline'` remains on `script-src` / `style-src` for bootstrap shells, analytics snippets, and Swagger. That weakens XSS containment until nonce/hash CSP is rolled out. Product browser Sentry/Rollbar DSNs in build-time env are public client tokens by design — not server secrets. Public Storybook hosting is retired (local/Chromatic only); Storybook heads must not embed GTM/Clarity/Sentry.
 
 ## Operator checks
 

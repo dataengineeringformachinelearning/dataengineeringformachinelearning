@@ -24,7 +24,6 @@ import type {
   ExploreCardStatus,
   ExploreCardUptimePoint,
 } from '@dataengineeringformachinelearning/viking-ui';
-import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, timeout } from 'rxjs/operators';
@@ -52,7 +51,6 @@ import {
     VikingExploreCard,
     VikingPageHeader,
     VikingPageTemplate,
-    VikingAppIcon,
     RouterModule,
     StatusCta,
   ],

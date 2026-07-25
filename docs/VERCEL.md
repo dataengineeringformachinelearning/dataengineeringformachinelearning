@@ -7,7 +7,7 @@ All DEML **static web** surfaces ship on Vercel. Django BFF remains on **Fly** (
 | `deml`      | `frontend`     | `https://deml.app`                              | Product showcase + Angular app |
 | `marketing` | `marketing`    | `https://dataengineeringformachinelearning.com` | Community entry (Astro)        |
 
-Public Storybook hosting (`deml-ui` / `ui.deml.app`) is **retired**. Viking-UI components stay in `packages/viking-ui/`; run Storybook locally (`npm run storybook` / `build-storybook`) or via Chromatic.
+Public Storybook hosting (`deml-ui` / `ui.deml.app`) is **retired** (Vercel project deleted). Viking-UI components stay in `packages/viking-ui/`; run Storybook locally (`npm run storybook` / `build-storybook`) or via Chromatic. Lock each Vercel project Production Branch to `main` in the dashboard.
 
 ## Project: `deml` (Angular product UI)
 

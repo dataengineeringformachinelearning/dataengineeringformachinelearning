@@ -14,7 +14,6 @@
     "dataengineeringformachinelearning_com_zjafyosh2v_pages",
     "deml_app_pages",
     "deml_backend_pages",
-    "DEML UI",
   ];
 
   const INDEX_ORIGIN = {
@@ -22,7 +21,6 @@
       "https://dataengineeringformachinelearning.com",
     deml_app_pages: "https://deml.app",
     deml_backend_pages: "https://backend.deml.app",
-    "DEML UI": "https://ui.deml.app",
   };
 
   const loadAlgoliaExperiences = () => {

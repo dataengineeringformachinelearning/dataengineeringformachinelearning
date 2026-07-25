@@ -13,7 +13,7 @@ _CSP_SCRIPT_SRC = (
   "https://cdn.rollbar.com "
   "https://browser.sentry-cdn.com https://js.sentry-cdn.com "
   "https://static.cloudflareinsights.com "
-  "https://deml.app https://backend.deml.app https://ui.deml.app "
+  "https://deml.app https://backend.deml.app "
   "https://dataengineeringformachinelearning.com"
 )
 _CSP_CONNECT_SRC = (
@@ -30,9 +30,6 @@ _CSP_CONNECT_SRC = (
   "https://backend.deml.app https://*.backend.deml.app "
   "wss://backend.deml.app wss://*.backend.deml.app "
   "https://dataengineeringformachinelearning.com https://*.dataengineeringformachinelearning.com "
-  "wss://ui.deml.app "
-  "https://*.ui.deml.app "
-  "wss://*.ui.deml.app "
   "https://analytics.google.com https://*.analytics.google.com "
   "https://*.google-analytics.com https://*.googletagmanager.com "
   "https://*.clarity.ms https://*.bing.com "
@@ -73,7 +70,7 @@ class ContentSecurityPolicyMiddleware:
         "worker-src 'self' blob:; "
         f"script-src {_CSP_SCRIPT_SRC}; "
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net "
-        "https://deml.app https://backend.deml.app https://ui.deml.app "
+        "https://deml.app https://backend.deml.app "
         "https://dataengineeringformachinelearning.com; "
         "font-src 'self' data:; "
         f"connect-src {_CSP_CONNECT_SRC}; "

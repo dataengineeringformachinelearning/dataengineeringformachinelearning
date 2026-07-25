@@ -9,7 +9,7 @@ addons.setConfig({
   theme: create({
     base: "dark",
     brandTitle: "Suite UI · Viking",
-    brandUrl: "https://ui.deml.app",
+    brandUrl: "https://deml.app",
     brandTarget: "_self",
     colorPrimary: "#2176ff",
     colorSecondary: "#2176ff",

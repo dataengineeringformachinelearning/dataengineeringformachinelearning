@@ -1,0 +1,90 @@
+# Viking-UI package gates — theme, tests, Storybook build, Chromatic.
+# Public Storybook hosting is retired; Chromatic is the visual record.
+
+name: Viking-UI
+
+on:
+  pull_request:
+    paths:
+      - "packages/viking-ui/**"
+      - ".changeset/**"
+      - "scripts/enforce-theme.js"
+      - "scripts/run_axe.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/viking-ui.yml"
+      - ".github/workflows/publish-viking-ui.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/viking-ui/**"
+      - ".changeset/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/viking-ui.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: deml-viking-ui-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    name: Theme, tests, Storybook, Chromatic
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            packages/viking-ui/package-lock.json
+
+      - name: Install workspace dependencies
+        run: npm ci --legacy-peer-deps
+
+      # Fail fast before Storybook / Chromatic.
+      - name: Theme enforcement
+        run: node scripts/enforce-theme.js
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+      - name: Package tests
+        run: npm run test:viking-ui:package
+
+      # Isolated Vite toolchain for Storybook (package-local lockfile).
+      - name: Install Storybook toolchain
+        run: npm ci --legacy-peer-deps --prefix packages/viking-ui
+
+      - name: Build Storybook
+        run: npm run build-storybook --prefix packages/viking-ui
+
+      - name: Accessibility on Storybook HTML
+        run: |
+          mapfile -d '' files < <(find packages/viking-ui/storybook-static -type f -name '*.html' -print0)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No Storybook HTML files found, skipping axe."
+            exit 0
+          fi
+          printf '%s\0' "${files[@]}" | xargs -0 node scripts/run_axe.js
+
+      - name: Chromatic
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
+        run: |
+          npx chromatic \
+            --project-token "$CHROMATIC_PROJECT_TOKEN" \
+            --storybook-build-dir packages/viking-ui/storybook-static \
+            --exit-zero-on-changes

@@ -1,12 +1,12 @@
+# Publish @dataengineeringformachinelearning/viking-ui to npm + Chromatic visual record.
+
 name: Publish Viking-UI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "packages/viking-ui/**"
-      - "viking-ui-docs/**"
       - ".changeset/**"
       - "package-lock.json"
       - "package.json"
@@ -22,61 +22,57 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  id-token: write
-  deployments: write
 
 concurrency:
-  group: viking-ui-showcase-production
+  group: publish-viking-ui
   cancel-in-progress: false
 
 jobs:
   release:
-    name: Release Viking-UI package, Storybook, and showcase
+    name: npm publish and Chromatic
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     env:
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-      FIREBASE_SERVICE_ACCOUNT_DEML_UI: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            packages/viking-ui/package-lock.json
           registry-url: "https://registry.npmjs.org"
 
-      - name: Verify Viking-UI version contract
+      - name: Version contract
         run: npm run check:viking-ui:version
 
-      - name: Install workspace dependencies
+      - name: Install workspace
         run: npm ci --legacy-peer-deps
 
-      - name: Isolate Storybook's supported Vite toolchain
-        run: npm ci --legacy-peer-deps --prefix packages/viking-ui
+      # Fail fast before npm publish / Storybook.
+      - name: Theme enforcement
+        run: node scripts/enforce-theme.js
 
-      - name: Verify npm publish token is present and valid
+      - name: Audit and package tests
+        run: |
+          npm audit --audit-level=high
+          npm run test:viking-ui:package
+
+      - name: Verify npm token
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          if [ -z "$NPM_TOKEN" ]; then
-            echo "::error ::NPM_TOKEN is not configured. Add repository secret NPM_TOKEN to enable publishing."
-            exit 1
-          fi
+          test -n "$NPM_TOKEN" || { echo "::error::NPM_TOKEN is not configured" >&2; exit 1; }
           npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
           npm whoami
 
-      - name: Security gate (dependency audit)
-        run: npm audit --audit-level=high
-
-      - name: Build canonical Viking-UI package
-        run: npm run build:viking-ui:package
-
-      - name: Apply Changesets versioning and publish package
+      # publish:viking-ui runs ci:viking-ui (rebuild + test + docs) before npm publish.
+      - name: Changesets publish
         id: changesets
         uses: changesets/action@v1
         with:
@@ -86,59 +82,46 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Assert release was published
+      - name: Resolve publish state
         id: ensure-release
         run: |
           LOCAL_VERSION="$(node -p "require('./packages/viking-ui/package.json').version")"
           if [ "${{ steps.changesets.outputs.published }}" = "true" ]; then
             echo "published=true" >> "$GITHUB_OUTPUT"
-            echo "Viking-UI release flow completed via changesets."
             exit 0
           fi
-
           if [ "${{ github.event.inputs.force_publish }}" = "true" ]; then
             if npm view "@dataengineeringformachinelearning/viking-ui@${LOCAL_VERSION}" version >/dev/null 2>&1; then
-              echo "::error ::force_publish is enabled but version ${LOCAL_VERSION} already exists on npm. Bump version before republishing."
+              echo "::error::force_publish enabled but v${LOCAL_VERSION} already exists on npm" >&2
               echo "published=false" >> "$GITHUB_OUTPUT"
               exit 1
             fi
-            echo "::warning ::Changesets did not publish (no releasable changesets). Running direct publish for v${LOCAL_VERSION}."
             (cd packages/viking-ui && npm publish --access public --tag latest)
             echo "published=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-
           if npm view "@dataengineeringformachinelearning/viking-ui@${LOCAL_VERSION}" version >/dev/null 2>&1; then
             echo "published=true" >> "$GITHUB_OUTPUT"
-            echo "Viking-UI ${LOCAL_VERSION} is already published; continuing idempotent asset sync and showcase deployment."
             exit 0
-          else
-            echo "::error ::No changesets were published. Add a changeset in .changeset/ or re-run with force_publish=true."
           fi
+          echo "::error::No changesets published. Add a changeset or re-run with force_publish=true." >&2
           echo "published=false" >> "$GITHUB_OUTPUT"
           exit 1
 
-      # Governance reference: Trust Controls-style evidence is mandatory; a
-      # release is incomplete without its published visual regression record.
-      - name: Require Chromatic publication credentials
+      - name: Install Storybook toolchain
         if: steps.ensure-release.outputs.published == 'true'
-        run: test -n "$CHROMATIC_PROJECT_TOKEN"
+        run: npm ci --legacy-peer-deps --prefix packages/viking-ui
 
-      - name: Build Storybook and publish to Chromatic
+      - name: Chromatic
         if: steps.ensure-release.outputs.published == 'true'
         run: |
+          test -n "$CHROMATIC_PROJECT_TOKEN"
           npm run build-storybook --prefix packages/viking-ui
           npx chromatic \
             --project-token "$CHROMATIC_PROJECT_TOKEN" \
             --storybook-build-dir packages/viking-ui/storybook-static \
             --exit-zero-on-changes
 
-      - name: Sync canonical design-system assets
+      - name: Sync design system
         if: steps.ensure-release.outputs.published == 'true'
         run: npm run sync:design-system
-
-      - name: Note Storybook hosting (retired)
-        if: steps.ensure-release.outputs.published == 'true'
-        run: |
-          echo "Public Storybook (ui.deml.app / deml-ui) is retired."
-          echo "Use local build-storybook or Chromatic for visual review."
