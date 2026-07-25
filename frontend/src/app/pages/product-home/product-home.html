@@ -1,11 +1,11 @@
-<div class="page-inner-wrapper landing-container showcase-layout">
+<div class="page-inner-wrapper landing-container showcase-layout suite-landing">
   <section class="hero-showcase viking-unified-hero" aria-labelledby="deml-brand">
     <div class="hero-copy viking-unified-hero-copy">
       <div class="hero-badge viking-unified-hero-badge">
         <span class="badge-dot pulse-dot"></span>
         <span class="badge-text">Field Grade · Version {{ version }}</span>
       </div>
-      <p class="hero-brand" id="deml-brand">DEML</p>
+      <p class="hero-brand suite-landing-brand" id="deml-brand">DEML</p>
       <h1 class="title viking-unified-hero-title" id="main-title">
         Operational intelligence for resilient AI systems
       </h1>
@@ -35,29 +35,45 @@
           <span>Tenant symmetry · enforced</span>
         </div>
       </div>
-      <div class="cta-group viking-unified-hero-actions">
+      <div class="cta-group viking-unified-hero-actions suite-landing-actions">
         @if (isAuthenticated()) {
-        <a routerLink="/dashboard" class="cta-button viking-btn viking-btn-primary">
+        <a
+          routerLink="/dashboard"
+          class="cta-button suite-btn viking-btn viking-btn-primary"
+          data-variant="primary"
+        >
           <span class="cta-content">
             <viking-app-icon name="home" [size]="20" class="cta-icon" />
             <span class="cta-label">Open dashboard</span>
           </span>
         </a>
         } @else {
-        <a routerLink="/login" class="cta-button viking-btn viking-btn-primary">
+        <a
+          routerLink="/login"
+          class="cta-button suite-btn viking-btn viking-btn-primary"
+          data-variant="primary"
+        >
           <span class="cta-content">
             <viking-app-icon name="rocket_launch" [size]="20" class="cta-icon" />
             <span class="cta-label">Get started</span>
           </span>
         </a>
         }
-        <a routerLink="/status/platform-status" class="cta-button viking-btn viking-btn-outline">
+        <a
+          routerLink="/status/platform-status"
+          class="cta-button suite-btn viking-btn viking-btn-outline"
+          data-variant="outline"
+        >
           <span class="cta-content">
             <viking-app-icon name="insights" [size]="20" class="cta-icon" />
             <span class="cta-label">See live security posture</span>
           </span>
         </a>
-        <a [href]="marketingUrl" class="cta-button viking-btn viking-btn-ghost">
+        <a
+          [href]="marketingUrl"
+          class="cta-button suite-btn viking-btn viking-btn-ghost"
+          data-variant="ghost"
+        >
           <span class="cta-content">
             <viking-app-icon name="globe" [size]="20" class="cta-icon" />
             <span class="cta-label">Community</span>
@@ -247,11 +263,19 @@
           <li><viking-app-icon name="check" [size]="20" /> Community Support</li>
         </ul>
         @if (isAuthenticated()) {
-        <a routerLink="/dashboard" class="viking-btn viking-btn-subtle cta-button secondary-btn">
+        <a
+          routerLink="/dashboard"
+          class="suite-btn viking-btn viking-btn-subtle cta-button secondary-btn"
+          data-variant="ghost"
+        >
           Open dashboard
         </a>
         } @else {
-        <a routerLink="/login" class="viking-btn viking-btn-subtle cta-button secondary-btn">
+        <a
+          routerLink="/login"
+          class="suite-btn viking-btn viking-btn-subtle cta-button secondary-btn"
+          data-variant="ghost"
+        >
           Get started
         </a>
         }
@@ -268,7 +292,8 @@
         @if (isAuthenticated()) {
         <a
           routerLink="/account"
-          class="viking-btn viking-btn-primary cta-button cta-primary pro-btn"
+          class="suite-btn viking-btn viking-btn-primary cta-button cta-primary pro-btn"
+          data-variant="primary"
         >
           Manage subscription
         </a>
@@ -276,7 +301,8 @@
         <a
           routerLink="/login"
           [queryParams]="{ action: 'checkout' }"
-          class="viking-btn viking-btn-primary cta-button cta-primary pro-btn"
+          class="suite-btn viking-btn viking-btn-primary cta-button cta-primary pro-btn"
+          data-variant="primary"
         >
           Upgrade to Pro
         </a>

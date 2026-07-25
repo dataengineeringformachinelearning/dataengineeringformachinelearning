@@ -18,7 +18,7 @@ const renderFooter = ({ context, authenticated }: FooterArgs) => `
 `;
 
 const meta: Meta<typeof renderFooter> = {
-  title: "Viking Web Components/Navigation/VikingSiteFooter",
+  title: "Product/Navigation/SiteFooter",
   tags: ["autodocs"],
   render: renderFooter,
   argTypes: {

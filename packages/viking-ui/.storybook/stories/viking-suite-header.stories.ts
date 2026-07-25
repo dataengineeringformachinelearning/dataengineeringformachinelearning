@@ -22,7 +22,7 @@ const renderSuiteHeader = ({
 `;
 
 const meta: Meta<typeof renderSuiteHeader> = {
-  title: "Viking Web Components/Navigation/VikingSuiteHeader",
+  title: "Product/Navigation/SuiteHeader",
   tags: ["autodocs"],
   render: renderSuiteHeader,
   argTypes: {

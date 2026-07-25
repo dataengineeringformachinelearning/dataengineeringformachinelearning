@@ -20,7 +20,7 @@ const renderNavbar = ({ context, authenticated, showSearch }: NavbarArgs) => `
 `;
 
 const meta: Meta<typeof renderNavbar> = {
-  title: "Viking Web Components/Navigation/VikingSiteNavbar",
+  title: "Product/Navigation/SiteNavbar",
   tags: ["autodocs"],
   render: renderNavbar,
   argTypes: {

@@ -31,7 +31,7 @@ const renderCard = ({
 `;
 
 const meta: Meta<typeof renderCard> = {
-  title: "Viking Web Components/Status/VikingStatusCard",
+  title: "Product/Status/StatusCard",
   tags: ["autodocs"],
   render: renderCard,
   argTypes: {

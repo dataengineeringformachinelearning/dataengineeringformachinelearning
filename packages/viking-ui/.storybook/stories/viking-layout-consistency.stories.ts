@@ -47,7 +47,7 @@ const renderConsistency = () => `
 `;
 
 const meta: Meta<typeof renderConsistency> = {
-  title: "Viking Web Components/Layout/ConsistencyBaseline",
+  title: "Product/Layout/ConsistencyBaseline",
   tags: ["autodocs"],
   render: renderConsistency,
   parameters: {

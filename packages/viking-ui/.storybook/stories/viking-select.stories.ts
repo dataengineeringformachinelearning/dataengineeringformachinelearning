@@ -37,7 +37,7 @@ const renderSelect = ({
 `;
 
 const meta: Meta<typeof renderSelect> = {
-  title: "Viking Web Components/Forms/VikingSelect",
+  title: "Primitives/Select",
   tags: ["autodocs"],
   render: renderSelect,
   argTypes: {

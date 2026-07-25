@@ -53,7 +53,7 @@ const renderLayout = () => `
 `;
 
 const meta: Meta<typeof renderLayout> = {
-  title: "Viking Web Components/Layout/IntrinsicComposition",
+  title: "Product/Layout/IntrinsicComposition",
   tags: ["autodocs"],
   render: renderLayout,
   parameters: {

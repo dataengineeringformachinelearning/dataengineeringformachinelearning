@@ -92,7 +92,7 @@ const renderPlayground = ({
 `;
 
 const meta: Meta<typeof renderPlayground> = {
-  title: "Viking Web Components/Playground/Command Grid",
+  title: "Product/Playground/Command Grid",
   tags: ["autodocs"],
   render: renderPlayground,
   argTypes: {

@@ -165,8 +165,10 @@ Streaming and warehouse-style analytics exports are FORJD responsibilities.
 
 ### Viking-UI Uniformity Law
 
-All DEML surfaces share one design system: **grid-first modern enterprise SaaS**
-with Cyber-Noir dark surfaces and Ocean Blue Serenity accents.
+All DEML **and FORJD** product chrome share one suite design system — see
+**[docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md)**. Aesthetic:
+void-black austerity + electric command `#2176ff` + institutional gold; Viking-UI
+is the canonical SoT; FORJD `forjd-ui` is a `--fj-*` adapter only.
 **[.cursorrules](.cursorrules)** is the Cursor agent entry point;
 **[THEME.md](THEME.md)** is the canonical token matrix;
 **[BOOK.md § Chapter 32](BOOK.md#chapter-32-viking-ui--the-zero-dependency-ui-kit)**
@@ -175,6 +177,7 @@ documents the kit. Package:
 
 - `packages/viking-ui/` owns all CSS/SCSS, tokens, Web Components, Angular
   wrappers, icons, and visual utilities. No other surface owns styling.
+  Suite `--fj-*` aliases ship via `_suite-bridge.scss`.
 - Always import from `@dataengineeringformachinelearning/viking-ui` — never
   Material, Bootstrap, or other third-party UI kits.
 - Compose pages with `viking-page-shell` → `viking-section` and semantic layout

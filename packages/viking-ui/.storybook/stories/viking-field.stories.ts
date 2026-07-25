@@ -25,7 +25,7 @@ const renderField = ({
 `;
 
 const meta: Meta<typeof renderField> = {
-  title: "Viking Web Components/Forms/VikingField",
+  title: "Primitives/Field",
   tags: ["autodocs"],
   render: renderField,
   argTypes: {

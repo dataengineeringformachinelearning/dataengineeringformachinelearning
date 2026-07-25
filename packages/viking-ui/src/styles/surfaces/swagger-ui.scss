@@ -3,62 +3,11 @@
  * Load after swagger-ui.css; tokens from the built viking-ui.css bundle.
  */
 
-body.backend-swagger,
-body.backend-redoc {
-  margin: 0;
-  background: var(--viking-bg, var(--bg-color));
-}
+/* Splash + docs topbar: suite-backend.css (appended into viking-ui.css). */
 
 body.backend-redoc redoc,
 body.backend-redoc .redoc-wrap {
-  background: var(--viking-bg, var(--bg-color));
-}
-
-/* ── Thin docs topbar (mirrors FORJD fj-topbar; DEML tokens) ───────────────── */
-.backend-docs-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--viking-space-3);
-  padding: var(--viking-space-2) var(--viking-space-4);
-  background: var(--viking-surface);
-  border-bottom: 1px solid var(--viking-border);
-  font-family: var(--viking-font-family, "Inter", system-ui, sans-serif);
-}
-
-.backend-docs-topbar a {
-  text-decoration: none;
-}
-
-.backend-docs-brand {
-  font-family: var(--viking-font-family-mono, ui-monospace, monospace);
-  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
-  text-transform: uppercase;
-  font-size: var(--viking-font-size-sm);
-  color: var(--viking-accent);
-  font-weight: var(--viking-font-weight-semibold, 600);
-}
-
-.backend-docs-topbar nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--viking-space-3);
-}
-
-.backend-docs-topbar nav a {
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-sm);
-  font-family: var(--viking-font-family-mono, ui-monospace, monospace);
-}
-
-.backend-docs-topbar nav a:hover,
-.backend-docs-topbar nav a:focus-visible {
-  color: var(--viking-accent);
-}
-
-.backend-docs-topbar a:focus-visible {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-accent));
-  outline-offset: var(--viking-ring-offset, 2px);
+  background: var(--suite-bg, var(--viking-bg, var(--bg-color)));
 }
 
 body.backend-swagger #swagger-ui {

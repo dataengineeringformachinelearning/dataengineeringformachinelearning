@@ -65,6 +65,8 @@ def test_home_splash_and_documentation_copy(client: Client) -> None:
   assert home.status_code == 200
   home_body = home.content.decode()
   assert "backend-splash" in home_body
+  assert "suite-backend-shell" in home_body
+  assert "suite-backend-logo" in home_body
   assert "dataengineeringformachinelearning.svg" in home_body
   assert "Swagger UI" not in home_body
   assert "Control plane, not data plane" not in home_body

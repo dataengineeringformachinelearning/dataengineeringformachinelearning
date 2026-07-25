@@ -96,7 +96,8 @@
 
   /* ── Status (refined for premium palette) ──────────────────────────────── */
   --viking-green-500: #2a9d8f;
-  --viking-gold-500: #c4a035;
+  /* Suite gold — elevated from FORJD institutional accent (SUITE_UI_UNIFICATION) */
+  --viking-gold-500: #d4af37;
   /* Info / chart series 6 — electric blue family */
   --viking-blue-500: var(--viking-electric-400);
   --viking-red-500: var(--viking-crimson-500);
@@ -200,12 +201,14 @@
   --viking-line-height-relaxed: 1.6;
   --viking-line-height-loose: 1.7;
 
-  --viking-letter-spacing-tighter: -0.025em;
-  --viking-letter-spacing-tight: -0.015em;
+  /* Industrial tracking elevated from FORJD brand/caps roles (suite lock) */
+  --viking-letter-spacing-tighter: -0.03em;
+  --viking-letter-spacing-tight: -0.03em;
   --viking-letter-spacing-normal: 0;
-  --viking-letter-spacing-wide: 0.01em;
-  --viking-letter-spacing-wider: 0.04em;
-  --viking-letter-spacing-caps: 0.06em;
+  --viking-letter-spacing-wide: 0.08em;
+  --viking-letter-spacing-wider: 0.1em;
+  --viking-letter-spacing-caps: 0.1em;
+  --viking-letter-spacing-display: 0.14em;
 
   --viking-type-caption: var(--viking-font-weight-medium)
     var(--viking-font-size-xs) / var(--viking-line-height-normal)
@@ -530,19 +533,21 @@
   --viking-icon-stroke-width-brand: 1.8;
 }
 
-/* ── Dark mode (default) ─────────────────────────────────────────────────── */
+/* ── Dark mode (default) ───────────────────────────────────────────────────
+   Suite lock (docs/SUITE_UI_UNIFICATION.md): void-black austerity from FORJD
+   + electric command primary from DEML. Solid industrial borders — not washes. */
 :root,
 html[data-theme="dark"] {
   color-scheme: dark;
 
-  --viking-bg: var(--viking-charcoal-900);
-  --viking-bg-subtle: var(--viking-ink-950);
+  --viking-bg: #0a0a0a;
+  --viking-bg-subtle: #050505;
   --viking-bg-inverted: var(--viking-white-pure);
-  --viking-surface: var(--viking-charcoal-800);
-  --viking-surface-alt: var(--viking-charcoal-700);
-  --viking-surface-inset: var(--viking-charcoal-950);
-  --viking-surface-raised: var(--viking-charcoal-600);
-  --viking-surface-overlay: var(--viking-ink-800);
+  --viking-surface: #111111;
+  --viking-surface-alt: #1a1a1a;
+  --viking-surface-inset: #050505;
+  --viking-surface-raised: #141414;
+  --viking-surface-overlay: #111111;
 
   --viking-text: var(--viking-white);
   --viking-text-muted: var(--viking-metallic-200);
@@ -550,21 +555,13 @@ html[data-theme="dark"] {
   --viking-text-disabled: var(--viking-metallic-400);
   --viking-text-link: var(--viking-electric-300);
   --viking-text-link-hover: var(--viking-electric-200);
-  --viking-text-inverted: var(--viking-charcoal-900);
+  --viking-text-inverted: var(--viking-bg);
 
-  --viking-border: color-mix(
-    in srgb,
-    var(--viking-metallic-600) 52%,
-    transparent
-  );
-  --viking-border-strong: color-mix(
-    in srgb,
-    var(--viking-metallic-400) 72%,
-    transparent
-  );
+  --viking-border: #222222;
+  --viking-border-strong: #333333;
   --viking-border-subtle: color-mix(
     in srgb,
-    var(--viking-metallic-600) 26%,
+    var(--viking-border) 70%,
     transparent
   );
   --viking-border-accent: color-mix(

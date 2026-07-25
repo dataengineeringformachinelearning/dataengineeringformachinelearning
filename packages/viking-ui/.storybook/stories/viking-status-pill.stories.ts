@@ -31,7 +31,7 @@ const renderPill = ({
 `;
 
 const meta: Meta<typeof renderPill> = {
-  title: "Viking Web Components/Status/VikingStatusPill",
+  title: "Product/Status/StatusPill",
   tags: ["autodocs"],
   render: renderPill,
   argTypes: {

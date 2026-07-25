@@ -28,7 +28,7 @@ const renderBadge = ({
 `;
 
 const meta: Meta<typeof renderBadge> = {
-  title: "Viking Web Components/Feedback/VikingBadge",
+  title: "Primitives/Badge",
   tags: ["autodocs"],
   render: renderBadge,
   argTypes: {

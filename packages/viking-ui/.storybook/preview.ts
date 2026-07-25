@@ -1,5 +1,8 @@
 import { registerVikingElements } from "../src/web/index";
 import type { Preview } from "@storybook/html";
+
+import "../dist/suite-tokens.css";
+import "../dist/suite-components.css";
 import "../dist/design-tokens.css";
 import "../dist/viking-ui.css";
 import "./storybook.css";
@@ -8,16 +11,16 @@ registerVikingElements();
 
 const wrapStory = (storyMarkup: unknown): string | Node => {
   if (typeof storyMarkup === "string") {
-    return `<div class="viking-story-shell" data-theme="dark">${storyMarkup}</div>`;
+    return `<div class="suite-story-shell viking-story-shell" data-theme="dark">${storyMarkup}</div>`;
   }
   if (storyMarkup instanceof Node) {
     const shell = document.createElement("div");
-    shell.className = "viking-story-shell";
+    shell.className = "suite-story-shell viking-story-shell";
     shell.setAttribute("data-theme", "dark");
     shell.appendChild(storyMarkup);
     return shell;
   }
-  return `<div class="viking-story-shell" data-theme="dark"></div>`;
+  return `<div class="suite-story-shell viking-story-shell" data-theme="dark"></div>`;
 };
 
 const preview: Preview = {
@@ -30,17 +33,17 @@ const preview: Preview = {
       storySort: {
         method: "alphabetical",
         order: [
-          "Viking Web Components",
-          "Viking Web Components/Controls",
-          "Viking Web Components/Forms",
-          "Viking Web Components/Feedback",
-          "Viking Web Components/Status",
-          "Viking Web Components/Layout",
-          "Viking Web Components/Surfaces",
-          "Viking Web Components/Navigation",
-          "Viking Web Components/Overlay",
-          "Viking Web Components/Playground",
-          "Viking Web Components/Release",
+          "Foundation",
+          "Primitives",
+          "Product",
+          "Product/Controls",
+          "Product/Status",
+          "Product/Layout",
+          "Product/Surfaces",
+          "Product/Navigation",
+          "Product/Overlay",
+          "Product/Playground",
+          "Product/Release",
         ],
       },
     },
@@ -54,21 +57,16 @@ const preview: Preview = {
     },
     layout: "fullscreen",
     backgrounds: {
-      options: {
-        battlefield: {
-          name: "battlefield-surface",
-          value: "var(--viking-bg)",
-        },
-        machined: { name: "machined-surface", value: "var(--viking-surface)" },
-        raised: { name: "raised-panel", value: "var(--viking-surface-raised)" },
-      },
+      default: "void",
+      values: [
+        { name: "void", value: "var(--suite-bg)" },
+        { name: "surface", value: "var(--suite-surface)" },
+        { name: "elevated", value: "var(--suite-surface-elevated)" },
+      ],
     },
     chromatic: {
       viewports: [375, 768, 1280],
     },
-  },
-  initialGlobals: {
-    backgrounds: { value: "battlefield" },
   },
   tags: ["autodocs"],
   decorators: [
@@ -77,8 +75,8 @@ const preview: Preview = {
         return wrapStory(story());
       } catch (error) {
         console.error("[viking-storybook] story render failed", error);
-        return `<div class="viking-story-shell" data-theme="dark">
-          <div class="viking-story-panel">
+        return `<div class="suite-story-shell viking-story-shell" data-theme="dark">
+          <div class="suite-story-panel viking-story-panel">
             <viking-callout tone="danger" heading="Story failed to render">
               Check the browser console for the component error.
             </viking-callout>

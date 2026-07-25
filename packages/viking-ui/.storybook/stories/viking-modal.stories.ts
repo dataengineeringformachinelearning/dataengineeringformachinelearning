@@ -23,7 +23,7 @@ const renderModal = ({ title, open, dismissible }: ModalArgs) => `
 `;
 
 const meta: Meta<typeof renderModal> = {
-  title: "Viking Web Components/Overlay/VikingModal",
+  title: "Primitives/Dialog",
   tags: ["autodocs"],
   render: renderModal,
   argTypes: {

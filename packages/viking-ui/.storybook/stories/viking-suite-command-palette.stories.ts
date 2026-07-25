@@ -22,7 +22,7 @@ const renderSuiteCommandPalette = ({
 `;
 
 const meta: Meta<typeof renderSuiteCommandPalette> = {
-  title: "Viking Web Components/Navigation/VikingSuiteCommandPalette",
+  title: "Product/Navigation/SuiteCommandPalette",
   tags: ["autodocs"],
   render: renderSuiteCommandPalette,
   argTypes: {

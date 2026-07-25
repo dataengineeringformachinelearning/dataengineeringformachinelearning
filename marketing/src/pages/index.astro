@@ -66,26 +66,36 @@ const resources = [
   keywords={`${DEFAULT_KEYWORDS}, community, learning, open examples`}
   jsonLd={homeJsonLd}
 >
-  <div class="page-inner-wrapper community-home">
-    <section class="community-hero viking-unified-hero" aria-labelledby="main-title">
-      <div class="community-hero-copy viking-unified-hero-copy">
-        <p class="community-eyebrow viking-unified-hero-badge">
-          <span class="badge-dot"></span>
-          <span class="badge-text">Community · Practice · Platforms</span>
-        </p>
-        <h1 class="title viking-unified-hero-title" id="main-title">
-          Data Engineering for Machine Learning
-        </h1>
-        <p class="subtitle viking-unified-hero-lead">
-          Learn and build the practice of data engineering for machine learning — share field notes,
-          study living reference platforms, and grow skills that hold up under production pressure.
-        </p>
+  <div class="page-inner-wrapper landing-container showcase-layout community-home suite-landing">
+    <section class="suite-landing-hero viking-unified-hero" aria-labelledby="main-title">
+      <p class="hero-badge viking-unified-hero-badge community-eyebrow">
+        <span class="badge-dot pulse-dot"></span>
+        <span class="badge-text">Community · Practice · Platforms</span>
+      </p>
+      <p class="hero-brand suite-landing-brand">DEML</p>
+      <h1 class="title viking-unified-hero-title" id="main-title">
+        Data Engineering for Machine Learning
+      </h1>
+      <p class="subtitle viking-unified-hero-lead suite-landing-lede">
+        Learn and build the practice of data engineering for machine learning — share field notes,
+        study living reference platforms, and grow skills that hold up under production pressure.
+      </p>
+      <div class="cta-group viking-unified-hero-actions suite-landing-actions">
+        <a class="suite-btn viking-btn viking-btn-primary" data-variant="primary" href={FRONTEND_URL}
+          >Open DEML</a
+        >
+        <a class="suite-btn viking-btn viking-btn-outline" data-variant="outline" href={FORJD_URL}
+          >Open FORJD</a
+        >
+        <a class="suite-btn viking-btn viking-btn-ghost" data-variant="ghost" href="/blog/"
+          >Blue Notes</a
+        >
       </div>
     </section>
 
     <section class="community-showcases" aria-labelledby="showcases-title">
-      <header class="viking-unified-section-header">
-        <span class="section-tag">OPEN EXAMPLES</span>
+      <header class="viking-unified-section-header suite-landing-section-header">
+        <span class="section-tag suite-landing-tag">OPEN EXAMPLES</span>
         <h2 id="showcases-title">Reference platforms</h2>
         <p>
           Two production systems the community uses as living examples — a control plane and a
@@ -94,7 +104,7 @@ const resources = [
       </header>
       <div class="community-showcase-grid viking-panel-grid" data-columns="2">
         {showcases.map((item) => (
-          <a class="community-showcase-card viking-card" href={item.href}>
+          <a class="community-showcase-card viking-card suite-card" href={item.href}>
             <span class="section-tag">{item.tag}</span>
             <div class="community-showcase-card-title">
               <VikingIcon name={item.icon} size={24} />
@@ -111,15 +121,15 @@ const resources = [
     </section>
 
     <section class="community-resources" aria-labelledby="resources-title">
-      <header class="viking-unified-section-header">
-        <span class="section-tag">RESOURCES</span>
+      <header class="viking-unified-section-header suite-landing-section-header">
+        <span class="section-tag suite-landing-tag">RESOURCES</span>
         <h2 id="resources-title">Learn with the community</h2>
         <p>Field notes, the book, and the whitepaper — community content without product chrome.</p>
       </header>
       <ul class="community-resource-list viking-stack">
         {resources.map((item) => (
           <li>
-            <a class="community-resource-link viking-card" href={item.href}>
+            <a class="community-resource-link viking-card suite-card" href={item.href}>
               <VikingIcon name={item.icon} size={20} />
               <div>
                 <strong>{item.title}</strong>

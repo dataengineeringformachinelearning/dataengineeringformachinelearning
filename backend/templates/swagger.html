@@ -10,7 +10,7 @@
       content="Interactive Swagger documentation for the DEML learning platform API."
     />
     <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml" />
-    <meta name="theme-color" content="#111111" />
+    <meta name="theme-color" content="#0a0a0a" />
     <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity — Swagger UI CDN; major version pinned -->
     <link
       rel="stylesheet"
@@ -18,9 +18,9 @@
     />
     <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
   </head>
-  <body class="backend-swagger">
-    <header class="backend-docs-topbar">
-      <a class="backend-docs-brand" href="{{ frontend_url }}/">DEML</a>
+  <body class="suite-backend-docs backend-swagger">
+    <header class="suite-backend-topbar backend-docs-topbar">
+      <a class="suite-backend-brand backend-docs-brand" href="{{ frontend_url }}/">DEML</a>
       <nav aria-label="API documentation">
         <a href="{{ frontend_url }}/">product</a>
         <a href="/api/v1/redoc">redoc</a>

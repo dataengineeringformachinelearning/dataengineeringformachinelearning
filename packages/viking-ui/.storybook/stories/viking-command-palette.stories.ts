@@ -43,7 +43,7 @@ const renderCommandPalette = ({
 `;
 
 const meta: Meta<typeof renderCommandPalette> = {
-  title: "Viking Web Components/Overlay/VikingCommandPalette",
+  title: "Product/Overlay/CommandPalette",
   tags: ["autodocs"],
   render: renderCommandPalette,
   argTypes: {

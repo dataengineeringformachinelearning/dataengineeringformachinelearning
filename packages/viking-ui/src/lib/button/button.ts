@@ -57,8 +57,9 @@ export type VikingButtonVariant =
 
     @if (href()) {
       <a
-        class="viking-btn"
+        class="suite-btn viking-btn"
         [class]="controlClass()"
+        [attr.data-variant]="suiteVariant()"
         [attr.href]="isInteractive() ? href() : null"
         [attr.target]="target()"
         [attr.rel]="relAttr()"
@@ -71,8 +72,9 @@ export type VikingButtonVariant =
       </a>
     } @else {
       <button
-        class="viking-btn"
+        class="suite-btn viking-btn"
         [class]="controlClass()"
+        [attr.data-variant]="suiteVariant()"
         [type]="type()"
         [disabled]="!isInteractive()"
         [attr.aria-label]="label() || null"
@@ -120,6 +122,14 @@ export class VikingButton {
       "viking-full": this.fullWidth(),
       "viking-compact": this.compact(),
     };
+  });
+
+  /** Maps filled/subtle → suite data-variant contract used by forjd-ui. */
+  protected readonly suiteVariant = computed(() => {
+    const v = this.variant();
+    if (v === "filled") return "primary";
+    if (v === "subtle") return "ghost";
+    return v;
   });
 
   protected readonly relAttr = computed(() =>

@@ -69,7 +69,7 @@ const renderPublishingReadiness = () => `
 `;
 
 const meta: Meta = {
-  title: "Viking Web Components/Release/Publishing",
+  title: "Product/Release/Publishing",
   tags: ["autodocs"],
 };
 

@@ -37,7 +37,7 @@ const renderButton = ({
 `;
 
 const meta: Meta<typeof renderButton> = {
-  title: "Viking Web Components/Controls/VikingButton",
+  title: "Primitives/Button",
   tags: ["autodocs"],
   render: renderButton,
   argTypes: {
@@ -70,6 +70,32 @@ export const Primary: Story = {
   args: {
     label: "Launch Drift Scanner",
     variant: "primary",
+    size: "",
+    loading: false,
+    disabled: false,
+    square: false,
+    fullWidth: false,
+    href: "",
+  },
+};
+
+export const Secondary: Story = {
+  args: {
+    label: "Secondary action",
+    variant: "secondary",
+    size: "",
+    loading: false,
+    disabled: false,
+    square: false,
+    fullWidth: false,
+    href: "",
+  },
+};
+
+export const Outline: Story = {
+  args: {
+    label: "Outline action",
+    variant: "outline",
     size: "",
     loading: false,
     disabled: false,

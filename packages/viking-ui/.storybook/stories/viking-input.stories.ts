@@ -40,7 +40,7 @@ const renderInput = ({
 `;
 
 const meta: Meta<typeof renderInput> = {
-  title: "Viking Web Components/Forms/VikingInput",
+  title: "Primitives/Input",
   tags: ["autodocs"],
   render: renderInput,
   argTypes: {

@@ -1,6 +1,6 @@
 # DEML — Cursor Agent Rules (Viking-UI Quality)
 
-You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must follow the final Viking-UI aesthetic: **grid-first modern enterprise SaaS** — Cyber-Noir dark surfaces, Ocean Blue Serenity accents, precision-engineered component anatomy, dense breathable data layouts, restrained dark-first surfaces, and WCAG 2.1 AA by construction. The system should feel calm, precise, premium, and deliberately unsurprising across every product surface.
+You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must follow the suite Viking-UI aesthetic: **grid-first modern enterprise SaaS** — void-black austerity, electric command `#2176ff`, institutional gold, precision-engineered component anatomy, dense breathable data layouts, and WCAG 2.1 AA by construction. The system must be visually identical across deml.app, backend.deml.app, ui.deml.app, dataengineeringformachinelearning.com, **and** forjd.co / backend.forjd.co / ui.forjd.co — see [docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md). Calm, precise, premium, aerospace-austere, deliberately unsurprising.
 
 ## Rule hierarchy (read in order)
 
@@ -163,7 +163,7 @@ import {
 
 Every surface must match the **marketing site polish bar** — use it as the visual benchmark before shipping UI.
 
-**Visual benchmark:** [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/) (`marketing/src/pages/index.astro`, `marketing/src/styles/landing.scss`). Match its breathing room, section hierarchy, machined card surfaces, and restrained teal/crimson accents. If deml.app, backend, docs, or showcase feels flatter, less disciplined, or less legible than marketing, it is not done.
+**Visual benchmark:** [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/) (`marketing/src/pages/index.astro`, suite stage in `packages/viking-ui/src/tokens/suite-landing.css` + `packages/viking-ui/src/styles/surfaces/marketing-landing.scss`). Match its breathing room, section hierarchy, machined card surfaces, and restrained teal/crimson accents. If deml.app, backend, docs, or showcase feels flatter, less disciplined, or less legible than marketing, it is not done.
 
 ### Tokens only — spacing, color, wrappers
 

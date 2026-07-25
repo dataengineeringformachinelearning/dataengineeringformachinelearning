@@ -1,180 +1,39 @@
-.viking-story-shell {
-  min-height: 100vh;
-  display: grid;
-  align-content: start;
-  justify-items: start;
-  padding: var(--viking-page-gutter);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--viking-bg) 70%, transparent) 0%,
-      color-mix(in srgb, var(--viking-bg) 90%, var(--viking-surface) 10%) 100%
-    ),
-    repeating-linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--viking-border-subtle) 8%, transparent),
-      color-mix(in srgb, var(--viking-border-subtle) 8%, transparent) 1px,
-      transparent 1px,
-      transparent 9px
-    );
-  color: var(--viking-text);
-  border-radius: 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.viking-story-shell h1,
-.viking-story-shell h2,
-.viking-story-shell h3 {
-  font-family: var(
-    --viking-font-family-display,
-    "Inter",
-    system-ui,
-    sans-serif
-  );
-  letter-spacing: 0.02em;
-}
-
-.viking-story-panel {
-  width: min(100%, var(--viking-content-max-width));
-  border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  box-shadow: var(--viking-shadow-md);
-  padding: var(--viking-card-padding);
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background-clip: padding-box;
-}
-
-.viking-story-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--viking-metallic-200) 35%, transparent),
-    transparent
-  );
-  pointer-events: none;
-}
-
-.viking-story-panel::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 auto;
-  width: 1px;
-  height: 34px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--viking-metallic-100) 28%, transparent),
-    transparent
-  );
-  pointer-events: none;
-}
-
-.viking-story-grid {
-  display: grid;
-  gap: var(--viking-space-4);
-  margin-top: var(--viking-space-4);
-}
-
-.viking-story-grid.cols-2 {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.viking-story-grid.cols-3 {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-
-.viking-story-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--viking-space-2);
-}
-
-.viking-story-playground-title {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--viking-space-1);
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-xs);
-  letter-spacing: var(--viking-letter-spacing-caps);
-  text-transform: uppercase;
-  margin-bottom: var(--viking-space-1);
-}
-
-.landing-playground-band {
-  width: 100%;
-  margin: 0;
-}
-
-.viking-story-stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-4);
-}
-
-.viking-story-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-2);
-  max-width: var(--viking-text-max-width);
-}
-
-.viking-story-header .viking-heading-sm,
-.viking-story-header .viking-heading-md {
-  margin: 0;
-}
+/* Suite docs chrome — Pass 5. Extra DEML playground utilities below. */
+@import "../dist/suite-docs.css";
 
 .viking-story-metric-row {
   display: grid;
-  gap: var(--viking-space-3);
+  gap: var(--suite-space-3);
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .viking-story-metric {
   display: flex;
-  min-height: var(--viking-target-size-lg);
+  min-height: var(--suite-touch);
   flex-direction: column;
   justify-content: center;
-  gap: var(--viking-space-1);
-  padding: var(--viking-space-3);
-  border: 1px solid var(--viking-border-subtle);
-  border-radius: var(--viking-radius);
-  background: var(--viking-surface-muted);
+  gap: var(--suite-space-1);
+  padding: var(--suite-space-3);
+  border: 1px solid var(--suite-border);
+  border-radius: var(--suite-radius);
+  background: var(--suite-surface-2);
 }
 
 .viking-story-checklist {
   display: grid;
-  gap: var(--viking-space-2);
+  gap: var(--suite-space-2);
   margin: 0;
-  padding-left: var(--viking-space-4);
-}
-
-.viking-story-note {
-  margin: var(--viking-space-3) 0 0;
+  padding-left: var(--suite-space-4);
+  color: var(--suite-ink-muted);
 }
 
 .viking-story-footer-space {
-  margin-top: var(--viking-space-4);
+  margin-top: var(--suite-space-4);
 }
 
 .viking-theme-toggle-story-compact {
   transform: scale(0.95);
   transform-origin: center;
-}
-
-.viking-story-narrow {
-  max-width: 28rem;
-}
-
-.viking-story-wide {
-  width: min(100%, 72rem);
 }
 
 .viking-story-bleed {
@@ -187,10 +46,15 @@
   min-height: 16rem;
   display: grid;
   align-content: start;
-  gap: var(--viking-space-3);
+  gap: var(--suite-space-3);
 }
 
 .viking-story-skeleton-block {
   height: 10rem;
   width: 100%;
+}
+
+.landing-playground-band {
+  width: 100%;
+  margin: 0;
 }

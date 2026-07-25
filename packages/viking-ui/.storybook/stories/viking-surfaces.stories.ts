@@ -96,7 +96,7 @@ const renderChartPanelShell = () => `
 `;
 
 const meta: Meta = {
-  title: "Viking Web Components/Surfaces",
+  title: "Product/Surfaces",
   tags: ["autodocs"],
 };
 

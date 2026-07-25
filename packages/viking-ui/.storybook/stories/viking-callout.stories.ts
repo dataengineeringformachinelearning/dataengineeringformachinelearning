@@ -17,7 +17,7 @@ const renderCallout = ({ tone, heading, dismissible }: CalloutArgs) => `
 `;
 
 const meta: Meta<typeof renderCallout> = {
-  title: "Viking Web Components/Feedback/VikingCallout",
+  title: "Primitives/Callout",
   tags: ["autodocs"],
   render: renderCallout,
   argTypes: {

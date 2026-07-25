@@ -19,67 +19,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Minimal API splash (logo only) ────────────────────────────────────────── */
-body.backend-splash {
-  margin: 0;
-  min-height: 100%;
-  background:
-    radial-gradient(
-      90% 55% at 50% 38%,
-      color-mix(in srgb, var(--viking-accent) 12%, transparent),
-      transparent 62%
-    ),
-    var(--viking-bg);
-}
-
-.backend-splash-shell {
-  min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: var(--viking-space-6);
-}
-
-.backend-splash-logo {
-  display: block;
-  width: min(8rem, 38vw);
-  height: auto;
-  border: 0;
-  text-decoration: none;
-  filter: drop-shadow(
-    0 0 28px color-mix(in srgb, var(--viking-accent) 28%, transparent)
-  );
-  transition:
-    transform var(--viking-duration, 250ms) var(--viking-ease-emphasized, ease),
-    filter var(--viking-duration, 250ms) var(--viking-ease-default, ease);
-
-  &:hover {
-    transform: translateY(-2px);
-    filter: drop-shadow(
-      0 0 40px color-mix(in srgb, var(--viking-accent) 40%, transparent)
-    );
-  }
-
-  &:focus-visible {
-    outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-accent));
-    outline-offset: var(--viking-ring-offset, 2px);
-  }
-
-  img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .backend-splash-logo {
-    transition: none;
-
-    &:hover {
-      transform: none;
-    }
-  }
-}
+/* Splash + docs topbar: owned by packages/viking-ui/src/tokens/suite-backend.css
+ * (appended into viking-ui.css). Do not reintroduce one-off splash chrome here. */
 
 /* ── Landing shell (documentation + legacy pages) ──────────────────────────── */
 .backend-landing-shell {

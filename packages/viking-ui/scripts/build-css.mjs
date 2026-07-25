@@ -68,12 +68,51 @@ const compile = (entry, style = "expanded") => {
 
 mkdirSync(outDir, { recursive: true });
 
-const tokensCss = compile("tokens-export.scss");
-const componentsCss = compile("components-bundle.scss");
-const demlComponentsCss = compile("deml-components.scss");
-const appCss = compile("viking-app.scss", "compressed");
-const bundleCss = compile("viking-ui-bundle.scss", "compressed");
+const suiteTokensSrc = path.join(
+  packageDir,
+  "src",
+  "tokens",
+  "suite-tokens.css",
+);
+const suiteComponentsSrc = path.join(
+  packageDir,
+  "src",
+  "tokens",
+  "suite-components.css",
+);
+const suiteLandingSrc = path.join(
+  packageDir,
+  "src",
+  "tokens",
+  "suite-landing.css",
+);
+const suiteBackendSrc = path.join(
+  packageDir,
+  "src",
+  "tokens",
+  "suite-backend.css",
+);
+const suiteDocsSrc = path.join(packageDir, "src", "tokens", "suite-docs.css");
+const suiteTokensCss = readFileSync(suiteTokensSrc, "utf8");
+const suiteComponentsCss = readFileSync(suiteComponentsSrc, "utf8");
+const suiteLandingCss = readFileSync(suiteLandingSrc, "utf8");
+const suiteBackendCss = readFileSync(suiteBackendSrc, "utf8");
+const suiteDocsCss = readFileSync(suiteDocsSrc, "utf8");
+// Product surfaces: tokens → components → landing → backend (docs CSS is Storybook-only)
+const suiteBundle = `${suiteTokensCss}\n${suiteComponentsCss}\n${suiteLandingCss}\n${suiteBackendCss}`;
 
+const tokensCss = `${compile("tokens-export.scss")}\n${suiteBundle}`;
+const componentsCss = `${compile("components-bundle.scss")}\n${suiteComponentsCss}`;
+const demlComponentsCss = compile("deml-components.scss");
+// Append suite so --suite-* aliases and stage chrome win over surface SCSS.
+const appCss = `${compile("viking-app.scss", "compressed")}\n${suiteBundle}`;
+const bundleCss = `${compile("viking-ui-bundle.scss", "compressed")}\n${suiteBundle}`;
+
+writeFileSync(path.join(outDir, "suite-tokens.css"), suiteTokensCss);
+writeFileSync(path.join(outDir, "suite-components.css"), suiteComponentsCss);
+writeFileSync(path.join(outDir, "suite-landing.css"), suiteLandingCss);
+writeFileSync(path.join(outDir, "suite-backend.css"), suiteBackendCss);
+writeFileSync(path.join(outDir, "suite-docs.css"), suiteDocsCss);
 writeFileSync(path.join(outDir, "design-tokens.css"), tokensCss);
 writeFileSync(path.join(outDir, "viking-components.css"), componentsCss);
 writeFileSync(path.join(outDir, "deml-components.css"), demlComponentsCss);

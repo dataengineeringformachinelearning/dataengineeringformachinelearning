@@ -1,5 +1,8 @@
 # DEML Design System — Viking-UI Theme
 
+**Suite mandate:** [docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md) — all suite hosts share one visual language.
+**Pass 1 tokens (canonical):** [`packages/viking-ui/src/tokens/suite-tokens.css`](packages/viking-ui/src/tokens/suite-tokens.css) + usage [`SUITE_TOKENS.md`](packages/viking-ui/src/tokens/SUITE_TOKENS.md). Prefer `--suite-*`; `--viking-*` / `--fj-*` are aliases. FORJD vendors this file (no npm style install).
+
 **Single source of truth** for visual design across all DEML surfaces:
 
 | Property                                                                               | Stack                          | Theme entry point                                               |
@@ -45,7 +48,7 @@ Viking-UI is the single source of truth for all DEML styling. Every visual rule 
 
 ## Design philosophy
 
-Viking-UI's current aesthetic is a **grid-first modern enterprise SaaS system**: highly consistent component anatomy, quiet Cyber-Noir surfaces, restrained Ocean Blue Serenity accents, balanced data density, and predictable responsive composition. The system should feel calm, precise, premium, and deliberately unsurprising across every product surface.
+Viking-UI's current aesthetic is a **grid-first modern enterprise SaaS system**: highly consistent component anatomy, **void-black command surfaces** (suite-locked with FORJD), restrained electric command accents (`#2176ff`), balanced data density, and predictable responsive composition. The system should feel calm, precise, premium, aerospace-austere, and deliberately unsurprising across every product surface in the DEML + FORJD suite.
 
 The concise component specification is maintained in
 [BOOK.md § Appendix Y](BOOK.md#appendix-y-viking-ui-modern-saas-style-guide). Controls share

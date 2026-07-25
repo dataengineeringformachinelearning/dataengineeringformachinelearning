@@ -83,7 +83,7 @@ const SCANNABLE_EXTENSIONS = /\.(html|htm|astro|scss|css|ts|tsx|js|jsx|svg)$/i;
 
 /** @type {RegExp} */
 const TOKEN_DEFINITION_FILE =
-  /[/\\](_variables\.scss|tokens\.scss|viking-ui-bundle\.scss)$/;
+  /[/\\](_variables\.scss|_series-colors\.scss|tokens\.scss|viking-ui-bundle\.scss|suite-tokens\.css|suite-components\.css|suite-landing\.css|suite-backend\.css|suite-docs\.css)$/;
 
 /** Layout rhythm tokens — must exist in _variables.scss (THEME.md §3). */
 const LAYOUT_RHYTHM_TOKENS = [
@@ -135,9 +135,12 @@ const SERIES_PRESETS = [
 /** Hex literals allowed outside token definition files when on canonical palette. */
 const PALETTE_HEX = new Set([
   "#0a0a0a",
+  "#050505",
   "#111111",
+  "#141414",
   "#1a1a1a",
   "#2a2a2a",
+  "#222222",
   "#333333",
   "#444444",
   "#555555",
@@ -157,6 +160,19 @@ const PALETTE_HEX = new Set([
   "#c44355",
   "#2a9d8f",
   "#c4a035",
+  "#d4af37",
+  "#d69e2e",
+  "#2176ff",
+  "#4d94ff",
+  "#0a4fd4",
+  "#7ab0ff",
+  "#1565f0",
+  "#073a99",
+  "#080d1f",
+  "#fbfcfe",
+  "#f4f7fb",
+  "#d7e0ef",
+  "#8fa2c2",
   "#14a3a8",
   "#f5f5f5",
   "#ffffff",

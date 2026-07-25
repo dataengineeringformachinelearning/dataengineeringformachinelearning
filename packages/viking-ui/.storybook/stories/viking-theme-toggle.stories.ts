@@ -12,7 +12,7 @@ const renderThemeToggle = ({ compact }: { compact: boolean }) => `
 `;
 
 const meta: Meta<typeof renderThemeToggle> = {
-  title: "Viking Web Components/Controls/VikingThemeToggle",
+  title: "Product/Controls/ThemeToggle",
   tags: ["autodocs"],
   render: renderThemeToggle,
   argTypes: {

@@ -25,6 +25,7 @@
     "hygiene:cache": "python scripts/deml_tooling.py hygiene --cache",
     "theme:clean": "node scripts/enforce-theme.js",
     "theme:clean:apply": "node scripts/enforce-theme.js --apply",
+    "suite:purity": "node scripts/check-suite-purity.mjs",
     "cleanup-theme": "node scripts/enforce-theme.js",
     "cleanup-theme:apply": "node scripts/enforce-theme.js --apply",
     "quality": "python scripts/deml_tooling.py quality --fast",
@@ -55,5 +56,8 @@
     "@chromatic-com/playwright": "^0.14.10",
     "@playwright/test": "^1.52.0",
     "chromatic": "^18.0.1"
+  },
+  "dependencies": {
+    "@angular/forms": "^22.0.8"
   }
 }
