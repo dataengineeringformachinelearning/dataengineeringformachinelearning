@@ -1,81 +1,16 @@
-# Deploy marketing site to Firebase Hosting on merge to main.
-# Uses Firebase CLI directly so identical rebuilds do not fail the workflow.
+# Retired: marketing is hosted on Vercel (project `marketing`, root `marketing/`).
+# Keep this file as a no-op so historical links do not break; remove after DNS cutover is verified.
 
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Firebase Hosting on merge (retired)
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "marketing/**"
-      - "packages/viking-ui/**"
-      - "package.json"
-      - "package-lock.json"
-      - "firebase.json"
-      - ".github/workflows/firebase-hosting-merge.yml"
   workflow_dispatch:
 
-concurrency:
-  group: firebase-marketing-production
-  cancel-in-progress: false
-
 jobs:
-  build_and_deploy:
+  retired:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: "24.15.0"
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            marketing/package-lock.json
-
-      - name: Install workspace dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Build canonical Viking-UI package
-        run: npm run build:viking-ui:package
-
-      - name: Build marketing site
-        run: npm run build --prefix marketing
-
-      - name: Authenticate to Google Cloud / Firebase
-        id: auth
-        uses: google-github-actions/auth@v3
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
-          create_credentials_file: true
-
-      - name: Verify Firebase CLI
-        run: npx --yes firebase-tools@14.12.0 --version
-
-      - name: Deploy marketing hosting target
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
+      - name: Firebase Hosting retired
         run: |
-          set +e
-          OUTPUT=$(npx --yes firebase-tools@14.12.0 deploy --only hosting:marketing --project demldotcom --non-interactive 2>&1)
-          STATUS=$?
-          echo "$OUTPUT"
-          if [ "$STATUS" -eq 0 ]; then
-            exit 0
-          fi
-          if echo "$OUTPUT" | grep -q "is the current active version"; then
-            echo "Hosting is already on the active version; treating deploy as success."
-            exit 0
-          fi
-          exit "$STATUS"
-
-  purge-cloudflare-cache:
-    needs: build_and_deploy
-    uses: ./.github/workflows/purge-cloudflare-cache.yml
-    secrets:
-      CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-      CLOUDFLARE_ZONE_ID_DEML_MARKETING: ${{ secrets.CLOUDFLARE_ZONE_ID_DEML_MARKETING }}
-      CLOUDFLARE_ZONE_ID_DEML_APP: ${{ secrets.CLOUDFLARE_ZONE_ID_DEML_APP }}
+          echo "Marketing deploys via Vercel project marketing (marketing/vercel.json)."
+          echo "Viking-UI Storybook deploys via Vercel project ui (packages/viking-ui/vercel.ui.json)."

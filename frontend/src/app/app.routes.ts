@@ -7,6 +7,10 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: [rootGuard],
+    loadComponent: () => import('./pages/product-home/product-home').then(m => m.ProductHome),
+  },
+  {
+    path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.Login),
   },
   { path: 'status', loadComponent: () => import('./pages/status/status').then(m => m.Status) },
@@ -44,7 +48,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/account/account').then(m => m.Account),
   },
 
-  { path: 'login', redirectTo: '', pathMatch: 'full' },
   { path: 'success', loadComponent: () => import('./pages/success/success').then(m => m.Success) },
   {
     path: 'auth-status',

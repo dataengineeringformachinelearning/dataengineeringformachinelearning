@@ -137,29 +137,9 @@ jobs:
         if: steps.ensure-release.outputs.published == 'true'
         run: npm run sync:design-system
 
-      - name: Build Viking-UI showcase
+      - name: Note Storybook host (Vercel)
         if: steps.ensure-release.outputs.published == 'true'
-        run: npm run build:viking-ui-docs
-
-      - name: Host Storybook with Viking-UI documentation
-        if: steps.ensure-release.outputs.published == 'true'
-        run: npm run embed:storybook --prefix viking-ui-docs
-
-      - name: Authenticate to Firebase
-        if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
-        id: firebase-auth
-        uses: google-github-actions/auth@v3
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI }}
-          create_credentials_file: true
-
-      - name: Deploy UI showcase
-        if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.firebase-auth.outputs.credentials_file_path }}
         run: |
-          npx --no-install firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive
-
-      - name: Skip showcase deploy
-        if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI == ''
-        run: echo "FIREBASE_SERVICE_ACCOUNT_DEML_UI is not set; showcase deploy skipped."
+          echo "ui.dataengineeringformachinelearning.com is the Vercel project ui"
+          echo "(packages/viking-ui/vercel.ui.json → storybook-static)."
+          echo "Firebase Hosting for deml-ui is retired."

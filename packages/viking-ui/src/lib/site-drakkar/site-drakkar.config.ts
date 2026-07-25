@@ -45,19 +45,18 @@ export interface SiteFooterColumn {
 /** Primary navbar links (desktop + mobile). Shown on every surface. */
 export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
   {
-    id: "explore",
-    label: "Explore",
-    icon: "globe",
-    appHref: "/explore",
-    marketingHref: "/explore",
-    platform: true,
+    id: "blue-notes",
+    label: "Blue Notes",
+    icon: "file",
+    appHref: "https://dataengineeringformachinelearning.com/blog/",
+    marketingHref: "/blog/",
   },
   {
-    id: "documentation",
-    label: "Documentation",
-    icon: "file",
-    appHref: "https://dataengineeringformachinelearning.com/documentation/",
-    marketingHref: "/documentation",
+    id: "book",
+    label: "Book",
+    icon: "policy",
+    appHref: "https://dataengineeringformachinelearning.com/book/",
+    marketingHref: "/book",
   },
   {
     id: "dashboard",
@@ -90,8 +89,20 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
 
 export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
   {
-    title: "Platform",
+    title: "Platforms",
     links: [
+      {
+        label: "DEML",
+        appHref: "/",
+        marketingHref: "https://deml.app/",
+        platform: true,
+      },
+      {
+        label: "FORJD",
+        appHref: "https://forjd.co/",
+        marketingHref: "https://forjd.co/",
+        external: true,
+      },
       {
         label: "Explore",
         appHref: "/explore",
@@ -105,29 +116,15 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         platform: true,
         requireAuth: true,
       },
-      {
-        label: "Sites",
-        appHref: "/settings",
-        marketingHref: "/settings",
-        platform: true,
-        requireAuth: true,
-      },
-      {
-        label: "Account",
-        appHref: "/account",
-        marketingHref: "/account",
-        platform: true,
-        requireAuth: true,
-      },
     ],
   },
   {
     title: "Resources",
     links: [
       {
-        label: "Documentation",
-        appHref: "https://dataengineeringformachinelearning.com/documentation/",
-        marketingHref: "/documentation",
+        label: "Community",
+        appHref: "https://dataengineeringformachinelearning.com/",
+        marketingHref: "/",
       },
       {
         label: "Whitepaper",

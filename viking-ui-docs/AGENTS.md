@@ -8,8 +8,8 @@ This is the **standalone Astro showcase** for Viking-UI. Do not merge this into 
 - Canonical library source (styles/tokens/web components and Angular wrappers) lives in `../packages/viking-ui/`.
 - This app **demonstrates** library primitives via CSS + Web Components; keep demo pages thin.
 - Component registry: `src/lib/component-registry.ts`
-- Deploy via Firebase Hosting site **`deml-ui`**, not marketing or deml.app.
-- **Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/)
+- Public `ui.` host is **Storybook-only** on Vercel (`packages/viking-ui/` + `vercel.ui.json`). This Astro app is local/dev only.
+- **Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/) (Storybook)
 
 ## Local dev
 

@@ -8,68 +8,42 @@ const urls = {
 };
 
 describe("buildSuiteSearchItems", () => {
-  it("includes platform navigation and legal links for marketing", () => {
+  it("includes community resources and omits retired documentation nav", () => {
     const items = buildSuiteSearchItems("marketing", urls);
     const titles = items.map((item) => item.title);
 
-    expect(titles).toContain("Documentation");
-    expect(titles).toContain("Whitepaper");
-    expect(titles).toContain("Book");
     expect(titles).toContain("Blue Notes");
-    expect(titles).toContain("Privacy Policy");
-    expect(titles).toContain("Terms of Service");
-    expect(titles).toContain("SOC2 Compliance");
-    expect(titles).toContain("Viking-UI Components");
+    expect(titles).toContain("Book");
+    expect(titles).not.toContain("Documentation");
+    expect(titles).toContain("Viking-UI Storybook");
+    expect(titles).toContain("DEML product showcase");
   });
 
-  it("resolves app routes for deml.app context", () => {
-    const items = buildSuiteSearchItems("app", urls);
-    const dashboard = items.find((item) => item.title === "Dashboard");
+  it("hides auth-gated nav until authenticated", () => {
+    const anon = buildSuiteSearchItems("app", urls, { authenticated: false });
+    const auth = buildSuiteSearchItems("app", urls, { authenticated: true });
+    const anonTitles = anon.map((item) => item.title);
+    const authenticatedTitles = auth.map((item) => item.title);
 
-    expect(dashboard?.href).toBe("/dashboard");
-    expect(items.some((item) => item.title === "Billing & subscription")).toBe(
-      true,
-    );
-  });
-
-  it("matches keyword search metadata", () => {
-    const items = buildSuiteSearchItems("marketing", urls);
-    const privacy = items.find((item) => item.title === "Privacy Policy");
-
-    expect(
-      privacy?.keywords?.some((keyword) => keyword.includes("privacy")),
-    ).toBe(true);
-  });
-
-  it("shows account-only routes only after cross-site authentication", () => {
-    const anonymousTitles = buildSuiteSearchItems("marketing", urls, {
-      authenticated: false,
-    }).map((item) => item.title);
-    const authenticatedTitles = buildSuiteSearchItems("marketing", urls, {
-      authenticated: true,
-    }).map((item) => item.title);
-
-    expect(anonymousTitles).not.toContain("Dashboard");
-    expect(anonymousTitles).not.toContain("Account");
+    expect(anonTitles).not.toContain("Dashboard");
     expect(authenticatedTitles).toContain("Dashboard");
     expect(authenticatedTitles).toContain("Account");
   });
 
-  it("includes Viking-UI docs entries for docs context", () => {
+  it("includes Storybook home for docs context", () => {
     const items = buildSuiteSearchItems("docs", urls, {
       docsOrigin: "https://ui.dataengineeringformachinelearning.com",
     });
     const titles = items.map((item) => item.title);
 
-    expect(titles).toContain("Components");
-    expect(titles).toContain("Playground");
+    expect(titles).toContain("Storybook home");
     expect(titles).toContain("Whitepaper");
-    expect(items.find((item) => item.title === "Components")?.href).toBe(
-      "https://ui.dataengineeringformachinelearning.com/components",
+    expect(items.find((item) => item.title === "Storybook home")?.href).toBe(
+      "https://ui.dataengineeringformachinelearning.com/",
     );
-    expect(items.find((item) => item.title === "Documentation")?.href).toBe(
-      "https://dataengineeringformachinelearning.com/documentation",
-    );
+    expect(
+      items.find((item) => item.title === "DEML product showcase")?.href,
+    ).toBe("https://deml.app/#docs");
     expect(items.find((item) => item.title === "Whitepaper")?.href).toBe(
       "https://dataengineeringformachinelearning.com/whitepaper",
     );

@@ -1,14 +1,14 @@
-export const SITE_NAME = "DEML (DATA ENGINEERING FOR MACHINE LEARNING)";
-export const SITE_SHORT_NAME = "DEML";
+export const SITE_NAME = "Data Engineering for Machine Learning";
+export const SITE_SHORT_NAME = "DEML Community";
 export const DEFAULT_OG_IMAGE = "/dataengineeringformachinelearning-social.png";
 export const ORGANIZATION_LOGO = "/dataengineeringformachinelearning.png";
 export const DEFAULT_OG_IMAGE_ALT =
-  "DEML ship mark for data engineering, machine learning, and cybersecurity";
+  "Ship mark for the Data Engineering for Machine Learning community";
 export const TWITTER_SITE = "@joealongi";
 export const AUTHOR_NAME = "Joe Alongi";
 
 export const DEFAULT_KEYWORDS =
-  "data engineering, machine learning, MLOps, operational intelligence, digital battlefield, telemetry, threat intelligence, STIX, multi-tenant SaaS, event projections, SLA forecasting, defendable architecture";
+  "data engineering, machine learning, MLOps, community, learning, open examples, operational intelligence, telemetry, threat intelligence, STIX, multi-tenant SaaS, event projections, SLA forecasting, defendable architecture";
 
 export function canonicalHref(pathname: string, site: URL | string): string {
   const base = typeof site === "string" ? site : site.href;
@@ -34,7 +34,7 @@ export function webSiteJsonLd(siteUrl: string) {
     name: SITE_NAME,
     url: siteUrl,
     description:
-      "Operational intelligence for the digital battlefield — real-time telemetry, SLA forecasting, and tenant-safe event projections under defendable architecture principles.",
+      "Community for practitioners learning and building data engineering for machine learning — field notes, shared resources, and open reference platforms.",
     author: { "@type": "Person", name: AUTHOR_NAME },
     publisher: { "@type": "Organization", name: SITE_NAME },
   };

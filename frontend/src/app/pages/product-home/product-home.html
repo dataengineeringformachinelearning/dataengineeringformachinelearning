@@ -1,0 +1,269 @@
+<div class="page-inner-wrapper landing-container showcase-layout">
+  <section class="hero-showcase viking-unified-hero" aria-labelledby="main-title">
+    <div class="hero-copy viking-unified-hero-copy">
+      <div class="hero-badge viking-unified-hero-badge">
+        <span class="badge-dot pulse-dot"></span>
+        <span class="badge-text">Field Grade · Version {{ version }}</span>
+      </div>
+      <h1 class="title viking-unified-hero-title" id="main-title">
+        Operational intelligence for resilient AI systems
+      </h1>
+      <p class="subtitle viking-unified-hero-lead">
+        DEML fuses data engineering, AI engineering, and intelligence-driven cybersecurity defense
+        into one multi-tenant operational fabric. Ingest telemetry at scale, forecast SLA breach
+        before it manifests, and federate threat indicators with production-grade reliability.
+      </p>
+      <div
+        class="hero-stats viking-column-layout viking-column-layout--2"
+        aria-label="Platform highlights"
+      >
+        <div class="hero-stat-pill">
+          <viking-app-icon name="shield" [size]="20" />
+          <span>{{ threatsLabel() }}</span>
+        </div>
+        <div class="hero-stat-pill">
+          <viking-app-icon name="speed" [size]="20" />
+          <span>{{ p99Label() }}</span>
+        </div>
+        <div class="hero-stat-pill">
+          <viking-app-icon name="verified_user" [size]="20" />
+          <span>Zero-trust · enforced</span>
+        </div>
+        <div class="hero-stat-pill">
+          <viking-app-icon name="hub" [size]="20" />
+          <span>Tenant symmetry · enforced</span>
+        </div>
+      </div>
+      <div class="cta-group viking-unified-hero-actions">
+        @if (isAuthenticated()) {
+        <a routerLink="/dashboard" class="cta-button viking-btn viking-btn-primary">
+          <span class="cta-content">
+            <viking-app-icon name="home" [size]="20" class="cta-icon" />
+            <span class="cta-label">Open dashboard</span>
+          </span>
+        </a>
+        } @else {
+        <a routerLink="/login" class="cta-button viking-btn viking-btn-primary">
+          <span class="cta-content">
+            <viking-app-icon name="rocket_launch" [size]="20" class="cta-icon" />
+            <span class="cta-label">Get started</span>
+          </span>
+        </a>
+        }
+        <a routerLink="/status/platform-status" class="cta-button viking-btn viking-btn-outline">
+          <span class="cta-content">
+            <viking-app-icon name="insights" [size]="20" class="cta-icon" />
+            <span class="cta-label">See live security posture</span>
+          </span>
+        </a>
+        <a [href]="marketingUrl" class="cta-button viking-btn viking-btn-ghost">
+          <span class="cta-content">
+            <viking-app-icon name="globe" [size]="20" class="cta-icon" />
+            <span class="cta-label">Community</span>
+          </span>
+        </a>
+      </div>
+    </div>
+    <viking-page-mockup
+      variant="security-ops"
+      class="viking-unified-hero-panel"
+      [decorative]="true"
+    />
+  </section>
+
+  <section class="quick-start-band" aria-labelledby="quick-start-title">
+    <header class="quick-start-header viking-unified-section-header">
+      <span class="section-tag">DEPLOYMENT SEQUENCE</span>
+      <h2 id="quick-start-title">Operational onboarding in four steps</h2>
+      <p>
+        Connect, observe, and act. The platform sustains projections, enrichment, and threat scoring
+        autonomously.
+      </p>
+    </header>
+    <ol class="quick-start-steps viking-column-layout viking-column-layout--4">
+      @for (item of quickStartSteps; track item.step) {
+      <li class="quick-start-step viking-card">
+        <span class="step-number" aria-hidden="true">{{ item.step }}</span>
+        <viking-app-icon [name]="item.icon" [size]="20" class="step-icon" />
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </li>
+      }
+    </ol>
+  </section>
+
+  <section class="integrations-strip" aria-label="Integrates with modern infrastructure">
+    <p class="strip-label">INTEGRATES WITH</p>
+    <div class="integration-logos">
+      @for (item of integrations; track item.name) {
+      <a routerLink="/" fragment="docs" class="integration-logo-item">
+        <viking-app-icon [name]="item.icon" [size]="20" />
+        <span>{{ item.name }}</span>
+      </a>
+      }
+    </div>
+  </section>
+
+  @for (cap of capabilities; track cap.title; let idx = $index) {
+  <section
+    class="showcase-band viking-column-layout viking-column-layout--2 viking-column-layout--loose"
+    [class.reversed]="idx % 2 === 1"
+    [attr.aria-labelledby]="'cap-' + idx"
+  >
+    <div class="showcase-band-copy">
+      <span class="section-tag">{{ cap.tag }}</span>
+      <h2 [id]="'cap-' + idx">{{ cap.title }}</h2>
+      <p>{{ cap.description }}</p>
+      @if (isAuthenticated() && cap.authedHref) {
+      <a [routerLink]="cap.authedHref" class="showcase-link">{{ cap.authedLabel }}</a>
+      } @else if (cap.linkHref.startsWith('/')) {
+      <a [routerLink]="cap.linkHref" class="showcase-link">{{ cap.linkLabel }}</a>
+      } @else {
+      <a [href]="cap.linkHref" class="showcase-link">{{ cap.linkLabel }}</a>
+      }
+    </div>
+    <div class="showcase-band-visual" aria-hidden="true">
+      <div class="visual-panel viking-card">
+        <div class="visual-panel-header">
+          <viking-app-icon [name]="cap.icon" [size]="20" />
+          <span>{{ cap.title }}</span>
+        </div>
+        <div class="visual-metrics">
+          @for (m of cap.metrics; track m.label) {
+          <div class="visual-metric">
+            <span class="metric-label">{{ m.label }}</span>
+            <span class="metric-value">{{ metricValue(m.key, m.staticValue) }}</span>
+            <span class="metric-trend" [class]="'trend-' + m.trend" aria-hidden="true">
+              {{ m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '—' }}
+            </span>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+  }
+
+  <section class="widget-showcase" aria-labelledby="widget-title">
+    <div class="widget-showcase-inner viking-column-layout viking-column-layout--2">
+      <div class="widget-copy">
+        <span class="section-tag">EMBED ANYWHERE</span>
+        <h2 id="widget-title">Live status widget</h2>
+        <p>
+          One script tag brings live service health to any surface. Zero runtime dependencies,
+          privacy-aware operational context, and automatic workspace isolation at every boundary.
+        </p>
+        <div class="embed-code">
+          <code>{{ widgetSnippet }}</code>
+        </div>
+        <a routerLink="/explore" class="showcase-link">Browse public status pages →</a>
+      </div>
+      <div class="widget-mount-point">
+        <viking-page-mockup variant="status" [decorative]="true" />
+      </div>
+    </div>
+  </section>
+
+  <section id="docs" class="quick-start-band" aria-labelledby="docs-title">
+    <header class="quick-start-header viking-unified-section-header">
+      <span class="section-tag">QUICK START</span>
+      <h2 id="docs-title">Docs & integrations</h2>
+      <p>
+        Product documentation lives with the showcase. Deep API contracts remain on the OpenAPI
+        portal; community learning stays on the community site.
+      </p>
+    </header>
+    <ol class="quick-start-steps viking-column-layout viking-column-layout--3">
+      @for (step of docsSteps; track step.title) {
+      <li class="quick-start-step viking-card">
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.detail }}</p>
+        @if (step.external) {
+        <a [href]="step.href" class="showcase-link" target="_blank" rel="noopener noreferrer">
+          Open API docs →
+        </a>
+        } @else {
+        <a [routerLink]="step.href" class="showcase-link">Continue →</a>
+        }
+      </li>
+      }
+    </ol>
+  </section>
+
+  <section class="security-pillars-band" aria-labelledby="security-pillars-title">
+    <header class="security-pillars-header">
+      <span class="section-tag">DEFENSE IN DEPTH</span>
+      <h2 id="security-pillars-title">Perimeter security without operational friction</h2>
+      <p>
+        Every layer — from command ingress to projection materialization — is encrypted, isolated,
+        and audited. Operators focus on models; the platform sustains the perimeter.
+      </p>
+    </header>
+    <ul class="security-pillars-grid viking-column-layout viking-column-layout--2">
+      @for (pillar of securityPillars; track pillar.label) {
+      <li class="security-pillar viking-card">
+        <viking-app-icon [name]="pillar.icon" [size]="20" />
+        <strong>{{ pillar.label }}</strong>
+        <span>{{ pillar.detail }}</span>
+      </li>
+      }
+    </ul>
+  </section>
+
+  <section class="pricing-showcase" aria-labelledby="pricing-title">
+    <header class="pricing-header">
+      <span class="section-tag">API ACCESS</span>
+      <h2 id="pricing-title">Transparent throughput tiers</h2>
+      <p>
+        Select the operational tier aligned with your telemetry volume and threat-analytics
+        requirements.
+      </p>
+    </header>
+    <div class="pricing-cards-container viking-column-layout viking-column-layout--2">
+      <div class="viking-card pricing-card standard-tier">
+        <h3>Standard Tier</h3>
+        <div class="price">Free</div>
+        <ul class="features-list">
+          <li><viking-app-icon name="check" [size]="20" /> 60 requests / minute</li>
+          <li><viking-app-icon name="check" [size]="20" /> Core Analytics</li>
+          <li><viking-app-icon name="check" [size]="20" /> Community Support</li>
+        </ul>
+        @if (isAuthenticated()) {
+        <a routerLink="/dashboard" class="viking-btn viking-btn-subtle cta-button secondary-btn">
+          Open dashboard
+        </a>
+        } @else {
+        <a routerLink="/login" class="viking-btn viking-btn-subtle cta-button secondary-btn">
+          Get started
+        </a>
+        }
+      </div>
+      <div class="viking-card pricing-card pro-tier">
+        <div class="recommended-badge">RECOMMENDED</div>
+        <h3>Pro Tier</h3>
+        <div class="price">$39<span>/mo</span></div>
+        <ul class="features-list">
+          <li><viking-app-icon name="check" [size]="20" /> 1,000 requests / minute</li>
+          <li><viking-app-icon name="check" [size]="20" /> Advanced Threat Detection</li>
+          <li><viking-app-icon name="check" [size]="20" /> Priority Support</li>
+        </ul>
+        @if (isAuthenticated()) {
+        <a
+          routerLink="/account"
+          class="viking-btn viking-btn-primary cta-button cta-primary pro-btn"
+        >
+          Manage subscription
+        </a>
+        } @else {
+        <a
+          routerLink="/login"
+          [queryParams]="{ action: 'checkout' }"
+          class="viking-btn viking-btn-primary cta-button cta-primary pro-btn"
+        >
+          Upgrade to Pro
+        </a>
+        }
+      </div>
+    </div>
+  </section>
+</div>

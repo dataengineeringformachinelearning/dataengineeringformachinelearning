@@ -270,18 +270,19 @@ flowchart TB
 
 ### 4. Operational Environment
 
-| Layer                    | Provider                                                                          | Responsibility                                                                                                                           |
-| ------------------------ | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product UI**           | [Vercel](https://vercel.com/) (`deml.app`)                                        | Angular 22+ SPA (standalone + Signals, Viking-UI); calls Django only; live ticks via BFF SSE                                             |
-| **Control plane API**    | [Fly.io](https://fly.io/) `deml-backend`                                          | Django BFF: auth, billing, consent, learning, FORJD adapters, SSE live bridge                                                            |
-| **Data plane**           | FORJD on Fly (`backend.forjd.co`) + [Supabase](https://supabase.com/) + Dragonfly | FastAPI + Prefect 3 + Pathway + Polars + Rust engine; sealed ingest, projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ |
-| **Identity**             | [Firebase Authentication](https://firebase.google.com/products/auth)              | Email/OAuth/MFA; JWT verified by Django middleware; MFA claims gate site mutations                                                       |
-| **Marketing hosting**    | Marketing site (Astro)                                                            | `dataengineeringformachinelearning.com`                                                                                                  |
-| **Cryptography & audit** | Application AES-256-GCM + KMS / platform audit sinks                              | Field encryption for secrets; sealed envelopes on the wire to FORJD                                                                      |
-| **Secrets**              | [Infisical](https://infisical.com/) / Fly secrets (recommended)                   | Runtime secret injection; `FORJD_SERVICE_TOKEN` as secret ref                                                                            |
-| **Billing**              | [Stripe](https://stripe.com/)                                                     | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                  |
-| **Model artifacts**      | FORJD ML surfaces (+ optional Hugging Face namespacing where configured)          | Training and scoring execute in FORJD                                                                                                    |
-| **Content**              | [Sanity.io](https://www.sanity.io/)                                               | Learning narratives and incident communications decoupled from Django                                                                    |
+| Layer                    | Provider                                                                          | Responsibility                                                                                                                               |
+| ------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product UI**           | [Vercel](https://vercel.com/) (`deml.app`)                                        | Angular 22+ SPA (standalone + Signals, Viking-UI); product showcase at `/`, app routes under auth; calls Django only; live ticks via BFF SSE |
+| **Control plane API**    | [Fly.io](https://fly.io/) `deml-backend`                                          | Django BFF: auth, billing, consent, learning, FORJD adapters, SSE live bridge                                                                |
+| **Data plane**           | FORJD on Fly (`backend.forjd.co`) + [Supabase](https://supabase.com/) + Dragonfly | FastAPI + Prefect 3 + Pathway + Polars + Rust engine; sealed ingest, projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ     |
+| **Identity**             | [Firebase Authentication](https://firebase.google.com/products/auth)              | Email/OAuth/MFA; JWT verified by Django middleware; MFA claims gate site mutations                                                           |
+| **Community hosting**    | [Vercel](https://vercel.com/) (`marketing`)                                       | Astro community entry at `dataengineeringformachinelearning.com` (DEML/FORJD as open examples)                                               |
+| **Viking-UI Storybook**  | [Vercel](https://vercel.com/) (`ui`)                                              | `ui.dataengineeringformachinelearning.com` — Storybook-only (mirrors `ui.forjd.co`)                                                          |
+| **Cryptography & audit** | Application AES-256-GCM + KMS / platform audit sinks                              | Field encryption for secrets; sealed envelopes on the wire to FORJD                                                                          |
+| **Secrets**              | [Infisical](https://infisical.com/) / Fly secrets (recommended)                   | Runtime secret injection; `FORJD_SERVICE_TOKEN` as secret ref                                                                                |
+| **Billing**              | [Stripe](https://stripe.com/)                                                     | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                      |
+| **Model artifacts**      | FORJD ML surfaces (+ optional Hugging Face namespacing where configured)          | Training and scoring execute in FORJD                                                                                                        |
+| **Content**              | [Sanity.io](https://www.sanity.io/)                                               | Learning narratives and incident communications decoupled from Django                                                                        |
 
 #### Production host matrix
 
@@ -1318,11 +1319,13 @@ The ultimate crucible for any software architecture is its transition from a con
 
 **Primary production hosts** are fixed for the product:
 
-| Surface                        | Host                                     | Public hostname (typical)  |
-| ------------------------------ | ---------------------------------------- | -------------------------- |
-| Angular product UI             | [Vercel](https://vercel.com/) (`deml`)   | `https://deml.app`         |
-| Django BFF / control plane     | [Fly.io](https://fly.io/) `deml-backend` | `https://backend.deml.app` |
-| FORJD API + engine + Dragonfly | FORJD on Fly + Supabase                  | `https://backend.forjd.co` |
+| Surface                        | Host                                        | Public hostname (typical)                          |
+| ------------------------------ | ------------------------------------------- | -------------------------------------------------- |
+| Angular product UI             | [Vercel](https://vercel.com/) (`deml`)      | `https://deml.app`                                 |
+| Community site (Astro)         | [Vercel](https://vercel.com/) (`marketing`) | `https://dataengineeringformachinelearning.com`    |
+| Viking-UI Storybook            | [Vercel](https://vercel.com/) (`ui`)        | `https://ui.dataengineeringformachinelearning.com` |
+| Django BFF / control plane     | [Fly.io](https://fly.io/) `deml-backend`    | `https://backend.deml.app`                         |
+| FORJD API + engine + Dragonfly | FORJD on Fly + Supabase                     | `https://backend.forjd.co`                         |
 
 DEML owns identity, billing, consent, learning, and BFF adapters. FORJD owns sealed ingest, streams, projections, status pages, analytics, ML, SIEM/SOAR, and reports. Firebase Authentication terminates at Django; Firebase carries no product data (no Firestore, Storage, or Cloud Functions for telemetry). Operator checklists: [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md), [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md), [docs/VERCEL.md](docs/VERCEL.md), [docs/FLY.md](docs/FLY.md).
 
@@ -1731,7 +1734,7 @@ Before creating services, prepare:
 
 5. **Variables tab**: Set env vars per service (see per-service sections). Workers share nearly the same bundle as `deml-backend`.
 6. **Redeploy frontend** after changing build-time vars (`FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`, `FIREBASE_*`, `SENTRY_DSN`) so `set-env.js` regenerates `environment.ts`.
-7. **Marketing site** (Astro) is hosted **outside** this Cloud Run project (Firebase Hosting). Set the same URL trio at **build** time on that host.
+7. **Community site** (Astro) is hosted **outside** this Cloud Run project (Vercel project `marketing`). Set the same URL trio at **build** time on that host.
 8. **Firebase** is Auth + marketing Hosting only — Cloud Functions and Firestore are retired; data storage and retrieval run through FORJD + Supabase.
 
 ## Infisical Integration
@@ -1866,7 +1869,7 @@ Control-plane services inherit configuration from `deml-backend` settings. Use F
 
 ### Marketing Site (not a Cloud Run service)
 
-Hosted separately (Firebase Hosting / static). Build with the same URL trio:
+Hosted separately (Vercel project `marketing`). Build with the same URL trio:
 
 | Variable        | Example                                         |
 | --------------- | ----------------------------------------------- |
@@ -2556,11 +2559,11 @@ External HTML hosts can also use the jsDelivr CDN:
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/web-components.js"
 ></script>
 ```
 
@@ -2804,7 +2807,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/forms`: 22.0.5
 - `@angular/platform-browser`: 22.0.5
 - `@angular/router`: 22.0.5
-- `@dataengineeringformachinelearning/viking-ui`: ^9.7.0
+- `@dataengineeringformachinelearning/viking-ui`: ^9.7.1
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `@vercel/analytics`: ^2.0.1
@@ -2996,15 +2999,16 @@ Production hosts are fixed: **Vercel** for the Angular app, **Fly.io** for the D
 | **Cloud Run (GCP)**         | Alternate control-plane reference topology                                         | BOOK Appendix C                                                         |
 | **AWS Lightsail / Fargate** | Alternate control-plane residency; ECR                                             | BOOK Ch. 23 / Appendix E                                                |
 
-Firebase (Auth + marketing Hosting only) is shared across compute hosts; all product data flows through FORJD + Supabase. GCP KMS/audit applies when the GCP control plane is enabled.
+Firebase Auth-only is shared across compute hosts (no Firebase Hosting for product or community sites); all product data flows through FORJD + Supabase. GCP KMS/audit applies when the GCP control plane is enabled.
 
-| Component                                                                        | Example service names                   | Deploy trigger               |
-| -------------------------------------------------------------------------------- | --------------------------------------- | ---------------------------- |
-| Angular app (`deml.app`)                                                         | `deml` on Vercel                        | Push to `main`               |
-| Django API                                                                       | `deml-backend` on Fly                   | Push to `main`               |
-| Data plane (ingest, workflows, projections, analytics, ML, scanners, replay/DLQ) | FORJD `forjd-engine` (FORJD repository) | FORJD deploy pipeline        |
-| Postgres                                                                         | managed DB (DEML control plane)         | Infrastructure change        |
-| Marketing site                                                                   | Firebase Hosting                        | `firebase-hosting-merge.yml` |
+| Component                                                                        | Example service names                   | Deploy trigger        |
+| -------------------------------------------------------------------------------- | --------------------------------------- | --------------------- |
+| Angular app (`deml.app`)                                                         | `deml` on Vercel                        | Push to `main`        |
+| Community site                                                                   | `marketing` on Vercel                   | Push to `main`        |
+| Viking-UI Storybook                                                              | `ui` on Vercel                          | Push to `main`        |
+| Django API                                                                       | `deml-backend` on Fly                   | Push to `main`        |
+| Data plane (ingest, workflows, projections, analytics, ML, scanners, replay/DLQ) | FORJD `forjd-engine` (FORJD repository) | FORJD deploy pipeline |
+| Postgres                                                                         | managed DB (DEML control plane)         | Infrastructure change |
 
 **Ownership invariant:** FORJD owns the data plane end to end — sealed ingest,
 the transactional outbox, durable scheduling, probes, normalization, CPE lookup,
@@ -5237,16 +5241,16 @@ This architecture rests on open-source foundations, enterprise design references
 
 ## 17. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.1/dist/web-components.js"
 ></script>
 ```
 
