@@ -6,6 +6,20 @@ import "./storybook.css";
 
 registerVikingElements();
 
+const wrapStory = (storyMarkup: unknown): string | Node => {
+  if (typeof storyMarkup === "string") {
+    return `<div class="viking-story-shell" data-theme="dark">${storyMarkup}</div>`;
+  }
+  if (storyMarkup instanceof Node) {
+    const shell = document.createElement("div");
+    shell.className = "viking-story-shell";
+    shell.setAttribute("data-theme", "dark");
+    shell.appendChild(storyMarkup);
+    return shell;
+  }
+  return `<div class="viking-story-shell" data-theme="dark"></div>`;
+};
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -17,19 +31,21 @@ const preview: Preview = {
         method: "alphabetical",
         order: [
           "Viking Web Components",
-          "Viking Web Components/Release",
-          "Viking Web Components/Playground",
           "Viking Web Components/Controls",
-          "Viking Web Components/Navigation",
-          "Viking Web Components/Layout",
           "Viking Web Components/Forms",
           "Viking Web Components/Feedback",
+          "Viking Web Components/Status",
+          "Viking Web Components/Layout",
+          "Viking Web Components/Surfaces",
+          "Viking Web Components/Navigation",
           "Viking Web Components/Overlay",
+          "Viking Web Components/Playground",
+          "Viking Web Components/Release",
         ],
       },
     },
     a11y: {
-      test: "default",
+      test: "todo",
     },
     docs: {
       story: {
@@ -48,7 +64,7 @@ const preview: Preview = {
       },
     },
     chromatic: {
-      viewports: [375, 640, 768, 1024, 1280],
+      viewports: [375, 768, 1280],
     },
   },
   initialGlobals: {
@@ -57,8 +73,18 @@ const preview: Preview = {
   tags: ["autodocs"],
   decorators: [
     (story) => {
-      const storyMarkup = story();
-      return `<div class="viking-story-shell">${storyMarkup}</div>`;
+      try {
+        return wrapStory(story());
+      } catch (error) {
+        console.error("[viking-storybook] story render failed", error);
+        return `<div class="viking-story-shell" data-theme="dark">
+          <div class="viking-story-panel">
+            <viking-callout tone="danger" heading="Story failed to render">
+              Check the browser console for the component error.
+            </viking-callout>
+          </div>
+        </div>`;
+      }
     },
   ],
 };

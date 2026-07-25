@@ -1,26 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/html";
 
-const renderModal = ({
-  title,
-  open,
-  dismissible,
-}: {
+type ModalArgs = {
   title: string;
   open: boolean;
   dismissible: boolean;
-}) => `
+};
+
+const renderModal = ({ title, open, dismissible }: ModalArgs) => `
   <div class="viking-story-panel">
-    <viking-button id="open-modal">Review policy change</viking-button>
-    <viking-modal
+    <viking-button-wc id="open-modal" variant="secondary">Review policy change</viking-button-wc>
+    <viking-modal-wc
       ${open ? "open" : ""}
       title="${title}"
-      ${dismissible ? "dismissible" : "dismissible=false"}
+      dismissible="${dismissible ? "true" : "false"}"
     >
       <p>The deployment will roll a new worker stack to production.</p>
       <p>Proceed only during a low-traffic maintenance window.</p>
-      <viking-button slot="actions" variant="secondary">Cancel</viking-button>
-      <viking-button slot="actions" variant="primary">Deploy</viking-button>
-    </viking-modal>
+      <viking-button-wc slot="actions" variant="secondary">Cancel</viking-button-wc>
+      <viking-button-wc slot="actions" variant="primary">Deploy</viking-button-wc>
+    </viking-modal-wc>
   </div>
 `;
 

@@ -1,0 +1,31 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ api_title }} — ReDoc</title>
+    <meta
+      name="description"
+      content="ReDoc reference for the DEML learning platform API."
+    />
+    <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml" />
+    <meta name="theme-color" content="#111111" />
+    <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
+  </head>
+  <body class="backend-redoc">
+    <header class="backend-docs-topbar">
+      <a class="backend-docs-brand" href="{{ frontend_url }}/">DEML</a>
+      <nav aria-label="API documentation">
+        <a href="{{ frontend_url }}/">product</a>
+        <a href="/api/v1/docs">swagger</a>
+        <a href="/api/v1/openapi.json">openapi</a>
+        <a href="/api/v1/health">health</a>
+        <a href="/api/v1/ready">ready</a>
+      </nav>
+    </header>
+    <redoc spec-url="{{ openapi_url }}"></redoc>
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity — ReDoc CDN; major version pinned -->
+    <script src="https://cdn.jsdelivr.net/npm/redoc@2/bundles/redoc.standalone.js"></script>
+  </body>
+</html>

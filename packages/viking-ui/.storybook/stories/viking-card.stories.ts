@@ -31,7 +31,7 @@ const renderCard = ({
       </div>
       <p class="viking-text-muted">${metric}</p>
       <p>${detail}</p>
-      ${showFooter ? `<div class="viking-card-footer"><viking-button size="sm" variant="ghost">${footerLabel}</viking-button></div>` : ""}
+      ${showFooter ? `<div class="viking-card-footer"><viking-button-wc size="sm" variant="ghost">${footerLabel}</viking-button-wc></div>` : ""}
     </viking-card>
   </div>
 `;
@@ -112,7 +112,7 @@ export const EqualHeightGrid: Story = {
         </div>
         <p>A concise status summary.</p>
         <div class="viking-card-footer">
-          <viking-button size="sm" variant="ghost">Open signal</viking-button>
+          <viking-button-wc size="sm" variant="ghost">Open signal</viking-button-wc>
         </div>
       </viking-card>
       <viking-card title="Detailed signal">
@@ -126,7 +126,7 @@ export const EqualHeightGrid: Story = {
           content lengths fill the same grid track without fixed heights.
         </p>
         <div class="viking-card-footer">
-          <viking-button size="sm" variant="ghost">Open telemetry</viking-button>
+          <viking-button-wc size="sm" variant="ghost">Open telemetry</viking-button-wc>
         </div>
       </viking-card>
     </div>

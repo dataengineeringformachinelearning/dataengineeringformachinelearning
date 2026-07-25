@@ -169,25 +169,42 @@
       <span class="section-tag">QUICK START</span>
       <h2 id="docs-title">Docs & integrations</h2>
       <p>
-        Product documentation lives with the showcase. Deep API contracts remain on the OpenAPI
-        portal; community learning stays on the community site.
+        Product documentation lives with the showcase. OpenAPI contracts for DEML and FORJD are
+        linked below; community learning stays on the community site.
       </p>
     </header>
-    <ol class="quick-start-steps viking-column-layout viking-column-layout--3">
+    <ol class="quick-start-steps viking-column-layout viking-column-layout--2">
       @for (step of docsSteps; track step.title) {
       <li class="quick-start-step viking-card">
         <h3>{{ step.title }}</h3>
         <p>{{ step.detail }}</p>
-        @if (step.external) {
-        <a [href]="step.href" class="showcase-link" target="_blank" rel="noopener noreferrer">
-          Open API docs →
-        </a>
-        } @else {
         <a [routerLink]="step.href" class="showcase-link">Continue →</a>
-        }
       </li>
       }
     </ol>
+    <div
+      class="quick-start-steps viking-column-layout viking-column-layout--2"
+      aria-label="API documentation"
+    >
+      @for (doc of apiDocs; track doc.name) {
+      <article class="quick-start-step viking-card">
+        <h3>{{ doc.name }}</h3>
+        <p>{{ doc.detail }}</p>
+        <div class="showcase-link-row">
+          <a
+            [href]="doc.swaggerHref"
+            class="showcase-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Swagger →</a
+          >
+          <a [href]="doc.redocHref" class="showcase-link" target="_blank" rel="noopener noreferrer"
+            >ReDoc →</a
+          >
+        </div>
+      </article>
+      }
+    </div>
   </section>
 
   <section class="security-pillars-band" aria-labelledby="security-pillars-title">

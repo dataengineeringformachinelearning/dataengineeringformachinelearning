@@ -21,7 +21,7 @@ class APIDocsSitemap(Sitemap):
   changefreq = "weekly"
 
   def items(self):
-    return ["/api/v1/docs"]
+    return ["/api/v1/docs", "/api/v1/redoc"]
 
   def location(self, item):
     return item

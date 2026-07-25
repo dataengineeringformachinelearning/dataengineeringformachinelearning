@@ -99,10 +99,28 @@ const SUITE_SEARCH_EXTRAS: readonly Omit<SuiteSearchItem, "href">[] = [
     keywords: ["deml", "product", "showcase", "docs", "quick start"],
   },
   {
-    title: "API reference",
-    snippet: "OpenAPI schema and REST endpoints",
+    title: "DEML Swagger",
+    snippet: "Interactive DEML control-plane OpenAPI",
     group: "Resources",
-    keywords: ["api", "openapi", "swagger", "rest"],
+    keywords: ["api", "openapi", "swagger", "rest", "deml"],
+  },
+  {
+    title: "DEML ReDoc",
+    snippet: "Readable DEML control-plane API reference",
+    group: "Resources",
+    keywords: ["api", "openapi", "redoc", "rest", "deml"],
+  },
+  {
+    title: "FORJD Swagger",
+    snippet: "Interactive FORJD data-plane OpenAPI",
+    group: "Resources",
+    keywords: ["api", "openapi", "swagger", "forjd", "streaming"],
+  },
+  {
+    title: "FORJD ReDoc",
+    snippet: "Readable FORJD data-plane API reference",
+    group: "Resources",
+    keywords: ["api", "openapi", "redoc", "forjd", "streaming"],
   },
 ];
 
@@ -116,8 +134,14 @@ const resolveExtraHref = (
       return "https://ui.deml.app/";
     case "DEML product showcase":
       return `${urls.app.replace(/\/$/, "")}/#docs`;
-    case "API reference":
+    case "DEML Swagger":
       return `${urls.backend.replace(/\/$/, "")}/api/v1/docs`;
+    case "DEML ReDoc":
+      return `${urls.backend.replace(/\/$/, "")}/api/v1/redoc`;
+    case "FORJD Swagger":
+      return "https://backend.forjd.co/docs";
+    case "FORJD ReDoc":
+      return "https://backend.forjd.co/redoc";
     default:
       return context === "app" ? urls.app : urls.marketing;
   }
@@ -257,16 +281,16 @@ export const buildSuiteSearchItems = (
       {
         title: "OpenAPI / Swagger",
         href: `${urls.backend.replace(/\/$/, "")}/api/v1/docs`,
-        snippet: "Interactive public ingest and predict sandbox",
+        snippet: "Interactive DEML control-plane sandbox",
         group: "Backend",
         keywords: ["swagger", "openapi", "docs", "api"],
       },
       {
-        title: "Backend home",
-        href: urls.backend,
-        snippet: "API landing and service overview",
+        title: "ReDoc",
+        href: `${urls.backend.replace(/\/$/, "")}/api/v1/redoc`,
+        snippet: "Readable DEML control-plane reference",
         group: "Backend",
-        keywords: ["backend", "api", "home"],
+        keywords: ["redoc", "openapi", "docs", "api"],
       },
     );
   }

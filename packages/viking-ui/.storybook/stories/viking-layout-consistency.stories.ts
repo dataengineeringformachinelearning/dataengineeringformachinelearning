@@ -10,8 +10,8 @@ const renderConsistency = () => `
           <p class="viking-text-muted">The same shell, section, metric, and field rhythm used by dashboards, documentation, and marketing.</p>
         </div>
         <div class="viking-content-layout__actions">
-          <viking-button variant="outline">Export evidence</viking-button>
-          <viking-button variant="primary">Create monitor</viking-button>
+          <viking-button-wc variant="outline">Export evidence</viking-button-wc>
+          <viking-button-wc variant="primary">Create monitor</viking-button-wc>
         </div>
       </header>
 

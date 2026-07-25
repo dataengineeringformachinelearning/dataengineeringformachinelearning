@@ -1,7 +1,7 @@
 import type { StorybookConfig } from "@storybook/html-vite";
 
 const config: StorybookConfig = {
-  stories: ["../.storybook/stories/**/*.stories.ts"],
+  stories: ["./stories/**/*.stories.ts"],
   addons: ["@storybook/addon-docs", "@storybook/addon-a11y"],
   core: {
     disableTelemetry: true,

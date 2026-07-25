@@ -1,14 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/html";
 
-const renderCallout = ({
-  tone,
-  heading,
-  dismissible,
-}: {
+type CalloutArgs = {
   tone: string;
   heading: string;
   dismissible: boolean;
-}) => `
+};
+
+const renderCallout = ({ tone, heading, dismissible }: CalloutArgs) => `
   <div class="viking-story-panel">
     <viking-callout tone="${tone}" heading="${heading}" ${
       dismissible ? "dismissible" : ""
@@ -43,10 +41,34 @@ const meta: Meta<typeof renderCallout> = {
 export default meta;
 type Story = StoryObj<typeof renderCallout>;
 
-export const Default: Story = {
+export const Warning: Story = {
   args: {
     tone: "warning",
     heading: "Latency elevated",
     dismissible: true,
+  },
+};
+
+export const Success: Story = {
+  args: {
+    tone: "success",
+    heading: "Projection synced",
+    dismissible: false,
+  },
+};
+
+export const Danger: Story = {
+  args: {
+    tone: "danger",
+    heading: "Token mismatch",
+    dismissible: true,
+  },
+};
+
+export const Info: Story = {
+  args: {
+    tone: "info",
+    heading: "Maintenance window",
+    dismissible: false,
   },
 };

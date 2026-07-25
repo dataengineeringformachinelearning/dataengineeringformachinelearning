@@ -701,6 +701,13 @@
   }
 }
 
+.showcase-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--viking-space-3);
+  margin-top: var(--viking-space-2);
+}
+
 .visual-panel {
   background: var(--viking-surface);
   border: 1px solid var(--viking-border);

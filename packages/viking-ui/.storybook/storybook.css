@@ -168,3 +168,29 @@
   transform: scale(0.95);
   transform-origin: center;
 }
+
+.viking-story-narrow {
+  max-width: 28rem;
+}
+
+.viking-story-wide {
+  width: min(100%, 72rem);
+}
+
+.viking-story-bleed {
+  padding: 0;
+  overflow: hidden;
+  width: min(100%, 72rem);
+}
+
+.viking-story-chart-slot {
+  min-height: 16rem;
+  display: grid;
+  align-content: start;
+  gap: var(--viking-space-3);
+}
+
+.viking-story-skeleton-block {
+  height: 10rem;
+  width: 100%;
+}

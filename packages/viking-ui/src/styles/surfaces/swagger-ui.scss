@@ -1,48 +1,68 @@
 /**
- * Swagger UI — Viking-UI theme (single-panel, flat operation list).
+ * Swagger / ReDoc — Viking-UI theme (flat FORJD-style shell + DEML tokens).
  * Load after swagger-ui.css; tokens from the built viking-ui.css bundle.
  */
 
-body.backend-swagger {
+body.backend-swagger,
+body.backend-redoc {
+  margin: 0;
   background: var(--viking-bg, var(--bg-color));
 }
 
-.backend-swagger-shell {
-  padding-block: var(--viking-space-6) var(--viking-space-8);
+body.backend-redoc redoc,
+body.backend-redoc .redoc-wrap {
+  background: var(--viking-bg, var(--bg-color));
 }
 
-/* ── VikingCard panel wrapping Swagger UI ──────────────────────────────────── */
-.backend-swagger-panel {
+/* ── Thin docs topbar (mirrors FORJD fj-topbar; DEML tokens) ───────────────── */
+.backend-docs-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--viking-space-3);
+  padding: var(--viking-space-2) var(--viking-space-4);
+  background: var(--viking-surface);
+  border-bottom: 1px solid var(--viking-border);
+  font-family: var(--viking-font-family, "Inter", system-ui, sans-serif);
+}
+
+.backend-docs-topbar a {
+  text-decoration: none;
+}
+
+.backend-docs-brand {
+  font-family: var(--viking-font-family-mono, ui-monospace, monospace);
+  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+  text-transform: uppercase;
+  font-size: var(--viking-font-size-sm);
+  color: var(--viking-accent);
+  font-weight: var(--viking-font-weight-semibold, 600);
+}
+
+.backend-docs-topbar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--viking-space-3);
+}
+
+.backend-docs-topbar nav a {
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-sm);
+  font-family: var(--viking-font-family-mono, ui-monospace, monospace);
+}
+
+.backend-docs-topbar nav a:hover,
+.backend-docs-topbar nav a:focus-visible {
+  color: var(--viking-accent);
+}
+
+.backend-docs-topbar a:focus-visible {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-accent));
+  outline-offset: var(--viking-ring-offset, 2px);
+}
+
+body.backend-swagger #swagger-ui {
   padding: 0;
-  overflow: hidden;
-}
-
-.backend-swagger-hero {
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  border-bottom: 1px solid var(--viking-border);
-  margin: 0;
-}
-
-.backend-swagger-toolbar {
-  padding: var(--viking-space-3) var(--viking-card-padding);
-  border-bottom: 1px solid var(--viking-border);
-  background: color-mix(in srgb, var(--viking-surface-alt) 40%, transparent);
-}
-
-.backend-swagger-search {
-  margin: 0;
-  max-width: none;
-}
-
-.backend-swagger-search .viking-input-shell {
-  width: 100%;
-}
-
-.backend-swagger-panel #swagger-ui {
-  padding: var(--viking-space-2) var(--viking-card-padding)
-    var(--viking-card-padding);
 }
 
 .swagger-ui .opblock .opblock-summary {
@@ -66,9 +86,10 @@ body.backend-swagger {
   background: transparent;
 }
 
-/* Hide duplicate Swagger title — page hero is authoritative */
+/* Title stays visible — thin topbar has no page hero */
 .swagger-ui .info .title {
-  display: none;
+  display: block;
+  color: var(--viking-text, var(--text-color));
 }
 
 .swagger-ui .info {

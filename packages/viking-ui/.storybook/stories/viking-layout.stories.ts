@@ -17,7 +17,7 @@ const renderLayout = () => `
         </div>
         <p class="viking-text-muted">8.4K events per second.</p>
         <div class="viking-card-footer">
-          <viking-button size="sm" variant="ghost">Inspect</viking-button>
+          <viking-button-wc size="sm" variant="ghost">Inspect</viking-button-wc>
         </div>
       </viking-card>
       <viking-card title="Projection integrity">
@@ -30,7 +30,7 @@ const renderLayout = () => `
           evidence needed to verify that action rows remain aligned.
         </p>
         <div class="viking-card-footer">
-          <viking-button size="sm" variant="ghost">Review evidence</viking-button>
+          <viking-button-wc size="sm" variant="ghost">Review evidence</viking-button-wc>
         </div>
       </viking-card>
       <viking-card title="Threat posture">
@@ -40,14 +40,14 @@ const renderLayout = () => `
         </div>
         <p class="viking-text-muted">Two signals require operator review.</p>
         <div class="viking-card-footer">
-          <viking-button size="sm" variant="ghost">Open queue</viking-button>
+          <viking-button-wc size="sm" variant="ghost">Open queue</viking-button-wc>
         </div>
       </viking-card>
     </div>
     <div class="viking-switcher viking-switcher--compact viking-switcher--tight">
-      <viking-button variant="primary">Deploy projection</viking-button>
-      <viking-button variant="outline">Review runbook</viking-button>
-      <viking-button variant="ghost">Export evidence</viking-button>
+      <viking-button-wc variant="primary">Deploy projection</viking-button-wc>
+      <viking-button-wc variant="outline">Review runbook</viking-button-wc>
+      <viking-button-wc variant="ghost">Export evidence</viking-button-wc>
     </div>
   </section>
 `;

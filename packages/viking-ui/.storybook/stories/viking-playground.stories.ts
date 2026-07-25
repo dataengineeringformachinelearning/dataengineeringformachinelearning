@@ -80,11 +80,11 @@ const renderPlayground = ({
             : ""
         }
         <div class="viking-card-footer">
-          <viking-button
+          <viking-button-wc
             size="sm"
             variant="${commandVariant}"
-          >${commandLabel}</viking-button>
-          <viking-button size="sm" variant="ghost">Inspect</viking-button>
+          >${commandLabel}</viking-button-wc>
+          <viking-button-wc size="sm" variant="ghost">Inspect</viking-button-wc>
         </div>
       </viking-card>
     </div>

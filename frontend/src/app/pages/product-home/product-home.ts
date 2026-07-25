@@ -43,6 +43,13 @@ type DocsStep = {
   external?: boolean;
 };
 
+type ApiDocLink = {
+  name: string;
+  detail: string;
+  swaggerHref: string;
+  redocHref: string;
+};
+
 // --- Public DEML product showcase (former marketing homepage) ---
 @Component({
   selector: 'app-product-home',
@@ -58,6 +65,7 @@ export class ProductHome implements OnInit {
 
   protected readonly marketingUrl = environment.marketingUrl;
   protected readonly backendUrl = environment.backendUrl;
+  protected readonly forjdApiUrl = environment.forjdApiUrl;
   protected readonly version = environment.version;
   protected readonly isAuthenticated = this.auth.isAuthenticated;
 
@@ -187,11 +195,20 @@ export class ProductHome implements OnInit {
       detail: 'Browse published status pages and the Tenant0 live projection.',
       href: '/explore',
     },
+  ];
+
+  protected readonly apiDocs: ApiDocLink[] = [
     {
-      title: 'Ingest & predict',
-      detail: 'Use /api/v1/ingest and /api/v1/predict via the Django BFF and FORJD data plane.',
-      href: `${environment.backendUrl}/api/v1/docs`,
-      external: true,
+      name: 'DEML API',
+      detail: 'Control-plane OpenAPI — identity, billing, and sealed FORJD handoff.',
+      swaggerHref: `${environment.backendUrl}/api/v1/docs`,
+      redocHref: `${environment.backendUrl}/api/v1/redoc`,
+    },
+    {
+      name: 'FORJD API',
+      detail: 'Data-plane OpenAPI — sealed ingest, projections, replay, and ML.',
+      swaggerHref: `${environment.forjdApiUrl}/docs`,
+      redocHref: `${environment.forjdApiUrl}/redoc`,
     },
   ];
 

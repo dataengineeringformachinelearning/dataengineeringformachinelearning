@@ -75,6 +75,7 @@ urlpatterns = [
   path("", views.home, name="home"),
   path("documentation", views.documentation, name="documentation"),
   path("assets/<path:path>", views.serve_asset, name="serve_asset"),
+  path("api/v1/redoc", views.api_redoc, name="api-redoc"),
   path("api/v1/telemetry/cookie-consent", cookie_consent, name="cookie-consent"),
   path("api/v1/telemetry/subscribe", newsletter, name="newsletter-subscribe"),
   path(

@@ -17,6 +17,16 @@ describe("buildSuiteSearchItems", () => {
     expect(titles).not.toContain("Documentation");
     expect(titles).toContain("Viking-UI Storybook");
     expect(titles).toContain("DEML product showcase");
+    expect(titles).toContain("DEML Swagger");
+    expect(titles).toContain("DEML ReDoc");
+    expect(titles).toContain("FORJD Swagger");
+    expect(titles).toContain("FORJD ReDoc");
+    expect(items.find((item) => item.title === "DEML Swagger")?.href).toBe(
+      "https://backend.deml.app/api/v1/docs",
+    );
+    expect(items.find((item) => item.title === "FORJD ReDoc")?.href).toBe(
+      "https://backend.forjd.co/redoc",
+    );
   });
 
   it("hides auth-gated nav until authenticated", () => {

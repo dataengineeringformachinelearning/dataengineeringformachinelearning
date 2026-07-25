@@ -19,7 +19,40 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Landing shell ─────────────────────────────────────────────────────────── */
+/* ── Minimal API splash (logo only) ────────────────────────────────────────── */
+body.backend-splash {
+  margin: 0;
+  min-height: 100%;
+  background: var(--viking-bg);
+}
+
+.backend-splash-shell {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--viking-space-6);
+}
+
+.backend-splash-logo {
+  display: block;
+  width: min(7.5rem, 36vw);
+  height: auto;
+  border: 0;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-accent));
+    outline-offset: var(--viking-ring-offset, 2px);
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* ── Landing shell (documentation + legacy pages) ──────────────────────────── */
 .backend-landing-shell {
   display: flex;
   flex-direction: column;

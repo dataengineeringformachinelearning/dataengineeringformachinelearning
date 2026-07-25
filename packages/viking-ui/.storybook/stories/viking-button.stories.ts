@@ -1,5 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/html";
 
+type ButtonArgs = {
+  label: string;
+  variant: string;
+  size: string;
+  loading: boolean;
+  disabled: boolean;
+  square: boolean;
+  fullWidth: boolean;
+  href: string;
+};
+
 const renderButton = ({
   label,
   variant,
@@ -8,36 +19,19 @@ const renderButton = ({
   disabled,
   square,
   fullWidth,
-  icon,
-  iconTrailing,
-  ariaBusy,
-}: {
-  label: string;
-  variant: string;
-  size: string;
-  loading: boolean;
-  disabled: boolean;
-  square: boolean;
-  fullWidth: boolean;
-  icon: string;
-  iconTrailing: string;
-  ariaBusy: boolean;
-}) => `
+  href,
+}: ButtonArgs) => `
   <div class="viking-story-panel">
     <div class="viking-story-row">
-      <viking-button
+      <viking-button-wc
         variant="${variant}"
         ${size ? `size="${size}"` : ""}
         ${loading ? "loading" : ""}
         ${disabled ? "disabled" : ""}
         ${square ? "square" : ""}
         ${fullWidth ? "full-width" : ""}
-        ${ariaBusy ? 'aria-busy="true"' : ""}
-      >
-      ${icon ? `<viking-icon name="${icon}" size="16"></viking-icon>` : ""}
-      ${label}
-      ${iconTrailing ? `<viking-icon name="${iconTrailing}" size="16"></viking-icon>` : ""}
-      </viking-button>
+        ${href ? `href="${href}" target="_blank"` : ""}
+      >${label}</viking-button-wc>
     </div>
   </div>
 `;
@@ -65,31 +59,7 @@ const meta: Meta<typeof renderButton> = {
     square: { control: "boolean" },
     fullWidth: { control: "boolean" },
     label: { control: "text" },
-    icon: {
-      control: "select",
-      options: [
-        "",
-        "shield",
-        "sparkle",
-        "chevron-right",
-        "check",
-        "alert-triangle",
-        "lock",
-      ],
-    },
-    iconTrailing: {
-      control: "select",
-      options: [
-        "",
-        "chevron-right",
-        "sparkle",
-        "shield",
-        "check",
-        "rocket",
-        "lock",
-      ],
-    },
-    ariaBusy: { control: "boolean" },
+    href: { control: "text" },
   },
 };
 
@@ -105,13 +75,11 @@ export const Primary: Story = {
     disabled: false,
     square: false,
     fullWidth: false,
-    icon: "",
-    iconTrailing: "",
-    ariaBusy: false,
+    href: "",
   },
 };
 
-export const AccentCompact: Story = {
+export const Ghost: Story = {
   args: {
     label: "View Details",
     variant: "ghost",
@@ -120,13 +88,11 @@ export const AccentCompact: Story = {
     disabled: false,
     square: false,
     fullWidth: false,
-    icon: "",
-    iconTrailing: "",
-    ariaBusy: false,
+    href: "",
   },
 };
 
-export const Premium: Story = {
+export const FilledFullWidth: Story = {
   args: {
     label: "Primary Command",
     variant: "filled",
@@ -135,43 +101,11 @@ export const Premium: Story = {
     disabled: false,
     square: false,
     fullWidth: true,
-    icon: "",
-    iconTrailing: "",
-    ariaBusy: false,
+    href: "",
   },
 };
 
-export const IconLeading: Story = {
-  args: {
-    label: "Launch Drift Scanner",
-    variant: "primary",
-    size: "",
-    loading: false,
-    disabled: false,
-    square: false,
-    fullWidth: false,
-    icon: "shield",
-    iconTrailing: "",
-    ariaBusy: false,
-  },
-};
-
-export const IconAndLabelBalance: Story = {
-  args: {
-    label: "Open Incident Log",
-    variant: "subtle",
-    size: "",
-    loading: false,
-    disabled: false,
-    square: false,
-    fullWidth: false,
-    icon: "sparkle",
-    iconTrailing: "chevron-right",
-    ariaBusy: false,
-  },
-};
-
-export const LoadingState: Story = {
+export const Loading: Story = {
   args: {
     label: "Reconciling telemetry",
     variant: "secondary",
@@ -180,8 +114,32 @@ export const LoadingState: Story = {
     disabled: false,
     square: false,
     fullWidth: false,
-    icon: "",
-    iconTrailing: "",
-    ariaBusy: false,
+    href: "",
+  },
+};
+
+export const AsLink: Story = {
+  args: {
+    label: "Open product docs",
+    variant: "primary",
+    size: "",
+    loading: false,
+    disabled: false,
+    square: false,
+    fullWidth: false,
+    href: "https://deml.app/#docs",
+  },
+};
+
+export const Danger: Story = {
+  args: {
+    label: "Revoke session",
+    variant: "danger",
+    size: "",
+    loading: false,
+    disabled: false,
+    square: false,
+    fullWidth: false,
+    href: "",
   },
 };

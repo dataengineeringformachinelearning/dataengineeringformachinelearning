@@ -141,6 +141,30 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         appHref: "https://dataengineeringformachinelearning.com/blog/",
         marketingHref: "/blog/",
       },
+      {
+        label: "DEML Swagger",
+        appHref: "https://backend.deml.app/api/v1/docs",
+        marketingHref: "https://backend.deml.app/api/v1/docs",
+        external: true,
+      },
+      {
+        label: "DEML ReDoc",
+        appHref: "https://backend.deml.app/api/v1/redoc",
+        marketingHref: "https://backend.deml.app/api/v1/redoc",
+        external: true,
+      },
+      {
+        label: "FORJD Swagger",
+        appHref: "https://backend.forjd.co/docs",
+        marketingHref: "https://backend.forjd.co/docs",
+        external: true,
+      },
+      {
+        label: "FORJD ReDoc",
+        appHref: "https://backend.forjd.co/redoc",
+        marketingHref: "https://backend.forjd.co/redoc",
+        external: true,
+      },
     ],
   },
   {

@@ -44,27 +44,30 @@ def test_viking_swagger_shell_is_served(client: Client) -> None:
   body = response.content.decode()
   assert "swagger-ui" in body
   assert "backend-swagger" in body
-  assert "Documentation" in body
+  assert "backend-docs-topbar" in body
+  assert 'href="/api/v1/redoc"' in body
+  assert "defaultModelsExpandDepth: 0" in body
 
 
 @pytest.mark.django_db
-def test_home_and_documentation_landing_copy(client: Client) -> None:
+def test_redoc_shell_is_served(client: Client) -> None:
+  response = client.get("/api/v1/redoc")
+  assert response.status_code == 200
+  body = response.content.decode()
+  assert "redoc" in body.lower()
+  assert "backend-docs-topbar" in body
+  assert 'spec-url="/api/v1/openapi.json"' in body
+
+
+@pytest.mark.django_db
+def test_home_splash_and_documentation_copy(client: Client) -> None:
   home = client.get("/")
   assert home.status_code == 200
   home_body = home.content.decode()
-  assert "Documentation" in home_body
-  assert "Swagger UI" in home_body
-  assert 'href="/api/v1/health"' in home_body
-  assert 'href="/api/v1/ready"' in home_body
-  assert "Control plane, not data plane" in home_body
-  assert (
-    'content="User control-plane API for the DEML learning platform and its secure FORJD data handoff."'
-    in home_body
-  )
-  # Meta description must stay in <head>; bare text leaks above the navbar.
-  pre_main = home_body.split("<main", 1)[0]
-  body_chunk = pre_main.split("<body", 1)[-1]
-  assert "User control-plane API" not in body_chunk
+  assert "backend-splash" in home_body
+  assert "dataengineeringformachinelearning.svg" in home_body
+  assert "Swagger UI" not in home_body
+  assert "Control plane, not data plane" not in home_body
 
   docs = client.get("/documentation")
   assert docs.status_code == 200

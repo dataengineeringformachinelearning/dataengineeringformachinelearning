@@ -32,7 +32,7 @@ const renderCommandPalette = ({
   placeholder: string;
 }) => `
   <div class="viking-story-panel">
-    <viking-button id="open-command-palette">Open command palette</viking-button>
+    <viking-button-wc id="open-command-palette">Open command palette</viking-button-wc>
     <viking-command-palette
       ${open ? "open" : ""}
       placeholder="${placeholder}"
