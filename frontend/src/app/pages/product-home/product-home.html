@@ -219,56 +219,38 @@
   <section class="pricing-showcase" aria-labelledby="pricing-title">
     <header class="pricing-header">
       <span class="section-tag">API ACCESS</span>
-      <h2 id="pricing-title">Transparent throughput tiers</h2>
+      <h2 id="pricing-title">Free, rate-limited access</h2>
       <p>
-        Select the operational tier aligned with your telemetry volume and threat-analytics
-        requirements.
+        Every account runs on the free plan with fair-use rate limits — no paid tiers and no
+        checkout.
       </p>
     </header>
-    <div class="pricing-cards-container viking-column-layout viking-column-layout--2">
+    <div class="pricing-cards-container viking-column-layout viking-column-layout--1">
       <div class="viking-card pricing-card standard-tier">
-        <h3>Standard Tier</h3>
-        <div class="price">Free</div>
+        <h3>Free plan</h3>
+        <div class="price">$0</div>
         <ul class="features-list">
           <li><viking-app-icon name="check" [size]="20" /> 60 requests / minute</li>
-          <li><viking-app-icon name="check" [size]="20" /> Core Analytics</li>
-          <li><viking-app-icon name="check" [size]="20" /> Community Support</li>
+          <li><viking-app-icon name="check" [size]="20" /> Core analytics &amp; status surfaces</li>
+          <li><viking-app-icon name="check" [size]="20" /> Community support</li>
         </ul>
         @if (isAuthenticated()) {
         <a
           routerLink="/dashboard"
-          class="suite-btn viking-btn viking-btn-subtle cta-button secondary-btn"
-          data-variant="ghost"
+          class="suite-btn viking-btn viking-btn-primary cta-button"
+          data-variant="primary"
         >
           Open dashboard
         </a>
         } @else {
         <a
           routerLink="/login"
-          class="suite-btn viking-btn viking-btn-subtle cta-button secondary-btn"
-          data-variant="ghost"
+          class="suite-btn viking-btn viking-btn-primary cta-button"
+          data-variant="primary"
         >
-          Get started
+          Get started free
         </a>
         }
-      </div>
-      <div class="viking-card pricing-card pro-tier">
-        <h3>Pro Tier</h3>
-        <div class="price">$39<span>/mo</span></div>
-        <ul class="features-list">
-          <li><viking-app-icon name="check" [size]="20" /> 1,000 requests / minute</li>
-          <li><viking-app-icon name="check" [size]="20" /> Advanced Threat Detection</li>
-          <li><viking-app-icon name="check" [size]="20" /> Priority Support</li>
-        </ul>
-        <button
-          type="button"
-          class="suite-btn viking-btn viking-btn-outline cta-button pro-btn"
-          data-variant="outline"
-          disabled
-          aria-disabled="true"
-        >
-          Pro purchases unavailable
-        </button>
       </div>
     </div>
   </section>

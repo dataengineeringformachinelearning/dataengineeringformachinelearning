@@ -2,7 +2,7 @@
   <viking-page-header
     tag="Account"
     title="Account & Billing"
-    subtitle="Manage your profile, security, API keys, subscription, and connected sign-in providers."
+    subtitle="Manage your profile, security, API keys, plan, and connected sign-in providers."
   />
 
   <div class="settings-stack grid-layout">
@@ -263,7 +263,7 @@
       <viking-card-header>
         <viking-card-title icon="user">Account & Billing Settings</viking-card-title>
       </viking-card-header>
-      <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
+      <p class="embed-desc">Manage your email, password, and plan details.</p>
 
       <viking-form-panel>
         <viking-form-section heading="Update Email" icon="mail" layout="inline">
@@ -317,41 +317,37 @@
         </viking-form-section>
 
         @if (!isViewer) {
-        <viking-form-section heading="Subscription Management" icon="sparkle" layout="status">
+        <viking-form-section heading="Plan" icon="sparkle" layout="status">
           @if (isBillingLoading()) {
           <div class="loading-state">
-            <viking-progress [indeterminate]="true" label="Loading subscription" />
+            <viking-progress [indeterminate]="true" label="Loading plan" />
           </div>
-          } @else { @if (!subscriptionActive()) {
+          } @else if (!subscriptionActive()) {
           <viking-icon-text
             icon="info"
             tone="info"
-            title="Standard Plan"
-            description="Pro purchases are currently unavailable. Existing Pro subscriptions can still be managed below when active."
+            title="Free plan"
+            description="Rate-limited to 60 requests per minute. There is no paid upgrade path."
           />
           } @else {
           <viking-icon-text
             icon="check-circle"
             tone="success"
-            title="Pro Plan Active"
+            title="Legacy paid plan"
             [description]="
                     subscriptionCancelAtPeriodEnd()
-                      ? 'Your subscription will cancel at the end of the current billing cycle.'
-                      : 'Your subscription is active and will auto-renew.'
+                      ? 'This paid plan ends when the current billing cycle completes; you will return to the free rate-limited plan.'
+                      : 'A legacy paid plan is still active. You can cancel it; new paid upgrades are not offered.'
                   "
           />
           <ng-container vikingFormActions>
-            @if (subscriptionCancelAtPeriodEnd()) {
-            <viking-button variant="outline" type="button" (pressed)="resumeSubscription()">
-              Resume Subscription
-            </viking-button>
-            } @else {
+            @if (!subscriptionCancelAtPeriodEnd()) {
             <viking-button variant="danger" type="button" (pressed)="cancelSubscription()">
-              Cancel Subscription
+              Cancel paid plan
             </viking-button>
             }
           </ng-container>
-          } }
+          }
           <ng-container vikingFormFooter>
             @if (billingError()) {
             <viking-callout tone="danger">{{ billingError() }}</viking-callout>

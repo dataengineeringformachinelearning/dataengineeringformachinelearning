@@ -212,11 +212,11 @@ export class Account implements OnInit {
 
   async cancelSubscription() {
     const ok = await this.vikingDialog.openConfirm({
-      title: 'Cancel Subscription',
+      title: 'Cancel paid plan',
       message:
-        'Are you sure you want to cancel your Pro subscription? It will remain active until the end of your billing cycle.',
+        'Cancel the legacy paid plan? It stays active until the billing cycle ends, then you return to the free rate-limited plan.',
       type: 'confirm',
-      confirmBtnText: 'Cancel Subscription',
+      confirmBtnText: 'Cancel paid plan',
       confirmBtnColor: 'warn',
     });
 
@@ -232,41 +232,18 @@ export class Account implements OnInit {
           next: res => {
             this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end);
             this.billingSuccess.set(
-              'Subscription cancelled. It will remain active until the end of the billing period.',
+              'Paid plan cancelled. It remains active until the billing period ends.',
             );
             this.isBillingLoading.set(false);
             this.cdr.markForCheck();
           },
           error: err => {
-            this.billingError.set(err.error?.error || 'Failed to cancel subscription.');
+            this.billingError.set(err.error?.error || 'Failed to cancel paid plan.');
             this.isBillingLoading.set(false);
             this.cdr.markForCheck();
           },
         });
     }
-  }
-
-  resumeSubscription() {
-    this.isBillingLoading.set(true);
-    this.billingError.set(null);
-    this.http
-      .post<SubscriptionUpdateResponse>(
-        `${environment.backendUrl}/api/v1/billing/resume-subscription`,
-        {},
-      )
-      .subscribe({
-        next: res => {
-          this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end);
-          this.billingSuccess.set('Subscription resumed successfully.');
-          this.isBillingLoading.set(false);
-          this.cdr.markForCheck();
-        },
-        error: err => {
-          this.billingError.set(err.error?.error || 'Failed to resume subscription.');
-          this.isBillingLoading.set(false);
-          this.cdr.markForCheck();
-        },
-      });
   }
 
   loadApiKeys() {
