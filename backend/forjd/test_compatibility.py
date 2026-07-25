@@ -369,6 +369,8 @@ def test_anonymous_status_services_require_published_page(
   ).encode()
 
   async def _proxy(method: str, path: str, **_kwargs: object) -> ForjdResponse:
+    if path == "/api/v1/status/pages/published":
+      return ForjdResponse(status=200, body=pages_body, content_type="application/json")
     if path == "/api/v1/status/pages":
       return ForjdResponse(status=200, body=pages_body, content_type="application/json")
     return ForjdResponse(status=200, body=services_body, content_type="application/json")
@@ -381,7 +383,7 @@ def test_anonymous_status_services_require_published_page(
   assert denied.status_code == 404
   assert allowed.status_code == 200
   assert allowed.json()[0]["name"] == "API"
-  assert mock_proxy.await_count == 3  # pages check (denied) + pages check + services
+  assert mock_proxy.await_count == 3  # published check (denied) + published check + services
 
 
 @pytest.mark.django_db
@@ -396,8 +398,7 @@ def test_anonymous_status_pages_list_returns_published_directory(
   mock_proxy: AsyncMock,
   client: Client,
 ) -> None:
-  """Explore directory must work without Firebase auth."""
-  tenant_id = "ded3e76a-64ca-44c9-aa90-cb6a4868fc4f"
+  """Explore directory must work without Firebase auth (cross-tenant published)."""
   mock_proxy.return_value = ForjdResponse(
     status=200,
     body=json.dumps(
@@ -411,6 +412,8 @@ def test_anonymous_status_pages_list_returns_published_directory(
             "description": "Personal site status",
             "is_published": True,
             "created_at": "2026-07-19T00:00:00Z",
+            "total_requests": 12,
+            "p99_latency": 42.0,
           },
           {
             "id": "page-draft",
@@ -427,6 +430,8 @@ def test_anonymous_status_pages_list_returns_published_directory(
             "description": "",
             "is_published": True,
             "created_at": "2026-07-19T00:00:00Z",
+            "total_requests": 4953,
+            "p99_latency": 5.0,
           },
         ],
       }
@@ -441,9 +446,12 @@ def test_anonymous_status_pages_list_returns_published_directory(
   assert slash_response.status_code == 200
   pages = response.json()
   assert {page["slug"] for page in pages} == {"joealongi-dev", "platform-status"}
+  by_slug = {page["slug"]: page for page in pages}
+  assert by_slug["joealongi-dev"]["total_requests"] == 12
+  assert by_slug["platform-status"]["total_requests"] == 4953
   assert slash_response.json() == pages
-  assert mock_proxy.await_args.args[:2] == ("GET", "/api/v1/status/pages")
-  assert parse_qs(mock_proxy.await_args.kwargs["query_string"])["tenant_id"] == [tenant_id]
+  assert mock_proxy.await_args.args[:2] == ("GET", "/api/v1/status/pages/published")
+  assert mock_proxy.await_args.kwargs.get("query_string") in ("", None)
 
 
 @pytest.mark.django_db
@@ -740,6 +748,8 @@ def test_public_status_page_resolves_legacy_embed_stem(
   async def _proxy(_method: str, path: str, **_kwargs: object) -> ForjdResponse:
     if path == "/api/v1/status/pages/slug/joealongi-dev":
       return ForjdResponse(status=200, body=page_body, content_type="application/json")
+    if path == "/api/v1/status/pages/published":
+      return ForjdResponse(status=200, body=directory_body, content_type="application/json")
     if path == "/api/v1/status/pages":
       return ForjdResponse(status=200, body=directory_body, content_type="application/json")
     return ForjdResponse(

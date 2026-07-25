@@ -184,6 +184,28 @@ def _published_directory_pages(pages: list[dict[str, Any]]) -> list[dict[str, An
   ]
 
 
+async def _fetch_published_directory(
+  *,
+  request_id: str | None,
+) -> list[dict[str, Any]]:
+  """Cross-tenant published status directory (each page keeps its own tenant KPIs)."""
+  client = ForjdClient(use_service_auth=False)
+  response = await client.proxy(
+    "GET",
+    "/api/v1/status/pages/published",
+    body=None,
+    query_string="",
+    content_type="application/json",
+    request_id=request_id,
+  )
+  if response.status >= 400:
+    raise AdapterError(response.status, "FORJD published status directory unavailable")
+  upstream = json.loads(response.body)
+  if not isinstance(upstream, dict):
+    raise AdapterError(502, "FORJD returned an invalid published status directory")
+  return deml_status_pages(upstream, deml_user_id=None)
+
+
 async def _ensure_published_status_page(
   client: ForjdClient,
   page_id: str,
@@ -191,25 +213,18 @@ async def _ensure_published_status_page(
   request_id: str | None,
 ) -> HttpResponse | None:
   """For anonymous directory reads, refuse unpublished page detail proxies."""
-  response = await client.proxy(
-    "GET",
-    "/api/v1/status/pages",
-    body=None,
-    query_string=f"tenant_id={client.tenant_id}",
-    content_type="application/json",
-    request_id=request_id,
-  )
-  if response.status >= 400:
-    if empty_read_fallback_enabled() and response.status >= 500:
-      return JsonResponse({"detail": "Not found"}, status=404)
-    return _upstream_error_response(response)
   try:
-    upstream = json.loads(response.body)
+    pages = _published_directory_pages(await _fetch_published_directory(request_id=request_id))
+  except AdapterError as exc:
+    if empty_read_fallback_enabled() and exc.status >= 500:
+      return JsonResponse({"detail": "Not found"}, status=404)
+    return _adapter_error_response(exc)
+  except ForjdError as exc:
+    if empty_read_fallback_enabled() and exc.status >= 500:
+      return JsonResponse({"detail": "Not found"}, status=404)
+    return _forjd_error_response(exc)
   except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
     return JsonResponse({"detail": "Not found"}, status=404)
-  if not isinstance(upstream, dict):
-    return JsonResponse({"detail": "Not found"}, status=404)
-  pages = _published_directory_pages(deml_status_pages(upstream, deml_user_id=None))
   if not any(str(page.get("id") or "") == str(page_id) for page in pages):
     return JsonResponse({"detail": "Not found"}, status=404)
   return None
@@ -719,7 +734,8 @@ def _reshape_public_status_page(page: dict[str, Any], *, status_code: int = 200)
   """Angular-stable public slug payload (ciphertext-free; no tenant_id)."""
   # Anonymous visitors cannot hit the authed services/incidents adapters, so
   # reshape the embedded FORJD arrays into the Angular contracts inline.
-  # Never echo FORJD tenant_id on the public slug surface (enumeration risk).
+  # Never echo FORJD tenant_id on the public Angular surface (enumeration risk).
+  # Service-auth slug responses may include tenant_id for BFF widget routing only.
   page = dict(page)
   page.pop("tenant_id", None)
   page_id = str(page.get("id") or "")
@@ -737,6 +753,7 @@ def _reshape_public_status_page(page: dict[str, Any], *, status_code: int = 200)
   page["p99_latency"] = compat["p99_latency"]
   page["total_requests"] = compat["total_requests"]
   page["threats_detected_24h"] = compat["threats_detected_24h"]
+  page["predicted_sla"] = compat.get("predicted_sla")
   page["spiking_temporal_forecast"] = compat["spiking_temporal_forecast"]
   page["temporal_status"] = compat["temporal_status"]
   page["temporal_backend"] = compat["temporal_backend"]
@@ -779,41 +796,28 @@ async def native_status_page_proxy(request: HttpRequest, slug: str) -> HttpRespo
   # (pre-deploy FORJD or stem-only embeds like data-page-id="joealongi").
   if last_error is not None and last_error.status_code == 404:
     try:
-      client, _deml_user_id, published_only = await _status_directory_read_client(request)
-      if client is not None:
-        directory_response = await client.proxy(
-          "GET",
-          "/api/v1/status/pages",
-          body=None,
-          query_string=f"tenant_id={client.tenant_id}",
-          content_type="application/json",
-          request_id=request_id_from(request),
+      pages = _published_directory_pages(
+        await _fetch_published_directory(request_id=request_id_from(request))
+      )
+      matched = match_published_status_page(pages, identifier=slug)
+      canonical = str((matched or {}).get("slug") or "")
+      if canonical and canonical not in candidates:
+        response = await native_forjd_proxy(
+          request,
+          target_path=f"/api/v1/status/pages/slug/{quote(canonical, safe='')}",
+          allowed_methods=("GET",),
+          public=True,
         )
-        if directory_response.status < 400:
-          upstream = json.loads(directory_response.body)
-          if isinstance(upstream, dict):
-            pages = deml_status_pages(upstream, deml_user_id=None)
-            if published_only:
-              pages = _published_directory_pages(pages)
-            matched = match_published_status_page(pages, identifier=slug)
-            canonical = str((matched or {}).get("slug") or "")
-            if canonical and canonical not in candidates:
-              response = await native_forjd_proxy(
-                request,
-                target_path=f"/api/v1/status/pages/slug/{quote(canonical, safe='')}",
-                allowed_methods=("GET",),
-                public=True,
-              )
-              if response.status_code < 400:
-                try:
-                  page_body = json.loads(response.content)
-                  page = page_body["page"]
-                except (KeyError, TypeError, UnicodeDecodeError, json.JSONDecodeError):
-                  return _adapter_error_response(
-                    AdapterError(502, "FORJD returned an invalid public status-page response")
-                  )
-                if isinstance(page, dict):
-                  return _reshape_public_status_page(page, status_code=response.status_code)
+        if response.status_code < 400:
+          try:
+            page_body = json.loads(response.content)
+            page = page_body["page"]
+          except (KeyError, TypeError, UnicodeDecodeError, json.JSONDecodeError):
+            return _adapter_error_response(
+              AdapterError(502, "FORJD returned an invalid public status-page response")
+            )
+          if isinstance(page, dict):
+            return _reshape_public_status_page(page, status_code=response.status_code)
     except (TypeError, UnicodeDecodeError, json.JSONDecodeError, AdapterError, ForjdError):
       pass
 
@@ -990,8 +994,23 @@ async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
   if request.method == "GET":
     try:
       client, deml_user_id, published_only = await _status_directory_read_client(request)
-      if client is None:
-        return JsonResponse([], status=200, safe=False)
+      # Anonymous explore must use the cross-tenant published directory so
+      # platform-status (DEML) and customer pages (joealongi) keep unique stats.
+      if published_only or client is None:
+        try:
+          pages = _published_directory_pages(
+            await _fetch_published_directory(request_id=request_id_from(request))
+          )
+        except AdapterError as exc:
+          if empty_read_fallback_enabled() and exc.status >= 500:
+            return JsonResponse([], status=200, safe=False)
+          return _adapter_error_response(exc)
+        except ForjdError as exc:
+          if empty_read_fallback_enabled() and exc.status >= 500:
+            return JsonResponse([], status=200, safe=False)
+          return _forjd_error_response(exc)
+        return JsonResponse(pages, status=200, safe=False)
+
       query_string = f"tenant_id={client.tenant_id}"
       response = await client.proxy(
         "GET",
@@ -1009,8 +1028,6 @@ async def status_pages_list_proxy(request: HttpRequest) -> HttpResponse:
       if not isinstance(upstream, dict):
         raise AdapterError(502, "FORJD returned an invalid status pages list")
       pages = deml_status_pages(upstream, deml_user_id=deml_user_id)
-      if published_only:
-        pages = _published_directory_pages(pages)
       return JsonResponse(pages, status=200, safe=False)
     except AdapterError as exc:
       return _adapter_error_response(exc)

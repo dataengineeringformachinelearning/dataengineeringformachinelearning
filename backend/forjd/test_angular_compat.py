@@ -142,6 +142,7 @@ def test_deml_status_page_passes_through_uptime_history() -> None:
       "cumulative_sla": 99.5,
       "p99_latency": 12.5,
       "total_requests": 42,
+      "predicted_sla": 97.25,
       "spiking_temporal_forecast": 0,
       "temporal_status": "ready",
       "temporal_backend": "gru_mlp",
@@ -157,6 +158,7 @@ def test_deml_status_page_passes_through_uptime_history() -> None:
   assert page["overall_uptime"] == 99.5
   assert page["p99_latency"] == 12.5
   assert page["total_requests"] == 42
+  assert page["predicted_sla"] == 97.25
   assert page["spiking_temporal_forecast"] == 0
   assert page["temporal_status"] == "ready"
   assert page["temporal_backend"] == "gru_mlp"

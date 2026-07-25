@@ -121,6 +121,21 @@ describe('MlService', () => {
     expect(service.latestStats()['current-sla-only']).toBeUndefined();
   });
 
+  it('seeds an explicit predicted SLA from the public status page', () => {
+    service.seedFromStatusPage({
+      id: 'predicted-sla-page',
+      title: 'Example',
+      slug: 'example',
+      description: '',
+      created_at: '2026-07-23T00:00:00Z',
+      user_id: null,
+      cumulative_sla: 99.99,
+      predicted_sla: 97.25,
+    });
+
+    expect(service.latestStats()['predicted-sla-page']).toBe(97.25);
+  });
+
   it('treats the legacy zero/false public payload as unknown inference', () => {
     service.seedFromStatusPage({
       id: 'legacy-status-page',

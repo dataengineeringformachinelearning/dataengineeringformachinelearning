@@ -142,7 +142,7 @@ export class Status implements OnInit {
   dashboardMetrics = (page: StatusPageData): StatusDashboardMetric[] => {
     const sla = page.cumulative_sla ?? page.overall_uptime;
     const latency = page.p99_latency;
-    const predicted = this.mlService.latestStats()[page.id];
+    const predicted = this.mlService.latestStats()[page.id] ?? page.predicted_sla ?? null;
     const requests = page.total_requests;
     return [
       {

@@ -76,24 +76,40 @@ def _credential_for_tenant(tenant_id: UUID) -> ForjdTenantCredential | None:
 
 
 async def _resolve_page_tenant(slug: str) -> UUID | None:
-  """Look up a published status page (public FORJD slug route — no auth)."""
-  # Public slug endpoint does not require a service token; avoid failing closed
-  # when only per-account sealed credentials exist (no platform env token).
-  client = ForjdClient(use_service_auth=False)
+  """Resolve the FORJD tenant that owns a published status-page slug.
+
+  Prefer service auth so FORJD includes ``tenant_id`` for BFF routing. Fall back
+  to the unauthenticated public slug (no tenant_id) only when platform env is
+  unset — in that case widget ingest cannot seal to a customer tenant.
+  """
+  clients: list[ForjdClient] = []
   try:
-    body = await client.request_json(
-      "GET",
-      f"/api/v1/status/pages/slug/{slug}",
-    )
-  except ForjdError as exc:
-    logger.info("widget telemetry page lookup failed slug=%s status=%s", slug, exc.status)
-    return None
-  page = body.get("page") if isinstance(body, dict) else None
-  if not isinstance(page, dict):
-    return None
-  if page.get("is_published") is False and str(page.get("slug") or "") != "platform-status":
-    return None
-  return parse_uuid(page.get("tenant_id"))
+    clients.append(ForjdClient())  # platform service principal when configured
+  except Exception:  # — platform env optional for pure customer deploys
+    pass
+  clients.append(ForjdClient(use_service_auth=False))
+
+  last_status: int | None = None
+  for client in clients:
+    try:
+      body = await client.request_json(
+        "GET",
+        f"/api/v1/status/pages/slug/{slug}",
+      )
+    except ForjdError as exc:
+      last_status = exc.status
+      continue
+    page = body.get("page") if isinstance(body, dict) else None
+    if not isinstance(page, dict):
+      continue
+    if page.get("is_published") is False and str(page.get("slug") or "") != "platform-status":
+      return None
+    tenant = parse_uuid(page.get("tenant_id"))
+    if tenant is not None:
+      return tenant
+  if last_status is not None:
+    logger.info("widget telemetry page lookup failed slug=%s status=%s", slug, last_status)
+  return None
 
 
 @csrf_exempt  # nosemgrep: python.django.security.audit.csrf-exempt.no-csrf-exempt

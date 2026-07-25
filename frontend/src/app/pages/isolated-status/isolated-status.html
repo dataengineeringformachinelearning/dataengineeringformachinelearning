@@ -109,7 +109,7 @@
           <viking-metric-card
             icon="trending-up"
             label="Predicted SLA"
-            [value]="formatUptimePct(mlService.latestStats()[page.id])"
+            [value]="formatUptimePct(mlService.latestStats()[page.id] ?? page.predicted_sla)"
             sublabel="30-day forecast via ML"
           />
         </div>

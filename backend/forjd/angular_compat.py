@@ -236,6 +236,11 @@ def deml_analytics_overview(forjd_body: dict[str, Any]) -> dict[str, Any]:
         "threat": float(ces_raw.get("ces_threat") or 0),
         "sla": float(ces_raw.get("ces_sla") or 0),
         "stability": float(ces_raw.get("ces_stability") or 0),
+        "predicted_sla": _optional_number(
+          ces_raw.get("predicted_sla")
+          if ces_raw.get("predicted_sla") is not None
+          else ces_raw.get("average_sla")
+        ),
         "spiking_temporal_forecast": _optional_number(forecast),
         "temporal_status": _optional_text(temporal_status),
         "temporal_backend": _optional_text(temporal_backend),
@@ -428,6 +433,7 @@ def deml_status_page(page: dict[str, Any], *, deml_user_id: int | None) -> dict[
     ),
     # Public intelligence (ciphertext-free) — explore/status seed ML gauges without auth.
     **temporal,
+    "predicted_sla": _optional_number(page.get("predicted_sla")),
     "threat_anomaly_score": _optional_number(page.get("threat_anomaly_score")),
     "threat_suspicious_ratio": _optional_number(page.get("threat_suspicious_ratio")),
   }

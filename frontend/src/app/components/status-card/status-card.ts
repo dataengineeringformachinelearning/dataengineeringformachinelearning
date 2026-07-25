@@ -79,7 +79,15 @@ export class StatusCard {
   readonly p99Latency = computed(() => this.page()?.p99_latency ?? 0);
   readonly totalRequests = computed(() => this.page()?.total_requests ?? 0);
   readonly cumulativeSla = computed(() => this.page()?.cumulative_sla ?? 0);
-  readonly predictedSlaValue = computed(() => this.predictedSla() ?? 0);
+  readonly predictedSlaValue = computed(() => {
+    const fromInput = this.predictedSla();
+    if (fromInput !== null && fromInput !== undefined) return fromInput;
+    return this.page()?.predicted_sla ?? null;
+  });
+  readonly predictedSlaDisplay = computed(() => {
+    const value = this.predictedSlaValue();
+    return value === null || value === undefined ? '—' : `${value.toFixed(2)}%`;
+  });
   readonly temporalInsight = computed<TemporalInsight>(() => {
     const page = this.page();
     const forecast = this.predictedTemporalForecast();

@@ -37,6 +37,8 @@ export interface StatusPageData {
   temporal_backend?: string | null;
   temporal_sample_count?: number | null;
   temporal_scored_at?: string | null;
+  /** Explicit SLA forecast (never current cumulative_sla / overall_uptime). */
+  predicted_sla?: number | null;
   threat_anomaly_score?: number | null;
   threat_suspicious_ratio?: number | null;
   uses_norse?: boolean | null;

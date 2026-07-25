@@ -67,6 +67,10 @@ export class MlService {
         usesNorse: page.uses_norse ?? null,
       },
     }));
+    // Explicit predicted SLA only — never seed from cumulative_sla / overall_uptime.
+    if (page.predicted_sla !== null && page.predicted_sla !== undefined) {
+      this.latestStats.update(stats => ({ ...stats, [pageId]: page.predicted_sla ?? null }));
+    }
     if (page.threat_anomaly_score != null || page.threat_suspicious_ratio != null) {
       this.latestThreatReports.update(reports => ({
         ...reports,
@@ -95,9 +99,11 @@ export class MlService {
       next: data => {
         const sla =
           data.average_sla !== null && data.average_sla !== undefined ? data.average_sla : null;
+        // Keep public seed when the authenticated overview has no explicit prediction yet.
+        if (sla === null) return;
         if (statusPageId) {
           this.latestStats.update(stats => ({ ...stats, [statusPageId]: sla }));
-        } else if (sla !== null) {
+        } else {
           this.latestStat.set(sla);
         }
       },
