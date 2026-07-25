@@ -11,3 +11,6 @@
 @use "components/badges" as *;
 @use "components/icon-inline" as *;
 @use "surfaces/app-pages" as *;
+/* Product home (/) is the former marketing showcase — needs landing surface styles. */
+@use "surfaces/marketing-landing" as *;
+@use "surfaces/marketing-community" as *;

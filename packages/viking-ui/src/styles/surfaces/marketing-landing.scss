@@ -91,8 +91,8 @@
   z-index: 10;
   overflow: visible;
   min-height: min(78dvh, 40rem);
-  animation: demlHeroIn var(--viking-duration-slow) var(--viking-ease-emphasized)
-    both;
+  animation: demlHeroIn var(--viking-duration-slow)
+    var(--viking-ease-emphasized) both;
   @media (min-width: 1024px) {
     grid-template-columns: 1fr 1.15fr;
     gap: var(--viking-space-6);
@@ -114,7 +114,9 @@
   }
 }
 
-.hero-brand {
+/* Suite-landing owns brand display when .suite-landing-brand is present.
+   Keep a quieter mono accent only for legacy hero-brand without suite class. */
+.hero-brand:not(.suite-landing-brand) {
   margin: 0;
   font-family: var(--viking-font-family-mono, var(--viking-font-family));
   font-size: clamp(1.5rem, 3.5vw, 2rem);

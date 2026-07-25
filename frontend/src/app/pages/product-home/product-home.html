@@ -1,10 +1,13 @@
-<div class="page-inner-wrapper landing-container showcase-layout suite-landing fj-landing">
+<div
+  class="page-inner-wrapper landing-container showcase-layout suite-landing fj-landing"
+  data-surface="product-home"
+>
   <section
     class="suite-landing-hero viking-unified-hero landing__hero"
-    aria-labelledby="deml-brand"
+    aria-labelledby="main-title"
   >
     <div class="suite-landing-badge hero-badge viking-unified-hero-badge">
-      <span class="badge-dot pulse-dot"></span>
+      <span class="badge-dot pulse-dot" aria-hidden="true"></span>
       <span class="badge-text">Learning · Control plane · v{{ version }}</span>
     </div>
     <p class="hero-brand suite-landing-brand" id="deml-brand">DEML</p>
@@ -19,44 +22,42 @@
       @if (isAuthenticated()) {
       <a
         routerLink="/dashboard"
-        class="cta-button suite-btn viking-btn viking-btn-primary"
+        class="cta-button suite-btn viking-btn fj-btn"
         data-variant="primary"
       >
         <span class="cta-content">
-          <viking-app-icon name="home" [size]="20" class="cta-icon" />
+          <viking-app-icon name="home" [size]="20" class="cta-icon" aria-hidden="true" />
           <span class="cta-label">Open dashboard</span>
         </span>
       </a>
       } @else {
-      <a
-        routerLink="/login"
-        class="cta-button suite-btn viking-btn viking-btn-primary"
-        data-variant="primary"
-      >
+      <a routerLink="/login" class="cta-button suite-btn viking-btn fj-btn" data-variant="primary">
         <span class="cta-content">
-          <viking-app-icon name="rocket_launch" [size]="20" class="cta-icon" />
+          <viking-app-icon name="rocket_launch" [size]="20" class="cta-icon" aria-hidden="true" />
           <span class="cta-label">Get started</span>
         </span>
       </a>
       }
       <a
         href="https://forjd.co/"
-        class="cta-button suite-btn viking-btn viking-btn-outline"
+        class="cta-button suite-btn viking-btn fj-btn"
         data-variant="outline"
-        rel="noopener"
+        rel="noopener noreferrer"
+        target="_blank"
       >
         <span class="cta-content">
-          <viking-app-icon name="hub" [size]="20" class="cta-icon" />
+          <viking-app-icon name="hub" [size]="20" class="cta-icon" aria-hidden="true" />
           <span class="cta-label">Open FORJD</span>
         </span>
       </a>
       <a
         [href]="marketingUrl"
-        class="cta-button suite-btn viking-btn viking-btn-ghost"
+        class="cta-button suite-btn viking-btn fj-btn"
         data-variant="ghost"
+        rel="noopener noreferrer"
       >
         <span class="cta-content">
-          <viking-app-icon name="globe" [size]="20" class="cta-icon" />
+          <viking-app-icon name="globe" [size]="20" class="cta-icon" aria-hidden="true" />
           <span class="cta-label">Community</span>
         </span>
       </a>
