@@ -96,8 +96,9 @@ const suiteBundle = `${suiteTokensCss}\n${suiteComponentsCss}\n${suiteLandingCss
 const tokensCss = `${compile("tokens-export.scss")}\n${suiteBundle}`;
 const componentsCss = `${compile("components-bundle.scss")}\n${suiteComponentsCss}`;
 const demlComponentsCss = compile("deml-components.scss");
-// Append suite so --suite-* aliases and stage chrome win over surface SCSS.
-const appCss = `${compile("viking-app.scss", "compressed")}\n${suiteBundle}`;
+// deml.app: suite-fonts first (absolute /fonts/inter/, forjd.co parity), then surfaces.
+// viking-ui.css keeps relative @font-face for Django/marketing asset trees.
+const appCss = `${suiteFontsCss}\n${compile("viking-app.scss", "compressed")}\n${suiteBundle}`;
 const bundleCss = `${compile("viking-ui-bundle.scss", "compressed")}\n${suiteBundle}`;
 
 writeFileSync(path.join(outDir, "suite-tokens.css"), suiteTokensCss);

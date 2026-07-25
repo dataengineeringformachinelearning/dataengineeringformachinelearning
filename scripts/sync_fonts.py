@@ -12,6 +12,11 @@ FONT_FILES: Final = ("InterVariable.woff2", "InterVariable-Italic.woff2")
 WOFF2_MAGIC: Final = b"wOF2"
 
 FONT_TARGETS: Final = (
+  # Absolute /fonts/inter/ (suite-fonts.css / forjd.co parity)
+  "frontend/public/fonts/inter",
+  "marketing/public/fonts/inter",
+  "viking-ui-docs/public/fonts/inter",
+  # Relative fonts/inter/ next to viking-*.css asset bundles
   "frontend/src/assets/fonts/inter",
   "frontend/public/assets/fonts/inter",
   "backend/static/fonts/inter",

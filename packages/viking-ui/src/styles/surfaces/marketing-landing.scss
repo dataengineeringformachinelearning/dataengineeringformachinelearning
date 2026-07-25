@@ -67,8 +67,21 @@
 }
 
 .landing-container.suite-landing {
-  /* Stage padding/gap from suite-landing.css — keep mockup overflow only */
-  overflow: visible;
+  /* Stage padding/gap from suite-landing.css — contain decorative chrome */
+  overflow: hidden;
+}
+
+/* Suite stage already spaces children — avoid double section padding */
+.landing-container.suite-landing
+  :is(
+    .quick-start-band,
+    .showcase-band,
+    .security-pillars-band,
+    .pricing-showcase,
+    .integrations-strip
+  ) {
+  padding-block: 0;
+  margin-bottom: 0;
 }
 
 .showcase-layout {
@@ -934,123 +947,6 @@
   svg {
     width: 100%;
     height: 100%;
-  }
-}
-
-/* ── Widget showcase ── */
-.widget-showcase {
-  padding: var(--viking-space-9) 0;
-  border-bottom: 1px solid var(--viking-border);
-  position: relative;
-}
-
-/* Structured double divider accent */
-.widget-showcase::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--viking-accent),
-    transparent
-  );
-  opacity: 0.25;
-}
-
-.widget-showcase-inner {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--viking-space-5);
-  align-items: center;
-
-  @media (min-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--viking-space-8);
-  }
-}
-
-.widget-copy {
-  .section-tag {
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--viking-accent);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 16px;
-  }
-
-  h2 {
-    font-size: clamp(1.75rem, 3vw, 2.25rem);
-    font-weight: 800;
-    margin: 0 0 16px 0;
-    text-transform: uppercase;
-  }
-
-  p {
-    color: var(--viking-text-muted);
-    line-height: 1.6;
-    margin: 0 0 24px 0;
-  }
-
-  .embed-code {
-    background: var(--viking-charcoal-950);
-    padding: 16px;
-    border-radius: var(--viking-radius-lg);
-    border: 1px solid color-mix(in srgb, var(--viking-accent) 30%, transparent);
-    overflow-x: auto;
-
-    code {
-      color: var(--viking-electric-200);
-      font-family: monospace;
-      font-size: 0.85rem;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-  }
-}
-
-.widget-mount-point {
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--viking-surface);
-  border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-xl, 16px);
-  padding: var(--viking-card-padding, var(--viking-space-4));
-  box-shadow: var(--viking-shadow-md);
-  position: relative;
-  overflow: hidden;
-  border-color: color-mix(
-    in srgb,
-    var(--viking-border-strong) 85%,
-    transparent
-  );
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        140px 42px at 16px 0,
-        color-mix(in srgb, var(--viking-accent) 10%, transparent),
-        transparent
-      ),
-      linear-gradient(
-        90deg,
-        transparent,
-        color-mix(in srgb, var(--viking-accent-strong) 16%, transparent),
-        transparent
-      );
-    opacity: 0.35;
   }
 }
 

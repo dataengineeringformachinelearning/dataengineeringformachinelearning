@@ -10,10 +10,10 @@
       <span class="badge-dot pulse-dot" aria-hidden="true"></span>
       <span class="badge-text">Learning · Control plane · v{{ version }}</span>
     </div>
-    <p class="hero-brand suite-landing-brand" id="deml-brand">DEML</p>
-    <h1 class="title viking-unified-hero-title suite-landing-headline" id="main-title">
+    <h1 class="hero-brand suite-landing-brand" id="main-title">DEML</h1>
+    <p class="title viking-unified-hero-title suite-landing-headline">
       Operational intelligence for resilient AI systems
-    </h1>
+    </p>
     <p class="subtitle viking-unified-hero-lead suite-landing-lede">
       Learning library and Firebase-authenticated control plane for FORJD — identity, billing,
       consent, dashboards, and status surfaces with production-grade reliability.
@@ -141,26 +141,6 @@
     </div>
   </section>
   }
-
-  <section class="widget-showcase" aria-labelledby="widget-title">
-    <div class="widget-showcase-inner viking-column-layout viking-column-layout--2">
-      <div class="widget-copy">
-        <span class="section-tag">EMBED ANYWHERE</span>
-        <h2 id="widget-title">Live status widget</h2>
-        <p>
-          One script tag brings live service health to any surface. Zero runtime dependencies,
-          privacy-aware operational context, and automatic workspace isolation at every boundary.
-        </p>
-        <div class="embed-code">
-          <code>{{ widgetSnippet }}</code>
-        </div>
-        <a routerLink="/explore" class="showcase-link">Browse public status pages →</a>
-      </div>
-      <div class="widget-mount-point">
-        <viking-page-mockup variant="status" [decorative]="true" />
-      </div>
-    </div>
-  </section>
 
   <section id="docs" class="quick-start-band" aria-labelledby="docs-title">
     <header class="quick-start-header viking-unified-section-header">

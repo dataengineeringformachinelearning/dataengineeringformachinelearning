@@ -1,5 +1,6 @@
-// Self-hosted Inter variable font — single woff2 covers weights 100–900.
-// Default relative path resolves from viking-ui.css in package dist or copied static roots.
+// Font faces live in suite-fonts.css (single SoT — same Inter as forjd.co).
+// Bundles prepend suite-fonts via build-css.mjs. Relative fallback below covers
+// Django/marketing asset trees where CSS sits next to fonts/inter/.
 
 $font-base-path: 'fonts/inter' !default;
 

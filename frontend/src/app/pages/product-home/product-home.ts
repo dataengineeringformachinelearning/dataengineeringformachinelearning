@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { VikingPageMockup } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
@@ -54,7 +53,7 @@ type ApiDocLink = {
 @Component({
   selector: 'app-product-home',
   standalone: true,
-  imports: [RouterLink, VikingAppIcon, VikingPageMockup],
+  imports: [RouterLink, VikingAppIcon],
   templateUrl: './product-home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -73,8 +72,6 @@ export class ProductHome implements OnInit {
   protected readonly uptimeValue = signal('Live');
   protected readonly requestsValue = signal('Live');
   protected readonly threatsValue = signal('Live');
-
-  protected readonly widgetSnippet = `<script src="/assets/widgets/widget.js" data-backend-url="${environment.backendUrl}" data-frontend-url="${environment.frontendUrl}" data-page-id="platform-status" async defer></script>`;
 
   protected readonly quickStartSteps = [
     {

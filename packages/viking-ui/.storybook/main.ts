@@ -10,6 +10,7 @@ const config: StorybookConfig = {
     name: "@storybook/html-vite",
     options: {},
   },
+  // dist includes suite-fonts.css + /fonts/inter (build:css copies faces first)
   staticDirs: ["../dist"],
   docs: {
     autodocs: "tag",
