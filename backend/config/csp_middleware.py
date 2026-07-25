@@ -9,6 +9,8 @@ _CSP_SCRIPT_SRC = (
   "https://apis.google.com https://*.firebaseapp.com "
   "https://www.googletagmanager.com https://*.googletagmanager.com "
   "https://www.clarity.ms https://*.clarity.ms "
+  "https://cdn.rollbar.com https://*.rollbar.com "
+  "https://browser.sentry-cdn.com https://js.sentry-cdn.com "
   "https://static.cloudflareinsights.com "
   "https://experiences.cdn.algolia.com "
   "https://ui.deml.app https://*.ui.deml.app"
@@ -32,7 +34,9 @@ _CSP_CONNECT_SRC = (
   "wss://*.ui.deml.app "
   "https://analytics.google.com https://*.analytics.google.com "
   "https://*.google-analytics.com https://*.googletagmanager.com "
-  "https://*.clarity.ms https://*.bing.com"
+  "https://*.clarity.ms https://*.bing.com "
+  "https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io "
+  "https://api.rollbar.com https://*.rollbar.com"
 )
 _CSP_IMG_SRC = (
   "'self' data: blob: "

@@ -45,7 +45,12 @@ const authDomain = process.env.FIREBASE_AUTH_DOMAIN ?? 'demldotcom.firebaseapp.c
 const messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID ?? '870072971206';
 const sanityProjectId = process.env.SANITY_PROJECT_ID ?? 'hj5wtuct';
 const sanityDataset = process.env.SANITY_DATASET ?? 'production';
-const sentryDsn = process.env.SENTRY_DSN ?? '';
+// Client DSN / post_client_item tokens are public by design; env overrides win.
+const DEFAULT_SENTRY_DSN =
+  'https://5b1b2fcdf985d485d90abd260c529953@o4511437520044032.ingest.us.sentry.io/4511793586962432'; // pragma: allowlist secret
+const DEFAULT_ROLLBAR_ACCESS_TOKEN = 'b5c330742d9b4386b99c5ff7c0555c2c'; // pragma: allowlist secret
+const sentryDsn = process.env.SENTRY_DSN || DEFAULT_SENTRY_DSN;
+const rollbarAccessToken = process.env.ROLLBAR_ACCESS_TOKEN || DEFAULT_ROLLBAR_ACCESS_TOKEN;
 
 // --- Deploy URLs (Vercel build-time; CSR has no runtime server injection) ---
 // Angular calls DEML Django BFF only. FORJD + Supabase are server-side via Django.
@@ -192,7 +197,8 @@ export const environment = {
     projectId: '${sanityProjectId}',
     dataset: '${sanityDataset}'
   },
-  sentryDsn: '${sentryDsn}'
+  sentryDsn: '${sentryDsn}',
+  rollbarAccessToken: '${rollbarAccessToken}'
 };
 `;
 

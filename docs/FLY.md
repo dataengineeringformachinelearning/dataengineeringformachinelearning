@@ -70,6 +70,8 @@ fly secrets set \
   STRIPE_WEBHOOK_SECRET=whsec_… \
   RESEND_API_KEY=re_… \
   SENTRY_DSN=https://… \
+  ROLLBAR_ACCESS_TOKEN=… \
+  ROLLBAR_ENVIRONMENT=production
 ```
 
 Do **not** set `REDIS_URL` / `DRAGONFLY_*` on DEML — sessions live in Postgres.

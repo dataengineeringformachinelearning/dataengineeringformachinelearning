@@ -50,7 +50,8 @@ Set in Vercel → Project `deml` → Settings → Environment Variables:
 | `FIREBASE_MESSAGING_SENDER_ID` | `870072971206`                                  | yes           |
 | `SANITY_PROJECT_ID`            | `hj5wtuct`                                      | optional      |
 | `SANITY_DATASET`               | `production`                                    | optional      |
-| `SENTRY_DSN`                   |                                                 | optional      |
+| `SENTRY_DSN`                   | deml.app project DSN (has production default)   | optional      |
+| `ROLLBAR_ACCESS_TOKEN`         | deml.app client token (has production default)  | optional      |
 | `FORJD_API_URL`                | `https://backend.forjd.co`                      | informational |
 
 `set-env.js` bakes these into `environment.ts` at build time (CSR has no runtime secret injection).

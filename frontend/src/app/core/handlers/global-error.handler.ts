@@ -30,10 +30,13 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   private async captureInMonitoring(error: unknown): Promise<void> {
-    if (!environment.sentryDsn || !isPlatformBrowser(this.platformId)) {
+    if (
+      (!environment.sentryDsn && !environment.rollbarAccessToken) ||
+      !isPlatformBrowser(this.platformId)
+    ) {
       return;
     }
-    // Chunk skew storms Sentry; recovery reload handles it locally.
+    // Chunk skew storms Sentry/Rollbar; recovery reload handles it locally.
     if (isChunkLoadError(error)) {
       return;
     }
@@ -42,6 +45,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       const { captureMonitoringException } = await import('../monitoring/monitoring.facade');
       await captureMonitoringException(error, {
         dsn: environment.sentryDsn,
+        rollbarAccessToken: environment.rollbarAccessToken,
         environment: environment.production ? 'production' : 'development',
       });
     } catch {

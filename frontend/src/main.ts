@@ -17,7 +17,7 @@ if (typeof window !== 'undefined' && !localHosts.has(window.location.hostname)) 
 }
 
 const initializeMonitoring = async (): Promise<void> => {
-  if (!environment.sentryDsn) {
+  if (!environment.sentryDsn && !environment.rollbarAccessToken) {
     return;
   }
 
@@ -26,6 +26,7 @@ const initializeMonitoring = async (): Promise<void> => {
       await import('./app/core/monitoring/monitoring.facade');
     await initializeMonitoringFacade({
       dsn: environment.sentryDsn,
+      rollbarAccessToken: environment.rollbarAccessToken,
       environment: environment.production ? 'production' : 'development',
     });
   } catch (error: unknown) {
@@ -34,7 +35,10 @@ const initializeMonitoring = async (): Promise<void> => {
 };
 
 const scheduleMonitoringInitialization = (): void => {
-  if (!environment.sentryDsn || typeof window === 'undefined') {
+  if (
+    (!environment.sentryDsn && !environment.rollbarAccessToken) ||
+    typeof window === 'undefined'
+  ) {
     return;
   }
 

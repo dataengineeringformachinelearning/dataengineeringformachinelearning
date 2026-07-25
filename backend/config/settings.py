@@ -86,7 +86,21 @@ if sentry_dsn:
     dsn=sentry_dsn,
     # PII off by default — enable only when SENTRY_SEND_PII=true for debugging.
     send_default_pii=os.getenv("SENTRY_SEND_PII", "false").lower() == "true",
+    traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.1")),
   )
+
+# Rollbar (post_server_item). Empty token = disabled.
+ROLLBAR_ACCESS_TOKEN = os.getenv("ROLLBAR_ACCESS_TOKEN", "")
+ROLLBAR_ENVIRONMENT = os.getenv("ROLLBAR_ENVIRONMENT", os.getenv("ENVIRONMENT", "development"))
+if ROLLBAR_ACCESS_TOKEN:
+  ROLLBAR = {
+    "access_token": ROLLBAR_ACCESS_TOKEN,
+    "environment": ROLLBAR_ENVIRONMENT,
+    "root": str(BASE_DIR),
+    "branch": os.getenv("ROLLBAR_BRANCH", "main"),
+    "capture_username": False,
+    "capture_email": False,
+  }
 
 # Initialize Firebase Admin
 if not firebase_admin._apps:
@@ -212,6 +226,9 @@ MIDDLEWARE = [
   "forjd.body_limit.ForjdIngestBodyLimitMiddleware",
   "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+if ROLLBAR_ACCESS_TOKEN:
+  # Outermost exception capture for HTML + API views.
+  MIDDLEWARE.append("rollbar.contrib.django.middleware.RollbarNotifierMiddleware")
 
 ROOT_URLCONF = "config.urls"
 
