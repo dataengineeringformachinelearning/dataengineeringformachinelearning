@@ -106,7 +106,7 @@ flowchart TB
  subgraph FORJD_Data
  FJ[FORJD FastAPI Fly]
  PREF[Prefect 3 workflows]
- PATH[Pathway streams]
+ PATH[Rust sealed pipeline]
  POL[Polars batch LazyFrames]
  SB[(Supabase Postgres Auth Realtime)]
  DF[(Dragonfly)]
@@ -130,7 +130,7 @@ flowchart TB
  A -.->|Product UI reads via BFF| DJ
 ```
 
-**Authoritative stores:** DEML PostgreSQL holds transactional truth for users, API credentials, consent, billing, and FORJD tenant mapping (secret references only—never plaintext `fjsvc_` tokens; the browser never holds service credentials). FORJD (FastAPI + Prefect 3 + Pathway streams + Polars batch + Rust `forjd-engine`, backed by Supabase Postgres + Dragonfly) holds sealed events, durable `stream_results` projections, **status pages**, analytics, ML artifacts, SIEM/SOAR, reports, replay/DLQ, and threat intelligence. Firebase Auth terminates at Django; Firebase carries no product data — Firestore, Storage, and Cloud Functions are not used for product telemetry (Auth only). Live dashboard ticks use the Django SSE bridge (`GET /api/v1/analytics/live`)—not Firestore and not a direct Supabase Realtime subscription from the browser.
+**Authoritative stores:** DEML PostgreSQL holds transactional truth for users, API credentials, consent, billing, and FORJD tenant mapping (secret references only—never plaintext `fjsvc_` tokens; the browser never holds service credentials). FORJD (FastAPI + Prefect 3 + Rust `forjd-engine` sealed hot path + Polars batch, backed by Supabase Postgres + Dragonfly) holds sealed events, durable `stream_results` projections, **status pages**, analytics, ML artifacts, SIEM/SOAR, reports, replay/DLQ, and threat intelligence. Firebase Auth terminates at Django; Firebase carries no product data — Firestore, Storage, and Cloud Functions are not used for product telemetry (Auth only). Live dashboard ticks use the Django SSE bridge (`GET /api/v1/analytics/live`)—not Firestore and not a direct Supabase Realtime subscription from the browser.
 
 ### 4. Operational Environment
 
@@ -138,7 +138,7 @@ flowchart TB
 | ------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Product UI**           | [Vercel](https://vercel.com/) (`deml.app`)                                        | Angular 22+ SPA (standalone + Signals, Viking-UI); product showcase at `/`, app routes under auth; calls Django only; live ticks via BFF SSE |
 | **Control plane API**    | [Fly.io](https://fly.io/) `deml-backend`                                          | Django BFF: auth, billing, consent, learning, FORJD adapters, SSE live bridge                                                                |
-| **Data plane**           | FORJD on Fly (`backend.forjd.co`) + [Supabase](https://supabase.com/) + Dragonfly | FastAPI + Prefect 3 + Pathway + Polars + Rust engine; sealed ingest, projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ     |
+| **Data plane**           | FORJD on Fly (`backend.forjd.co`) + [Supabase](https://supabase.com/) + Dragonfly | FastAPI + Prefect 3 + Rust engine + Polars; sealed ingest, projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ               |
 | **Identity**             | [Firebase Authentication](https://firebase.google.com/products/auth)              | Email/OAuth/MFA; JWT verified by Django middleware; MFA claims gate site mutations                                                           |
 | **Community hosting**    | [Vercel](https://vercel.com/) (`marketing`)                                       | Astro community entry at `dataengineeringformachinelearning.com` (DEML/FORJD as open examples)                                               |
 | **Viking-UI Storybook**  | [Vercel](https://vercel.com/) (`deml-ui`)                                         | `ui.deml.app` — Storybook-only (mirrors `ui.forjd.co`)                                                                                       |
@@ -235,17 +235,17 @@ SSE frames are change ticks only (`projections` with `{count, cursor}`) — neve
 
 Production topology is fixed for the product:
 
-| Service / host           | Operational role                                                                                                                 |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| `deml` (Vercel)          | Angular 22+ Signals app, Viking-UI, widgets, public status UI                                                                    |
-| `deml-backend` (Fly)     | Django REST BFF, auth middleware, billing, consent, learning, FORJD adapters, SSE live bridge                                    |
-| DEML Postgres            | System of record for identity, tenancy mapping, credentials, consent, billing                                                    |
-| FORJD API + engine (Fly) | FastAPI + Prefect + Pathway + Polars + Rust sealed hot path; projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ |
-| Supabase                 | FORJD Auth, Postgres/RLS, Realtime publication (consumed via Django SSE, not the browser), pgvector                              |
-| Dragonfly                | FORJD cache / streams                                                                                                            |
-| Firebase Auth            | DEML end-user identity (tokens terminate at Django)                                                                              |
-| Stripe                   | Subscriptions                                                                                                                    |
-| Sanity                   | Decoupled content                                                                                                                |
+| Service / host           | Operational role                                                                                                       |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `deml` (Vercel)          | Angular 22+ Signals app, Viking-UI, widgets, public status UI                                                          |
+| `deml-backend` (Fly)     | Django REST BFF, auth middleware, billing, consent, learning, FORJD adapters, SSE live bridge                          |
+| DEML Postgres            | System of record for identity, tenancy mapping, credentials, consent, billing                                          |
+| FORJD API + engine (Fly) | FastAPI + Prefect + Rust sealed hot path + Polars; projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ |
+| Supabase                 | FORJD Auth, Postgres/RLS, Realtime publication (consumed via Django SSE, not the browser), pgvector                    |
+| Dragonfly                | FORJD cache / streams                                                                                                  |
+| Firebase Auth            | DEML end-user identity (tokens terminate at Django)                                                                    |
+| Stripe                   | Subscriptions                                                                                                          |
+| Sanity                   | Decoupled content                                                                                                      |
 
 **Deploy paths:** Angular via Vercel ([docs/VERCEL.md](docs/VERCEL.md)); Django via `fly deploy -a deml-backend` ([docs/FLY.md](docs/FLY.md)); FORJD per its own Fly/Supabase runbooks. Operator sequence: [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md) + [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md).
 
@@ -881,7 +881,7 @@ DEML forwards sealed telemetry to FORJD; FORJD owns processing, durable projecti
 
 - **Sealed ingest**: Angular seals AES-256-GCM envelopes and calls Django with a Firebase JWT. Django verifies auth, resolves `account → forjd_tenant → secret_ref`, and forwards to FORJD `POST /api/v1/ingest` with a tenant-bound `fjsvc_` token (never exposed to the browser).
 - **Product-local wire ids**: Django may rewrite `deml_telemetry` / `deml.metric` to universal FORJD families (`threat_telemetry` / `threat.metric`) before the network call.
-- **FORJD internals** (DEML does not run these): FastAPI edge, Prefect 3 workflow orchestration, Pathway for continuous/incremental streams, Polars LazyFrames for finite batch transforms, and the Rust `forjd-engine` sealed hot path.
+- **FORJD internals** (DEML does not run these): FastAPI edge, Prefect 3 workflow orchestration, Rust `forjd-engine` for continuous/incremental sealed streams, Polars LazyFrames for finite batch transforms, and a dependency-free Python fallback.
 - **Projections & analytics**: FORJD materializes durable `stream_results` and analytics; DEML surfaces them through BFF adapters on established Angular paths.
 - **Live updates**: Angular `LiveUpdatesService` (`latestEvent` / `degraded`) consumes Django SSE (`GET /api/v1/analytics/live`); Django polls FORJD projections with `fjsvc_`. Frames are ticks only (`{count, cursor}`) — never payloads. Auth → `forjd_forbidden`; outages → `503`/`forjd_degraded`. Not Firestore; not browser Supabase Realtime.
 - **Fail closed**: Missing FORJD capabilities do not resurrect a DEML-local stream worker or broker.
@@ -892,7 +892,7 @@ flowchart LR
  A -->|SSE live ticks| B
  B -->|fjsvc_ sealed ingest| FJ[FORJD FastAPI]
  FJ --> ENG[Rust engine]
- FJ --> PATH[Pathway streams]
+ FJ --> PATH[Rust sealed pipeline]
  FJ --> POL[Polars batch]
  FJ --> PR[Projections analytics ML replay]
  A -->|Product REST reads| B
@@ -943,13 +943,13 @@ Optional **control-plane** observability (Sentry, edge analytics, future OTLP ex
 
 ## Chapter 9: Applying a Use-Case (The Status Page)
 
-The sealed telemetry path I described in the previous chapter—DEML forwarding to FORJD—is the production spine. Inside FORJD, Pathway (and the Rust sealed hot path) owns continuous/incremental stream work; Polars LazyFrames own finite batch transforms and reports. DEML never runs Pathway or Polars as a substitute streaming plane. Infrastructure alone does not provide value; it must be harnessed to solve tangible business problems and enhance the human experience. To demonstrate the practical application of this architecture, I will build a cornerstone feature of any modern, reliable platform: a highly available, public-facing status dashboard. This use-case forces me to bridge the gap between raw data engineering and transparent, real-time user communication.
+The sealed telemetry path I described in the previous chapter—DEML forwarding to FORJD—is the production spine. Inside FORJD, The Rust sealed hot path owns continuous/incremental stream work; Polars LazyFrames own finite batch transforms and reports. DEML never runs stream workers or Polars as a substitute streaming plane. Infrastructure alone does not provide value; it must be harnessed to solve tangible business problems and enhance the human experience. To demonstrate the practical application of this architecture, I will build a cornerstone feature of any modern, reliable platform: a highly available, public-facing status dashboard. This use-case forces me to bridge the gap between raw data engineering and transparent, real-time user communication.
 
 **Ownership boundary:** Status pages, services, incidents, and uptime projections live in **FORJD** (`/api/v1/status/*`). Angular calls stable DEML paths such as `/api/v1/system-status/status_pages`; Django authenticates the Firebase session and proxies through `backend/forjd/` adapters with a tenant-bound `fjsvc_` token. Local Django `StatusPage` / `StatusPageUptimeDaily` models are retired (migration `0053`).
 
 The architecture for the status page requires orchestrating four distinct technical phases:
 
-1. **Telemetry Processing:** The lifecycle begins when DEML forwards sealed healthcheck and latency telemetry to FORJD. FORJD owns continuous stream processing (Pathway / Rust sealed pipeline) and durable projections; finite batch aggregations use Polars LazyFrames inside FORJD for reports and offline transforms—never as a streaming substitute.
+1. **Telemetry Processing:** The lifecycle begins when DEML forwards sealed healthcheck and latency telemetry to FORJD. FORJD owns continuous stream processing (Rust sealed pipeline) and durable projections; finite batch aggregations use Polars LazyFrames inside FORJD for reports and offline transforms—never as a streaming substitute.
 
 2. **SLA Calculation:** With the data structured, FORJD continuously computes Service Level Agreement (SLA) compliance from projections. By analyzing error rates against total request volume and measuring P99 latency against performance thresholds, the system generates a rigorous assessment of platform stability. Angular reads those metrics through the Django BFF—never from a DEML-local rollup table.
 
@@ -1440,7 +1440,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
-- **Data plane (FORJD)**: [FORJD](https://github.com/dataengineeringformachinelearning/forjd) — [FastAPI](https://github.com/fastapi/fastapi) edge, [Prefect 3](https://github.com/PrefectHQ/prefect) orchestration, [Pathway](https://github.com/pathwaycom/pathway) streams, [Polars](https://pola.rs/) batch LazyFrames, Rust `forjd-engine` sealed hot path; [PostgreSQL](https://www.postgresql.org/) / [Supabase](https://supabase.com/) + [Dragonfly](https://dragonflydb.io/). DEML Postgres remains identity/billing/consent only; DEML does not run Pathway or Airflow.
+- **Data plane (FORJD)**: [FORJD](https://github.com/dataengineeringformachinelearning/forjd) — [FastAPI](https://github.com/fastapi/fastapi) edge, [Prefect 3](https://github.com/PrefectHQ/prefect) orchestration, Rust `forjd-engine` sealed hot path, [Polars](https://pola.rs/) batch LazyFrames; [PostgreSQL](https://www.postgresql.org/) / [Supabase](https://supabase.com/) + [Dragonfly](https://dragonflydb.io/). DEML Postgres remains identity/billing/consent only; DEML does not run stream workers or Airflow.
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [Appendix Z](#appendix-z-integration-guides)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/) (`state_dict` only), [Scikit-learn](https://scikit-learn.org/) (GridSearch harness), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (exclusive data plane: sealed product telemetry, projections, analytics, ML, replay, and DLQ), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Firecrawl](https://www.firecrawl.dev/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
@@ -1931,8 +1931,8 @@ Update the containers JSON (or use the Lightsail console) to reference the new i
 **Workers & FORJD data plane (not DEML-local)**
 
 - DEML sidecars beside the BFF: `reconcile_forjd_reports --watch` and `daily_maintenance --watch` only (control plane).
-- FORJD owns `analytics-rollup`, `ml-training`, `retention`, Prefect workflows, Pathway streams, Polars batch, and Rust `forjd-engine` roles—deploy from the FORJD repository, never as Lightsail stream workers.
-- Projection and analytics reads go through the Django BFF to FORJD; do not run Airflow, Pathway, or a local stream worker on Lightsail.
+- FORJD owns `analytics-rollup`, `ml-training`, `retention`, Prefect workflows, Rust sealed streams, Polars batch, and `forjd-engine` roles—deploy from the FORJD repository, never as Lightsail stream workers.
+- Projection and analytics reads go through the Django BFF to FORJD; do not run Airflow or a local stream worker on Lightsail.
 - Scanner / CPE / Tor helpers remain FORJD-owned surfaces when enabled; do not resurrect DEML-local stream brokers.
 
 **Light sidecars** (scanner, cpe-guesser, tor-proxy) run as additional containers in the same service with `read_only`, `security_opt: no-new-privileges`, tmpfs where appropriate.
@@ -2003,14 +2003,14 @@ This appendix is the **single source of truth** for all scheduled maintenance: b
 
 | Owner                                  | Cadence                                   | Responsibility                                                                                                                   |
 | -------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **FORJD** (Fly + engine)               | Continuous                                | Sealed ingest, Prefect workflows, Pathway/Rust streams, Polars batch, durable projections, analytics, ML, replay/DLQ             |
+| **FORJD** (Fly + engine)               | Continuous                                | Sealed ingest, Prefect workflows, Rust sealed streams, Polars batch, durable projections, analytics, ML, replay/DLQ              |
 | **FORJD `analytics-rollup`**           | Every `ANALYTICS_ROLLUP_INTERVAL_SECONDS` | Hourly `aggregated_analytics` upserts + throttled `classical_anomaly` `ml_scores` refresh                                        |
 | **FORJD `ml-training`**                | Daily (tenant-scoped)                     | SLA / threat / temporal retrains; optional Hugging Face publish                                                                  |
 | **FORJD `retention`**                  | Hourly bounded sweeps                     | Aged sealed events / `stream_results`, expired crypto sessions, completed ingest receipts                                        |
 | **Django BFF** (`deml-backend` on Fly) | Continuous                                | Firebase JWT termination; `account → forjd_tenant` mapping; sealed forward with `fjsvc_`; product-path adapters; SSE live bridge |
 | **DEML control-plane tasks**           | Daily / hourly as configured              | Stripe subscription reconciliation, DEK rotation checks, identity-adjacent retention, consent/billing hygiene                    |
 
-DEML does **not** run local stream consumers, topic relays, Airflow, Pathway, or projection workers for product telemetry. Stream processing and ML execute in FORJD. See [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md) and [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md).
+DEML does **not** run local stream consumers, topic relays, Airflow, or projection workers for product telemetry. Stream processing and ML execute in FORJD. See [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md) and [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md).
 
 **DEML-owned schedules (control plane):**
 
@@ -2373,7 +2373,7 @@ Furthermore, critical business logic—such as billing, telemetry, and backgroun
 
 ## Chapter 32: Viking-UI — The Zero-Dependency UI Kit
 
-The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles, framework-neutral Web Components, shared utility exports, and Angular wrapper components. **Suite law** ([docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md)): deml.app, backend.deml.app, ui.deml.app, dataengineeringformachinelearning.com, forjd.co, backend.forjd.co, and ui.forjd.co share one visual language — void-black austerity, electric command `#2176ff`, institutional gold. FORJD `forjd-ui` is a thin `--fj-*` adapter that must stay pixel-aligned with Viking; it is not a second design system. DEML product pages consume **Viking-UI** directly. Product pages are Angular 22+ standalone + Signals; dashboard and analytics live ticks arrive through Django SSE (`LiveUpdatesService`) rather than Firestore. The historical split that placed library ownership under frontend-specific paths has been unused; apps now consume the package the way they would consume an external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. Intrinsic `viking-grid columns="auto"` and `viking-switcher` contracts form tracks from available content space rather than device names, preserving readable minimums, equal-height cards, aligned action rows, and natural row-to-column flow from 320px and 400% zoom through wide operational canvases. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
+The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles (`suite-tokens.css` / `suite-components.css` / `suite-landing.css` / `suite-backend.css`), framework-neutral Web Components, shared utility exports, and Angular wrapper components. **Suite law** ([docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md)): FORJD is the primary product surface; deml.app, backend.deml.app, ui.deml.app, dataengineeringformachinelearning.com, forjd.co, backend.forjd.co, and ui.forjd.co share one visual language — void-black austerity, electric command `#2176ff`, institutional gold. FORJD `forjd-ui` is a thin `--fj-*` adapter that vendors suite CSS (no npm style package); it is not a second design system. DEML product pages consume **Viking-UI** directly. Product pages are Angular 22+ standalone + Signals; dashboard and analytics live ticks arrive through Django SSE (`LiveUpdatesService`) rather than Firestore. The historical split that placed library ownership under frontend-specific paths has been unused; apps now consume the package the way they would consume an external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. Intrinsic `viking-grid columns="auto"` and `viking-switcher` contracts form tracks from available content space rather than device names, preserving readable minimums, equal-height cards, aligned action rows, and natural row-to-column flow from 320px and 400% zoom through wide operational canvases. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
 
 Information-dense metric groups follow a wide-card density contract: one column when space is constrained and no more than two equal columns on larger canvases, equivalent to 6/12 per card. Status metrics, KPI tiles, CES gauges, and explore-card metrics stretch to the tallest peer in their row so repeated surfaces retain a stable silhouette. Labels, supporting captions, and values remain on one line when presented inside these compact operational tiles; when a narrow viewport cannot preserve that line, the component clips with an ellipsis while retaining the complete accessible name instead of making one card taller than its neighbors. Four-across 3/12 metric layouts are prohibited for dense components because they compress content, force unpredictable wrapping, and slow scanning. Simple navigation and non-content collections are not metric grids and may still use their documented column counts.
 
@@ -2603,7 +2603,7 @@ Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md). Ow
 
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 
-Async work splits cleanly across the boundary: **FORJD** owns sealed processing, Prefect workflows, Pathway/Rust streams, Polars batch jobs, ML training, analytics rollups, retention, replay/DLQ, and the transactional outbox. **DEML** owns only control-plane sidecars beside Daphne. See **Appendix D** for the consolidated schedule table and [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md) for the live contract.
+Async work splits cleanly across the boundary: **FORJD** owns sealed processing, Prefect workflows, Rust sealed streams, Polars batch jobs, ML training, analytics rollups, retention, replay/DLQ, and the transactional outbox. **DEML** owns only control-plane sidecars beside Daphne. See **Appendix D** for the consolidated schedule table and [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md) for the live contract.
 
 ### 1. Django BFF adapters (control plane — not a stream plane)
 
@@ -2826,7 +2826,7 @@ Implementation: `backend/billing/api.py`, `backend/monitor/management/commands/s
 ## Appendix N: Concept of Operations (Operator Quick Reference)
 
 **Platform:** Data Engineering for Machine Learning (DEML)
-**Last aligned:** July 2026 (token/envelope BFF path; SSE `{count, cursor}` ticks; `forjd_forbidden` vs `forjd_degraded`; FORJD FastAPI/Prefect/Pathway/Polars/Rust)
+**Last aligned:** July 2026 (token/envelope BFF path; SSE `{count, cursor}` ticks; `forjd_forbidden` vs `forjd_degraded`; FORJD FastAPI/Prefect/Rust/Polars)
 **Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
 **Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
 **Integration contract:** [docs/FORJD_INTEGRATION.md](../docs/FORJD_INTEGRATION.md)
@@ -2906,7 +2906,7 @@ Angular ← SSE {count,cursor} ticks ← GET /api/v1/analytics/live
 - Browser callers never hold `fjsvc_`; Django resolves the secret ref after Firebase/`deml_` auth.
 - SSE frames are ticks only — never payloads; dashboards refresh via REST adapters + `latestEvent` / `degraded` callouts.
 - Auth denials → `forjd_forbidden`; outages → `503` + `forjd_degraded`.
-- FORJD is the authoritative owner of projections, analytics, ML, and replay/DLQ (FastAPI + Prefect + Pathway + Polars + Rust engine).
+- FORJD is the authoritative owner of projections, analytics, ML, and replay/DLQ (FastAPI + Prefect + Rust engine + Polars).
 - Django adapts established Angular paths; missing FORJD capabilities fail closed.
 - Ops: [docs/FORJD_INTEGRATION.md](../docs/FORJD_INTEGRATION.md), [docs/FLY.md](../docs/FLY.md), [docs/VERCEL.md](../docs/VERCEL.md).
 
@@ -3487,25 +3487,25 @@ The former Railway data-plane services (relay, scheduler, probe, normalizer, ing
 
 ## Compute & Deployment
 
-| Layer             | Technology                                      | Notes                                                               |
-| ----------------- | ----------------------------------------------- | ------------------------------------------------------------------- |
-| Container Runtime | Docker                                          | Unprivileged multi-stage / Distroless builds                        |
-| Primary hosts     | Vercel (Angular) + Fly (`deml-backend`) + FORJD | `deml.app` / `backend.deml.app` / `backend.forjd.co`                |
-| Alternate hosts   | Cloud Run / AWS Lightsail / Fargate             | Control-plane residency options only (not primary shipping)         |
-| Control plane     | Django (Python) + Daphne ASGI                   | Firebase Auth BFF; holds `fjsvc_` secret refs only                  |
-| Data plane        | FORJD FastAPI + Rust `forjd-engine`             | Prefect 3 workflows; Pathway streams; Polars batch; sealed hot path |
+| Layer             | Technology                                      | Notes                                                       |
+| ----------------- | ----------------------------------------------- | ----------------------------------------------------------- |
+| Container Runtime | Docker                                          | Unprivileged multi-stage / Distroless builds                |
+| Primary hosts     | Vercel (Angular) + Fly (`deml-backend`) + FORJD | `deml.app` / `backend.deml.app` / `backend.forjd.co`        |
+| Alternate hosts   | Cloud Run / AWS Lightsail / Fargate             | Control-plane residency options only (not primary shipping) |
+| Control plane     | Django (Python) + Daphne ASGI                   | Firebase Auth BFF; holds `fjsvc_` secret refs only          |
+| Data plane        | FORJD FastAPI + Rust `forjd-engine`             | Prefect 3 workflows; Rust sealed hot path; Polars batch     |
 
 ## Data Layer
 
-| Component           | Technology                        | Purpose                                                         |
-| ------------------- | --------------------------------- | --------------------------------------------------------------- |
-| Transactional Store | PostgreSQL                        | DEML system of record (users, billing, consent, tenant mapping) |
-| Status / incidents  | FORJD                             | Status pages, services, incidents, uptime projections           |
-| Event Streaming     | FORJD Pathway + Rust + Dragonfly  | Continuous/incremental sealed processing (not Polars-as-stream) |
-| Finite batch        | FORJD Polars LazyFrames           | Reports, offline transforms, rollup helpers inside FORJD only   |
-| Real-time Models    | FORJD `stream_results` (Supabase) | Materialized read models; browser never polls storage directly  |
-| Analytics Store     | FORJD analytics                   | OLAP telemetry, CES aggregates, exports                         |
-| Cache/Rate Limiting | Dragonfly (FORJD)                 | Redis-protocol compatible; DEML headless limits are Postgres    |
+| Component           | Technology                        | Purpose                                                                  |
+| ------------------- | --------------------------------- | ------------------------------------------------------------------------ |
+| Transactional Store | PostgreSQL                        | DEML system of record (users, billing, consent, tenant mapping)          |
+| Status / incidents  | FORJD                             | Status pages, services, incidents, uptime projections                    |
+| Event Streaming     | FORJD Rust + Dragonfly            | Continuous/incremental sealed processing via Rust (not Polars-as-stream) |
+| Finite batch        | FORJD Polars LazyFrames           | Reports, offline transforms, rollup helpers inside FORJD only            |
+| Real-time Models    | FORJD `stream_results` (Supabase) | Materialized read models; browser never polls storage directly           |
+| Analytics Store     | FORJD analytics                   | OLAP telemetry, CES aggregates, exports                                  |
+| Cache/Rate Limiting | Dragonfly (FORJD)                 | Redis-protocol compatible; DEML headless limits are Postgres             |
 
 ## Frontend & Design
 

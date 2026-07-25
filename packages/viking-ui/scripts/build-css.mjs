@@ -22,14 +22,6 @@ const outDir = path.join(packageDir, "dist");
 const fontSourceDir = path.join(packageDir, "src", "assets", "fonts", "inter");
 const fontOutDir = path.join(outDir, "fonts", "inter");
 const localSass = path.join(packageDir, "node_modules", ".bin", "sass");
-const designSystemSass = path.join(
-  rootDir,
-  "packages",
-  "deml-design-system",
-  "node_modules",
-  ".bin",
-  "sass",
-);
 const docsSass = path.join(
   rootDir,
   "viking-ui-docs",
@@ -39,11 +31,9 @@ const docsSass = path.join(
 );
 const sassBin = existsSync(localSass)
   ? localSass
-  : existsSync(designSystemSass)
-    ? designSystemSass
-    : existsSync(docsSass)
-      ? docsSass
-      : "sass";
+  : existsSync(docsSass)
+    ? docsSass
+    : "sass";
 
 const compile = (entry, style = "expanded") => {
   const outFile = path.join(outDir, `${entry}.tmp.css`);

@@ -17,24 +17,24 @@ const homeJsonLd = [organizationJsonLd(MARKETING_URL), webSiteJsonLd(MARKETING_U
 
 const showcases = [
   {
-    id: 'deml',
-    tag: 'CONTROL PLANE',
-    title: 'DEML',
-    summary:
-      'Operational intelligence for resilient AI systems — telemetry, threat posture, and tenant-safe status surfaces you can learn from and extend.',
-    href: FRONTEND_URL,
-    cta: 'Open DEML showcase',
-    icon: 'analytics',
-  },
-  {
     id: 'forjd',
-    tag: 'DATA PLANE',
+    tag: 'PRIMARY · DATA PLANE',
     title: 'FORJD',
     summary:
-      'Universal secure streaming engine — sealed ingest, YAML workflows, durable projections, and a Rust hot path for production pipelines.',
+      'Universal secure streaming engine — sealed ingest, YAML workflows, durable projections, analytics, and a Rust hot path for production pipelines.',
     href: FORJD_URL,
-    cta: 'Open FORJD showcase',
+    cta: 'Open FORJD',
     icon: 'hub',
+  },
+  {
+    id: 'deml',
+    tag: 'LEARNING · CONTROL PLANE',
+    title: 'DEML',
+    summary:
+      'Learning library and Firebase-authenticated control plane — identity, billing, consent, dashboards, and status surfaces that call FORJD.',
+    href: FRONTEND_URL,
+    cta: 'Open DEML',
+    icon: 'analytics',
   },
 ] as const;
 
@@ -81,11 +81,11 @@ const resources = [
         study living reference platforms, and grow skills that hold up under production pressure.
       </p>
       <div class="cta-group viking-unified-hero-actions suite-landing-actions">
-        <a class="suite-btn viking-btn viking-btn-primary" data-variant="primary" href={FRONTEND_URL}
-          >Open DEML</a
-        >
-        <a class="suite-btn viking-btn viking-btn-outline" data-variant="outline" href={FORJD_URL}
+        <a class="suite-btn viking-btn viking-btn-primary" data-variant="primary" href={FORJD_URL}
           >Open FORJD</a
+        >
+        <a class="suite-btn viking-btn viking-btn-outline" data-variant="outline" href={FRONTEND_URL}
+          >Open DEML</a
         >
         <a class="suite-btn viking-btn viking-btn-ghost" data-variant="ghost" href="/blog/"
           >Blue Notes</a

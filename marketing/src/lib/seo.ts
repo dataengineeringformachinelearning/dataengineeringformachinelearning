@@ -8,7 +8,7 @@ export const TWITTER_SITE = "@joealongi";
 export const AUTHOR_NAME = "Joe Alongi";
 
 export const DEFAULT_KEYWORDS =
-  "data engineering, machine learning, MLOps, community, learning, open examples, operational intelligence, telemetry, threat intelligence, STIX, multi-tenant SaaS, event projections, SLA forecasting, defendable architecture";
+  "FORJD, DEML, data engineering, machine learning, MLOps, community, learning, secure streaming, sealed ingest, telemetry, threat intelligence, STIX, multi-tenant SaaS, defendable architecture";
 
 export function canonicalHref(pathname: string, site: URL | string): string {
   const base = typeof site === "string" ? site : site.href;
@@ -49,7 +49,7 @@ export function softwareApplicationJsonLd(appUrl: string) {
     operatingSystem: "Web",
     url: appUrl,
     description:
-      "Precision-engineered observability for contested environments: ingest telemetry, forecast SLA breach, federate STIX indicators, and project live state per tenant.",
+      "DEML learning and control-plane companion for FORJD — identity, billing, consent, dashboards, and status surfaces backed by FORJD sealed streaming.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
 }

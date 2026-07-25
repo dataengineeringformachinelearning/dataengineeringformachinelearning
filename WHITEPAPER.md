@@ -11,7 +11,7 @@
 > Production operations: [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md) and
 > [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md).
 
-**Abstract:** This paper specifies the architecture of the Data Engineering for Machine Learning (DEML) platform—a multi-tenant observability, AI intelligence, and threat-analytics system engineered for the new digital battlefield. The design unifies sealed high-throughput ingest through FORJD, AI/ML-forecasted service levels, automated STIX 2.1 indicator federation, model lifecycle management, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are durable and idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
+**Abstract:** This paper specifies the architecture of FORJD—the universal secure streaming engine—and DEML, its learning library and Firebase-authenticated control-plane companion. The design unifies sealed high-throughput ingest through FORJD, AI/ML-forecasted service levels, automated STIX 2.1 indicator federation, model lifecycle management, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are durable and idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
 
 **Published:** July 2026
 **Author:** Joe Alongi [(ORCID: 0009-0007-2401-2603)](https://orcid.org/0009-0007-2401-2603)
@@ -38,7 +38,7 @@ This section specifies how the DEML platform is **operated** in production: vend
 Deliver account-isolated observability, predictive SLA forecasting, and threat analytics through two clear planes:
 
 - **Control plane (DEML)** — Firebase Auth, Django BFF, Postgres identity/billing/consent/learning, Angular 22+ Signals + Viking-UI
-- **Data plane (FORJD)** — FastAPI + Prefect 3 + Pathway streams + Polars batch + Rust `forjd-engine`; sealed ingest, durable projections, analytics, ML, replay/DLQ via tenant-bound `fjsvc_` tokens held only by Django
+- **Data plane (FORJD)** — FastAPI + Prefect 3 + Rust `forjd-engine` sealed hot path (+ dependency-free Python fallback) + Polars batch; sealed ingest, durable projections, analytics, ML, replay/DLQ via tenant-bound `fjsvc_` tokens held only by Django
 
 ### 2.2 Operational environment
 
@@ -46,7 +46,7 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 | ----------------- | ----------------------------------- | ---------------------------------------------------------------------- |
 | Product UI        | Vercel (`deml.app`)                 | Angular 22+ Signals SPA + Viking-UI; calls Django only; SSE live ticks |
 | Control plane API | Fly.io `deml-backend`               | Django BFF: auth, billing, consent, learning, FORJD adapters, SSE      |
-| Data plane        | FORJD on Fly + Supabase + Dragonfly | FastAPI/Prefect/Pathway/Polars/Rust; projections, analytics, ML, erase |
+| Data plane        | FORJD on Fly + Supabase + Dragonfly | FastAPI/Prefect/Rust/Polars; projections, analytics, ML, erase         |
 | Identity          | Firebase Auth                       | JWT perimeter at Django; Auth-only (no Firestore product path)         |
 | Marketing         | Astro marketing site                | Landing and documentation                                              |
 | Security controls | AES-256-GCM + platform audit sinks  | Field encryption for secrets; sealed envelopes on the wire to FORJD    |
@@ -108,7 +108,7 @@ Browser (Firebase JWT) → DEML Django BFF   (Angular never holds fjsvc_)
 ```
 
 - **Commands** (event ingestion): Angular seals AES-256-GCM envelopes and calls Django with a Firebase JWT. Django verifies auth, resolves `account → forjd_tenant → secret_ref`, rewrites product-local workflow ids when needed, and forwards to FORJD `POST /api/v1/ingest` with `Authorization: Bearer fjsvc_…`.
-- **Data plane**: FORJD owns Prefect workflows, Pathway/Rust sealed pipeline execution, Polars batch transforms, durable `stream_results` projections, analytics, ML, and replay/DLQ. Independent failure domains prevent processing pressure from stalling DEML identity or billing.
+- **Data plane**: FORJD owns Prefect workflows, Rust sealed pipeline execution (+ dependency-free Python fallback), Polars batch transforms, durable `stream_results` projections, analytics, ML, and replay/DLQ. Independent failure domains prevent processing pressure from stalling DEML identity or billing.
 - **Projections**: FORJD materializes idempotent read models; DEML surfaces them through BFF adapters on established Angular paths.
 - **Queries**: Angular never calls FORJD or FORJD storage directly—product reads go Angular → Django → FORJD API.
 - **Live updates**: Browser → `GET /api/v1/analytics/live` (SSE) → Django polls FORJD projections with `fjsvc_`. Frames are ticks only (`{count, cursor}`) — never payloads. Angular binds `LiveUpdatesService.latestEvent` / `degraded` and refreshes REST adapters. Auth → `forjd_forbidden`; outages → `503` + `forjd_degraded`.
@@ -131,7 +131,7 @@ flowchart TB
  subgraph "FORJD Data Plane"
  FJ[FORJD FastAPI]
  PREF[Prefect 3]
- PATH[Pathway streams]
+ PATH[Rust sealed pipeline]
  POL[Polars LazyFrames]
  SB[(Supabase)]
  DF[(Dragonfly)]
@@ -155,13 +155,13 @@ This design provides non-blocking client feedback on the control plane while FOR
 
 FORJD’s sealed pipeline and engine roles achieve high-throughput dispatch without a DEML-local broker or Airflow orchestrator on the control plane. Observability and OLAP-style analytics retention live in FORJD so the DEML Postgres transactional database remains focused on identity, billing, consent, and learning.
 
-## 5. Streaming vs Batch Inside FORJD (Pathway + Polars)
+## 5. Streaming vs Batch Inside FORJD (Rust + Polars)
 
-Row-by-row persistence of streaming events introduces significant write amplification. DEML forwards sealed telemetry to FORJD and does **not** run Pathway, Polars, or Prefect locally.
+Row-by-row persistence of streaming events introduces significant write amplification. DEML forwards sealed telemetry to FORJD and does **not** run stream workers, Polars, or Prefect locally.
 
 Inside FORJD:
 
-- **Pathway** (with the Rust sealed hot path) owns continuous / incremental stream processing and durable projection materialization.
+- **Rust `forjd-engine`** owns continuous / incremental sealed stream processing and durable projection materialization (dependency-free Python is the soft fallback).
 - **Polars LazyFrames** own finite batch DataFrames—ETL, reports, offline transforms, and historical rollups—never as a substitute for streaming jobs.
 - **Prefect 3** orchestrates YAML workflows around that sealed pipeline.
 

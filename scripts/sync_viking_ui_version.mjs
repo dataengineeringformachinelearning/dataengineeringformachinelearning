@@ -15,7 +15,6 @@ const COPY_FILES = [
   "BOOK.md",
   "WHITEPAPER.md",
   "packages/viking-ui/README.md",
-  "packages/viking-ui/MIGRATION_PLAN.md",
   "viking-ui-docs/README.md",
 ];
 const COPY_DIRECTORIES = ["frontend/src", "viking-ui-docs/src"];
