@@ -55,7 +55,6 @@ type BillingSyncResponse = {
   cancel_at_period_end?: boolean;
 };
 
-type CheckoutResponse = { checkout_url?: string };
 type SubscriptionUpdateResponse = { cancel_at_period_end: boolean };
 type ApiKeyGenerateResponse = { key: string };
 
@@ -209,30 +208,6 @@ export class Account implements OnInit {
     }
     this.isUpdatingPassword.set(false);
     this.cdr.markForCheck();
-  }
-
-  subscribeToPro() {
-    this.isBillingLoading.set(true);
-    this.billingError.set(null);
-    this.http
-      .post<CheckoutResponse>(
-        `${environment.backendUrl}/api/v1/billing/create-checkout-session`,
-        {},
-      )
-      .subscribe({
-        next: res => {
-          if (res.checkout_url) {
-            window.location.href = res.checkout_url;
-          } else {
-            this.billingError.set('Failed to initialize checkout.');
-            this.isBillingLoading.set(false);
-          }
-        },
-        error: err => {
-          this.billingError.set(err.error?.error || 'Failed to initialize checkout.');
-          this.isBillingLoading.set(false);
-        },
-      });
   }
 
   async cancelSubscription() {

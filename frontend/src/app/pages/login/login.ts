@@ -41,7 +41,6 @@ import {
   PhoneMultiFactorGenerator,
 } from 'firebase/auth';
 
-type CheckoutResponse = { checkout_url?: string };
 type DesktopHandoffResponse = { status: string; token?: string };
 type AuthAttemptResult = { error?: string; resolver?: unknown };
 
@@ -81,29 +80,8 @@ export class Login implements OnInit, OnDestroy {
   constructor() {
     effect(() => {
       if (this.authService.isInitialized() && this.authService.isAuthenticated()) {
-        const action = this.route.snapshot.queryParams['action'];
-        if (action === 'checkout') {
-          this.isLoading.set(true);
-          this.http
-            .post<CheckoutResponse>(
-              `${environment.backendUrl}/api/v1/billing/create-checkout-session`,
-              {},
-            )
-            .subscribe({
-              next: res => {
-                if (res.checkout_url) {
-                  window.location.href = res.checkout_url;
-                } else {
-                  this.router.navigate(['/account']);
-                }
-              },
-              error: () => {
-                this.router.navigate(['/account']);
-              },
-            });
-        } else {
-          this.handleSuccess();
-        }
+        // Pro Stripe Checkout is closed — ignore legacy ?action=checkout deep links.
+        this.handleSuccess();
       }
     });
   }
@@ -359,10 +337,6 @@ export class Login implements OnInit, OnDestroy {
   }
 
   handleSuccess(): void {
-    const action = this.route.snapshot.queryParams['action'];
-    if (action === 'checkout') {
-      return; // The effect will catch this and handle the redirect
-    }
     if (this.route.snapshot.queryParams['desktop_callback']) {
       if (!this.desktopHandoffStarted) {
         this.desktopHandoffStarted = true;

@@ -27,6 +27,10 @@ if HAS_STRIPE:
 router = Router(tags=["Billing"])
 User = get_user_model()
 
+# Hard gate: Pro Stripe Checkout is closed. Existing Pro cancel/resume/sync remain.
+_PRO_CHECKOUT_ENABLED = False
+_PRO_CHECKOUT_DISABLED_MSG = "Pro purchases are currently unavailable"
+
 _DEFAULT_STRIPE_PRICE_ID = "price_1TlgG2Er73F9pBqwItcWHIJf"
 _ACTIVE_SUBSCRIPTION_STATUSES = frozenset({"active", "trialing"})
 
@@ -132,9 +136,12 @@ def _downgrade_to_standard(profile: UserProfile) -> None:
 
 @router.post("/create-checkout-session")
 def create_checkout_session(request):
-  if not request.user.is_authenticated or not request.user.is_active:
-    from django.http import JsonResponse
+  from django.http import JsonResponse
 
+  if not _PRO_CHECKOUT_ENABLED:
+    return JsonResponse({"error": _PRO_CHECKOUT_DISABLED_MSG}, status=403)
+
+  if not request.user.is_authenticated or not request.user.is_active:
     return JsonResponse({"error": "Authentication required"}, status=401)
 
   try:
@@ -252,6 +259,16 @@ def stripe_webhook(request):
       else getattr(session, "payment_status", None)
     )
     mode = session.get("mode") if isinstance(session, dict) else getattr(session, "mode", None)
+
+    # --- Pro checkout closed: cancel any late sessions instead of upgrading ---
+    if not _PRO_CHECKOUT_ENABLED:
+      logger.warning(
+        "Ignoring checkout.session.completed while Pro checkout is disabled account=%s",
+        client_reference_id,
+      )
+      if subscription_id and not _cancel_tombstoned_subscription(subscription_id):
+        return HttpResponse(status=500)
+      return HttpResponse(status=200)
 
     # --- Require paid subscription checkout before upgrading ---
     if payment_status not in {"paid", "no_payment_required"}:

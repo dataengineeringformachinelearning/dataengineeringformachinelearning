@@ -253,7 +253,6 @@
         }
       </div>
       <div class="viking-card pricing-card pro-tier">
-        <div class="recommended-badge">RECOMMENDED</div>
         <h3>Pro Tier</h3>
         <div class="price">$39<span>/mo</span></div>
         <ul class="features-list">
@@ -261,24 +260,15 @@
           <li><viking-app-icon name="check" [size]="20" /> Advanced Threat Detection</li>
           <li><viking-app-icon name="check" [size]="20" /> Priority Support</li>
         </ul>
-        @if (isAuthenticated()) {
-        <a
-          routerLink="/account"
-          class="suite-btn viking-btn viking-btn-primary cta-button cta-primary pro-btn"
-          data-variant="primary"
+        <button
+          type="button"
+          class="suite-btn viking-btn viking-btn-outline cta-button pro-btn"
+          data-variant="outline"
+          disabled
+          aria-disabled="true"
         >
-          Manage subscription
-        </a>
-        } @else {
-        <a
-          routerLink="/login"
-          [queryParams]="{ action: 'checkout' }"
-          class="suite-btn viking-btn viking-btn-primary cta-button cta-primary pro-btn"
-          data-variant="primary"
-        >
-          Upgrade to Pro
-        </a>
-        }
+          Pro purchases unavailable
+        </button>
       </div>
     </div>
   </section>

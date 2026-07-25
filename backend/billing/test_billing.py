@@ -64,7 +64,8 @@ def test_billing_endpoints_with_authenticated_user(authenticated_client, test_us
   assert "active" in response.json()
 
   response = authenticated_client.post("/api/v1/billing/create-checkout-session")
-  assert response.status_code in [200, 400, 409, 500]
+  assert response.status_code == 403
+  assert response.json()["error"] == "Pro purchases are currently unavailable"
 
 
 @pytest.mark.django_db
@@ -73,7 +74,7 @@ def test_billing_endpoints_with_authenticated_user(authenticated_client, test_us
   STRIPE_PRICE_ID="price_test_123",
 )
 @patch("billing.api.stripe.checkout.Session.create")
-def test_checkout_binds_account_metadata_and_customer(
+def test_checkout_disabled_does_not_create_stripe_session(
   create_session,
   authenticated_client,
   test_user,
@@ -84,7 +85,6 @@ def test_checkout_binds_account_metadata_and_customer(
   profile.subscription_active = False
   profile.stripe_customer_id = "cus_existing"
   profile.save(update_fields=["role", "tier", "subscription_active", "stripe_customer_id"])
-  create_session.return_value = _Obj(url="https://checkout.stripe.test/session")
 
   response = authenticated_client.post(
     "/api/v1/billing/create-checkout-session",
@@ -92,21 +92,15 @@ def test_checkout_binds_account_metadata_and_customer(
     content_type="application/json",
   )
 
-  assert response.status_code == 200
-  assert response.json()["checkout_url"] == "https://checkout.stripe.test/session"
-  kwargs = create_session.call_args.kwargs
-  assert kwargs["client_reference_id"] == str(profile.account_id)
-  assert kwargs["metadata"] == {"deml_account_id": str(profile.account_id)}
-  assert kwargs["subscription_data"] == {"metadata": {"deml_account_id": str(profile.account_id)}}
-  assert kwargs["customer"] == "cus_existing"
-  assert kwargs["line_items"][0]["price"] == "price_test_123"
-  assert "customer_email" not in kwargs
+  assert response.status_code == 403
+  assert response.json()["error"] == "Pro purchases are currently unavailable"
+  create_session.assert_not_called()
 
 
 @pytest.mark.django_db
 @override_settings(STRIPE_SECRET_KEY="sk_test")  # pragma: allowlist secret
 @patch("billing.api.stripe.checkout.Session.create")
-def test_checkout_rejects_active_pro_subscription(
+def test_checkout_rejects_when_disabled_even_for_active_pro(
   create_session,
   authenticated_client,
   test_user,
@@ -123,8 +117,8 @@ def test_checkout_rejects_active_pro_subscription(
     content_type="application/json",
   )
 
-  assert response.status_code == 409
-  assert response.json()["error"] == "Pro subscription already active"
+  assert response.status_code == 403
+  assert response.json()["error"] == "Pro purchases are currently unavailable"
   create_session.assert_not_called()
 
 
@@ -287,7 +281,7 @@ def test_late_checkout_webhook_retries_until_cancellation_succeeds(
   "billing.api.stripe.Subscription.retrieve", return_value={"current_period_end": 2_000_000_000}
 )
 @patch("billing.api.stripe.Webhook.construct_event")
-def test_active_checkout_webhook_preserves_subscription_upgrade(
+def test_checkout_webhook_cancels_when_pro_purchases_disabled(
   construct_event,
   _retrieve_subscription,
   cancel_subscription,
@@ -316,21 +310,21 @@ def test_active_checkout_webhook_preserves_subscription_upgrade(
   )
 
   assert response.status_code == 200
-  cancel_subscription.assert_not_called()
+  cancel_subscription.assert_called_once_with("sub_active")
   profile.refresh_from_db()
-  assert profile.tier == "Pro"
-  assert profile.subscription_active is True
-  assert profile.stripe_customer_id == "cus_active"
-  assert profile.stripe_subscription_id == "sub_active"
+  assert profile.tier == "Standard"
+  assert profile.subscription_active is False
 
 
 @pytest.mark.django_db
 @override_settings(STRIPE_WEBHOOK_SECRET="whsec_test")
+@patch("billing.api.stripe.Subscription.cancel")
 @patch("billing.api.stripe.Subscription.retrieve")
 @patch("billing.api.stripe.Webhook.construct_event")
-def test_checkout_webhook_ignores_unpaid_payment_status(
+def test_checkout_webhook_disabled_cancels_even_unpaid_sessions(
   construct_event,
   retrieve_subscription,
+  cancel_subscription,
   client: Client,
   test_user,
 ) -> None:
@@ -359,6 +353,7 @@ def test_checkout_webhook_ignores_unpaid_payment_status(
   )
 
   assert response.status_code == 200
+  cancel_subscription.assert_called_once_with("sub_unpaid")
   retrieve_subscription.assert_not_called()
   profile.refresh_from_db()
   assert profile.tier == "Standard"
