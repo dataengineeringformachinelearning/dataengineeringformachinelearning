@@ -23,6 +23,7 @@ const swaggerTemplate = readFileSync(
 );
 
 test("Swagger vendor CSS loads before Viking-UI", () => {
+  // Shared Django shell: optional vendor block precedes Viking-UI.
   const vendorStylesIndex = baseTemplate.indexOf("{% block vendor_styles %}");
   const vikingStylesIndex = baseTemplate.indexOf(
     "{% static 'viking-ui.css' %}",
@@ -31,7 +32,15 @@ test("Swagger vendor CSS loads before Viking-UI", () => {
   assert.notEqual(vendorStylesIndex, -1);
   assert.notEqual(vikingStylesIndex, -1);
   assert.ok(vendorStylesIndex < vikingStylesIndex);
-  assert.match(swaggerTemplate, /{% block vendor_styles %}/);
+
+  // Standalone Swagger page: vendor CDN stylesheet precedes Viking-UI.
+  const swaggerVendorIndex = swaggerTemplate.indexOf("swagger-ui.css");
+  const swaggerVikingIndex = swaggerTemplate.indexOf(
+    "{% static 'viking-ui.css' %}",
+  );
+  assert.notEqual(swaggerVendorIndex, -1);
+  assert.notEqual(swaggerVikingIndex, -1);
+  assert.ok(swaggerVendorIndex < swaggerVikingIndex);
 });
 
 test("Swagger authorization and method controls use quiet Viking surfaces", () => {

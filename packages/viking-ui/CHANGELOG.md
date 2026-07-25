@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 9.7.3
+
+### Patch Changes
+
+- Style organized
+
 ## 9.7.0
 
 ### Minor Changes

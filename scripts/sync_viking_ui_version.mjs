@@ -35,8 +35,12 @@ const LOCKFILE_PROJECTS = [
 ];
 const args = new Set(process.argv.slice(2));
 const shouldWrite = args.has("--write") || args.has("--changesets");
-const shouldRefreshLockfiles =
-  args.has("--lockfiles") || args.has("--changesets");
+// Lockfile refresh hits the npm registry for nested installs (`--workspaces=false`).
+// Do that only after publish (`npm run sync:viking-ui:version`), never during
+// `version:viking-ui` / `--changesets` when the new version is not on npm yet.
+const shouldRefreshLockfiles = args.has("--lockfiles");
+const shouldValidateLockfiles =
+  !args.has("--changesets") || args.has("--lockfiles");
 const failures = [];
 
 const readJson = (relativePath) =>
@@ -159,55 +163,61 @@ const expectLockValue = (relativePath, actual, expected, contract) => {
   );
 };
 
-for (const relativeDirectory of CONSUMER_MANIFESTS.map((path) =>
-  dirname(path),
-)) {
-  const relativePath = join(relativeDirectory, "package-lock.json");
-  const lockfile = readJson(relativePath);
+if (shouldValidateLockfiles) {
+  for (const relativeDirectory of CONSUMER_MANIFESTS.map((path) =>
+    dirname(path),
+  )) {
+    const relativePath = join(relativeDirectory, "package-lock.json");
+    const lockfile = readJson(relativePath);
+    expectLockValue(
+      relativePath,
+      lockfile.packages?.[""]?.dependencies?.[PACKAGE_NAME],
+      canonicalRange,
+      `${PACKAGE_NAME} manifest range`,
+    );
+    expectLockValue(
+      relativePath,
+      lockfile.packages?.[`node_modules/${PACKAGE_NAME}`]?.version,
+      canonicalVersion,
+      `${PACKAGE_NAME} resolved version`,
+    );
+  }
+
+  const packageLock = readJson("packages/viking-ui/package-lock.json");
   expectLockValue(
-    relativePath,
-    lockfile.packages?.[""]?.dependencies?.[PACKAGE_NAME],
-    canonicalRange,
-    `${PACKAGE_NAME} manifest range`,
-  );
-  expectLockValue(
-    relativePath,
-    lockfile.packages?.[`node_modules/${PACKAGE_NAME}`]?.version,
+    "packages/viking-ui/package-lock.json",
+    packageLock.version,
     canonicalVersion,
-    `${PACKAGE_NAME} resolved version`,
+    "root version",
   );
-}
+  expectLockValue(
+    "packages/viking-ui/package-lock.json",
+    packageLock.packages?.[""]?.version,
+    canonicalVersion,
+    "workspace version",
+  );
 
-const packageLock = readJson("packages/viking-ui/package-lock.json");
-expectLockValue(
-  "packages/viking-ui/package-lock.json",
-  packageLock.version,
-  canonicalVersion,
-  "root version",
-);
-expectLockValue(
-  "packages/viking-ui/package-lock.json",
-  packageLock.packages?.[""]?.version,
-  canonicalVersion,
-  "workspace version",
-);
-
-const rootLock = readJson("package-lock.json");
-for (const relativePath of CONSUMER_MANIFESTS) {
-  const workspacePath = dirname(relativePath);
+  const rootLock = readJson("package-lock.json");
+  for (const relativePath of CONSUMER_MANIFESTS) {
+    const workspacePath = dirname(relativePath);
+    expectLockValue(
+      "package-lock.json",
+      rootLock.packages?.[workspacePath]?.dependencies?.[PACKAGE_NAME],
+      canonicalRange,
+      `${workspacePath} ${PACKAGE_NAME} range`,
+    );
+  }
   expectLockValue(
     "package-lock.json",
-    rootLock.packages?.[workspacePath]?.dependencies?.[PACKAGE_NAME],
-    canonicalRange,
-    `${workspacePath} ${PACKAGE_NAME} range`,
+    rootLock.packages?.["packages/viking-ui"]?.version,
+    canonicalVersion,
+    "canonical workspace version",
+  );
+} else {
+  console.log(
+    "Skipped lockfile refresh/validation (pre-publish). After npm publish, run `npm run sync:viking-ui:version`.",
   );
 }
-expectLockValue(
-  "package-lock.json",
-  rootLock.packages?.["packages/viking-ui"]?.version,
-  canonicalVersion,
-  "canonical workspace version",
-);
 
 if (failures.length > 0) {
   console.error(`Viking-UI ${canonicalVersion} version drift detected:`);
