@@ -1,13 +1,13 @@
-/** Fixed series palette — keep in sync with viking-tokens.json and THEME.md §8.4 */
+/** Fixed series palette — Role B; keep in sync with suite-tokens.css --suite-series-* */
 export const VIKING_SERIES_PRESETS = [
-  "var(--viking-electric-500)",
-  "var(--viking-crimson-600)",
-  "var(--viking-green-500)",
-  "var(--viking-gold-500)",
-  "var(--viking-crimson-500)",
-  "var(--viking-blue-500)",
-  "var(--viking-charcoal-700)",
-  "var(--viking-metallic-500)",
+  "var(--suite-series-1)",
+  "var(--suite-series-2)",
+  "var(--suite-series-3)",
+  "var(--suite-series-4)",
+  "var(--suite-series-5)",
+  "var(--suite-series-6)",
+  "var(--suite-series-7)",
+  "var(--suite-series-8)",
 ] as const;
 
 export const VIKING_SERIES_DEFAULT = VIKING_SERIES_PRESETS[0];

@@ -2,10 +2,12 @@
   "$schema": "./viking-tokens.schema.json",
   "meta": {
     "name": "viking-ui",
-    "version": "2.1.0",
-    "description": "Canonical DEML design tokens — single source of truth for primitives, semantic aliases, and component foundations",
+    "version": "2.2.0",
+    "description": "Tooling export for viking-ui. Pass 1 product chrome SoT is suite-tokens.css (Role A). This JSON mirrors primitives + series for docs/codegen — keep Role A gold/primary in lockstep with suite-tokens.lock.json.",
+    "canonicalCss": "./suite-tokens.css",
+    "canonicalLock": "./suite-tokens.lock.json",
     "canonicalScss": "../styles/_variables.scss",
-    "documentation": "../../../THEME.md"
+    "documentation": "./SUITE_TOKENS.md"
   },
   "color": {
     "brand": {
@@ -76,7 +78,7 @@
     "violet": { "600": "#6f5bd7", "500": "#8674f0" },
     "amber": { "600": "#a77912", "500": "#d69e2e" },
     "green": { "500": "#2a9d8f" },
-    "gold": { "500": "#c4a035" },
+    "gold": { "500": "#d4af37" },
     "blue": { "500": "{color.electric.400}" },
     "red": { "500": "{color.crimson.500}" },
     "ink": {
@@ -108,9 +110,9 @@
       "role": "Success / stable metrics"
     },
     "4": {
-      "hex": "#c4a035",
+      "hex": "#d4af37",
       "token": "--viking-series-4",
-      "role": "Warning / threshold proximity"
+      "role": "Warning / threshold proximity (aliases suite institutional gold)"
     },
     "5": {
       "hex": "#a83344",

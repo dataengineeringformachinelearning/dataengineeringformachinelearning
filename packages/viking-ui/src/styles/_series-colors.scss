@@ -6,16 +6,18 @@
 // ============================================================================
 
 :root {
-  --viking-series-1: var(--viking-electric-500);
-  --viking-series-2: var(--viking-crimson-600);
-  --viking-series-3: var(--viking-green-500);
-  --viking-series-4: var(--viking-gold-500);
-  --viking-series-5: var(--viking-crimson-500);
-  --viking-series-6: var(--viking-blue-500);
-  --viking-series-7: var(--viking-charcoal-700);
-  --viking-series-8: var(--viking-metallic-500);
+  /* Prefer suite Role B when suite-tokens.css is loaded first (Pass 1).
+     Fallbacks keep SCSS-only compiles working. */
+  --viking-series-1: var(--suite-series-1, var(--viking-electric-500));
+  --viking-series-2: var(--suite-series-2, var(--viking-crimson-600));
+  --viking-series-3: var(--suite-series-3, var(--viking-green-500));
+  --viking-series-4: var(--suite-series-4, var(--viking-gold-500));
+  --viking-series-5: var(--suite-series-5, var(--viking-crimson-500));
+  --viking-series-6: var(--suite-series-6, var(--viking-blue-500));
+  --viking-series-7: var(--suite-series-7, var(--viking-charcoal-700));
+  --viking-series-8: var(--suite-series-8, var(--viking-metallic-500));
 
-  --viking-series-default: var(--viking-series-1);
+  --viking-series-default: var(--suite-series-default, var(--viking-series-1));
 
   /* Premium palette v3 — electric primary, crimson secondary, semantic + muted slots */
   --viking-series-palette: var(--viking-series-1), var(--viking-series-2),

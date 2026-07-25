@@ -1,57 +1,44 @@
-/* Suite docs chrome — Pass 5. Extra DEML playground utilities below. */
-@import "../dist/suite-docs.css";
+/*
+ * Pass 5 — Storybook extras (DEML Product/* playground helpers).
+ * Shell/panel chrome: suite-docs.css (loaded in preview.ts — do not re-import).
+ */
 
-.viking-story-metric-row {
-  display: grid;
-  gap: var(--suite-space-3);
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+/* Docs page body (Storybook docs addon) */
+.sbdocs.sbdocs-wrapper {
+  background: var(--suite-bg) !important;
+  color: var(--suite-ink) !important;
+  font-family: var(--suite-font-sans) !important;
 }
 
-.viking-story-metric {
-  display: flex;
-  min-height: var(--suite-touch);
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--suite-space-1);
-  padding: var(--suite-space-3);
-  border: 1px solid var(--suite-border);
-  border-radius: var(--suite-radius);
-  background: var(--suite-surface-2);
+.sbdocs.sbdocs-content {
+  max-width: var(--suite-content-max) !important;
 }
 
-.viking-story-checklist {
-  display: grid;
-  gap: var(--suite-space-2);
-  margin: 0;
-  padding-left: var(--suite-space-4);
-  color: var(--suite-ink-muted);
+.sbdocs h1,
+.sbdocs h2,
+.sbdocs h3 {
+  color: var(--suite-ink) !important;
+  font-family: var(--suite-font-sans) !important;
+  letter-spacing: var(--suite-tracking-tight);
 }
 
-.viking-story-footer-space {
-  margin-top: var(--suite-space-4);
+.sbdocs p,
+.sbdocs li {
+  color: var(--suite-ink-muted) !important;
 }
 
+.sbdocs a {
+  color: var(--suite-primary) !important;
+}
+
+.docs-story {
+  background: transparent !important;
+}
+
+/* Product playground helpers (triple-class for lockstep) */
 .viking-theme-toggle-story-compact {
   transform: scale(0.95);
   transform-origin: center;
-}
-
-.viking-story-bleed {
-  padding: 0;
-  overflow: hidden;
-  width: min(100%, 72rem);
-}
-
-.viking-story-chart-slot {
-  min-height: 16rem;
-  display: grid;
-  align-content: start;
-  gap: var(--suite-space-3);
-}
-
-.viking-story-skeleton-block {
-  height: 10rem;
-  width: 100%;
 }
 
 .landing-playground-band {

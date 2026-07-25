@@ -1,8 +1,9 @@
-.landing-container {
+/* Pass 3: atmosphere + stage rhythm owned by suite-landing.css when
+   `.suite-landing` is present. Legacy one-off glow only for non-suite pages. */
+.landing-container:not(.suite-landing) {
   position: relative;
   min-height: calc(100vh - 64px);
   padding-block: var(--viking-space-6) var(--viking-space-4);
-  /* visible so angled hero mockup can overflow the right edge */
   overflow: visible;
   font-family: var(--viking-font-family);
   isolation: isolate;
@@ -63,6 +64,11 @@
       opacity: 0.15;
     }
   }
+}
+
+.landing-container.suite-landing {
+  /* Stage padding/gap from suite-landing.css — keep mockup overflow only */
+  overflow: visible;
 }
 
 .showcase-layout {

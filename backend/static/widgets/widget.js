@@ -50,6 +50,8 @@
   const DEFAULT_STATUS_APP = 'https://deml.app';
   const VIKING_UI_CSS_CDN =
     'https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.3/dist/viking-ui.css';
+  /* Pass 6 — shadow-root fallback tokens mirror suite-tokens Role A (void + electric + gold).
+     Prefer host page suite CSS when present; these values keep embeds on-brand offline. */
   const PLATFORM_WIDGET_STYLES = `
     :host {
       color-scheme: dark;
@@ -61,8 +63,8 @@
       --viking-font-weight-medium: 500;
       --viking-font-weight-semibold: 600;
       --viking-line-height-normal: 1.5;
-      --viking-letter-spacing-caps: 0.08em;
-      --viking-letter-spacing-wide: 0.025em;
+      --viking-letter-spacing-caps: 0.1em;
+      --viking-letter-spacing-wide: 0.08em;
       --viking-space-half: 4px;
       --viking-space-1: 8px;
       --viking-space-1-5: 12px;
@@ -71,48 +73,49 @@
       --viking-space-3: 24px;
       --viking-space-4: 32px;
       --viking-radius: 8px;
-      --viking-radius-md: 10px;
+      --viking-radius-md: 8px;
       --viking-radius-lg: 12px;
       --viking-radius-pill: 999px;
       --viking-radius-full: var(--viking-radius-pill);
-      --viking-control-height: 46px;
+      --viking-control-height: 40px;
       --viking-touch-target-min: 44px;
       --viking-ring-width: 2px;
       --viking-ring-offset: 2px;
       --viking-text: rgb(245 245 245);
       --viking-text-muted: rgb(170 170 170);
       --viking-white-pure: rgb(255 255 255);
-      --viking-surface: rgb(16 27 51);
-      --viking-surface-alt: rgb(22 37 68);
-      --viking-surface-recipe: linear-gradient(180deg, rgb(16 27 51) 0%, rgb(10 16 36) 100%);
-      --viking-surface-recipe-muted: rgb(22 37 68);
+      --viking-bg: rgb(10 10 10);
+      --viking-surface: rgb(17 17 17);
+      --viking-surface-alt: rgb(26 26 26);
+      --viking-surface-recipe: rgb(17 17 17);
+      --viking-surface-recipe-muted: rgb(26 26 26);
       --viking-metallic-200: rgb(170 170 170);
-      --viking-metallic-300: #999999;
-      --viking-border: color-mix(in srgb, rgb(85 85 85) 48%, transparent);
-      --viking-border-strong: color-mix(in srgb, rgb(119 119 119) 68%, transparent);
+      --viking-metallic-300: rgb(153 153 153);
+      --viking-border: rgb(34 34 34);
+      --viking-border-strong: rgb(51 51 51);
       --viking-accent: rgb(33 118 255);
       --viking-accent-hover: rgb(77 148 255);
       --viking-accent-content: rgb(255 255 255);
       --viking-accent-strong: rgb(122 176 255);
       --viking-success: rgb(42 157 143);
-      --viking-warning: rgb(196 160 53);
+      --viking-warning: rgb(214 158 46);
       --viking-danger: rgb(168 51 68);
       --viking-green-500: rgb(42 157 143);
-      --viking-gold-500: rgb(196 160 53);
+      --viking-gold-500: rgb(212 175 55);
       --viking-crimson-500: rgb(168 51 68);
       --viking-ring: rgb(77 148 255);
-      --viking-overlay-backdrop: color-mix(in srgb, rgb(3 8 24) 78%, transparent);
-      --viking-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-      --viking-shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.22), 0 1px 2px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      --viking-shadow-md: 0 10px 24px rgba(0, 0, 0, 0.18), 0 3px 8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-      --viking-shadow-lg: 0 20px 44px rgba(0, 0, 0, 0.26), 0 8px 18px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-      --viking-shadow-hover: 0 18px 36px rgba(0, 0, 0, 0.26), 0 6px 14px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      --viking-overlay-backdrop: color-mix(in srgb, rgb(10 10 10) 72%, transparent);
+      --viking-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+      --viking-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.12);
+      --viking-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.18), 0 10px 24px rgba(0, 0, 0, 0.16);
+      --viking-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2);
+      --viking-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.2), 0 12px 28px rgba(0, 0, 0, 0.2);
       --viking-duration-fast: 150ms;
       --viking-duration: 250ms;
-      --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --viking-ease-default: cubic-bezier(0.2, 0, 0, 1);
       --viking-transition-colors: color var(--viking-duration) var(--viking-ease-default), background-color var(--viking-duration) var(--viking-ease-default), border-color var(--viking-duration) var(--viking-ease-default), box-shadow var(--viking-duration) var(--viking-ease-default);
       --viking-transition-interactive: var(--viking-transition-colors), transform var(--viking-duration) var(--viking-ease-default), opacity var(--viking-duration) var(--viking-ease-default);
-      --viking-state-disabled-opacity: 0.48;
+      --viking-state-disabled-opacity: 0.5;
       --viking-state-hover-lift: -1px;
       display: flex;
       justify-content: center;

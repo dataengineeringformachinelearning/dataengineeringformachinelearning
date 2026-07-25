@@ -1,10 +1,14 @@
 import { addons } from "storybook/manager-api";
 import { create } from "storybook/theming";
 
+/**
+ * Pass 5 — suite manager theme (void + electric).
+ * Same palette as ui.forjd.co; brand title is the only product-specific field.
+ */
 addons.setConfig({
   theme: create({
     base: "dark",
-    brandTitle: "Viking-UI · Suite",
+    brandTitle: "Suite UI · Viking",
     brandUrl: "https://ui.deml.app",
     brandTarget: "_self",
     colorPrimary: "#2176ff",

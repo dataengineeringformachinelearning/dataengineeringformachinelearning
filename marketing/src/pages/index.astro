@@ -66,27 +66,28 @@ const resources = [
   keywords={`${DEFAULT_KEYWORDS}, community, learning, open examples`}
   jsonLd={homeJsonLd}
 >
-  <div class="page-inner-wrapper landing-container showcase-layout community-home suite-landing">
-    <section class="suite-landing-hero viking-unified-hero" aria-labelledby="main-title">
-      <p class="hero-badge viking-unified-hero-badge community-eyebrow">
+  <div class="page-inner-wrapper landing-container showcase-layout community-home suite-landing fj-landing">
+    <section class="suite-landing-hero viking-unified-hero landing__hero" aria-labelledby="main-title">
+      <p class="suite-landing-badge hero-badge viking-unified-hero-badge community-eyebrow">
         <span class="badge-dot pulse-dot"></span>
         <span class="badge-text">Community · Practice · Platforms</span>
       </p>
-      <h1 class="title viking-unified-hero-title" id="main-title">
+      <p class="suite-landing-brand hero-brand" aria-hidden="true">DEML</p>
+      <h1 class="title viking-unified-hero-title suite-landing-headline landing__hero-line" id="main-title">
         Data Engineering for Machine Learning
       </h1>
-      <p class="subtitle viking-unified-hero-lead suite-landing-lede">
+      <p class="subtitle viking-unified-hero-lead suite-landing-lede landing__lede">
         Learn and build the practice of data engineering for machine learning — share field notes,
         study living reference platforms, and grow skills that hold up under production pressure.
       </p>
-      <div class="cta-group viking-unified-hero-actions suite-landing-actions">
-        <a class="suite-btn viking-btn viking-btn-primary" data-variant="primary" href={FORJD_URL}
+      <div class="cta-group viking-unified-hero-actions suite-landing-actions landing__actions">
+        <a class="suite-btn viking-btn fj-btn viking-btn-primary" data-variant="primary" href={FORJD_URL}
           >Open FORJD</a
         >
-        <a class="suite-btn viking-btn viking-btn-outline" data-variant="outline" href={FRONTEND_URL}
+        <a class="suite-btn viking-btn fj-btn viking-btn-outline" data-variant="outline" href={FRONTEND_URL}
           >Open DEML</a
         >
-        <a class="suite-btn viking-btn viking-btn-ghost" data-variant="ghost" href="/blog/"
+        <a class="suite-btn viking-btn fj-btn viking-btn-ghost" data-variant="ghost" href="/blog/"
           >Blue Notes</a
         >
       </div>
@@ -95,22 +96,22 @@ const resources = [
     <section class="community-showcases" aria-labelledby="showcases-title">
       <header class="viking-unified-section-header suite-landing-section-header">
         <span class="section-tag suite-landing-tag">OPEN EXAMPLES</span>
-        <h2 id="showcases-title">Reference platforms</h2>
-        <p>
+        <h2 id="showcases-title" class="suite-landing-section-title">Reference platforms</h2>
+        <p class="suite-landing-section-lede">
           Two production systems the community uses as living examples — a control plane and a
           streaming data plane.
         </p>
       </header>
-      <div class="community-showcase-grid viking-panel-grid" data-columns="2">
+      <div class="community-showcase-grid suite-landing-grid viking-panel-grid" data-columns="2">
         {showcases.map((item) => (
-          <a class="community-showcase-card viking-card suite-card" href={item.href}>
-            <span class="section-tag">{item.tag}</span>
+          <a class="community-showcase-card viking-card suite-card fj-card" href={item.href}>
+            <span class="section-tag suite-landing-tag">{item.tag}</span>
             <div class="community-showcase-card-title">
               <VikingIcon name={item.icon} size={24} />
               <h3>{item.title}</h3>
             </div>
             <p>{item.summary}</p>
-            <span class="community-showcase-cta">
+            <span class="community-showcase-cta suite-link">
               {item.cta}
               <VikingIcon name="chevron_right" size={18} />
             </span>
@@ -122,13 +123,13 @@ const resources = [
     <section class="community-resources" aria-labelledby="resources-title">
       <header class="viking-unified-section-header suite-landing-section-header">
         <span class="section-tag suite-landing-tag">RESOURCES</span>
-        <h2 id="resources-title">Learn with the community</h2>
-        <p>Field notes, the book, and the whitepaper — community content without product chrome.</p>
+        <h2 id="resources-title" class="suite-landing-section-title">Learn with the community</h2>
+        <p class="suite-landing-section-lede">Field notes, the book, and the whitepaper — community content without product chrome.</p>
       </header>
-      <ul class="community-resource-list viking-stack">
+      <ul class="community-resource-list viking-stack suite-stack">
         {resources.map((item) => (
           <li>
-            <a class="community-resource-link viking-card suite-card" href={item.href}>
+            <a class="community-resource-link viking-card suite-card fj-card" href={item.href}>
               <VikingIcon name={item.icon} size={20} />
               <div>
                 <strong>{item.title}</strong>

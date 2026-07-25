@@ -1,7 +1,7 @@
 # DEML Design System — Viking-UI Theme
 
 **Suite mandate:** [docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md) — all suite hosts share one visual language.
-**Pass 1 tokens (canonical):** [`packages/viking-ui/src/tokens/suite-tokens.css`](packages/viking-ui/src/tokens/suite-tokens.css) + usage [`SUITE_TOKENS.md`](packages/viking-ui/src/tokens/SUITE_TOKENS.md). Prefer `--suite-*`; `--viking-*` / `--fj-*` are aliases. FORJD vendors this file (no npm style install).
+**Pass 1 tokens (canonical):** [`packages/viking-ui/src/tokens/suite-tokens.css`](packages/viking-ui/src/tokens/suite-tokens.css) + lock [`suite-tokens.lock.json`](packages/viking-ui/src/tokens/suite-tokens.lock.json) + usage [`SUITE_TOKENS.md`](packages/viking-ui/src/tokens/SUITE_TOKENS.md). Prefer `--suite-*`; `--viking-*` / `--fj-*` are aliases. Gate: `npm run suite:tokens`. FORJD vendors this file (no npm style install).
 
 **Single source of truth** for visual design across all DEML surfaces:
 
@@ -25,7 +25,7 @@ Product UI architecture (Angular 22+ Signals, Django SSE live updates, FORJD dat
 Viking-UI is the single source of truth for all DEML styling. Every visual rule used by the Angular frontend, Astro marketing site, Viking-UI docs, Django templates, Swagger, widgets, and future surfaces must originate in `packages/viking-ui/`.
 
 - **Components first:** new UI must use existing `viking-*` components or Web Components before adding markup. If the primitive is missing, create it in `packages/viking-ui/src/web/` and, when Angular needs it, expose a thin wrapper in `packages/viking-ui/src/lib/`.
-- **Tokens only:** every color, spacing, radius, shadow, font, motion, and data visualization value must resolve to a `--viking-*` token from `packages/viking-ui/src/styles/_variables.scss` or a semantic alias exported by the Viking-UI bundle.
+- **Tokens only:** every color, spacing, radius, shadow, font, motion, and data visualization value must resolve to a `--suite-*` token (or `--viking-*` / `--fj-*` alias) from `packages/viking-ui/src/tokens/suite-tokens.css`. Primitive ramps in `_variables.scss` support SCSS builds but product chrome is suite-locked.
 - **No app-owned visuals:** `frontend/`, `marketing/`, `viking-ui-docs/`, Django templates, and widget consumers may compose Viking components, pass content/props, and load synced assets, but they must not define page-level SCSS/CSS, local `<style>` blocks, inline `style=""`, Tailwind utility styling, hardcoded palettes, or one-off visual class systems.
 - **Extend, then consume:** when a consuming surface needs a new layout, card, CTA, legal/prose surface, nav/footer pattern, status display, chart treatment, or form pattern, add the primitive or surface style to `packages/viking-ui/src/styles/`, rebuild the package, and sync with `scripts/sync_design_system.py`.
 - **Aesthetic changes are package changes:** every styling decision required by the final aesthetic below must be implemented inside `packages/viking-ui/` only, then consumed through public package entrypoints, synced artifacts, or CDN delivery. Do not implement aesthetic fixes directly in `frontend/`, `marketing/`, `viking-ui-docs/`, or `backend/`.
@@ -171,7 +171,7 @@ Secondary emphasis, destructive actions, critical series.
 | Token                | HEX       | RGB                 | Role                                     |
 | -------------------- | --------- | ------------------- | ---------------------------------------- |
 | `--viking-green-500` | `#2A9D8F` | `rgb(42, 157, 143)` | Success, stable, series 3                |
-| `--viking-gold-500`  | `#C4A035` | `rgb(196, 160, 53)` | Warning, series 4                        |
+| `--viking-gold-500`  | `#D4AF37` | `rgb(212, 175, 55)` | Institutional gold, series 4             |
 | `--viking-blue-500`  | `#4D94FF` | `rgb(77, 148, 255)` | Info, series 6 (`--viking-electric-400`) |
 
 ### 1.6 Absolute neutrals
@@ -258,7 +258,7 @@ Programmatic series colors map to fixed tokens — use these instead of raw hex 
 | 1    | `--viking-series-1` | `#2176FF` | Primary / default    |
 | 2    | `--viking-series-2` | `#922B3E` | Secondary comparison |
 | 3    | `--viking-series-3` | `#2A9D8F` | Success / stable     |
-| 4    | `--viking-series-4` | `#C4A035` | Warning / threshold  |
+| 4    | `--viking-series-4` | `#D4AF37` | Warning / threshold  |
 | 5    | `--viking-series-5` | `#A83344` | Critical / anomaly   |
 | 6    | `--viking-series-6` | `#4D94FF` | Info / auxiliary     |
 | 7    | `--viking-series-7` | `#162544` | Baseline / muted     |
@@ -609,7 +609,7 @@ Each preset maps to a `--viking-series-N` token (§1.9). Import shared values fr
 | 1   | `#2176FF` | `--viking-electric-500` | Primary series, default selection      |
 | 2   | `#922B3E` | `--viking-crimson-600`  | Secondary / comparison series          |
 | 3   | `#2A9D8F` | `--viking-green-500`    | Success / stable metrics               |
-| 4   | `#C4A035` | `--viking-gold-500`     | Warning / threshold proximity          |
+| 4   | `#D4AF37` | `--viking-gold-500`     | Warning / threshold proximity          |
 | 5   | `#A83344` | `--viking-crimson-500`  | Critical / anomaly series              |
 | 6   | `#4D94FF` | `--viking-blue-500`     | Info / auxiliary series (electric-400) |
 | 7   | `#162544` | `--viking-charcoal-700` | Baseline / muted series                |
@@ -625,7 +625,7 @@ export const VIKING_SERIES_PRESETS = [
   "#2176ff",
   "#922b3e",
   "#2a9d8f",
-  "#c4a035",
+  "#d4af37",
   "#a83344",
   "#4d94ff",
   "#162544",

@@ -1,18 +1,21 @@
-<div class="page-inner-wrapper landing-container showcase-layout suite-landing">
-  <section class="suite-landing-hero viking-unified-hero" aria-labelledby="deml-brand">
-    <div class="hero-badge viking-unified-hero-badge">
+<div class="page-inner-wrapper landing-container showcase-layout suite-landing fj-landing">
+  <section
+    class="suite-landing-hero viking-unified-hero landing__hero"
+    aria-labelledby="deml-brand"
+  >
+    <div class="suite-landing-badge hero-badge viking-unified-hero-badge">
       <span class="badge-dot pulse-dot"></span>
       <span class="badge-text">Learning · Control plane · v{{ version }}</span>
     </div>
     <p class="hero-brand suite-landing-brand" id="deml-brand">DEML</p>
-    <h1 class="title viking-unified-hero-title" id="main-title">
+    <h1 class="title viking-unified-hero-title suite-landing-headline" id="main-title">
       Operational intelligence for resilient AI systems
     </h1>
     <p class="subtitle viking-unified-hero-lead suite-landing-lede">
       Learning library and Firebase-authenticated control plane for FORJD — identity, billing,
       consent, dashboards, and status surfaces with production-grade reliability.
     </p>
-    <div class="cta-group viking-unified-hero-actions suite-landing-actions">
+    <div class="cta-group viking-unified-hero-actions suite-landing-actions landing__actions">
       @if (isAuthenticated()) {
       <a
         routerLink="/dashboard"
@@ -60,19 +63,23 @@
     </div>
   </section>
 
-  <section class="quick-start-band" aria-labelledby="quick-start-title">
-    <header class="quick-start-header viking-unified-section-header">
-      <span class="section-tag">DEPLOYMENT SEQUENCE</span>
-      <h2 id="quick-start-title">Operational onboarding in four steps</h2>
-      <p>
+  <section class="quick-start-band suite-landing-section" aria-labelledby="quick-start-title">
+    <header class="quick-start-header suite-landing-section-header viking-unified-section-header">
+      <span class="section-tag suite-landing-tag">DEPLOYMENT SEQUENCE</span>
+      <h2 id="quick-start-title" class="suite-landing-section-title">
+        Operational onboarding in four steps
+      </h2>
+      <p class="suite-landing-section-lede">
         Connect, observe, and act. The platform sustains projections, enrichment, and threat scoring
         autonomously.
       </p>
     </header>
-    <ol class="quick-start-steps viking-column-layout viking-column-layout--4">
+    <ol
+      class="quick-start-steps suite-landing-steps landing__steps viking-column-layout viking-column-layout--4"
+    >
       @for (item of quickStartSteps; track item.step) {
-      <li class="quick-start-step viking-card">
-        <span class="step-number" aria-hidden="true">{{ item.step }}</span>
+      <li class="quick-start-step suite-landing-feature suite-card viking-card">
+        <span class="step-number suite-landing-step-num" aria-hidden="true">{{ item.step }}</span>
         <viking-app-icon [name]="item.icon" [size]="20" class="step-icon" />
         <h3>{{ item.title }}</h3>
         <p>{{ item.description }}</p>
@@ -95,29 +102,30 @@
 
   @for (cap of capabilities; track cap.title; let idx = $index) {
   <section
-    class="showcase-band viking-column-layout viking-column-layout--2 viking-column-layout--loose"
+    class="showcase-band suite-landing-band landing__band"
     [class.reversed]="idx % 2 === 1"
+    [attr.data-reversed]="idx % 2 === 1 ? 'true' : null"
     [attr.aria-labelledby]="'cap-' + idx"
   >
-    <div class="showcase-band-copy">
-      <span class="section-tag">{{ cap.tag }}</span>
-      <h2 [id]="'cap-' + idx">{{ cap.title }}</h2>
-      <p>{{ cap.description }}</p>
+    <div class="showcase-band-copy suite-landing-band-copy landing__band-copy">
+      <span class="section-tag suite-landing-tag">{{ cap.tag }}</span>
+      <h2 class="suite-landing-band-title" [id]="'cap-' + idx">{{ cap.title }}</h2>
+      <p class="fj-lede">{{ cap.description }}</p>
       @if (isAuthenticated() && cap.authedHref) {
-      <a [routerLink]="cap.authedHref" class="showcase-link">{{ cap.authedLabel }}</a>
+      <a [routerLink]="cap.authedHref" class="showcase-link suite-link">{{ cap.authedLabel }}</a>
       } @else if (cap.linkHref.startsWith('/')) {
-      <a [routerLink]="cap.linkHref" class="showcase-link">{{ cap.linkLabel }}</a>
+      <a [routerLink]="cap.linkHref" class="showcase-link suite-link">{{ cap.linkLabel }}</a>
       } @else {
-      <a [href]="cap.linkHref" class="showcase-link">{{ cap.linkLabel }}</a>
+      <a [href]="cap.linkHref" class="showcase-link suite-link">{{ cap.linkLabel }}</a>
       }
     </div>
     <div class="showcase-band-visual" aria-hidden="true">
-      <div class="visual-panel viking-card">
+      <div class="visual-panel suite-card viking-card">
         <div class="visual-panel-header">
           <viking-app-icon [name]="cap.icon" [size]="20" />
           <span>{{ cap.title }}</span>
         </div>
-        <div class="visual-metrics">
+        <div class="visual-metrics suite-landing-metric-list">
           @for (m of cap.metrics; track m.label) {
           <div class="visual-metric">
             <span class="metric-label">{{ m.label }}</span>
@@ -197,17 +205,19 @@
   </section>
 
   <section class="security-pillars-band" aria-labelledby="security-pillars-title">
-    <header class="security-pillars-header">
-      <span class="section-tag">DEFENSE IN DEPTH</span>
-      <h2 id="security-pillars-title">Perimeter security without operational friction</h2>
-      <p>
+    <header class="security-pillars-header suite-landing-section-header">
+      <span class="section-tag suite-landing-tag">DEFENSE IN DEPTH</span>
+      <h2 id="security-pillars-title" class="suite-landing-section-title">
+        Perimeter security without operational friction
+      </h2>
+      <p class="suite-landing-section-lede">
         Every layer — from command ingress to projection materialization — is encrypted, isolated,
         and audited. Operators focus on models; the platform sustains the perimeter.
       </p>
     </header>
-    <ul class="security-pillars-grid viking-column-layout viking-column-layout--2">
+    <ul class="security-pillars-grid suite-landing-grid landing__grid">
       @for (pillar of securityPillars; track pillar.label) {
-      <li class="security-pillar viking-card">
+      <li class="security-pillar suite-landing-feature suite-card viking-card">
         <viking-app-icon [name]="pillar.icon" [size]="20" />
         <strong>{{ pillar.label }}</strong>
         <span>{{ pillar.detail }}</span>

@@ -4,24 +4,33 @@ import type { Preview } from "@storybook/html";
 import "../dist/suite-fonts.css";
 import "../dist/suite-tokens.css";
 import "../dist/suite-components.css";
+import "../dist/suite-docs.css";
 import "../dist/design-tokens.css";
 import "../dist/viking-ui.css";
 import "./storybook.css";
 
 registerVikingElements();
 
+/**
+ * Pass 5 — lockstep with ui.forjd.co:
+ * shell + panel frame, void backgrounds, Foundation/Primitives/Product order.
+ */
 const wrapStory = (storyMarkup: unknown): string | Node => {
   if (typeof storyMarkup === "string") {
-    return `<div class="suite-story-shell viking-story-shell" data-theme="dark">${storyMarkup}</div>`;
+    return `<div class="suite-story-shell viking-story-shell fj-story-shell" data-theme="dark"><div class="suite-story-panel viking-story-panel fj-story-panel" data-size="compact">${storyMarkup}</div></div>`;
   }
   if (storyMarkup instanceof Node) {
     const shell = document.createElement("div");
-    shell.className = "suite-story-shell viking-story-shell";
+    shell.className = "suite-story-shell viking-story-shell fj-story-shell";
     shell.setAttribute("data-theme", "dark");
-    shell.appendChild(storyMarkup);
+    const panel = document.createElement("div");
+    panel.className = "suite-story-panel viking-story-panel fj-story-panel";
+    panel.setAttribute("data-size", "compact");
+    panel.appendChild(storyMarkup);
+    shell.appendChild(panel);
     return shell;
   }
-  return `<div class="suite-story-shell viking-story-shell" data-theme="dark"></div>`;
+  return `<div class="suite-story-shell viking-story-shell fj-story-shell" data-theme="dark"><div class="suite-story-panel viking-story-panel fj-story-panel" data-size="compact"></div></div>`;
 };
 
 const preview: Preview = {
@@ -29,6 +38,10 @@ const preview: Preview = {
     controls: {
       expanded: true,
       sort: "requiredFirst",
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
     },
     options: {
       storySort: {
@@ -76,8 +89,8 @@ const preview: Preview = {
         return wrapStory(story());
       } catch (error) {
         console.error("[viking-storybook] story render failed", error);
-        return `<div class="suite-story-shell viking-story-shell" data-theme="dark">
-          <div class="suite-story-panel viking-story-panel">
+        return `<div class="suite-story-shell viking-story-shell fj-story-shell" data-theme="dark">
+          <div class="suite-story-panel viking-story-panel fj-story-panel">
             <viking-callout tone="danger" heading="Story failed to render">
               Check the browser console for the component error.
             </viking-callout>

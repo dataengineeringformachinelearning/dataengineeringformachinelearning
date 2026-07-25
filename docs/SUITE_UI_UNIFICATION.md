@@ -66,66 +66,77 @@ Elevate existing strengths — no new primary brand hues:
 4. **Apps never own look.** FORJD `frontend/src/**` and DEML `frontend/`, `marketing/`, `backend/` may compose components and bind data only.
 5. **Mobile-first, snappy, SaaS-grade.** Touch ≥ 44px; tokenized motion; prefer CSS over JS animation.
 
-## Pass 1 — canonical tokens
+## Pass 1 — canonical tokens (locked 2026-07-25)
 
 | Artifact            | Path                                                                                                   |
 | ------------------- | ------------------------------------------------------------------------------------------------------ |
 | **Source of truth** | `packages/viking-ui/src/tokens/suite-tokens.css`                                                       |
+| **Role A lock**     | `packages/viking-ui/src/tokens/suite-tokens.lock.json`                                                 |
 | Usage docs          | `packages/viking-ui/src/tokens/SUITE_TOKENS.md`                                                        |
+| Gate                | `npm run suite:tokens` (also invoked by `suite:purity`)                                                |
 | Built               | `packages/viking-ui/dist/suite-tokens.css` (also prepended into `design-tokens.css` / `viking-ui.css`) |
 | FORJD vendor        | `frontend/libs/forjd-ui/src/lib/styles/suite-tokens.css` + `backend/static/suite-tokens.css`           |
 
 Prefix: **`--suite-*`** (canonical). `--viking-*` and `--fj-*` are compatibility aliases in the same file.
 Theme: **dark-first** void; light via `data-theme="light"` only.
+Roles: **A** chrome (locked) · **B** chart series · **C** PDF reports (out of product UI).
 Sync to FORJD (no npm style install): `cd frontend && npm run sync:suite`.
+Everything downstream consumes only these tokens — no hard-coded product colors/spacing outside the system.
 
-## Pass 2 — component libraries
+## Pass 2 — component libraries (locked 2026-07-25)
 
 | Artifact         | Path                                                                                 |
 | ---------------- | ------------------------------------------------------------------------------------ |
 | **Owned chrome** | `packages/viking-ui/src/tokens/suite-components.css`                                 |
 | Contracts        | `packages/viking-ui/src/tokens/SUITE_COMPONENTS.md`                                  |
+| Gate             | `npm run suite:components` (also via `suite:purity`)                                 |
 | Built            | `packages/viking-ui/dist/suite-components.css` (also folded into viking CSS bundles) |
 | FORJD vendor     | `frontend/libs/forjd-ui/src/lib/styles/suite-components.css` + `backend/static/`     |
 
 Dual selectors (`.suite-*` / `.viking-*` / `.fj-*`) keep DEML Angular, FORJD Angular, Storybook, and backend HTML shells on one look.
-Pattern: **headless behavior + owned suite classes**. forjd-ui selectors (`forjd-*`) mirror viking APIs (`viking-*`).
+Pattern: **headless behavior + owned suite classes**. forjd-ui selectors (`forjd-*`) mirror viking APIs (`viking-*`); adapters apply triple classes.
+Required primitives: button, input, textarea, select, checkbox, radio, switch, card, badge, dialog/sheet, tabs, table, nav, toast, skeleton, empty, avatar, separator, callout, progress, spinner, page shell.
 Load order: **suite-tokens → suite-components → suite-landing → app**.
+Aesthetic: SpaceX restraint · Palantir density · Porsche precision · Spartan/Flux composability — all token-only.
 
-## Pass 3 — product frontend lockstep
+## Pass 3 — product frontend lockstep (locked 2026-07-25)
 
-| Artifact          | Path                                                                              |
-| ----------------- | --------------------------------------------------------------------------------- |
-| **Landing stage** | `packages/viking-ui/src/tokens/suite-landing.css`                                 |
-| Contracts         | `packages/viking-ui/src/tokens/SUITE_LANDING.md`                                  |
-| deml.app          | `viking-app.css` includes suite bundle + `marketing-landing` / community surfaces |
-| forjd.co          | Composition-only landing; no app `landing.scss`                                   |
-| marketing `/`     | `landing-container` + suite hero/CTAs                                             |
+| Artifact          | Path                                                                          |
+| ----------------- | ----------------------------------------------------------------------------- |
+| **Landing stage** | `packages/viking-ui/src/tokens/suite-landing.css`                             |
+| Contracts         | `packages/viking-ui/src/tokens/SUITE_LANDING.md`                              |
+| Gate              | `npm run suite:landing` (also via `suite:purity`)                             |
+| deml.app `/`      | `product-home` composition + suite classes; `viking-app.css`                  |
+| forjd.co          | Composition-only `landing.html`; no app SCSS                                  |
+| marketing `/`     | `index.astro` + suite stage; atmosphere not doubled by marketing-landing.scss |
 
-Shared DNA: void atmosphere, electric command CTAs, brand → headline → lede → actions, section tags, suite cards.
+Shared DNA: void atmosphere (electric + gold + grid), live badge, brand → headline → lede → suite-btn CTAs, mono section tags, steps / bands / grids, suite cards.
 
-## Pass 4 — backend surfaces
+## Pass 4 — backend surfaces (locked 2026-07-25)
 
-| Artifact          | Path                                                                 |
-| ----------------- | -------------------------------------------------------------------- |
-| **Backend stage** | `packages/viking-ui/src/tokens/suite-backend.css`                    |
-| Contracts         | `packages/viking-ui/src/tokens/SUITE_BACKEND.md`                     |
-| backend.forjd.co  | Splash + `/docs` / `/redoc` load suite-tokens → components → backend |
-| backend.deml.app  | Splash + swagger/redoc via `viking-ui.css` (suite-backend folded in) |
+| Artifact          | Path                                                                         |
+| ----------------- | ---------------------------------------------------------------------------- |
+| **Backend stage** | `packages/viking-ui/src/tokens/suite-backend.css`                            |
+| Contracts         | `packages/viking-ui/src/tokens/SUITE_BACKEND.md`                             |
+| Gate              | `npm run suite:backend` (also via `suite:purity`)                            |
+| backend.forjd.co  | suite-fonts → tokens → components → backend; Inter at `/static/fonts/inter/` |
+| backend.deml.app  | Splash + swagger/redoc via `viking-ui.css` (suite-backend folded in)         |
 
-Quiet twin: perfectly centered logo splash, thin docs topbar, no product marketing chrome.
+Quiet twin: **perfectly centered** logo splash, sticky thin docs topbar, quiet Swagger chips, no marketing chrome. Same DNA as product — calmer and more focused.
 
-## Pass 5 — component documentation Storybooks
+## Pass 5 — component documentation Storybooks (locked 2026-07-25)
 
-| Artifact        | Path                                           |
-| --------------- | ---------------------------------------------- |
-| **Docs chrome** | `packages/viking-ui/src/tokens/suite-docs.css` |
-| Contracts       | `packages/viking-ui/src/tokens/SUITE_DOCS.md`  |
-| ui.deml.app     | `packages/viking-ui/.storybook`                |
-| ui.forjd.co     | `forjd/frontend/.storybook`                    |
+| Artifact        | Path                                                        |
+| --------------- | ----------------------------------------------------------- |
+| **Docs chrome** | `packages/viking-ui/src/tokens/suite-docs.css`              |
+| Contracts       | `packages/viking-ui/src/tokens/SUITE_DOCS.md`               |
+| Gate            | `npm run suite:docs` (also via `suite:purity`)              |
+| ui.deml.app     | `packages/viking-ui/.storybook` — brand `Suite UI · Viking` |
+| ui.forjd.co     | `forjd/frontend/.storybook` — brand `Suite UI · FORJD`      |
 
 Shared taxonomy: `Foundation/*` + `Primitives/*`. DEML-only extensions under `Product/*`.
-Both managers use suite dark branding. Story shells use `.suite-story-shell` dual-class frames.
+Both managers: void + electric (identical theme object).
+Story frame: `.suite-story-shell` + `.suite-story-panel` (triple-classed) + fullscreen void backgrounds.
 
 ## Component API parity (Pass 2)
 
@@ -146,34 +157,38 @@ Styles are **vendored** into FORJD (no npm theme package). Charts / metric-card 
 
 ## Rollout phases
 
-1. **Token lock** — done (`suite-tokens.css`).
-2. **Owned chrome CSS** — done (`suite-components.css`).
-3. **forjd-ui full primitive set** — done (suite class adapters + Storybook).
-4. **Frontend lockstep** — done (`suite-landing.css` on forjd.co / deml.app `/` / marketing `/`).
-5. **Backend lockstep** — done (`suite-backend.css`).
-6. **Storybook lockstep** — done (`suite-docs.css`, shared Foundation/Primitives taxonomy on ui.deml.app + ui.forjd.co).
+1. **Token lock** — done (`suite-tokens.css` + `suite-tokens.lock.json` + `suite:tokens` gate).
+2. **Owned chrome CSS** — done (`suite-components.css` + triple-prefix + `suite:components` gate).
+3. **forjd-ui full primitive set** — done (suite class adapters + Storybook; triple classes).
+4. **Frontend lockstep** — done (`suite-landing.css` + triple hosts + `suite:landing` gate; vivid hero DNA).
+5. **Backend lockstep** — done (`suite-backend.css` + fonts on FORJD backend + `suite:backend` gate).
+6. **Storybook lockstep** — done (`suite-docs.css` + dual managers + shell/panel frame + `suite:docs` gate).
 7. **Purity / enforcement** — done (`npm run suite:purity` + `enforce-theme.js`; Chromatic + `npm run sync:suite` after suite edits).
 
-## Pass 6 — cross-repo purity (done)
+## Pass 6 — cross-repo purity (locked 2026-07-25)
 
 | Check                             | Result                                                                    |
 | --------------------------------- | ------------------------------------------------------------------------- |
-| Hard-coded retired cyan `#00b4ff` | Absent in source; local FORJD build inlines `#2176ff`                     |
+| Hard-coded retired cyan `#00b4ff` | Absent in **source** (tests assert absence)                               |
 | External UI style packages        | viking-ui `dependencies: {}`; forjd-ui only Angular peers + tslib         |
-| One-off component SCSS            | Removed (`_typography.scss`, `status-list.scss` → suite CSS)              |
-| Google Fonts CDN                  | Removed from DEML CSP (self-hosted Inter only)                            |
+| One-off component SCSS            | Forbidden under deml pages / forjd app (gate fails if reintroduced)       |
+| Google Fonts CDN                  | Banned by purity scan; self-hosted Inter only                             |
+| Widget shadow tokens              | Void Role A + institutional gold (not legacy navy / `#c4a035`)            |
 | Suite file lockstep               | `sync:suite` vendors tokens/components/landing/backend/docs + Inter faces |
-| Gate                              | `npm run suite:purity` (DEML; compares sibling FORJD when present)        |
+| Gate                              | `npm run suite:purity` runs Pass 1–5 contracts + purity scan              |
+
+**Full remaining-difference table + deploy debt:** [SUITE_PURITY.md](./SUITE_PURITY.md)
 
 ### Remaining differences (intentional)
 
-| Surface difference                          | Why OK                                                                |
-| ------------------------------------------- | --------------------------------------------------------------------- |
-| Product names / logos                       | Brand marks may differ; chrome must not                               |
-| DEML `Product/*` Storybook stories          | Charts, suite header, status cards — DEML product depth               |
-| FORJD `Product/Panel` + `StatusList`        | Adapter demos; same suite classes                                     |
-| Light `theme-color` on deml.app / marketing | Products that support light mode; dark default remains `#0a0a0a`      |
-| Production deploy lag                       | Live forjd.co/backend may still show pre-suite cyan until next deploy |
+| Surface difference                          | Why OK                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------- |
+| Product names / logos                       | Brand marks may differ; chrome must not                              |
+| DEML `Product/*` Storybook stories          | Charts, suite header, status cards — DEML product depth              |
+| FORJD `Product/Panel` + `StatusList`        | Adapter demos; same suite classes                                    |
+| Light `theme-color` on deml.app / marketing | Products that support light mode; dark default remains `#0a0a0a`     |
+| Integration / Google logo brand hexes       | Third-party marks, not product chrome                                |
+| Production deploy lag                       | Live backend.forjd.co may still show pre-suite cyan until Fly deploy |
 
 ## Verification
 
