@@ -105,6 +105,8 @@ import { VikingIcon } from "../icon/icon";
         justify-content: center;
         width: var(--viking-control-height-sm);
         height: var(--viking-control-height-sm);
+        min-width: var(--viking-touch-target-min, 44px);
+        min-height: var(--viking-touch-target-min, 44px);
         border: 1px solid transparent;
         background: transparent;
         color: var(--viking-text-muted);

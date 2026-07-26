@@ -2,6 +2,7 @@
 
 **Suite mandate:** [docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md) — all suite hosts share one visual language.
 **Pass 1 tokens (canonical):** [`packages/viking-ui/src/tokens/suite-tokens.css`](packages/viking-ui/src/tokens/suite-tokens.css) + lock [`suite-tokens.lock.json`](packages/viking-ui/src/tokens/suite-tokens.lock.json) + usage [`SUITE_TOKENS.md`](packages/viking-ui/src/tokens/SUITE_TOKENS.md). Prefer `--suite-*`; `--viking-*` / `--fj-*` are aliases. Gate: `npm run suite:tokens`. FORJD vendors this file (no npm style install).
+**Craft checklist:** [`packages/viking-ui/VISUAL_STANDARDS.md`](packages/viking-ui/VISUAL_STANDARDS.md) — spacing, states, a11y, and noise rules for every PR.
 
 **Single source of truth** for visual design across all DEML surfaces:
 

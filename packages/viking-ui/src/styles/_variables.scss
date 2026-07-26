@@ -317,13 +317,13 @@
   --viking-chart-map-min-height: 24rem;
   --viking-chart-padding: var(--viking-space-2) var(--viking-space-2);
 
-  /* ── Breakpoints (mobile-first) ─────────────────────────────────────────── */
-  --viking-bp-sm: 640px;
+  /* ── Breakpoints (THEME.md mobile-first) ────────────────────────────────── */
+  --viking-bp-sm: 600px;
   --viking-bp-md: 768px;
-  --viking-bp-sidebar: 1024px;
+  --viking-bp-sidebar: 901px;
   --viking-bp-lg: 1024px;
-  --viking-bp-xl: 1280px;
-  --viking-bp-2xl: 1280px;
+  --viking-bp-xl: 1440px;
+  --viking-bp-2xl: 1920px;
 
   /* ── Motion ──────────────────────────────────────────────────────────────── */
   --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
@@ -364,9 +364,9 @@
   --viking-state-active-scale: 0.985;
   --viking-state-disabled-opacity: 0.48;
 
-  /* ── Controls (heights on 8px grid; touch target remains WCAG 44px) ────── */
+  /* ── Controls (40px dense desktop; ≥44px touch on mobile) ─────────────── */
   --viking-touch-target-min: 44px;
-  --viking-control-height: var(--viking-touch-target-min);
+  --viking-control-height: 40px;
   --viking-control-height-sm: 32px;
   --viking-control-height-xs: 24px;
   --viking-control-padding-x: var(--viking-space-2); /* 16px — on-grid */
