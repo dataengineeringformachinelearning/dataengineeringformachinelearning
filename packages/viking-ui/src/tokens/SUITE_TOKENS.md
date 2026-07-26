@@ -76,7 +76,10 @@ Use `--suite-series-1` … `--suite-series-8` (or `--viking-series-*`). Do not i
 
 ### Role C — PDF reports
 
-Out of product UI. Lives in FORJD `fjord-report-tokens.json` until explicitly promoted.
+Print/PDF only (not product UI CSS). Lives in FORJD `fjord-report-tokens.json`.
+**Promoted for suite chrome parity (2026-07-26):** report chrome uses suite
+primary `#2176ff` and institutional gold `#d4af37`; brand artwork blue `#0078ff`
+remains logos/mark-only. Product UI still consumes `suite-tokens.css` only.
 
 ---
 
