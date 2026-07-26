@@ -16,6 +16,7 @@ User = get_user_model()
 _PRO_ACTIONS = frozenset(
   {
     "export.write",
+    "export.download",
     "model.admin",
     "playbook.admin",
     "playbook.execute",
@@ -36,6 +37,7 @@ _PRO_ACTIONS = frozenset(
     ("vulnerability.write", {"Operator", "Security Admin"}),
     ("replay.write", {"Operator", "Security Admin"}),
     ("export.write", {"Operator", "Security Admin"}),
+    ("export.download", {"Operator", "Security Admin"}),
     ("playbook.execute", {"Operator", "Security Admin"}),
     ("status.admin", {"Security Admin"}),
     ("playbook.admin", {"Security Admin"}),

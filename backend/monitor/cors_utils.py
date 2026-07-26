@@ -35,29 +35,50 @@ def _platform_hostnames() -> frozenset[str]:
   return _PLATFORM_HOSTNAMES_PROD
 
 
-def _origin_hostname(origin: str) -> str | None:
+def _parse_origin(origin: str) -> tuple[str, str, int | None] | None:
+  """Return (scheme, hostname, port) or None when the Origin is unusable."""
   try:
     parsed = urlsplit(origin.strip())
-    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
-      return None
-    return parsed.hostname.rstrip(".").encode("idna").decode("ascii").lower()
+  except ValueError:
+    return None
+  scheme = (parsed.scheme or "").lower()
+  if scheme not in {"http", "https"} or not parsed.hostname:
+    return None
+  try:
+    host = parsed.hostname.rstrip(".").encode("idna").decode("ascii").lower()
   except (UnicodeError, ValueError):
     return None
+  return scheme, host, parsed.port
+
+
+def _scheme_port_allowed(scheme: str, host: str, port: int | None) -> bool:
+  """Credentialed CORS must bind scheme (and default ports) — not hostname alone."""
+  debug = bool(getattr(settings, "DEBUG", False))
+  if not debug:
+    return scheme == "https" and port in {None, 443}
+  if host in _PLATFORM_HOSTNAMES_DEV:
+    if scheme == "http":
+      return port in {None, 80, 4200, 5173, 8000, 8080}
+    return scheme == "https" and port in {None, 443}
+  return scheme == "https" and port in {None, 443}
 
 
 def _static_allowed_hostnames() -> set[str]:
   hosts: set[str] = set(_platform_hostnames())
   for origin in getattr(settings, "CORS_ALLOWED_ORIGINS", []) or []:
-    host = _origin_hostname(str(origin))
-    if host is not None:
-      hosts.add(host)
+    parsed = _parse_origin(str(origin))
+    if parsed is not None:
+      hosts.add(parsed[1])
   return hosts
 
 
 def is_domain_registered(origin: str) -> bool:
   """Allow platform/static origins, otherwise only verified ValidatedSite hosts."""
-  domain = _origin_hostname(origin)
-  if domain is None:
+  parsed = _parse_origin(origin)
+  if parsed is None:
+    return False
+  scheme, domain, port = parsed
+  if not _scheme_port_allowed(scheme, domain, port):
     return False
 
   if domain in _static_allowed_hostnames():

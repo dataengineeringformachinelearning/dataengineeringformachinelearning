@@ -259,6 +259,10 @@ def google_callback(request: HttpRequest) -> HttpResponse:
     user = User.objects.get(id=int(payload["uid"]), is_active=True)
   except (signing.BadSignature, signing.SignatureExpired, User.DoesNotExist, KeyError, ValueError):
     return redirect(_frontend_return_url("failed", "invalid_state"))
+  # Re-check write role at callback — the initiator may have been downgraded.
+  denied = _require_write_role(user)
+  if denied is not None:
+    return redirect(_frontend_return_url("failed", "role_forbidden"))
   account_id = getattr(getattr(user, "profile", None), "account_id", None)
   if account_id is None:
     return redirect(_frontend_return_url("failed", "account_required"))

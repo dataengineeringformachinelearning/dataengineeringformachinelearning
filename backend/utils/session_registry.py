@@ -67,9 +67,9 @@ def touch_session(session_id: str) -> bool:
 
 
 def is_session_valid(session_id: str, firebase_uid: str) -> bool:
-  """Fail-open when session_id empty; fail-closed on uid mismatch."""
+  """Fail closed: missing ids, uid mismatch, expiry, or registry errors reject."""
   if not session_id or not firebase_uid:
-    return True
+    return False
   try:
     from monitor.models import BrowserSession
 
@@ -79,8 +79,12 @@ def is_session_valid(session_id: str, firebase_uid: str) -> bool:
       expires_at__gt=timezone.now(),
     ).exists()
   except Exception:
-    # DB blip: fail-open so Firebase JWT alone can keep the UI up.
-    return True
+    # Revocation integrity beats availability: never treat registry failure as valid.
+    logger.exception(
+      "is_session_valid registry failure uid_prefix=%s",
+      (firebase_uid or "")[:8] or "-",
+    )
+    return False
 
 
 def list_sessions(firebase_uid: str) -> list[dict[str, Any]]:

@@ -163,19 +163,18 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
       request.firebase_token = decoded_token
       request.authentication_type = "firebase"
 
-      session_id = request.META.get("HTTP_X_DEML_SESSION_ID")
-      firebase_uid = decoded_token.get("uid")
-      if session_id and firebase_uid:
+      session_id = str(request.META.get("HTTP_X_DEML_SESSION_ID") or "").strip()
+      firebase_uid = str(decoded_token.get("uid") or "")
+      # Auth handshake may mint/bind the registry entry before the header exists.
+      # All other Firebase-authenticated routes require a live registered session
+      # so omitting X-DEML-Session-Id cannot bypass server-side revocation.
+      is_auth_handshake = request.path.startswith("/api/v1/auth/")
+      if not is_auth_handshake:
         from utils.session_registry import is_session_valid, touch_session
 
-        # Allow auth handshake endpoints (/auth/user, /auth/sessions register) to
-        # proceed even if the server-side session_id is not yet registered.
-        # The register endpoint creates the entry; other calls require a valid one.
-        # This prevents chicken-egg 401s on initial bindServerSession.
-        is_auth_handshake = request.path.startswith("/api/v1/auth/")
-        if not is_auth_handshake and not is_session_valid(session_id, firebase_uid):
+        if not session_id or not firebase_uid or not is_session_valid(session_id, firebase_uid):
           logger.warning(
-            "Firebase session revoked or expired uid_prefix=%s",
+            "Firebase session missing, revoked, or expired uid_prefix=%s",
             (firebase_uid or "")[:8] or "-",
           )
           return JsonResponse({"detail": "Session revoked or expired"}, status=401)
@@ -212,6 +211,18 @@ class HeadlessRateLimitMiddleware(MiddlewareMixin):
       return None
 
     authenticated = bool(getattr(request.user, "is_authenticated", False))
+    # --- Anonymous widget telemetry writes (tighter bucket than status reads) ---
+    if (
+      not authenticated
+      and request.method == "POST"
+      and (request.path.rstrip("/") or "/") == "/api/v1/system-status/widget-telemetry"
+    ):
+      return self._consume_scopes(
+        request,
+        scope_keys=(hashed_scope("ip", get_client_ip(request) or "unknown", "public_anon_write"),),
+        capacity=int(getattr(settings, "DEML_PUBLIC_ANON_WRITE_RPM", 20)),
+      )
+
     # --- Anonymous public status directory (IP-hashed) ---
     if not authenticated and _is_public_status_path(request.path):
       return self._consume_scopes(

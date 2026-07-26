@@ -46,6 +46,8 @@ ACTION_POLICIES: Final[dict[str, ActionPolicy]] = {
   "vulnerability.write": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "replay.write": ActionPolicy(OPERATOR_ROLES),
   "export.write": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
+  # Bulk export artifacts are privileged even when the create call already ran.
+  "export.download": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "playbook.execute": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "projection.run": ActionPolicy(OPERATOR_ROLES, requires_pro=True),
   "session.write": ActionPolicy(OPERATOR_ROLES),
