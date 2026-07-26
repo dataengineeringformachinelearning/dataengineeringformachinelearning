@@ -1,9 +1,0 @@
-*out
-*logs
-*actions
-*notifications
-*tools
-plugins
-.tmp_trunk.yaml
-.tmp.yaml
-tmp

@@ -6,7 +6,7 @@
     "node": "^22.22.3 || ^24.15.0 || ^26.0.0"
   },
   "scripts": {
-    "prebuild": "node -e \"if (!process.env.VERCEL) require('child_process').execSync('npm run build:viking-ui:package --prefix ..', {stdio:'inherit'})\"",
+    "prebuild": "node -e \"console.log('marketing: using published @dataengineeringformachinelearning/viking-ui')\"",
     "dev": "astro dev",
     "build": "astro build && node scripts/postbuild.mjs",
     "test": "node --test --experimental-strip-types src/lib/*.spec.ts",

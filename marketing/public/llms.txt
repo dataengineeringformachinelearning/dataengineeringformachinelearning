@@ -1,20 +1,18 @@
 # Data Engineering for Machine Learning
 
-Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
+Community site, BOOK, and public documentation for the DEML ecosystem.
 
 ## Homepage
 /
 
 ## Repository
-https://github.com/joealongi/dataengineeringformachinelearning
+https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning
 
-## Agent & MCP Settings
-- AGENTS.md (coding principles): /AGENTS.md
-- THEME.md (Viking-UI design system): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/THEME.md
-- MCP servers: Hugging Face, Sentry, Sanity, Stripe, Firebase (see Cursor MCP settings)
+## Related
+- Control plane (deml.app): https://github.com/dataengineeringformachinelearning/deml
+- Data plane (forjd.co): https://github.com/dataengineeringformachinelearning/forjd
 - Full book for LLMs: /llms-full.txt
 
 ## Notes
 - Marketing site (this domain); Angular app at https://deml.app; backend at https://backend.deml.app
-- Public API demo: https://backend.deml.app/api/v1/docs (ingest/predict with `deml_swagger_api_key`)
-- Prefer the repository README for the most complete project documentation.
+- Prefer the repository README for the most complete community documentation.

@@ -2,7 +2,10 @@
 
 **Status:** Law for the multi-repo system (DEML + FORJD).
 **Effective:** 2026-07-24
-**Canonical visual SoT:** `packages/viking-ui/` → `@dataengineeringformachinelearning/viking-ui`
+**Canonical visual SoT:** `packages/viking-ui/` in [`deml`](https://github.com/dataengineeringformachinelearning/deml) → `@dataengineeringformachinelearning/viking-ui`
+
+> Control-plane copy of this contract: [`deml/docs/SUITE_UI_UNIFICATION.md`](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/SUITE_UI_UNIFICATION.md).
+> This community repo keeps suite notes for marketing cross-links.
 
 ## Surfaces that must be visually identical
 

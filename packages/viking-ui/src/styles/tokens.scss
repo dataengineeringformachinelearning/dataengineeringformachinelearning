@@ -1,7 +1,0 @@
-/*! DEML Design Tokens
- *  Suite product chrome: ../tokens/suite-tokens.css (--suite-* + aliases)
- *  Primitive scales / charts: _variables.scss + _series-colors.scss
- *  Build: npm run build:viking-ui:package */
-@use 'variables';
-@use 'series-colors';
-@use 'legacy-aliases';

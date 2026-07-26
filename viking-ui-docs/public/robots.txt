@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://ui.deml.app/sitemap-index.xml

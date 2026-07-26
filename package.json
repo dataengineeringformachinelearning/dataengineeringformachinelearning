@@ -1,67 +1,17 @@
 {
-  "name": "deml-platform",
+  "name": "dataengineeringformachinelearning",
   "private": true,
-  "description": "DEML monorepo workspace scripts",
+  "description": "DEML community site, BOOK, and public documentation",
   "packageManager": "npm@11.18.0",
   "workspaces": [
-    "packages/*",
-    "frontend",
-    "marketing",
-    "viking-ui-docs",
-    "infrastructure/studio"
+    "marketing"
   ],
   "engines": {
     "node": "^22.22.3 || ^24.15.0 || ^26.0.0"
   },
   "scripts": {
-    "sync": "python scripts/deml_tooling.py sync --all",
-    "sync:content": "python scripts/deml_tooling.py sync --content",
-    "sync:design-system": "python scripts/deml_tooling.py sync --design-system",
-    "sync:widgets": "python scripts/deml_tooling.py sync --widgets",
-    "sync:viking-ui:version": "node scripts/sync_viking_ui_version.mjs --write --lockfiles",
-    "check:viking-ui:version": "node scripts/sync_viking_ui_version.mjs --check",
-    "validate:viking-ui:assets": "node scripts/validate_viking_ui_assets.mjs",
-    "hygiene": "python scripts/deml_tooling.py hygiene",
-    "hygiene:cache": "python scripts/deml_tooling.py hygiene --cache",
-    "theme:clean": "node scripts/enforce-theme.js",
-    "theme:clean:apply": "node scripts/enforce-theme.js --apply",
-    "suite:tokens": "node packages/viking-ui/scripts/check-suite-tokens.mjs",
-    "suite:components": "node packages/viking-ui/scripts/check-suite-components.mjs",
-    "suite:landing": "node packages/viking-ui/scripts/check-suite-landing.mjs",
-    "suite:backend": "node packages/viking-ui/scripts/check-suite-backend.mjs",
-    "suite:docs": "node packages/viking-ui/scripts/check-suite-docs.mjs",
-    "suite:purity": "node scripts/check-suite-purity.mjs",
-    "suite:hardcoded": "node scripts/check-hardcoded-styles.mjs",
-    "quality": "python scripts/deml_tooling.py quality --fast",
-    "quality:fix": "python scripts/deml_tooling.py quality --fast --fix",
-    "quality:full": "python scripts/deml_tooling.py quality --ci",
-    "quality:push": "python scripts/deml_tooling.py quality --full",
-    "build:viking-ui": "npm run build:viking-ui --prefix frontend",
-    "build:viking-ui:package": "npm run build --workspace @dataengineeringformachinelearning/viking-ui",
-    "build:viking-ui:universal": "npm run build:viking-ui:package",
-    "changeset": "npx -y @changesets/cli",
-    "version:viking-ui": "node scripts/sync_viking_ui_version.mjs --changesets",
-    "publish:viking-ui": "npm run ci:viking-ui && npx -y @changesets/cli publish",
-    "pack:viking-ui": "npm run pack:check --workspace @dataengineeringformachinelearning/viking-ui",
-    "test:viking-ui:package": "npm run build:viking-ui:package && npm run test --workspace @dataengineeringformachinelearning/viking-ui",
-    "test:viking-ui:visual": "npm run test:visual --workspace viking-ui-docs",
-    "ci:viking-ui": "npm run build:viking-ui:package && npm run test --workspace @dataengineeringformachinelearning/viking-ui && npm run build:viking-ui-docs",
-    "build:viking-ui-docs": "npm run build --prefix viking-ui-docs",
-    "start:viking-ui-docs": "npm run start --prefix viking-ui-docs",
-    "start": "npm run start:viking-ui-docs",
-    "deploy:viking-ui-storybook": "npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui && echo 'Public Storybook hosting (ui.deml.app / deml-ui) is retired. Use local storybook or Chromatic.'",
-    "deploy:viking-ui-docs": "npm run deploy:viking-ui-storybook",
-    "test:visual": "playwright test",
-    "chromatic": "chromatic --playwright",
-    "chromatic:ci": "npm run test:visual && chromatic --playwright --exit-zero-on-changes",
-    "install-hooks": "python scripts/deml_tooling.py install-hooks && uvx pre-commit install --hook-type pre-commit --hook-type pre-push"
-  },
-  "devDependencies": {
-    "@chromatic-com/playwright": "^0.14.10",
-    "@playwright/test": "^1.52.0",
-    "chromatic": "^18.0.1"
-  },
-  "overrides": {
-    "brace-expansion": "5.0.8"
+    "dev": "npm run dev --workspace marketing",
+    "build": "npm run build --workspace marketing",
+    "sync:content": "python scripts/sync_content.py"
   }
 }

@@ -101,69 +101,55 @@ def sync_readme():
     if whitepaper_content:
       llms_full_content += "\n\n" + whitepaper_content
 
+    # Community repo: marketing only (control-plane frontend lives in deml)
     marketing_llms_full_path = os.path.join(root_dir, "marketing", "public", "llms-full.txt")
     os.makedirs(os.path.dirname(marketing_llms_full_path), exist_ok=True)
-    for path in [llms_full_path, marketing_llms_full_path]:
+    llms_full_targets = [marketing_llms_full_path]
+    if os.path.isdir(os.path.dirname(llms_full_path)):
+      llms_full_targets.append(llms_full_path)
+    for path in llms_full_targets:
       with open(path, "w", encoding="utf-8") as f:
         f.write(llms_full_content)
 
     print("Successfully synced markdown content to:")
-    print(f" - {llms_full_path} & {marketing_llms_full_path}")
+    for path in llms_full_targets:
+      print(f" - {path}")
     print(f" - {marketing_page_md_path}")
     print(f" - {marketing_readme_md_path}")
     if whitepaper_content:
       print(f" - {marketing_whitepaper_md_path}")
 
-    # Sync llms.txt for frontend and marketing (site-specific headers)
+    # --- llms.txt (marketing; optional frontend if present) ---
     marketing_llms_path = os.path.join(root_dir, "marketing", "public", "llms.txt")
-    frontend_llms = """# Data Engineering for Machine Learning (DEML APP)
-
-Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
-
-## Homepage
-/
-
-## Repository
-https://github.com/joealongi/dataengineeringformachinelearning
-
-## Agent & MCP Settings
-- AGENTS.md (coding principles): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/AGENTS.md
-- THEME.md (Viking-UI design system): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/THEME.md
-- MCP servers: Hugging Face, Sentry, Sanity, Stripe, Firebase (see Cursor MCP settings)
-- Full book for LLMs: /llms-full.txt
-
-## Notes
-- This site is the DEML Angular application (deml.app).
-- Backend API: https://backend.deml.app/api/v1/docs
-- Marketing site: https://dataengineeringformachinelearning.com
-"""
     marketing_llms = """# Data Engineering for Machine Learning
 
-Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
+Community site, BOOK, and public documentation for the DEML ecosystem.
 
 ## Homepage
 /
 
 ## Repository
-https://github.com/joealongi/dataengineeringformachinelearning
+https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning
 
-## Agent & MCP Settings
-- AGENTS.md (coding principles): /AGENTS.md
-- THEME.md (Viking-UI design system): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/THEME.md
-- MCP servers: Hugging Face, Sentry, Sanity, Stripe, Firebase (see Cursor MCP settings)
+## Related
+- Control plane (deml.app): https://github.com/dataengineeringformachinelearning/deml
+- Data plane (forjd.co): https://github.com/dataengineeringformachinelearning/forjd
 - Full book for LLMs: /llms-full.txt
 
 ## Notes
 - Marketing site (this domain); Angular app at https://deml.app; backend at https://backend.deml.app
-- Public API demo: https://backend.deml.app/api/v1/docs (ingest/predict with `deml_swagger_api_key`)
-- Prefer the repository README for the most complete project documentation.
+- Prefer the repository README for the most complete community documentation.
 """
-    for path, content in [(llms_path, frontend_llms), (marketing_llms_path, marketing_llms)]:
-      with open(path, "w", encoding="utf-8") as f:
-        f.write(content)
-    print(f" - {llms_path} & {marketing_llms_path}")
+    os.makedirs(os.path.dirname(marketing_llms_path), exist_ok=True)
+    with open(marketing_llms_path, "w", encoding="utf-8") as f:
+      f.write(marketing_llms)
+    print(f" - {marketing_llms_path}")
+    if os.path.isdir(os.path.dirname(llms_path)):
+      with open(llms_path, "w", encoding="utf-8") as f:
+        f.write(marketing_llms)
+      print(f" - {llms_path}")
 
-    # Sync AGENTS.md for LLM discoverability on marketing site
+    # Sync AGENTS.md when present (control-plane AGENTS lives in deml)
     agents_src = os.path.join(root_dir, "AGENTS.md")
     agents_dest = os.path.join(root_dir, "marketing", "public", "AGENTS.md")
     if os.path.exists(agents_src):
@@ -175,6 +161,7 @@ https://github.com/joealongi/dataengineeringformachinelearning
 
   except Exception as e:
     print(f"Error syncing markdown content: {e}")
+    raise
 
 
 def sync_version():
@@ -182,22 +169,31 @@ def sync_version():
   root_dir = os.path.dirname(script_dir)
 
   version_path = os.path.join(root_dir, "version.txt")
-  frontend_version_path = os.path.join(root_dir, "frontend", "version.txt")
-  backend_version_path = os.path.join(root_dir, "backend", "version.txt")
+  if not os.path.exists(version_path):
+    print("sync_content: version.txt absent — skip (control-plane versions live in deml)")
+    return
 
-  if os.path.exists(version_path):
-    try:
-      with open(version_path, encoding="utf-8") as f:
-        version_data = f.read().strip()
+  targets = [
+    p
+    for p in (
+      os.path.join(root_dir, "frontend", "version.txt"),
+      os.path.join(root_dir, "backend", "version.txt"),
+    )
+    if os.path.isdir(os.path.dirname(p))
+  ]
+  if not targets:
+    print("sync_content: no frontend/backend trees — skip version fan-out")
+    return
 
-      for p in [frontend_version_path, backend_version_path]:
-        with open(p, "w", encoding="utf-8") as f:
-          f.write(f"{version_data}\n")
-      print(f"Successfully synced version {version_data} to:")
-      print(f" - {frontend_version_path}")
-      print(f" - {backend_version_path}")
-    except Exception as e:
-      print(f"Error syncing version.txt: {e}")
+  try:
+    with open(version_path, encoding="utf-8") as f:
+      version_data = f.read().strip()
+    for p in targets:
+      with open(p, "w", encoding="utf-8") as f:
+        f.write(f"{version_data}\n")
+      print(f"Successfully synced version {version_data} to {p}")
+  except Exception as e:
+    print(f"Error syncing version.txt: {e}")
 
 
 def sync_search_index():
@@ -206,19 +202,24 @@ def sync_search_index():
   page_md = os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md")
   dest_dir = os.path.join(root_dir, "marketing", "public", "assets", "content")
   dest = os.path.join(dest_dir, "search-index.json")
+  builder = os.path.join(script_dir, "build_search_index.py")
 
-  if os.path.exists(page_md):
-    import sys
-
-    if script_dir not in sys.path:
-      sys.path.insert(0, script_dir)
-    from build_search_index import write_search_index
-
-    count = write_search_index(page_md, dest)
-    print(f"Rebuilt search-index.json ({count} sections) at {dest}")
-  else:
+  if not os.path.exists(page_md):
     print(f"search-index source missing: {page_md}")
     return
+  if not os.path.exists(builder):
+    print("sync_content: build_search_index.py absent — skip search index (lives in deml)")
+    return
+
+  import sys
+
+  if script_dir not in sys.path:
+    sys.path.insert(0, script_dir)
+  from build_search_index import write_search_index
+
+  os.makedirs(dest_dir, exist_ok=True)
+  count = write_search_index(page_md, dest)
+  print(f"Rebuilt search-index.json ({count} sections) at {dest}")
 
 
 if __name__ == "__main__":
@@ -229,21 +230,14 @@ if __name__ == "__main__":
   readme_path = os.path.join(root_dir, "README.md")
   version_path = os.path.join(root_dir, "version.txt")
   agents_path = os.path.join(root_dir, "AGENTS.md")
-
   whitepaper_path = os.path.join(root_dir, "WHITEPAPER.md")
 
   content_dests = [
     os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md"),
     os.path.join(root_dir, "marketing", "src", "assets", "content", "readme.md"),
     os.path.join(root_dir, "marketing", "src", "assets", "content", "whitepaper.md"),
-    os.path.join(root_dir, "frontend", "public", "llms-full.txt"),
     os.path.join(root_dir, "marketing", "public", "llms-full.txt"),
-    os.path.join(root_dir, "frontend", "public", "llms.txt"),
     os.path.join(root_dir, "marketing", "public", "llms.txt"),
-    os.path.join(root_dir, "marketing", "public", "AGENTS.md"),
-    os.path.join(root_dir, "marketing", "public", "assets", "content", "search-index.json"),
-    os.path.join(root_dir, "frontend", "version.txt"),
-    os.path.join(root_dir, "backend", "version.txt"),
   ]
 
   if _needs_sync([book_path, readme_path, agents_path, whitepaper_path], content_dests):
@@ -252,7 +246,4 @@ if __name__ == "__main__":
   else:
     print("sync_content: sources unchanged — skipping BOOK/README/AGENTS propagation")
 
-  if _needs_sync([version_path], content_dests[-2:]):
-    sync_version()
-  else:
-    print("sync_content: version.txt unchanged — skipping version sync")
+  sync_version()
