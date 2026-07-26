@@ -9,10 +9,17 @@ from uuid import UUID, uuid4
 import pytest
 from django.test import override_settings
 
-from forjd.client import ForjdClient, ForjdError
+from forjd.client import ForjdClient, ForjdError, reset_forjd_circuit_breaker
 
 TENANT_ID: Final[str] = "2af44174-6332-4f37-8129-684ed84a87dc"
 SERVICE_TOKEN: Final[str] = "fjsvc_deadbeef_test-secret"  # pragma: allowlist secret
+
+
+@pytest.fixture(autouse=True)
+def _reset_forjd_breaker() -> None:
+  reset_forjd_circuit_breaker()
+  yield
+  reset_forjd_circuit_breaker()
 
 
 class _FakeResponse:
@@ -449,3 +456,60 @@ async def test_request_id_shape_is_validated_before_network() -> None:
 
   assert error.value.status == 400
   assert session.requests == []
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+  FORJD_READ_RETRY_ATTEMPTS=1,
+)
+async def test_circuit_breaker_opens_after_consecutive_transport_failures() -> None:
+  class _BoomSession(_FakeSession):
+    def request(self, *args: Any, **kwargs: Any) -> Any:
+      raise TimeoutError("upstream timeout")
+
+  with (
+    patch("forjd.client.aiohttp.ClientSession", return_value=_BoomSession()),
+    patch("forjd.client._BREAKER_FAILURE_THRESHOLD", 2),
+  ):
+    with pytest.raises(ForjdError) as first:
+      await ForjdClient().proxy("GET", "/health")
+    assert first.value.status == 503
+
+    with pytest.raises(ForjdError) as second:
+      await ForjdClient().proxy("GET", "/health")
+    assert second.value.status == 503
+
+    with pytest.raises(ForjdError, match="circuit open") as open_err:
+      await ForjdClient().proxy("GET", "/health")
+    assert open_err.value.status == 503
+
+
+@pytest.mark.asyncio
+@override_settings(
+  FORJD_API_URL="https://forjd.example",
+  FORJD_SERVICE_TOKEN=SERVICE_TOKEN,
+  FORJD_TENANT_ID=TENANT_ID,
+  FORJD_READ_RETRY_ATTEMPTS=1,
+)
+async def test_circuit_breaker_resets_on_success() -> None:
+  session = _SequenceSession(
+    [
+      _FakeResponse(status=503),
+      _FakeResponse(status=200, body=b'{"ok": true}'),
+      _FakeResponse(status=200, body=b'{"ok": true}'),
+    ]
+  )
+  with (
+    patch("forjd.client.aiohttp.ClientSession", return_value=session),
+    patch("forjd.client._BREAKER_FAILURE_THRESHOLD", 3),
+  ):
+    first = await ForjdClient().proxy("GET", "/health")
+    assert first.status == 503
+    second = await ForjdClient().proxy("GET", "/health")
+    assert second.status == 200
+    # A later success path clears the failure streak — next call is not blocked.
+    third = await ForjdClient().proxy("GET", "/health")
+    assert third.status == 200

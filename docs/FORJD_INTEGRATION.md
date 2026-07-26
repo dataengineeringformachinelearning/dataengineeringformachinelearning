@@ -230,6 +230,8 @@ lifecycle jobs, every 30s) and `daily_maintenance --watch` (Stripe
 `sync_subscriptions` entitlement sweep + retention purge of expired browser
 sessions, auth-handoff tokens, and stale rate-limit buckets, daily).
 
+See also the suite connection map: [`CONNECTION_MAP.md`](CONNECTION_MAP.md).
+
 ## Operator product paths (Angular → Django → FORJD)
 
 | Surface       | DEML route family                         | Upstream FORJD ownership                                     |
@@ -238,12 +240,13 @@ sessions, auth-handoff tokens, and stale rate-limit buckets, daily).
 | Analytics     | `/analytics` + SSE live                   | Projections, ML scores, incidents/playbooks via BFF adapters |
 | Status        | `/status`, `/explore`, system-status APIs | `/api/v1/status/*` (published pages world-readable via BFF)  |
 | Settings      | `/settings`                               | DEML Postgres only (billing/consent/identity); no FORJD UI   |
-| Sealed ingest | `/api/v1/ingest` (+ batch)                | FastAPI ingest → Prefect/Pathway/Rust sealed pipeline        |
+| Sealed ingest | `/api/v1/ingest` (+ batch)                | FastAPI ingest → Prefect + Rust sealed pipeline (Python soft fallback) |
 
 FORJD internals that DEML never runs locally: **Prefect 3** (YAML workflows),
-**Pathway** (continuous/incremental streams), **Polars LazyFrames** (finite
-batch only), and the Rust **`forjd-engine`** sealed hot path. Do not document
-Airflow, DuckDB, or Polars-as-streaming on the DEML side.
+the Rust **`forjd-engine`** sealed hot path (dependency-free Python soft
+fallback when the engine is down), and **Polars LazyFrames** (finite batch
+only). Pathway and Airflow are **not** in the live stack — do not document
+them as active dependencies.
 
 ## Live updates (Supabase Realtime → SSE bridge)
 

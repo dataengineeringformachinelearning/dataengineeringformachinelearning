@@ -7,6 +7,7 @@ import json
 import logging
 import random
 import re
+import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
@@ -45,6 +46,40 @@ _SAFE_RESPONSE_HEADERS: Final[dict[str, str]] = {
 }
 REQUEST_ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"\A[A-Za-z0-9._-]{8,128}\Z")
 _CONNECTOR_ATTRIBUTE: Final[str] = "_deml_forjd_connector"
+# Simple host-level breaker — trip after consecutive transport/5xx failures.
+_BREAKER_FAILURE_THRESHOLD: Final[int] = 5
+_BREAKER_COOLDOWN_SECONDS: Final[float] = 20.0
+_breaker_failures: int = 0
+_breaker_open_until: float = 0.0
+
+
+def _breaker_is_open() -> bool:
+  return time.monotonic() < _breaker_open_until
+
+
+def _breaker_record_success() -> None:
+  global _breaker_failures, _breaker_open_until
+  _breaker_failures = 0
+  _breaker_open_until = 0.0
+
+
+def _breaker_record_failure() -> None:
+  global _breaker_failures, _breaker_open_until
+  _breaker_failures += 1
+  if _breaker_failures >= _BREAKER_FAILURE_THRESHOLD:
+    _breaker_open_until = time.monotonic() + _BREAKER_COOLDOWN_SECONDS
+    logger.warning(
+      "forjd_circuit_open failures=%s cooldown_seconds=%s",
+      _breaker_failures,
+      _BREAKER_COOLDOWN_SECONDS,
+    )
+
+
+def reset_forjd_circuit_breaker() -> None:
+  """Test helper — clear breaker state between cases."""
+  global _breaker_failures, _breaker_open_until
+  _breaker_failures = 0
+  _breaker_open_until = 0.0
 
 
 def is_forjd_service_token(token: str) -> bool:
@@ -335,6 +370,8 @@ class ForjdClient:
       raise ForjdError(400, "FORJD request path must be an absolute API path")
     if query_string.startswith("?"):
       raise ForjdError(400, "FORJD query_string must not include a leading question mark")
+    if _breaker_is_open():
+      raise ForjdError(503, "FORJD circuit open — retry shortly")
     if self.use_service_auth:
       self._validate_request_tenants(
         body=body,
@@ -422,6 +459,10 @@ class ForjdClient:
             result.status,
             result.headers.get("X-Request-ID", ""),
           )
+          if attempt >= attempts or verb not in _RETRYABLE_METHODS:
+            _breaker_record_failure()
+          return result
+        _breaker_record_success()
         return result
       except ForjdError:
         raise
@@ -440,8 +481,10 @@ class ForjdClient:
           if delay > 0:
             await asyncio.sleep(delay)
           continue
+        _breaker_record_failure()
         raise ForjdError(503, "FORJD is unavailable") from exc
 
+    _breaker_record_failure()
     raise ForjdError(503, "FORJD is unavailable") from last_error
 
   async def request_json(

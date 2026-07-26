@@ -61,7 +61,7 @@ security model and build instructions.
 ## Core Capabilities
 
 - **Sealed FORJD projections**: Django BFF forwards sealed telemetry with tenant-bound `fjsvc_` (browser never holds service tokens); FORJD materializes durable read models
-- **FORJD data plane stack**: FastAPI + Prefect 3 + Pathway streams + Polars batch LazyFrames + Rust `forjd-engine` (DEML does not run Pathway/Airflow)
+- **FORJD data plane stack**: FastAPI + Prefect 3 + Rust sealed hot path (+ Python soft fallback) + Polars batch LazyFrames (DEML does not run stream workers or Airflow)
 - **High-Throughput Ingestion**: Sub-second sealed dispatch with durable FORJD outbox semantics
 - **Live dashboards**: Angular 22+ Signals + Django SSE (`/api/v1/analytics/live`) — `{count, cursor}` ticks only; `latestEvent` / `degraded` callouts; not Firestore
 - **Account Isolation**: Strict tenant separation without cross-account data exposure
