@@ -9,9 +9,13 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import {
+  ContinuityHealthSignal,
+  continuityFromReady,
+} from '../../core/continuity-health';
 import { AuthService } from '../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 
 type MetricKey = 'p99' | 'uptime' | 'requests' | 'threats' | 'static';
 
@@ -60,7 +64,7 @@ export class ProductHome implements OnInit {
   protected readonly requestsValue = signal('—');
   protected readonly threatsValue = signal('—');
   /** Shared continuity signal: DEML `/api/v1/ready` (+ soft FORJD health). */
-  protected readonly controlPlaneReady = signal<'ok' | 'degraded' | 'unreachable'>('ok');
+  protected readonly controlPlaneReady = signal<ContinuityHealthSignal>('checking');
 
   protected readonly quickStartSteps = [
     {
@@ -177,18 +181,13 @@ export class ProductHome implements OnInit {
   private async probeControlPlaneReady(): Promise<void> {
     try {
       const ready = await firstValueFrom(
-        this.http.get<{ forjd_health?: string; status?: string }>(
-          `${this.backendUrl}/api/v1/ready`,
-        ),
+        this.http
+          .get<{ forjd_health?: string; mode?: string; status?: string }>(
+            `${this.backendUrl}/api/v1/ready`,
+          )
+          .pipe(timeout(2500)),
       );
-      const forjd = (ready.forjd_health || 'ok').toLowerCase();
-      if (forjd === 'ok') {
-        this.controlPlaneReady.set('ok');
-      } else if (forjd === 'degraded') {
-        this.controlPlaneReady.set('degraded');
-      } else {
-        this.controlPlaneReady.set('unreachable');
-      }
+      this.controlPlaneReady.set(continuityFromReady(ready));
     } catch {
       this.controlPlaneReady.set('unreachable');
       console.warn('[product-home] control-plane /ready unreachable');

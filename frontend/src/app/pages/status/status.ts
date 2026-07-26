@@ -38,15 +38,22 @@ import { SanityService } from '../../services/sanity.service';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { resolveUptimeHistory } from '../../core/utils/uptime.utils';
 
-import { timeout } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { ConnectivityService } from '../../services/connectivity.service';
 import {
+  FORJD_FALLBACK_BODY,
   OFFLINE_BODY,
   OFFLINE_HEADING,
   STATUS_CONNECT_BODY,
   STATUS_CONNECT_HEADING,
   STATUS_RETRY_LABEL,
 } from '../../core/continuity-copy';
+import {
+  ContinuityHealthSignal,
+  continuityFromReady,
+} from '../../core/continuity-health';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-status',
@@ -74,12 +81,17 @@ export class Status implements OnInit {
   private metaService = inject(Meta);
   public sanityService = inject(SanityService);
   private injector = inject(Injector);
+  private http = inject(HttpClient);
 
   readonly connectHeading = STATUS_CONNECT_HEADING;
   readonly connectBody = STATUS_CONNECT_BODY;
   readonly offlineHeading = OFFLINE_HEADING;
   readonly offlineBody = OFFLINE_BODY;
   readonly retryLabel = STATUS_RETRY_LABEL;
+  readonly forjdFallbackBody = FORJD_FALLBACK_BODY;
+
+  /** Soft control-plane continuity (DEML `/ready` → FORJD). */
+  readonly controlPlaneReady = signal<ContinuityHealthSignal>('checking');
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
@@ -288,8 +300,24 @@ export class Status implements OnInit {
     });
   }
 
+  private async probeControlPlaneReady(): Promise<void> {
+    try {
+      const ready = await firstValueFrom(
+        this.http
+          .get<{ forjd_health?: string; mode?: string; status?: string }>(
+            `${environment.backendUrl}/api/v1/ready`,
+          )
+          .pipe(timeout(2500)),
+      );
+      this.controlPlaneReady.set(continuityFromReady(ready));
+    } catch {
+      this.controlPlaneReady.set('unreachable');
+    }
+  }
+
   constructor() {
     afterNextRender(() => {
+      void this.probeControlPlaneReady();
       this.sanityService.fetchAnnouncements();
 
       effect(

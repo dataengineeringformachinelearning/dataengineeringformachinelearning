@@ -80,7 +80,12 @@ def api_health(request: Any) -> dict[str, str]:
 
 @api.get("/ready", auth=None, include_in_schema=False)
 def api_ready(request: Any) -> dict[str, Any]:
-  """Readiness — Postgres + FORJD credentials; lightweight FORJD /health probe."""
+  """Readiness — Postgres + FORJD credentials; soft FORJD `/ready` probe.
+
+  Control-plane credentials are hard requirements (503). Upstream FORJD
+  dependency health is soft: this endpoint stays 200 with ``mode=degraded``
+  so Vercel/Fly can still admit DEML while product surfaces show continuity.
+  """
   import http.client
   from urllib.parse import urlparse
 
@@ -109,34 +114,43 @@ def api_ready(request: Any) -> dict[str, Any]:
     )
     raise HttpError(503, "FORJD control-plane credentials not configured")
 
-  # Soft probe — settings-owned HTTPS base + fixed /health (not user-controlled).
+  # Soft probe — settings-owned HTTPS base + fixed /ready (not user-controlled).
+  # Prefer dependency readiness over process liveness so soft-degraded matches
+  # what Fly admission and partner BFFs actually need.
   forjd_health = "unreachable"
   try:
-    parsed = urlparse(f"{forjd_url}/health")
+    parsed = urlparse(f"{forjd_url}/ready")
     if parsed.scheme != "https" or not parsed.hostname:
       raise ValueError("forjd_url_invalid")
     # Python 3.12 verifies TLS by default; host is settings-owned, not request input.
     # nosemgrep: python.lang.security.audit.httpsconnection-detected.httpsconnection-detected
     conn = http.client.HTTPSConnection(parsed.hostname, parsed.port or 443, timeout=2.5)
     try:
-      conn.request("GET", parsed.path or "/health", headers={"Accept": "application/json"})
+      conn.request("GET", parsed.path or "/ready", headers={"Accept": "application/json"})
       resp = conn.getresponse()
-      forjd_health = "ok" if resp.status < 400 else "degraded"
+      if resp.status < 400:
+        forjd_health = "ok"
+      elif resp.status == 503:
+        forjd_health = "degraded"
+      else:
+        forjd_health = "degraded"
     finally:
       conn.close()
   except (TimeoutError, OSError, ValueError, http.client.HTTPException) as exc:
     forjd_health = "unreachable"
     logger.warning(
-      "ready: FORJD /health probe failed error_type=%s",
+      "ready: FORJD /ready probe failed error_type=%s",
       type(exc).__name__,
     )
 
+  mode = "full" if forjd_health == "ok" else "degraded"
   if forjd_health != "ok":
-    logger.warning("ready: FORJD health soft-degraded forjd_health=%s", forjd_health)
+    logger.warning("ready: FORJD soft-degraded forjd_health=%s mode=%s", forjd_health, mode)
 
   return {
     "status": "ready",
     "role": "user-control-plane",
+    "mode": mode,
     "database": "ok",
     "forjd_api_url": forjd_url,
     "forjd_token_configured": True,

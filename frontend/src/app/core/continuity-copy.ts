@@ -9,7 +9,7 @@ export const STATUS_CONNECT_BODY =
   "We couldn't reach the status service. Check your connection, then retry.";
 export const STATUS_RETRY_LABEL = 'Retry';
 
-// --- Auth / FORJD control-plane degraded (dashboard + analytics) ---
+// --- Auth / FORJD control-plane degraded (dashboard + analytics + status) ---
 export const FORJD_FALLBACK_BODY =
   'Live FORJD data is temporarily unavailable. Showing the last successful view when possible.';
 export const FORJD_UNAVAILABLE_BODY =
