@@ -194,4 +194,4 @@ The Vercel project `deml-ui` and hostname `ui.deml.app` are removed. Do **not** 
 - Local Storybook: `npm run storybook --workspace @dataengineeringformachinelearning/viking-ui`
 - Visual review: Chromatic (CI / `publish-viking-ui` workflow)
 
-Firebase Hosting workflows for marketing/`deml-ui` remain retired no-ops.
+Firebase Hosting is disabled on `demldotcom` and `deml-ui` (Auth left intact on `demldotcom`). Do not re-deploy Hosting.

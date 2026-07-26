@@ -26,12 +26,12 @@ usable through `X-API-Key: deml_…`, `Authorization: ApiKey deml_…`, or
 
 ### CSRF vs XSS at the DEML boundary
 
-| Surface                            | CSRF                                                                            | XSS                                                                                           |
-| ---------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Django session / form paths        | `CsrfViewMiddleware` + `CSRF_TRUSTED_ORIGINS`                                   | CSP middleware on HTML, nosniff, frame options                                                |
-| SPA → Django BFF                   | Firebase Bearer (or `deml_` API key); not cookie-only writes for FORJD adapters | Site-wide CSP + hardening headers on Vercel (`frontend/vercel.json`), nginx, Firebase Hosting |
-| SOAR ack/retry + headless controls | CSRF-exempt **only** with `Authorization` / `X-API-Key` gate                    | Same as SPA/BFF; responses are JSON                                                           |
-| FORJD upstream                     | N/A at browser (BFF holds `fjsvc_`)                                             | FORJD API CSP is independent                                                                  |
+| Surface                            | CSRF                                                                            | XSS                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Django session / form paths        | `CsrfViewMiddleware` + `CSRF_TRUSTED_ORIGINS`                                   | CSP middleware on HTML, nosniff, frame options                                 |
+| SPA → Django BFF                   | Firebase Bearer (or `deml_` API key); not cookie-only writes for FORJD adapters | Site-wide CSP + hardening headers on Vercel (`frontend/vercel.json`) and nginx |
+| SOAR ack/retry + headless controls | CSRF-exempt **only** with `Authorization` / `X-API-Key` gate                    | Same as SPA/BFF; responses are JSON                                            |
+| FORJD upstream                     | N/A at browser (BFF holds `fjsvc_`)                                             | FORJD API CSP is independent                                                   |
 
 Rule: new `@csrf_exempt` write views that can mutate tenant state must compose
 `csrf_exempt_require_header_auth` (or call `authorization_header_required`) and must
