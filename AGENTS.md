@@ -5,6 +5,7 @@ DEML owns identity, profiles, roles, subscriptions, consent, account lifecycle,
 and user interactions. FORJD is the universal secure streaming engine for intake,
 processing, analytics, projections, replay, and machine learning.
 Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+Scale guidance: [docs/SCALE.md](docs/SCALE.md).
 
 ## DEML ↔ FORJD Boundary
 

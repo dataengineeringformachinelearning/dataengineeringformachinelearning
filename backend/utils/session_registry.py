@@ -12,6 +12,9 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 SESSION_TTL_SECONDS = 3600
+# Skip last_seen/expires writes when the session was touched recently — dashboards
+# and SSE poll often hit auth middleware many times per minute.
+TOUCH_MIN_INTERVAL_SECONDS = 120
 
 
 def register_session(
@@ -47,6 +50,10 @@ def register_session(
 
 
 def touch_session(session_id: str) -> bool:
+  """Refresh session TTL, throttled to ``TOUCH_MIN_INTERVAL_SECONDS``.
+
+  Returns True when the session is still valid (whether or not a write ran).
+  """
   if not session_id:
     return False
   try:
@@ -56,11 +63,17 @@ def touch_session(session_id: str) -> bool:
     updated = BrowserSession.objects.filter(
       session_id=session_id,
       expires_at__gt=now,
+      last_seen__lt=now - timedelta(seconds=TOUCH_MIN_INTERVAL_SECONDS),
     ).update(
       last_seen=now,
       expires_at=now + timedelta(seconds=SESSION_TTL_SECONDS),
     )
-    return bool(updated)
+    if updated:
+      return True
+    return BrowserSession.objects.filter(
+      session_id=session_id,
+      expires_at__gt=now,
+    ).exists()
   except Exception as exc:
     logger.error("touch_session failed: %s", exc)
     return False
