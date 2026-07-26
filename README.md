@@ -45,6 +45,7 @@ license: apache-2.0
 | --------------------- | ----------------------------------------------------------------------- |
 | `/dashboard`          | CES / KPI overview (Signals + Django SSE live ticks)                    |
 | `/analytics`          | Telemetry & threats (FORJD projections via BFF; `LiveUpdatesService`)   |
+| `/pipeline`           | Pipeline Studio — compose/export FORJD workflow YAML (no remote write)  |
 | `/status`, `/explore` | Public status pages (FORJD status APIs proxied by Django)               |
 | `/settings`           | Account / billing / consent (DEML Postgres; Firebase Auth + MFA writes) |
 
@@ -115,7 +116,7 @@ Authorization: Bearer YOUR_API_KEY
 
 ---
 
-**Resources:** [GitHub](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning)
+**Resources:** [GitHub](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning) · [FORJD data plane](https://github.com/dataengineeringformachinelearning/forjd) · [CONTRIBUTING](CONTRIBUTING.md) · [SECURITY](SECURITY.md)
 
 ## Acknowledgements & Technologies
 
@@ -126,7 +127,7 @@ quality bars; their component runtimes and source are not bundled into Viking-UI
 - **Design systems and UI references:** [Material Design 3](https://m3.material.io/) for adaptive foundations and accessibility; [Flux UI](https://fluxui.dev/) for composable, responsive layouts; [Spartan](https://spartan.ng/) for accessible Angular primitives and signal-first ergonomics; [shadcn/ui](https://ui.shadcn.com/) for open composition, blocks, and clear component anatomy; and [Cloudscape Design System](https://cloudscape.design/) for AWS-scale responsive application patterns, accessibility guidance, and operational density.
 - **Security and governance reference:** [Trust Controls](https://www.trustcontrols.ai/) for control-oriented product governance and evidence-minded security UX.
 - **Design-system delivery:** [Storybook](https://storybook.js.org/) for component documentation and accessibility review; [Chromatic](https://www.chromatic.com/) for published visual regression evidence; [axe-core](https://github.com/dequelabs/axe-core) for automated WCAG checks; and [Inter](https://rsms.me/inter/) for self-hosted variable typography.
-- **Core application stack:** [Angular](https://angular.dev/) 22+ (Signals + Viking-UI), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Firebase](https://firebase.google.com/) Auth-only, [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (FastAPI / Prefect / Pathway / Polars / Rust sealed data plane), [Fly.io](https://fly.io/), [Vercel](https://vercel.com/), [OpenTelemetry](https://opentelemetry.io/) (optional control-plane observability only), and [Firecrawl](https://www.firecrawl.dev/) for verified public-site technology evidence.
+- **Core application stack:** [Angular](https://angular.dev/) 22+ (Signals + Viking-UI), [Astro](https://astro.build/), [Django](https://www.djangoproject.com/), [PostgreSQL](https://www.postgresql.org/), [Firebase](https://firebase.google.com/) Auth-only, [FORJD](https://github.com/dataengineeringformachinelearning/forjd) (FastAPI / Prefect 3 / Polars / Rust sealed data plane), [Fly.io](https://fly.io/), [Vercel](https://vercel.com/), [OpenTelemetry](https://opentelemetry.io/) (optional control-plane observability only), and [Firecrawl](https://www.firecrawl.dev/) for verified public-site technology evidence.
 
 The comprehensive technology acknowledgement and software inventory remain in
 [BOOK.md](BOOK.md#acknowledgements--technologies) and the generated SBOM.
