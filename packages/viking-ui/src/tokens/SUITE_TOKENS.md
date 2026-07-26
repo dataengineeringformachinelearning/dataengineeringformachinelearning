@@ -62,13 +62,14 @@ All three resolve to the same computed values via `var()`.
 | Focus ring                 | `--suite-ring` + `--suite-ring-width`                                                   |
 | Sans / mono                | `--suite-font-sans` / `--suite-font-mono`                                               |
 | Type scale                 | `--suite-text-2xs` … `--suite-text-display`                                             |
-| Spacing                    | `--suite-space-0-5` … `--suite-space-12` (8px grid)                                     |
-| Touch / control            | `--suite-touch` (44px) / `--suite-control-height` (40px)                                |
+| Spacing                    | `--suite-space-0-5` … `--suite-space-12` (8px grid; THEME numbered scale)               |
+| Touch / control            | `--suite-touch` (44px) / `--suite-control-height` (40px desktop)                        |
 | Radius                     | `--suite-radius*` · control `--suite-radius-control` · surface `--suite-radius-surface` |
 | Elevation                  | `--suite-shadow-xs` … `--suite-shadow-hover`                                            |
 | Motion                     | `--suite-duration*` · `--suite-ease` · `--suite-transition`                             |
 | Stacking                   | `--suite-z-dropdown` … `--suite-z-toast`                                                |
-| Content width              | `--suite-content-max` (1260px) · `--suite-page-gutter`                                  |
+| Content width              | `--suite-content-max` (1260px) · `--suite-readable-max` (48rem) · `--suite-page-gutter` |
+| Breakpoints                | `--suite-bp-sm/md/sidebar/lg/xl/2xl` → `600 / 768 / 901 / 1024 / 1440 / 1920`           |
 
 ### Role B — charts
 
