@@ -192,6 +192,18 @@ def test_sync_without_stripe_ids_downgrades_manual_pro(
 
 
 @pytest.mark.django_db
+@override_settings(STRIPE_WEBHOOK_SECRET="")
+def test_stripe_webhook_fails_closed_without_secret(client: Client) -> None:
+  response = client.post(
+    "/api/v1/billing/webhook",
+    data=b"{}",
+    content_type="application/json",
+    HTTP_STRIPE_SIGNATURE="signed",
+  )
+  assert response.status_code == 503
+
+
+@pytest.mark.django_db
 @override_settings(STRIPE_WEBHOOK_SECRET="whsec_test")
 @patch("billing.api.stripe.Subscription.cancel")
 @patch("billing.api.stripe.Webhook.construct_event")

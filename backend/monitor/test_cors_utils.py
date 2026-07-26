@@ -66,6 +66,18 @@ def test_localhost_not_auto_allowed_outside_debug() -> None:
 
 
 @pytest.mark.django_db
+@override_settings(DEBUG=False, CORS_ALLOWED_ORIGINS=[])
+def test_http_scheme_rejected_outside_debug_for_registered_hosts() -> None:
+  cache.clear()
+  user = User.objects.create_user(username="cors-https-only")
+  ValidatedSite.objects.create(user=user, domain="customer.example", is_verified=True)
+
+  assert is_domain_registered("http://customer.example") is False
+  assert is_domain_registered("http://deml.app") is False
+  assert is_domain_registered("https://customer.example") is True
+
+
+@pytest.mark.django_db
 def test_unverified_domain_fails_closed() -> None:
   cache.clear()
   user = User.objects.create_user(username="unverified-owner")

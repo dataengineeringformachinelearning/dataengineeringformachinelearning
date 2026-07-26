@@ -225,7 +225,12 @@ def create_checkout_session(request):
 def stripe_webhook(request):
   payload = request.body
   sig_header = request.headers.get("STRIPE_SIGNATURE", "")
-  endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+  endpoint_secret = str(settings.STRIPE_WEBHOOK_SECRET or "").strip()
+
+  # Fail closed: an empty secret disables signature verification in some SDK paths.
+  if not endpoint_secret:
+    logger.error("Stripe webhook rejected: STRIPE_WEBHOOK_SECRET is not configured")
+    return HttpResponse(status=503)
 
   event = None
 

@@ -1210,12 +1210,20 @@ async def status_page_services_proxy(request: HttpRequest, page_id: str) -> Http
     }:
       service_status = "operational"
     service_url = str(payload.get("url") or payload.get("description") or "").strip()
+    probe_url = None
+    if service_url:
+      from forjd.public_url import validate_public_https_url
+
+      try:
+        probe_url = validate_public_https_url(service_url)
+      except ValueError as exc:
+        raise AdapterError(400, f"Invalid probe URL: {exc}") from exc
     body = json.dumps(
       {
         "tenant_id": str(credential.tenant_id),
         "name": str(payload.get("name") or ""),
-        "description": service_url,
-        "probe_url": service_url or None,
+        "description": service_url[:2048],
+        "probe_url": probe_url,
         "status": service_status,
       }
     ).encode()
@@ -1869,6 +1877,15 @@ async def exports_collection_proxy(request: HttpRequest) -> HttpResponse:
       days = max(1, min(int(payload.get("days") or 7), 90))
     except (TypeError, ValueError) as exc:
       raise AdapterError(400, "Export days must be an integer from 1 to 90") from exc
+    raw_site_url = str(payload.get("site_url") or "").strip()
+    site_url = None
+    if raw_site_url:
+      from forjd.public_url import validate_public_https_url
+
+      try:
+        site_url = validate_public_https_url(raw_site_url)
+      except ValueError as exc:
+        raise AdapterError(400, f"Invalid site URL: {exc}") from exc
     body = json.dumps(
       {
         "tenant_id": str(credential.tenant_id),
@@ -1877,7 +1894,7 @@ async def exports_collection_proxy(request: HttpRequest) -> HttpResponse:
         "source_kind": kind,
         "limit": 1_000 if fmt == "pdf" else 10_000,
         "days": days,
-        "site_url": str(payload.get("site_url") or "")[:2048] or None,
+        "site_url": site_url,
       }
     ).encode()
     client = _client_for_credential(credential)
@@ -1925,7 +1942,7 @@ async def export_detail_proxy(
   return JsonResponse(deml_export_job(result), status=200)
 
 
-@require_forjd_action("read")
+@require_forjd_action("export.download")
 async def export_download_proxy(request: HttpRequest, export_id: str) -> HttpResponse:
   if request.method != "GET":
     return JsonResponse({"detail": "Method not allowed"}, status=405)

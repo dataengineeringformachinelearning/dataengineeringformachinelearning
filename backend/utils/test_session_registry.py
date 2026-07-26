@@ -12,6 +12,12 @@ def test_register_and_validate_session() -> None:
   assert not session_registry.is_session_valid("sess-1", "uid-2")
 
 
+def test_empty_session_ids_fail_closed() -> None:
+  assert not session_registry.is_session_valid("", "uid-1")
+  assert not session_registry.is_session_valid("sess-1", "")
+  assert not session_registry.is_session_valid("", "")
+
+
 @pytest.mark.django_db
 def test_revoke_session() -> None:
   session_registry.register_session("sess-1", "uid-1", 42)
