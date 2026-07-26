@@ -1,11 +1,20 @@
 <viking-app-sidebar [collapsed]="isCollapsed()" [dragging]="isDragging()" [width]="sidebarWidth()">
-  <aside
-    class="dashboard-sidebar"
-    [class.collapsed]="isCollapsed()"
-    [class.dragging]="isDragging()"
-  >
+  <!-- Div (not aside) — parent viking-app-layout already owns the complementary landmark -->
+  <div class="dashboard-sidebar" [class.collapsed]="isCollapsed()" [class.dragging]="isDragging()">
     @if (!isCollapsed()) {
-    <div class="resize-handle" (mousedown)="startResize($event)"></div>
+    <!-- WCAG 2.5.7 / 2.5.8 — keyboard-resizable separator with ≥44px hit target -->
+    <div
+      class="resize-handle"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Resize sidebar"
+      [attr.aria-valuenow]="sidebarWidth()"
+      aria-valuemin="200"
+      aria-valuemax="800"
+      tabindex="0"
+      (mousedown)="startResize($event)"
+      (keydown)="onResizeKeydown($event)"
+    ></div>
     }
     <div class="sidebar-brand">
       <deml-brand-logo hostClass="brand-icon" [size]="24" />
@@ -16,6 +25,8 @@
         [square]="true"
         [icon]="isCollapsed() ? 'chevron-right' : 'chevron-left'"
         [label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+        [aria-expanded]="!isCollapsed()"
+        aria-controls="viking-app-layout-sidebar"
         (pressed)="toggleCollapse()"
       />
     </div>
@@ -23,27 +34,62 @@
     <div class="sidebar-scroll-container">
       <viking-sidebar-nav>
         @if (authService.isAuthenticated()) {
-        <viking-sidebar-nav-link routerLink="/dashboard" title="Dashboard">
+        <viking-sidebar-nav-link
+          routerLink="/dashboard"
+          title="Dashboard"
+          (mouseenter)="prefetchRoute('/dashboard')"
+          (focusin)="prefetchRoute('/dashboard')"
+        >
           <viking-app-icon name="dashboard" [ariaHidden]="true" />
           <span class="viking-sidebar-nav-label">Dashboard</span>
         </viking-sidebar-nav-link>
 
-        <viking-sidebar-nav-link routerLink="/settings" title="Sites">
+        <viking-sidebar-nav-link
+          routerLink="/settings"
+          title="Sites"
+          (mouseenter)="prefetchRoute('/settings')"
+          (focusin)="prefetchRoute('/settings')"
+        >
           <viking-app-icon name="language" [ariaHidden]="true" />
           <span class="viking-sidebar-nav-label">Sites</span>
         </viking-sidebar-nav-link>
 
-        <viking-sidebar-nav-link routerLink="/account" title="Account">
+        <viking-sidebar-nav-link
+          routerLink="/account"
+          title="Account"
+          (mouseenter)="prefetchRoute('/account')"
+          (focusin)="prefetchRoute('/account')"
+        >
           <viking-app-icon name="person" [ariaHidden]="true" />
           <span class="viking-sidebar-nav-label">Account</span>
         </viking-sidebar-nav-link>
 
-        <viking-sidebar-nav-link routerLink="/vulnerabilities" title="Threat Matrix">
+        <viking-sidebar-nav-link
+          routerLink="/pipeline"
+          title="Pipeline"
+          (mouseenter)="prefetchRoute('/pipeline')"
+          (focusin)="prefetchRoute('/pipeline')"
+        >
+          <viking-app-icon name="lan" [ariaHidden]="true" />
+          <span class="viking-sidebar-nav-label">Pipeline</span>
+        </viking-sidebar-nav-link>
+
+        <viking-sidebar-nav-link
+          routerLink="/vulnerabilities"
+          title="Threat Matrix"
+          (mouseenter)="prefetchRoute('/vulnerabilities')"
+          (focusin)="prefetchRoute('/vulnerabilities')"
+        >
           <viking-app-icon name="security" [ariaHidden]="true" />
           <span class="viking-sidebar-nav-label">Threats</span>
         </viking-sidebar-nav-link>
 
-        <viking-sidebar-nav-link routerLink="/analytics" title="Analytics">
+        <viking-sidebar-nav-link
+          routerLink="/analytics"
+          title="Analytics"
+          (mouseenter)="prefetchRoute('/analytics')"
+          (focusin)="prefetchRoute('/analytics')"
+        >
           <viking-app-icon name="monitoring" [ariaHidden]="true" />
           <span class="viking-sidebar-nav-label">Analytics</span>
         </viking-sidebar-nav-link>
@@ -87,7 +133,12 @@
           }
         </viking-sidebar-nav-tree>
         } } @else {
-        <viking-sidebar-nav-link routerLink="/explore" title="Explore">
+        <viking-sidebar-nav-link
+          routerLink="/explore"
+          title="Explore"
+          (mouseenter)="prefetchRoute('/explore')"
+          (focusin)="prefetchRoute('/explore')"
+        >
           <viking-app-icon name="explore" [ariaHidden]="true" />
           <span class="viking-sidebar-nav-label">Explore</span>
         </viking-sidebar-nav-link>
@@ -101,14 +152,18 @@
     <div class="sidebar-footer">
       <div
         class="system-health"
+        role="status"
         [class.degraded]="globalStatus() !== 'All Systems Normal'"
+        [attr.aria-label]="'System health: ' + globalStatus()"
         [title]="globalStatus()"
       >
-        <span class="health-dot"></span>
+        <span class="health-dot" aria-hidden="true"></span>
         @if (!isCollapsed()) {
         <span class="health-text">{{ globalStatus() }}</span>
+        } @else {
+        <span class="sr-only">{{ globalStatus() }}</span>
         }
       </div>
     </div>
-  </aside>
+  </div>
 </viking-app-sidebar>

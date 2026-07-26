@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -9,59 +9,69 @@ const packageDir = path.resolve(
   "..",
 );
 const repositoryDir = path.resolve(packageDir, "..", "..");
-const styles = readFileSync(
-  path.join(packageDir, "src", "styles", "surfaces", "swagger-ui.scss"),
-  "utf8",
-);
-const baseTemplate = readFileSync(
-  path.join(repositoryDir, "backend", "templates", "base.html"),
+const apidocs = readFileSync(
+  path.join(packageDir, "src", "tokens", "suite-apidocs.css"),
   "utf8",
 );
 const swaggerTemplate = readFileSync(
   path.join(repositoryDir, "backend", "templates", "swagger.html"),
   "utf8",
 );
+const redocTemplate = readFileSync(
+  path.join(repositoryDir, "backend", "templates", "redoc.html"),
+  "utf8",
+);
 
-test("Swagger vendor CSS loads before Viking-UI", () => {
-  // Shared Django shell: optional vendor block precedes Viking-UI.
-  const vendorStylesIndex = baseTemplate.indexOf("{% block vendor_styles %}");
-  const vikingStylesIndex = baseTemplate.indexOf(
-    "{% static 'viking-ui.css' %}",
+test("Swagger / ReDoc self-host vendor assets (no jsDelivr)", () => {
+  assert.doesNotMatch(swaggerTemplate, /cdn\.jsdelivr\.net/);
+  assert.doesNotMatch(redocTemplate, /cdn\.jsdelivr\.net/);
+  assert.match(swaggerTemplate, /vendor\/swagger-ui-dist\/swagger-ui\.css/);
+  assert.match(
+    swaggerTemplate,
+    /vendor\/swagger-ui-dist\/swagger-ui-bundle\.js/,
   );
-
-  assert.notEqual(vendorStylesIndex, -1);
-  assert.notEqual(vikingStylesIndex, -1);
-  assert.ok(vendorStylesIndex < vikingStylesIndex);
-
-  // Standalone Swagger page: vendor CDN stylesheet precedes Viking-UI.
-  const swaggerVendorIndex = swaggerTemplate.indexOf("swagger-ui.css");
-  const swaggerVikingIndex = swaggerTemplate.indexOf(
-    "{% static 'viking-ui.css' %}",
+  assert.match(redocTemplate, /vendor\/redoc\/redoc\.standalone\.js/);
+  assert.ok(
+    existsSync(
+      path.join(
+        repositoryDir,
+        "backend/static/vendor/swagger-ui-dist/swagger-ui-bundle.js",
+      ),
+    ),
   );
-  assert.notEqual(swaggerVendorIndex, -1);
-  assert.notEqual(swaggerVikingIndex, -1);
-  assert.ok(swaggerVendorIndex < swaggerVikingIndex);
+  assert.ok(
+    existsSync(
+      path.join(
+        repositoryDir,
+        "backend/static/vendor/redoc/redoc.standalone.js",
+      ),
+    ),
+  );
 });
 
-test("Swagger authorization and method controls use quiet Viking surfaces", () => {
-  assert.match(
-    styles,
-    /\.swagger-ui \.btn\.authorize,[^{]*{[^}]*background: var\([^}]*--viking-surface-raised/,
+test("Swagger cascade: vendor CSS → viking-ui → suite-apidocs", () => {
+  const vendorIndex = swaggerTemplate.indexOf("swagger-ui.css");
+  const vikingIndex = swaggerTemplate.indexOf("{% static 'viking-ui.css' %}");
+  const apidocsIndex = swaggerTemplate.indexOf(
+    "{% static 'suite-apidocs.css' %}",
   );
+  assert.notEqual(vendorIndex, -1);
+  assert.notEqual(vikingIndex, -1);
+  assert.notEqual(apidocsIndex, -1);
+  assert.ok(vendorIndex < vikingIndex);
+  assert.ok(vikingIndex < apidocsIndex);
+  assert.doesNotMatch(swaggerTemplate, /<style>/);
+  assert.match(swaggerTemplate, /docs-swagger-init\.js/);
+});
+
+test("suite-apidocs uses quiet method chips (token surfaces)", () => {
   assert.match(
-    styles,
-    /\.swagger-ui \.opblock \.opblock-summary-method {[^}]*background: var\(--viking-surface-raised/,
+    apidocs,
+    /\.swagger-ui \.opblock \.opblock-summary-method \{[^}]*--suite-surface-2/,
   );
   assert.doesNotMatch(
-    styles,
-    /\.swagger-ui \.opblock\.opblock-post \.opblock-summary-method {[^}]*var\(--viking-green/,
+    apidocs,
+    /\.swagger-ui \.opblock\.opblock-post \.opblock-summary-method/,
   );
-  assert.match(
-    styles,
-    /\.swagger-ui \.opblock-tag a {\s*color: inherit !important;/,
-  );
-  assert.match(
-    styles,
-    /\.swagger-ui \.opblock \.opblock-summary-path a,[\s\S]*color: inherit !important;/,
-  );
+  assert.match(apidocs, /--suite-/);
 });

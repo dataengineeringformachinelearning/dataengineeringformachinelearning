@@ -181,7 +181,7 @@ export type VikingSplitPanelWidth = "compact" | "medium" | "large";
       :host(.viking-split-panel--large) {
         --viking-split-panel-width: 640px;
       }
-      @media (min-width: 640px) {
+      @media (min-width: 600px) {
         .viking-split-panel {
           width: var(--viking-split-panel-width, 480px);
         }

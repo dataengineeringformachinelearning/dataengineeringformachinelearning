@@ -11,15 +11,22 @@
     [autoOpenSidebar]="true"
   >
     @if (isDashboardPage()) {
+    <!-- Sidebar is app-shell only — separate chunk so marketing/login stay lean -->
+    @defer (on immediate) {
     <app-sidebar vikingAppLayoutSidebar></app-sidebar>
-    }
+    } @placeholder {
+    <viking-page-skeleton vikingAppLayoutSidebar layout="nav" label="Loading navigation" />
+    } }
     <main
       vikingAppLayoutContent
       id="main-content"
       tabindex="-1"
       [class.dashboard-content]="isDashboardPage()"
       [class.main-content]="!isDashboardPage()"
+      [attr.aria-busy]="routeLoading() ? 'true' : null"
     >
+      <!-- Keep the outlet mounted — previous view stays visible until the next
+           route activates (optimistic nav). Pages paint from SWR when warm. -->
       <router-outlet />
     </main>
   </viking-app-layout>
@@ -35,5 +42,7 @@
   <app-command-palette />
   }
   <viking-toaster />
+  <viking-shortcut-help />
+  <viking-preferences />
 </div>
 }

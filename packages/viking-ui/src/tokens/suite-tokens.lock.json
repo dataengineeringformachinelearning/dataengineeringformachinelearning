@@ -6,7 +6,8 @@
     "role": "A",
     "description": "Locked Role A chrome hexes for suite-tokens.css. CI asserts these appear as --suite-* assignments in the canonical CSS. Edit suite-tokens.css first, then update this lock in the same PR.",
     "canonicalCss": "suite-tokens.css",
-    "updated": "2026-07-25"
+    "updated": "2026-07-26",
+    "contrast": "WCAG 2.2 AA — fills ≥4.5:1 with on-fill ink; UI borders ≥3:1; status *-text for foreground on soft surfaces"
   },
   "theme": {
     "default": "dark",
@@ -33,22 +34,30 @@
     },
     "border": {
       "default": "#222222",
-      "strong": "#333333"
+      "strong": "#666666"
     },
     "primary": {
-      "default": "#2176ff",
-      "hover": "#4d94ff",
+      "default": "#1565f0",
+      "hover": "#0f5ae0",
       "active": "#0a4fd4",
-      "strong": "#7ab0ff"
+      "strong": "#7ab0ff",
+      "ring": "#4d94ff"
     },
     "gold": "#d4af37",
+    "goldText": "#e8c96a",
     "status": {
       "success": "#2a9d8f",
+      "successText": "#5ec4b6",
+      "successFill": "#1a7066",
       "warning": "#d69e2e",
-      "danger": "#a83344"
+      "warningText": "#e8c25a",
+      "danger": "#a83344",
+      "dangerText": "#dc6b78"
     },
     "series": {
+      "1": "#2176ff",
       "2": "#922b3e",
+      "6": "#4d94ff",
       "7": "#162544",
       "8": "#666666"
     }
@@ -60,17 +69,27 @@
       "surface": "#ffffff"
     },
     "ink": {
-      "default": "#080d1f"
+      "default": "#080d1f",
+      "muted": "#555555",
+      "subtle": "#666666",
+      "disabled": "#666666"
     },
     "border": {
       "default": "#d7e0ef",
-      "strong": "#8fa2c2"
+      "strong": "#58719e"
     },
     "primary": {
       "default": "#1565f0",
-      "hover": "#2176ff",
-      "active": "#0a4fd4",
+      "hover": "#0a4fd4",
+      "active": "#073a99",
       "strong": "#073a99"
+    },
+    "goldText": "#7a6410",
+    "status": {
+      "successText": "#187066",
+      "successFill": "#1a7066",
+      "warningText": "#7a580e",
+      "dangerText": "#a83344"
     }
   },
   "layout": {
@@ -84,11 +103,11 @@
   },
   "deprecated": {
     "productPrimary": ["#00b4ff"],
-    "notes": "FORJD operator cyan retired; use --suite-primary #2176ff"
+    "notes": "FORJD operator cyan retired; filled primary is AA #1565f0; brand chart hue remains #2176ff on --suite-series-1"
   },
   "roles": {
     "A": "Product chrome — this lock",
-    "B": "Chart series — --suite-series-* in CSS (series-1/3/4/5/6 alias Role A)",
+    "B": "Chart series — --suite-series-* in CSS (series-1 keeps brand #2176ff; fills use Role A primary)",
     "C": "PDF report tokens — forjd backend/static/fjord-report-tokens.json (suite-aligned chrome; not product UI CSS)"
   }
 }

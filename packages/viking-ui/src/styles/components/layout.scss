@@ -57,5 +57,5 @@ th,
 .criteria-details,
 .log-text,
 .file-name {
-  font-size: max(16px, var(--base-font-size, 16px));
+  font-size: max(var(--viking-font-size-base), var(--viking-font-size-base));
 }

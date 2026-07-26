@@ -538,6 +538,15 @@ class ForjdClient:
       request_id=request_id,
     )
 
+  async def list_workflows(self, *, request_id: str | None = None) -> dict[str, Any]:
+    """GET /api/v1/workflows — sealed-stream catalog (visual pipeline cards)."""
+    self._validate_configuration()
+    return await self.request_json(
+      "GET",
+      "/api/v1/workflows",
+      request_id=request_id,
+    )
+
   async def list_projections(
     self,
     *,

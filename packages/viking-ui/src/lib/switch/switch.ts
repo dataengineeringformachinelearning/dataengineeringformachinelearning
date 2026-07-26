@@ -24,6 +24,7 @@ import { VikingControl, provideVikingCva } from "../core/cva";
           type="checkbox"
           role="switch"
           [checked]="checked()"
+          [attr.aria-checked]="checked()"
           [disabled]="disabled() || formDisabled()"
           (change)="toggle($event)"
           (blur)="onTouched()"
@@ -69,12 +70,22 @@ import { VikingControl, provideVikingCva } from "../core/cva";
         flex-shrink: 0;
         box-sizing: border-box;
       }
-      /* The native input fills the visual track so clicks and focus land on it. */
+      /* Expand hit target to suite touch floor without growing the visual track. */
+      .viking-switch-track::before {
+        content: "";
+        position: absolute;
+        inset: 50%;
+        width: var(--viking-touch-target-min, 44px);
+        height: var(--viking-touch-target-min, 44px);
+        transform: translate(-50%, -50%);
+      }
+      /* The native input fills the hit area so clicks and focus land on it. */
       .viking-switch-track input {
         position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
+        inset: 50%;
+        width: var(--viking-touch-target-min, 44px);
+        height: var(--viking-touch-target-min, 44px);
+        transform: translate(-50%, -50%);
         margin: 0;
         opacity: 0;
         cursor: pointer;

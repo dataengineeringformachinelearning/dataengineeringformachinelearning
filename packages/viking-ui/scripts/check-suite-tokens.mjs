@@ -67,10 +67,15 @@ mustDeclare("primary", d.primary.default);
 mustDeclare("primary-hover", d.primary.hover);
 mustDeclare("primary-active", d.primary.active);
 mustDeclare("primary-strong", d.primary.strong);
+mustDeclare("ring", d.primary.ring);
 mustDeclare("gold", d.gold);
+mustDeclare("gold-text", d.goldText);
 mustDeclare("success", d.status.success);
+mustDeclare("success-text", d.status.successText);
 mustDeclare("warning", d.status.warning);
+mustDeclare("warning-text", d.status.warningText);
 mustDeclare("danger", d.status.danger);
+mustDeclare("danger-text", d.status.dangerText);
 
 // Layout contracts (values as declared)
 const layoutChecks = [

@@ -73,7 +73,7 @@ export type VikingChartPanelBody = "default" | "origin-map";
         min-width: 0;
       }
 
-      @container viking-chart-panel (min-width: 40rem) {
+      @container viking-chart-panel (min-width: 37.5rem) {
         .viking-chart-panel-body {
           padding: var(--viking-space-container-gap);
         }

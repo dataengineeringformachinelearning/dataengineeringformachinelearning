@@ -8,10 +8,13 @@ import {
   model,
   output,
   signal,
+  untracked,
   viewChild,
 } from "@angular/core";
+import { captureReturnFocus, restoreFocus, trapTabKey } from "../../core/focus";
 import { VikingIcon } from "../icon/icon";
 import { VikingCommandItem } from "../../core/types";
+import { vikingUid } from "../../core/uid";
 
 /**
  * viking-command — command palette.
@@ -21,37 +24,69 @@ import { VikingCommandItem } from "../../core/types";
   selector: "viking-command",
   imports: [VikingIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { "(keydown.escape)": "open.set(false)" },
+  host: { "(keydown.escape)": "dismiss()" },
   template: `
     @if (open()) {
       <button
         type="button"
         class="viking-command-backdrop"
+        tabindex="-1"
         aria-label="Close command palette"
-        (click)="open.set(false)"
+        (click)="dismiss()"
       ></button>
-      <div class="viking-command" role="dialog" aria-label="Command palette">
+      <div
+        #dialogRoot
+        class="viking-command"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+        tabindex="-1"
+        (keydown)="onDialogKeydown($event)"
+      >
         <div class="viking-command-search">
-          <viking-icon name="search" [size]="20" />
+          <viking-icon name="search" [size]="20" aria-hidden="true" />
           <input
             #queryInput
             type="text"
+            role="combobox"
             [placeholder]="placeholder()"
             [value]="query()"
             aria-label="Search commands"
+            aria-autocomplete="list"
+            aria-haspopup="listbox"
+            [attr.aria-expanded]="true"
+            [attr.aria-controls]="listboxId"
+            [attr.aria-activedescendant]="
+              activeId() ? optionId(activeId()!) : null
+            "
             (input)="onQuery($event)"
             (keydown)="onKeydown($event)"
           />
-          <kbd>esc</kbd>
+          <button
+            type="button"
+            class="viking-command-close"
+            aria-label="Close command palette"
+            (click)="dismiss()"
+          >
+            <viking-icon name="x" [size]="18" aria-hidden="true" />
+          </button>
         </div>
-        <div class="viking-command-list" role="listbox">
+        <div
+          class="viking-command-list"
+          role="listbox"
+          [id]="listboxId"
+          aria-label="Commands"
+        >
           @for (group of groups(); track group.name) {
-            <p class="viking-command-group">{{ group.name }}</p>
+            <p class="viking-command-group" role="presentation">
+              {{ group.name }}
+            </p>
             @for (item of group.items; track item.id) {
               <button
                 type="button"
                 role="option"
                 class="viking-command-item"
+                [id]="optionId(item.id)"
                 [class.viking-active]="item.id === activeId()"
                 [attr.aria-selected]="item.id === activeId()"
                 (click)="run(item)"
@@ -121,6 +156,30 @@ import { VikingCommandItem } from "../../core/types";
         color: var(--viking-text);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
+      }
+      .viking-command-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        min-width: var(--viking-touch-target-min, 44px);
+        min-height: var(--viking-touch-target-min, 44px);
+        border: 1px solid transparent;
+        border-radius: var(--viking-radius);
+        background: transparent;
+        color: var(--viking-text-muted);
+        cursor: pointer;
+        padding: 0;
+        transition: var(--viking-transition-interactive);
+      }
+      .viking-command-close:hover {
+        color: var(--viking-text);
+        background: var(--viking-accent-soft);
+        border-color: var(--viking-border-subtle);
+      }
+      .viking-command-close:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
       }
       kbd {
         font-family: var(--viking-font-family);
@@ -196,19 +255,45 @@ export class VikingCommand {
 
   private readonly queryInput =
     viewChild<ElementRef<HTMLInputElement>>("queryInput");
+  private readonly dialogRoot =
+    viewChild<ElementRef<HTMLElement>>("dialogRoot");
+  private readonly commandUid = vikingUid("viking-command");
+  protected readonly listboxId = `${this.commandUid}-listbox`;
+  private returnFocus: HTMLElement | null = null;
 
   protected readonly query = signal("");
   protected readonly activeId = signal<string>("");
 
+  protected optionId = (id: string): string =>
+    `${this.commandUid}-option-${id}`;
+
   constructor() {
+    // Reset + focus only on closed → open edge (not on items() churn while open)
+    let wasOpen = false;
     effect(() => {
-      if (this.open()) {
+      const isOpen = this.open();
+      if (isOpen && !wasOpen) {
+        this.returnFocus = captureReturnFocus();
+        const firstId = untracked(() => this.items()[0]?.id ?? "");
         this.query.set("");
-        this.activeId.set(this.items()[0]?.id ?? "");
+        this.activeId.set(firstId);
         queueMicrotask(() => this.queryInput()?.nativeElement.focus());
+      } else if (!isOpen && wasOpen) {
+        restoreFocus(this.returnFocus);
+        this.returnFocus = null;
       }
+      wasOpen = isOpen;
     });
   }
+
+  protected dismiss = (): void => {
+    this.open.set(false);
+  };
+
+  protected onDialogKeydown = (event: KeyboardEvent): void => {
+    const root = this.dialogRoot()?.nativeElement;
+    if (root) trapTabKey(event, root);
+  };
 
   protected readonly filtered = computed(() => {
     const query = this.query().toLowerCase().trim();
@@ -236,7 +321,7 @@ export class VikingCommand {
 
   protected run = (item: VikingCommandItem): void => {
     this.executed.emit(item);
-    this.open.set(false);
+    this.dismiss();
     this.query.set("");
   };
 

@@ -54,6 +54,7 @@ export class VikingAccordion {
     <button
       type="button"
       class="viking-accordion-trigger"
+      [id]="triggerId"
       [attr.aria-expanded]="expanded()"
       [attr.aria-controls]="panelId"
       (click)="toggle()"
@@ -65,7 +66,12 @@ export class VikingAccordion {
       />
     </button>
     @if (expanded()) {
-      <div class="viking-accordion-panel" [id]="panelId">
+      <div
+        class="viking-accordion-panel"
+        [id]="panelId"
+        role="region"
+        [attr.aria-labelledby]="triggerId"
+      >
         <ng-content />
       </div>
     }
@@ -116,6 +122,7 @@ export class VikingAccordionItem {
   readonly expanded = model<boolean>(false);
 
   protected readonly panelId = vikingUid("viking-accordion-panel");
+  protected readonly triggerId = vikingUid("viking-accordion-trigger");
 
   protected toggle = (): void => {
     this.expanded.update((value) => !value);

@@ -12,7 +12,10 @@ export type VikingTone =
 
 export type VikingSize = "base" | "sm" | "xs";
 
-export interface VikingSelectOption<T = unknown> {
+/** Values supported by viking-select / viking-radio-group. */
+export type VikingOptionValue = string | number | boolean;
+
+export interface VikingSelectOption<T extends VikingOptionValue = string> {
   label: string;
   value: T;
   disabled?: boolean;
@@ -69,17 +72,34 @@ export interface VikingDonutSegment {
   tone?: VikingTone;
 }
 
+export type VikingToastAction = {
+  readonly label: string;
+  readonly onClick: () => void;
+};
+
+/** Importance for the priority toast stack (FORJD ADR-0020). */
+export type VikingToastPriority = "low" | "normal" | "high" | "critical";
+
 export interface VikingToastOptions {
   heading?: string;
   text: string;
   tone?: VikingTone;
+  /** Importance — defaults from tone (success→low, danger→critical). */
+  priority?: VikingToastPriority;
   /** Auto-dismiss duration in ms. 0 disables auto-dismiss. */
   duration?: number;
+  /** Replace an in-flight toast with the same key. */
+  dedupeKey?: string;
+  /** Optional one-shot action (e.g. Undo). */
+  action?: VikingToastAction;
 }
 
 export interface VikingToastInstance extends Required<
-  Omit<VikingToastOptions, "heading">
+  Omit<VikingToastOptions, "heading" | "action" | "priority" | "dedupeKey">
 > {
   id: number;
   heading: string;
+  priority: VikingToastPriority;
+  dedupeKey?: string;
+  action?: VikingToastAction;
 }

@@ -31,17 +31,18 @@
   <viking-page-header
     [tag]="pageTag(page)"
     [title]="page.title"
-    [subtitle]="page.description || 'Monitoring core services and API integrations in real-time.'"
+    [subtitle]="page.description || 'Monitoring core services and API integrations.'"
   />
 
   <!-- Content in stack for consistent vertical rhythm and grid alignment -->
   <div class="viking-stack viking-stack--loose">
     <viking-status-section
       [title]="page.title"
+      [hideTitle]="true"
       [description]="statusDescription(globalPageStatus())"
       [status]="statusVariant(globalPageStatus())"
       [statusLabel]="globalPageStatus()"
-      liveLabel="Live Status"
+      liveLabel="Current status"
     >
       <section class="viking-status-section-block" aria-labelledby="announcements-heading">
         <h3 class="viking-status-section-heading" id="announcements-heading">
@@ -110,6 +111,11 @@
         </div>
 
         <viking-chart-panel size="medium">
+          <viking-chart-card-header
+            title="Availability history"
+            [hasData]="(availabilitySeries(page)[0]?.data?.length ?? 0) > 0"
+            emptyLabel="Awaiting signal"
+          />
           <viking-chart
             kind="line"
             [series]="availabilitySeries(page)"
@@ -158,9 +164,7 @@
           Active Monitored Services
         </h3>
         @if (isLoading()) {
-        <viking-callout tone="muted" heading="Loading Services">
-          Fetching monitored service health.
-        </viking-callout>
+        <viking-page-skeleton layout="list" label="Loading monitored services" />
         } @else if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
         <viking-callout tone="muted" heading="No Services">
           No monitored services configured for this page.
@@ -171,7 +175,7 @@
           <article class="viking-status-service">
             <div class="viking-status-section-row">
               <div>
-                <h4 class="viking-status-section-heading">{{ formatServiceName(service.name) }}</h4>
+                <h4 class="viking-status-service-name">{{ formatServiceName(service.name) }}</h4>
                 <p class="viking-status-section-subtitle">{{ service.url }}</p>
               </div>
               <viking-status-badge

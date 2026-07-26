@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { describe, expect, it } from "vitest";
-import { VikingDialogService } from "./dialog.service";
+import { VikingDialogService } from "./confirm-dialog.service";
 
 describe("VikingDialogService", () => {
   it("updates an open confirm without replacing its pending resolver", async () => {

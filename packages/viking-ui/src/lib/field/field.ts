@@ -1,21 +1,39 @@
-import { ChangeDetectionStrategy, Component, input } from "@angular/core";
+import {
+  afterRenderEffect,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+} from "@angular/core";
+import { syncFieldControlA11y } from "../../core/field-a11y";
 import { vikingUid } from "../../core/uid";
 
 /**
- * viking-field — label / description / error wrapper for any control
- *.
- * The projected control is associated with the label by wrapping.
+ * viking-field — label / description / error wrapper for any control.
+ *
+ * Associates helper + validation text via aria-describedby, marks the control
+ * aria-invalid when error is set, and announces errors (role=alert).
  */
 @Component({
   selector: "viking-field",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { "[class.viking-field-invalid]": "!!error()" },
+  host: {
+    class: "suite-field viking-field",
+    "[class.viking-field-invalid]": "!!error()",
+    "[attr.data-invalid]": 'error() ? "true" : null',
+    role: "group",
+    "[attr.aria-labelledby]": "label() ? labelId : null",
+  },
   template: `
-    <!-- The projected control lives inside the label, which associates it implicitly. -->
+    <!-- Projected control is wrapped for implicit label association. -->
     <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -->
-    <label class="viking-field-label-wrap">
+    <label class="viking-field-label-wrap suite-field-label-wrap">
       @if (label()) {
-        <span class="viking-field-label" [id]="labelId">
+        <span
+          class="viking-field-label suite-field-label suite-label"
+          [id]="labelId"
+        >
           {{ label() }}
           @if (required()) {
             <span class="viking-field-required" aria-hidden="true">*</span>
@@ -24,14 +42,23 @@ import { vikingUid } from "../../core/uid";
       }
       <ng-content />
     </label>
-    @if (description() && !error()) {
-      <p class="viking-field-description" [id]="descriptionId">
+    @if (description()) {
+      <p
+        class="viking-field-description suite-field-description"
+        [id]="descriptionId"
+      >
         {{ description() }}
       </p>
     }
     @if (error()) {
-      <p class="viking-field-error" [id]="errorId" role="alert">
-        {{ error() }}
+      <p
+        class="viking-field-error suite-field-error"
+        [id]="errorId"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <span class="suite-sr-only viking-sr-only">Error: </span>{{ error() }}
       </p>
     }
   `,
@@ -98,6 +125,11 @@ import { vikingUid } from "../../core/uid";
         width: 100%;
         min-width: 0;
       }
+      @media (prefers-reduced-motion: reduce) {
+        :host(.viking-field-invalid) {
+          animation: none;
+        }
+      }
     `,
   ],
 })
@@ -110,4 +142,20 @@ export class VikingField {
   protected readonly descriptionId = vikingUid("viking-field-description");
   protected readonly errorId = vikingUid("viking-field-error");
   protected readonly labelId = vikingUid("viking-field-label");
+
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  constructor() {
+    afterRenderEffect(() => {
+      const description = this.description();
+      const error = this.error();
+      syncFieldControlA11y(this.host.nativeElement, {
+        descriptionId: this.descriptionId,
+        errorId: this.errorId,
+        hasDescription: !!description,
+        hasError: !!error,
+        required: this.required(),
+      });
+    });
+  }
 }

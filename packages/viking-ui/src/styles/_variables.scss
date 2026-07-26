@@ -187,6 +187,16 @@
   --viking-font-size-4xl: 48px;
   --viking-font-size-5xl: 60px;
   --viking-font-size-6xl: 72px;
+  --viking-font-size-display: clamp(2.5rem, 7vw, 3rem);
+  --viking-font-size-display-lg: clamp(2.25rem, 5vw, 3.75rem);
+  --viking-font-size-display-md: clamp(2rem, 4.5vw, 3rem);
+  --viking-font-size-headline: clamp(1.35rem, 3.2vw, 2rem);
+  --viking-font-size-headline-quiet: clamp(1.2rem, 2.6vw, 1.65rem);
+  --viking-font-size-title: clamp(1.5rem, 3.5vw, 2rem);
+  --viking-font-size-title-lg: clamp(1.75rem, 5vw, 2.5rem);
+  --viking-font-size-title-sm: clamp(1.35rem, 3vw, 1.75rem);
+  --viking-font-size-lead: 1.25rem;
+  --viking-font-size-lead-fluid: clamp(1.05rem, 2vw, 1.25rem);
 
   --viking-font-weight-regular: 400;
   --viking-font-weight-medium: 500;
@@ -359,9 +369,12 @@
   --viking-transition-transform: transform var(--viking-duration)
     var(--viking-ease-emphasized);
 
-  /* ── Interactive state ───────────────────────────────────────────────────── */
+  /* ── Interactive state (1px lift / press — match suite-tokens) ───────────── */
   --viking-state-hover-lift: -1px;
-  --viking-state-active-scale: 0.985;
+  --viking-state-press-sink: 1px;
+  --viking-state-nudge: 2px;
+  --viking-state-reveal-distance: 0.5rem;
+  --viking-state-active-scale: var(--suite-active-scale, 0.985);
   --viking-state-disabled-opacity: 0.48;
 
   /* ── Controls (40px dense desktop; ≥44px touch on mobile) ─────────────── */
@@ -421,9 +434,9 @@
   );
   --viking-page-gutter-lg: var(--viking-space-4);
   --viking-page-gutter-xl: var(--viking-space-8);
-  --viking-page-stack-gap: var(--viking-space-4);
-  --viking-page-section-gap: var(--viking-space-8);
-  --viking-dashboard-grid-gap: var(--viking-space-3);
+  --viking-page-stack-gap: var(--viking-space-5);
+  --viking-page-section-gap: var(--viking-space-9);
+  --viking-dashboard-grid-gap: var(--viking-space-2);
   --viking-section-padding-y: var(--viking-space-8);
   --viking-section-padding-y-compact: var(--viking-space-4);
   --viking-card-padding: var(--viking-space-3);
@@ -558,7 +571,7 @@ html[data-theme="dark"] {
   --viking-text-inverted: var(--viking-bg);
 
   --viking-border: #222222;
-  --viking-border-strong: #333333;
+  --viking-border-strong: #666666;
   --viking-border-subtle: color-mix(
     in srgb,
     var(--viking-border) 70%,
@@ -620,7 +633,10 @@ html[data-theme="dark"] {
     var(--viking-blue-500) 14%,
     transparent
   );
-  --viking-danger-text: var(--viking-crimson-400);
+  --viking-danger-text: var(--viking-crimson-300);
+  --viking-success-text: #5ec4b6;
+  --viking-warning-text: #e8c25a;
+  --viking-gold-text: #e8c96a;
   --viking-on-danger: var(--viking-white-pure);
 
   --viking-ring: var(--viking-electric-400);
@@ -689,21 +705,13 @@ html[data-theme="light"] {
   --viking-text: var(--viking-charcoal-900);
   --viking-text-muted: var(--viking-metallic-500);
   --viking-text-subtle: var(--viking-metallic-400);
-  --viking-text-disabled: var(--viking-metallic-300);
+  --viking-text-disabled: var(--viking-metallic-500);
   --viking-text-link: var(--viking-electric-700);
-  --viking-text-link-hover: var(--viking-electric-600);
+  --viking-text-link-hover: var(--viking-electric-700);
   --viking-text-inverted: var(--viking-white-pure);
 
-  --viking-border: color-mix(
-    in srgb,
-    var(--viking-metallic-600) 32%,
-    transparent
-  );
-  --viking-border-strong: color-mix(
-    in srgb,
-    var(--viking-metallic-600) 48%,
-    transparent
-  );
+  --viking-border: var(--viking-navy-100);
+  --viking-border-strong: var(--viking-navy-300);
   --viking-border-subtle: color-mix(
     in srgb,
     var(--viking-metallic-600) 22%,
@@ -762,6 +770,9 @@ html[data-theme="light"] {
     transparent
   );
   --viking-danger-text: var(--viking-crimson-700);
+  --viking-success-text: #187066;
+  --viking-warning-text: #7a580e;
+  --viking-gold-text: #7a6410;
   --viking-on-danger: var(--viking-white-pure);
 
   --viking-ring: var(--viking-electric-500);
@@ -932,5 +943,23 @@ html[data-theme="light"] {
       0 2px 4px rgba(17, 17, 17, 0.06), 0 4px 8px rgba(17, 17, 17, 0.08);
     --viking-shadow-lg:
       0 4px 8px rgba(17, 17, 17, 0.06), 0 12px 24px rgba(17, 17, 17, 0.1);
+  }
+}
+
+/* Fallback when suite-tokens.css is not loaded (suite SoT still wins when present) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --viking-duration-instant: 0ms;
+    --viking-duration-fast: 0ms;
+    --viking-duration: 0ms;
+    --viking-duration-slow: 0ms;
+    --viking-state-hover-lift: 0px;
+    --viking-state-press-sink: 0px;
+    --viking-state-nudge: 0px;
+    --viking-state-reveal-distance: 0px;
+    --viking-state-active-scale: 1;
+    --viking-transition-interactive: none;
+    --viking-transition-colors: none;
+    --viking-transition-transform: none;
   }
 }

@@ -27,7 +27,7 @@ const responsiveFiles = [
 ];
 
 test("responsive components use canonical mobile-first breakpoints", () => {
-  const allowedBreakpoints = new Set([640, 768, 1024, 1280]);
+  const allowedBreakpoints = new Set([600, 768, 901, 1024, 1440, 1920]);
 
   for (const segments of responsiveFiles) {
     const source = readPackageFile(...segments);
@@ -87,7 +87,7 @@ test("narrow layouts are the base and wider layouts are enhancements", () => {
   assert.match(splitPanel, /\.viking-split-panel\s*\{[\s\S]*?width:\s*100vw;/);
   assert.match(
     splitPanel,
-    /@media \(min-width: 640px\)[\s\S]*?width:\s*var\(--viking-split-panel-width, 480px\);/,
+    /@media \(min-width: 600px\)[\s\S]*?width:\s*var\(--viking-split-panel-width, 480px\);/,
   );
   assert.match(
     statusSection,

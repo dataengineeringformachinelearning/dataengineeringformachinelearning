@@ -1,6 +1,6 @@
 # DEML — Cursor Agent Rules (Viking-UI Quality)
 
-You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must follow the suite Viking-UI aesthetic: **grid-first modern enterprise SaaS** — void-black austerity, electric command `#2176ff`, institutional gold, precision-engineered component anatomy, dense breathable data layouts, and WCAG 2.1 AA by construction. The system must be visually identical across deml.app, backend.deml.app, ui.deml.app, dataengineeringformachinelearning.com, **and** forjd.co / backend.forjd.co / ui.forjd.co — see [docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md). Calm, precise, premium, aerospace-austere, deliberately unsurprising.
+You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must follow the suite Viking-UI aesthetic: **grid-first modern enterprise SaaS** — void-black austerity, electric command `#2176ff`, institutional gold, precision-engineered component anatomy, dense breathable data layouts, and WCAG 2.2 AA by construction. The system must be visually identical across deml.app, backend.deml.app, ui.deml.app, dataengineeringformachinelearning.com, **and** forjd.co / backend.forjd.co / ui.forjd.co — see [docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md). Calm, precise, premium, aerospace-austere, deliberately unsurprising.
 
 ## Rule hierarchy (read in order)
 
@@ -245,7 +245,7 @@ Before merge, confirm the touched surface matches marketing benchmark quality:
 3. Padding, gutters, and max-widths meet **Premium polish standards** — parity with marketing benchmark.
 4. Charts use `viking-chart-panel` with loading/empty states and `VIKING_SERIES_PRESETS` color mapping.
 5. Context matches density — dashboard components in settings forms (or vice versa) is a blocking defect.
-6. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
+6. `node scripts/run_axe.js` passes (WCAG 2.2 AA).
 7. Token changes start in `packages/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui:package` + `python scripts/sync_design_system.py`.
 8. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.32**, and **README.md** together.
 9. `npm run test:viking-ui` and app `npm test` pass for touched surfaces (charts, auth, forms, icons).
@@ -259,7 +259,7 @@ Before merge, confirm the touched surface matches marketing benchmark quality:
 | Gate                         | Command                                 | Blocks                                                                            |
 | ---------------------------- | --------------------------------------- | --------------------------------------------------------------------------------- |
 | Theme tokens / no hardcoding | `node scripts/enforce-theme.js`         | Off-palette hex, legacy Lab Coat vars, Material classes, generic `.card`/`.btn-*` |
-| Accessibility                | `node scripts/run_axe.js`               | WCAG 2.1 AA violations on HTML/Astro                                              |
+| Accessibility                | `node scripts/run_axe.js`               | WCAG 2.2 AA violations on HTML/Astro                                              |
 | Mobile-first layout          | `node scripts/check_mobile_first.js`    | Missing `.page-inner-wrapper`, sub-44px touch targets                             |
 | Lint                         | `cd frontend && npm run lint`           | ESLint / angular-eslint                                                           |
 | Viking-UI tests              | `cd frontend && npm run test:viking-ui` | Regressions in charts, forms, icons, auth panel                                   |

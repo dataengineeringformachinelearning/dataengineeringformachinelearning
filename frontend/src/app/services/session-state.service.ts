@@ -1,4 +1,4 @@
-import { Injectable, Injector, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, Injector, OnDestroy, PLATFORM_ID, effect, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
@@ -29,7 +29,6 @@ export class SessionStateService implements OnDestroy {
   private channel: BroadcastChannel | null = null;
   private authEffectRegistered = false;
   private initialized = false;
-  private authPollId: number | undefined;
   private previousAuthState: boolean | undefined;
 
   /** Lazy resolve breaks AuthService ↔ SessionStateService circular DI during SSR. */
@@ -49,10 +48,6 @@ export class SessionStateService implements OnDestroy {
   ngOnDestroy(): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
-    }
-    if (this.authPollId !== undefined) {
-      window.clearInterval(this.authPollId);
-      this.authPollId = undefined;
     }
     window.removeEventListener('storage', this.onStorage);
     this.channel?.close();
@@ -78,8 +73,14 @@ export class SessionStateService implements OnDestroy {
     }
     this.authEffectRegistered = true;
 
-    // Poll signal transitions — AuthService uses Angular signals without effect hook here.
-    this.authPollId = window.setInterval(() => this.syncAuthState(), 500);
+    // Signal-driven — no 500ms timer on the main thread.
+    effect(
+      () => {
+        this.authService.isAuthenticated();
+        this.syncAuthState();
+      },
+      { injector: this.injector },
+    );
     this.syncAuthState();
   }
 

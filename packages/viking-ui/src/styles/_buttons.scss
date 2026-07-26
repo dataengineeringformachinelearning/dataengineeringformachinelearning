@@ -329,7 +329,11 @@
 }
 
 @mixin viking-btn-size-xs {
-  min-height: var(--viking-control-height-xs);
+  /* Visual chrome stays compact; hit target meets WCAG 2.5.8 (≥24px) and suite touch. */
+  min-height: max(
+    var(--viking-control-height-xs),
+    var(--viking-touch-target-min, 44px)
+  );
   padding: var(--viking-space-0-5) var(--viking-space-2);
   font-size: var(--viking-font-size-xs);
   min-width: auto;

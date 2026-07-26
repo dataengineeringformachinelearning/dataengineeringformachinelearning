@@ -8,6 +8,7 @@ import {
   output,
   viewChild,
 } from "@angular/core";
+import { captureReturnFocus, restoreFocus, trapTabKey } from "../../core/focus";
 import { VikingIcon } from "../icon/icon";
 import { VikingKbd } from "../kbd/kbd";
 
@@ -30,12 +31,14 @@ import { VikingKbd } from "../kbd/kbd";
         (keydown.escape)="close()"
       >
         <div
+          #dialogRoot
           class="viking-search-palette"
           role="dialog"
+          aria-modal="true"
           aria-label="Search"
           tabindex="-1"
           (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
+          (keydown)="onDialogKeydown($event)"
         >
           <div class="viking-search-palette-header">
             <viking-icon name="search" [size]="24" />
@@ -67,11 +70,12 @@ import { VikingKbd } from "../kbd/kbd";
           <footer class="viking-search-palette-footer">
             <ng-content select="[vikingSearchPaletteFooter]" />
             <span class="viking-search-palette-shortcut">
-              <viking-kbd>{{ modKey() }}</viking-kbd
-              ><viking-kbd>K</viking-kbd> toggle · <viking-kbd>↑</viking-kbd
-              ><viking-kbd>↓</viking-kbd> navigate ·
+              <viking-kbd>{{ modKey }}</viking-kbd
+              ><viking-kbd>K</viking-kbd> / <viking-kbd>/</viking-kbd> open ·
+              <viking-kbd>↑</viking-kbd><viking-kbd>↓</viking-kbd> navigate ·
               <viking-kbd>Enter</viking-kbd> open ·
-              <viking-kbd>Esc</viking-kbd> close
+              <viking-kbd>Esc</viking-kbd> close ·
+              <viking-kbd>?</viking-kbd> all shortcuts
             </span>
           </footer>
         </div>
@@ -88,12 +92,22 @@ export class VikingSearchPalette {
 
   private readonly queryInput =
     viewChild<ElementRef<HTMLInputElement>>("queryInput");
+  private readonly dialogRoot =
+    viewChild<ElementRef<HTMLElement>>("dialogRoot");
+  private returnFocus: HTMLElement | null = null;
 
   constructor() {
+    let wasOpen = false;
     effect(() => {
-      if (this.open()) {
+      const isOpen = this.open();
+      if (isOpen && !wasOpen) {
+        this.returnFocus = captureReturnFocus();
         queueMicrotask(() => this.queryInput()?.nativeElement.focus());
+      } else if (!isOpen && wasOpen) {
+        restoreFocus(this.returnFocus);
+        this.returnFocus = null;
       }
+      wasOpen = isOpen;
     });
   }
 
@@ -101,12 +115,19 @@ export class VikingSearchPalette {
     this.query.set((event.target as HTMLInputElement).value);
   }
 
+  protected onDialogKeydown(event: KeyboardEvent): void {
+    event.stopPropagation();
+    const root = this.dialogRoot()?.nativeElement;
+    if (root) trapTabKey(event, root);
+    this.paletteKeydown.emit(event);
+  }
+
   protected close(): void {
     this.open.set(false);
   }
 
-  /** Platform modifier label for footer shortcut hint. */
-  protected modKey = (): string =>
+  /** Platform modifier label — stable for component lifetime. */
+  protected readonly modKey =
     typeof navigator !== "undefined" &&
     /Mac|iPhone|iPad/i.test(navigator.platform)
       ? "⌘"

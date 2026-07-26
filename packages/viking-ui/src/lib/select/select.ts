@@ -10,9 +10,15 @@ import {
 } from "@angular/core";
 import { VikingControl, provideVikingCva } from "../core/cva";
 import { VikingIcon } from "../icon/icon";
-import { VikingSelectOption } from "../../core/types";
+import {
+  type VikingOptionValue,
+  type VikingSelectOption,
+} from "../../core/types";
 
 export type VikingSelectWidth = "full" | "half";
+export type { VikingOptionValue, VikingSelectOption };
+
+let selectSeq = 0;
 
 /**
  * viking-select — custom listbox select.
@@ -32,10 +38,14 @@ export type VikingSelectWidth = "full" | "half";
     <button
       type="button"
       class="viking-control viking-select-trigger"
+      role="combobox"
       [disabled]="disabled() || formDisabled()"
       [attr.aria-expanded]="open()"
-      [attr.aria-label]="label() || placeholder()"
+      [attr.aria-controls]="listboxId"
+      [attr.aria-activedescendant]="open() ? optionId(activeIndex()) : null"
+      [attr.aria-label]="label() || null"
       aria-haspopup="listbox"
+      aria-autocomplete="none"
       (click)="toggle()"
       (keydown)="onKeydown($event)"
     >
@@ -48,19 +58,22 @@ export type VikingSelectWidth = "full" | "half";
       <viking-icon
         [name]="open() ? 'chevron-up' : 'chevron-down'"
         [size]="18"
+        aria-hidden="true"
       />
     </button>
     @if (open()) {
       <div
         class="viking-select-panel"
         role="listbox"
-        [attr.aria-label]="label() || placeholder()"
+        [id]="listboxId"
+        [attr.aria-label]="label() || 'Options'"
       >
         @for (option of options(); track option.label; let index = $index) {
           <button
             type="button"
             role="option"
             class="viking-select-option"
+            [id]="optionId(index)"
             [class.viking-active]="index === activeIndex()"
             [class.viking-selected]="option.value === value()"
             [disabled]="option.disabled"
@@ -203,14 +216,21 @@ export type VikingSelectWidth = "full" | "half";
           var(--viking-select-panel-bg, var(--viking-surface-raised))
         );
       }
+      @media (prefers-reduced-motion: reduce) {
+        .viking-select-panel {
+          animation: none;
+        }
+      }
     `,
   ],
 })
-export class VikingSelect extends VikingControl<unknown> {
+export class VikingSelect extends VikingControl<VikingOptionValue | null> {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly selectId = ++selectSeq;
+  protected readonly listboxId = `viking-select-listbox-${this.selectId}`;
 
-  readonly options = input.required<VikingSelectOption[]>();
-  readonly value = model<unknown>(null);
+  readonly options = input.required<readonly VikingSelectOption[]>();
+  readonly value = model<VikingOptionValue | null>(null);
   readonly placeholder = input<string>("Select…");
   readonly label = input<string>("");
   readonly disabled = input<boolean>(false);
@@ -223,13 +243,16 @@ export class VikingSelect extends VikingControl<unknown> {
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(0);
 
+  protected optionId = (index: number): string =>
+    `viking-select-option-${this.selectId}-${index}`;
+
   protected readonly selectedLabel = computed(
     () =>
       this.options().find((option) => option.value === this.value())?.label ??
       "",
   );
 
-  writeValue(value: unknown): void {
+  writeValue(value: VikingOptionValue | null): void {
     this.value.set(value);
   }
 

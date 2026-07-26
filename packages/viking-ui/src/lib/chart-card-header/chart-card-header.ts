@@ -64,7 +64,7 @@ import { ChangeDetectionStrategy, Component, input } from "@angular/core";
       }
 
       .chart-value-muted {
-        font-size: 1.125rem !important;
+        font-size: var(--viking-font-size-md) !important;
         font-weight: var(--viking-font-weight-semibold, 600) !important;
         color: var(--text-muted) !important;
         letter-spacing: var(--viking-letter-spacing-caps, 0.05em);

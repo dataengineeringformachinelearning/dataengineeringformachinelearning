@@ -39,10 +39,12 @@ import {
             [label]="statusLabel()"
             [aria]="statusAria()"
           />
-          <div class="viking-status-section-title-row">
-            <h2 class="viking-status-section-title">{{ title() }}</h2>
-            <ng-content select="[statusSectionTitleMeta]" />
-          </div>
+          @if (!hideTitle()) {
+            <div class="viking-status-section-title-row">
+              <h2 class="viking-status-section-title">{{ title() }}</h2>
+              <ng-content select="[statusSectionTitleMeta]" />
+            </div>
+          }
           @if (description()) {
             <p class="viking-status-section-description">{{ description() }}</p>
           }
@@ -239,6 +241,15 @@ import {
         border-top: 1px solid var(--viking-border-subtle);
       }
 
+      /* Service names sit below section H3s — body weight, not heading chrome. */
+      .viking-status-section-content ::ng-deep .viking-status-service-name {
+        margin: 0;
+        font-size: var(--viking-font-size);
+        font-weight: var(--viking-font-weight-semibold, 600);
+        line-height: var(--viking-line-height-tight, 1.2);
+        color: var(--viking-text);
+      }
+
       .viking-status-section-content
         ::ng-deep
         .viking-status-service:first-child {
@@ -283,6 +294,8 @@ export class StatusSectionComponent {
   readonly statusLabel = input<string>("");
   readonly statusAria = input<string>("");
   readonly liveLabel = input<string>("");
+  /** Hide the H2 when a parent page-header already owns the page title. */
+  readonly hideTitle = input<boolean>(false);
 
   protected readonly ariaLabel = computed(
     () => `${this.title()} status overview`,

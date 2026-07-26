@@ -75,9 +75,11 @@
 
     <viking-card class="status-panel-outlined">
       <viking-card-header>
-        @if (selectedPage()) {
+        @if (!pagesHydrated()) {
+        <viking-card-title icon="globe">Sites</viking-card-title>
+        } @else if (selectedPage()) {
         <viking-card-title icon="pencil">{{ selectedPage()!.title }}</viking-card-title>
-        } @if (selectedPage()) {
+        } @if (pagesHydrated() && selectedPage()) {
         <viking-button
           variant="ghost"
           type="button"
@@ -88,12 +90,13 @@
           class="delete-page-btn"
           [disabled]="!canMutateSites()"
         />
-        } @if (!selectedPage()) {
+        } @if (pagesHydrated() && !selectedPage()) {
         <viking-card-title icon="plus">Create Status Page</viking-card-title>
         }
       </viking-card-header>
-      <!-- New Page Form -->
-      @if (!selectedPage()) {
+      @if (!pagesHydrated()) {
+      <viking-page-skeleton layout="form" label="Loading sites" />
+      } @else if (!selectedPage()) {
       <div class="form-col">
         <p class="embed-desc">
           Create a new status page to start monitoring your services. Refer to the
@@ -235,62 +238,65 @@
           </div>
         </div>
 
-        <!-- Telemetry Tracking IDs Section -->
+        <!-- Telemetry Tracking IDs — advanced (ADR-0022) -->
         <div class="panel-section">
-          <h3 class="section-heading">
-            <viking-app-icon name="analytics" /> Telemetry Tracking IDs
-          </h3>
-          <div class="settings-form-panel">
-            <p class="embed-desc">
-              Enter IDs for this status page only. GA4 OAuth sync uses each page’s Google Analytics
-              measurement ID (G-…) plus monitored service hostnames—never every property on the
-              Google account. Scripts are also injected on the public status page for visitor
-              telemetry.
-            </p>
-            <viking-form-grid [columns]="3">
-              <viking-field
-                label="Google Analytics ID"
-                description="Measurement ID for this site’s host only (not all GA properties)"
-              >
-                <viking-input
-                  [ngModel]="editGoogleAnalyticsId()"
-                  (ngModelChange)="editGoogleAnalyticsId.set($event)"
-                  placeholder="e.g. G-XXXXXXX"
-                  [disabled]="!canMutateSites()"
-                />
-              </viking-field>
-              <viking-field label="Microsoft Clarity ID">
-                <viking-input
-                  [ngModel]="editMicrosoftClarityId()"
-                  (ngModelChange)="editMicrosoftClarityId.set($event)"
-                  placeholder="e.g. xxxxxxxx"
-                  [disabled]="!canMutateSites()"
-                />
-              </viking-field>
-              <viking-field label="Cloudflare Analytics ID">
-                <viking-input
-                  [ngModel]="editCloudflareAnalyticsId()"
-                  (ngModelChange)="editCloudflareAnalyticsId.set($event)"
-                  placeholder="e.g. xxxxxxxx"
-                  [disabled]="!canMutateSites()"
-                />
-              </viking-field>
-            </viking-form-grid>
-            <div class="settings-actions">
-              <viking-button
-                variant="primary"
-                type="button"
-                class="save-settings-btn"
-                (pressed)="updateStatusPage()"
-                [disabled]="!editTitle() || !editSlug() || isUpdatingPage() || !canMutateSites()"
-                [loading]="isUpdatingPage()"
-              >
-                @if (!isUpdatingPage()) {
-                <viking-app-icon name="save" />
-                } Save Tracking IDs
-              </viking-button>
+          <viking-disclosure
+            sectionId="deml.settings.telemetry"
+            heading="Telemetry Tracking IDs"
+            description="Optional GA4, Clarity, and Cloudflare IDs for this status page only."
+            [defaultOpen]="false"
+          >
+            <div class="settings-form-panel">
+              <p class="embed-desc">
+                GA4 OAuth sync uses each page’s Google Analytics measurement ID (G-…) plus monitored
+                service hostnames—never every property on the Google account. Scripts are also
+                injected on the public status page for visitor telemetry.
+              </p>
+              <viking-form-grid [columns]="3">
+                <viking-field
+                  label="Google Analytics ID"
+                  description="Measurement ID for this site’s host only (not all GA properties)"
+                >
+                  <viking-input
+                    [ngModel]="editGoogleAnalyticsId()"
+                    (ngModelChange)="editGoogleAnalyticsId.set($event)"
+                    placeholder="e.g. G-XXXXXXX"
+                    [disabled]="!canMutateSites()"
+                  />
+                </viking-field>
+                <viking-field label="Microsoft Clarity ID">
+                  <viking-input
+                    [ngModel]="editMicrosoftClarityId()"
+                    (ngModelChange)="editMicrosoftClarityId.set($event)"
+                    placeholder="e.g. xxxxxxxx"
+                    [disabled]="!canMutateSites()"
+                  />
+                </viking-field>
+                <viking-field label="Cloudflare Analytics ID">
+                  <viking-input
+                    [ngModel]="editCloudflareAnalyticsId()"
+                    (ngModelChange)="editCloudflareAnalyticsId.set($event)"
+                    placeholder="e.g. xxxxxxxx"
+                    [disabled]="!canMutateSites()"
+                  />
+                </viking-field>
+              </viking-form-grid>
+              <div class="settings-actions">
+                <viking-button
+                  variant="primary"
+                  type="button"
+                  class="save-settings-btn"
+                  (pressed)="updateStatusPage()"
+                  [disabled]="!editTitle() || !editSlug() || isUpdatingPage() || !canMutateSites()"
+                  [loading]="isUpdatingPage()"
+                >
+                  @if (!isUpdatingPage()) {
+                  <viking-app-icon name="save" />
+                  } Save Tracking IDs
+                </viking-button>
+              </div>
             </div>
-          </div>
+          </viking-disclosure>
         </div>
 
         <div class="panel-section">
@@ -327,9 +333,28 @@
               Add Service
             </viking-button>
           </div>
-          <div class="data-list-outlined">
-            @for (service of services(); track service) {
-            <div class="data-item-row">
+          <viking-bulk-toolbar
+            [count]="selectedServiceCount()"
+            [actions]="serviceBulkActions"
+            ariaLabel="Selected monitored services"
+            (actionClick)="onServiceBulkAction($event)"
+            (clear)="clearServiceSelection()"
+          />
+          <div class="data-list-outlined" role="list">
+            @for (service of services(); track service.id) {
+            <div
+              class="data-item-row"
+              role="listitem"
+              [class.is-selected]="isServiceSelected(service.id)"
+              [attr.data-selected]="isServiceSelected(service.id) ? 'true' : null"
+            >
+              <viking-checkbox
+                [checked]="isServiceSelected(service.id)"
+                [disabled]="!canMutateSites()"
+                (checkedChange)="setServiceSelected(service.id, $event)"
+              >
+                <span class="suite-sr-only viking-sr-only">Select {{ service.name }}</span>
+              </viking-checkbox>
               <div class="data-info">
                 <span class="data-title">{{ service.name }}</span>
                 <span class="data-subtitle">{{ service.url }}</span>
@@ -345,13 +370,19 @@
               />
             </div>
             } @if (services().length === 0) {
-            <div class="empty-data-text">
-              <viking-app-icon name="monitor_heart" hostClass="empty-icon" />
-              <p class="empty-title">No Services Monitored</p>
-              <p class="empty-subtitle">
-                Add a service above to begin uptime and health monitoring.
-              </p>
-            </div>
+            <viking-empty-state
+              [eyebrow]="emptyGuidanceEyebrow"
+              heading="No services monitored"
+              description="Add a service above to begin uptime and health monitoring."
+              hint="The setup wizard can add your first health check for you."
+              icon="folder"
+              density="compact"
+              variant="inset"
+            >
+              <viking-button variant="secondary" type="button" (pressed)="openOnboardingWizard()">
+                Open setup wizard
+              </viking-button>
+            </viking-empty-state>
             }
           </div>
         </div>
@@ -379,6 +410,7 @@
               <div class="select-wrapper">
                 <app-unified-select
                   id="incident-status"
+                  label="Incident status"
                   [options]="incidentStatusOptions"
                   [value]="newIncidentStatus()"
                   (valueChange)="newIncidentStatus.set($event)"
@@ -398,9 +430,28 @@
               </viking-button>
             </div>
           </div>
-          <div class="data-list-outlined">
-            @for (incident of incidents(); track incident) {
-            <div class="data-item-row">
+          <viking-bulk-toolbar
+            [count]="selectedIncidentCount()"
+            [actions]="incidentBulkActions"
+            ariaLabel="Selected incidents"
+            (actionClick)="onIncidentBulkAction($event)"
+            (clear)="clearIncidentSelection()"
+          />
+          <div class="data-list-outlined" role="list">
+            @for (incident of incidents(); track incident.id) {
+            <div
+              class="data-item-row"
+              role="listitem"
+              [class.is-selected]="isIncidentSelected(incident.id)"
+              [attr.data-selected]="isIncidentSelected(incident.id) ? 'true' : null"
+            >
+              <viking-checkbox
+                [checked]="isIncidentSelected(incident.id)"
+                [disabled]="!canMutateSites()"
+                (checkedChange)="setIncidentSelected(incident.id, $event)"
+              >
+                <span class="suite-sr-only viking-sr-only">Select {{ incident.title }}</span>
+              </viking-checkbox>
               <div class="data-info">
                 <span class="data-title">{{ incident.title }}</span>
                 <span class="data-subtitle"
@@ -418,196 +469,208 @@
               />
             </div>
             } @if (incidents().length === 0) {
-            <div class="empty-data-text">
-              <viking-app-icon name="check_circle" hostClass="empty-icon" />
-              <p class="empty-title">No Incidents Reported</p>
-              <p class="empty-subtitle">
-                All systems operational. Post an incident above if service degradation occurs.
-              </p>
-            </div>
+            <viking-empty-state
+              eyebrow="All clear"
+              heading="No incidents reported"
+              description="All systems operational. Post an incident above if service degradation occurs."
+              icon="check-circle"
+              density="compact"
+              variant="inset"
+            />
             }
           </div>
         </div>
         <div class="panel-section">
-          <h3 class="section-heading"><viking-app-icon name="code" /> Embeddable Widget</h3>
-          <p class="embed-desc">Copy and paste one of these options onto your website.</p>
-          <div class="code-block-container">
-            <p class="embed-desc">Option A: script served by this site (default)</p>
-            <div class="code-block-outlined">
-              <code>{{ getWidgetCode() }}</code>
+          <viking-disclosure
+            sectionId="deml.settings.embed"
+            heading="Embeddable Widget"
+            description="Copy a status widget snippet onto your website when you are ready to publish."
+            [defaultOpen]="false"
+          >
+            <p class="embed-desc">Copy and paste one of these options onto your website.</p>
+            <div class="code-block-container">
+              <p class="embed-desc">Option A: script served by this site (default)</p>
+              <div class="code-block-outlined">
+                <code>{{ getWidgetCode() }}</code>
+              </div>
+              <viking-button
+                variant="primary"
+                type="button"
+                [icon]="copied() ? 'check' : 'copy'"
+                (pressed)="copyWidgetCode()"
+              >
+                {{ copied() ? 'Copied' : 'Copy' }}
+              </viking-button>
             </div>
-            <viking-button
-              variant="primary"
-              type="button"
-              [icon]="copied() ? 'check' : 'copy'"
-              (pressed)="copyWidgetCode()"
-            >
-              {{ copied() ? 'Copied' : 'Copy' }}
-            </viking-button>
-          </div>
-          <div class="code-block-container">
-            <p class="embed-desc">Option B: jsDelivr CDN (no npm install)</p>
-            <div class="code-block-outlined">
-              <code>{{ getWidgetCdnCode() }}</code>
+            <div class="code-block-container">
+              <p class="embed-desc">Option B: jsDelivr CDN (no npm install)</p>
+              <div class="code-block-outlined">
+                <code>{{ getWidgetCdnCode() }}</code>
+              </div>
             </div>
-          </div>
+          </viking-disclosure>
         </div>
         <div class="panel-section">
-          <h3 class="section-heading">
-            <viking-app-icon name="analytics" /> Threat Intel & API Integrations
-          </h3>
-          <p class="embed-desc">
-            Link your analytics providers to securely sync geolocation and visitor access telemetry.
-            This data feeds directly into the threat intelligence and ML anomaly detection models to
-            monitor traffic access patterns.
-          </p>
-          <div class="integrations-list">
-            <div class="integration-item">
-              <div class="integration-info">
-                <strong class="integration-name">Google Analytics</strong>
-                <span class="integration-status">
-                  @if (integrations().find(i => i.provider === 'google' && i.active)) { Connected
-                  &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                  'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected }
-                </span>
-              </div>
-              <div class="integration-action">
-                @if (integrations().find(i => i.provider === 'google' && i.active)) {
-                <viking-button
-                  variant="danger"
-                  type="button"
-                  (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
-                  [disabled]="!canMutateSites()"
-                >
-                  Disconnect
-                </viking-button>
-                } @else {
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  (pressed)="connectGoogleAnalytics()"
-                  [disabled]="isConnectingGoogle() || !canMutateSites()"
-                  [loading]="isConnectingGoogle()"
-                >
-                  Connect GA4 API
-                </viking-button>
-                }
-              </div>
-            </div>
-            <div class="integration-item clarity-item">
-              <div class="integration-header">
+          <viking-disclosure
+            sectionId="deml.settings.integrations"
+            heading="Threat Intel & API Integrations"
+            description="Connect GA4, Clarity, or Cloudflare when you need visitor telemetry for threat models."
+            [defaultOpen]="false"
+          >
+            <p class="embed-desc">
+              Link your analytics providers to securely sync geolocation and visitor access
+              telemetry. This data feeds directly into the threat intelligence and ML anomaly
+              detection models to monitor traffic access patterns.
+            </p>
+            <div class="integrations-list">
+              <div class="integration-item">
                 <div class="integration-info">
-                  <strong class="integration-name">Microsoft Clarity</strong>
+                  <strong class="integration-name">Google Analytics</strong>
                   <span class="integration-status">
-                    @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                    Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                    'microsoft')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected }
+                    @if (integrations().find(i => i.provider === 'google' && i.active)) { Connected
+                    &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                    'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected }
                   </span>
                 </div>
-                @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
                 <div class="integration-action">
+                  @if (integrations().find(i => i.provider === 'google' && i.active)) {
                   <viking-button
                     variant="danger"
                     type="button"
-                    (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                    (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
                     [disabled]="!canMutateSites()"
                   >
                     Disconnect
                   </viking-button>
-                </div>
-                }
-              </div>
-              @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
-              <div class="clarity-form-row">
-                <div class="inputs-group">
-                  <viking-field label="Clarity Project ID">
-                    <viking-input
-                      [ngModel]="clarityProjectId()"
-                      (ngModelChange)="clarityProjectId.set($event)"
-                      placeholder="Project ID"
-                      [disabled]="!canMutateSites()"
-                    />
-                  </viking-field>
-                  <viking-field label="API Token / Key">
-                    <viking-input
-                      [ngModel]="clarityApiKey()"
-                      (ngModelChange)="clarityApiKey.set($event)"
-                      type="password"
-                      placeholder="Clarity API Key"
-                      [disabled]="!canMutateSites()"
-                    />
-                  </viking-field>
-                </div>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  (pressed)="connectMicrosoftClarity()"
-                  [disabled]="!clarityProjectId() || !clarityApiKey() || isConnectingClarity() || !canMutateSites()"
-                  [loading]="isConnectingClarity()"
-                >
-                  Connect API
-                </viking-button>
-              </div>
-              }
-            </div>
-            <div class="integration-item cloudflare-item">
-              <div class="integration-header">
-                <div class="integration-info">
-                  <strong class="integration-name">Cloudflare Analytics</strong>
-                  <span class="integration-status">
-                    @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                    Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                    'cloudflare')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected
-                    }
-                  </span>
-                </div>
-                @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                <div class="integration-action">
+                  } @else {
                   <viking-button
-                    variant="danger"
+                    variant="primary"
                     type="button"
-                    (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
-                    [disabled]="!canMutateSites()"
+                    (pressed)="connectGoogleAnalytics()"
+                    [disabled]="isConnectingGoogle() || !canMutateSites()"
+                    [loading]="isConnectingGoogle()"
                   >
-                    Disconnect
+                    Connect GA4 API
+                  </viking-button>
+                  }
+                </div>
+              </div>
+              <div class="integration-item clarity-item">
+                <div class="integration-header">
+                  <div class="integration-info">
+                    <strong class="integration-name">Microsoft Clarity</strong>
+                    <span class="integration-status">
+                      @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                      Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                      'microsoft')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected
+                      }
+                    </span>
+                  </div>
+                  @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                  <div class="integration-action">
+                    <viking-button
+                      variant="danger"
+                      type="button"
+                      (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                      [disabled]="!canMutateSites()"
+                    >
+                      Disconnect
+                    </viking-button>
+                  </div>
+                  }
+                </div>
+                @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                <div class="clarity-form-row">
+                  <div class="inputs-group">
+                    <viking-field label="Clarity Project ID">
+                      <viking-input
+                        [ngModel]="clarityProjectId()"
+                        (ngModelChange)="clarityProjectId.set($event)"
+                        placeholder="Project ID"
+                        [disabled]="!canMutateSites()"
+                      />
+                    </viking-field>
+                    <viking-field label="API Token / Key">
+                      <viking-input
+                        [ngModel]="clarityApiKey()"
+                        (ngModelChange)="clarityApiKey.set($event)"
+                        type="password"
+                        placeholder="Clarity API Key"
+                        [disabled]="!canMutateSites()"
+                      />
+                    </viking-field>
+                  </div>
+                  <viking-button
+                    variant="primary"
+                    type="button"
+                    (pressed)="connectMicrosoftClarity()"
+                    [disabled]="!clarityProjectId() || !clarityApiKey() || isConnectingClarity() || !canMutateSites()"
+                    [loading]="isConnectingClarity()"
+                  >
+                    Connect API
                   </viking-button>
                 </div>
                 }
               </div>
-              @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-              <div class="cloudflare-form-row">
-                <div class="inputs-group">
-                  <viking-field label="Cloudflare Account ID">
-                    <viking-input
-                      [ngModel]="cloudflareProjectId()"
-                      (ngModelChange)="cloudflareProjectId.set($event)"
-                      placeholder="Account ID"
+              <div class="integration-item cloudflare-item">
+                <div class="integration-header">
+                  <div class="integration-info">
+                    <strong class="integration-name">Cloudflare Analytics</strong>
+                    <span class="integration-status">
+                      @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                      Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                      'cloudflare')?.last_sync | date:'medium') || 'Never' }} } @else { Not
+                      Connected }
+                    </span>
+                  </div>
+                  @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                  <div class="integration-action">
+                    <viking-button
+                      variant="danger"
+                      type="button"
+                      (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
                       [disabled]="!canMutateSites()"
-                    />
-                  </viking-field>
-                  <viking-field label="API Token / Key">
-                    <viking-input
-                      [ngModel]="cloudflareApiKey()"
-                      (ngModelChange)="cloudflareApiKey.set($event)"
-                      type="password"
-                      placeholder="Cloudflare API Token"
-                      [disabled]="!canMutateSites()"
-                    />
-                  </viking-field>
+                    >
+                      Disconnect
+                    </viking-button>
+                  </div>
+                  }
                 </div>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  (pressed)="connectCloudflare()"
-                  [disabled]="!cloudflareProjectId() || !cloudflareApiKey() || isConnectingCloudflare() || !canMutateSites()"
-                  [loading]="isConnectingCloudflare()"
-                >
-                  Connect API
-                </viking-button>
+                @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                <div class="cloudflare-form-row">
+                  <div class="inputs-group">
+                    <viking-field label="Cloudflare Account ID">
+                      <viking-input
+                        [ngModel]="cloudflareProjectId()"
+                        (ngModelChange)="cloudflareProjectId.set($event)"
+                        placeholder="Account ID"
+                        [disabled]="!canMutateSites()"
+                      />
+                    </viking-field>
+                    <viking-field label="API Token / Key">
+                      <viking-input
+                        [ngModel]="cloudflareApiKey()"
+                        (ngModelChange)="cloudflareApiKey.set($event)"
+                        type="password"
+                        placeholder="Cloudflare API Token"
+                        [disabled]="!canMutateSites()"
+                      />
+                    </viking-field>
+                  </div>
+                  <viking-button
+                    variant="primary"
+                    type="button"
+                    (pressed)="connectCloudflare()"
+                    [disabled]="!cloudflareProjectId() || !cloudflareApiKey() || isConnectingCloudflare() || !canMutateSites()"
+                    [loading]="isConnectingCloudflare()"
+                  >
+                    Connect API
+                  </viking-button>
+                </div>
+                }
               </div>
-              }
             </div>
-          </div>
+          </viking-disclosure>
         </div>
       </div>
       }

@@ -110,7 +110,9 @@ export class VikingTab {
     () => `viking-tab-panel-${this.value()}`,
   );
 
-  protected active = () => (this.tabs?.value() ?? "") === this.value();
+  protected readonly active = computed(
+    () => (this.tabs?.value() ?? "") === this.value(),
+  );
 
   protected select = (): void => {
     if (this.disabled() || !this.tabs) {

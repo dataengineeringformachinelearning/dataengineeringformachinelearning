@@ -18,15 +18,17 @@ import {
   EndpointData,
   IncidentData,
 } from '../../services/monitor.service';
-import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
   VikingButton,
+  VikingBulkToolbar,
   VikingCallout,
   VikingCheckbox,
+  VikingDisclosure,
   VikingField,
   VikingInput,
   VikingPageHeader,
+  VikingPageSkeleton,
   VikingPageTemplate,
   VikingTextarea,
   VikingIcon,
@@ -34,7 +36,11 @@ import {
   VikingCardHeader,
   VikingCardTitle,
   VikingFormGrid,
+  VikingEmptyState,
+  SUITE_EMPTY_GUIDANCE_EYEBROW,
+  createSelectionModel,
 } from '@dataengineeringformachinelearning/viking-ui';
+import { OnboardingService } from '../../services/onboarding.service';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -53,11 +59,14 @@ import {
   imports: [
     CommonModule,
     VikingButton,
+    VikingBulkToolbar,
     VikingCallout,
     VikingCheckbox,
+    VikingDisclosure,
     VikingField,
     VikingInput,
     VikingPageHeader,
+    VikingPageSkeleton,
     VikingPageTemplate,
     VikingTextarea,
     VikingIcon,
@@ -65,6 +74,7 @@ import {
     VikingCardHeader,
     VikingCardTitle,
     VikingFormGrid,
+    VikingEmptyState,
     VikingAppIcon,
     FormsModule,
     RouterModule,
@@ -75,9 +85,21 @@ import {
 })
 export class Settings implements OnInit {
   private monitorService = inject(MonitorService);
-  public mlService = inject(MlService);
   public authService = inject(AuthService);
+  private onboardingService = inject(OnboardingService);
+  protected readonly emptyGuidanceEyebrow = SUITE_EMPTY_GUIDANCE_EYEBROW;
   private router = inject(Router);
+  /** Multi-select for monitored services / incidents (ADR-0021). */
+  private readonly serviceSelection = createSelectionModel();
+  private readonly incidentSelection = createSelectionModel();
+  protected readonly selectedServiceCount = signal(0);
+  protected readonly selectedIncidentCount = signal(0);
+  protected readonly serviceBulkActions = [
+    { id: 'delete', label: 'Delete selected', variant: 'danger' as const },
+  ];
+  protected readonly incidentBulkActions = [
+    { id: 'delete', label: 'Delete selected', variant: 'danger' as const },
+  ];
   private route = inject(ActivatedRoute);
   private vikingDialog = inject(VikingDialogService);
   private titleService = inject(Title);
@@ -151,6 +173,8 @@ export class Settings implements OnInit {
   isAddingService = signal<boolean>(false);
   isAddingIncident = signal<boolean>(false);
   isRefreshingMfa = signal<boolean>(false);
+  /** False until the first status-pages fetch settles — avoids Create-form flash. */
+  pagesHydrated = signal(false);
 
   async refreshMfaSession(): Promise<void> {
     this.isRefreshingMfa.set(true);
@@ -250,6 +274,16 @@ export class Settings implements OnInit {
     });
   }
 
+  openOnboardingWizard(): void {
+    void this.onboardingService.openWizard()?.then(() => {
+      const page = this.selectedPage();
+      if (page) {
+        this.loadServices(page.id);
+        this.loadIncidents(page.id);
+      }
+    });
+  }
+
   loadIntegrations() {
     if (this.authService.isAuthenticated()) {
       this.monitorService.getIntegrations().subscribe({
@@ -285,20 +319,39 @@ export class Settings implements OnInit {
 
   loadStatusPages() {
     if (this.authService.isAuthenticated()) {
+      const applyPages = (data: StatusPageData[]): void => {
+        // Strictly filter to only the user's own pages, never show platform-status in settings
+        const myPages = data.filter(
+          p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status',
+        );
+        this.statusPages.set(myPages);
+        if (myPages.length > 0 && !this.selectedPage()) {
+          this.selectPage(myPages[0]);
+        }
+        this.pagesHydrated.set(true);
+      };
+
+      // Optimistic: show cached sites immediately, then revalidate in background.
+      const cached = this.monitorService.peekStatusPages();
+      if (cached) {
+        applyPages(cached);
+      }
+
       this.monitorService.getStatusPages().subscribe({
         next: data => {
-          if (!Array.isArray(data)) return;
-          // Strictly filter to only the user's own pages, never show platform-status in settings
-          const myPages = data.filter(
-            p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status',
-          );
-          this.statusPages.set(myPages);
-          if (myPages.length > 0 && !this.selectedPage()) {
-            this.selectPage(myPages[0]);
+          if (!Array.isArray(data)) {
+            this.pagesHydrated.set(true);
+            return;
           }
+          applyPages(data);
         },
-        error: err => console.error('Error fetching status pages:', err),
+        error: err => {
+          console.error('Error fetching status pages:', err);
+          this.pagesHydrated.set(true);
+        },
       });
+    } else {
+      this.pagesHydrated.set(true);
     }
   }
 
@@ -416,6 +469,8 @@ export class Settings implements OnInit {
     this.monitorService.getServices(pageId).subscribe({
       next: data => {
         this.services.set(data);
+        this.serviceSelection.pruneTo(data.map(s => s.id));
+        this.syncServiceSelectionCount();
       },
       error: err => console.error('Error fetching services:', err),
     });
@@ -425,6 +480,8 @@ export class Settings implements OnInit {
     this.monitorService.getIncidents(pageId).subscribe({
       next: data => {
         this.incidents.set(data);
+        this.incidentSelection.pruneTo(data.map(i => i.id));
+        this.syncIncidentSelectionCount();
       },
       error: err => console.error('Error fetching incidents:', err),
     });
@@ -478,6 +535,8 @@ export class Settings implements OnInit {
   deleteService(serviceId: string) {
     this.monitorService.deleteService(serviceId).subscribe({
       next: () => {
+        this.serviceSelection.deselect(serviceId);
+        this.syncServiceSelectionCount();
         const page = this.selectedPage();
         if (page) this.loadServices(page.id);
       },
@@ -491,6 +550,98 @@ export class Settings implements OnInit {
         });
       },
     });
+  }
+
+  protected isServiceSelected(id: string): boolean {
+    return this.serviceSelection.isSelected(id);
+  }
+
+  protected setServiceSelected(id: string, selected: boolean): void {
+    if (selected) {
+      this.serviceSelection.select(id);
+    } else {
+      this.serviceSelection.deselect(id);
+    }
+    this.syncServiceSelectionCount();
+  }
+
+  protected clearServiceSelection(): void {
+    this.serviceSelection.clear();
+    this.syncServiceSelectionCount();
+  }
+
+  protected async onServiceBulkAction(actionId: string): Promise<void> {
+    if (actionId !== 'delete' || !this.canMutateSites()) {
+      return;
+    }
+    const ids = this.serviceSelection.selected();
+    if (!ids.length) {
+      return;
+    }
+    const ok = await this.vikingDialog.openConfirm({
+      title: 'Delete services',
+      message: `Delete ${ids.length} monitored service${ids.length === 1 ? '' : 's'}? This cannot be undone.`,
+      type: 'confirm',
+      confirmBtnText: 'Delete',
+      confirmBtnColor: 'warn',
+    });
+    if (!ok) {
+      return;
+    }
+    for (const id of ids) {
+      this.deleteService(id);
+    }
+    this.clearServiceSelection();
+  }
+
+  private syncServiceSelectionCount(): void {
+    this.selectedServiceCount.set(this.serviceSelection.size());
+  }
+
+  protected isIncidentSelected(id: string): boolean {
+    return this.incidentSelection.isSelected(id);
+  }
+
+  protected setIncidentSelected(id: string, selected: boolean): void {
+    if (selected) {
+      this.incidentSelection.select(id);
+    } else {
+      this.incidentSelection.deselect(id);
+    }
+    this.syncIncidentSelectionCount();
+  }
+
+  protected clearIncidentSelection(): void {
+    this.incidentSelection.clear();
+    this.syncIncidentSelectionCount();
+  }
+
+  protected async onIncidentBulkAction(actionId: string): Promise<void> {
+    if (actionId !== 'delete' || !this.canMutateSites()) {
+      return;
+    }
+    const ids = this.incidentSelection.selected();
+    if (!ids.length) {
+      return;
+    }
+    const ok = await this.vikingDialog.openConfirm({
+      title: 'Delete incidents',
+      message: `Delete ${ids.length} incident${ids.length === 1 ? '' : 's'}? This cannot be undone.`,
+      type: 'confirm',
+      confirmBtnText: 'Delete',
+      confirmBtnColor: 'warn',
+    });
+    if (!ok) {
+      return;
+    }
+    for (const id of ids) {
+      this.deleteIncident(id);
+    }
+    this.clearIncidentSelection();
+  }
+
+  private syncIncidentSelectionCount(): void {
+    this.selectedIncidentCount.set(this.incidentSelection.size());
   }
 
   addIncident() {
@@ -528,6 +679,8 @@ export class Settings implements OnInit {
   deleteIncident(incidentId: string) {
     this.monitorService.deleteIncident(incidentId).subscribe({
       next: () => {
+        this.incidentSelection.deselect(incidentId);
+        this.syncIncidentSelectionCount();
         const page = this.selectedPage();
         if (page) this.loadIncidents(page.id);
       },

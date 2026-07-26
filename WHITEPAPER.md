@@ -60,9 +60,9 @@ Every production transport is cryptographically authenticated: HTTPS/HSTS at pub
 ### 2.3 Actors & workflows
 
 - **Anonymous visitors** read published status pages and the world-readable `platform-status` sentinel only (ABAC).
-- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA-verified session required for writes); may upgrade to **Pro** via Stripe; dashboards read FORJD projections/analytics through the Django BFF.
+- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA-verified session required for writes); may upgrade to **Pro** via Stripe; dashboards read FORJD projections/analytics through the Django BFF; may compose sealed-stream workflow YAML in **Pipeline** (`/pipeline`) and deploy files on FORJD (YAML remains SoT — see [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)).
 - **API integrators** stream data through DEML `/api/v1/ingest` using hashed API keys scoped to `account_id`; Django maps the account to a FORJD tenant and forwards sealed envelopes with `fjsvc_`.
-- **Platform operators** manage Vercel, Fly `deml-backend`, FORJD readiness, Firebase, Infisical/Fly secrets, and the internal vulnerability Kanban.
+- **Platform operators** manage Vercel, Fly `deml-backend`, FORJD readiness, Firebase, Infisical/Fly secrets, and the internal vulnerability Kanban; validate FORJD workflow YAML with `npm run validate:workflows` before reload.
 
 ### 2.4 Operational modes
 

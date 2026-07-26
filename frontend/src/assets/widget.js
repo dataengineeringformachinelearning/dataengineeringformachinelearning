@@ -497,7 +497,7 @@
       pointer-events: none !important;
     }
 
-    @media (min-width: 640px) {
+    @media (min-width: 600px) {
       .form-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }

@@ -1,14 +1,14 @@
 # Suite Visual Identity Completion — Enforcement Design
 
-| Field                          | Value                                                                                                                         |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Title**                      | UNIFICATION MANDATE Completion: Multi-Repo Visual Identity as Law                                                             |
-| **Author**                     | Grok Design (suite unification completion)                                                                                    |
-| **Date**                       | 2026-07-25                                                                                                                    |
-| **Status**                     | Draft (revision 3 — re-review polish: smoke script + lock path)                                                               |
-| **Supersedes (operationally)** | Passes 1–6 "done" claims where exploration finds residual divergence; Pass 6 = foundation complete, **not** identity complete |
-| **Canonical SoT**              | DEML `packages/viking-ui` (`@dataengineeringformachinelearning/viking-ui@9.7.3`)                                              |
-| **Related law**                | DEML `docs/SUITE_UI_UNIFICATION.md`, FORJD `docs/SUITE_UI_UNIFICATION.md`, `THEME.md`                                         |
+| Field                          | Value                                                                                                                                |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Title**                      | UNIFICATION MANDATE Completion: Multi-Repo Visual Identity as Law                                                                    |
+| **Author**                     | Grok Design (suite unification completion)                                                                                           |
+| **Date**                       | 2026-07-25                                                                                                                           |
+| **Status**                     | Draft (revision 4 — Pass 7 interaction identity partial: panel titles, control motion/disabled parity, `--fj-*` aliases; 2026-07-26) |
+| **Supersedes (operationally)** | Passes 1–6 "done" claims where exploration finds residual divergence; Pass 6 = foundation complete, **not** identity complete        |
+| **Canonical SoT**              | DEML `packages/viking-ui` (`@dataengineeringformachinelearning/viking-ui@9.7.3`)                                                     |
+| **Related law**                | DEML `docs/SUITE_UI_UNIFICATION.md`, FORJD `docs/SUITE_UI_UNIFICATION.md`, `THEME.md`                                                |
 
 ---
 

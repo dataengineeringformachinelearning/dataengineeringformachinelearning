@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Title, Meta } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -37,20 +36,30 @@ import {
   VikingSection,
   VikingSpinner,
   VikingCallout,
+  VikingPageSkeleton,
+  VikingOnboardingChecklist,
+  VikingStreamStatus,
+  VikingSectionTemplate,
+  VikingActivityList,
+  VikingHudPanel,
+  type VikingOnboardingStep,
+  type SuiteActivityEntry,
 } from '@dataengineeringformachinelearning/viking-ui';
-import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import {
   FORJD_FALLBACK_BODY,
   FORJD_UNAVAILABLE_BODY,
+  FORJD_UPDATES_DELAYED_HEADING,
   LOAD_FAILED_BODY,
   OFFLINE_BODY,
   OFFLINE_HEADING,
   STATUS_RETRY_LABEL,
 } from '../../core/continuity-copy';
+import { streamStatusStory } from '../../core/stream-status';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { MonitorService } from '../../services/monitor.service';
+import { AnalyticsQueryService } from '../../services/analytics-query.service';
 import { OnboardingService } from '../../services/onboarding.service';
 import { LiveUpdatesService } from '../../services/live-updates.service';
 import { ConnectivityService } from '../../services/connectivity.service';
@@ -147,13 +156,53 @@ type DashboardOverviewResponse = {
     VikingChartCardHeader,
     VikingSection,
     VikingSpinner,
+    VikingPageSkeleton,
     VikingCallout,
+    VikingOnboardingChecklist,
+    VikingStreamStatus,
+    VikingSectionTemplate,
+    VikingActivityList,
+    VikingHudPanel,
   ],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard implements OnInit, OnDestroy {
-  private http = inject(HttpClient);
+  protected readonly trackThreatById = (item: Vulnerability, _index: number): string => item.id;
+  /** First-time status-page checklist (ADR-0025) — wizard remains the heavy path. */
+  protected readonly onboardingSteps: readonly VikingOnboardingStep[] = [
+    {
+      id: 'welcome',
+      title: 'Open the setup wizard',
+      description: 'Walk through naming a site, adding a health check, and publishing.',
+    },
+    {
+      id: 'site',
+      title: 'Name your status page',
+      description: 'Create a slug your customers can bookmark.',
+      routerLink: '/settings',
+      actionLabel: 'Sites settings',
+    },
+    {
+      id: 'endpoint',
+      title: 'Add a health check',
+      description: 'Monitor an HTTPS endpoint so uptime telemetry can populate.',
+      routerLink: '/sites',
+      actionLabel: 'Go to Sites',
+    },
+    {
+      id: 'publish',
+      title: 'Publish when ready',
+      description: 'Make the public status page live after checks look healthy.',
+      routerLink: '/settings',
+      actionLabel: 'Publish',
+    },
+  ];
+  private readonly onboardingTick = signal(0);
+  protected readonly showOnboardingGuide = computed(() => {
+    this.onboardingTick();
+    return this.onboardingService.shouldShowGuide();
+  });
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private titleService = inject(Title);
@@ -163,6 +212,7 @@ export class Dashboard implements OnInit, OnDestroy {
   public settingsService = inject(SettingsService);
   public authService = inject(AuthService);
   private monitorService = inject(MonitorService);
+  private analyticsQuery = inject(AnalyticsQueryService);
   private onboardingService = inject(OnboardingService);
   private liveUpdates = inject(LiveUpdatesService);
   readonly connectivity = inject(ConnectivityService);
@@ -170,6 +220,19 @@ export class Dashboard implements OnInit, OnDestroy {
   readonly offlineHeading = OFFLINE_HEADING;
   readonly offlineBody = OFFLINE_BODY;
   readonly retryLabel = STATUS_RETRY_LABEL;
+  readonly updatesDelayedHeading = FORJD_UPDATES_DELAYED_HEADING;
+
+  /** Calm near-real-time chip — never claims "Live". */
+  readonly streamStatus = computed(() =>
+    streamStatusStory({
+      offline: this.connectivity.offline(),
+      streamActive: this.liveUpdates.streamActive(),
+      connected: this.liveUpdates.connected(),
+      paused: this.liveUpdates.paused(),
+      streamDegraded: this.liveUpdates.degraded(),
+      metricsDegraded: this.metricsDegraded(),
+    }),
+  );
 
   activeTab = signal<DashboardTab>('overview');
   isLoading = signal(true);
@@ -207,6 +270,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   private intervalId: ReturnType<typeof setInterval> | undefined;
   private liveRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+  private unsubOnboarding: (() => void) | undefined;
   private readonly queryParams = toSignal(this.route.queryParamMap, {
     requireSync: true,
   });
@@ -230,6 +294,32 @@ export class Dashboard implements OnInit, OnDestroy {
       .vulnerabilities()
       .filter(v => v.status !== 'Resolved' && v.status !== 'False Positive')
       .slice(0, 6),
+  );
+
+  /** Ops list ladder: title → severity/status → timestamp (never flat pills-first). */
+  recentThreatEntries = computed<readonly SuiteActivityEntry[]>(() =>
+    this.recentThreats().map(v => ({
+      id: v.id,
+      at: Date.parse(v.updated_at || v.created_at) || Date.now(),
+      kind: 'threat',
+      label: v.title,
+      detail: `${v.severity} · ${v.status}`,
+      source: 'deml' as const,
+    })),
+  );
+
+  threatQueueEntries = computed<readonly SuiteActivityEntry[]>(() =>
+    this.vulnService
+      .vulnerabilities()
+      .slice(0, 25)
+      .map(v => ({
+        id: v.id,
+        at: Date.parse(v.updated_at || v.created_at) || Date.now(),
+        kind: 'threat',
+        label: v.title,
+        detail: `${v.severity} · ${v.status}${v.customer_id ? ` · ${v.customer_id}` : ''}`,
+        source: 'deml' as const,
+      })),
   );
 
   healthScore = computed(() => {
@@ -314,6 +404,9 @@ export class Dashboard implements OnInit, OnDestroy {
       this.loadError.set(FORJD_FALLBACK_BODY);
     });
 
+    // Optimistic: seed from SWR so revisits paint KPIs before network returns.
+    this.seedFromCache();
+
     afterNextRender(() => {
       if (this.isBrowser) {
         this.loadTenants();
@@ -324,17 +417,44 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
+  private seedFromCache(): void {
+    const tenants = this.analyticsQuery.peekTenants<TenantListResponse>();
+    if (tenants?.status === 'success' && tenants.data?.length) {
+      this.tenantOptions.set(
+        tenants.data.map(tenant => ({
+          value: tenant.id,
+          label: tenant.is_platform ? `${tenant.name} (Global)` : tenant.name,
+        })),
+      );
+      if (!this.selectedTenantId()) {
+        const userTenant = tenants.data.find(tenant => !tenant.is_platform);
+        this.selectedTenantId.set(userTenant ? userTenant.id : tenants.data[0].id);
+      }
+    }
+    const overview = this.analyticsQuery.peekOverview<DashboardOverviewResponse>(
+      this.selectedTenantId(),
+      this.selectedSite(),
+    );
+    if (overview) {
+      this.applyOverviewResponse(overview);
+    }
+  }
+
   ngOnInit() {
     this.titleService.setTitle('Dashboard - DEML');
     this.metaService.updateTag({
       name: 'description',
       content: 'Unified security and performance dashboard for your monitored sites.',
     });
+    this.unsubOnboarding = this.onboardingService.subscribe(() => {
+      this.onboardingTick.update(n => n + 1);
+    });
   }
 
   ngOnDestroy() {
     if (this.intervalId) clearInterval(this.intervalId);
     if (this.liveRefreshTimer) clearTimeout(this.liveRefreshTimer);
+    this.unsubOnboarding?.();
     this.liveUpdates.stop();
   }
 
@@ -359,6 +479,7 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   openOnboardingWizard() {
+    this.onboardingService.completeStep('welcome');
     void this.onboardingService.openWizard()?.then(() => {
       this.loadUserPages(false);
     });
@@ -400,7 +521,7 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   private loadTenants() {
-    this.http.get<TenantListResponse>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
+    this.analyticsQuery.getTenants<TenantListResponse>().subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const tenants = response.data;
@@ -429,89 +550,89 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
+  private applyOverviewResponse(response: DashboardOverviewResponse): void {
+    if (response.status === 'success' && response.data) {
+      const degraded = response?.degraded === true || response?.code === 'forjd_degraded';
+      const { benchmarking, ces, user_metrics } = response.data;
+      this.cesLevel.set(ces?.level ?? 0);
+      this.threatLevel.set(ces?.threat ?? 0);
+      this.slaLevel.set(ces?.sla ?? 0);
+      this.stabilityLevel.set(ces?.stability ?? 0);
+      this.temporalForecast.set(ces?.spiking_temporal_forecast ?? 0);
+      this.p99Latency.set(user_metrics?.p99_latency_ms ?? 0);
+      this.uptimePercent.set(user_metrics?.uptime_percent ?? 0);
+      this.totalRequests.set(user_metrics?.total_requests_24h ?? 0);
+      this.activeIncidents.set(user_metrics?.active_incidents ?? 0);
+      this.uniqueVisitors.set(user_metrics?.unique_visitors ?? 0);
+      this.benchmarkSummary.set(benchmarking?.current_scope ?? null);
+      this.metricsReady.set(!degraded);
+      this.metricsDegraded.set(degraded);
+      this.loadError.set(degraded ? FORJD_FALLBACK_BODY : null);
+
+      if (user_metrics?.available_sites) {
+        this.siteOptions.set([
+          { value: 'All', label: 'All Sites' },
+          ...user_metrics.available_sites.map((s: string) => ({ value: s, label: s })),
+        ]);
+      }
+
+      const timeSeries = user_metrics?.time_series || [];
+      this.latencySeries.set(
+        toVikingLineSeries(
+          'Latency (ms)',
+          timeSeries.map((d: { latency: number }) => d.latency ?? 0),
+        ),
+      );
+
+      const uptimeSeriesData = user_metrics?.uptime_series || [];
+      this.uptimeSeries.set(
+        toVikingLineSeries(
+          'Uptime (%)',
+          uptimeSeriesData.map((d: { uptime: number }) => d.uptime ?? 100),
+          'success',
+        ),
+      );
+
+      const threats = user_metrics?.threat_severity || [];
+      this.threatDonutSegments.set(
+        toVikingDonutSegments(
+          threats.map((d: { severity: string }) => d.severity),
+          threats.map((d: { count: number }) => d.count ?? 0),
+        ),
+      );
+
+      const alerts = user_metrics?.security_alerts || [];
+      this.threatTrendSeries.set(
+        toVikingLineSeries(
+          'Threat events',
+          alerts.map((d: { count: number }) => d.count ?? 0),
+          'warning',
+        ),
+      );
+      this.securityAlertSeries.set(
+        toVikingBarSeries(
+          'Anomalies',
+          alerts.map((d: { count: number }) => d.count ?? 0),
+          'warning',
+        ),
+      );
+    }
+    this.isLoading.set(false);
+    this.isRetrying.set(false);
+  }
+
   private loadAnalyticsData() {
-    this.isLoading.set(true);
-    this.loadError.set(null);
-    let url = API_ENDPOINTS.ANALYTICS.OVERVIEW;
-    const params: string[] = [];
     const tenantId = this.selectedTenantId();
     const site = this.selectedSite();
-    if (tenantId) params.push(`tenant_id=${tenantId}`);
-    if (site && site !== 'All') {
-      params.push(`site_url=${encodeURIComponent(site)}`);
+    // Keep prior KPIs visible while SWR revalidates.
+    if (!this.metricsReady()) {
+      this.isLoading.set(true);
     }
-    if (params.length > 0) url += '?' + params.join('&');
+    this.loadError.set(null);
 
-    this.http.get<DashboardOverviewResponse>(url).subscribe({
+    this.analyticsQuery.getOverview<DashboardOverviewResponse>(tenantId, site).subscribe({
       next: response => {
-        if (response.status === 'success' && response.data) {
-          const degraded = response?.degraded === true || response?.code === 'forjd_degraded';
-          const { benchmarking, ces, user_metrics } = response.data;
-          this.cesLevel.set(ces?.level ?? 0);
-          this.threatLevel.set(ces?.threat ?? 0);
-          this.slaLevel.set(ces?.sla ?? 0);
-          this.stabilityLevel.set(ces?.stability ?? 0);
-          this.temporalForecast.set(ces?.spiking_temporal_forecast ?? 0);
-          this.p99Latency.set(user_metrics?.p99_latency_ms ?? 0);
-          this.uptimePercent.set(user_metrics?.uptime_percent ?? 0);
-          this.totalRequests.set(user_metrics?.total_requests_24h ?? 0);
-          this.activeIncidents.set(user_metrics?.active_incidents ?? 0);
-          this.uniqueVisitors.set(user_metrics?.unique_visitors ?? 0);
-          this.benchmarkSummary.set(benchmarking?.current_scope ?? null);
-          this.metricsReady.set(!degraded);
-          this.metricsDegraded.set(degraded);
-          this.loadError.set(degraded ? FORJD_FALLBACK_BODY : null);
-
-          if (user_metrics?.available_sites) {
-            this.siteOptions.set([
-              { value: 'All', label: 'All Sites' },
-              ...user_metrics.available_sites.map((s: string) => ({ value: s, label: s })),
-            ]);
-          }
-
-          const timeSeries = user_metrics?.time_series || [];
-          this.latencySeries.set(
-            toVikingLineSeries(
-              'Latency (ms)',
-              timeSeries.map((d: { latency: number }) => d.latency ?? 0),
-            ),
-          );
-
-          const uptimeSeriesData = user_metrics?.uptime_series || [];
-          this.uptimeSeries.set(
-            toVikingLineSeries(
-              'Uptime (%)',
-              uptimeSeriesData.map((d: { uptime: number }) => d.uptime ?? 100),
-              'success',
-            ),
-          );
-
-          const threats = user_metrics?.threat_severity || [];
-          this.threatDonutSegments.set(
-            toVikingDonutSegments(
-              threats.map((d: { severity: string }) => d.severity),
-              threats.map((d: { count: number }) => d.count ?? 0),
-            ),
-          );
-
-          const alerts = user_metrics?.security_alerts || [];
-          this.threatTrendSeries.set(
-            toVikingLineSeries(
-              'Threat events',
-              alerts.map((d: { count: number }) => d.count ?? 0),
-              'warning',
-            ),
-          );
-          this.securityAlertSeries.set(
-            toVikingBarSeries(
-              'Anomalies',
-              alerts.map((d: { count: number }) => d.count ?? 0),
-              'warning',
-            ),
-          );
-        }
-        this.isLoading.set(false);
-        this.isRetrying.set(false);
+        this.applyOverviewResponse(response);
       },
       error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
         this.metricsReady.set(false);

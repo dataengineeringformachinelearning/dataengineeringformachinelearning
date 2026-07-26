@@ -4,7 +4,7 @@
 .docs-bento-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-3, 24px);
+  gap: var(--viking-space-3, var(--viking-space-3));
   width: 100%;
 
   @media (min-width: 768px) {
@@ -17,10 +17,10 @@
   background: var(--viking-surface);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-xl, 24px);
-  padding: var(--viking-space-4, 32px);
+  padding: var(--viking-space-4, var(--viking-space-4));
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-3, 24px);
+  gap: var(--viking-space-3, var(--viking-space-3));
   box-shadow: var(--viking-shadow-sm);
   transition:
     transform var(--viking-duration-normal, 0.3s) ease,
@@ -48,7 +48,7 @@
 .docs-bento-card__body {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-2, var(--viking-space-2));
   min-width: 0;
 }
 
@@ -154,7 +154,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--viking-space-1);
-  min-height: var(--viking-control-height-sm);
+  min-height: var(--viking-touch-target-min);
   padding: 0 var(--viking-space-2);
   border-radius: var(--viking-radius);
   color: var(--viking-text-muted);
@@ -162,6 +162,10 @@
   font-weight: var(--viking-font-weight-semibold);
   text-decoration: none;
   white-space: nowrap;
+
+  @media (min-width: 768px) {
+    min-height: var(--viking-control-height-sm);
+  }
 }
 
 .outline-link:hover,
@@ -217,9 +221,16 @@
   }
 }
 
+/* Stay 2-up through desktop — 4 skinny cards read as shrunk, not intentional */
 @media (min-width: 1024px) {
   .docs-quick-start-steps {
-    grid-template-columns: repeat(4, 1fr);
+    gap: var(--viking-space-5);
+  }
+}
+
+@media (min-width: 1440px) {
+  .docs-quick-start-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

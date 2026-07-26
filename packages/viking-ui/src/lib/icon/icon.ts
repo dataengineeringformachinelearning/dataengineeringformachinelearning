@@ -212,6 +212,12 @@ const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);
           transform: rotate(360deg);
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        :host(.viking-icon-spin) svg {
+          animation: none;
+        }
+      }
     `,
   ],
 })

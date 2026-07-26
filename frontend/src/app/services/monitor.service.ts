@@ -1,7 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { finalize, Observable, shareReplay } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
+import { SwrCacheService } from '../core/cache/swr-cache.service';
 
 export interface EndpointData {
   id: string;
@@ -79,7 +80,7 @@ export const publicStatusPageTag = (slug: string): string => {
 })
 export class MonitorService {
   private http = inject(HttpClient);
-  private statusPagesInFlight?: Observable<StatusPageData[]>;
+  private swr = inject(SwrCacheService);
 
   public incidentsMap = signal<Record<string, IncidentData[]>>({});
   public servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
@@ -143,25 +144,39 @@ export class MonitorService {
   }
 
   getStatusPages(): Observable<StatusPageData[]> {
-    if (this.statusPagesInFlight) return this.statusPagesInFlight;
+    const key = this.swr.key('status:pages', {});
+    return this.swr.observe(
+      key,
+      () =>
+        this.http.get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, {
+          withCredentials: true,
+        }),
+      { freshMs: 30_000, staleMs: 5 * 60_000, scope: 'auth' },
+    );
+  }
 
-    this.statusPagesInFlight = this.http
-      .get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, {
-        withCredentials: true,
-      })
-      .pipe(
-        finalize(() => (this.statusPagesInFlight = undefined)),
-        shareReplay({ bufferSize: 1, refCount: false }),
-      );
-    return this.statusPagesInFlight;
+  /** Synchronous SWR peek for optimistic directory / settings paint. */
+  peekStatusPages(): StatusPageData[] | undefined {
+    return this.swr.get<StatusPageData[]>(this.swr.key('status:pages', {}));
   }
 
   getStatusPageBySlug(slug: string) {
     // BFF resolves domain-style / stem aliases (joealongi.dev → joealongi-dev).
-    return this.http.get<StatusPageData>(
-      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/slug/${encodeURIComponent(slug)}`,
-      { withCredentials: true },
+    const key = this.swr.key('status:slug', { slug });
+    return this.swr.observe(
+      key,
+      () =>
+        this.http.get<StatusPageData>(
+          `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/slug/${encodeURIComponent(slug)}`,
+          { withCredentials: true },
+        ),
+      { freshMs: 60_000, staleMs: 10 * 60_000, scope: 'public-status' },
     );
+  }
+
+  private invalidateStatusReads(): void {
+    this.swr.invalidate('status:pages');
+    this.swr.invalidate('status:slug');
   }
 
   createStatusPage(data: {
@@ -173,9 +188,11 @@ export class MonitorService {
     microsoft_clarity_id?: string;
     cloudflare_analytics_id?: string;
   }) {
-    return this.http.post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, {
-      withCredentials: true,
-    });
+    return this.http
+      .post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, {
+        withCredentials: true,
+      })
+      .pipe(tap(() => this.invalidateStatusReads()));
   }
 
   updateStatusPage(
@@ -190,17 +207,19 @@ export class MonitorService {
       cloudflare_analytics_id?: string;
     },
   ) {
-    return this.http.put<StatusPageData>(
-      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`,
-      data,
-      { withCredentials: true },
-    );
+    return this.http
+      .put<StatusPageData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, data, {
+        withCredentials: true,
+      })
+      .pipe(tap(() => this.invalidateStatusReads()));
   }
 
   deleteStatusPage(pageId: string) {
-    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, {
-      withCredentials: true,
-    });
+    return this.http
+      .delete(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, {
+        withCredentials: true,
+      })
+      .pipe(tap(() => this.invalidateStatusReads()));
   }
 
   getServices(pageId: string) {

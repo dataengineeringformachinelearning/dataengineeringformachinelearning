@@ -234,13 +234,29 @@ See also the suite connection map: [`CONNECTION_MAP.md`](CONNECTION_MAP.md).
 
 ## Operator product paths (Angular → Django → FORJD)
 
-| Surface       | DEML route family                         | Upstream FORJD ownership                                     |
-| ------------- | ----------------------------------------- | ------------------------------------------------------------ |
-| Dashboard     | `/dashboard` → `/api/v1/analytics/*`      | Analytics overview, CES aggregates, projection change ticks  |
-| Analytics     | `/analytics` + SSE live                   | Projections, ML scores, incidents/playbooks via BFF adapters |
-| Status        | `/status`, `/explore`, system-status APIs | `/api/v1/status/*` (published pages world-readable via BFF)  |
-| Settings      | `/settings`                               | DEML Postgres only (billing/consent/identity); no FORJD UI   |
-| Sealed ingest | `/api/v1/ingest` (+ batch)                | FastAPI ingest → Prefect + Rust sealed pipeline (Python soft fallback) |
+| Surface         | DEML route family                         | Upstream FORJD ownership                                                   |
+| --------------- | ----------------------------------------- | -------------------------------------------------------------------------- |
+| Dashboard       | `/dashboard` → `/api/v1/analytics/*`      | Analytics overview, CES aggregates, projection change ticks                |
+| Analytics       | `/analytics` + SSE live                   | Projections, ML scores, incidents/playbooks via BFF adapters               |
+| Status          | `/status`, `/explore`, system-status APIs | `/api/v1/status/*` (published pages world-readable via BFF)                |
+| Settings        | `/settings`                               | DEML Postgres only (billing/consent/identity); no FORJD UI                 |
+| Sealed ingest   | `/api/v1/ingest` (+ batch)                | FastAPI ingest → Prefect + Rust sealed pipeline (Python soft fallback)     |
+| Pipeline Studio | `/pipeline` → `GET /api/v1/workflows`     | Compose/export FORJD workflow YAML (read catalog only; no browser persist) |
+
+### Pipeline Studio → FORJD deploy loop
+
+DEML **Pipeline** (`/pipeline`) is a compose surface, not a workflow write API:
+
+1. Open **Pipeline** (sidebar) or Account → **Open Pipeline studio**.
+2. Seed from `GET /api/v1/workflows` (BFF → FORJD catalog + `pipeline_steps` cards).
+3. Tune identity, detectors, projection; copy or download YAML when client checks are green.
+4. Place the file under FORJD `backend/workflows/` (not `examples/`).
+5. On the FORJD host: `npm run validate:workflows`, then reload/restart the API.
+6. Match ingest `content_type` / optional `workflow_id`. Django may rewrite product-local
+   wire ids (`deml_*` → `threat_*`) before the network call — see above.
+
+YAML remains the source of truth on FORJD. Full extension map (detectors, add-ons,
+Rust parity): FORJD [`docs/EXTENDING.md`](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md).
 
 FORJD internals that DEML never runs locally: **Prefect 3** (YAML workflows),
 the Rust **`forjd-engine`** sealed hot path (dependency-free Python soft
@@ -386,3 +402,4 @@ Hosts: Angular on Vercel (`docs/VERCEL.md`); Django on Fly (`docs/FLY.md`).
 10. SIEM correlation and SOAR action ACK/retry preserve stable run/action ids across retries.
 11. Export create/detail/download returns a durable job and an expiring private signed URL.
 12. Per-principal and per-account quotas return bounded `429` responses without cross-tenant starvation.
+13. Pipeline Studio exports are file-deployed on FORJD (`validate:workflows`); DEML never persists workflow YAML.

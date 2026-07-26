@@ -6,6 +6,7 @@ import {
   signal,
   viewChild,
 } from "@angular/core";
+import { prefersReducedMotion } from "../../core/theme";
 import { VikingIcon } from "../icon/icon";
 
 /** A single slide inside viking-carousel. */
@@ -42,7 +43,9 @@ export class VikingCarouselSlide {}
       tabindex="0"
       role="group"
       aria-label="Carousel slides"
+      aria-roledescription="carousel"
       (scroll)="onScroll()"
+      (keydown)="onViewportKeydown($event)"
     >
       <ng-content />
     </div>
@@ -177,6 +180,15 @@ export class VikingCarouselSlide {}
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
       }
+      @media (prefers-reduced-motion: reduce) {
+        .viking-carousel-viewport {
+          scroll-behavior: auto;
+        }
+        .viking-carousel-nav:hover:not(:disabled),
+        .viking-carousel-nav:active:not(:disabled) {
+          transform: none;
+        }
+      }
     `,
   ],
 })
@@ -186,21 +198,44 @@ export class VikingCarousel {
 
   protected readonly slides = contentChildren(VikingCarouselSlide);
   protected readonly index = signal(0);
+  private scrollRaf = 0;
 
   protected goTo = (target: number): void => {
     const clamped = Math.min(this.slides().length - 1, Math.max(0, target));
     const element = this.viewport().nativeElement;
+    // Read once, then write — avoid interleaved layout in a loop.
+    const width = element.clientWidth;
     element.scrollTo({
-      left: clamped * element.clientWidth,
-      behavior: "smooth",
+      left: clamped * width,
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
     });
     this.index.set(clamped);
   };
 
-  protected onScroll = (): void => {
-    const element = this.viewport().nativeElement;
-    if (element.clientWidth > 0) {
-      this.index.set(Math.round(element.scrollLeft / element.clientWidth));
+  /** Switch / keyboard: arrows move slides when the viewport is focused. */
+  protected onViewportKeydown = (event: KeyboardEvent): void => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      this.goTo(this.index() - 1);
+      return;
     }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      this.goTo(this.index() + 1);
+    }
+  };
+
+  protected onScroll = (): void => {
+    if (this.scrollRaf) {
+      return;
+    }
+    this.scrollRaf = requestAnimationFrame(() => {
+      this.scrollRaf = 0;
+      const element = this.viewport().nativeElement;
+      const width = element.clientWidth;
+      if (width > 0) {
+        this.index.set(Math.round(element.scrollLeft / width));
+      }
+    });
   };
 }

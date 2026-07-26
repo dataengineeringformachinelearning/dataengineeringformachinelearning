@@ -17,10 +17,19 @@ export interface VikingColumn {
   width?: string;
 }
 
-export interface VikingTableRow {
-  id: string;
-  [key: string]: unknown;
-}
+/** Primitive cell values for table row records (not the row component). */
+export type VikingTableCellValue =
+  | string
+  | number
+  | boolean
+  | bigint
+  | null
+  | undefined;
+
+/** Data row for table consumers — distinct from the `VikingTableRow` component. */
+export type VikingTableRecord = {
+  readonly id: string;
+} & Record<string, VikingTableCellValue>;
 
 export type VikingSortDirection = "asc" | "desc" | null;
 
@@ -35,31 +44,38 @@ export type VikingSortDirection = "asc" | "desc" | null;
   template: `
     <tr class="viking-table-header">
       @if (selectable()) {
-        <th class="viking-table-header__select">
+        <th class="viking-table-header__select" scope="col">
           <input
             type="checkbox"
             class="viking-table-header__checkbox"
             [checked]="allSelected()"
             [indeterminate]="someSelected()"
             (change)="toggleSelectAll($event)"
+            aria-label="Select all rows"
           />
         </th>
       }
       @for (column of columns(); track column.id) {
         <th
           class="viking-table-header__cell"
+          scope="col"
           [style.width]="column.width"
           [class.viking-table-header__cell--sortable]="column.sortable"
+          [attr.aria-sort]="ariaSort(column.id)"
         >
           @if (column.sortable) {
             <button
               type="button"
               class="viking-table-header__sort-button"
+              [attr.aria-label]="sortLabel(column)"
               (click)="sortColumn(column.id)"
             >
               <span>{{ column.label }}</span>
               <viking-icon
                 class="viking-table-header__sort-icon"
+                [class.viking-table-header__sort-icon--active]="
+                  sortColumnId() === column.id && !!sortDirection()
+                "
                 [name]="getSortIcon(column.id)"
                 [size]="16"
               />
@@ -116,11 +132,16 @@ export type VikingSortDirection = "asc" | "desc" | null;
         text-transform: uppercase;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 0;
+        min-height: var(--viking-touch-target-min, 44px);
+        padding: 0 var(--viking-space-1);
         transition: var(--viking-transition);
       }
       .viking-table-header__sort-button:hover {
         color: var(--viking-text);
+      }
+      .viking-table-header__sort-button:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-table-header__sort-icon {
         opacity: 0.4;
@@ -141,6 +162,8 @@ export class VikingTableHeader {
   readonly selectable = input<boolean>(false);
   readonly allSelected = input<boolean>(false);
   readonly someSelected = input<boolean>(false);
+  readonly sortColumnId = input<string | null>(null);
+  readonly sortDirection = input<VikingSortDirection>(null);
 
   readonly selectionChange = output<boolean>();
   readonly sortChange = output<{
@@ -154,11 +177,34 @@ export class VikingTableHeader {
   }
 
   protected getSortIcon(columnId: string): string {
-    return "chevron-up";
+    if (this.sortColumnId() !== columnId) return "chevron-up";
+    return this.sortDirection() === "desc" ? "chevron-down" : "chevron-up";
+  }
+
+  protected ariaSort(columnId: string): string | null {
+    if (this.sortColumnId() !== columnId || !this.sortDirection()) return null;
+    return this.sortDirection() === "desc" ? "descending" : "ascending";
+  }
+
+  protected sortLabel(column: VikingColumn): string {
+    if (this.sortColumnId() !== column.id || !this.sortDirection()) {
+      return `Sort by ${column.label}`;
+    }
+    const next = this.sortDirection() === "asc" ? "descending" : "ascending";
+    return `Sort by ${column.label}, currently ${this.sortDirection() === "asc" ? "ascending" : "descending"}; activate for ${next}`;
   }
 
   protected sortColumn(columnId: string): void {
-    this.sortChange.emit({ column: columnId, direction: "asc" });
+    let direction: VikingSortDirection = "asc";
+    if (this.sortColumnId() === columnId) {
+      direction =
+        this.sortDirection() === "asc"
+          ? "desc"
+          : this.sortDirection() === "desc"
+            ? null
+            : "asc";
+    }
+    this.sortChange.emit({ column: columnId, direction });
   }
 }
 
@@ -180,6 +226,7 @@ export class VikingTableHeader {
             class="viking-table-row__checkbox"
             [checked]="selected()"
             (change)="selected.update((s) => !s)"
+            [attr.aria-label]="selected() ? 'Deselect row' : 'Select row'"
           />
         </td>
       }
@@ -192,6 +239,7 @@ export class VikingTableHeader {
             type="button"
             class="viking-table-row__expand-trigger"
             [attr.aria-expanded]="expanded()"
+            [attr.aria-label]="expanded() ? 'Collapse row' : 'Expand row'"
             (click)="expanded.update((value) => !value)"
           >
             <viking-icon
@@ -243,7 +291,7 @@ export class VikingTableHeader {
         border-bottom: 1px solid var(--viking-border-subtle);
       }
       .viking-table-row__cell--expand {
-        width: 32px;
+        width: var(--viking-touch-target-min, 44px);
         padding: var(--viking-space-1);
       }
       .viking-table-row__cell--expandable {
@@ -253,8 +301,11 @@ export class VikingTableHeader {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
+        /* WCAG 2.5.8 + suite touch floor */
+        width: var(--viking-touch-target-min, 44px);
+        height: var(--viking-touch-target-min, 44px);
+        min-width: var(--viking-touch-target-min, 44px);
+        min-height: var(--viking-touch-target-min, 44px);
         border: none;
         background: transparent;
         color: var(--viking-text-muted);
@@ -266,6 +317,10 @@ export class VikingTableHeader {
       .viking-table-row__expand-trigger:hover {
         color: var(--viking-text);
         background: var(--viking-accent-soft);
+      }
+      .viking-table-row__expand-trigger:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-table-row__expand {
         background: var(--viking-surface-alt);

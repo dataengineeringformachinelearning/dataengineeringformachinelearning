@@ -1,6 +1,6 @@
-// Font faces live in suite-fonts.css (single SoT — same Inter as forjd.co).
-// Bundles prepend suite-fonts via build-css.mjs. Relative fallback below covers
-// Django/marketing asset trees where CSS sits next to fonts/inter/.
+// Relative @font-face for viking-ui.css / Django / marketing asset trees
+// (CSS sits next to fonts/inter/). deml.app uses suite-fonts.css instead
+// (absolute /fonts/inter/) — do not also @use this from viking-app.scss.
 
 $font-base-path: 'fonts/inter' !default;
 
@@ -17,7 +17,7 @@ $font-base-path: 'fonts/inter' !default;
   font-family: 'Inter';
   font-style: italic;
   font-weight: 100 900;
-  font-display: swap;
+  font-display: optional;
   src: url('#{$font-base-path}/InterVariable-Italic.woff2') format('woff2 supports variations'),
     url('#{$font-base-path}/InterVariable-Italic.woff2') format('woff2-variations');
 }

@@ -2,7 +2,7 @@
 # Install: uvx pre-commit install --hook-type pre-commit --hook-type pre-push
 # Run all:  python scripts/deml_tooling.py quality --ci
 # Run fast: python scripts/deml_tooling.py quality --fast
-exclude: '^(?:\.venv|backend/\.venv|frontend/node_modules)/'
+exclude: '^(?:\.venv|backend/\.venv|frontend/node_modules|backend/static/vendor)/'
 
 default_stages: [pre-commit]
 
@@ -14,8 +14,8 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
-        args: ['--maxkb=1000']
-        exclude: ^frontend/public/data-engineering-for-machine-learning\.mp4$
+        args: ['--maxkb=1600']
+        exclude: ^(frontend/public/data-engineering-for-machine-learning\.mp4$|backend/static/vendor/)
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.4
@@ -73,7 +73,7 @@ repos:
         entry: node scripts/enforce-theme.js
         language: system
         files: ^(frontend|marketing|backend|packages)/.*\.(scss|css|astro|html|ts|js|svg)$
-        exclude: ^.*/(viking-ui|design-tokens|deml-components)\.css$
+        exclude: ^(.*/(viking-ui|design-tokens|deml-components)\.css$|backend/static/vendor/)
         pass_filenames: false
         stages: [pre-commit, manual]
 

@@ -42,6 +42,8 @@ export class VikingInputWc extends HTMLElementBase {
       "error",
       "aria-label",
       "aria-describedby",
+      "aria-invalid",
+      "aria-required",
       "bare",
     ];
   }
@@ -153,12 +155,19 @@ export class VikingInputWc extends HTMLElementBase {
     const minLength = escapeHtml(this.getAttribute("minlength") ?? "");
     const maxLength = escapeHtml(this.getAttribute("maxlength") ?? "");
     const pattern = escapeHtml(this.getAttribute("pattern") ?? "");
-    const error = this.getAttribute("error") ?? "";
-    const required = readBoolAttr(this, "required");
+    const invalid =
+      this.hasAttribute("error") ||
+      this.getAttribute("aria-invalid") === "true";
+    const required =
+      readBoolAttr(this, "required") ||
+      this.getAttribute("aria-required") === "true";
     const readonly = readBoolAttr(this, "readonly");
+    const descriptionFallback = this.resolveDescribedByText();
     const showClear =
       this.clearable && value.length > 0 && !this.loading && !this.bare;
     // name + autocomplete on the native input enable password managers / SMS OTP autofill.
+    // aria-description bridges light-DOM message ids into the shadow input when
+    // cross-root aria-describedby resolution is unavailable.
     const nativeAttrs = `
       ${name ? `name="${name}"` : ""}
       ${this.disabled || this.loading ? "disabled" : ""}
@@ -166,8 +175,9 @@ export class VikingInputWc extends HTMLElementBase {
       ${readonly ? "readonly" : ""}
       aria-label="${escapeHtml(label)}"
       ${describedBy ? `aria-describedby="${describedBy}"` : ""}
+      ${descriptionFallback ? `aria-description="${escapeHtml(descriptionFallback)}"` : ""}
       ${this.loading ? 'aria-busy="true"' : ""}
-      ${error ? 'aria-invalid="true"' : ""}
+      ${invalid ? 'aria-invalid="true"' : ""}
       ${autocomplete ? `autocomplete="${autocomplete}"` : ""}
       ${minLength ? `minlength="${minLength}"` : ""}
       ${maxLength ? `maxlength="${maxLength}"` : ""}
@@ -209,6 +219,52 @@ export class VikingInputWc extends HTMLElementBase {
 
     const clearBtn = this.shadow.querySelector(".viking-input-clear");
     clearBtn?.addEventListener("click", this.onClear);
+    this.syncInternalsAria();
+  }
+
+  /** Resolve light-DOM description/error text for shadow-input fallback. */
+  private resolveDescribedByText(): string {
+    const raw = this.getAttribute("aria-describedby") ?? "";
+    if (!raw.trim()) return "";
+    const root =
+      this.getRootNode() instanceof Document
+        ? (this.getRootNode() as Document)
+        : document;
+    return raw
+      .split(/\s+/)
+      .map((id) => root.getElementById(id)?.textContent?.trim() ?? "")
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  /** Prefer ElementInternals ARIA reflection when the engine supports it. */
+  private syncInternalsAria(): void {
+    if (!this.internals) return;
+    const internals = this.internals as ElementInternals & {
+      ariaInvalid?: string;
+      ariaDescribedByElements?: Element[];
+    };
+    const invalid =
+      this.hasAttribute("error") ||
+      this.getAttribute("aria-invalid") === "true";
+    if ("ariaInvalid" in internals) {
+      internals.ariaInvalid = invalid ? "true" : "false";
+    }
+    if (!("ariaDescribedByElements" in internals)) return;
+    const raw = this.getAttribute("aria-describedby") ?? "";
+    const root =
+      this.getRootNode() instanceof Document
+        ? (this.getRootNode() as Document)
+        : document;
+    const els = raw
+      .split(/\s+/)
+      .map((id) => root.getElementById(id))
+      .filter((el): el is HTMLElement => el instanceof HTMLElement);
+    try {
+      internals.ariaDescribedByElements = els;
+    } catch {
+      /* older engines */
+    }
   }
 }
 

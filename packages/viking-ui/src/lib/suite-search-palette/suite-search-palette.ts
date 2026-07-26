@@ -11,6 +11,7 @@ import {
   viewChild,
 } from "@angular/core";
 import { isPlatformBrowser } from "@angular/common";
+import { writeDemlWidgets } from "../../core/deml-widgets";
 import {
   DEFAULT_SITE_URLS,
   type SiteDrakkarContext,
@@ -67,14 +68,10 @@ export class VikingSuiteSearchPalette implements OnInit, AfterViewInit {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
-    const widgets =
-      (globalThis as { DemlWidgets?: Record<string, unknown> }).DemlWidgets ??
-      {};
-    (globalThis as { DemlWidgets?: Record<string, unknown> }).DemlWidgets = {
-      ...widgets,
+    writeDemlWidgets({
       openSearch: () => this.openPalette(),
       closeSearch: () => this.closePalette(),
-    };
+    });
   }
 
   /** Opens the palette. */

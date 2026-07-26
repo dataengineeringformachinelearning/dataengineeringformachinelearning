@@ -17,7 +17,7 @@ import {
   VikingButton,
   VikingCallout,
   VikingChartSeries,
-  VikingSpinner,
+  VikingPageSkeleton,
   VikingField,
   VikingFormGrid,
   VikingFormSection,
@@ -35,20 +35,26 @@ import {
   VikingChartPanel,
   VikingChartCardHeader,
   VikingChartEmptyState,
+  VikingDisclosure,
   VikingSectionTemplate,
+  VikingStreamStatus,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
 import { LiveUpdatesService } from '../../services/live-updates.service';
+import { AnalyticsQueryService } from '../../services/analytics-query.service';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 import {
+  ANALYTICS_PAGE_SUBTITLE,
   FORJD_FALLBACK_BODY,
   FORJD_UNAVAILABLE_BODY,
+  FORJD_UPDATES_DELAYED_HEADING,
   LOAD_FAILED_BODY,
   OFFLINE_BODY,
   OFFLINE_HEADING,
   STATUS_RETRY_LABEL,
 } from '../../core/continuity-copy';
+import { streamStatusStory } from '../../core/stream-status';
 import {
   UnifiedSelect,
   SelectOption,
@@ -64,7 +70,9 @@ import {
   toVikingLineSeries,
   toVikingStackedStatusSeries,
 } from '../../core/chart-data.util';
-import * as L from 'leaflet';
+import type { CircleMarker, LatLngExpression, Map as LeafletMap } from 'leaflet';
+
+type LeafletNS = typeof import('leaflet');
 
 export type ExportJobRow = {
   id: string;
@@ -244,7 +252,7 @@ type AnalyticsOverviewResponse = {
     VikingBadge,
     VikingButton,
     VikingCallout,
-    VikingSpinner,
+    VikingPageSkeleton,
     VikingField,
     VikingFormGrid,
     VikingFormSection,
@@ -263,7 +271,9 @@ type AnalyticsOverviewResponse = {
     VikingChartPanel,
     VikingChartCardHeader,
     VikingChartEmptyState,
+    VikingDisclosure,
     VikingSectionTemplate,
+    VikingStreamStatus,
   ],
   templateUrl: './analytics.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -273,6 +283,7 @@ export class AnalyticsComponent implements OnDestroy {
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
   private authService = inject(AuthService);
+  private analyticsQuery = inject(AnalyticsQueryService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private liveUpdates = inject(LiveUpdatesService);
   readonly connectivity = inject(ConnectivityService);
@@ -281,6 +292,20 @@ export class AnalyticsComponent implements OnDestroy {
   readonly offlineHeading = OFFLINE_HEADING;
   readonly offlineBody = OFFLINE_BODY;
   readonly retryLabel = STATUS_RETRY_LABEL;
+  readonly updatesDelayedHeading = FORJD_UPDATES_DELAYED_HEADING;
+  readonly analyticsSubtitle = ANALYTICS_PAGE_SUBTITLE;
+
+  /** Calm near-real-time chip — never claims "Live". */
+  readonly streamStatus = computed(() =>
+    streamStatusStory({
+      offline: this.connectivity.offline(),
+      streamActive: this.liveUpdates.streamActive(),
+      connected: this.liveUpdates.connected(),
+      paused: this.liveUpdates.paused(),
+      streamDegraded: this.liveUpdates.degraded(),
+      metricsDegraded: this.metricsDegraded(),
+    }),
+  );
 
   // --- Metric / filter signals ---
   public p99Latency = signal(0);
@@ -366,10 +391,15 @@ export class AnalyticsComponent implements OnDestroy {
   );
 
   public originMapData = signal<OriginMapPoint[]>([]);
-  public map: L.Map | undefined;
+  public map: LeafletMap | undefined;
+  private leafletApi: LeafletNS | null = null;
   private intervalId: ReturnType<typeof setInterval> | undefined;
   private exportPollId: ReturnType<typeof setInterval> | undefined;
   private liveRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Coalesce Leaflet invalidateSize — avoids layout thrash from timed redraw storms. */
+  private mapInvalidateRaf = 0;
+  private mapResizeObserver: ResizeObserver | null = null;
+  private cachedMapAccent: string | null = null;
   private readonly onVisibilityChange = (): void => {
     if (document.hidden) {
       this.stopAnalyticsPolling();
@@ -451,23 +481,24 @@ export class AnalyticsComponent implements OnDestroy {
   }
 
   private updateMapTheme() {
-    if (this.map) {
-      this.map.eachLayer(layer => {
-        if (layer instanceof L.TileLayer) {
-          this.map?.removeLayer(layer);
-        }
-      });
-      const tileUrl = this.isDarkMode
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-      L.tileLayer(tileUrl, {
-        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-      }).addTo(this.map);
+    const L = this.leafletApi;
+    if (!this.map || !L) return;
+    this.map.eachLayer(layer => {
+      if (layer instanceof L.TileLayer) {
+        this.map?.removeLayer(layer);
+      }
+    });
+    const tileUrl = this.isDarkMode
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+    L.tileLayer(tileUrl, {
+      attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+      updateWhenIdle: true,
+      keepBuffer: 2,
+    }).addTo(this.map);
 
-      setTimeout(() => {
-        this.map?.invalidateSize();
-      }, 100);
-    }
+    this.cachedMapAccent = null;
+    this.scheduleMapInvalidate();
   }
 
   public getGaugeStroke(value: number, circumference: number): string {
@@ -476,203 +507,198 @@ export class AnalyticsComponent implements OnDestroy {
   }
 
   private loadAnalyticsData() {
-    this.isLoading.set(true);
+    // Keep prior charts visible while SWR revalidates.
+    const hasPainted = this.cesLevel() > 0 || this.totalRequests() > 0 || this.metricsDegraded();
+    if (!hasPainted) {
+      this.isLoading.set(true);
+    }
     this.loadError.set(null);
-    let url = API_ENDPOINTS.ANALYTICS.OVERVIEW;
-    const params = [];
-    if (this.selectedTenantId()) {
-      params.push(`tenant_id=${this.selectedTenantId()}`);
-    }
-    if (this.selectedSite() && this.selectedSite() !== 'All') {
-      params.push(`site_url=${encodeURIComponent(this.selectedSite()!)}`);
-    }
-    if (params.length > 0) {
-      url += '?' + params.join('&');
-    }
 
-    this.http.get<AnalyticsOverviewResponse>(url).subscribe({
-      next: response => {
-        if (response.status === 'success' && response.data) {
-          const { benchmarking, ces, user_metrics } = response.data;
-          const degraded =
-            response?.degraded === true ||
-            response?.code === 'forjd_read_fallback' ||
-            response?.code === 'forjd_degraded' ||
-            user_metrics?.data_available === false;
-          this.metricsDegraded.set(degraded);
-          this.loadError.set(degraded ? FORJD_FALLBACK_BODY : null);
+    this.analyticsQuery
+      .getOverview<AnalyticsOverviewResponse>(this.selectedTenantId(), this.selectedSite())
+      .subscribe({
+        next: response => {
+          if (response.status === 'success' && response.data) {
+            const { benchmarking, ces, user_metrics } = response.data;
+            const degraded =
+              response?.degraded === true ||
+              response?.code === 'forjd_read_fallback' ||
+              response?.code === 'forjd_degraded' ||
+              user_metrics?.data_available === false;
+            this.metricsDegraded.set(degraded);
+            this.loadError.set(degraded ? FORJD_FALLBACK_BODY : null);
 
-          if (user_metrics?.available_sites) {
-            this.availableSites.set(user_metrics.available_sites);
-            this.siteOptions.set([
-              { value: 'All', label: 'All Sites' },
-              ...user_metrics.available_sites.map((site: string) => ({
-                value: site,
-                label: site,
-              })),
-            ]);
+            if (user_metrics?.available_sites) {
+              this.availableSites.set(user_metrics.available_sites);
+              this.siteOptions.set([
+                { value: 'All', label: 'All Sites' },
+                ...user_metrics.available_sites.map((site: string) => ({
+                  value: site,
+                  label: site,
+                })),
+              ]);
+            }
+
+            this.cesLevel.set(degraded ? 0 : (ces?.level ?? 0));
+            this.threatLevel.set(degraded ? 0 : (ces?.threat ?? 0));
+            this.slaLevel.set(degraded ? 0 : (ces?.sla ?? 0));
+            this.stabilityLevel.set(degraded ? 0 : (ces?.stability ?? 0));
+            this.temporalForecast.set(
+              degraded
+                ? 0
+                : (response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0),
+            );
+            this.honeypotScore.set(degraded ? 0 : (response.data?.honeypot_score ?? 0));
+            this.latestBenchmarkScore.set(degraded ? null : (ces?.latest_benchmark_score ?? null));
+            this.latestBenchmark.set(degraded ? null : (ces?.latest_benchmark ?? null));
+            this.benchmarkSummary.set(degraded ? null : (benchmarking?.current_scope ?? null));
+            this.platformBenchmarkSummary.set(
+              degraded ? null : (benchmarking?.platform_reference ?? null),
+            );
+
+            this.p99Latency.set(degraded ? 0 : (user_metrics?.p99_latency_ms ?? 0));
+            this.uptimePercent.set(degraded ? null : (user_metrics?.uptime_percent ?? null));
+            this.totalRequests.set(degraded ? 0 : (user_metrics?.total_requests_24h ?? 0));
+            this.activeIncidents.set(degraded ? 0 : (user_metrics?.active_incidents ?? 0));
+
+            this.widgetInteractions.set(degraded ? 0 : user_metrics?.widget_interactions || 0);
+            this.uniqueVisitors.set(degraded ? 0 : user_metrics?.unique_visitors || 0);
+            this.cookieConsents.set(
+              degraded
+                ? 0
+                : (user_metrics?.cookie_consents?.analytical || 0) +
+                    (user_metrics?.cookie_consents?.marketing || 0),
+            );
+            this.activeProviders.set(degraded ? [] : user_metrics?.active_providers || []);
+
+            if (!degraded && user_metrics?.api_usage) {
+              this.apiUsageCurrent.set(user_metrics.api_usage.usage_current_minute || 0);
+              this.apiUsageQuota.set(user_metrics.api_usage.quota_per_minute || 60);
+            }
+
+            const timeSeries = degraded ? [] : user_metrics?.time_series || [];
+            this.latencyCategories.set(
+              timeSeries.map((d: { label?: string; time?: string }) =>
+                String(d.label ?? d.time ?? '').slice(-5),
+              ),
+            );
+            this.latencySeries.set(
+              toVikingLineSeries(
+                'Latency (ms)',
+                timeSeries.map((d: { latency: number }) => d.latency ?? 0),
+              ),
+            );
+
+            const origins = user_metrics?.origin_distribution || [];
+            this.originMapData.set(origins);
+
+            const topOrigins = [...origins].sort((a, b) => b.count - a.count).slice(0, 5);
+            this.topRegionsCategories.set(
+              topOrigins.map((d: { region?: string; country?: string; name?: string }) =>
+                String(d.region ?? d.country ?? d.name ?? '—').slice(0, 8),
+              ),
+            );
+            this.topRegionsSeries.set(
+              toVikingBarSeries(
+                'Requests',
+                topOrigins.map((d: { count: number }) => d.count ?? 0),
+                'warning',
+              ),
+            );
+
+            if (this.isBrowser) {
+              void this.ensureMap();
+            }
+
+            // Prefer dedicated request_frequency; fall back to time_series.requests.
+            const requestFrequency = user_metrics?.request_frequency ?? [];
+            const reqFreq = requestFrequency.length > 0 ? requestFrequency : timeSeries;
+            this.frequencyCategories.set(
+              reqFreq.map((d: { label?: string; time?: string }) =>
+                String(d.label ?? d.time ?? '').slice(-5),
+              ),
+            );
+            this.frequencySeries.set(
+              toVikingLineSeries(
+                'Requests',
+                reqFreq.map((d: { requests: number }) => d.requests ?? 0),
+                'muted',
+              ),
+            );
+
+            const statuses = user_metrics?.http_statuses || [];
+            this.statusCategories.set(
+              statuses.map((d: { status?: string | number; code?: string | number }) =>
+                String(d.status ?? d.code ?? '—'),
+              ),
+            );
+            this.statusSeries.set(
+              toVikingBarSeries(
+                'Count',
+                statuses.map((d: { count: number }) => d.count ?? 0),
+              ),
+            );
+            this.statusStackedSeries.set(toVikingStackedStatusSeries(statuses));
+
+            const endpoints = user_metrics?.endpoint_counts || [];
+            this.endpointCategories.set(
+              endpoints.map((d: { endpoint?: string; path?: string }) => {
+                const raw = String(d.endpoint ?? d.path ?? '—');
+                return raw.length > 12 ? `…${raw.slice(-11)}` : raw;
+              }),
+            );
+            this.endpointSeries.set(
+              toVikingBarSeries(
+                'Calls',
+                endpoints.map((d: { count: number }) => d.count ?? 0),
+              ),
+            );
+
+            const threats = user_metrics?.threat_severity || [];
+            this.threatSeveritySegments.set(
+              toVikingDonutSegments(
+                threats.map((d: { severity: string }) => d.severity),
+                threats.map((d: { count: number }) => d.count ?? 0),
+              ),
+            );
+
+            const alerts = user_metrics?.security_alerts || [];
+            this.securityAlertCategories.set(
+              alerts.map((d: { label?: string; type?: string }) =>
+                String(d.label ?? d.type ?? 'Alert').slice(0, 10),
+              ),
+            );
+            this.securityAlertsSeries.set(
+              toVikingBarSeries(
+                'Anomalies',
+                alerts.map((d: { count: number }) => d.count ?? 0),
+                'warning',
+              ),
+            );
+          } else {
+            this.metricsDegraded.set(true);
+            this.loadError.set('Analytics overview returned an unexpected response.');
           }
-
-          this.cesLevel.set(degraded ? 0 : (ces?.level ?? 0));
-          this.threatLevel.set(degraded ? 0 : (ces?.threat ?? 0));
-          this.slaLevel.set(degraded ? 0 : (ces?.sla ?? 0));
-          this.stabilityLevel.set(degraded ? 0 : (ces?.stability ?? 0));
-          this.temporalForecast.set(
-            degraded
-              ? 0
-              : (response.data?.spiking_temporal_forecast ?? ces?.spiking_temporal_forecast ?? 0),
-          );
-          this.honeypotScore.set(degraded ? 0 : (response.data?.honeypot_score ?? 0));
-          this.latestBenchmarkScore.set(degraded ? null : (ces?.latest_benchmark_score ?? null));
-          this.latestBenchmark.set(degraded ? null : (ces?.latest_benchmark ?? null));
-          this.benchmarkSummary.set(degraded ? null : (benchmarking?.current_scope ?? null));
-          this.platformBenchmarkSummary.set(
-            degraded ? null : (benchmarking?.platform_reference ?? null),
-          );
-
-          this.p99Latency.set(degraded ? 0 : (user_metrics?.p99_latency_ms ?? 0));
-          this.uptimePercent.set(degraded ? null : (user_metrics?.uptime_percent ?? null));
-          this.totalRequests.set(degraded ? 0 : (user_metrics?.total_requests_24h ?? 0));
-          this.activeIncidents.set(degraded ? 0 : (user_metrics?.active_incidents ?? 0));
-
-          this.widgetInteractions.set(degraded ? 0 : user_metrics?.widget_interactions || 0);
-          this.uniqueVisitors.set(degraded ? 0 : user_metrics?.unique_visitors || 0);
-          this.cookieConsents.set(
-            degraded
-              ? 0
-              : (user_metrics?.cookie_consents?.analytical || 0) +
-                  (user_metrics?.cookie_consents?.marketing || 0),
-          );
-          this.activeProviders.set(degraded ? [] : user_metrics?.active_providers || []);
-
-          if (!degraded && user_metrics?.api_usage) {
-            this.apiUsageCurrent.set(user_metrics.api_usage.usage_current_minute || 0);
-            this.apiUsageQuota.set(user_metrics.api_usage.quota_per_minute || 60);
-          }
-
-          const timeSeries = degraded ? [] : user_metrics?.time_series || [];
-          this.latencyCategories.set(
-            timeSeries.map((d: { label?: string; time?: string }) =>
-              String(d.label ?? d.time ?? '').slice(-5),
-            ),
-          );
-          this.latencySeries.set(
-            toVikingLineSeries(
-              'Latency (ms)',
-              timeSeries.map((d: { latency: number }) => d.latency ?? 0),
-            ),
-          );
-
-          const origins = user_metrics?.origin_distribution || [];
-          this.originMapData.set(origins);
-
-          const topOrigins = [...origins].sort((a, b) => b.count - a.count).slice(0, 5);
-          this.topRegionsCategories.set(
-            topOrigins.map((d: { region?: string; country?: string; name?: string }) =>
-              String(d.region ?? d.country ?? d.name ?? '—').slice(0, 8),
-            ),
-          );
-          this.topRegionsSeries.set(
-            toVikingBarSeries(
-              'Requests',
-              topOrigins.map((d: { count: number }) => d.count ?? 0),
-              'warning',
-            ),
-          );
-
-          if (this.isBrowser) {
-            this.initMap();
-          }
-
-          // Prefer dedicated request_frequency; fall back to time_series.requests.
-          const requestFrequency = user_metrics?.request_frequency ?? [];
-          const reqFreq = requestFrequency.length > 0 ? requestFrequency : timeSeries;
-          this.frequencyCategories.set(
-            reqFreq.map((d: { label?: string; time?: string }) =>
-              String(d.label ?? d.time ?? '').slice(-5),
-            ),
-          );
-          this.frequencySeries.set(
-            toVikingLineSeries(
-              'Requests',
-              reqFreq.map((d: { requests: number }) => d.requests ?? 0),
-              'muted',
-            ),
-          );
-
-          const statuses = user_metrics?.http_statuses || [];
-          this.statusCategories.set(
-            statuses.map((d: { status?: string | number; code?: string | number }) =>
-              String(d.status ?? d.code ?? '—'),
-            ),
-          );
-          this.statusSeries.set(
-            toVikingBarSeries(
-              'Count',
-              statuses.map((d: { count: number }) => d.count ?? 0),
-            ),
-          );
-          this.statusStackedSeries.set(toVikingStackedStatusSeries(statuses));
-
-          const endpoints = user_metrics?.endpoint_counts || [];
-          this.endpointCategories.set(
-            endpoints.map((d: { endpoint?: string; path?: string }) => {
-              const raw = String(d.endpoint ?? d.path ?? '—');
-              return raw.length > 12 ? `…${raw.slice(-11)}` : raw;
-            }),
-          );
-          this.endpointSeries.set(
-            toVikingBarSeries(
-              'Calls',
-              endpoints.map((d: { count: number }) => d.count ?? 0),
-            ),
-          );
-
-          const threats = user_metrics?.threat_severity || [];
-          this.threatSeveritySegments.set(
-            toVikingDonutSegments(
-              threats.map((d: { severity: string }) => d.severity),
-              threats.map((d: { count: number }) => d.count ?? 0),
-            ),
-          );
-
-          const alerts = user_metrics?.security_alerts || [];
-          this.securityAlertCategories.set(
-            alerts.map((d: { label?: string; type?: string }) =>
-              String(d.label ?? d.type ?? 'Alert').slice(0, 10),
-            ),
-          );
-          this.securityAlertsSeries.set(
-            toVikingBarSeries(
-              'Anomalies',
-              alerts.map((d: { count: number }) => d.count ?? 0),
-              'warning',
-            ),
-          );
-        } else {
+          this.isLoading.set(false);
+          this.isRetrying.set(false);
+        },
+        error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
+          console.error('Failed to load analytics data', err);
           this.metricsDegraded.set(true);
-          this.loadError.set('Analytics overview returned an unexpected response.');
-        }
-        this.isLoading.set(false);
-        this.isRetrying.set(false);
-      },
-      error: (err: { status?: number; error?: { detail?: string; code?: string } }) => {
-        console.error('Failed to load analytics data', err);
-        this.metricsDegraded.set(true);
-        this.uptimePercent.set(null);
-        const code = err?.error?.code;
-        const detail = err?.error?.detail;
-        if (err?.status === 503 || code === 'forjd_degraded') {
-          this.loadError.set(detail || FORJD_UNAVAILABLE_BODY);
-        } else if (err?.status === 401 || err?.status === 403) {
-          this.loadError.set(detail || 'Sign in again to load analytics.');
-        } else {
-          this.loadError.set(detail || LOAD_FAILED_BODY);
-        }
-        this.isLoading.set(false);
-        this.isRetrying.set(false);
-      },
-    });
+          this.uptimePercent.set(null);
+          const code = err?.error?.code;
+          const detail = err?.error?.detail;
+          if (err?.status === 503 || code === 'forjd_degraded') {
+            this.loadError.set(detail || FORJD_UNAVAILABLE_BODY);
+          } else if (err?.status === 401 || err?.status === 403) {
+            this.loadError.set(detail || 'Sign in again to load analytics.');
+          } else {
+            this.loadError.set(detail || LOAD_FAILED_BODY);
+          }
+          this.isLoading.set(false);
+          this.isRetrying.set(false);
+        },
+      });
   }
 
   retryLoad(): void {
@@ -681,21 +707,32 @@ export class AnalyticsComponent implements OnDestroy {
   }
 
   private loadTenants() {
-    this.http.get<TenantListResponse>(API_ENDPOINTS.ANALYTICS.TENANTS).subscribe({
-      next: response => {
-        if (response.status === 'success' && response.data) {
-          this.tenants.set(response.data);
-          this.tenantOptions.set(
-            response.data.map(tenant => ({
-              value: tenant.id,
-              label: tenant.is_platform ? `${tenant.name} (Global)` : tenant.name,
-            })),
-          );
-          if (!this.selectedTenantId() && response.data.length > 0) {
-            const userTenant = response.data.find(tenant => !tenant.is_platform);
-            this.selectedTenantId.set(userTenant ? userTenant.id : response.data[0].id);
-          }
+    const applyTenants = (response: TenantListResponse): void => {
+      if (response.status === 'success' && response.data) {
+        this.tenants.set(response.data);
+        this.tenantOptions.set(
+          response.data.map(tenant => ({
+            value: tenant.id,
+            label: tenant.is_platform ? `${tenant.name} (Global)` : tenant.name,
+          })),
+        );
+        if (!this.selectedTenantId() && response.data.length > 0) {
+          const userTenant = response.data.find(tenant => !tenant.is_platform);
+          this.selectedTenantId.set(userTenant ? userTenant.id : response.data[0].id);
         }
+      }
+    };
+
+    // Optimistic: seed tenants from SWR and start overview immediately when warm.
+    const cachedTenants = this.analyticsQuery.peekTenants<TenantListResponse>();
+    if (cachedTenants) {
+      applyTenants(cachedTenants);
+      this.loadAnalyticsData();
+    }
+
+    this.analyticsQuery.getTenants<TenantListResponse>().subscribe({
+      next: response => {
+        applyTenants(response);
         this.loadAnalyticsData();
       },
       error: err => {
@@ -717,10 +754,31 @@ export class AnalyticsComponent implements OnDestroy {
       clearTimeout(this.liveRefreshTimer);
     }
     this.liveUpdates.stop();
+    this.teardownMapObservers();
     if (this.map) {
       this.map.remove();
       this.map = undefined;
     }
+  }
+
+  private teardownMapObservers(): void {
+    this.mapResizeObserver?.disconnect();
+    this.mapResizeObserver = null;
+    if (this.mapInvalidateRaf) {
+      cancelAnimationFrame(this.mapInvalidateRaf);
+      this.mapInvalidateRaf = 0;
+    }
+  }
+
+  /** One invalidateSize per frame — never interleave with style writes. */
+  private scheduleMapInvalidate(): void {
+    if (!this.map || this.mapInvalidateRaf) {
+      return;
+    }
+    this.mapInvalidateRaf = requestAnimationFrame(() => {
+      this.mapInvalidateRaf = 0;
+      this.map?.invalidateSize({ animate: false });
+    });
   }
 
   /** Debounce live change ticks so bursts collapse into one reload. */
@@ -886,89 +944,111 @@ export class AnalyticsComponent implements OnDestroy {
     return `Platform reference ${reference.toFixed(1)}%`;
   }
 
-  private initMap(): void {
-    if (!this.isBrowser) return;
-
-    setTimeout(() => {
-      const mapContainer = document.getElementById('originMap');
-      if (!mapContainer) return;
-
-      if (this.map) {
-        this.map.remove();
-        this.map = undefined;
-        mapContainer.replaceChildren();
-      }
-
-      // Ensure the host has a stable pixel size before Leaflet measures it.
-      mapContainer.classList.add('viking-map-ready');
-      const hostHeight =
-        mapContainer.clientHeight ||
-        Math.round(parseFloat(getComputedStyle(mapContainer).minHeight || '0') || 352);
-      if (hostHeight > 0) {
-        mapContainer.style.minHeight = `${hostHeight}px`;
-        mapContainer.style.height = `${hostHeight}px`;
-      }
-
-      this.map = L.map(mapContainer, {
-        zoomControl: false,
-        attributionControl: false,
-        worldCopyJump: true,
-        preferCanvas: false,
-      }).setView([20, 0], 2);
-
-      const tileUrl = this.isDarkMode
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-
-      L.tileLayer(tileUrl, {
-        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-        maxZoom: 8,
-        minZoom: 1,
-        noWrap: false,
-        updateWhenIdle: false,
-        keepBuffer: 4,
-        crossOrigin: true,
-      }).addTo(this.map);
-
-      // Leaflet needs real dimensions after flex/grid layout settles,
-      // then place markers once the tile pane has a stable size.
-      const refreshSize = (): void => {
-        if (!this.map) {
-          return;
-        }
-        this.map.invalidateSize({ animate: false });
-        // Force tile redraw after size settles (prevents broken/split tiles).
-        this.map.eachLayer((layer: L.Layer) => {
-          const tileLayer = layer as L.TileLayer & { redraw?: () => void };
-          if (typeof tileLayer.redraw === 'function') {
-            tileLayer.redraw();
-          }
-        });
-      };
-      requestAnimationFrame(refreshSize);
-      setTimeout(refreshSize, 80);
-      setTimeout(() => {
-        refreshSize();
-        this.updateMapMarkers();
-      }, 200);
-      setTimeout(refreshSize, 500);
-      setTimeout(refreshSize, 1200);
-    }, 50);
+  /** Dynamic-import Leaflet (+ CSS) so analytics map cost stays off the critical path. */
+  private async loadLeaflet(): Promise<LeafletNS> {
+    if (!this.leafletApi) {
+      this.ensureLeafletCss();
+      this.leafletApi = await import('leaflet');
+    }
+    return this.leafletApi;
   }
 
-  /** Resolve the computed Viking series color used by Leaflet's SVG overlay. */
+  /** Inject Leaflet CSS once — kept out of global `angular.json` styles for LCP. */
+  private ensureLeafletCss(): void {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    if (document.getElementById('leaflet-css')) {
+      return;
+    }
+    const link = document.createElement('link');
+    link.id = 'leaflet-css';
+    link.rel = 'stylesheet';
+    link.href = '/assets/leaflet/leaflet.css';
+    document.head.appendChild(link);
+  }
+
+  /**
+   * Wait for the @defer map host (viewport) then mount Leaflet.
+   * Retries briefly so data can arrive before the deferred block paints.
+   */
+  private async ensureMap(): Promise<void> {
+    if (!this.isBrowser) return;
+    const L = await this.loadLeaflet();
+    for (let attempt = 0; attempt < 40; attempt++) {
+      const mapContainer = document.getElementById('originMap');
+      if (mapContainer) {
+        this.renderMap(L, mapContainer);
+        return;
+      }
+      await new Promise<void>(resolve => setTimeout(resolve, 50));
+    }
+  }
+
+  private renderMap(L: LeafletNS, mapContainer: HTMLElement): void {
+    this.teardownMapObservers();
+    if (this.map) {
+      this.map.remove();
+      this.map = undefined;
+      mapContainer.replaceChildren();
+    }
+
+    // Height comes from suite CSS (.origin-map-canvas) — do not read layout then
+    // write inline height (classic forced reflow).
+    mapContainer.classList.add('viking-map-ready');
+
+    this.map = L.map(mapContainer, {
+      zoomControl: false,
+      attributionControl: false,
+      worldCopyJump: true,
+      // Canvas markers avoid per-circle SVG style recalculation.
+      preferCanvas: true,
+    }).setView([20, 0], 2);
+
+    const tileUrl = this.isDarkMode
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+    L.tileLayer(tileUrl, {
+      attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 8,
+      minZoom: 1,
+      noWrap: false,
+      updateWhenIdle: true,
+      keepBuffer: 2,
+      crossOrigin: true,
+    }).addTo(this.map);
+
+    // ResizeObserver contentRect avoids getBoundingClientRect; rAF coalesces invalidateSize.
+    if (typeof ResizeObserver !== 'undefined') {
+      this.mapResizeObserver = new ResizeObserver(() => this.scheduleMapInvalidate());
+      this.mapResizeObserver.observe(mapContainer);
+    }
+    this.scheduleMapInvalidate();
+    // Markers after the first settled layout frame (one invalidate, not a redraw storm).
+    requestAnimationFrame(() => {
+      this.scheduleMapInvalidate();
+      this.updateMapMarkers();
+    });
+  }
+
+  /** Resolve the computed Viking series color used by Leaflet's canvas overlay. */
   private resolveMapAccent(): string {
+    if (this.cachedMapAccent) {
+      return this.cachedMapAccent;
+    }
     const styles = getComputedStyle(document.documentElement);
-    return (
+    this.cachedMapAccent =
       styles.getPropertyValue('--viking-series-1').trim() ||
       styles.getPropertyValue('--viking-accent').trim() ||
       styles.getPropertyValue('--viking-teal-500').trim() ||
-      styles.color
-    );
+      styles.color;
+    return this.cachedMapAccent;
   }
 
   private updateMapMarkers(): void {
-    if (!this.map) return;
+    const L = this.leafletApi;
+    if (!this.map || !L) return;
 
     this.map.eachLayer(layer => {
       if (layer instanceof L.CircleMarker) {
@@ -977,7 +1057,7 @@ export class AnalyticsComponent implements OnDestroy {
     });
 
     const accent = this.resolveMapAccent();
-    const points: L.LatLngExpression[] = [];
+    const points: LatLngExpression[] = [];
 
     this.originMapData().forEach(loc => {
       const lat = Number(loc.lat ?? loc.latitude);
@@ -988,7 +1068,8 @@ export class AnalyticsComponent implements OnDestroy {
       const count = Number(loc.count ?? 0) || 1;
       const label = String(loc.origin ?? loc.region ?? loc.country ?? loc.name ?? 'Origin');
       points.push([lat, lng]);
-      const marker = L.circleMarker([lat, lng], {
+      const tooltip = `${label}: ${count.toLocaleString()} reqs`;
+      const marker: CircleMarker = L.circleMarker([lat, lng], {
         pane: 'overlayPane',
         radius: Math.max(7, Math.min(22, 6 + Math.sqrt(count) * 2.5)),
         color: accent,
@@ -997,12 +1078,27 @@ export class AnalyticsComponent implements OnDestroy {
         weight: 2,
         opacity: 0.95,
       })
-        .bindTooltip(`${label}: ${count.toLocaleString()} reqs`, {
+        .bindTooltip(tooltip, {
           direction: 'top',
           sticky: true,
         })
         .addTo(this.map!);
       marker.bringToFront();
+      // Keyboard-focusable marker path for non-pointer exploration
+      const path = marker.getElement();
+      if (path) {
+        path.setAttribute('tabindex', '0');
+        path.setAttribute('role', 'img');
+        path.setAttribute('aria-label', tooltip);
+        path.addEventListener('focus', () => marker.openTooltip());
+        path.addEventListener('blur', () => marker.closeTooltip());
+        path.addEventListener('keydown', (event: KeyboardEvent) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            marker.openTooltip();
+          }
+        });
+      }
     });
 
     if (points.length > 1) {

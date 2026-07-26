@@ -12,9 +12,14 @@ import { VikingIcon } from "../icon/icon";
   template: `
     @if (logoSrc()) {
       <img
-        class="viking-brand-logo"
+        class="suite-media viking-brand-logo"
         [src]="logoSrc()"
         [alt]="name() + ' logo'"
+        width="24"
+        height="24"
+        decoding="async"
+        fetchpriority="high"
+        loading="eager"
       />
     } @else {
       <viking-icon

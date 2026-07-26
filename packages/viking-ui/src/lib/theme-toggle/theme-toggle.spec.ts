@@ -24,7 +24,7 @@ describe("VikingThemeToggle", () => {
     const btn = fixture.nativeElement.querySelector(
       ".theme-toggle-btn",
     ) as HTMLButtonElement;
-    expect(btn.getAttribute("aria-label")).toBe("Toggle light and dark theme");
+    expect(btn.getAttribute("aria-label")).toContain("Switch to light");
     expect(btn.querySelector("viking-icon")).toBeTruthy();
   });
 

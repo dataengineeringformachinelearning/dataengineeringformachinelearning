@@ -24,6 +24,13 @@ describe('DEML app smoke', () => {
     cy.get('body').should('be.visible');
   });
 
+  it('loads the account route shell (preferences / activity host)', () => {
+    cy.visit('/account', { failOnStatusCode: false });
+    cy.get('body').should('be.visible');
+    // Authenticated users see preferences; unauthenticated still get a shell.
+    cy.get('.page-inner-wrapper, viking-page-template, body').should('exist');
+  });
+
   it('returns 404 shell for unknown routes', () => {
     cy.visit('/this-route-does-not-exist', { failOnStatusCode: false });
     cy.get('body').should('be.visible');

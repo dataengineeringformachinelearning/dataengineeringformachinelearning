@@ -21,6 +21,7 @@ _API_KEY_ALLOWED_PREFIXES = (
   "/api/v1/ingest",
   "/api/v1/sessions",
   "/api/v1/projections",
+  "/api/v1/workflows",
   "/api/v1/replay",
   "/api/v1/agent/vulnerabilities",
   "/api/v1/exports",

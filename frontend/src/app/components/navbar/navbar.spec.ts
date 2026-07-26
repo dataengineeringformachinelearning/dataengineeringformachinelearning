@@ -36,6 +36,7 @@ describe('Navbar', () => {
           provide: ThemeService,
           useValue: {
             theme: signal<'light' | 'dark'>('dark'),
+            preference: signal<'light' | 'dark' | 'system'>('system'),
             toggleTheme: (): void => undefined,
           },
         },

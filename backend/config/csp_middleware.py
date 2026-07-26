@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse
 
 # Shared third-party allowlists for HTML CSP (keep in sync with frontend/vercel.json + nginx.conf).
 # Prefer hashes/nonces later; keep 'unsafe-inline' for current shell scripts — no 'unsafe-eval'.
+# jsDelivr remains for Algolia Experiences / published viking-ui widget snippets (not swagger/redoc).
 _CSP_SCRIPT_SRC = (
   "'self' 'unsafe-inline' "
   "https://cdn.jsdelivr.net "

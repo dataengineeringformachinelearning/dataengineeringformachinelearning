@@ -31,22 +31,25 @@
                 "glob": "**/*",
                 "input": "public",
                 "output": "/",
-                "ignore": ["assets/viking-app.css"]
+                "ignore": [
+                  "assets/viking-app.css",
+                  "assets/viking-ui.css",
+                  "assets/suite-fonts.css",
+                  "assets/fonts/**",
+                  "assets/widgets/**"
+                ]
               },
               {
                 "glob": "**/*",
                 "input": "src/assets",
-                "output": "/assets"
+                "output": "/assets",
+                "ignore": ["fonts/**", "widgets/**"]
               }
             ],
             "loader": {
               ".md": "text"
             },
-            "styles": [
-              "public/assets/viking-app.css",
-              "leaflet/dist/leaflet.css",
-              "src/styles.scss"
-            ],
+            "styles": ["public/assets/viking-app.css", "src/styles.scss"],
             "security": {
               "allowedHosts": [
                 "dataengineeringformachinelearning.com",
@@ -55,16 +58,7 @@
                 "127.0.0.1"
               ]
             },
-            "allowedCommonJsDependencies": [
-              "leaflet",
-              "@sanity/eventsource",
-              "event-source-polyfill",
-              "eventsource",
-              "decompress-response",
-              "tunnel-agent",
-              "is-retry-allowed",
-              "through2"
-            ]
+            "allowedCommonJsDependencies": ["leaflet", "event-source-polyfill"]
           },
           "configurations": {
             "production": {

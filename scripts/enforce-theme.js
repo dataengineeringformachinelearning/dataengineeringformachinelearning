@@ -41,6 +41,8 @@ const SKIP_DIR_NAMES = new Set([
   "__pycache__",
   ".vite",
   ".sanity",
+  // Closed-suite vendored CSS/JS (Swagger UI) — not Viking-owned styling
+  "vendor",
 ]);
 
 /** @type {readonly string[]} */

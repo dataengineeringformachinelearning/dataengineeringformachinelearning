@@ -178,7 +178,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         border-radius: var(--viking-radius);
       }
 
-      @media (min-width: 640px) {
+      @media (min-width: 600px) {
         .uptime-history-bar viking-uptime-bar,
         .uptime-history-segment {
           min-width: 4px;

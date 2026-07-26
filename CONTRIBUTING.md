@@ -4,6 +4,18 @@ Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is th
 
 **Live docs:** [ui.deml.app](https://ui.deml.app)
 
+### Platform / FORJD contributors
+
+DEML is the Firebase control plane; FORJD owns sealed streams. Product UI changes
+(including **Pipeline** `/pipeline` compose/export) stay in this repo. Workflow
+YAML deploy and `npm run validate:workflows` live in the
+[FORJD](https://github.com/dataengineeringformachinelearning/forjd) repository
+([`docs/EXTENDING.md`](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md),
+ADR-0028). Integration contract:
+[`docs/FORJD_INTEGRATION.md`](docs/FORJD_INTEGRATION.md). Architectural narrative:
+[`BOOK.md`](BOOK.md). After BOOK/WHITEPAPER/AGENTS edits, run
+`python scripts/sync_content.py`.
+
 ---
 
 ## Where to contribute

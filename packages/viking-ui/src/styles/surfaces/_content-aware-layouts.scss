@@ -26,7 +26,7 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-@container viking-app-page (min-width: 640px) {
+@container viking-app-page (min-width: 600px) {
   .dashboard-page-container .kpi-grid,
   .dashboard-page-container .snapshot-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -64,7 +64,7 @@
   align-items: stretch;
 }
 
-@container viking-app-page (min-width: 1280px) {
+@container viking-app-page (min-width: 1440px) {
   .dashboard-page-container .triage-grid {
     grid-template-columns:
       minmax(calc(var(--viking-space-24) + var(--viking-space-12)), 0.9fr)

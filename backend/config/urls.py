@@ -294,6 +294,16 @@ urlpatterns = [
     name="forjd-session-revoke-adapter",
   ),
   re_path(
+    r"^api/v1/workflows/?$",
+    native_forjd_proxy,
+    {
+      "target_path": "/api/v1/workflows",
+      "allowed_methods": ("GET",),
+      "tenant_binding": "none",
+    },
+    name="forjd-workflows-adapter",
+  ),
+  re_path(
     r"^api/v1/projections/?$",
     native_forjd_proxy,
     {

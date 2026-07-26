@@ -40,9 +40,9 @@
 @mixin viking-navbar-search-shell {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-1, var(--viking-space-1));
   min-height: var(--viking-control-height, 40px);
-  padding: 0 var(--viking-space-2, 16px);
+  padding: 0 var(--viking-space-2, var(--viking-space-2));
   background: var(--viking-surface, var(--viking-surface));
   border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
@@ -65,7 +65,7 @@
 
 @mixin viking-navbar-search-panel {
   margin: 0;
-  padding: var(--viking-space-1, 8px);
+  padding: var(--viking-space-1, var(--viking-space-1));
   background: var(--viking-surface, var(--viking-surface));
   border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius, 8px);
@@ -92,18 +92,18 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: 0 var(--viking-space-2, 16px);
+  padding: 0 var(--viking-space-2, var(--viking-space-2));
   box-sizing: border-box;
   overflow: visible;
   container-type: inline-size;
   container-name: viking-navbar;
 
   @media (min-width: 768px) {
-    padding-inline: var(--viking-space-4, 32px);
+    padding-inline: var(--viking-space-4, var(--viking-space-4));
   }
 
-  @media (min-width: 1280px) {
-    padding-inline: var(--viking-space-5, 40px);
+  @media (min-width: 1440px) {
+    padding-inline: var(--viking-space-5, var(--viking-space-5));
   }
   box-shadow:
     var(--viking-shadow-xs, 0 1px 2px rgba(0, 0, 0, 0.2)),
@@ -112,11 +112,11 @@
 }
 
 .navbar-brand {
-  margin-right: var(--viking-space-1, 8px);
+  margin-right: var(--viking-space-1, var(--viking-space-1));
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-1, var(--viking-space-1));
   text-decoration: none;
   overflow: visible;
   flex-shrink: 0;
@@ -143,7 +143,7 @@
 }
 
 .navbar-logo {
-  font-size: 28px;
+  font-size: var(--viking-font-size-2xl);
   width: 36px;
   height: 36px;
   line-height: 1;
@@ -187,7 +187,7 @@
   overflow: visible !important;
   width: 36px !important;
   height: 36px !important;
-  font-size: 28px !important;
+  font-size: var(--viking-font-size-2xl) !important;
   line-height: 36px !important;
   padding: 0 !important;
   box-sizing: border-box;
@@ -200,7 +200,7 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: var(--viking-space-3, 24px);
+  gap: var(--viking-space-3, var(--viking-space-3));
   width: 100%;
   max-width: none;
   margin-inline: 0;
@@ -224,7 +224,7 @@
   align-items: center;
   justify-content: flex-end;
   flex: 0 0 auto;
-  gap: var(--viking-space-3, 24px);
+  gap: var(--viking-space-3, var(--viking-space-3));
   min-width: 0;
   flex-shrink: 0;
 }
@@ -285,8 +285,8 @@ viking-theme-toggle-wc,
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-3, 24px);
-  padding: var(--viking-space-1, 8px) 0;
+  gap: var(--viking-space-3, var(--viking-space-3));
+  padding: var(--viking-space-1, var(--viking-space-1)) 0;
   min-width: 0;
   max-width: 100%;
   overflow: visible;
@@ -296,7 +296,7 @@ viking-theme-toggle-wc,
   display: none;
   align-items: center;
   flex-shrink: 0;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-2, var(--viking-space-2));
   min-height: var(--viking-control-height, 40px);
 
   viking-button,
@@ -319,7 +319,7 @@ viking-theme-toggle-wc,
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--viking-radius, 8px) !important;
-  padding: var(--viking-space-1, 8px) var(--viking-space-3, 24px) !important;
+  padding: var(--viking-space-1, var(--viking-space-1)) var(--viking-space-3, var(--viking-space-3)) !important;
   height: auto !important;
   min-height: var(--viking-control-height, 40px) !important;
   line-height: 1 !important;
@@ -626,7 +626,7 @@ viking-button.menu-toggle-btn .viking-btn svg,
 .theme-toggle-btn .material-icons {
   width: 20px;
   height: 20px;
-  font-size: 20px;
+  font-size: var(--viking-font-size-lead);
   line-height: 1;
 }
 
@@ -687,7 +687,7 @@ viking-button.menu-toggle-btn[aria-expanded="true"] .viking-btn {
   height: 24px;
   width: 0px;
   background-color: var(--viking-border);
-  margin: 0 8px;
+  margin: 0 var(--viking-space-1);
 }
 
 .auth-btn .material-icons {
@@ -703,11 +703,11 @@ button.auth-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: var(--viking-space-1, 8px) !important;
+  gap: var(--viking-space-1, var(--viking-space-1)) !important;
   min-width: var(--viking-btn-min-width, 120px) !important;
   height: var(--viking-control-height, 40px) !important;
   min-height: var(--viking-control-height, 40px) !important;
-  padding: 0 var(--viking-space-2, 16px) !important;
+  padding: 0 var(--viking-space-2, var(--viking-space-2)) !important;
   border-radius: var(--viking-radius, 8px) !important;
   letter-spacing: var(--viking-letter-spacing-caps, 0.08em) !important;
   text-transform: uppercase !important;
@@ -749,7 +749,7 @@ viking-button-wc.mobile-auth-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-1, var(--viking-space-1));
   min-width: 0;
   line-height: 1;
 }
@@ -763,11 +763,11 @@ viking-button.auth-btn.viking-full .viking-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: var(--viking-space-1, 8px) !important;
+  gap: var(--viking-space-1, var(--viking-space-1)) !important;
   min-width: var(--viking-btn-min-width, 120px) !important;
   min-height: var(--viking-control-height, 40px) !important;
   height: var(--viking-control-height, 40px) !important;
-  padding: 0 var(--viking-space-2, 16px) !important;
+  padding: 0 var(--viking-space-2, var(--viking-space-2)) !important;
   box-sizing: border-box !important;
   border: 1px solid
     color-mix(
@@ -807,13 +807,13 @@ viking-button.auth-btn .viking-btn:disabled {
   color: var(--viking-text-muted) !important;
   font-weight: 600 !important;
   border-radius: var(--viking-radius, 8px) !important;
-  padding: 0 var(--viking-space-2, 16px) !important;
+  padding: 0 var(--viking-space-2, var(--viking-space-2)) !important;
   border: 1px solid var(--viking-border) !important;
   height: var(--viking-control-height, 40px) !important;
   line-height: var(--viking-control-height, 40px) !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: var(--viking-space-1, 8px) !important;
+  gap: var(--viking-space-1, var(--viking-space-1)) !important;
   white-space: nowrap !important;
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
@@ -887,6 +887,18 @@ viking-button.auth-btn .viking-btn:disabled {
   color: inherit !important;
 }
 
+/* Host chrome is reset; keep keyboard focus on the inner control */
+.navbar viking-button .viking-btn:focus-visible,
+.navbar viking-button-wc .viking-btn:focus-visible,
+.navbar .auth-btn:focus-visible,
+.navbar .auth-signout-btn:focus-visible,
+.navbar .mobile-auth-btn:focus-visible,
+.navbar .navbar-search-trigger:focus-visible,
+.navbar .menu-toggle-btn:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
 .navbar viking-button.auth-btn,
 .navbar viking-button.auth-signout-btn,
 .navbar viking-button.navbar-search-trigger,
@@ -927,9 +939,9 @@ viking-button.auth-btn .viking-btn:disabled {
   background-color: var(--viking-surface, var(--viking-surface));
   box-shadow: var(--viking-shadow-md, var(--viking-shadow-md));
   border-bottom: 1px solid var(--viking-border, var(--viking-border));
-  padding: var(--viking-space-3, 24px);
+  padding: var(--viking-space-3, var(--viking-space-3));
   padding-bottom: calc(
-    var(--viking-space-3, 24px) + env(safe-area-inset-bottom, 0px)
+    var(--viking-space-3, var(--viking-space-3)) + env(safe-area-inset-bottom, var(--viking-space-0))
   );
   box-sizing: border-box;
   z-index: 49;
@@ -976,10 +988,10 @@ viking-button.auth-btn .viking-btn:disabled {
   color: var(--viking-text-muted, var(--viking-text-muted)) !important;
   min-height: 44px !important;
   border-radius: var(--viking-radius, 8px) !important;
-  padding: 0 var(--viking-space-2, 16px) !important;
+  padding: 0 var(--viking-space-2, var(--viking-space-2)) !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: var(--viking-space-1, 8px) !important;
+  gap: var(--viking-space-1, var(--viking-space-1)) !important;
   text-decoration: none;
   border: 1px solid transparent;
   background: transparent;
@@ -988,7 +1000,7 @@ viking-button.auth-btn .viking-btn:disabled {
 
 .mobile-nav-btn .material-icons {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--viking-font-size-lead);
   width: 20px;
   height: 20px;
 }
@@ -1013,7 +1025,7 @@ viking-button.auth-btn .viking-btn:disabled {
 .mobile-divider {
   height: 1px;
   background-color: var(--viking-border, var(--viking-border));
-  margin: var(--viking-space-2, 16px) 0 var(--viking-space-1, 8px);
+  margin: var(--viking-space-2, var(--viking-space-2)) 0 var(--viking-space-1, var(--viking-space-1));
   flex-shrink: 0;
 }
 
@@ -1028,7 +1040,7 @@ viking-button.auth-btn .viking-btn:disabled {
 }
 
 .navbar-link {
-  font-size: 1rem;
+  font-size: var(--viking-font-size-base);
   color: var(--viking-text-muted);
   font-weight: 600;
   text-transform: uppercase;
@@ -1128,7 +1140,7 @@ viking-button.auth-btn .viking-btn:disabled {
   position: fixed;
   inset: 0;
   z-index: var(--viking-z-overlay, 10001);
-  padding: 10vh var(--viking-space-2, 16px) var(--viking-space-2, 16px);
+  padding: 10vh var(--viking-space-2, var(--viking-space-2)) var(--viking-space-2, var(--viking-space-2));
   background: var(--viking-overlay-backdrop, rgba(0, 0, 0, 0.55));
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -1217,7 +1229,7 @@ viking-button.auth-btn .viking-btn:disabled {
     box-shadow: none;
     background: transparent;
     max-height: 50vh;
-    padding: var(--viking-space-2, 16px);
+    padding: var(--viking-space-2, var(--viking-space-2));
     overflow: auto;
   }
 
@@ -1234,7 +1246,7 @@ viking-button.auth-btn .viking-btn:disabled {
     max-width: 600px;
     width: 100%;
     margin: 0 auto;
-    padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
+    padding: var(--viking-space-1, var(--viking-space-1)) var(--viking-space-2, var(--viking-space-2));
     border: 1px solid var(--viking-border, var(--viking-border));
     border-top: 0;
     border-radius: 0 0 var(--viking-radius-lg, 12px)
@@ -1283,7 +1295,7 @@ viking-button.auth-btn .viking-btn:disabled {
   align-items: center;
   flex: 1;
   min-width: 0;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-1, var(--viking-space-1));
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
@@ -1412,8 +1424,8 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .ais-AutocompleteSourceHeader {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-1, 8px);
-  padding: var(--viking-space-1, 8px) var(--viking-space-1, 8px) 0;
+  gap: var(--viking-space-1, var(--viking-space-1));
+  padding: var(--viking-space-1, var(--viking-space-1)) var(--viking-space-1, var(--viking-space-1)) 0;
   margin: 0;
 }
 
@@ -1472,7 +1484,7 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .ais-ItemTemplateInfo {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--viking-space-1, 8px) / 2);
+  gap: calc(var(--viking-space-1, var(--viking-space-1)) / 2);
   min-width: 0;
   flex: 1;
 }
@@ -1522,7 +1534,7 @@ viking-button.auth-btn .viking-btn:disabled {
 .algolia-autocomplete-host .aa-ItemContentBody {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--viking-space-1, 8px) / 2);
+  gap: calc(var(--viking-space-1, var(--viking-space-1)) / 2);
   min-width: 0;
   flex: 1;
 }
@@ -1644,7 +1656,7 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
     max-width: min(100% - 26rem, 52rem);
     overflow: visible;
     justify-content: center;
-    gap: var(--viking-space-4, 32px);
+    gap: var(--viking-space-4, var(--viking-space-4));
   }
 
   .navbar-left {
@@ -1696,15 +1708,15 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
   }
 
   .navbar-right {
-    gap: var(--viking-space-2, 16px);
+    gap: var(--viking-space-2, var(--viking-space-2));
   }
 
   .desktop-nav {
-    gap: var(--viking-space-3, 24px);
+    gap: var(--viking-space-3, var(--viking-space-3));
   }
 
   .desktop-nav .nav-btn {
-    padding: 0 var(--viking-space-3, 24px) !important;
+    padding: 0 var(--viking-space-3, var(--viking-space-3)) !important;
     margin: 0;
   }
 }
@@ -1712,7 +1724,7 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
 // Compact desktop — icon-only nav labels when the bar is still tight.
 @container viking-navbar (min-width: 768px) {
   .nav-btn {
-    padding: 0 var(--viking-space-1, 8px) !important;
+    padding: 0 var(--viking-space-1, var(--viking-space-1)) !important;
     gap: 0 !important;
   }
 
@@ -1721,7 +1733,7 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
     width: 1px;
     height: 1px;
     padding: 0;
-    margin: -1px;
+    margin: calc(-1 * var(--viking-space-px));
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
@@ -1730,9 +1742,9 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
 }
 
 // Full desktop — restore nav link labels and spacing.
-@container viking-navbar (min-width: 1280px) {
+@container viking-navbar (min-width: 1440px) {
   .nav-btn {
-    padding: 0 var(--viking-space-2, 16px) !important;
+    padding: 0 var(--viking-space-2, var(--viking-space-2)) !important;
     gap: var(--viking-space-1) !important;
     font-size: var(--viking-font-size, 16px) !important;
     letter-spacing: 0.08em !important;

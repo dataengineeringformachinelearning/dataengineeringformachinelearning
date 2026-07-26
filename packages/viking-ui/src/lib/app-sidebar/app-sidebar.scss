@@ -42,16 +42,18 @@ html[data-theme="light"] .viking-app-sidebar-host {
 
 .resize-handle {
   position: absolute;
-  right: -4px;
+  right: calc(var(--viking-touch-target-min, 44px) / -2);
   top: 0;
   bottom: 0;
-  width: 16px;
+  /* WCAG 2.5.8 — minimum target ≥24px; suite floor is 44px touch. */
+  width: var(--viking-touch-target-min, 44px);
   cursor: col-resize;
   z-index: 10;
   background: transparent;
   display: none;
   align-items: center;
   justify-content: center;
+  touch-action: none;
 
   &::after {
     content: "";
@@ -63,9 +65,15 @@ html[data-theme="light"] .viking-app-sidebar-host {
   }
 
   &:hover::after,
-  &:active::after {
+  &:active::after,
+  &:focus-visible::after {
     opacity: 1;
     background: var(--sidebar-accent);
+  }
+
+  &:focus-visible {
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
   }
 }
 
@@ -283,7 +291,7 @@ html[data-theme="light"] .viking-app-sidebar-host {
     }
 
     .result-icon {
-      font-size: 20px;
+      font-size: var(--viking-font-size-lead);
       width: 20px;
       height: 20px;
       line-height: 20px;
@@ -341,7 +349,7 @@ html[data-theme="light"] .viking-app-sidebar-host {
   }
 
   .search-no-results {
-    font-size: 1rem;
+    font-size: var(--viking-font-size-base);
     color: var(--text-muted);
     text-align: center;
     padding: var(--viking-space-2) 0;

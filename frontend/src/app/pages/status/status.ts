@@ -5,7 +5,6 @@ import {
   ChangeDetectionStrategy,
   signal,
   effect,
-  computed,
   afterNextRender,
   Injector,
 } from '@angular/core';
@@ -23,7 +22,7 @@ import {
   VikingCallout,
   VikingPageHeader,
   VikingPageTemplate,
-  VikingSpinner,
+  VikingPageSkeleton,
   VikingStatusDashboard,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type {
@@ -48,10 +47,7 @@ import {
   STATUS_CONNECT_HEADING,
   STATUS_RETRY_LABEL,
 } from '../../core/continuity-copy';
-import {
-  ContinuityHealthSignal,
-  continuityFromReady,
-} from '../../core/continuity-health';
+import { ContinuityHealthSignal, continuityFromReady } from '../../core/continuity-health';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
@@ -63,7 +59,7 @@ import { environment } from '../../../environments/environment';
     VikingCallout,
     VikingPageHeader,
     VikingPageTemplate,
-    VikingSpinner,
+    VikingPageSkeleton,
     VikingStatusDashboard,
     RouterModule,
     StatusCta,
@@ -108,22 +104,15 @@ export class Status implements OnInit {
     return 'muted';
   }
 
-  /** Skeleton card shown while status pages load. */
-  loadingPlaceholder: StatusPageData = {
+  /** Seed card for headless crawlers only (not used as a loading UI). */
+  private readonly crawlerPlaceholder: StatusPageData = {
     id: 'loading-placeholder',
     title: 'Platform Status Feed',
     slug: 'platform-status',
-    description: 'Real-time telemetry and status monitoring for all machine learning pipelines.',
+    description: 'Telemetry and status monitoring for machine learning pipelines.',
     created_at: new Date().toISOString(),
     user_id: null,
   };
-
-  displayPages = computed(() => {
-    if (this.isLoading() && !this.loadFailed()) {
-      return [this.loadingPlaceholder];
-    }
-    return this.statusPages();
-  });
 
   getPageStatus(pageId: string): string {
     const active = this.activeIncidents(pageId);
@@ -215,7 +204,7 @@ export class Status implements OnInit {
 
   dashboardServices = (page: StatusPageData): StatusDashboardService[] => {
     const services = this.servicesMap()[page.id] ?? [];
-    if (services.length === 0 && page.id === this.loadingPlaceholder.id) {
+    if (services.length === 0 && page.id === this.crawlerPlaceholder.id) {
       return [
         {
           name: 'Primary Site',
@@ -304,9 +293,11 @@ export class Status implements OnInit {
     try {
       const ready = await firstValueFrom(
         this.http
-          .get<{ forjd_health?: string; mode?: string; status?: string }>(
-            `${environment.backendUrl}/api/v1/ready`,
-          )
+          .get<{
+            forjd_health?: string;
+            mode?: string;
+            status?: string;
+          }>(`${environment.backendUrl}/api/v1/ready`)
           .pipe(timeout(2500)),
       );
       this.controlPlaneReady.set(continuityFromReady(ready));
@@ -341,55 +332,70 @@ export class Status implements OnInit {
   }
 
   loadData() {
-    this.isLoading.set(true);
     this.loadFailed.set(false);
     const isCrawler = typeof navigator !== 'undefined' && navigator.webdriver;
     if (isCrawler) {
-      this.statusPages.set([this.loadingPlaceholder]);
+      this.statusPages.set([this.crawlerPlaceholder]);
       this.isLoading.set(false);
       this.loadFailed.set(false);
       return;
     }
     if (this.authService.isAuthenticated()) {
+      const applySorted = (data: StatusPageData[]): void => {
+        // Include user's own pages AND the platform status page
+        const myPages = data.filter(
+          p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status',
+        );
+        // Sort so platform-status is always first
+        const sorted = [...myPages].sort((a, b) => {
+          if (a.slug === 'platform-status') return -1;
+          if (b.slug === 'platform-status') return 1;
+          return a.title.localeCompare(b.title);
+        });
+        this.statusPages.set(sorted);
+        this.monitorService.fetchAllIncidents(sorted);
+        this.monitorService.fetchAllServices(sorted);
+        for (const page of sorted) {
+          this.monitorService.seedFromEmbeddedPage(page);
+          this.mlService.seedFromStatusPage(page);
+          this.mlService.fetchLatestStat(page.id);
+          this.mlService.fetchThreatReport(page.id);
+          this.mlService.fetchTemporalForecast(page.id);
+        }
+        this.isLoading.set(false);
+        this.isRetrying.set(false);
+      };
+
+      // Optimistic: paint stale status directory, then revalidate.
+      const cached = this.monitorService.peekStatusPages();
+      if (cached) {
+        applySorted(cached);
+      } else {
+        this.isLoading.set(true);
+      }
+
       this.monitorService
         .getStatusPages()
         .pipe(timeout(15000))
         .subscribe({
           next: data => {
             if (!Array.isArray(data)) {
-              this.statusPages.set([]);
-              this.loadFailed.set(true);
+              if (!cached) {
+                this.statusPages.set([]);
+                this.loadFailed.set(true);
+              }
               this.isLoading.set(false);
               this.isRetrying.set(false);
               return;
             }
-            // Include user's own pages AND the platform status page
-            const myPages = data.filter(
-              p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status',
-            );
-            // Sort so platform-status is always first
-            const sorted = [...myPages].sort((a, b) => {
-              if (a.slug === 'platform-status') return -1;
-              if (b.slug === 'platform-status') return 1;
-              return a.title.localeCompare(b.title);
-            });
-            this.statusPages.set(sorted);
-            this.monitorService.fetchAllIncidents(sorted);
-            this.monitorService.fetchAllServices(sorted);
-            for (const page of sorted) {
-              this.monitorService.seedFromEmbeddedPage(page);
-              this.mlService.seedFromStatusPage(page);
-              this.mlService.fetchLatestStat(page.id);
-              this.mlService.fetchThreatReport(page.id);
-              this.mlService.fetchTemporalForecast(page.id);
-            }
-            this.isLoading.set(false);
-            this.isRetrying.set(false);
+            applySorted(data);
           },
           error: err => {
             console.error('Error fetching pages:', err);
-            this.statusPages.set([]);
-            this.loadFailed.set(true);
+            if (!cached) {
+              this.statusPages.set([]);
+              this.loadFailed.set(true);
+            }
             this.isLoading.set(false);
             this.isRetrying.set(false);
           },

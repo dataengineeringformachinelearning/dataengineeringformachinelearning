@@ -34,6 +34,7 @@ import {
 } from 'firebase/auth';
 
 import { SessionApiService } from './session-api.service';
+import { SwrCacheService } from '../core/cache/swr-cache.service';
 
 type AuthUserResponse = {
   status: string;
@@ -164,6 +165,24 @@ export class AuthService {
   public currentUserRole = signal<string | null>(null);
   public isInitialized = signal<boolean>(false);
   public isProcessing = signal<boolean>(false);
+
+  /** Resolves when constructor auth bootstrap (mock or onAuthStateChanged) has settled. */
+  whenInitialized(): Promise<void> {
+    if (this.isInitialized()) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      const started = Date.now();
+      const tick = (): void => {
+        if (this.isInitialized() || Date.now() - started > 20_000) {
+          resolve();
+          return;
+        }
+        globalThis.setTimeout(tick, 32);
+      };
+      tick();
+    });
+  }
   /** Firebase user has enrolled MFA factors (account setting). */
   public mfaEnrolled = signal<boolean>(false);
   /** Current ID token includes MFA verification (`amr` contains `mfa`). */
@@ -172,6 +191,7 @@ export class AuthService {
   public sessionId = signal<string | null>(null);
   private http = inject(HttpClient);
   private sessionApi = inject(SessionApiService);
+  private swrCache = inject(SwrCacheService);
   public auth: Auth | MockAuth | null = null;
 
   private useMock =
@@ -471,6 +491,8 @@ export class AuthService {
     this.mfaEnrolled.set(false);
     this.mfaVerifiedInSession.set(false);
     this.clearMfaSessionFlag();
+    // Drop in-memory SWR entries so the next account cannot see prior tenant data.
+    this.swrCache.clear();
     if (this.useMock) {
       localStorage.removeItem('mock_user');
       this.auth = null;

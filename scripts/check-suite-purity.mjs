@@ -116,6 +116,7 @@ for (const rel of [
   "packages/viking-ui/scripts/check-suite-landing.mjs",
   "packages/viking-ui/scripts/check-suite-backend.mjs",
   "packages/viking-ui/scripts/check-suite-docs.mjs",
+  "scripts/check-hardcoded-styles.mjs",
 ]) {
   const check = path.join(root, rel);
   if (!existsSync(check)) continue;
@@ -161,6 +162,13 @@ if (existsSync(vikingPkg)) {
 // FORJD sibling checks
 if (existsSync(forjdRoot)) {
   const forjdUi = path.join(forjdRoot, "frontend/libs/forjd-ui/src/lib/styles");
+  const forjdBackendStatic = path.join(forjdRoot, "backend/static");
+  const backendSuiteFiles = [
+    "suite-tokens.css",
+    "suite-components.css",
+    "suite-landing.css",
+    "suite-backend.css",
+  ];
   for (const name of suiteFiles) {
     const a = path.join(demlTokens, name);
     const b = path.join(forjdUi, name);
@@ -172,7 +180,25 @@ if (existsSync(forjdRoot)) {
     const hb = createHash("sha256").update(readFileSync(b)).digest("hex");
     if (ha !== hb) {
       failures.push(
-        `Suite drift: ${name} DEML ≠ FORJD — run npm run sync:suite`,
+        `Suite drift: ${name} DEML ≠ FORJD forjd-ui — run npm run sync:suite`,
+      );
+    }
+  }
+  // G14 — backend.forjd.co must vendor the same suite CSS as forjd-ui / DEML
+  for (const name of backendSuiteFiles) {
+    const a = path.join(demlTokens, name);
+    const b = path.join(forjdBackendStatic, name);
+    if (!existsSync(b)) {
+      failures.push(
+        `FORJD backend/static missing ${name} — run npm run sync:suite`,
+      );
+      continue;
+    }
+    const ha = createHash("sha256").update(readFileSync(a)).digest("hex");
+    const hb = createHash("sha256").update(readFileSync(b)).digest("hex");
+    if (ha !== hb) {
+      failures.push(
+        `Suite drift: ${name} DEML ≠ FORJD backend/static — run npm run sync:suite`,
       );
     }
   }

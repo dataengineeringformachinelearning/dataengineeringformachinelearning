@@ -33,6 +33,9 @@ import { VikingControl, provideVikingCva } from "../core/cva";
         [value]="value()"
         [disabled]="disabled() || formDisabled()"
         [attr.aria-label]="label() || 'One-time passcode'"
+        [attr.aria-describedby]="describedBy() || null"
+        [attr.aria-invalid]="invalid() ? 'true' : null"
+        [attr.aria-required]="required() ? 'true' : null"
         (input)="onInput($event)"
         (blur)="onTouched()"
       />
@@ -96,6 +99,10 @@ export class VikingOtpInput extends VikingControl<string> {
   readonly name = input<string>("one-time-code");
   /** Optional id on the first cell for label[for] association. */
   readonly inputId = input<string>("");
+  /** Space-separated ids (description / error) from the parent field. */
+  readonly describedBy = input<string>("");
+  readonly invalid = input<boolean>(false);
+  readonly required = input<boolean>(false);
   readonly disabled = input<boolean>(false);
   readonly centered = input<boolean>(false);
 

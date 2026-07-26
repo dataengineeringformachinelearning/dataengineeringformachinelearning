@@ -1,20 +1,39 @@
 import { isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { inject as injectAnalytics } from '@vercel/analytics';
-import { injectSpeedInsights } from '@vercel/speed-insights';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { environment } from './environments/environment';
 
 const MONITORING_IDLE_TIMEOUT_MS = 2_000;
+const ANALYTICS_IDLE_TIMEOUT_MS = 4_000;
 
-// Framework-agnostic Vercel Web Analytics + Speed Insights.
-// Local static servers route unknown Vercel paths to index.html, so inject only on a real host.
-const localHosts = new Set(['localhost', '127.0.0.1', '[::1]']);
-if (typeof window !== 'undefined' && !localHosts.has(window.location.hostname)) {
-  injectAnalytics({ mode: isDevMode() ? 'development' : 'production' });
-  injectSpeedInsights({ framework: 'angular' });
-}
+const scheduleIdle = (work: () => void, timeoutMs: number): void => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(work, { timeout: timeoutMs });
+    return;
+  }
+  globalThis.setTimeout(work, timeoutMs);
+};
+
+// Vercel analytics — dynamic + idle so SDK code stays out of the critical JS bundle.
+const scheduleVercelAnalytics = (): void => {
+  const localHosts = new Set(['localhost', '127.0.0.1', '[::1]']);
+  if (typeof window === 'undefined' || localHosts.has(window.location.hostname)) {
+    return;
+  }
+  const mode = isDevMode() ? 'development' : 'production';
+  scheduleIdle(() => {
+    void Promise.all([import('@vercel/analytics'), import('@vercel/speed-insights')]).then(
+      ([{ inject: injectAnalytics }, { injectSpeedInsights }]) => {
+        injectAnalytics({ mode });
+        injectSpeedInsights({ framework: 'angular' });
+      },
+    );
+  }, ANALYTICS_IDLE_TIMEOUT_MS);
+};
 
 const initializeMonitoring = async (): Promise<void> => {
   if (!environment.sentryDsn && !environment.rollbarAccessToken) {
@@ -42,21 +61,15 @@ const scheduleMonitoringInitialization = (): void => {
     return;
   }
 
-  const initialize = (): void => {
+  scheduleIdle(() => {
     void initializeMonitoring();
-  };
-
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(initialize, { timeout: MONITORING_IDLE_TIMEOUT_MS });
-    return;
-  }
-
-  globalThis.setTimeout(initialize, MONITORING_IDLE_TIMEOUT_MS);
+  }, MONITORING_IDLE_TIMEOUT_MS);
 };
 
 const startApplication = async (): Promise<void> => {
   try {
     await bootstrapApplication(App, appConfig);
+    scheduleVercelAnalytics();
     scheduleMonitoringInitialization();
   } catch (error: unknown) {
     console.error('Application bootstrap failed:', error);

@@ -7,10 +7,15 @@
     aria-labelledby="main-title"
   >
     <p class="suite-landing-badge hero-badge viking-unified-hero-badge">
-      <span class="badge-dot pulse-dot" aria-hidden="true"></span>
+      <span
+        class="badge-dot"
+        [class.pulse-dot]="controlPlaneReady() === 'ok'"
+        aria-hidden="true"
+      ></span>
       <span class="badge-text">
-        Learning · Control plane · v{{ version }} @if (controlPlaneReady() === 'degraded') { · FORJD
-        degraded } @else if (controlPlaneReady() === 'unreachable') { · API unreachable }
+        Learning · Control plane · v{{ version }} @if (controlPlaneReady() === 'checking') { ·
+        Confirming } @else if (controlPlaneReady() === 'degraded') { · Updates delayed } @else if
+        (controlPlaneReady() === 'unreachable') { · Unavailable }
       </span>
     </p>
     <h1 class="hero-brand suite-landing-brand" id="main-title">DEML</h1>
@@ -27,10 +32,17 @@
         routerLink="/dashboard"
         class="cta-button suite-btn viking-btn fj-btn"
         data-variant="primary"
+        (mouseenter)="prefetchRoute('/dashboard')"
+        (focusin)="prefetchRoute('/dashboard')"
         >Open dashboard</a
       >
       } @else {
-      <a routerLink="/login" class="cta-button suite-btn viking-btn fj-btn" data-variant="primary"
+      <a
+        routerLink="/login"
+        class="cta-button suite-btn viking-btn fj-btn"
+        data-variant="primary"
+        (mouseenter)="prefetchRoute('/login')"
+        (focusin)="prefetchRoute('/login')"
         >Get started</a
       >
       }
@@ -155,10 +167,17 @@
           routerLink="/dashboard"
           class="suite-btn viking-btn fj-btn cta-button"
           data-variant="primary"
+          (mouseenter)="prefetchRoute('/dashboard')"
+          (focusin)="prefetchRoute('/dashboard')"
           >Open dashboard</a
         >
         } @else {
-        <a routerLink="/login" class="suite-btn viking-btn fj-btn cta-button" data-variant="primary"
+        <a
+          routerLink="/login"
+          class="suite-btn viking-btn fj-btn cta-button"
+          data-variant="primary"
+          (mouseenter)="prefetchRoute('/login')"
+          (focusin)="prefetchRoute('/login')"
           >Get started free</a
         >
         }

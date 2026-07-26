@@ -2,12 +2,24 @@
   <viking-page-header
     tag="Platform Analytics"
     title="System Analytics"
-    subtitle="Live performance, reliability, and risk signals for every monitored service."
+    [subtitle]="analyticsSubtitle"
     backTo="/dashboard"
     [backQueryParams]="{ tab: 'performance' }"
     backLabel="Back to Dashboard"
     backNavLabel="Return to dashboard performance view"
-  />
+  >
+    <div vikingPageHeaderActions>
+      @if (streamStatus(); as stream) { @if (stream.visible) {
+      <viking-stream-status
+        [phase]="stream.phase"
+        [label]="stream.label"
+        [tone]="stream.tone"
+        [pulse]="stream.pulse"
+        [ariaLabel]="stream.ariaLabel"
+      />
+      } }
+    </div>
+  </viking-page-header>
 
   @if (connectivity.offline()) {
   <viking-callout tone="warning" [heading]="offlineHeading">
@@ -24,7 +36,7 @@
     </viking-button>
   </viking-callout>
   } @else if (loadError()) {
-  <viking-callout tone="warning" heading="Analytics degraded">
+  <viking-callout tone="warning" [heading]="updatesDelayedHeading">
     <p>{{ loadError() }}</p>
     <viking-button
       variant="primary"
@@ -38,11 +50,595 @@
     </viking-button>
   </viking-callout>
   } @if (isLoading()) {
-  <div class="viking-stack" role="status" aria-live="polite" aria-busy="true">
-    <viking-spinner [size]="28" label="Loading analytics" />
-  </div>
-  }
+  <viking-page-skeleton layout="dashboard" label="Loading analytics" />
+  } @else {
+  <viking-section>
+    <viking-section-template
+      heading="Model Benchmarking"
+      icon="model"
+      description="Validation evidence for the selected workspace, compared with the platform reference."
+    >
+      <viking-panel-grid [columns]="2">
+        <viking-metric-card
+          label="Benchmark score"
+          [value]="formatOptionalPercent(benchmarkSummary()?.score_percent)"
+          [sublabel]="benchmarkScoreSublabel()"
+          icon="speed"
+          tone="info"
+        />
+        <viking-metric-card
+          label="Weighted accuracy"
+          [value]="formatOptionalPercent(benchmarkSummary()?.accuracy_percent)"
+          sublabel="Classification agreement across measured models"
+          icon="check-circle"
+          tone="success"
+        />
+        <viking-metric-card
+          label="Root mean square error"
+          [value]="formatBenchmarkError(benchmarkSummary()?.rmse)"
+          sublabel="Lower values indicate tighter predictive fit"
+          icon="analytics"
+        />
+        <viking-metric-card
+          label="Validation observations"
+          [value]="formatCount(benchmarkSummary()?.dataset_size || 0)"
+          [sublabel]="(benchmarkSummary()?.models_evaluated || 0) + ' model types evaluated'"
+          icon="storage"
+        />
+      </viking-panel-grid>
+    </viking-section-template>
+  </viking-section>
 
+  <viking-section>
+    <viking-section-template
+      heading="Global Platform Metrics"
+      icon="globe"
+      description="Aggregate performance and security telemetry across all nodes."
+    >
+      <viking-panel-grid class="analytics-gauge-grid" [columns]="3" spacing="tight">
+        <!-- THREAT GAUGE -->
+        <viking-card class="gauge-card">
+          <div class="gauge-card-header">
+            <h3>System Threat</h3>
+            <viking-app-icon name="security" />
+          </div>
+          <div class="gauge-wrapper threat-gauge">
+            <viking-gauge-arc tone="amber" [value]="threatLevel()" />
+            <div class="gauge-center-text threat-text">
+              <viking-app-icon name="warning" hostClass="gauge-inner-icon" />
+              <span class="unit">DETECTED</span>
+              <span class="value"
+                >{{ threatLevel() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+              >
+            </div>
+          </div>
+          <div class="gauge-card-footer">
+            <viking-app-icon name="info" />
+            <span>Current threat exposure score</span>
+          </div>
+        </viking-card>
+
+        <!-- MAIN CES GAUGE -->
+        <viking-card class="gauge-card">
+          <div class="gauge-card-header">
+            <h3>Platform Effectiveness</h3>
+            <viking-app-icon name="analytics" />
+          </div>
+          <div class="gauge-wrapper main-gauge">
+            <viking-gauge-arc tone="danger" [value]="cesLevel()" />
+            <div class="gauge-center-text main-text">
+              <viking-app-icon name="stars" hostClass="gauge-inner-icon" />
+              <span class="unit">SCORE</span>
+              <span class="value">{{ cesLevel() | number:'1.0-0' }}</span>
+            </div>
+          </div>
+          <div class="gauge-card-footer">
+            <viking-app-icon name="info" />
+            <span>Overall CES performance metric</span>
+          </div>
+        </viking-card>
+
+        <!-- Spiking Temporal Forecast (4th model) -->
+        <viking-card class="gauge-card">
+          <div class="gauge-card-header">
+            <h3>Temporal Forecast</h3>
+            <viking-app-icon name="timeline" />
+          </div>
+          <div class="gauge-wrapper temporal-gauge">
+            <viking-gauge-arc tone="amber" [value]="temporalForecast()" />
+            <div class="gauge-center-text temporal-text">
+              <viking-app-icon name="trending-up" hostClass="gauge-inner-icon" />
+              <span class="unit">SPIKE RISK</span>
+              <span class="value"
+                >{{ temporalForecast() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+              >
+            </div>
+          </div>
+          <div class="gauge-card-footer">
+            <viking-app-icon name="info" />
+            <span>Spiking NN temporal prediction</span>
+          </div>
+        </viking-card>
+
+        <!-- Honeypot Detection (5th indicator) -->
+        <viking-card class="gauge-card">
+          <div class="gauge-card-header">
+            <h3>Honeypot Activity</h3>
+            <viking-app-icon name="bug-report" />
+          </div>
+          <div class="gauge-wrapper honeypot-gauge">
+            <viking-gauge-arc tone="danger" [value]="honeypotScore()" />
+            <div class="gauge-center-text honeypot-text">
+              <viking-app-icon name="security" hostClass="gauge-inner-icon" />
+              <span class="unit">CAPTURES</span>
+              <span class="value"
+                >{{ honeypotScore() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+              >
+            </div>
+          </div>
+          <div class="gauge-card-footer">
+            <viking-app-icon name="info" />
+            <span>Threat actor detection rate</span>
+          </div>
+        </viking-card>
+
+        <!-- Benchmark Indicator -->
+        <viking-card class="gauge-card">
+          <div class="gauge-card-header">
+            <h3>Model Benchmark</h3>
+            <viking-app-icon name="science" />
+          </div>
+          <div class="gauge-wrapper benchmark-gauge">
+            <viking-gauge-arc tone="primary" [value]="latestBenchmarkScore() ?? 0" />
+            <div class="gauge-center-text benchmark-text">
+              <viking-app-icon name="speed" hostClass="gauge-inner-icon" />
+              <span class="unit">SCORE</span>
+              <span class="value"
+                >{{ latestBenchmarkScore() !== null ? (latestBenchmarkScore() | number:'1.0-0') :
+                '—' }}<span class="unit-symbol"
+                  >{{ latestBenchmarkScore() !== null ? '%' : '' }}</span
+                ></span
+              >
+            </div>
+          </div>
+          <div class="gauge-card-footer">
+            <viking-app-icon name="info" />
+            @if (latestBenchmark()?.evaluation_status === 'measured') {
+            <span>
+              {{ latestBenchmark()?.models_evaluated }} model {{ latestBenchmark()?.models_evaluated
+              === 1 ? 'type' : 'types' }} · n={{ latestBenchmark()?.dataset_size }} · score {{
+              formatOptionalPercent(latestBenchmark()?.score_percent) }}
+            </span>
+            } @else {
+            <span>Insufficient observations for a measured benchmark</span>
+            }
+          </div>
+        </viking-card>
+
+        <!-- STABLENESS GAUGE -->
+        <viking-card class="gauge-card">
+          <div class="gauge-card-header">
+            <h3>Network Stability</h3>
+            <viking-app-icon name="health_and_safety" />
+          </div>
+          <div class="gauge-wrapper stability-gauge">
+            <viking-gauge-arc tone="primary" [value]="stabilityLevel()" />
+            <div class="gauge-center-text stability-text">
+              <viking-app-icon name="monitor_heart" hostClass="gauge-inner-icon" />
+              <span class="unit">UPTIME</span>
+              <span class="value"
+                >{{ stabilityLevel() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+              >
+            </div>
+          </div>
+          <div class="gauge-card-footer">
+            <viking-app-icon name="info" />
+            <span>System resilience index</span>
+          </div>
+        </viking-card>
+      </viking-panel-grid>
+    </viking-section-template>
+  </viking-section>
+
+  <viking-section>
+    <viking-section-template
+      heading="Your Analytics"
+      icon="user"
+      description="Performance data isolated to your active projects and workloads."
+    >
+      <viking-stack class="analytics-metrics-stack" spacing="compact">
+        @if (availableSites().length > 0) {
+        <div class="filter-group-mobile">
+          <app-unified-select
+            id="siteSelect"
+            label="Filter by Site:"
+            width="half"
+            [options]="siteOptions()"
+            [value]="selectedSite() || 'All'"
+            (valueChange)="onSiteChange($event)"
+          ></app-unified-select>
+        </div>
+        }
+        <viking-panel-grid [columns]="2">
+          <viking-metric-card
+            label="API usage (last minute)"
+            [value]="formatCount(apiUsageCurrent()) + ' / ' + formatCount(apiUsageQuota())"
+            sublabel="Requests within the current quota window"
+            icon="analytics"
+          />
+          <viking-metric-card
+            label="P99 latency"
+            [value]="(p99Latency() | number:'1.2-2') + ' ms'"
+            sublabel="99th percentile response time"
+            icon="speed"
+            tone="info"
+          />
+          <viking-metric-card
+            label="Service uptime"
+            [value]="uptimePercent() === null ? '—' : (uptimePercent() | number:'1.2-2') + '%'"
+            sublabel="Availability across monitored services"
+            icon="heart"
+            tone="success"
+          />
+          <viking-metric-card
+            label="Total requests"
+            [value]="formatCount(totalRequests())"
+            sublabel="Requests observed in the last 24 hours"
+            icon="network"
+          />
+          <viking-metric-card
+            label="Active incidents"
+            [value]="activeIncidents()"
+            sublabel="Open reliability and security events"
+            icon="warning"
+            [tone]="activeIncidents() > 0 ? 'danger' : 'success'"
+          />
+          <viking-metric-card
+            label="Widget interactions"
+            [value]="formatCount(widgetInteractions())"
+            sublabel="Tracked user interactions"
+            icon="bolt"
+          />
+          <viking-metric-card
+            label="Unique visitors"
+            [value]="formatCount(uniqueVisitors())"
+            sublabel="Distinct visitors in the reporting window"
+            icon="user"
+          />
+          <viking-metric-card
+            label="Cookie consents"
+            [value]="formatCount(cookieConsents())"
+            sublabel="Analytics and marketing consent events"
+            icon="cookie"
+            tone="success"
+          />
+        </viking-panel-grid>
+
+        <!-- ACTIVE PROVIDERS CHIPS -->
+        @if (activeProviders().length > 0) {
+        <div class="active-providers-row">
+          <span class="active-providers-label">Active Providers:</span>
+          @for (provider of activeProviders(); track provider) {
+          <viking-badge tone="accent" size="sm">{{ provider }}</viking-badge>
+          }
+        </div>
+        }
+
+        <viking-chart-panel>
+          <viking-chart-card-header
+            title="System Latency (Last 24h)"
+            [hasData]="hasLatencyData()"
+            [value]="p99Latency() + ' ms'"
+            [trend]="latencyTrend()"
+            emptyLabel="Awaiting signal"
+          />
+
+          @if (hasLatencyData()) {
+          <viking-chart
+            kind="line"
+            [series]="latencySeries()"
+            [categories]="latencyCategories()"
+            label="System Latency (Last 24h)"
+            [showArea]="true"
+            curve="smooth"
+            [fill]="true"
+            [zoomable]="true"
+          />
+          } @else {
+          <viking-chart-empty-state
+            icon="globe"
+            title="No Telemetry Signal"
+            description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
+          />
+          }
+        </viking-chart-panel>
+      </viking-stack>
+    </viking-section-template>
+  </viking-section>
+
+  <viking-section>
+    <viking-section-template
+      heading="Traffic Analytics"
+      icon="globe"
+      description="Geographic origins, frequency trends, and endpoint usage patterns."
+    >
+      <viking-stack class="analytics-traffic-stack" spacing="compact">
+        <!-- Full Width Origin Map — deferred so Leaflet pays only when this section is due -->
+        @defer (on viewport; prefetch on idle) {
+        <viking-chart-panel size="medium" body="origin-map">
+          <viking-chart-card-header
+            title="Geographic Origins"
+            [hasData]="originMapData().length > 0"
+            [value]="originMapData().length + ' Regions'"
+            [trend]="originTrend()"
+            emptyLabel="Awaiting signal"
+          />
+          <div
+            id="originMap"
+            class="origin-map-canvas viking-map-ready"
+            role="region"
+            aria-label="Geographic origin map"
+          ></div>
+          <!-- Keyboard/SR equivalent of hover map markers -->
+          @if (originMapData().length > 0) {
+          <table class="sr-only" aria-label="Geographic origin request counts">
+            <caption>
+              Regional request counts shown on the map
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Region</th>
+                <th scope="col">Requests</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (loc of originMapData(); track $index) {
+              <tr>
+                <td>{{ loc.origin || loc.region || loc.country || loc.name || 'Origin' }}</td>
+                <td>{{ loc.count || 0 }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+          } @if (originMapData().length === 0) {
+          <viking-chart-empty-state
+            layout="overlay"
+            icon="globe"
+            title="No Geographic Data"
+            description="Regional traffic origins will appear once requests are received from connected endpoints."
+          />
+          }
+        </viking-chart-panel>
+        } @placeholder {
+        <viking-chart-panel size="medium" body="origin-map" [loading]="true">
+          <viking-chart-card-header
+            title="Geographic Origins"
+            [hasData]="false"
+            emptyLabel="Loading map"
+          />
+        </viking-chart-panel>
+        } @defer (on viewport; prefetch on idle) {
+        <viking-panel-grid [columns]="12">
+          <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
+            <viking-chart-panel>
+              <viking-chart-card-header
+                title="Top Regions"
+                [hasData]="hasTopRegionsData()"
+                [value]="(topRegionsSeries()[0]?.data?.length || 0) + ' Regions'"
+                [trend]="originTrend()"
+                emptyLabel="No regions yet"
+              />
+              @if (hasTopRegionsData()) {
+              <viking-chart
+                kind="bar"
+                [series]="topRegionsSeries()"
+                [categories]="topRegionsCategories()"
+                label="Top Regions"
+                [fill]="true"
+                [zoomable]="true"
+              />
+              } @else {
+              <viking-chart-empty-state
+                icon="globe"
+                title="No Regional Data"
+                description="Top traffic regions will populate as geographic telemetry is collected."
+              />
+              }
+            </viking-chart-panel>
+          </viking-grid-item>
+
+          <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
+            <viking-chart-panel>
+              <viking-chart-card-header
+                title="Request Frequency"
+                [hasData]="hasFrequencyData()"
+                [value]="formatCount(totalRequests()) + ' Req'"
+                [trend]="frequencyTrend()"
+                emptyLabel="Awaiting signal"
+              />
+              @if (hasFrequencyData()) {
+              <viking-chart
+                kind="line"
+                [series]="frequencySeries()"
+                [categories]="frequencyCategories()"
+                label="Request Frequency"
+                [showArea]="true"
+                curve="smooth"
+                [fill]="true"
+                [zoomable]="true"
+              />
+              } @else {
+              <viking-chart-empty-state
+                icon="globe"
+                title="No Telemetry Signal"
+                description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
+              />
+              }
+            </viking-chart-panel>
+          </viking-grid-item>
+
+          <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
+            <viking-chart-panel>
+              <viking-chart-card-header
+                title="Request Counts per Endpoint"
+                [hasData]="hasEndpointData()"
+                [value]="(endpointSeries()[0]?.data?.length || 0) + ' APIs'"
+                [trend]="endpointTrend()"
+                emptyLabel="No endpoints yet"
+              />
+              @if (hasEndpointData()) {
+              <viking-chart
+                kind="bar"
+                [series]="endpointSeries()"
+                [categories]="endpointCategories()"
+                label="Request Counts per Endpoint"
+                [fill]="true"
+                [zoomable]="true"
+              />
+              } @else {
+              <viking-chart-empty-state
+                icon="globe"
+                title="No Endpoint Data"
+                description="Per-endpoint request counts will appear once traffic is routed through monitored APIs."
+              />
+              }
+            </viking-chart-panel>
+          </viking-grid-item>
+        </viking-panel-grid>
+        } @placeholder {
+        <viking-panel-grid [columns]="12">
+          <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
+            <viking-chart-panel [loading]="true">
+              <viking-chart-card-header
+                title="Traffic charts"
+                [hasData]="false"
+                emptyLabel="Loading charts"
+              />
+            </viking-chart-panel>
+          </viking-grid-item>
+        </viking-panel-grid>
+        }
+      </viking-stack>
+    </viking-section-template>
+  </viking-section>
+
+  <viking-section>
+    <viking-section-template
+      heading="SIEM / Security Insights"
+      icon="shield"
+      description="Threat events, anomalies, and HTTP status distribution."
+    >
+      @defer (on viewport; prefetch on idle) {
+      <viking-panel-grid [columns]="12">
+        <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
+          <viking-chart-panel>
+            <viking-chart-card-header
+              title="Threat Events by Severity"
+              [hasData]="hasThreatSeverityData()"
+              [value]="formatPercent(threatLevel())"
+              [trend]="threatTrend()"
+              emptyLabel="Perimeter secure"
+            />
+            @if (hasThreatSeverityData()) {
+            <viking-chart
+              kind="donut"
+              [segments]="threatSeveritySegments()"
+              label="Threat Events by Severity"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else {
+            <viking-chart-empty-state
+              tone="secure"
+              icon="check-circle"
+              title="No Active Threats"
+              description="Your perimeter is secure. No threat events have been detected."
+            />
+            }
+          </viking-chart-panel>
+        </viking-grid-item>
+
+        <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
+          <viking-chart-panel>
+            <viking-chart-card-header
+              title="Recent Security Anomalies"
+              [hasData]="hasSecurityAlertsData()"
+              [value]="activeIncidents() + ' Active'"
+              [trend]="anomalyTrend()"
+              emptyLabel="No anomalies"
+            />
+            @if (hasSecurityAlertsData()) {
+            <viking-chart
+              kind="bar"
+              [series]="securityAlertsSeries()"
+              [categories]="securityAlertCategories()"
+              label="Recent Security Anomalies"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else {
+            <viking-chart-empty-state
+              tone="secure"
+              icon="search"
+              title="No Anomalies Detected"
+              description="Security monitoring is active. No anomalous behavior patterns identified."
+            />
+            }
+          </viking-chart-panel>
+        </viking-grid-item>
+
+        <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
+          <viking-chart-panel>
+            <viking-chart-card-header
+              title="HTTP Status Distribution"
+              [hasData]="hasStatusStackedData() || hasStatusData()"
+              [value]="uptimePercent() === null ? '—' : uptimePercent() + '%'"
+              [trend]="statusTrend()"
+              emptyLabel="Awaiting signal"
+            />
+            @if (hasStatusStackedData()) {
+            <viking-chart
+              kind="stacked-bar"
+              [series]="statusStackedSeries()"
+              [categories]="statusCategories()"
+              label="HTTP Status Distribution"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else if (hasStatusData()) {
+            <viking-chart
+              kind="bar"
+              [series]="statusSeries()"
+              [categories]="statusCategories()"
+              label="HTTP Status Distribution"
+              [fill]="true"
+              [zoomable]="true"
+            />
+            } @else {
+            <viking-chart-empty-state
+              icon="bar-chart"
+              title="No Status Data"
+              description="HTTP response distribution will chart once request telemetry is available."
+            />
+            }
+          </viking-chart-panel>
+        </viking-grid-item>
+      </viking-panel-grid>
+      } @placeholder {
+      <viking-panel-grid [columns]="12">
+        <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
+          <viking-chart-panel [loading]="true">
+            <viking-chart-card-header
+              title="Security insights"
+              [hasData]="false"
+              emptyLabel="Loading charts"
+            />
+          </viking-chart-panel>
+        </viking-grid-item>
+      </viking-panel-grid>
+      }
+    </viking-section-template>
+  </viking-section>
   <viking-section>
     <viking-section-template
       class="analytics-export-card"
@@ -50,61 +646,69 @@
       icon="download"
       description="Signed downloads · CSV · JSON · Parquet · PDF"
     >
-      <viking-form-section heading="Generate" icon="download" layout="inline">
-        <viking-form-grid [columns]="3">
-          <app-unified-select
-            id="exportKindSelect"
-            label="Kind"
-            width="full"
-            [options]="exportKindOptions"
-            [value]="exportKind()"
-            (valueChange)="exportKind.set($event)"
-          />
-          <app-unified-select
-            id="exportFormatSelect"
-            label="Format"
-            width="full"
-            [options]="exportFormatOptions"
-            [value]="exportFormat()"
-            (valueChange)="exportFormat.set($event)"
-          />
-          <viking-field label="Days">
-            <viking-input
-              type="number"
-              name="exportDays"
-              [ngModel]="exportDaysLabel"
-              (ngModelChange)="onExportDaysChange($event)"
-              autocomplete="off"
+      <viking-disclosure
+        sectionId="deml.analytics.export-generate"
+        heading="Generate export"
+        description="Kind, format, and window — defaults to analytics CSV for the last 7 days."
+        [defaultOpen]="exportsList().length === 0"
+        level="inset"
+      >
+        <viking-form-section heading="Options" icon="download" layout="inline">
+          <viking-form-grid [columns]="3">
+            <app-unified-select
+              id="exportKindSelect"
+              label="Kind"
+              width="full"
+              [options]="exportKindOptions"
+              [value]="exportKind()"
+              (valueChange)="exportKind.set($event)"
             />
-          </viking-field>
-        </viking-form-grid>
-        <div vikingFormActions class="viking-cluster">
-          <viking-button
-            variant="primary"
-            type="button"
-            [compact]="true"
-            [loading]="exportBusy()"
-            [disabled]="exportBusy()"
-            (pressed)="requestExport()"
-          >
-            Generate
-          </viking-button>
-          <viking-button
-            variant="ghost"
-            type="button"
-            [compact]="true"
-            [disabled]="exportBusy()"
-            (pressed)="loadExports()"
-          >
-            Refresh
-          </viking-button>
-        </div>
-        @if (exportMessage()) {
-        <p vikingFormFooter class="section-description-premium" role="status">
-          {{ exportMessage() }}
-        </p>
-        }
-      </viking-form-section>
+            <app-unified-select
+              id="exportFormatSelect"
+              label="Format"
+              width="full"
+              [options]="exportFormatOptions"
+              [value]="exportFormat()"
+              (valueChange)="exportFormat.set($event)"
+            />
+            <viking-field label="Days">
+              <viking-input
+                type="number"
+                name="exportDays"
+                [ngModel]="exportDaysLabel"
+                (ngModelChange)="onExportDaysChange($event)"
+                autocomplete="off"
+              />
+            </viking-field>
+          </viking-form-grid>
+          <div vikingFormActions class="viking-cluster">
+            <viking-button
+              variant="primary"
+              type="button"
+              [compact]="true"
+              [loading]="exportBusy()"
+              [disabled]="exportBusy()"
+              (pressed)="requestExport()"
+            >
+              Generate
+            </viking-button>
+            <viking-button
+              variant="ghost"
+              type="button"
+              [compact]="true"
+              [disabled]="exportBusy()"
+              (pressed)="loadExports()"
+            >
+              Refresh
+            </viking-button>
+          </div>
+          @if (exportMessage()) {
+          <p vikingFormFooter class="section-description-premium" role="status">
+            {{ exportMessage() }}
+          </p>
+          }
+        </viking-form-section>
+      </viking-disclosure>
 
       @if (exportsList().length) {
       <viking-container padding="none" aria-label="Generated exports">
@@ -169,561 +773,5 @@
     </viking-section-template>
   </viking-section>
 
-  <viking-section>
-    <header class="metrics-overview-header">
-      <h2 class="section-title-premium">
-        <viking-app-icon name="model_training" />
-        Model Benchmarking
-      </h2>
-      <p class="section-description-premium">
-        Validation evidence for the selected workspace, compared with the platform reference.
-      </p>
-    </header>
-    <viking-panel-grid [columns]="2">
-      <viking-metric-card
-        label="Benchmark score"
-        [value]="formatOptionalPercent(benchmarkSummary()?.score_percent)"
-        [sublabel]="benchmarkScoreSublabel()"
-        icon="speed"
-        tone="info"
-      />
-      <viking-metric-card
-        label="Weighted accuracy"
-        [value]="formatOptionalPercent(benchmarkSummary()?.accuracy_percent)"
-        sublabel="Classification agreement across measured models"
-        icon="check-circle"
-        tone="success"
-      />
-      <viking-metric-card
-        label="Root mean square error"
-        [value]="formatBenchmarkError(benchmarkSummary()?.rmse)"
-        sublabel="Lower values indicate tighter predictive fit"
-        icon="analytics"
-      />
-      <viking-metric-card
-        label="Validation observations"
-        [value]="formatCount(benchmarkSummary()?.dataset_size || 0)"
-        [sublabel]="(benchmarkSummary()?.models_evaluated || 0) + ' model types evaluated'"
-        icon="storage"
-      />
-    </viking-panel-grid>
-  </viking-section>
-
-  <viking-section>
-    <header class="metrics-overview-header">
-      <h2 class="section-title-premium">
-        <viking-app-icon name="public" />
-        Global Platform Metrics
-      </h2>
-      <p class="section-description-premium">
-        Aggregate performance and security telemetry across all nodes.
-      </p>
-    </header>
-    <viking-panel-grid class="analytics-gauge-grid" [columns]="3" spacing="tight">
-      <!-- THREAT GAUGE -->
-      <viking-card class="gauge-card">
-        <div class="gauge-card-header">
-          <h3>System Threat</h3>
-          <viking-app-icon name="security" />
-        </div>
-        <div class="gauge-wrapper threat-gauge">
-          <viking-gauge-arc tone="amber" [value]="threatLevel()" />
-          <div class="gauge-center-text threat-text">
-            <viking-app-icon name="warning" hostClass="gauge-inner-icon" />
-            <span class="unit">DETECTED</span>
-            <span class="value"
-              >{{ threatLevel() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
-            >
-          </div>
-        </div>
-        <div class="gauge-card-footer">
-          <viking-app-icon name="info" />
-          <span>Current threat exposure score</span>
-        </div>
-      </viking-card>
-
-      <!-- MAIN CES GAUGE -->
-      <viking-card class="gauge-card">
-        <div class="gauge-card-header">
-          <h3>Platform Effectiveness</h3>
-          <viking-app-icon name="analytics" />
-        </div>
-        <div class="gauge-wrapper main-gauge">
-          <viking-gauge-arc tone="danger" [value]="cesLevel()" />
-          <div class="gauge-center-text main-text">
-            <viking-app-icon name="stars" hostClass="gauge-inner-icon" />
-            <span class="unit">SCORE</span>
-            <span class="value">{{ cesLevel() | number:'1.0-0' }}</span>
-          </div>
-        </div>
-        <div class="gauge-card-footer">
-          <viking-app-icon name="info" />
-          <span>Overall CES performance metric</span>
-        </div>
-      </viking-card>
-
-      <!-- Spiking Temporal Forecast (4th model) -->
-      <viking-card class="gauge-card">
-        <div class="gauge-card-header">
-          <h3>Temporal Forecast</h3>
-          <viking-app-icon name="timeline" />
-        </div>
-        <div class="gauge-wrapper temporal-gauge">
-          <viking-gauge-arc tone="amber" [value]="temporalForecast()" />
-          <div class="gauge-center-text temporal-text">
-            <viking-app-icon name="trending-up" hostClass="gauge-inner-icon" />
-            <span class="unit">SPIKE RISK</span>
-            <span class="value"
-              >{{ temporalForecast() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
-            >
-          </div>
-        </div>
-        <div class="gauge-card-footer">
-          <viking-app-icon name="info" />
-          <span>Spiking NN temporal prediction</span>
-        </div>
-      </viking-card>
-
-      <!-- Honeypot Detection (5th indicator) -->
-      <viking-card class="gauge-card">
-        <div class="gauge-card-header">
-          <h3>Honeypot Activity</h3>
-          <viking-app-icon name="bug-report" />
-        </div>
-        <div class="gauge-wrapper honeypot-gauge">
-          <viking-gauge-arc tone="danger" [value]="honeypotScore()" />
-          <div class="gauge-center-text honeypot-text">
-            <viking-app-icon name="security" hostClass="gauge-inner-icon" />
-            <span class="unit">CAPTURES</span>
-            <span class="value"
-              >{{ honeypotScore() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
-            >
-          </div>
-        </div>
-        <div class="gauge-card-footer">
-          <viking-app-icon name="info" />
-          <span>Threat actor detection rate</span>
-        </div>
-      </viking-card>
-
-      <!-- Benchmark Indicator -->
-      <viking-card class="gauge-card">
-        <div class="gauge-card-header">
-          <h3>Model Benchmark</h3>
-          <viking-app-icon name="science" />
-        </div>
-        <div class="gauge-wrapper benchmark-gauge">
-          <viking-gauge-arc tone="primary" [value]="latestBenchmarkScore() ?? 0" />
-          <div class="gauge-center-text benchmark-text">
-            <viking-app-icon name="speed" hostClass="gauge-inner-icon" />
-            <span class="unit">SCORE</span>
-            <span class="value"
-              >{{ latestBenchmarkScore() !== null ? (latestBenchmarkScore() | number:'1.0-0') : '—'
-              }}<span class="unit-symbol"
-                >{{ latestBenchmarkScore() !== null ? '%' : '' }}</span
-              ></span
-            >
-          </div>
-        </div>
-        <div class="gauge-card-footer">
-          <viking-app-icon name="info" />
-          @if (latestBenchmark()?.evaluation_status === 'measured') {
-          <span>
-            {{ latestBenchmark()?.models_evaluated }} model {{ latestBenchmark()?.models_evaluated
-            === 1 ? 'type' : 'types' }} · n={{ latestBenchmark()?.dataset_size }} · score {{
-            formatOptionalPercent(latestBenchmark()?.score_percent) }}
-          </span>
-          } @else {
-          <span>Insufficient observations for a measured benchmark</span>
-          }
-        </div>
-      </viking-card>
-
-      <!-- STABLENESS GAUGE -->
-      <viking-card class="gauge-card">
-        <div class="gauge-card-header">
-          <h3>Network Stability</h3>
-          <viking-app-icon name="health_and_safety" />
-        </div>
-        <div class="gauge-wrapper stability-gauge">
-          <viking-gauge-arc tone="primary" [value]="stabilityLevel()" />
-          <div class="gauge-center-text stability-text">
-            <viking-app-icon name="monitor_heart" hostClass="gauge-inner-icon" />
-            <span class="unit">UPTIME</span>
-            <span class="value"
-              >{{ stabilityLevel() | number:'1.0-0' }}<span class="unit-symbol">%</span></span
-            >
-          </div>
-        </div>
-        <div class="gauge-card-footer">
-          <viking-app-icon name="info" />
-          <span>System resilience index</span>
-        </div>
-      </viking-card>
-    </viking-panel-grid>
-  </viking-section>
-
-  <viking-section>
-    <header class="metrics-overview-header">
-      <h2 class="section-title-premium">
-        <viking-app-icon name="person" />
-        Your Analytics
-      </h2>
-      <p class="section-description-premium">
-        Performance data isolated to your active projects and workloads.
-      </p>
-    </header>
-
-    <viking-stack class="analytics-metrics-stack" spacing="compact">
-      @if (availableSites().length > 0) {
-      <div class="filter-group-mobile">
-        <app-unified-select
-          id="siteSelect"
-          label="Filter by Site:"
-          width="half"
-          [options]="siteOptions()"
-          [value]="selectedSite() || 'All'"
-          (valueChange)="onSiteChange($event)"
-        ></app-unified-select>
-      </div>
-      }
-      <viking-panel-grid [columns]="2">
-        <viking-metric-card
-          label="API usage (last minute)"
-          [value]="formatCount(apiUsageCurrent()) + ' / ' + formatCount(apiUsageQuota())"
-          sublabel="Requests within the current quota window"
-          icon="analytics"
-        />
-        <viking-metric-card
-          label="P99 latency"
-          [value]="(p99Latency() | number:'1.2-2') + ' ms'"
-          sublabel="99th percentile response time"
-          icon="speed"
-          tone="info"
-        />
-        <viking-metric-card
-          label="Service uptime"
-          [value]="uptimePercent() === null ? '—' : (uptimePercent() | number:'1.2-2') + '%'"
-          sublabel="Availability across monitored services"
-          icon="heart"
-          tone="success"
-        />
-        <viking-metric-card
-          label="Total requests"
-          [value]="formatCount(totalRequests())"
-          sublabel="Requests observed in the last 24 hours"
-          icon="network"
-        />
-        <viking-metric-card
-          label="Active incidents"
-          [value]="activeIncidents()"
-          sublabel="Open reliability and security events"
-          icon="warning"
-          [tone]="activeIncidents() > 0 ? 'danger' : 'success'"
-        />
-        <viking-metric-card
-          label="Widget interactions"
-          [value]="formatCount(widgetInteractions())"
-          sublabel="Tracked user interactions"
-          icon="bolt"
-        />
-        <viking-metric-card
-          label="Unique visitors"
-          [value]="formatCount(uniqueVisitors())"
-          sublabel="Distinct visitors in the reporting window"
-          icon="user"
-        />
-        <viking-metric-card
-          label="Cookie consents"
-          [value]="formatCount(cookieConsents())"
-          sublabel="Analytics and marketing consent events"
-          icon="cookie"
-          tone="success"
-        />
-      </viking-panel-grid>
-
-      <!-- ACTIVE PROVIDERS CHIPS -->
-      @if (activeProviders().length > 0) {
-      <div class="active-providers-row">
-        <span class="active-providers-label">Active Providers:</span>
-        @for (provider of activeProviders(); track provider) {
-        <viking-badge tone="accent" size="sm">{{ provider }}</viking-badge>
-        }
-      </div>
-      }
-
-      <viking-chart-panel>
-        <viking-chart-card-header
-          title="System Latency (Last 24h)"
-          [hasData]="hasLatencyData()"
-          [value]="p99Latency() + ' ms'"
-          [trend]="latencyTrend()"
-          emptyLabel="Awaiting signal"
-        />
-
-        @if (hasLatencyData()) {
-        <viking-chart
-          kind="line"
-          [series]="latencySeries()"
-          [categories]="latencyCategories()"
-          label="System Latency (Last 24h)"
-          [showArea]="true"
-          curve="smooth"
-          [fill]="true"
-          [zoomable]="true"
-        />
-        } @else {
-        <viking-chart-empty-state
-          icon="globe"
-          title="No Telemetry Signal"
-          description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
-        />
-        }
-      </viking-chart-panel>
-    </viking-stack>
-  </viking-section>
-
-  <viking-section>
-    <header class="metrics-overview-header">
-      <h2 class="section-title-premium">
-        <viking-app-icon name="traffic" />
-        Traffic Analytics
-      </h2>
-      <p class="section-description-premium">
-        Geographic origins, frequency trends, and endpoint usage patterns.
-      </p>
-    </header>
-
-    <viking-stack class="analytics-traffic-stack" spacing="compact">
-      <!-- Full Width Origin Map — deferred so Leaflet pays only when this section is due -->
-      @defer (on viewport; prefetch on idle) {
-      <viking-chart-panel size="medium" body="origin-map">
-        <viking-chart-card-header
-          title="Geographic Origins"
-          [hasData]="originMapData().length > 0"
-          [value]="originMapData().length + ' Regions'"
-          [trend]="originTrend()"
-          emptyLabel="Awaiting signal"
-        />
-        <div
-          id="originMap"
-          class="origin-map-canvas viking-map-ready"
-          role="region"
-          aria-label="Geographic origin map"
-        ></div>
-        @if (originMapData().length === 0) {
-        <viking-chart-empty-state
-          layout="overlay"
-          icon="globe"
-          title="No Geographic Data"
-          description="Regional traffic origins will appear once requests are received from connected endpoints."
-        />
-        }
-      </viking-chart-panel>
-      } @placeholder {
-      <viking-chart-panel size="medium" body="origin-map" [loading]="true">
-        <viking-chart-card-header
-          title="Geographic Origins"
-          [hasData]="false"
-          emptyLabel="Loading map"
-        />
-      </viking-chart-panel>
-      }
-
-      <viking-panel-grid [columns]="12">
-        <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
-          <viking-chart-panel>
-            <viking-chart-card-header
-              title="Top Regions"
-              [hasData]="hasTopRegionsData()"
-              [value]="(topRegionsSeries()[0]?.data?.length || 0) + ' Regions'"
-              [trend]="originTrend()"
-              emptyLabel="No regions yet"
-            />
-            @if (hasTopRegionsData()) {
-            <viking-chart
-              kind="bar"
-              [series]="topRegionsSeries()"
-              [categories]="topRegionsCategories()"
-              label="Top Regions"
-              [fill]="true"
-              [zoomable]="true"
-            />
-            } @else {
-            <viking-chart-empty-state
-              icon="globe"
-              title="No Regional Data"
-              description="Top traffic regions will populate as geographic telemetry is collected."
-            />
-            }
-          </viking-chart-panel>
-        </viking-grid-item>
-
-        <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
-          <viking-chart-panel>
-            <viking-chart-card-header
-              title="Request Frequency"
-              [hasData]="hasFrequencyData()"
-              [value]="formatCount(totalRequests()) + ' Req'"
-              [trend]="frequencyTrend()"
-              emptyLabel="Awaiting signal"
-            />
-            @if (hasFrequencyData()) {
-            <viking-chart
-              kind="line"
-              [series]="frequencySeries()"
-              [categories]="frequencyCategories()"
-              label="Request Frequency"
-              [showArea]="true"
-              curve="smooth"
-              [fill]="true"
-              [zoomable]="true"
-            />
-            } @else {
-            <viking-chart-empty-state
-              icon="globe"
-              title="No Telemetry Signal"
-              description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
-            />
-            }
-          </viking-chart-panel>
-        </viking-grid-item>
-
-        <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
-          <viking-chart-panel>
-            <viking-chart-card-header
-              title="Request Counts per Endpoint"
-              [hasData]="hasEndpointData()"
-              [value]="(endpointSeries()[0]?.data?.length || 0) + ' APIs'"
-              [trend]="endpointTrend()"
-              emptyLabel="No endpoints yet"
-            />
-            @if (hasEndpointData()) {
-            <viking-chart
-              kind="bar"
-              [series]="endpointSeries()"
-              [categories]="endpointCategories()"
-              label="Request Counts per Endpoint"
-              [fill]="true"
-              [zoomable]="true"
-            />
-            } @else {
-            <viking-chart-empty-state
-              icon="globe"
-              title="No Endpoint Data"
-              description="Per-endpoint request counts will appear once traffic is routed through monitored APIs."
-            />
-            }
-          </viking-chart-panel>
-        </viking-grid-item>
-      </viking-panel-grid>
-    </viking-stack>
-  </viking-section>
-
-  <viking-section>
-    <header class="metrics-overview-header">
-      <h2 class="section-title-premium">
-        <viking-app-icon name="security" />
-        SIEM / Security Insights
-      </h2>
-      <p class="section-description-premium">
-        Threat events, anomalies, and HTTP status distribution.
-      </p>
-    </header>
-    <viking-panel-grid [columns]="12">
-      <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
-        <viking-chart-panel>
-          <viking-chart-card-header
-            title="Threat Events by Severity"
-            [hasData]="hasThreatSeverityData()"
-            [value]="formatPercent(threatLevel())"
-            [trend]="threatTrend()"
-            emptyLabel="Perimeter secure"
-          />
-          @if (hasThreatSeverityData()) {
-          <viking-chart
-            kind="donut"
-            [segments]="threatSeveritySegments()"
-            label="Threat Events by Severity"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else {
-          <viking-chart-empty-state
-            tone="secure"
-            icon="check-circle"
-            title="No Active Threats"
-            description="Your perimeter is secure. No threat events have been detected."
-          />
-          }
-        </viking-chart-panel>
-      </viking-grid-item>
-
-      <viking-grid-item [tabletSpan]="6" [desktopSpan]="6">
-        <viking-chart-panel>
-          <viking-chart-card-header
-            title="Recent Security Anomalies"
-            [hasData]="hasSecurityAlertsData()"
-            [value]="activeIncidents() + ' Active'"
-            [trend]="anomalyTrend()"
-            emptyLabel="No anomalies"
-          />
-          @if (hasSecurityAlertsData()) {
-          <viking-chart
-            kind="bar"
-            [series]="securityAlertsSeries()"
-            [categories]="securityAlertCategories()"
-            label="Recent Security Anomalies"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else {
-          <viking-chart-empty-state
-            tone="secure"
-            icon="search"
-            title="No Anomalies Detected"
-            description="Security monitoring is active. No anomalous behavior patterns identified."
-          />
-          }
-        </viking-chart-panel>
-      </viking-grid-item>
-
-      <viking-grid-item [tabletSpan]="12" [desktopSpan]="12">
-        <viking-chart-panel>
-          <viking-chart-card-header
-            title="HTTP Status Distribution"
-            [hasData]="hasStatusStackedData() || hasStatusData()"
-            [value]="uptimePercent() === null ? '—' : uptimePercent() + '%'"
-            [trend]="statusTrend()"
-            emptyLabel="Awaiting signal"
-          />
-          @if (hasStatusStackedData()) {
-          <viking-chart
-            kind="stacked-bar"
-            [series]="statusStackedSeries()"
-            [categories]="statusCategories()"
-            label="HTTP Status Distribution"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else if (hasStatusData()) {
-          <viking-chart
-            kind="bar"
-            [series]="statusSeries()"
-            [categories]="statusCategories()"
-            label="HTTP Status Distribution"
-            [fill]="true"
-            [zoomable]="true"
-          />
-          } @else {
-          <viking-chart-empty-state
-            icon="bar-chart"
-            title="No Status Data"
-            description="HTTP response distribution will chart once request telemetry is available."
-          />
-          }
-        </viking-chart-panel>
-      </viking-grid-item>
-    </viking-panel-grid>
-  </viking-section>
+  }
 </viking-page-template>

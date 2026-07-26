@@ -9,7 +9,13 @@
 
   <!-- Dense cards stack by default and switch to two columns only at the xl tier. -->
   <div class="status-directory-grid">
-    @for (page of displayPages(); track page.id) {
+    @if (isLoading() && !loadFailed()) {
+    <viking-page-skeleton
+      class="status-directory-card"
+      layout="cards"
+      label="Loading status directory"
+    />
+    } @else { @for (page of statusPages(); track page.id) {
     <viking-explore-card
       [title]="page.title"
       [description]="page.description || 'Monitoring core services'"
@@ -22,7 +28,7 @@
       [uptimePercentage]="overallUptime(page)"
       [uptimeSummary]="uptimeSummary(page)"
     />
-    } @if (connectivity.offline() || loadFailed()) {
+    } } @if (connectivity.offline() || loadFailed()) {
     <viking-callout
       class="status-directory-card"
       tone="danger"

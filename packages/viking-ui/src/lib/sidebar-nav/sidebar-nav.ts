@@ -1,11 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   input,
   output,
   ViewEncapsulation,
 } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
+
+let sidebarTreeSeq = 0;
 
 /**
  * viking-sidebar-nav — composable sidebar navigation container.
@@ -17,6 +20,7 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
   host: {
     class: "viking-sidebar-nav",
     role: "navigation",
+    "aria-label": "Primary",
   },
   template: `<ng-content />`,
   styleUrl: "./sidebar-nav.scss",
@@ -64,7 +68,9 @@ export class VikingSidebarNavLink {
   template: `<ng-content />`,
   styleUrl: "./sidebar-nav.scss",
 })
-export class VikingSidebarNavTree {}
+export class VikingSidebarNavTree {
+  readonly childrenId = `viking-sidebar-tree-children-${++sidebarTreeSeq}`;
+}
 
 /**
  * viking-sidebar-nav-tree-header — collapsible tree section header.
@@ -78,6 +84,7 @@ export class VikingSidebarNavTree {}
     role: "button",
     tabindex: "0",
     "[attr.aria-expanded]": "expanded()",
+    "[attr.aria-controls]": "tree?.childrenId ?? null",
     "(click)": "onToggle()",
     "(keydown.enter)": "onToggle()",
     "(keydown.space)": "onSpace($event)",
@@ -89,6 +96,8 @@ export class VikingSidebarNavTree {}
   styleUrl: "./sidebar-nav.scss",
 })
 export class VikingSidebarNavTreeHeader {
+  protected readonly tree = inject(VikingSidebarNavTree, { optional: true });
+
   readonly label = input.required<string>();
   readonly expanded = input<boolean>(true);
   readonly toggled = output<void>();
@@ -110,11 +119,17 @@ export class VikingSidebarNavTreeHeader {
   selector: "viking-sidebar-nav-tree-children",
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  host: { class: "viking-sidebar-nav-tree-children" },
+  host: {
+    class: "viking-sidebar-nav-tree-children",
+    role: "group",
+    "[id]": "tree?.childrenId ?? null",
+  },
   template: `<ng-content />`,
   styleUrl: "./sidebar-nav.scss",
 })
-export class VikingSidebarNavTreeChildren {}
+export class VikingSidebarNavTreeChildren {
+  protected readonly tree = inject(VikingSidebarNavTree, { optional: true });
+}
 
 export type VikingSidebarNavTreeItemVariant = "default" | "empty" | "accent";
 
@@ -127,8 +142,9 @@ export type VikingSidebarNavTreeItemVariant = "default" | "empty" | "accent";
   encapsulation: ViewEncapsulation.None,
   host: {
     class: "viking-sidebar-nav-tree-item",
-    role: "button",
-    tabindex: "0",
+    "[attr.role]": "variant() === 'empty' ? null : 'button'",
+    "[attr.tabindex]": "variant() === 'empty' ? null : 0",
+    "[attr.aria-current]": "active() ? 'true' : null",
     "[class.viking-sidebar-nav-tree-item-active]": "active()",
     "[class.viking-sidebar-nav-tree-item-empty]": "variant() === 'empty'",
     "[class.viking-sidebar-nav-tree-item-accent]": "variant() === 'accent'",
@@ -152,6 +168,9 @@ export class VikingSidebarNavTreeItem {
   };
 
   protected onSpace = (event: Event): void => {
+    if (this.variant() === "empty") {
+      return;
+    }
     event.preventDefault();
     this.onActivate(event);
   };

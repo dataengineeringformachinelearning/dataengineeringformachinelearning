@@ -22,7 +22,9 @@ license: apache-2.0
 > machine learning. DEML calls FORJD with tenant-bound opaque `fjsvc_` tokens and
 > sealed AES-256-GCM envelopes. Production hosts: Angular on **Vercel**, Django BFF
 > on **Fly** (`deml-backend`), streaming engine on **FORJD** Fly + Supabase.
-> Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+> Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)
+> (Pipeline Studio compose/export → FORJD YAML deploy). FORJD extension map:
+> [EXTENDING.md](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md).
 
 **Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
@@ -61,7 +63,7 @@ security model and build instructions.
 ## Core Capabilities
 
 - **Sealed FORJD projections**: Django BFF forwards sealed telemetry with tenant-bound `fjsvc_` (browser never holds service tokens); FORJD materializes durable read models
-- **FORJD data plane stack**: FastAPI + Prefect 3 + Pathway streams + Polars batch LazyFrames + Rust `forjd-engine` (DEML does not run Pathway/Airflow)
+- **FORJD data plane stack**: FastAPI + Prefect 3 + Rust sealed hot path (+ Python soft fallback) + Polars batch LazyFrames (DEML does not run stream workers or Airflow)
 - **High-Throughput Ingestion**: Sub-second sealed dispatch with durable FORJD outbox semantics
 - **Live dashboards**: Angular 22+ Signals + Django SSE (`/api/v1/analytics/live`) — `{count, cursor}` ticks only; `latestEvent` / `degraded` callouts; not Firestore
 - **Account Isolation**: Strict tenant separation without cross-account data exposure
@@ -535,17 +537,18 @@ Semantic versioning and release notes: `scripts/git_flow.py` ([Chapter 16](#chap
 
 ### 15. Documentation Map
 
-| Document                                                                                     | Audience                 | Content                                                  |
-| -------------------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------------- |
-| **This CONOPS**                                                                              | Operators, architects    | End-to-end operational narrative                         |
-| [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference)                     | On-call engineers        | Checklists, modes, quick reference                       |
-| [WHITEPAPER.md](WHITEAPER.md) §2                                                             | Executives, reviewers    | Concise CONOPS + hypothesis                              |
-| [README.md](README.md)                                                                       | Integrators              | API gateway, architecture diagram                        |
-| [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)                                       | Integrators / BFF owners | Tenant binding & sealed ingest                           |
-| [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md)                                       | DevOps                   | Vercel + Fly + FORJD deploy                              |
-| [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md)                                 | SRE                      | Production readiness checklist                           |
-| [AGENTS.md](AGENTS.md)                                                                       | AI agents / contributors | Coding principles aligned to CONOPS                      |
-| [Chapter 34](#chapter-34-do-not-reintroduce-a-local-stream-plane--anti-regression-reference) | Architects / operators   | Anti-regression: do not reintroduce a local stream plane |
+| Document                                                                                                            | Audience                 | Content                                                    |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------- |
+| **This CONOPS**                                                                                                     | Operators, architects    | End-to-end operational narrative                           |
+| [Appendix N](#appendix-n-concept-of-operations-operator-quick-reference)                                            | On-call engineers        | Checklists, modes, quick reference                         |
+| [WHITEPAPER.md](WHITEAPER.md) §2                                                                                    | Executives, reviewers    | Concise CONOPS + hypothesis                                |
+| [README.md](README.md)                                                                                              | Integrators              | API gateway, architecture diagram                          |
+| [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)                                                              | Integrators / BFF owners | Tenant binding, sealed ingest, Pipeline Studio deploy loop |
+| FORJD [`docs/EXTENDING.md`](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md) | Data-plane extenders     | Workflow YAML, detectors, `validate:workflows` (ADR-0028)  |
+| [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md)                                                              | DevOps                   | Vercel + Fly + FORJD deploy                                |
+| [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md)                                                        | SRE                      | Production readiness checklist                             |
+| [AGENTS.md](AGENTS.md)                                                                                              | AI agents / contributors | Coding principles aligned to CONOPS                        |
+| [Chapter 34](#chapter-34-do-not-reintroduce-a-local-stream-plane--anti-regression-reference)                        | Architects / operators   | Anti-regression: do not reintroduce a local stream plane   |
 
 ---
 
@@ -3054,14 +3057,16 @@ Client → Django `/api/v1/ingest` (API key) → resolve account → forjd_tenan
 
 ### 4.3 Queries & product operator paths
 
-| Surface / data               | Store / owner                                      | Client access                                          |
-| ---------------------------- | -------------------------------------------------- | ------------------------------------------------------ |
-| Dashboard / CES KPIs         | FORJD analytics (via Django BFF)                   | `/dashboard` → `/api/v1/analytics/overview` + SSE live |
-| Analytics / threats          | FORJD projections + ML scores                      | `/analytics` → BFF adapters + `LiveUpdatesService`     |
-| Live change ticks            | Django SSE bridge; FORJD cursor poll with `fjsvc_` | `GET /api/v1/analytics/live` — `{count, cursor}` only  |
-| Status pages, incidents      | FORJD status APIs (+ Sanity for narrative comms)   | `/status`, `/explore` → `/api/v1/system-status/*`      |
-| Settings / billing / consent | DEML Postgres                                      | `/settings` (Firebase JWT; MFA on mutations)           |
-| CES / time-series analytics  | FORJD analytics (via Django BFF)                   | REST (authenticated); never Firestore                  |
+| Surface / data               | Store / owner                                      | Client access                                                                                           |
+| ---------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Dashboard / CES KPIs         | FORJD analytics (via Django BFF)                   | `/dashboard` → `/api/v1/analytics/overview` + SSE live                                                  |
+| Analytics / threats          | FORJD projections + ML scores                      | `/analytics` → BFF adapters + `LiveUpdatesService`                                                      |
+| Live change ticks            | Django SSE bridge; FORJD cursor poll with `fjsvc_` | `GET /api/v1/analytics/live` — `{count, cursor}` only                                                   |
+| Pipeline Studio              | FORJD workflow catalog (read) + local YAML compose | `/pipeline` → export → FORJD `backend/workflows/` + `validate:workflows` (YAML SoT; no browser persist) |
+| Status pages, incidents      | FORJD status APIs (+ Sanity for narrative comms)   | `/status`, `/explore` → `/api/v1/system-status/*`                                                       |
+| Settings / billing / consent | DEML Postgres                                      | `/settings` (Firebase JWT; MFA on mutations)                                                            |
+| Account / credentials        | DEML Postgres + FORJD catalog (read-only visual)   | `/account` → open Pipeline studio CTA                                                                   |
+| CES / time-series analytics  | FORJD analytics (via Django BFF)                   | REST (authenticated); never Firestore                                                                   |
 
 ## 5. Actors
 
@@ -3612,6 +3617,8 @@ reports installation/provisioning readiness independently through its catalog
 API.
 
 DEML integrates as a control plane only. Django resolves `deml_account_id → forjd_tenant_id → secret_ref` and calls FORJD synchronously through the BFF adapters in `backend/forjd/` with a tenant-bound `fjsvc_` service token. Durable delivery, retries, DLQ admission, and replay are FORJD responsibilities; DEML fails closed when FORJD is unavailable rather than inventing local workers. Endpoints, cutover flags, failure semantics, and rollback are documented in [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+
+**Pipeline Studio** (`/pipeline`) is a DEML compose surface: it reads the FORJD workflow catalog, lets operators tune detectors, and exports YAML. It does **not** write workflows to FORJD. Deploy remains a FORJD-host file drop under `backend/workflows/` validated with `npm run validate:workflows` (FORJD ADR-0028 / [`docs/EXTENDING.md`](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md)).
 
 The former Railway data-plane services (relay, scheduler, probe, normalizer, ingest, CPE) are retired. [`infrastructure/railway/services.json`](infrastructure/railway/services.json) catalogs the retired service names, and `python scripts/railway_retire_dataplane.py` performs the Railway cleanup. The corresponding local Django state was retired in `backend/monitor/migrations/0053_retire_local_data_plane.py`; the underlying tables are retained deliberately for a rollback window.
 
@@ -4948,9 +4955,9 @@ Every production transport is cryptographically authenticated: HTTPS/HSTS at pub
 ### 2.3 Actors & workflows
 
 - **Anonymous visitors** read published status pages and the world-readable `platform-status` sentinel only (ABAC).
-- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA-verified session required for writes); may upgrade to **Pro** via Stripe; dashboards read FORJD projections/analytics through the Django BFF.
+- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA-verified session required for writes); may upgrade to **Pro** via Stripe; dashboards read FORJD projections/analytics through the Django BFF; may compose sealed-stream workflow YAML in **Pipeline** (`/pipeline`) and deploy files on FORJD (YAML remains SoT — see [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)).
 - **API integrators** stream data through DEML `/api/v1/ingest` using hashed API keys scoped to `account_id`; Django maps the account to a FORJD tenant and forwards sealed envelopes with `fjsvc_`.
-- **Platform operators** manage Vercel, Fly `deml-backend`, FORJD readiness, Firebase, Infisical/Fly secrets, and the internal vulnerability Kanban.
+- **Platform operators** manage Vercel, Fly `deml-backend`, FORJD readiness, Firebase, Infisical/Fly secrets, and the internal vulnerability Kanban; validate FORJD workflow YAML with `npm run validate:workflows` before reload.
 
 ### 2.4 Operational modes
 

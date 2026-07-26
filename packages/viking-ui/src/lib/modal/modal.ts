@@ -9,6 +9,8 @@ import {
   model,
   viewChild,
 } from "@angular/core";
+import { NativeDialogSession } from "../../core/dialog-session";
+import { vikingUid } from "../../core/uid";
 import { VikingIcon } from "../icon/icon";
 
 /**
@@ -24,15 +26,18 @@ import { VikingIcon } from "../icon/icon";
       #dialog
       class="viking-modal"
       tabindex="-1"
-      [attr.aria-label]="heading() || 'Dialog'"
-      (close)="open.set(false)"
+      aria-modal="true"
+      [attr.aria-labelledby]="heading() ? titleId : null"
+      [attr.aria-label]="heading() ? null : 'Dialog'"
+      (close)="onNativeClose()"
       (click)="onBackdropClick($event)"
+      (keydown)="onDialogKeydown($event)"
       (keydown.escape)="dismissible() && open.set(false)"
     >
       <div class="viking-modal-surface">
         <header class="viking-modal-header">
           @if (heading()) {
-            <h2 class="viking-modal-heading">{{ heading() }}</h2>
+            <h2 class="viking-modal-heading" [id]="titleId">{{ heading() }}</h2>
           }
           @if (dismissible()) {
             <button
@@ -174,36 +179,42 @@ export class VikingModal implements OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly dialogRef =
     viewChild.required<ElementRef<HTMLDialogElement>>("dialog");
+  private readonly session = new NativeDialogSession();
 
   readonly open = model<boolean>(false);
   readonly heading = input<string>("");
   readonly dismissible = input<boolean>(true);
+  protected readonly titleId = vikingUid("viking-modal-title");
 
   constructor() {
     effect(() => {
-      const dialog = this.dialogRef().nativeElement;
-      // showModal is unavailable during SSR; the dialog stays closed there.
-      if (typeof dialog.showModal !== "function") {
-        return;
-      }
-      if (this.open() && this.host.nativeElement.isConnected && !dialog.open) {
-        dialog.showModal();
-      } else if (!this.open() && dialog.open) {
-        dialog.close();
-      }
+      this.session.syncOpen(this.dialogRef().nativeElement, this.open(), {
+        connected: this.host.nativeElement.isConnected,
+      });
     });
   }
 
   ngOnDestroy(): void {
-    const dialog = this.dialogRef()?.nativeElement;
-    if (dialog?.open) {
-      dialog.close();
-    }
+    this.session.destroy(this.dialogRef()?.nativeElement);
   }
 
+  protected onNativeClose = (): void => {
+    this.session.onNativeClose(() => {
+      if (this.open()) this.open.set(false);
+    });
+  };
+
   protected onBackdropClick = (event: MouseEvent): void => {
-    if (this.dismissible() && event.target === this.dialogRef().nativeElement) {
-      this.open.set(false);
-    }
+    this.session.onBackdropClick(
+      event,
+      this.dialogRef().nativeElement,
+      this.dismissible() && this.open(),
+      () => this.open.set(false),
+    );
+  };
+
+  /** Defensive Tab cycle — complements native showModal() focus trap. */
+  protected onDialogKeydown = (event: KeyboardEvent): void => {
+    this.session.onKeydown(event, this.dialogRef().nativeElement);
   };
 }

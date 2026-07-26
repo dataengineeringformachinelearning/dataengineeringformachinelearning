@@ -105,7 +105,10 @@ import { VikingTone } from "../../core/types";
       }
       @media (prefers-reduced-motion: reduce) {
         .viking-indeterminate {
-          animation-duration: 2.4s;
+          animation: none;
+          left: 0;
+          width: 40%;
+          opacity: 0.85;
         }
       }
     `,

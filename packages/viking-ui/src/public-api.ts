@@ -4,6 +4,37 @@
  */
 
 export * from "./core/types";
+export * from "./core/focus";
+export * from "./core/field-a11y";
+export * from "./core/theme";
+export * from "./core/uid";
+export * from "./core/dialog-session";
+export * from "./core/toast-store";
+export * from "./core/optimistic";
+export * from "./core/command-history";
+export * from "./lib/command-history/command-history.service";
+export * from "./core/selection-model";
+export * from "./lib/bulk-toolbar/bulk-toolbar";
+export * from "./core/disclosure";
+export * from "./lib/disclosure/disclosure";
+export * from "./core/keyboard-shortcuts";
+export * from "./lib/shortcut-help/shortcut-help.service";
+export * from "./lib/shortcut-help/shortcut-help";
+export * from "./core/preferences";
+export * from "./lib/preferences/preferences.service";
+export * from "./lib/preferences/preferences-panel";
+export * from "./lib/preferences/preferences-host";
+export * from "./core/onboarding";
+export * from "./lib/onboarding-checklist/onboarding-checklist";
+export * from "./core/suite-data-pack";
+export * from "./core/activity-log";
+export * from "./lib/activity-list/activity-list";
+export * from "./core/fetch-handle";
+export * from "./core/swr-cache";
+export * from "./core/safe-href";
+export * from "./core/sanitize-text";
+export * from "./core/deml-widgets";
+export * from "./lib/theme/theme.service";
 export {
   VIKING_ICON_NAMES,
   VIKING_FILLED_ICON_NAMES,
@@ -122,7 +153,7 @@ export * from "./lib/chart/chart";
 export * from "./lib/chart/chart-zoom";
 export * from "./lib/chart-container/chart-container";
 export * from "./lib/confirm-dialog/confirm-dialog";
-export * from "./lib/confirm-dialog/dialog.service";
+export * from "./lib/confirm-dialog/confirm-dialog.service";
 export * from "./lib/chart-card-header/chart-card-header";
 export * from "./lib/icon-heading/icon-heading";
 export * from "./lib/chart-empty-state/chart-empty-state";
@@ -139,6 +170,7 @@ export * from "./lib/container/container";
 export * from "./lib/date-picker/date-picker";
 export * from "./lib/dropdown/dropdown";
 export * from "./lib/empty-state/empty-state";
+export * from "./lib/error-state/error-state";
 export * from "./lib/editor/editor";
 export * from "./lib/explore-card/explore-card";
 export * from "./lib/fab/fab";
@@ -182,12 +214,28 @@ export * from "./lib/progress/progress";
 export * from "./lib/radio/radio";
 export * from "./lib/ring-gauge/ring-gauge";
 export * from "./lib/search-palette/search-palette";
+export {
+  rankSearchItems,
+  scoreSearchItem,
+} from "./web/search-palette/rank-search";
+export {
+  DEFAULT_RECENT_LIMIT,
+  DEFAULT_RECENT_STORAGE_KEY,
+  clearRecentSearches,
+  pushRecentSearch,
+  readRecentSearches,
+  recentSearchesAsItems,
+  type VikingRecentSearch,
+} from "./web/search-palette/recent-searches";
 export * from "./lib/select/select";
 export * from "./lib/separator/separator";
 export * from "./lib/scroll-area/scroll-area";
 export * from "./lib/sheet/sheet";
 export * from "./lib/sidebar-nav/sidebar-nav";
 export * from "./lib/skeleton/skeleton";
+export * from "./lib/page-skeleton/page-skeleton";
+export * from "./lib/virtual-list/virtual-window";
+export * from "./lib/virtual-list/virtual-list";
 export * from "./lib/spinner/spinner";
 export * from "./lib/status-card/status-card";
 export * from "./lib/status-badge/status-badge";
@@ -200,6 +248,7 @@ export * from "./lib/slider/slider";
 export * from "./lib/split-panel/split-panel";
 export * from "./lib/switch/switch";
 export * from "./lib/table/table";
+export * from "./lib/table/table-header";
 export * from "./lib/tabs/tab";
 export * from "./lib/tabs/tab-panel";
 export * from "./lib/tabs/tabs";
@@ -208,6 +257,8 @@ export * from "./lib/toggle/toggle";
 export * from "./lib/toggle/toggle-group";
 export * from "./lib/time-picker/time-picker";
 export * from "./lib/timeline/timeline";
+export * from "./lib/pipeline-flow/pipeline-flow";
+export * from "./lib/stream-status/stream-status";
 export * from "./lib/toast/toast";
 export * from "./lib/uptime-bar/uptime-bar";
 export * from "./lib/uptime-history/uptime-history";

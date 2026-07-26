@@ -146,7 +146,7 @@
 
 .showcase-hero-title {
   margin: 0;
-  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-size: var(--viking-font-size-display-md);
   font-weight: var(--viking-font-weight-bold, 800);
   letter-spacing: var(--viking-letter-spacing-tight);
   color: var(--viking-text);
@@ -337,7 +337,7 @@
   padding: var(--viking-space-6) 0;
   border-bottom: 1px solid var(--viking-border);
   scroll-margin-top: calc(
-    var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
+    var(--viking-navbar-height, var(--viking-space-8)) + var(--showcase-subnav-height, 52px) +
       var(--viking-space-7)
   );
 }
@@ -368,7 +368,7 @@
   padding-block: var(--viking-space-6);
   border-top: 1px solid var(--viking-border-subtle);
   scroll-margin-top: calc(
-    var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
+    var(--viking-navbar-height, var(--viking-space-8)) + var(--showcase-subnav-height, 52px) +
       var(--viking-space-7)
   );
   position: relative;
@@ -417,7 +417,7 @@
   flex-direction: column;
   gap: var(--viking-space-5);
   scroll-margin-top: calc(
-    var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
+    var(--viking-navbar-height, var(--viking-space-8)) + var(--showcase-subnav-height, 52px) +
       var(--viking-space-7)
   );
   transition: var(--viking-transition-interactive);
@@ -782,7 +782,7 @@
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .showcase-related-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -861,7 +861,7 @@
   gap: var(--viking-space-2);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .api-prop-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1164,7 +1164,7 @@
   gap: var(--viking-space-3);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .landing-preview-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1428,7 +1428,7 @@ viking-card-wc.landing-doctrine-card > * {
   width: 2.25rem;
   height: 2.25rem;
   color: var(--viking-text-muted);
-  font-size: 1.85rem;
+  font-size: var(--viking-font-size-2xl);
   line-height: 1;
 }
 
@@ -1643,7 +1643,7 @@ viking-card-wc.landing-doctrine-card > * {
 .component-showcase-preview > .theme-toggle-btn::before,
 .component-showcase-preview button.theme-toggle-btn:empty::before {
   content: "◐";
-  font-size: 1.15rem;
+  font-size: var(--viking-font-size-md);
   line-height: 1;
   color: currentColor;
 }
@@ -1710,7 +1710,7 @@ viking-card-wc.landing-doctrine-card > * {
   max-width: none;
   margin: 0;
   padding-left: calc(
-    var(--viking-icon-size-lg, 24px) + var(--viking-space-2, 16px)
+    var(--viking-icon-size-lg, var(--viking-space-3)) + var(--viking-space-2, var(--viking-space-2))
   );
   text-align: left;
 }
@@ -2055,7 +2055,7 @@ viking-card-wc.landing-doctrine-card > * {
   overflow-x: auto;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .component-showcase-footer,
   .component-showcase-frameworks {
     align-items: center;

@@ -22,7 +22,9 @@ license: apache-2.0
 > machine learning. DEML calls FORJD with tenant-bound opaque `fjsvc_` tokens and
 > sealed AES-256-GCM envelopes. Production hosts: Angular on **Vercel**, Django BFF
 > on **Fly** (`deml-backend`), streaming engine on **FORJD** Fly + Supabase.
-> Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+> Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)
+> (Pipeline Studio compose/export → FORJD YAML deploy). FORJD extension map:
+> [EXTENDING.md](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md).
 
 **Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 

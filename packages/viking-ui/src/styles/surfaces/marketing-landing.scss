@@ -4,6 +4,9 @@
 
 .landing-container:not(.suite-landing) {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-4);
   min-height: calc(100vh - 64px);
   padding-block: var(--viking-space-6) var(--viking-space-4);
   overflow: visible;
@@ -58,6 +61,7 @@
 
   @media (min-width: 768px) {
     padding-block: var(--viking-space-9) var(--viking-space-8);
+    gap: var(--viking-space-6);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -71,7 +75,7 @@
   .hero-brand {
     margin: 0;
     font-family: var(--viking-font-family-mono, var(--viking-font-family));
-    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-size: var(--viking-font-size-title);
     font-weight: var(--viking-font-weight-bold, 700);
     letter-spacing: var(--viking-letter-spacing-caps, 0.06em);
     text-transform: uppercase;
@@ -80,7 +84,7 @@
   }
 
   .title {
-    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    font-size: var(--viking-font-size-display-lg);
     font-weight: 900;
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -90,7 +94,7 @@
   }
 
   .subtitle {
-    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    font-size: var(--viking-font-size-lead-fluid);
     color: var(--viking-text-muted);
     line-height: 1.6;
     margin: 0;

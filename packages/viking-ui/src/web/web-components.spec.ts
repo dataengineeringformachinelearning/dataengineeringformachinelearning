@@ -219,6 +219,66 @@ describe("Viking Web Components v2", () => {
     expect(palette.hasAttribute("open")).toBe(false);
   });
 
+  it("opens with / when focus is not in an editable field", async () => {
+    const palette = document.createElement("viking-command-palette");
+    palette.setAttribute("global-shortcut", "");
+    palette.setAttribute(
+      "items",
+      JSON.stringify([{ title: "Docs", href: "/docs" }]),
+    );
+    document.body.append(palette);
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "/",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    await Promise.resolve();
+    expect(palette.hasAttribute("open")).toBe(true);
+  });
+
+  it("shows recent searches on empty query", async () => {
+    const key = "viking-search-recent-test";
+    localStorage.setItem(
+      key,
+      JSON.stringify([
+        {
+          query: "components",
+          title: "Components",
+          href: "#components",
+          at: Date.now(),
+        },
+      ]),
+    );
+    const palette = document.createElement(
+      "viking-command-palette",
+    ) as HTMLElement & {
+      openPalette: () => void;
+    };
+    palette.setAttribute("recent-storage-key", key);
+    palette.setAttribute(
+      "items",
+      JSON.stringify([
+        { title: "Components", href: "#components", group: "Docs" },
+        { title: "Theming", href: "#theming", group: "Docs" },
+      ]),
+    );
+    document.body.append(palette);
+
+    palette.openPalette();
+    await Promise.resolve();
+    const labels = Array.from(
+      palette.shadowRoot?.querySelectorAll(".viking-search-group-label") ?? [],
+    ).map((el) => el.textContent?.trim());
+    expect(labels).toContain("Recent");
+    expect(
+      palette.shadowRoot?.querySelector("[data-clear-recent]"),
+    ).toBeTruthy();
+    localStorage.removeItem(key);
+  });
+
   it("mounts suite palette with curated items and openPalette()", async () => {
     document.documentElement.setAttribute("data-deml-context", "marketing");
     const suite = document.createElement("viking-suite-command-palette");

@@ -25,7 +25,9 @@ import {
   VikingChartEmptyState,
   VikingToggle,
   VikingToggleGroup,
-  VikingSpinner,
+  VikingPageSkeleton,
+  VikingVirtualList,
+  VikingSectionTemplate,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type { VikingTone } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
@@ -35,8 +37,6 @@ import {
 } from '../../components/unified-select/unified-select.component';
 import { FormsModule } from '@angular/forms';
 import { Title, Meta } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 
 import {
   VulnerabilityService,
@@ -44,6 +44,7 @@ import {
   IncidentCase,
   Playbook,
 } from '../../services/vulnerability.service';
+import { AnalyticsQueryService } from '../../services/analytics-query.service';
 
 type AnalyticsTenant = {
   id: string;
@@ -56,8 +57,11 @@ type ApiEnvelope<T> = {
   data?: T;
 };
 
-type SiteOverview = {
-  user_metrics?: { available_sites?: string[] };
+type SiteOverviewResponse = {
+  status: string;
+  data?: {
+    user_metrics?: { available_sites?: string[] };
+  };
 };
 
 @Component({
@@ -81,7 +85,9 @@ type SiteOverview = {
     VikingChartEmptyState,
     VikingToggle,
     VikingToggleGroup,
-    VikingSpinner,
+    VikingPageSkeleton,
+    VikingVirtualList,
+    VikingSectionTemplate,
     FormsModule,
     UnifiedSelect,
   ],
@@ -89,11 +95,12 @@ type SiteOverview = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Vulnerabilities implements OnInit {
+  protected readonly trackVuln = (item: Vulnerability, _index: number): string => item.id;
   public vulnService = inject(VulnerabilityService);
+  private analyticsQuery = inject(AnalyticsQueryService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   private cdr = inject(ChangeDetectorRef);
-  private http = inject(HttpClient);
 
   public tenants: AnalyticsTenant[] = [];
   public tenantOptions: SelectOption[] = [];
@@ -194,55 +201,58 @@ export class Vulnerabilities implements OnInit {
   }
 
   loadTenants() {
-    this.http
-      .get<ApiEnvelope<AnalyticsTenant[]>>(`${environment.backendUrl}/api/v1/analytics/tenants`)
-      .subscribe({
-        next: response => {
-          if (response.status === 'success' && response.data) {
-            this.tenants = response.data;
-            this.tenantOptions = this.tenants.map(t => ({
-              value: t.id,
-              label: `${t.name} ${t.is_platform ? '(Platform)' : ''}`.trim(),
-            }));
-            if (!this.selectedTenantId && this.tenants.length > 0) {
-              const platformTenant = this.tenants.find(tenant => tenant.is_platform);
-              this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
-            }
-            this.loadAvailableSites();
-            this.loadVulnerabilities();
-            this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
-            this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
-            this.cdr.markForCheck();
-          }
-        },
-        error: err => console.error('Failed to load tenants', err),
-      });
+    const applyTenants = (response: ApiEnvelope<AnalyticsTenant[]>): void => {
+      if (response.status === 'success' && response.data) {
+        this.tenants = response.data;
+        this.tenantOptions = this.tenants.map(t => ({
+          value: t.id,
+          label: `${t.name} ${t.is_platform ? '(Platform)' : ''}`.trim(),
+        }));
+        if (!this.selectedTenantId && this.tenants.length > 0) {
+          const platformTenant = this.tenants.find(tenant => tenant.is_platform);
+          this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
+        }
+        this.loadAvailableSites();
+        this.loadVulnerabilities();
+        this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+        this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
+        this.cdr.markForCheck();
+      }
+    };
+
+    const cached = this.analyticsQuery.peekTenants<ApiEnvelope<AnalyticsTenant[]>>();
+    if (cached) {
+      applyTenants(cached);
+    }
+
+    this.analyticsQuery.getTenants<ApiEnvelope<AnalyticsTenant[]>>().subscribe({
+      next: applyTenants,
+      error: err => console.error('Failed to load tenants', err),
+    });
   }
 
   loadAvailableSites() {
-    let url = `${environment.backendUrl}/api/v1/analytics/overview`;
-    if (this.selectedTenantId) {
-      url += `?account_id=${this.selectedTenantId}`;
-    }
-    this.http.get<ApiEnvelope<SiteOverview>>(url).subscribe({
-      next: response => {
-        if (response.status === 'success' && response.data) {
-          const { user_metrics } = response.data;
-          if (user_metrics?.available_sites) {
-            this.availableSites = user_metrics.available_sites;
-            this.siteOptions = [
-              { value: 'All', label: 'All Sites' },
-              ...this.availableSites.map(site => ({ value: site, label: site })),
-            ];
-          } else {
-            this.availableSites = [];
-            this.siteOptions = [{ value: 'All', label: 'All Sites' }];
+    this.analyticsQuery
+      .getOverview<SiteOverviewResponse>(this.selectedTenantId, this.selectedSite)
+      .subscribe({
+        next: response => {
+          if (response.status === 'success' && response.data) {
+            const { user_metrics } = response.data;
+            if (user_metrics?.available_sites) {
+              this.availableSites = user_metrics.available_sites;
+              this.siteOptions = [
+                { value: 'All', label: 'All Sites' },
+                ...this.availableSites.map(site => ({ value: site, label: site })),
+              ];
+            } else {
+              this.availableSites = [];
+              this.siteOptions = [{ value: 'All', label: 'All Sites' }];
+            }
+            this.cdr.markForCheck();
           }
-          this.cdr.markForCheck();
-        }
-      },
-      error: err => console.error('Failed to load sites for tenant', err),
-    });
+        },
+        error: err => console.error('Failed to load sites for tenant', err),
+      });
   }
 
   public onTenantChange(tenantId: string) {
@@ -337,14 +347,6 @@ export class Vulnerabilities implements OnInit {
   selectIncident(incident: IncidentCase): void {
     this.selectedIncident.set(incident);
     this.cdr.markForCheck();
-  }
-
-  selectIncidentFromCard(event: Event, incident: IncidentCase): void {
-    const target = event.target;
-    if (target instanceof HTMLElement && target.closest('[data-card-action="ignore"]')) {
-      return;
-    }
-    this.selectIncident(incident);
   }
 
   selectPlaybook(playbook: Playbook): void {

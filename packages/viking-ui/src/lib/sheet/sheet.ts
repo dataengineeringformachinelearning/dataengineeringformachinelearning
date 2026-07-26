@@ -2,12 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnDestroy,
   effect,
-  inject,
   input,
   model,
   viewChild,
 } from "@angular/core";
+import { NativeDialogSession } from "../../core/dialog-session";
+import { vikingUid } from "../../core/uid";
 import { VikingIcon } from "../icon/icon";
 
 export type VikingSheetSide = "left" | "right";
@@ -25,15 +27,18 @@ export type VikingSheetSide = "left" | "right";
       class="viking-sheet"
       [class.viking-sheet-left]="side() === 'left'"
       tabindex="-1"
-      [attr.aria-label]="heading() || 'Panel'"
-      (close)="open.set(false)"
+      aria-modal="true"
+      [attr.aria-labelledby]="heading() ? titleId : null"
+      [attr.aria-label]="heading() ? null : 'Panel'"
+      (close)="onNativeClose()"
       (click)="onBackdropClick($event)"
+      (keydown)="onDialogKeydown($event)"
       (keydown.escape)="dismissible() && open.set(false)"
     >
       <div class="viking-sheet-surface">
         <header class="viking-sheet-header">
           @if (heading()) {
-            <h2 class="viking-sheet-heading">{{ heading() }}</h2>
+            <h2 class="viking-sheet-heading" [id]="titleId">{{ heading() }}</h2>
           }
           @if (dismissible()) {
             <button
@@ -113,6 +118,8 @@ export type VikingSheetSide = "left" | "right";
         justify-content: center;
         width: var(--viking-control-height-sm);
         height: var(--viking-control-height-sm);
+        min-width: var(--viking-touch-target-min, 44px);
+        min-height: var(--viking-touch-target-min, 44px);
         border: 1px solid transparent;
         background: transparent;
         color: var(--viking-text-muted);
@@ -120,6 +127,7 @@ export type VikingSheetSide = "left" | "right";
         padding: 0;
         border-radius: var(--viking-radius);
         transition: var(--viking-transition-interactive);
+        flex-shrink: 0;
       }
       .viking-sheet-close:hover {
         color: var(--viking-text);
@@ -158,34 +166,55 @@ export type VikingSheetSide = "left" | "right";
         gap: var(--viking-space-2);
         width: 100%;
       }
+      @media (prefers-reduced-motion: reduce) {
+        .viking-sheet::backdrop,
+        .viking-sheet-surface {
+          animation: none;
+        }
+        .viking-sheet-close:active {
+          transform: none;
+        }
+      }
     `,
   ],
 })
-export class VikingSheet {
+export class VikingSheet implements OnDestroy {
   readonly open = model(false);
   readonly heading = input("");
   readonly dismissible = input(true);
   readonly side = input<VikingSheetSide>("right");
+  protected readonly titleId = vikingUid("viking-sheet-title");
 
   private readonly dialogRef =
     viewChild.required<ElementRef<HTMLDialogElement>>("dialog");
+  private readonly session = new NativeDialogSession();
 
   constructor() {
     effect(() => {
-      const dialog = this.dialogRef().nativeElement;
-      if (this.open() && !dialog.open) {
-        dialog.showModal();
-      } else if (!this.open() && dialog.open) {
-        dialog.close();
-      }
+      this.session.syncOpen(this.dialogRef().nativeElement, this.open());
     });
   }
 
+  ngOnDestroy(): void {
+    this.session.destroy(this.dialogRef()?.nativeElement);
+  }
+
+  protected onNativeClose = (): void => {
+    this.session.onNativeClose(() => {
+      if (this.open()) this.open.set(false);
+    });
+  };
+
   protected onBackdropClick = (event: MouseEvent): void => {
-    if (!this.dismissible()) return;
-    const dialog = this.dialogRef().nativeElement;
-    if (event.target === dialog) {
-      this.open.set(false);
-    }
+    this.session.onBackdropClick(
+      event,
+      this.dialogRef().nativeElement,
+      this.dismissible() && this.open(),
+      () => this.open.set(false),
+    );
+  };
+
+  protected onDialogKeydown = (event: KeyboardEvent): void => {
+    this.session.onKeydown(event, this.dialogRef().nativeElement);
   };
 }

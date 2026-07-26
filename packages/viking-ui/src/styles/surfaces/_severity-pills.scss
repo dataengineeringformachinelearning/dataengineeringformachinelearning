@@ -12,22 +12,22 @@
   text-transform: uppercase;
 
   &.low {
-    background: color-mix(in srgb, var(--viking-teal-600) 20%, transparent);
-    color: var(--viking-teal-600);
+    background: color-mix(in srgb, var(--viking-success) 20%, transparent);
+    color: var(--viking-success-text, var(--viking-success));
   }
 
   &.medium {
-    background: color-mix(in srgb, var(--viking-teal-400) 20%, transparent);
-    color: var(--viking-teal-400);
+    background: color-mix(in srgb, var(--viking-accent) 20%, transparent);
+    color: var(--viking-accent-strong, var(--viking-accent));
   }
 
   &.high {
-    background: color-mix(in srgb, var(--viking-gold-500) 20%, transparent);
-    color: var(--viking-gold-500);
+    background: color-mix(in srgb, var(--viking-warning) 20%, transparent);
+    color: var(--viking-warning-text, var(--viking-warning));
   }
 
   &.critical {
-    background: color-mix(in srgb, var(--viking-crimson-500) 20%, transparent);
-    color: var(--viking-crimson-500);
+    background: color-mix(in srgb, var(--viking-danger) 20%, transparent);
+    color: var(--viking-danger-text, var(--viking-danger));
   }
 }

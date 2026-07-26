@@ -23,7 +23,7 @@
 .publication-hero {
   position: relative;
   text-align: center;
-  padding: 36px 28px 28px;
+  padding: var(--viking-space-4) var(--viking-space-4) var(--viking-space-4);
   border-bottom: 1px solid var(--viking-border);
   overflow: hidden;
 
@@ -31,7 +31,7 @@
     position: relative;
     display: flex;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: var(--viking-space-2);
   }
 
   .section-tag-row {
@@ -61,28 +61,28 @@
   .hero-title {
     position: relative;
     font-family: var(--viking-font-family);
-    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    font-size: var(--viking-font-size-display-lg);
     font-weight: 900;
     line-height: 1.05;
     letter-spacing: -0.02em;
-    margin: 0 0 12px;
+    margin: 0 0 var(--viking-space-compact-gap);
     text-transform: uppercase;
   }
 
   .hero-subtitle {
     position: relative;
-    font-size: 1.05rem;
+    font-size: var(--viking-font-size-base);
     line-height: 1.6;
     color: var(--viking-text-muted);
     max-width: 640px;
-    margin: 0 auto 16px;
+    margin: 0 auto var(--viking-space-2);
   }
 
   .hero-meta {
     position: relative;
-    font-size: 0.92rem;
+    font-size: var(--viking-font-size-sm);
     color: var(--viking-text-muted);
-    margin-bottom: 20px;
+    margin-bottom: var(--viking-space-3);
   }
 
   .hero-meta-row {
@@ -91,9 +91,9 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
+    gap: var(--viking-space-1);
+    font-size: var(--viking-font-size-sm);
+    margin-bottom: var(--viking-space-3);
 
     a {
       color: var(--viking-teal-600);
@@ -116,9 +116,9 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: var(--viking-space-1, 8px);
+    gap: var(--viking-space-1, var(--viking-space-1));
     max-width: 780px;
-    margin: 16px auto 0;
+    margin: var(--viking-space-2) auto 0;
   }
 
   .integration-pill {
@@ -127,8 +127,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--viking-space-1, 8px);
-    padding: 0 var(--viking-space-2, 16px);
+    gap: var(--viking-space-1, var(--viking-space-1));
+    padding: 0 var(--viking-space-2, var(--viking-space-2));
     border: 1px solid var(--viking-border-strong, var(--viking-border));
     border-radius: var(--viking-radius, 8px);
     box-sizing: border-box;
@@ -138,7 +138,7 @@
       var(--viking-surface-raised, var(--viking-surface)) 86%,
       var(--viking-accent) 14%
     );
-    font-size: 0.9rem;
+    font-size: var(--viking-font-size-sm);
     font-weight: 700;
     line-height: 1.15;
     text-decoration: none !important;
@@ -174,21 +174,21 @@
   }
 
   .integration-strip {
-    margin-top: 14px;
+    margin-top: var(--viking-space-compact-gap);
   }
 
   .integration-pill {
     min-height: 36px;
     padding-inline: var(--viking-space-2);
-    font-size: 0.82rem;
+    font-size: var(--viking-font-size-sm);
     letter-spacing: 0.02em;
   }
 
   .arxiv-banner {
     position: relative;
     max-width: 920px;
-    margin: 22px auto 0;
-    padding: var(--viking-space-2, 16px);
+    margin: var(--viking-space-3) auto 0;
+    padding: var(--viking-space-2, var(--viking-space-2));
     border: 1px solid
       color-mix(in srgb, var(--viking-accent) 28%, var(--viking-border));
     border-radius: var(--viking-radius-lg, 12px);
@@ -208,17 +208,17 @@
 }
 
 .publication-toc {
-  padding: 20px 28px;
+  padding: var(--viking-space-3) var(--viking-space-4);
   border-bottom: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-surface) 60%, transparent);
 
   .toc-heading {
-    font-size: 0.72rem;
+    font-size: var(--viking-font-size-2xs);
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--viking-text-muted);
-    margin: 0 0 12px;
+    margin: 0 0 var(--viking-space-compact-gap);
   }
 
   .toc-list {
@@ -226,11 +226,11 @@
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 4px;
+    gap: var(--viking-space-0-5);
 
-    @media (min-width: 640px) {
+    @media (min-width: 600px) {
       grid-template-columns: repeat(2, 1fr);
-      gap: 4px 24px;
+      gap: var(--viking-space-0-5) var(--viking-space-3);
     }
 
     @media (min-width: 1024px) {
@@ -240,15 +240,22 @@
 
   .toc-item {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 6px 0;
-    font-size: 0.88rem;
+    align-items: center;
+    gap: var(--viking-space-1);
+    min-height: var(--viking-touch-target-min);
+    padding: var(--viking-space-1) var(--viking-space-0-5);
+    font-size: var(--viking-font-size-sm);
     line-height: 1.4;
     text-decoration: none !important;
     color: var(--viking-text-muted) !important;
-    border-radius: 6px;
+    border-radius: var(--viking-radius-sm);
     transition: color 0.15s ease;
+
+    @media (min-width: 768px) {
+      min-height: 0;
+      align-items: baseline;
+      padding: var(--viking-space-0-5) 0;
+    }
 
     &:hover {
       color: var(--viking-teal-600) !important;
@@ -259,7 +266,7 @@
       min-width: 1.5rem;
       font-variant-numeric: tabular-nums;
       font-weight: 700;
-      font-size: 0.78rem;
+      font-size: var(--viking-font-size-xs);
       color: var(--viking-teal-600);
       opacity: 0.85;
     }
@@ -272,15 +279,15 @@
 }
 
 .publication-body {
-  padding: 28px 32px 36px;
+  padding: var(--viking-space-4) var(--viking-space-4) var(--viking-space-4);
 
   @media (min-width: 768px) {
-    padding: 32px 40px 40px;
+    padding: var(--viking-space-4) var(--viking-space-5) var(--viking-space-5);
   }
 }
 
 .publication-section {
-  padding: 28px 0;
+  padding: var(--viking-space-4) 0;
   border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 80%, transparent);
 
   &:first-child {
@@ -293,42 +300,42 @@
   }
 
   h2 {
-    font-size: 1.35rem;
+    font-size: var(--viking-font-size-md);
     font-weight: 800;
-    margin: 0 0 16px;
+    margin: 0 0 var(--viking-space-2);
     letter-spacing: -0.02em;
     color: var(--viking-text);
     border-bottom: 2px solid
       color-mix(in srgb, var(--viking-teal-600) 35%, transparent);
-    padding-bottom: 8px;
+    padding-bottom: var(--viking-space-1);
   }
 
   h3 {
-    font-size: 1.05rem;
+    font-size: var(--viking-font-size-base);
     font-weight: 700;
-    margin: 24px 0 10px;
+    margin: var(--viking-space-3) 0 var(--viking-space-1);
     color: var(--viking-text);
   }
 
   h4 {
-    font-size: 0.95rem;
+    font-size: var(--viking-font-size-base);
     font-weight: 700;
-    margin: 20px 0 8px;
+    margin: var(--viking-space-3) 0 var(--viking-space-1);
     color: var(--viking-text);
   }
 
   p,
   li {
-    font-size: 1rem;
+    font-size: var(--viking-font-size-base);
     line-height: 1.65;
     color: var(--viking-text-muted);
-    margin: 0 0 14px;
+    margin: 0 0 var(--viking-space-compact-gap);
   }
 
   ul,
   ol {
     padding-left: 1.35rem;
-    margin: 0 0 14px;
+    margin: 0 0 var(--viking-space-compact-gap);
   }
 
   a {
@@ -342,11 +349,11 @@
     border: 1px solid
       color-mix(in srgb, var(--viking-electric-400) 34%, var(--viking-border));
     border-radius: var(--viking-radius-lg, 12px);
-    padding: 14px 16px;
+    padding: var(--viking-space-compact-gap) var(--viking-space-2);
     overflow-x: auto;
-    margin: 16px 0;
+    margin: var(--viking-space-2) 0;
     color: var(--viking-code-panel-text) !important;
-    font-size: 0.82rem;
+    font-size: var(--viking-font-size-sm);
     line-height: 1.55;
     box-shadow: var(--viking-shadow-sm);
     white-space: pre-wrap;
@@ -369,7 +376,7 @@
     background: var(--viking-charcoal-950);
     padding: 0.12em 0.42em;
     border-radius: var(--viking-radius-sm, 6px);
-    font-size: 0.875em;
+    font-size: var(--viking-font-size-sm);
     line-height: inherit;
     color: var(--viking-white-pure);
     border: 1px solid
@@ -385,13 +392,13 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 16px 0;
-    font-size: 0.9rem;
+    margin: var(--viking-space-2) 0;
+    font-size: var(--viking-font-size-sm);
 
     th,
     td {
       border: 1px solid var(--viking-border);
-      padding: 8px 12px;
+      padding: var(--viking-space-1) var(--viking-space-compact-gap);
       text-align: left;
     }
 
@@ -405,8 +412,8 @@
   }
 
   blockquote {
-    margin: 16px 0;
-    padding: 12px 16px;
+    margin: var(--viking-space-2) 0;
+    padding: var(--viking-space-compact-gap) var(--viking-space-2);
     border-left: 3px solid var(--viking-teal-600);
     background: color-mix(
       in srgb,
@@ -414,7 +421,7 @@
       var(--viking-surface)
     );
     border-radius: 0 8px 8px 0;
-    font-size: 0.95rem;
+    font-size: var(--viking-font-size-base);
     color: var(--viking-text-muted);
   }
 }
@@ -422,8 +429,8 @@
 .book-toc-cta {
   display: flex;
   justify-content: flex-start;
-  padding: var(--viking-space-2, 16px) var(--viking-space-3, 24px)
-    var(--viking-space-3, 24px);
+  padding: var(--viking-space-2, var(--viking-space-2)) var(--viking-space-3, var(--viking-space-3))
+    var(--viking-space-3, var(--viking-space-3));
   border-top: 1px solid var(--viking-border, var(--viking-border));
   background: color-mix(
     in srgb,
@@ -438,8 +445,8 @@ a.book-toc-link.sidebar-search {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1, 8px);
-  padding: 0 var(--viking-space-2, 16px);
+  gap: var(--viking-space-1, var(--viking-space-1));
+  padding: 0 var(--viking-space-2, var(--viking-space-2));
   border: 1px solid
     color-mix(
       in srgb,
@@ -487,7 +494,7 @@ a.book-toc-link.sidebar-search:focus-visible {
 
 a.book-toc-link.sidebar-search {
   width: 100%;
-  margin: 0 0 var(--viking-space-1, 8px);
+  margin: 0 0 var(--viking-space-1, var(--viking-space-1));
 
   .search-wrapper {
     min-width: 0;
@@ -495,7 +502,7 @@ a.book-toc-link.sidebar-search {
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
-    gap: var(--viking-space-1, 8px);
+    gap: var(--viking-space-1, var(--viking-space-1));
     overflow: visible;
   }
 }
@@ -503,7 +510,7 @@ a.book-toc-link.sidebar-search {
 // Book chapter sidebar — keep the table of contents off the viewport edge.
 #book-app > .dashboard-sidebar {
   width: min(22rem, 34vw);
-  padding: var(--viking-space-3, 24px) var(--viking-space-2, 16px);
+  padding: var(--viking-space-3, var(--viking-space-3)) var(--viking-space-2, var(--viking-space-2));
   background: color-mix(
     in srgb,
     var(--viking-surface, var(--viking-surface)) 92%,
@@ -518,21 +525,21 @@ a.book-toc-link.sidebar-search {
 }
 
 #book-app .sidebar-section {
-  padding: var(--viking-space-2, 16px) 0 var(--viking-space-4, 32px);
+  padding: var(--viking-space-2, var(--viking-space-2)) 0 var(--viking-space-4, var(--viking-space-4));
 }
 
 #book-app .sidebar-section .section-title {
-  margin-inline: var(--viking-space-1, 8px);
+  margin-inline: var(--viking-space-1, var(--viking-space-1));
 }
 
 #book-app .pub-chapter-item {
   min-height: var(--viking-space-5, 40px);
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1440px) {
   #book-app > .dashboard-sidebar {
     width: 24rem;
-    padding-inline: var(--viking-space-3, 24px);
+    padding-inline: var(--viking-space-3, var(--viking-space-3));
   }
 }
 
@@ -540,16 +547,16 @@ a.book-toc-link.sidebar-search {
 .pub-sidebar-group {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1, 8px);
-  margin-bottom: 16px;
+  gap: var(--viking-space-1, var(--viking-space-1));
+  margin-bottom: var(--viking-space-2);
 
   .pub-sidebar-group-title {
-    font-size: 0.68rem;
+    font-size: var(--viking-font-size-2xs);
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--viking-text-muted);
-    margin: 0 0 2px 8px;
+    margin: 0 0 var(--viking-space-px) var(--viking-space-1);
     opacity: 0.75;
   }
 }
@@ -557,8 +564,8 @@ a.book-toc-link.sidebar-search {
 .pub-chapter-item {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-1) var(--viking-space-compact-gap);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -593,7 +600,7 @@ a.book-toc-link.sidebar-search {
   .pub-chapter-num {
     flex-shrink: 0;
     min-width: 1.25rem;
-    font-size: 0.72rem;
+    font-size: var(--viking-font-size-2xs);
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     color: var(--viking-text-muted);
@@ -601,7 +608,7 @@ a.book-toc-link.sidebar-search {
   }
 
   .pub-chapter-title {
-    font-size: 0.85rem;
+    font-size: var(--viking-font-size-sm);
     line-height: 1.35;
     color: var(--viking-text);
   }
@@ -612,7 +619,7 @@ a.book-toc-link.sidebar-search {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 24px;
+  padding: var(--viking-space-5) var(--viking-space-3);
 }
 
 .book-cover-card {
@@ -656,7 +663,7 @@ a.book-toc-link.sidebar-search {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 32px 40px 48px;
+  padding: var(--viking-space-6) var(--viking-space-4) var(--viking-space-5) var(--viking-space-6);
   height: 100%;
   width: 100%;
   text-align: center;
@@ -665,29 +672,29 @@ a.book-toc-link.sidebar-search {
 .book-cover-label {
   margin-bottom: auto;
   letter-spacing: 0.15em;
-  font-size: 0.75rem;
+  font-size: var(--viking-font-size-xs);
   font-weight: 700;
   color: var(--viking-text-muted);
   text-transform: uppercase;
 }
 
 .book-cover-logo {
-  margin: 24px 0;
+  margin: var(--viking-space-3) 0;
   filter: drop-shadow(
     0 6px 16px color-mix(in srgb, var(--viking-teal-600) 30%, transparent)
   );
 }
 
 .book-cover-title {
-  font-size: 1.75rem;
+  font-size: var(--viking-font-size-2xl);
   font-weight: 800;
   line-height: 1.15;
-  margin-bottom: 12px;
+  margin-bottom: var(--viking-space-compact-gap);
   letter-spacing: -0.02em;
 }
 
 .book-cover-subtitle {
-  font-size: 0.95rem;
+  font-size: var(--viking-font-size-base);
   color: var(--viking-text-muted);
   font-weight: 500;
   font-style: italic;
@@ -695,13 +702,13 @@ a.book-toc-link.sidebar-search {
 
 .book-cover-footer {
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: var(--viking-space-3);
   border-top: 1px solid var(--viking-border);
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: var(--viking-font-size-sm);
 
   a {
     font-weight: 600;
@@ -716,7 +723,7 @@ a.book-toc-link.sidebar-search {
     font-weight: 700;
     color: var(--viking-accent);
     letter-spacing: 0.1em;
-    font-size: 0.8rem;
+    font-size: var(--viking-font-size-xs);
   }
 }
 
@@ -725,14 +732,14 @@ a.book-toc-link.sidebar-search {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 16px;
-  padding: 20px 28px;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3) var(--viking-space-4);
   border-top: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-surface) 50%, transparent);
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     justify-content: space-between;
-    padding: 16px 32px;
+    padding: var(--viking-space-2) var(--viking-space-4);
   }
 
   .pagination-btn {
@@ -761,12 +768,12 @@ a.book-toc-link.sidebar-search {
         var(--viking-accent-strong, var(--viking-accent)) 78%,
         var(--viking-white-pure)
       );
-    padding: 0 var(--viking-space-2, 16px);
+    padding: 0 var(--viking-space-2, var(--viking-space-2));
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: var(--viking-space-1);
     line-height: 1.15;
     text-decoration: none !important;
     white-space: normal;
@@ -777,7 +784,7 @@ a.book-toc-link.sidebar-search {
     transition:
       opacity 0.2s ease,
       transform 0.2s ease;
-    font-size: 0.9rem;
+    font-size: var(--viking-font-size-sm);
 
     &[disabled],
     &[aria-disabled="true"] {
@@ -799,7 +806,7 @@ a.book-toc-link.sidebar-search {
   }
 
   .page-counter {
-    font-size: 0.88rem;
+    font-size: var(--viking-font-size-sm);
     color: var(--viking-text-muted);
     font-weight: 500;
   }
@@ -812,10 +819,10 @@ a.book-toc-link.sidebar-search {
   .progress-bar-header {
     display: flex;
     justify-content: space-between;
-    font-size: 0.85rem;
+    font-size: var(--viking-font-size-sm);
     font-weight: 600;
     color: var(--viking-text-muted);
-    margin-bottom: 6px;
+    margin-bottom: var(--viking-space-0-5);
   }
 
   .progress-percentage {

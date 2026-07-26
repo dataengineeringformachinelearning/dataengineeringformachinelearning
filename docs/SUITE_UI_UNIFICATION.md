@@ -120,9 +120,9 @@ Shared DNA: void atmosphere (electric + gold + grid), live badge, brand → head
 | Contracts         | `packages/viking-ui/src/tokens/SUITE_BACKEND.md`                             |
 | Gate              | `npm run suite:backend` (also via `suite:purity`)                            |
 | backend.forjd.co  | suite-fonts → tokens → components → backend; Inter at `/static/fonts/inter/` |
-| backend.deml.app  | Splash + swagger/redoc via `viking-ui.css` (suite-backend folded in)         |
+| backend.deml.app  | Splash + self-hosted swagger/redoc (`static/vendor/`) + `suite-apidocs.css`  |
 
-Quiet twin: **perfectly centered** logo splash, sticky thin docs topbar, quiet Swagger chips, no marketing chrome. Same DNA as product — calmer and more focused.
+Quiet twin: **perfectly centered** logo splash, sticky thin docs topbar, quiet Swagger chips, no marketing chrome. Same DNA as product — calmer and more focused. G1 CDN docs retired 2026-07-26.
 
 ## Pass 5 — component documentation Storybooks (locked 2026-07-25)
 
@@ -163,7 +163,8 @@ Styles are **vendored** into FORJD (no npm theme package). Charts / metric-card 
 4. **Frontend lockstep** — done (`suite-landing.css` + triple hosts + `suite:landing` gate; vivid hero DNA).
 5. **Backend lockstep** — done (`suite-backend.css` + fonts on FORJD backend + `suite:backend` gate).
 6. **Storybook lockstep** — done (`suite-docs.css` + dual managers + shell/panel frame + `suite:docs` gate).
-7. **Purity / enforcement** — done (`npm run suite:purity` + `enforce-theme.js`; Chromatic + `npm run sync:suite` after suite edits).
+7. **Purity / enforcement (foundation)** — done locally (`npm run suite:purity` + `enforce-theme.js`; FORJD CI runs purity). Residual host holes → Pass 7.
+8. **Interaction identity (Pass 7)** — in progress (2026-07-26): shared hover/press/focus/disabled + motion/spacing language; panel titles in `suite-components`; expanded `--fj-*` aliases. See [`SUITE_UI_UNIFICATION_COMPLETION.md`](./SUITE_UI_UNIFICATION_COMPLETION.md) + `SUITE_COMPONENTS.md`.
 
 ## Pass 6 — cross-repo purity (locked 2026-07-25)
 

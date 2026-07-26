@@ -46,8 +46,12 @@ def test_viking_swagger_shell_is_served(client: Client) -> None:
   assert "backend-swagger" in body
   assert "backend-docs-topbar" in body
   assert 'href="/api/v1/redoc"' in body
-  assert "defaultModelsExpandDepth: 0" in body
-  assert "persistAuthorization: false" in body
+  assert "vendor/swagger-ui-dist/swagger-ui.css" in body
+  assert "vendor/swagger-ui-dist/swagger-ui-bundle.js" in body
+  assert "suite-apidocs.css" in body
+  assert "docs-swagger-init.js" in body
+  assert "cdn.jsdelivr.net" not in body
+  assert "<style>" not in body
 
 
 @pytest.mark.django_db
@@ -58,6 +62,9 @@ def test_redoc_shell_is_served(client: Client) -> None:
   assert "redoc" in body.lower()
   assert "backend-docs-topbar" in body
   assert 'spec-url="/api/v1/openapi.json"' in body
+  assert "vendor/redoc/redoc.standalone.js" in body
+  assert "suite-apidocs.css" in body
+  assert "cdn.jsdelivr.net" not in body
 
 
 @pytest.mark.django_db

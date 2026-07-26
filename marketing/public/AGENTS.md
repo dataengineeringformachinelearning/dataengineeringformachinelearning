@@ -5,11 +5,13 @@ DEML owns identity, profiles, roles, subscriptions, consent, account lifecycle,
 and user interactions. FORJD is the universal secure streaming engine for intake,
 processing, analytics, projections, replay, and machine learning.
 Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+Scale guidance: [docs/SCALE.md](docs/SCALE.md).
 
 ## DEML ↔ FORJD Boundary
 
 - Keep the complete Angular product surface intact: dashboards, analytics, status
-  pages, vulnerability views, monitoring UI, onboarding, and generated API contracts.
+  pages, vulnerability views, monitoring UI, onboarding, Pipeline Studio
+  (`/pipeline` — compose/export FORJD YAML only), and generated API contracts.
 - Django is the Firebase-authenticated user control plane and backend-for-frontend.
   Identity, profiles, roles, billing, consent, API credentials, issue reports,
   learning/library content, and account lifecycle remain local.
@@ -25,9 +27,13 @@ Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 - Missing FORJD capabilities are explicit dependencies — never filled with DEML
   stream workers or direct FORJD database access.
 
-**Operations:** [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md),
+**Operations:** [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md) (includes
+Pipeline Studio → FORJD deploy loop),
+[docs/CONNECTION_MAP.md](docs/CONNECTION_MAP.md),
 [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md),
 [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md).
+FORJD extension map (validate CLI, detectors): FORJD
+[`docs/EXTENDING.md`](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md).
 
 **Steady-state flags (`deml-backend`):** `FORJD_WRITE_MODE=forjd` and
 `FORJD_READ_MODE=forjd` are the production defaults (`FORJD_CUTOVER_PHASE=2`

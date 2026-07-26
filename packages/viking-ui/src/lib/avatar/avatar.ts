@@ -8,8 +8,7 @@ import {
 import { VikingTone } from "../../core/types";
 
 /**
- * viking-avatar — image or initials avatar with optional status indicator
- *.
+ * viking-avatar — image or initials avatar with optional status indicator.
  */
 @Component({
   selector: "viking-avatar",
@@ -21,7 +20,16 @@ import { VikingTone } from "../../core/types";
   },
   template: `
     @if (src() && !imageFailed()) {
-      <img [src]="src()" [alt]="name()" (error)="imageFailed.set(true)" />
+      <img
+        class="suite-media"
+        [src]="src()"
+        [alt]="name()"
+        [attr.width]="size()"
+        [attr.height]="size()"
+        loading="lazy"
+        decoding="async"
+        (error)="imageFailed.set(true)"
+      />
     } @else {
       <span class="viking-avatar-initials">
         {{ initials() }}

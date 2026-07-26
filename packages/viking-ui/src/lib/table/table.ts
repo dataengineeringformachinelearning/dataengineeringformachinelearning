@@ -18,7 +18,10 @@ import { VikingSkeleton } from "../skeleton/skeleton";
   },
   template: `
     @if (loading()) {
-      <div class="viking-table-loading-state" aria-hidden="true">
+      <div
+        class="suite-skeleton-stack viking-skeleton-stack viking-table-loading-state"
+        aria-hidden="true"
+      >
         @for (row of [1, 2, 3, 4]; track row) {
           <viking-skeleton height="44px" />
         }
@@ -28,6 +31,8 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         [heading]="emptyMessage()"
         [description]="emptyDescription()"
         icon="search-off"
+        density="compact"
+        variant="inset"
       />
     } @else {
       <table class="viking-table">

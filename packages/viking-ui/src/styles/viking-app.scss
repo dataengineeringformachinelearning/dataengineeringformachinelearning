@@ -1,7 +1,8 @@
 /*! Viking-UI Application Bundle
  *  Canonical Angular application styles without marketing, docs, backend, or
  *  Swagger surface rules. Generated artifacts remain owned by Viking-UI. */
-@use "fonts";
+/* Fonts: suite-fonts.css is prepended by build-css.mjs (/fonts/inter/) — do not
+   @use "fonts" here or browsers register duplicate Inter faces and may double-fetch. */
 @use "typography";
 @use "viking-ui" as *;
 @use "static-primitives";

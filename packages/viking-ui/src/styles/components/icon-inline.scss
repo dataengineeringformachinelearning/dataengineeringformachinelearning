@@ -1,5 +1,14 @@
 // Vertical alignment for icons paired with text (buttons, links, titles).
 
+/* Offscreen icons skip paint until near the viewport (inline SVG, no network). */
+viking-app-icon,
+viking-icon,
+deml-brand-logo,
+[data-viking-icon] {
+  content-visibility: auto;
+  contain-intrinsic-size: 1.25rem 1.25rem;
+}
+
 viking-app-icon,
 viking-icon,
 deml-brand-logo,
@@ -162,7 +171,7 @@ deml-brand-logo,
 
 .navbar-brand .material-icons.navbar-logo,
 .navbar-brand deml-brand-logo .material-icons {
-  font-size: 28px;
+  font-size: var(--viking-font-size-2xl);
   width: 36px;
   height: 36px;
   line-height: 36px;
@@ -171,7 +180,7 @@ deml-brand-logo,
 
 .sidebar-brand .material-icons.brand-icon,
 .sidebar-brand deml-brand-logo .material-icons {
-  font-size: 24px;
+  font-size: var(--viking-font-size-xl);
   width: 24px;
   height: 24px;
   line-height: 24px;

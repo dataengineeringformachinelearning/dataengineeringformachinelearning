@@ -176,27 +176,32 @@ export class VikingFormTemplate {
   };
 
   private focusFirstInvalid(): void {
-    const elements = this.formElements();
-    const firstInvalid = elements.find((el) => {
-      const element = el.nativeElement as HTMLElement & {
-        checkValidity?: () => boolean;
-      };
-      return (
-        element.hasAttribute("data-invalid") ||
-        (element.checkValidity && !element.checkValidity())
-      );
-    });
-    if (firstInvalid) {
-      setTimeout(() => {
-        const input = firstInvalid.nativeElement.querySelector(
-          "input, select, textarea",
+    const host = this.hostRef.nativeElement as HTMLElement;
+    const firstInvalid =
+      host.querySelector<HTMLElement>(
+        'viking-field[data-invalid="true"], [aria-invalid="true"], [data-invalid="true"]',
+      ) ??
+      this.formElements().find((el) => {
+        const element = el.nativeElement as HTMLElement & {
+          checkValidity?: () => boolean;
+        };
+        return (
+          element.hasAttribute("data-invalid") ||
+          element.classList.contains("viking-field-invalid") ||
+          (element.checkValidity && !element.checkValidity())
         );
-        if (input instanceof HTMLElement) {
-          input.focus();
-        } else {
-          firstInvalid.nativeElement.focus();
-        }
-      });
-    }
+      })?.nativeElement;
+
+    if (!(firstInvalid instanceof HTMLElement)) return;
+    setTimeout(() => {
+      const control = firstInvalid.querySelector(
+        'input, select, textarea, [role="combobox"], viking-input-wc',
+      );
+      if (control instanceof HTMLElement) {
+        control.focus();
+        return;
+      }
+      firstInvalid.focus();
+    });
   }
 }

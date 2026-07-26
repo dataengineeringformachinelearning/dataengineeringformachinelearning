@@ -12,6 +12,9 @@ import { VIKING_FIELD_STYLES } from "../core/styles";
  * Framework-agnostic Viking field stack Web Component.
  * Tag: `viking-field` (legacy alias: `viking-field-wc`)
  *
+ * Description/error live in light DOM so slotted controls can reference them
+ * via aria-describedby (shadow ids are not reachable from light-DOM controls).
+ *
  * @attr label - Visible field label
  * @attr description - Helper text below the control
  * @attr error - Validation message; sets aria-invalid on the slotted control
@@ -42,16 +45,19 @@ export class VikingFieldWc extends HTMLElementBase {
 
   connectedCallback(): void {
     this.render();
+    this.syncLightMessages();
     this.syncControlA11y();
   }
 
   disconnectedCallback(): void {
-    this.slotEl?.removeEventListener("slotchange", this.syncControlA11y);
+    this.slotEl?.removeEventListener("slotchange", this.onSlotChange);
+    this.clearLightMessages();
   }
 
   attributeChangedCallback(): void {
     if (this.isConnected) {
       this.render();
+      this.syncLightMessages();
       this.syncControlA11y();
     }
   }
@@ -70,15 +76,61 @@ export class VikingFieldWc extends HTMLElementBase {
     control?.focus?.();
   };
 
+  private readonly onSlotChange = (): void => {
+    this.syncControlA11y();
+  };
+
+  private clearLightMessages(): void {
+    this.querySelectorAll(":scope > [data-viking-field-msg]").forEach((node) =>
+      node.remove(),
+    );
+  }
+
+  /**
+   * Light-DOM messages so aria-describedby ids resolve for slotted controls.
+   * Visual chrome comes from suite/viking global `.viking-field-*` classes.
+   */
+  private syncLightMessages(): void {
+    this.clearLightMessages();
+    const description = this.getAttribute("description") ?? "";
+    const error = this.getAttribute("error") ?? "";
+
+    if (description) {
+      const p = document.createElement("p");
+      p.id = this.descriptionId;
+      p.className = "viking-field-description suite-field-description";
+      p.setAttribute("data-viking-field-msg", "description");
+      p.textContent = description;
+      this.append(p);
+    }
+
+    if (error) {
+      const p = document.createElement("p");
+      p.id = this.errorId;
+      p.className = "viking-field-error suite-field-error";
+      p.setAttribute("data-viking-field-msg", "error");
+      p.setAttribute("role", "alert");
+      p.setAttribute("aria-live", "assertive");
+      p.setAttribute("aria-atomic", "true");
+      const prefix = document.createElement("span");
+      prefix.className = "suite-sr-only viking-sr-only";
+      prefix.textContent = "Error: ";
+      p.append(prefix, document.createTextNode(error));
+      this.append(p);
+    }
+  }
+
   private readonly syncControlA11y = (): void => {
     const control = this.control;
     if (!control) {
       return;
     }
 
-    const description = [
-      this.getAttribute("description") ?? "",
-      this.getAttribute("error") ?? "",
+    const description = this.getAttribute("description") ?? "";
+    const error = this.getAttribute("error") ?? "";
+    const describedBy = [
+      description && this.descriptionId,
+      error && this.errorId,
     ]
       .filter(Boolean)
       .join(" ");
@@ -87,35 +139,35 @@ export class VikingFieldWc extends HTMLElementBase {
     if (label && !control.hasAttribute("aria-label")) {
       control.setAttribute("aria-label", label);
     }
-    if (description) {
-      control.setAttribute("aria-description", description);
-    } else {
-      control.removeAttribute("aria-description");
-    }
 
-    if (this.getAttribute("error")) {
+    if (describedBy) {
+      control.setAttribute("aria-describedby", describedBy);
+    } else {
+      control.removeAttribute("aria-describedby");
+    }
+    control.removeAttribute("aria-description");
+
+    if (error) {
       control.setAttribute("aria-invalid", "true");
-      control.setAttribute("error", this.getAttribute("error") ?? "");
+      control.setAttribute("error", error);
     } else {
       control.removeAttribute("aria-invalid");
-      if (control.getAttribute("error") === "") {
-        control.removeAttribute("error");
-      }
+      control.removeAttribute("error");
     }
 
     if (readBoolAttr(this, "required")) {
       control.setAttribute("required", "");
+      control.setAttribute("aria-required", "true");
     }
   };
 
   private render(): void {
     const label = this.getAttribute("label") ?? "";
-    const description = this.getAttribute("description") ?? "";
-    const error = this.getAttribute("error") ?? "";
     const required = readBoolAttr(this, "required");
+    const hasError = !!this.getAttribute("error");
 
     this.shadow.innerHTML = `
-      <div class="viking-field" part="field" role="group" aria-labelledby="${this.labelId}">
+      <div class="viking-field${hasError ? " viking-field-invalid" : ""}" part="field" role="group" aria-labelledby="${this.labelId}">
         ${
           label
             ? `<div class="viking-field-label-row" part="label-row">
@@ -127,21 +179,11 @@ export class VikingFieldWc extends HTMLElementBase {
             : `<span id="${this.labelId}" hidden>Form field</span>`
         }
         <div class="viking-field-control" part="control"><slot></slot></div>
-        ${
-          description
-            ? `<p id="${this.descriptionId}" class="viking-field-description" part="description">${escapeHtml(description)}</p>`
-            : ""
-        }
-        ${
-          error
-            ? `<p id="${this.errorId}" class="viking-field-error" part="error" role="alert">${escapeHtml(error)}</p>`
-            : ""
-        }
       </div>
     `;
 
     this.slotEl = this.shadow.querySelector("slot");
-    this.slotEl?.addEventListener("slotchange", this.syncControlA11y);
+    this.slotEl?.addEventListener("slotchange", this.onSlotChange);
     this.shadow
       .querySelector(".viking-field-label")
       ?.addEventListener("click", this.focusControl);

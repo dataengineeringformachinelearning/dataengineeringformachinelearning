@@ -1,7 +1,22 @@
-export const HTMLElementBase: typeof HTMLElement =
-  typeof HTMLElement === "undefined"
-    ? (class {} as unknown as typeof HTMLElement)
-    : HTMLElement;
+/**
+ * DOM helpers for Viking web components.
+ * HTMLElementBase is SSR-safe when the DOM constructor is unavailable.
+ */
+
+/** Constructor shape used by custom element classes. */
+export type HTMLElementBaseCtor = {
+  new (): HTMLElement;
+  prototype: HTMLElement;
+};
+
+/**
+ * Minimal stand-in for SSR/prerender — cast once at the boundary.
+ * Runtime browsers always take the real HTMLElement branch.
+ */
+const SSRHTMLElementBase = class {} as HTMLElementBaseCtor;
+
+export const HTMLElementBase: HTMLElementBaseCtor =
+  typeof HTMLElement === "undefined" ? SSRHTMLElementBase : HTMLElement;
 
 /** Stable unique id for associating labels and controls. */
 export const vikingWcUid = (prefix: string): string =>

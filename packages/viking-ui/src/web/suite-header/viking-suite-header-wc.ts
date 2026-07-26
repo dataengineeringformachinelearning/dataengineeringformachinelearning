@@ -343,7 +343,7 @@ viking-suite-command-palette {
   display: contents;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .suite-header__lockup,
   .suite-header__user-text {
     display: inline;

@@ -69,7 +69,7 @@ Directional references are [Material Design 3](https://m3.material.io/) for adap
 - **Dense, breathable telemetry** — spacing is compact enough for operational dashboards and charts, but never cramped; semantic roles compose on a 4px primitive grid while stable numbered aliases retain compatibility.
 - **Primitive clarity** — component language follows clean, composable primitive style: small accessible primitives, predictable APIs, and layout visible through structure rather than bespoke styling.
 - **Geometric severity, not fantasy** — austere geometry, cold materiality, and sparse restraint appear as severe silhouettes and structural accents, never themed illustration, faux-medieval ornament, or decorative storytelling.
-- **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
+- **WCAG 2.2 AA** — contrast, focus rings, touch targets (44px suite floor / ≥24px AA), focus not obscured, keyboard alternatives to drag, consistent help, accessible authentication.
 - **Zero arbitrary hex** — all colors resolve to tokens below.
 
 ### Composable primitive model
@@ -291,17 +291,19 @@ Inter is the **primary typeface** for every DEML surface. The variable font is *
 
 Sync fonts after changes: `python scripts/sync_fonts.py` (also runs inside `scripts/sync_design_system.py`).
 
-**Preload** (optional, recommended on login/marketing shells):
+**Preload** (required on product shells — roman only; italic is on-demand):
 
 ```html
 <link
   rel="preload"
-  href="/assets/fonts/inter/InterVariable.woff2"
+  href="/fonts/inter/InterVariable.woff2"
   as="font"
   type="font/woff2"
   crossorigin
 />
 ```
+
+Do not preload `InterVariable-Italic.woff2` on the critical path.
 
 ### 2.2 Weights & optical sizing
 

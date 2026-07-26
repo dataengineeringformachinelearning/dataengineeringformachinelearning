@@ -77,11 +77,10 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
       }
 
       .empty-title {
-        margin: 0 0 var(--viking-space-2) 0;
-        font-size: var(--viking-font-size-sm);
+        margin: 0 0 var(--viking-space-1) 0;
+        font-size: var(--viking-font-size-md);
         font-weight: var(--viking-font-weight-semibold);
-        letter-spacing: var(--viking-letter-spacing-caps);
-        text-transform: uppercase;
+        letter-spacing: var(--viking-letter-spacing-tight);
         color: var(--viking-text);
         line-height: var(--viking-line-height-tight);
       }
@@ -100,7 +99,7 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
       }
 
       :host(.compact) {
-        min-height: 160px;
+        min-height: var(--viking-space-14);
         padding: var(--viking-space-3);
       }
 
@@ -134,10 +133,10 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
 
       .empty-subtitle {
         margin: 0;
-        font-size: var(--viking-font-size-xs);
+        font-size: var(--viking-font-size-sm);
         color: var(--viking-text-muted);
         line-height: var(--viking-line-height-relaxed);
-        max-width: 26rem;
+        max-width: 28rem;
       }
 
       .viking-chart-empty-actions {

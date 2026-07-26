@@ -42,7 +42,7 @@
 
 .viking-field-label {
   display: block;
-  font-size: max(16px, var(--viking-font-size-base));
+  font-size: max(var(--viking-font-size-base), var(--viking-font-size-base));
   font-weight: 500;
   color: var(--viking-text);
   margin-bottom: var(--viking-space-2);
@@ -62,7 +62,7 @@
 
 .viking-field-description {
   display: block;
-  font-size: 1rem;
+  font-size: var(--viking-font-size-base);
   color: var(--viking-text-muted);
   margin-bottom: var(--viking-space-1);
 }
@@ -90,7 +90,7 @@
   }
 
   > * + * {
-    margin-left: -1px; // fuse borders
+    margin-left: calc(-1 * var(--viking-space-px)); // fuse borders
   }
 }
 
@@ -101,7 +101,7 @@
   padding: 0 var(--viking-space-2);
   background-color: var(--viking-surface-raised);
   color: var(--viking-text-muted);
-  font-size: max(16px, var(--viking-font-size-base));
+  font-size: max(var(--viking-font-size-base), var(--viking-font-size-base));
   border: 1px solid var(--viking-border);
   white-space: nowrap;
   user-select: none;
@@ -132,7 +132,7 @@
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-md);
   padding: var(--viking-space-1) var(--viking-space-2);
-  font-size: max(16px, var(--viking-font-size-base));
+  font-size: max(var(--viking-font-size-base), var(--viking-font-size-base));
   font-family: var(--viking-font-family);
   line-height: 1.4;
   min-height: 44px;
@@ -172,7 +172,7 @@
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-md);
   padding: var(--viking-space-1) var(--viking-space-2);
-  font-size: max(16px, var(--viking-font-size-base));
+  font-size: max(var(--viking-font-size-base), var(--viking-font-size-base));
   min-height: 44px;
   display: flex;
   align-items: center;

@@ -39,6 +39,24 @@ export {
   registerVikingSearchPaletteWc,
   type VikingSearchPaletteItem,
 } from "./search-palette/viking-search-palette-wc";
+export { rankSearchItems, scoreSearchItem } from "./search-palette/rank-search";
+export {
+  DEFAULT_RECENT_LIMIT,
+  DEFAULT_RECENT_STORAGE_KEY,
+  clearRecentSearches,
+  pushRecentSearch,
+  readRecentSearches,
+  recentSearchesAsItems,
+  restoreRecentSearches,
+  type VikingRecentSearch,
+} from "./search-palette/recent-searches";
+export {
+  bindCommandHistoryShortcuts,
+  createCommandHistory,
+  getDefaultCommandHistory,
+  type CommandHistory,
+  type RunHistoryCommand,
+} from "../core/command-history";
 export {
   VikingStatusCardWc,
   registerVikingStatusCardWc,

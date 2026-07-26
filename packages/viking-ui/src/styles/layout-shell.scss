@@ -16,7 +16,7 @@
   );
   margin-inline: auto;
   padding-inline: var(--viking-page-gutter, var(--viking-space-2));
-  padding-block: var(--viking-space-6, 48px) var(--viking-space-8, 64px);
+  padding-block: var(--viking-space-6, var(--viking-space-6)) var(--viking-space-8, var(--viking-space-8));
   box-sizing: border-box;
   display: grid;
   grid-template-columns: 1fr;
@@ -39,12 +39,12 @@
   padding-block: var(--viking-space-3) var(--viking-space-5);
   padding-inline: var(--viking-page-gutter);
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     padding-block: var(--viking-space-4) var(--viking-space-6);
     padding-inline: var(--viking-page-gutter-lg);
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1440px) {
     padding-inline: var(--viking-page-gutter-xl);
   }
 }
@@ -58,7 +58,7 @@
 }
 
 // Responsive gutters — use the widest gutter at the canonical XL breakpoint.
-@media (min-width: 1280px) {
+@media (min-width: 1440px) {
   .viking-page-shell,
   .page-inner-wrapper,
   .viking-page-container,
@@ -81,7 +81,7 @@
   grid-template-columns: 1fr;
   gap: var(
     --viking-page-section-gap,
-    var(--viking-space-6, var(--space-6, 48px))
+    var(--viking-space-6, var(--space-6, var(--viking-space-6)))
   );
   width: 100%;
 }
@@ -89,23 +89,23 @@
 .viking-content-stack--tight {
   gap: var(
     --viking-page-stack-gap,
-    var(--viking-space-4, var(--space-4, 32px))
+    var(--viking-space-4, var(--space-4, var(--viking-space-4)))
   );
 }
 
 .viking-section--compact {
   padding-block: var(
     --viking-section-padding-y-compact,
-    var(--viking-space-4, var(--space-4, 32px))
+    var(--viking-space-4, var(--space-4, var(--viking-space-4)))
   );
 }
 
 .viking-section--hero {
-  padding-block: var(--viking-space-8, var(--space-8, 64px))
-    var(--viking-space-6, var(--space-6, 48px));
+  padding-block: var(--viking-space-8, var(--space-8, var(--viking-space-8)))
+    var(--viking-space-6, var(--space-6, var(--viking-space-6)));
 
   @media (min-width: 768px) {
-    padding-block: var(--viking-space-10) var(--viking-space-8, 64px);
+    padding-block: var(--viking-space-10) var(--viking-space-8, var(--viking-space-8));
   }
 }
 
@@ -116,7 +116,7 @@
     var(--container-max-width, 1260px)
   );
   margin-inline: auto;
-  padding-inline: var(--viking-page-gutter, var(--viking-space-4, 32px));
+  padding-inline: var(--viking-page-gutter, var(--viking-space-4, var(--viking-space-4)));
   box-sizing: border-box;
 }
 
@@ -157,7 +157,7 @@
   max-width: 100%;
   box-sizing: border-box;
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     flex-direction: row;
     align-items: center;
     gap: var(--viking-space-3);
@@ -174,11 +174,12 @@
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  min-height: var(--viking-control-height, 40px);
+  min-height: var(--viking-touch-target-min, var(--viking-control-height));
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     width: auto;
     min-width: var(--viking-btn-min-width, var(--btn-min-width, 120px));
+    min-height: var(--viking-control-height);
     flex: 0 1 auto;
   }
 }

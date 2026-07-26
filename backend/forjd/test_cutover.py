@@ -69,6 +69,10 @@ def test_empty_read_envelope_shapes() -> None:
   checkpoints = empty_read_envelope("/api/v1/projections/checkpoints")
   assert "checkpoints" in checkpoints
   assert checkpoints["degraded"] is True
+  workflows = empty_read_envelope("/api/v1/workflows")
+  assert workflows["workflows"] == []
+  assert workflows["count"] == 0
+  assert workflows["degraded"] is True
 
 
 @pytest.mark.django_db

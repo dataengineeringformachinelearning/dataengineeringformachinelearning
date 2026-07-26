@@ -105,6 +105,11 @@
     background-color: color-mix(in srgb, var(--viking-white) 1%, transparent);
   }
 
+  &:focus-visible {
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
+  }
+
   &.active {
     border-color: var(--viking-accent);
     background-color: color-mix(
@@ -120,7 +125,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--viking-space-1);
+  margin-bottom: var(--viking-space-0-5);
+  gap: var(--viking-space-1);
 
   .item-id {
     font-size: var(--viking-font-size-sm);
@@ -130,19 +136,27 @@
 }
 
 .item-title {
-  font-size: var(--viking-font-size-sm);
-  font-weight: 600;
-  margin: 0 0 var(--viking-space-1) 0;
-  line-height: 1.2;
+  font-size: var(--viking-font-size);
+  font-weight: var(--viking-font-weight-semibold, 600);
+  margin: 0 0 var(--viking-space-0-5) 0;
+  line-height: var(--viking-line-height-tight, 1.2);
+  color: var(--viking-text);
 }
 
 .item-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: var(--viking-space-1);
   font-size: var(--viking-font-size-sm);
   color: var(--viking-text-muted);
   font-family: var(--viking-font-family-mono);
+
+  .item-time {
+    margin-inline-start: auto;
+    font-variant-numeric: tabular-nums;
+  }
 
   .client-id {
     display: flex;

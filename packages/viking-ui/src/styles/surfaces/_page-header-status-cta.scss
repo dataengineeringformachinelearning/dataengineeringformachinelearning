@@ -277,12 +277,12 @@ app-status-cta.isolated-status-cta {
   overflow-x: auto;
 }
 
-/* Snapshot stats denser polish */
+/* Snapshot stats — stack on phone, pair from sm up */
 .dashboard-page-container .snapshot-stats {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-2);
 
-  @media (min-width: 1024px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -320,9 +320,10 @@ app-status-cta.isolated-status-cta {
     "metrics";
 }
 
-@media (min-width: 640px) {
+/* Tablet: command layout only when both columns can breathe */
+@media (min-width: 768px) {
   .dashboard-page-container .overview-grid {
-    grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
     grid-template-areas:
       "setup setup"
       "health kpis"
@@ -346,11 +347,13 @@ app-status-cta.isolated-status-cta {
 
 .dashboard-page-container .kpi-grid {
   grid-area: kpis;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+  grid-template-columns: minmax(0, 1fr);
 
-@media (min-width: 1280px) {
-  .dashboard-page-container .kpi-grid {
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1440px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -418,13 +421,13 @@ app-status-cta.isolated-status-cta {
   grid-template-columns: minmax(0, 1fr);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .dashboard-page-container .ces-gauge-cluster {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1440px) {
   .dashboard-page-container .ces-gauge-cluster {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -454,7 +457,7 @@ app-status-cta.isolated-status-cta {
   margin-bottom: var(--viking-page-stack-gap);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .dashboard-page-container .ml-stat-panels-row,
   .dashboard-page-container .stat-panels-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -553,6 +556,8 @@ app-status-cta.isolated-status-cta {
   overflow: hidden;
   background: var(--viking-bg);
   position: relative;
+  /* Isolate Leaflet tile/marker paints from the surrounding dashboard layout. */
+  contain: layout paint;
 }
 
 .dashboard-page-container .origin-map-canvas .leaflet-container {

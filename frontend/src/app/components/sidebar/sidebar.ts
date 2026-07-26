@@ -24,6 +24,7 @@ import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { filter } from 'rxjs/operators';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
+import { RoutePrefetchService } from '../../core/route-prefetch.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -49,6 +50,12 @@ export class Sidebar implements OnInit {
   private monitorService = inject(MonitorService);
   public settingsService = inject(SettingsService);
   private router = inject(Router);
+  private readonly routePrefetch = inject(RoutePrefetchService);
+
+  /** Intent prefetch — warm the lazy chunk on hover / focus. */
+  protected prefetchRoute(path: string): void {
+    this.routePrefetch.prefetch(path);
+  }
 
   isCollapsed = signal<boolean>(false);
   isSettingsActive = signal(false);
@@ -62,6 +69,9 @@ export class Sidebar implements OnInit {
   isDragging = signal<boolean>(false);
   private startX = 0;
   private startWidth = 0;
+  /** rAF-coalesce width writes so mousemove does not force layout every event. */
+  private pendingWidth: number | null = null;
+  private widthRaf = 0;
 
   startResize(event: MouseEvent) {
     if (this.isCollapsed()) return;
@@ -70,6 +80,33 @@ export class Sidebar implements OnInit {
     this.startWidth = this.sidebarWidth();
     document.body.style.cursor = 'col-resize';
     event.preventDefault();
+  }
+
+  /** WCAG 2.5.7 — keyboard alternative to drag-resize (Arrow / Home / End). */
+  onResizeKeydown(event: KeyboardEvent): void {
+    if (this.isCollapsed()) return;
+    const step = event.shiftKey ? 32 : 16;
+    let next = this.sidebarWidth();
+    switch (event.key) {
+      case 'ArrowLeft':
+        next -= step;
+        break;
+      case 'ArrowRight':
+        next += step;
+        break;
+      case 'Home':
+        next = 200;
+        break;
+      case 'End':
+        next = 800;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    next = Math.min(800, Math.max(200, next));
+    this.sidebarWidth.set(next);
+    localStorage.setItem('sidebarWidth', next.toString());
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -81,12 +118,29 @@ export class Sidebar implements OnInit {
     if (newWidth < 200) newWidth = 200;
     if (newWidth > 800) newWidth = 800;
 
-    this.sidebarWidth.set(newWidth);
+    this.pendingWidth = newWidth;
+    if (this.widthRaf) {
+      return;
+    }
+    this.widthRaf = requestAnimationFrame(() => {
+      this.widthRaf = 0;
+      if (this.pendingWidth != null) {
+        this.sidebarWidth.set(this.pendingWidth);
+      }
+    });
   }
 
   @HostListener('document:mouseup')
   onMouseUp() {
     if (this.isDragging()) {
+      if (this.widthRaf) {
+        cancelAnimationFrame(this.widthRaf);
+        this.widthRaf = 0;
+      }
+      if (this.pendingWidth != null) {
+        this.sidebarWidth.set(this.pendingWidth);
+        this.pendingWidth = null;
+      }
       this.isDragging.set(false);
       document.body.style.cursor = '';
       localStorage.setItem('sidebarWidth', this.sidebarWidth().toString());

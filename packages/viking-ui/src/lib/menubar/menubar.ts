@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+} from "@angular/core";
+import { nextRovingIndex } from "../../core/focus";
 
 /**
- * viking-menubar — horizontal application menu bar.
+ * viking-menubar — horizontal application menu bar with arrow-key roving focus.
  */
 @Component({
   selector: "viking-menubar",
@@ -9,6 +16,8 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
   host: {
     role: "menubar",
     class: "viking-menubar",
+    "aria-label": "Menu bar",
+    "(keydown)": "onKeydown($event)",
   },
   template: `<ng-content />`,
   styles: [
@@ -53,7 +62,40 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
     `,
   ],
 })
-export class VikingMenubar {}
+export class VikingMenubar implements AfterViewInit {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  ngAfterViewInit(): void {
+    this.syncRovingTabindex(0);
+  }
+
+  protected onKeydown = (event: KeyboardEvent): void => {
+    const items = this.menuItems();
+    if (items.length === 0) return;
+    const currentIndex = Math.max(
+      0,
+      items.findIndex((el) => el === document.activeElement),
+    );
+    const next = nextRovingIndex(event.key, currentIndex, items.length);
+    if (next === null) return;
+    event.preventDefault();
+    this.syncRovingTabindex(next);
+    items[next]?.focus({ preventScroll: true });
+  };
+
+  private menuItems = (): HTMLElement[] =>
+    Array.from(
+      this.host.nativeElement.querySelectorAll<HTMLElement>(
+        '[role="menuitem"]',
+      ),
+    );
+
+  private syncRovingTabindex = (activeIndex: number): void => {
+    this.menuItems().forEach((el, index) => {
+      el.tabIndex = index === activeIndex ? 0 : -1;
+    });
+  };
+}
 
 /**
  * viking-menubar-item — menu item trigger for viking-menubar.

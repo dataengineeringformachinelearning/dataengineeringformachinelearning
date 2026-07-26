@@ -17,6 +17,7 @@ import { environment } from '../../../environments/environment';
       [isAuthenticated]="authService.isAuthenticated()"
       [isBusy]="authService.isProcessing()"
       [theme]="themeService.theme()"
+      [themePreference]="themeService.preference()"
       [showSearch]="true"
       (login)="login()"
       (logout)="logout()"

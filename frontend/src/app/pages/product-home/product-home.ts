@@ -9,11 +9,11 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import {
-  ContinuityHealthSignal,
-  continuityFromReady,
-} from '../../core/continuity-health';
+import { ContinuityHealthSignal, continuityFromReady } from '../../core/continuity-health';
 import { AuthService } from '../../services/auth.service';
+import { MonitorService } from '../../services/monitor.service';
+import { RoutePrefetchService } from '../../core/route-prefetch.service';
+import { SwrCacheService } from '../../core/cache/swr-cache.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, timeout } from 'rxjs';
 
@@ -48,7 +48,15 @@ type ShowcaseCapability = {
 export class ProductHome implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly auth = inject(AuthService);
+  private readonly routePrefetch = inject(RoutePrefetchService);
+  private readonly swr = inject(SwrCacheService);
+  private readonly monitor = inject(MonitorService);
   private readonly http = inject(HttpClient);
+
+  /** Warm likely next route chunks from hero CTAs. */
+  protected prefetchRoute(path: string): void {
+    this.routePrefetch.prefetch(path);
+  }
 
   protected readonly marketingUrl = environment.marketingUrl;
   protected readonly backendUrl = environment.backendUrl;
@@ -75,7 +83,7 @@ export class ProductHome implements OnInit {
     {
       step: '02',
       title: 'Observe',
-      description: 'Telemetry, threat scores, and CVE posture surface in real time.',
+      description: 'Telemetry, threat scores, and CVE posture surface as projections arrive.',
     },
     {
       step: '03',
@@ -157,9 +165,21 @@ export class ProductHome implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      // Short ready probe for continuity badge; heavier metrics wait for idle.
       void this.probeControlPlaneReady();
-      void this.hydratePlatformMetrics();
+      this.scheduleIdleHydration();
     }
+  }
+
+  private scheduleIdleHydration(): void {
+    const run = (): void => {
+      void this.hydratePlatformMetrics();
+    };
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(run, { timeout: 3_000 });
+      return;
+    }
+    globalThis.setTimeout(run, 1_500);
   }
 
   protected metricValue(key: MetricKey, staticValue?: string): string {
@@ -181,11 +201,18 @@ export class ProductHome implements OnInit {
   private async probeControlPlaneReady(): Promise<void> {
     try {
       const ready = await firstValueFrom(
-        this.http
-          .get<{ forjd_health?: string; mode?: string; status?: string }>(
-            `${this.backendUrl}/api/v1/ready`,
-          )
-          .pipe(timeout(2500)),
+        this.swr.observe(
+          this.swr.key('ready', { surface: 'product-home' }),
+          () =>
+            this.http
+              .get<{
+                forjd_health?: string;
+                mode?: string;
+                status?: string;
+              }>(`${this.backendUrl}/api/v1/ready`)
+              .pipe(timeout(2500)),
+          { freshMs: 30_000, staleMs: 2 * 60_000, scope: 'public' },
+        ),
       );
       this.controlPlaneReady.set(continuityFromReady(ready));
     } catch {
@@ -196,14 +223,8 @@ export class ProductHome implements OnInit {
 
   private async hydratePlatformMetrics(): Promise<void> {
     try {
-      const metrics = await firstValueFrom(
-        this.http.get<{
-          p99_latency?: number;
-          overall_uptime?: number;
-          total_requests?: number;
-          threats_detected_24h?: number;
-        }>(`${this.backendUrl}/api/v1/system-status/status_pages/slug/platform-status`),
-      );
+      // Public slug — SWR via MonitorService (shared with explore/status).
+      const metrics = await firstValueFrom(this.monitor.getStatusPageBySlug('platform-status'));
       if (Number.isFinite(metrics.p99_latency)) {
         const ms = Math.round(metrics.p99_latency as number);
         this.p99Value.set(`${ms}ms`);

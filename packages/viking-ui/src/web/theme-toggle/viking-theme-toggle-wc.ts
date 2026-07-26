@@ -1,68 +1,61 @@
 import { attachShadowStyles } from "../core/base";
 import { defineCustomElement, HTMLElementBase } from "../core/dom";
+import {
+  SUITE_THEME_CHANGE_EVENT,
+  applySuiteTheme,
+  dispatchSuiteThemeChange,
+  ensureSuiteSystemThemeListener,
+  prefersDarkScheme,
+  readSuiteThemePreference,
+  resolveSuiteTheme,
+  toggleSuiteThemePreference,
+  writeSuiteThemePreference,
+  type SuiteThemePreference,
+  type SuiteThemeResolved,
+} from "../../core/theme";
 
 const VIKING_THEME_TOGGLE_STYLES = `
-:host {
-  display: inline-flex;
-}
-
+:host { display: inline-flex; }
 .theme-toggle-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: var(--viking-control-height, 40px);
-  height: var(--viking-control-height, 40px);
-  min-width: var(--viking-control-height, 40px);
+  width: var(--suite-control-height, var(--viking-control-height, 40px));
+  height: var(--suite-control-height, var(--viking-control-height, 40px));
+  min-width: var(--suite-touch, 44px);
+  min-height: var(--suite-touch, 44px);
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 32%, var(--viking-border-strong, var(--viking-border)));
-  border-radius: var(--viking-radius);
-  background: color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 8%, var(--viking-surface));
-  color: var(--viking-accent-strong, var(--viking-ring));
-  box-shadow: var(--viking-shadow-sm);
+  border: 1px solid color-mix(in srgb, var(--suite-primary, var(--viking-accent)) 32%, var(--suite-border-strong, var(--viking-border)));
+  border-radius: var(--suite-radius-control, var(--viking-radius));
+  background: color-mix(in srgb, var(--suite-primary, var(--viking-accent)) 8%, var(--suite-surface, var(--viking-surface)));
+  color: var(--suite-primary, var(--viking-accent-strong, var(--viking-ring)));
+  box-shadow: var(--suite-shadow-sm, var(--viking-shadow-sm));
   cursor: pointer;
-  transition: var(--viking-transition-interactive);
+  transition: var(--suite-transition, var(--viking-transition-interactive));
   -webkit-tap-highlight-color: transparent;
 }
-
 .theme-toggle-btn:hover {
-  border-color: var(--viking-accent-strong, var(--viking-ring));
-  background: color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 14%, var(--viking-surface-alt));
-  color: var(--viking-accent-strong, var(--viking-ring));
-  box-shadow: var(--viking-shadow-md);
+  border-color: var(--suite-primary-hover, var(--viking-accent-strong));
+  background: color-mix(in srgb, var(--suite-primary, var(--viking-accent)) 14%, var(--suite-surface-2, var(--viking-surface-alt)));
+  box-shadow: var(--suite-shadow-md, var(--viking-shadow-md));
 }
-
 .theme-toggle-btn:focus-visible {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring);
-  outline-offset: var(--viking-ring-offset, 2px);
+  outline: var(--suite-ring-width, 2px) solid var(--suite-ring, var(--viking-ring));
+  outline-offset: var(--suite-ring-offset, 2px);
 }
-
-.theme-toggle-btn:active {
-  transform: scale(var(--viking-state-active-scale, 0.98));
-}
-
-.theme-icon {
-  display: none;
-}
-
-.theme-icon.is-visible {
-  display: block;
+.theme-icon { display: none; }
+.theme-icon.is-visible { display: block; }
+@media (min-width: 768px) {
+  .theme-toggle-btn {
+    min-width: var(--suite-control-height, 40px);
+    min-height: var(--suite-control-height, 40px);
+  }
 }
 `;
 
-const applyTheme = (theme: "light" | "dark"): void => {
-  document.documentElement.setAttribute("data-theme", theme);
-  document.documentElement.classList.toggle("dark", theme === "dark");
-  localStorage.setItem("theme", theme);
-};
-
-const readTheme = (): "light" | "dark" => {
-  const saved = localStorage.getItem("theme");
-  if (saved === "light" || saved === "dark") return saved;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-};
+const currentResolved = (): SuiteThemeResolved =>
+  resolveSuiteTheme(readSuiteThemePreference(), prefersDarkScheme());
 
 /**
  * Framework-agnostic theme toggle Web Component.
@@ -75,7 +68,12 @@ export class VikingThemeToggleWc extends HTMLElementBase {
   private button: HTMLButtonElement | null = null;
   private sunIcon: SVGElement | null = null;
   private moonIcon: SVGElement | null = null;
+
   private readonly onStorage = (): void => {
+    this.syncIcons();
+  };
+
+  private readonly onThemeChange = (): void => {
     this.syncIcons();
   };
 
@@ -86,49 +84,57 @@ export class VikingThemeToggleWc extends HTMLElementBase {
   }
 
   connectedCallback(): void {
-    this.setAttribute("role", "button");
     this.render();
     this.syncIcons();
     this.button?.addEventListener("click", this.onClick);
     window.addEventListener("storage", this.onStorage);
-    window.addEventListener("viking-theme-change", this.onThemeChange);
+    // Canonical event only — avoid double sync from legacy viking-theme-change
+    window.addEventListener(SUITE_THEME_CHANGE_EVENT, this.onThemeChange);
+    // One document-level OS sync; this instance only refreshes icons
+    ensureSuiteSystemThemeListener();
   }
 
   disconnectedCallback(): void {
     this.button?.removeEventListener("click", this.onClick);
     window.removeEventListener("storage", this.onStorage);
-    window.removeEventListener("viking-theme-change", this.onThemeChange);
+    window.removeEventListener(SUITE_THEME_CHANGE_EVENT, this.onThemeChange);
   }
 
-  private readonly onThemeChange = (): void => {
-    this.syncIcons();
-  };
-
   private readonly onClick = (): void => {
-    const next = readTheme() === "light" ? "dark" : "light";
-    applyTheme(next);
-    this.syncIcons();
-    this.dispatchEvent(
-      new CustomEvent("viking-theme-change", {
-        bubbles: true,
-        composed: true,
-        detail: { theme: next },
-      }),
+    const preference = readSuiteThemePreference();
+    const next: SuiteThemePreference = toggleSuiteThemePreference(
+      preference,
+      prefersDarkScheme(),
     );
+    writeSuiteThemePreference(next);
+    const resolved = resolveSuiteTheme(next, prefersDarkScheme());
+    applySuiteTheme(resolved);
+    dispatchSuiteThemeChange({ preference: next, resolved });
+    this.syncIcons();
   };
 
   private syncIcons = (): void => {
-    // Match Angular viking-theme-toggle: sun in dark mode (switch to light).
-    const isDark = readTheme() === "dark";
+    const isDark = currentResolved() === "dark";
     this.sunIcon?.classList.toggle("is-visible", isDark);
     this.moonIcon?.classList.toggle("is-visible", !isDark);
+    const pref = readSuiteThemePreference();
+    const label =
+      pref === "system"
+        ? isDark
+          ? "Theme: system (dark). Switch to light"
+          : "Theme: system (light). Switch to dark"
+        : isDark
+          ? "Theme: dark. Switch to light"
+          : "Theme: light. Switch to dark";
+    this.button?.setAttribute("aria-label", label);
+    this.button?.setAttribute("title", label);
   };
 
   private render(): void {
     const label =
       this.getAttribute("aria-label") ?? "Toggle light and dark theme";
     this.shadow.innerHTML = `
-      <button type="button" class="theme-toggle-btn" part="control" aria-label="${label}">
+      <button type="button" class="theme-toggle-btn suite-theme-toggle" part="control" aria-label="${label}">
         <svg class="theme-icon theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
           <path stroke="currentColor" stroke-width="2" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>

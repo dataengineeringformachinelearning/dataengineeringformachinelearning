@@ -15,6 +15,7 @@ import { VIKING_TABS } from "./tabs";
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     role: "tabpanel",
+    tabindex: "0",
     "[attr.id]": "panelId()",
     "[attr.aria-labelledby]": "tabId()",
     "[attr.hidden]": 'hidden() ? "" : null',

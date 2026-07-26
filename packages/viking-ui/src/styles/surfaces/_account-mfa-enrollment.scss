@@ -34,7 +34,7 @@
 .mfa-enrollment-form {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-3, 24px);
+  gap: var(--viking-space-3, var(--viking-space-3));
 }
 
 .mfa-step-title {
@@ -46,20 +46,20 @@
 .mfa-phone-block {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-2, var(--viking-space-2));
   width: 100%;
 }
 
 .mfa-phone-row {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-2, var(--viking-space-2));
   width: 100%;
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     flex-direction: row;
     align-items: flex-end;
-    gap: var(--viking-space-2, 16px);
+    gap: var(--viking-space-2, var(--viking-space-2));
 
     .mfa-input-full {
       flex: 1;
@@ -72,9 +72,9 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--viking-space-3, 24px);
-  margin-top: var(--viking-space-2, 16px);
-  padding-top: var(--viking-space-3, 24px);
+  gap: var(--viking-space-3, var(--viking-space-3));
+  margin-top: var(--viking-space-2, var(--viking-space-2));
+  padding-top: var(--viking-space-3, var(--viking-space-3));
   border-top: 1px solid var(--viking-border-subtle, var(--viking-border));
   width: 100%;
 }
@@ -83,7 +83,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-2, var(--viking-space-2));
   width: 100%;
   max-width: 28rem;
   margin-inline: auto;
@@ -92,8 +92,8 @@
 .mfa-feedback-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, 16px);
-  margin-top: var(--viking-space-2, 16px);
+  gap: var(--viking-space-2, var(--viking-space-2));
+  margin-top: var(--viking-space-2, var(--viking-space-2));
 }
 
 .mfa-recaptcha-slot {
@@ -105,16 +105,16 @@
 }
 
 .mfa-relogin-callout {
-  margin-top: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-2, var(--viking-space-2));
 }
 
 .mfa-status-enrolled {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-2, var(--viking-space-2));
   align-items: stretch;
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;

@@ -8,6 +8,7 @@ import {
 import { NgTemplateOutlet } from "@angular/common";
 import { VikingIcon } from "../icon/icon";
 import { VikingIconName } from "../../core/icons";
+import { safeHref } from "../../core/safe-href";
 import { VikingSize } from "../../core/types";
 
 export type VikingButtonVariant =
@@ -31,7 +32,8 @@ export type VikingButtonVariant =
   host: {
     "[class.viking-full]": "fullWidth()",
     "[class.viking-compact]": "compact()",
-    "[attr.aria-busy]": "loading() ? 'true' : null",
+    // Host is presentational — interactive ARIA lives on the native control
+    role: "presentation",
   },
   template: `
     <ng-template #controlContent>
@@ -55,15 +57,21 @@ export type VikingButtonVariant =
       }
     </ng-template>
 
-    @if (href()) {
+    @if (safeUrl()) {
       <a
         class="suite-btn viking-btn"
         [class]="controlClass()"
         [attr.data-variant]="suiteVariant()"
-        [attr.href]="isInteractive() ? href() : null"
+        [attr.href]="isInteractive() ? safeUrl() : null"
         [attr.target]="target()"
         [attr.rel]="relAttr()"
-        [attr.aria-label]="label() || null"
+        [attr.aria-label]="accessibleName()"
+        [attr.aria-busy]="loading() ? 'true' : null"
+        [attr.aria-expanded]="ariaExpanded()"
+        [attr.aria-controls]="ariaControls()"
+        [attr.aria-haspopup]="ariaHaspopup()"
+        [attr.aria-pressed]="ariaPressed()"
+        [attr.aria-current]="ariaCurrent()"
         [attr.aria-disabled]="!isInteractive() ? 'true' : null"
         [attr.tabindex]="!isInteractive() ? -1 : null"
         (click)="onClick($event)"
@@ -77,8 +85,13 @@ export type VikingButtonVariant =
         [attr.data-variant]="suiteVariant()"
         [type]="type()"
         [disabled]="!isInteractive()"
-        [attr.aria-label]="label() || null"
+        [attr.aria-label]="accessibleName()"
         [attr.aria-busy]="loading() ? 'true' : null"
+        [attr.aria-expanded]="ariaExpanded()"
+        [attr.aria-controls]="ariaControls()"
+        [attr.aria-haspopup]="ariaHaspopup()"
+        [attr.aria-pressed]="ariaPressed()"
+        [attr.aria-current]="ariaCurrent()"
         (click)="onClick($event)"
       >
         <ng-container [ngTemplateOutlet]="controlContent" />
@@ -102,12 +115,40 @@ export class VikingButton {
   readonly target = input<string | null>(null);
   readonly kbd = input<string | null>(null);
   readonly label = input<string>("");
+  /** Forwarded onto the native control (host attrs alone are invisible to AT). */
+  readonly ariaExpanded = input<boolean | string | null>(null, {
+    alias: "aria-expanded",
+  });
+  readonly ariaControls = input<string | null>(null, {
+    alias: "aria-controls",
+  });
+  readonly ariaHaspopup = input<boolean | string | null>(null, {
+    alias: "aria-haspopup",
+  });
+  readonly ariaPressed = input<boolean | string | null>(null, {
+    alias: "aria-pressed",
+  });
+  readonly ariaCurrent = input<string | null>(null, { alias: "aria-current" });
 
   readonly pressed = output<MouseEvent>();
 
   protected readonly iconSize = computed(() =>
     this.size() === "base" ? 20 : 18,
   );
+
+  /**
+   * Voice/switch: square buttons hide the text label — always expose a name.
+   * Prefer explicit `label`; fall back to a humanized icon name for icon-only.
+   */
+  protected readonly accessibleName = computed(() => {
+    const explicit = this.label().trim();
+    if (explicit) return explicit;
+    if (this.square()) {
+      const icon = this.icon();
+      if (icon) return icon.replace(/-/g, " ");
+    }
+    return null;
+  });
 
   protected readonly isInteractive = computed(
     () => !this.disabled() && !this.loading(),
@@ -135,6 +176,9 @@ export class VikingButton {
   protected readonly relAttr = computed(() =>
     this.target() === "_blank" ? "noopener noreferrer" : null,
   );
+
+  /** Drop javascript:/data:/protocol-relative hrefs (FORJD ADR-0013). */
+  protected readonly safeUrl = computed(() => safeHref(this.href()));
 
   protected onClick = (event: MouseEvent): void => {
     if (!this.isInteractive()) {

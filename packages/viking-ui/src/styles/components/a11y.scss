@@ -1,54 +1,87 @@
-// Accessibility — WCAG 2.x / Section 508 oriented utilities.
+// Accessibility — suite-aligned WCAG 2.2 AA utilities.
+// Canonical focus chrome also ships in tokens/suite-components.css for FORJD.
+
+// WCAG 2.4.11 Focus Not Obscured — keep focused targets clear of sticky chrome.
+html {
+  scroll-padding-top: var(--viking-navbar-height, var(--suite-nav-height, 64px));
+  scroll-padding-bottom: var(--viking-space-4, var(--suite-space-4, 32px));
+}
+
+:focus-visible {
+  scroll-margin-top: var(--viking-navbar-height, var(--suite-nav-height, 64px));
+  scroll-margin-bottom: var(--viking-space-3, var(--suite-space-3, 24px));
+}
 
 .sr-only,
-.visually-hidden {
+.visually-hidden,
+.suite-sr-only,
+.viking-sr-only {
   position: absolute !important;
-  width: 0 !important;
-  height: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
   padding: 0 !important;
-  margin: -1px !important;
+  margin: calc(-1 * var(--viking-space-px, var(--suite-space-px))) !important;
   overflow: hidden !important;
   clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
   white-space: nowrap !important;
   border: 0 !important;
 }
 
-// Skip link: clipped when idle, visible only on keyboard focus (never shown to sighted users).
-.skip-link {
+// Skip link — clipped until keyboard focus (suite-skip-link alias in suite-components)
+.skip-link,
+.suite-skip-link,
+.viking-skip-link {
+  position: absolute;
+  top: var(--viking-space-2, var(--suite-space-2, 16px));
+  left: var(--viking-space-2, var(--suite-space-2, 16px));
+  z-index: var(--viking-z-max, var(--suite-z-max, 1500));
   display: inline-flex;
   align-items: center;
-  position: absolute;
-  top: 0;
-  left: var(--viking-space-2, 16px);
-  z-index: 10000;
-  padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
-  border-radius: var(--viking-radius-sm, 8px);
-  background-color: var(--viking-black) !important;
-  color: var(--viking-white-pure) !important;
+  min-height: var(--viking-touch-target-min, var(--suite-touch, 44px));
+  padding: 0 var(--viking-space-2, var(--suite-space-2, 16px));
+  border: 1px solid var(--viking-border-strong, var(--suite-border-strong));
+  border-radius: var(--viking-radius, var(--suite-radius-control));
+  background-color: var(--viking-surface-raised, var(--suite-surface-elevated));
+  color: var(--viking-text, var(--suite-ink));
   text-decoration: none;
-  font-weight: 600;
-  font-size: max(16px, var(--viking-font-size-base, 16px));
-  line-height: 1.4;
+  font-weight: var(--viking-font-weight-semibold, 600);
+  font-size: var(--viking-font-size-sm, var(--suite-text-sm));
+  letter-spacing: var(--viking-letter-spacing-wide, 0.02em);
+  box-shadow: var(--viking-shadow-md, var(--suite-shadow-md));
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   width: 1px;
   height: 1px;
   overflow: hidden;
   white-space: nowrap;
-  border: 0;
 }
 
 .skip-link:focus,
-.skip-link:focus-visible {
+.skip-link:focus-visible,
+.suite-skip-link:focus,
+.suite-skip-link:focus-visible,
+.viking-skip-link:focus,
+.viking-skip-link:focus-visible {
   clip: auto;
   clip-path: none;
   width: auto;
   height: auto;
-  min-height: var(--viking-touch-target-min, 44px);
   overflow: visible;
-  white-space: normal;
-  outline: var(--viking-ring-width, 3px) solid var(--viking-ring, var(--viking-accent));
-  outline-offset: var(--viking-ring-offset, 2px);
+  white-space: nowrap;
+  outline: var(--viking-ring-width, var(--suite-ring-width)) solid
+    var(--viking-ring, var(--suite-ring));
+  outline-offset: var(--viking-ring-offset, var(--suite-ring-offset));
+}
+
+#main-content:focus {
+  outline: none;
+}
+
+#main-content:focus-visible {
+  outline: var(--viking-ring-width, var(--suite-ring-width)) solid
+    var(--viking-ring, var(--suite-ring));
+  outline-offset: var(--viking-ring-offset, var(--suite-ring-offset));
 }
 
 a:focus-visible,
@@ -56,11 +89,27 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
-[role='button']:focus-visible,
-[role='tab']:focus-visible,
-[tabindex]:not([tabindex='-1']):focus-visible {
-  outline: var(--viking-ring-width) solid var(--viking-ring) !important;
-  outline-offset: var(--viking-ring-offset) !important;
+summary:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="menuitem"]:focus-visible,
+[role="menuitemcheckbox"]:focus-visible,
+[role="menuitemradio"]:focus-visible,
+[role="option"]:focus-visible,
+[role="switch"]:focus-visible,
+[role="checkbox"]:focus-visible,
+[role="radio"]:focus-visible,
+[role="combobox"]:focus-visible,
+[role="listbox"]:focus-visible,
+[role="slider"]:focus-visible,
+[role="spinbutton"]:focus-visible,
+[role="separator"][tabindex]:focus-visible,
+[role="treeitem"]:focus-visible,
+[role="gridcell"]:focus-visible,
+[role="link"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
 }
 
 // Viking shells own the focus ring on the control border — not the inner native input.
@@ -68,7 +117,13 @@ select:focus-visible,
 .viking-input-shell input:focus-visible,
 .viking-textarea-shell textarea:focus,
 .viking-textarea-shell textarea:focus-visible {
-  outline: none !important;
+  outline: none;
+}
+
+.viking-input-shell:focus-within,
+.viking-textarea-shell:focus-within {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -88,6 +143,6 @@ select:focus-visible,
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
-    outline: 3px solid CanvasText !important;
+    outline: 3px solid CanvasText;
   }
 }

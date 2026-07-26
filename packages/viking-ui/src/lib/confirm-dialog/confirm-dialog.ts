@@ -13,7 +13,10 @@ import { VikingInput } from "../input/input";
 import { VikingModal } from "../modal/modal";
 import { VikingText } from "../typography/text";
 import type { VikingIconName } from "../../core/icons";
-import { VikingConfirmDialogData, VikingDialogService } from "./dialog.service";
+import {
+  VikingConfirmDialogData,
+  VikingDialogService,
+} from "./confirm-dialog.service";
 
 /**
  * viking-confirm-dialog — alert / confirm / prompt modal wired to VikingDialogService.
@@ -105,11 +108,9 @@ export class VikingConfirmDialog {
 
   protected readonly inputValue = signal<string>("");
 
-  protected readonly data = computed(() => {
+  protected readonly data = computed((): VikingConfirmDialogData | null => {
     const active = this.vikingDialog.active();
-    return active?.kind === "confirm"
-      ? (active.data as VikingConfirmDialogData)
-      : null;
+    return active?.kind === "confirm" ? active.data : null;
   });
 
   protected readonly open = computed(() => this.data() !== null);

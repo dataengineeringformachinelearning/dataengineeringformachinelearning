@@ -22,7 +22,9 @@ license: apache-2.0
 > machine learning. DEML calls FORJD with tenant-bound opaque `fjsvc_` tokens and
 > sealed AES-256-GCM envelopes. Production hosts: Angular on **Vercel**, Django BFF
 > on **Fly** (`deml-backend`), streaming engine on **FORJD** Fly + Supabase.
-> Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+> Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md)
+> (Pipeline Studio compose/export → FORJD YAML deploy). FORJD extension map:
+> [EXTENDING.md](https://github.com/dataengineeringformachinelearning/forjd/blob/main/docs/EXTENDING.md).
 
 **Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering, and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
@@ -61,7 +63,7 @@ security model and build instructions.
 ## Core Capabilities
 
 - **Sealed FORJD projections**: Django BFF forwards sealed telemetry with tenant-bound `fjsvc_` (browser never holds service tokens); FORJD materializes durable read models
-- **FORJD data plane stack**: FastAPI + Prefect 3 + Pathway streams + Polars batch LazyFrames + Rust `forjd-engine` (DEML does not run Pathway/Airflow)
+- **FORJD data plane stack**: FastAPI + Prefect 3 + Rust sealed hot path (+ Python soft fallback) + Polars batch LazyFrames (DEML does not run stream workers or Airflow)
 - **High-Throughput Ingestion**: Sub-second sealed dispatch with durable FORJD outbox semantics
 - **Live dashboards**: Angular 22+ Signals + Django SSE (`/api/v1/analytics/live`) — `{count, cursor}` ticks only; `latestEvent` / `degraded` callouts; not Firestore
 - **Account Isolation**: Strict tenant separation without cross-account data exposure

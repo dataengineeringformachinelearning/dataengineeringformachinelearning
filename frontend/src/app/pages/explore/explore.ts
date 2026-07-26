@@ -5,7 +5,6 @@ import {
   ChangeDetectionStrategy,
   signal,
   effect,
-  computed,
   untracked,
 } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
@@ -17,6 +16,7 @@ import {
   VikingCallout,
   VikingExploreCard,
   VikingPageHeader,
+  VikingPageSkeleton,
   VikingPageTemplate,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type {
@@ -25,7 +25,7 @@ import type {
   ExploreCardUptimePoint,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { RouterModule } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, map, timeout } from 'rxjs/operators';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { toUptimeHistoryDataPoints } from '../../core/utils/uptime.utils';
@@ -50,6 +50,7 @@ import {
     VikingCallout,
     VikingExploreCard,
     VikingPageHeader,
+    VikingPageSkeleton,
     VikingPageTemplate,
     RouterModule,
     StatusCta,
@@ -77,23 +78,6 @@ export class Explore implements OnInit {
   isLoading = signal<boolean>(true);
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
-
-  /** Skeleton card shown while the published directory loads. */
-  loadingPlaceholder: StatusPageData = {
-    id: 'loading-placeholder',
-    title: 'Loading Directory...',
-    slug: 'loading',
-    description: 'Fetching status pages from the platform directory...',
-    created_at: new Date().toISOString(),
-    user_id: null,
-  };
-
-  displayPages = computed(() => {
-    if (this.isLoading() && !this.loadFailed()) {
-      return [this.loadingPlaceholder];
-    }
-    return this.statusPages();
-  });
 
   getPageStatus(page: StatusPageData): ExploreCardStatus {
     const active = (this.incidentsMap()[page.id] || []).filter(
@@ -223,8 +207,15 @@ export class Explore implements OnInit {
   }
 
   loadData() {
-    this.isLoading.set(true);
     this.loadFailed.set(false);
+    // Optimistic: paint stale directory immediately, then revalidate + hydrate KPIs.
+    const cached = this.monitorService.peekStatusPages();
+    if (cached) {
+      this.applyDirectory(cached.filter(p => p.is_published || p.slug === 'platform-status'));
+    } else {
+      this.isLoading.set(true);
+    }
+
     this.monitorService
       .getStatusPages()
       .pipe(timeout(15000))
@@ -232,57 +223,68 @@ export class Explore implements OnInit {
         next: data => {
           // Under /explore we show all public status pages, including the main 'platform-status' system page
           if (!Array.isArray(data)) {
-            this.statusPages.set([]);
-            this.loadFailed.set(true);
+            if (!cached) {
+              this.statusPages.set([]);
+              this.loadFailed.set(true);
+            }
             this.isLoading.set(false);
             this.isRetrying.set(false);
             return;
           }
           const publicPages = data.filter(p => p.is_published || p.slug === 'platform-status');
-          // Directory list may omit KPIs — hydrate each card from the public slug DTO.
-          const hydrations = publicPages.map(page =>
-            this.monitorService.getStatusPageBySlug(page.slug).pipe(
-              map(hydrated => ({ ...page, ...hydrated, id: hydrated.id || page.id })),
-              catchError(() => {
-                console.warn('[explore] status page hydrate failed slug=%s', page.slug);
-                return of(page);
-              }),
-            ),
-          );
-          const applyPages = (pages: StatusPageData[]) => {
-            this.statusPages.set(pages);
-            for (const page of pages) {
-              this.monitorService.seedFromEmbeddedPage(page);
-              this.mlService.seedFromStatusPage(page);
-              if (this.authService.isAuthenticated()) {
-                this.mlService.fetchLatestStat(page.id);
-                this.mlService.fetchThreatReport(page.id);
-                this.mlService.fetchTemporalForecast(page.id);
-              }
-            }
-            if (this.authService.isAuthenticated()) {
-              this.monitorService.fetchAllIncidents(pages);
-              this.monitorService.fetchAllServices(pages);
-            }
-            this.isLoading.set(false);
-            this.isRetrying.set(false);
-          };
-          if (hydrations.length === 0) {
-            applyPages([]);
-            return;
-          }
-          forkJoin(hydrations).subscribe({
-            next: applyPages,
-            error: () => applyPages(publicPages),
-          });
+          this.applyDirectory(publicPages);
+          this.hydrateDirectoryCards(publicPages);
         },
         error: () => {
-          this.statusPages.set([]);
-          this.loadFailed.set(true);
+          if (!cached) {
+            this.statusPages.set([]);
+            this.loadFailed.set(true);
+          }
           this.isLoading.set(false);
           this.isRetrying.set(false);
         },
       });
+  }
+
+  private applyDirectory(pages: StatusPageData[]): void {
+    this.statusPages.set(pages);
+    for (const page of pages) {
+      this.monitorService.seedFromEmbeddedPage(page);
+      this.mlService.seedFromStatusPage(page);
+      if (this.authService.isAuthenticated()) {
+        this.mlService.fetchLatestStat(page.id);
+        this.mlService.fetchThreatReport(page.id);
+        this.mlService.fetchTemporalForecast(page.id);
+      }
+    }
+    if (this.authService.isAuthenticated()) {
+      this.monitorService.fetchAllIncidents(pages);
+      this.monitorService.fetchAllServices(pages);
+    }
+    this.isLoading.set(false);
+    this.isRetrying.set(false);
+  }
+
+  /** Background slug hydrations — never block the directory first paint. */
+  private hydrateDirectoryCards(publicPages: StatusPageData[]): void {
+    for (const page of publicPages) {
+      this.monitorService
+        .getStatusPageBySlug(page.slug)
+        .pipe(
+          map(hydrated => ({ ...page, ...hydrated, id: hydrated.id || page.id })),
+          catchError(() => {
+            console.warn('[explore] status page hydrate failed slug=%s', page.slug);
+            return of(page);
+          }),
+        )
+        .subscribe(hydrated => {
+          this.statusPages.update(current =>
+            current.map(item => (item.slug === hydrated.slug ? hydrated : item)),
+          );
+          this.monitorService.seedFromEmbeddedPage(hydrated);
+          this.mlService.seedFromStatusPage(hydrated);
+        });
+    }
   }
 
   isRetrying = signal<boolean>(false);

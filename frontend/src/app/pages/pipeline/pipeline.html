@@ -1,0 +1,299 @@
+<viking-page-template width="wide">
+  <viking-page-header
+    tag="Sealed streams"
+    title="Pipeline"
+    subtitle="Compose a sealed-stream workflow from the catalog, tune detectors, and export FORJD YAML. YAML remains the source of truth."
+  />
+
+  @if (loading()) {
+  <viking-page-skeleton layout="form" label="Loading workflow catalog" />
+  } @else {
+  <viking-stack spacing="loose">
+    <viking-callout tone="info" heading="Deploy via YAML" icon="info">
+      This studio does not save to FORJD. Download or copy the YAML and place it under
+      <code>backend/workflows/</code> on the engine host. Ciphertext stays sealed — the pipeline
+      never opens event content.
+    </viking-callout>
+
+    @if (error()) {
+    <viking-callout tone="warning" heading="Catalog unavailable" icon="alert-triangle">
+      {{ error() }}
+      <viking-button variant="secondary" type="button" [compact]="true" (pressed)="loadWorkflows()">
+        Try again
+      </viking-button>
+    </viking-callout>
+    } @else if (degraded()) {
+    <viking-callout tone="warning" heading="Catalog temporarily unavailable" icon="alert-triangle">
+      Pipeline definitions could not be loaded from FORJD. You can still draft a blank workflow and
+      export YAML.
+    </viking-callout>
+    }
+
+    <!-- Catalog + visual flow -->
+    <viking-section-template
+      heading="Catalog"
+      description="Start from a published sealed-stream definition, or draft a blank partner stream."
+    >
+      <viking-card class="status-card-outlined">
+        <viking-stack spacing="compact">
+          <viking-form-grid>
+            <app-unified-select
+              id="pipelineCatalog"
+              label="Workflow"
+              width="full"
+              [options]="catalogOptions()"
+              [value]="selectedId()"
+              (valueChange)="selectWorkflow($event)"
+              [disabled]="workflows().length === 0"
+            />
+            <div>
+              <viking-button variant="outline" type="button" icon="plus" (pressed)="startBlank()">
+                Blank draft
+              </viking-button>
+            </div>
+          </viking-form-grid>
+
+          @if (selected(); as row) {
+          <p class="embed-desc">
+            @if (row.description) { {{ row.description }} } @else { Sealed metadata pipeline —
+            ciphertext never opens in FORJD. }
+          </p>
+          }
+
+          <viking-pipeline-flow
+            [steps]="previewSteps()"
+            orientation="horizontal"
+            [label]="draft().name + ' steps'"
+          />
+        </viking-stack>
+      </viking-card>
+    </viking-section-template>
+
+    <!-- Configure -->
+    <viking-section-template
+      heading="Configure"
+      description="Identity, detectors, and projection. Rollup is always on — E2EE stays locked."
+    >
+      <viking-card class="status-card-outlined">
+        <viking-form-section heading="Identity" icon="key" layout="stack">
+          <viking-form-grid>
+            <viking-field label="Workflow ID">
+              <viking-input
+                [ngModel]="draft().id"
+                (ngModelChange)="patchDraft({ id: $event })"
+                placeholder="partner_stream"
+                autocomplete="off"
+              />
+            </viking-field>
+            <viking-field label="Name">
+              <viking-input
+                [ngModel]="draft().name"
+                (ngModelChange)="patchDraft({ name: $event })"
+                placeholder="Partner stream"
+                autocomplete="off"
+              />
+            </viking-field>
+            <viking-field label="Version">
+              <viking-input
+                type="number"
+                [ngModel]="'' + draft().version"
+                (ngModelChange)="patchNumber('version', $event)"
+              />
+            </viking-field>
+            <viking-field label="Content types" class="full-width">
+              <viking-input
+                [ngModel]="draft().contentTypes"
+                (ngModelChange)="patchDraft({ contentTypes: $event })"
+                placeholder="application/forjd-event+v1"
+                autocomplete="off"
+              />
+            </viking-field>
+            <viking-field label="Description" class="full-width">
+              <viking-textarea
+                [ngModel]="draft().description"
+                (ngModelChange)="patchDraft({ description: $event })"
+                [rows]="2"
+                placeholder="Optional summary for operators"
+              />
+            </viking-field>
+          </viking-form-grid>
+          <viking-checkbox
+            [ngModel]="draft().enabled"
+            (ngModelChange)="patchDraft({ enabled: $event })"
+            description="Disabled workflows stay in the catalog but do not match ingest."
+          >
+            Enabled
+          </viking-checkbox>
+          <viking-checkbox
+            [ngModel]="draft().default"
+            (ngModelChange)="patchDraft({ default: $event })"
+            description="Used when no content-type match is more specific."
+          >
+            Default workflow
+          </viking-checkbox>
+        </viking-form-section>
+
+        <viking-form-section heading="Steps" icon="network" layout="stack">
+          <viking-checkbox
+            [ngModel]="true"
+            [disabled]="true"
+            description="Always on — sealed metadata rollup."
+          >
+            Seal &amp; roll up
+          </viking-checkbox>
+          <viking-checkbox
+            [ngModel]="draft().useSizeAnomaly"
+            (ngModelChange)="patchDraft({ useSizeAnomaly: $event })"
+            description="Flag unusually large ciphertext envelopes."
+          >
+            Size anomaly
+          </viking-checkbox>
+          <viking-checkbox
+            [ngModel]="draft().useRateAnomaly"
+            (ngModelChange)="patchDraft({ useRateAnomaly: $event })"
+            description="Flag bursts over the event-rate window."
+          >
+            Rate anomaly
+          </viking-checkbox>
+
+          @if (draft().useSizeAnomaly) {
+          <viking-form-grid>
+            <viking-field label="Size z-score">
+              <viking-input
+                type="number"
+                [ngModel]="'' + draft().sizeZscore"
+                (ngModelChange)="patchNumber('sizeZscore', $event)"
+              />
+            </viking-field>
+            <viking-field label="Max cipher length">
+              <viking-input
+                type="number"
+                [ngModel]="'' + draft().sizeMaxCipherLen"
+                (ngModelChange)="patchNumber('sizeMaxCipherLen', $event)"
+              />
+            </viking-field>
+          </viking-form-grid>
+          } @if (draft().useRateAnomaly) {
+          <viking-form-grid>
+            <viking-field label="Max events">
+              <viking-input
+                type="number"
+                [ngModel]="'' + draft().rateMaxEvents"
+                (ngModelChange)="patchNumber('rateMaxEvents', $event)"
+              />
+            </viking-field>
+            <viking-field label="Window (seconds)">
+              <viking-input
+                type="number"
+                [ngModel]="'' + draft().rateWindowSec"
+                (ngModelChange)="patchNumber('rateWindowSec', $event)"
+              />
+            </viking-field>
+          </viking-form-grid>
+          }
+        </viking-form-section>
+
+        <viking-form-section heading="Projection &amp; tags" icon="server" layout="stack">
+          <viking-form-grid>
+            <viking-field label="Projection name">
+              <viking-input
+                [ngModel]="draft().projectionName"
+                (ngModelChange)="patchDraft({ projectionName: $event })"
+                placeholder="sealed.default"
+                autocomplete="off"
+              />
+            </viking-field>
+            <viking-field label="Projection version">
+              <viking-input
+                type="number"
+                [ngModel]="'' + draft().projectionVersion"
+                (ngModelChange)="patchNumber('projectionVersion', $event)"
+              />
+            </viking-field>
+            <viking-field label="Tag · use_case">
+              <viking-input
+                [ngModel]="draft().outputTagUseCase"
+                (ngModelChange)="patchDraft({ outputTagUseCase: $event })"
+                autocomplete="off"
+              />
+            </viking-field>
+            <viking-field label="Tag · vertical">
+              <viking-input
+                [ngModel]="draft().outputTagVertical"
+                (ngModelChange)="patchDraft({ outputTagVertical: $event })"
+                autocomplete="off"
+              />
+            </viking-field>
+          </viking-form-grid>
+        </viking-form-section>
+      </viking-card>
+    </viking-section-template>
+
+    <!-- Export -->
+    <viking-section-template
+      heading="Export"
+      description="Live YAML preview. Copy or download, then place under FORJD backend/workflows/ and run npm run validate:workflows."
+    >
+      <viking-card class="status-card-outlined">
+        <viking-card-header>
+          <viking-card-title icon="file">{{ yamlFilename() }}</viking-card-title>
+        </viking-card-header>
+        <viking-stack spacing="compact">
+          @if (validationErrors().length) {
+          <viking-callout tone="danger" heading="Fix before export" icon="alert-triangle">
+            <ul>
+              @for (issue of validationErrors(); track issue.message) {
+              <li>{{ issue.message }}</li>
+              }
+            </ul>
+          </viking-callout>
+          } @else if (validationWarnings().length) {
+          <viking-callout tone="warning" heading="Ready with notes" icon="info">
+            <ul>
+              @for (issue of validationWarnings(); track issue.message) {
+              <li>{{ issue.message }}</li>
+              }
+            </ul>
+          </viking-callout>
+          } @else {
+          <viking-callout tone="success" heading="Ready to deploy" icon="check">
+            Client checks passed. After download, validate on the FORJD host with
+            <code>npm run validate:workflows</code>.
+          </viking-callout>
+          }
+          <div>
+            <viking-button
+              variant="primary"
+              type="button"
+              icon="copy"
+              [disabled]="!exportReady()"
+              (pressed)="copyYaml()"
+              [attr.aria-live]="'polite'"
+            >
+              {{ copied() ? 'Copied' : 'Copy YAML' }}
+            </viking-button>
+            <viking-button
+              variant="secondary"
+              type="button"
+              icon="download"
+              [disabled]="!exportReady()"
+              (pressed)="downloadYaml()"
+            >
+              Download
+            </viking-button>
+          </div>
+          @if (yamlTouched()) {
+          <p class="embed-desc" role="status">Draft differs from the selected catalog row.</p>
+          }
+          <viking-textarea
+            [ngModel]="yamlPreview()"
+            [disabled]="true"
+            [rows]="18"
+            label="Generated workflow YAML"
+          />
+        </viking-stack>
+      </viking-card>
+    </viking-section-template>
+  </viking-stack>
+  }
+</viking-page-template>

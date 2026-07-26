@@ -21,6 +21,24 @@ class FieldInputHost {
 }
 
 @Component({
+  imports: [VikingField, VikingInput, FormsModule],
+  template: `
+    <viking-field
+      label="Email"
+      description="Work email only"
+      [error]="error"
+      [required]="true"
+    >
+      <viking-input [(ngModel)]="email" placeholder="you@example.com" />
+    </viking-field>
+  `,
+})
+class DescribedFieldHost {
+  email = "";
+  error = "Invalid email address";
+}
+
+@Component({
   imports: [VikingFormSection, VikingField, VikingInput, FormsModule],
   template: `
     <viking-form-section heading="Profile" icon="user" layout="stack">
@@ -70,6 +88,7 @@ describe("viking forms", () => {
     const fixture = await render(FieldInputHost);
     fixture.componentInstance.error = "Invalid email address";
     fixture.detectChanges();
+    await fixture.whenStable();
     const field = fixture.nativeElement.querySelector(
       "viking-field",
     ) as HTMLElement;
@@ -78,7 +97,31 @@ describe("viking forms", () => {
       ".viking-field-error",
     ) as HTMLElement;
     expect(alert.getAttribute("role")).toBe("alert");
+    expect(alert.getAttribute("aria-live")).toBe("assertive");
     expect(alert.textContent).toContain("Invalid email address");
+    expect(alert.textContent).toContain("Error:");
+  });
+
+  it("associates description and error with the control", async () => {
+    const fixture = await render(DescribedFieldHost);
+    const desc = fixture.nativeElement.querySelector(
+      ".viking-field-description",
+    ) as HTMLElement;
+    const err = fixture.nativeElement.querySelector(
+      ".viking-field-error",
+    ) as HTMLElement;
+    const control = fixture.nativeElement.querySelector(
+      "viking-input-wc",
+    ) as HTMLElement;
+    expect(desc?.id).toBeTruthy();
+    expect(err?.id).toBeTruthy();
+    expect(control.getAttribute("aria-invalid")).toBe("true");
+    const describedBy = control.getAttribute("aria-describedby") ?? "";
+    expect(describedBy.split(/\s+/)).toEqual(
+      expect.arrayContaining([desc.id, err.id]),
+    );
+    // Description stays visible alongside the error
+    expect(desc.textContent).toContain("Work email only");
   });
 
   it("binds input value via ngModel (ControlValueAccessor)", async () => {

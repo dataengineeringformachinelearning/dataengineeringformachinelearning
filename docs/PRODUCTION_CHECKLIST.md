@@ -23,6 +23,7 @@ Integration contract: [`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md).
 | A4   | Set `FORJD_WRITE_MODE=forjd`, `FORJD_READ_MODE=forjd`                                                                                                                                                                                                    |
 | A5   | Set `FORJD_REQUIRED_CONTRACT_VERSION=1.0`; verify `/api/v1/forjd/capabilities` is `ready`                                                                                                                                                                |
 | A6   | Remint from FORJD canonical defaults; verify ingest, cases, playbooks/runs, SIEM, vulnerabilities, replay/DLQ, reports, exports, status, analytics, ML-read, and threat-intel-read scopes; include `tenants:erase` only when account deletion is enabled |
+| A7   | Pipeline Studio: confirm `/pipeline` loads catalog via BFF; any exported YAML is deployed on FORJD (`backend/workflows/` + `npm run validate:workflows`) — DEML never persists workflows                                                                 |
 
 ## B. Fly + Vercel
 
@@ -45,6 +46,7 @@ Integration contract: [`FORJD_INTEGRATION.md`](./FORJD_INTEGRATION.md).
 5. Vulnerability create/update and compliance SOC read preserve Angular response contracts.
 6. Create an idempotent export, poll its durable job through DEML, and obtain a short-lived signed download URL after completion.
 7. Account deletion calls FORJD erase before local teardown.
+8. Pipeline Studio (`/pipeline`) loads the FORJD catalog; export is client-validated; deploying YAML is a FORJD-host step (`validate:workflows`) — not a DEML write.
 
 ## D. RBAC and degradation
 

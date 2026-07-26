@@ -1,43 +1,48 @@
-import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
+import {
+  VikingThemeService,
+  type SuiteThemePreference,
+  type SuiteThemeResolved,
+} from '@dataengineeringformachinelearning/viking-ui';
 
+/**
+ * App ThemeService — thin façade over suite VikingThemeService
+ * (system preference + persistence + data-theme apply).
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private platformId = inject(PLATFORM_ID);
-  private themeSignal = signal<'light' | 'dark'>('dark');
+  private readonly suite = inject(VikingThemeService);
 
-  constructor() {
-    if (isPlatformBrowser(this.platformId)) {
-      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-      if (savedTheme) {
-        this.themeSignal.set(savedTheme);
-      } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.themeSignal.set(prefersDark ? 'dark' : 'light');
-      }
-
-      effect(() => {
-        if (isPlatformBrowser(this.platformId)) {
-          const activeTheme = this.themeSignal();
-          document.documentElement.setAttribute('data-theme', activeTheme);
-          if (activeTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-          localStorage.setItem('theme', activeTheme);
-        }
-      });
-    }
-  }
-
+  /** Resolved light | dark currently on the document. */
   get theme() {
-    return this.themeSignal.asReadonly();
+    return this.suite.theme;
   }
 
-  toggleTheme() {
-    this.themeSignal.update(current => (current === 'light' ? 'dark' : 'light'));
+  /** Stored preference including system. */
+  get preference() {
+    return this.suite.preference;
+  }
+
+  toggleTheme(): void {
+    this.suite.toggleTheme();
+  }
+
+  cyclePreference(): void {
+    this.suite.cyclePreference();
+  }
+
+  useSystemPreference(): void {
+    this.suite.useSystemPreference();
+  }
+
+  setPreference(preference: SuiteThemePreference): void {
+    this.suite.setPreference(preference);
+  }
+
+  /** @deprecated use theme() — kept for call sites expecting SuiteThemeResolved */
+  resolved(): SuiteThemeResolved {
+    return this.suite.theme();
   }
 }

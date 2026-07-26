@@ -681,6 +681,19 @@ export const VIKING_FIELD_STYLES = `
 .viking-field-error {
   color: var(--viking-danger-text);
 }
+
+.viking-sr-only {
+  position: absolute !important;
+  width: var(--viking-space-px, 1px) !important;
+  height: var(--viking-space-px, 1px) !important;
+  padding: 0 !important;
+  margin: calc(-1 * var(--viking-space-px, 1px)) !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
 `;
 
 export const VIKING_BADGE_STYLES = `
@@ -960,6 +973,19 @@ export const VIKING_SELECT_STYLES = `
   margin: 0;
   font-size: var(--viking-font-size-xs);
   color: var(--viking-danger);
+}
+
+.viking-sr-only {
+  position: absolute !important;
+  width: var(--viking-space-px, 1px) !important;
+  height: var(--viking-space-px, 1px) !important;
+  padding: 0 !important;
+  margin: calc(-1 * var(--viking-space-px, 1px)) !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 .viking-select-native {
@@ -1296,6 +1322,20 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   gap: var(--viking-space-1);
 }
 
+.viking-search-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--viking-space-1);
+  margin: var(--viking-space-1) 0 var(--viking-space-0-5);
+  padding: 0 var(--viking-space-1);
+}
+
+.viking-search-group-header .viking-search-group-label {
+  margin: 0;
+  padding: 0;
+}
+
 .viking-search-group-label {
   margin: var(--viking-space-1) 0 var(--viking-space-0-5);
   padding: 0 var(--viking-space-1);
@@ -1304,6 +1344,30 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   letter-spacing: var(--viking-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--viking-text-muted);
+}
+
+.viking-search-clear-recent {
+  border: none;
+  background: transparent;
+  color: var(--viking-text-muted);
+  font: inherit;
+  font-size: var(--viking-font-size-2xs);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: var(--viking-space-0-5) var(--viking-space-1);
+  border-radius: var(--viking-radius);
+  min-height: var(--viking-touch-target-comfort, 44px);
+}
+
+.viking-search-clear-recent:hover {
+  color: var(--viking-text);
+  background: var(--viking-accent-soft);
+}
+
+.viking-search-clear-recent:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
 }
 
 .viking-search-result {

@@ -28,7 +28,8 @@ const TONE_ICONS: Record<string, VikingIconName> = {
   imports: [VikingIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    role: "note",
+    "[attr.role]": "liveRole()",
+    "[attr.aria-live]": "liveRole() === 'alert' ? 'assertive' : null",
     "[class]": "'viking-callout-' + tone()",
     "[style.display]": "dismissed() ? 'none' : null",
   },
@@ -120,16 +121,21 @@ const TONE_ICONS: Record<string, VikingIconName> = {
       :host(.viking-callout-danger) {
         background: color-mix(
           in srgb,
-          var(--viking-danger) 16%,
+          var(--viking-danger) 12%,
           var(--viking-surface)
         );
-        color: var(--viking-white);
+        border: 1px solid
+          color-mix(in srgb, var(--viking-danger) 32%, transparent);
+        color: var(--viking-text);
       }
       :host(.viking-callout-danger) .viking-callout-icon {
-        color: var(--viking-crimson-400);
+        color: var(--viking-danger);
       }
       :host(.viking-callout-danger) .viking-callout-text {
-        color: var(--viking-white);
+        color: var(--viking-text-muted);
+      }
+      :host(.viking-callout-danger) .viking-callout-heading {
+        color: var(--viking-text);
       }
       .viking-callout-body {
         flex: 1;
@@ -182,6 +188,12 @@ export class VikingCallout {
   protected readonly resolvedIcon = computed<VikingIconName>(
     () => this.icon() ?? TONE_ICONS[this.tone()] ?? "info",
   );
+  protected readonly liveRole = computed(() => {
+    const tone = this.tone();
+    if (tone === "danger") return "alert";
+    if (tone === "warning" || tone === "success") return "status";
+    return "note";
+  });
 
   protected dismiss = (): void => {
     this.dismissed.set(true);

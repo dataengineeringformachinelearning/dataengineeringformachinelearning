@@ -42,7 +42,7 @@
         transparent
       );
     box-shadow: inset 0 1px 0
-      color-mix(in srgb, var(--viking-white, #fff) 7%, transparent);
+      color-mix(in srgb, var(--viking-white, var(--viking-white-pure)) 7%, transparent);
     opacity: 0.75;
   }
 }
@@ -86,7 +86,7 @@
   .mockup-title,
   .viking-page-mockup-title {
     margin-left: var(--viking-space-1);
-    font-size: 0.85rem;
+    font-size: var(--viking-font-size-sm);
     font-family: var(--viking-font-family-mono, ui-monospace, monospace);
     color: var(--viking-electric-200, var(--viking-text-muted));
     letter-spacing: 0.04em;
@@ -147,7 +147,7 @@
   grid-template-columns: 1fr;
   gap: var(--viking-space-2);
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -172,7 +172,7 @@
   .gauge-label,
   .viking-page-mockup-gauge-label {
     display: block;
-    font-size: 0.7rem;
+    font-size: var(--viking-font-size-2xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--viking-metallic-200, var(--viking-text-muted));
@@ -181,7 +181,7 @@
 
   .gauge-val,
   .viking-page-mockup-gauge-val {
-    font-size: 1.25rem;
+    font-size: var(--viking-font-size-lead);
     font-weight: 800;
     color: var(--viking-white, var(--viking-text));
     font-variant-numeric: tabular-nums;
@@ -294,7 +294,7 @@
   grid-template-columns: 1fr;
   gap: var(--viking-space-2);
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -312,7 +312,7 @@
 
     span {
       display: block;
-      font-size: 0.7rem;
+      font-size: var(--viking-font-size-2xs);
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--viking-text-muted);
@@ -320,7 +320,7 @@
     }
 
     strong {
-      font-size: 1rem;
+      font-size: var(--viking-font-size-base);
       font-weight: 700;
       color: var(--viking-text);
       font-variant-numeric: tabular-nums;
@@ -341,7 +341,7 @@
   padding: var(--viking-space-3) var(--viking-space-4);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .viking-page-mockup--showcase {
     padding: var(--viking-space-4) var(--viking-space-6);
   }

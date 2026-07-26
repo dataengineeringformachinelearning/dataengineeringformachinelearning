@@ -440,3 +440,11 @@
   animation: viking-pulse-soft 2s var(--viking-ease-default) infinite;
   pointer-events: none;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-status-dot--pulse::after,
+  .telemetry-pulse::after {
+    animation: none;
+    opacity: 0.45;
+  }
+}

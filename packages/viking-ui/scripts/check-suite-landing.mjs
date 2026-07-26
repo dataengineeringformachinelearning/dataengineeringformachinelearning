@@ -28,6 +28,8 @@ const required = [
   "suite-landing-headline",
   "suite-landing-lede",
   "suite-landing-actions",
+  "suite-landing-actions-primary",
+  "suite-landing-actions-secondary",
   "suite-landing-section-header",
   "suite-landing-tag",
   "suite-landing-steps",

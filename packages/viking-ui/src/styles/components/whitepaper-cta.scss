@@ -201,7 +201,7 @@
 }
 
 .viking-whitepaper-title {
-  font-size: clamp(1.375rem, 3vw, 1.75rem);
+  font-size: var(--viking-font-size-title-sm);
   font-weight: var(--viking-font-weight-bold);
   margin: 0;
   text-transform: uppercase;

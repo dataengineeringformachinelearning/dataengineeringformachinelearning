@@ -236,7 +236,10 @@ export class VikingAppLayout {
     effect(() => {
       const activeId = this.activeDrawerId();
       for (const drawer of this.drawers()) {
-        drawer.active.set(drawer.drawerId() === activeId);
+        const next = drawer.drawerId() === activeId;
+        if (drawer.active() !== next) {
+          drawer.active.set(next);
+        }
       }
     });
     afterNextRender(() => {
@@ -244,9 +247,9 @@ export class VikingAppLayout {
       const syncSidebarForViewport = (
         event: MediaQueryList | MediaQueryListEvent,
       ): void => {
-        if (this.autoOpenSidebar()) {
-          this.sidebarOpen.set(event.matches);
-        }
+        if (!this.autoOpenSidebar()) return;
+        if (this.sidebarOpen() === event.matches) return;
+        this.sidebarOpen.set(event.matches);
       };
 
       syncSidebarForViewport(desktopQuery);

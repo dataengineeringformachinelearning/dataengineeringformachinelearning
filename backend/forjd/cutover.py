@@ -53,6 +53,7 @@ _READ_FALLBACK_PATHS: Final[frozenset[str]] = frozenset(
     "/api/v1/exports",
     "/api/v1/ml/scores",
     "/api/v1/compliance/soc",
+    "/api/v1/workflows",
   }
 )
 
@@ -146,6 +147,8 @@ def empty_read_envelope(target_path: str) -> dict[str, Any]:
     return {**base, "ok": True, "scores": [], "items": []}
   if path.endswith("/soc"):
     return {**base, "ok": False, "status": "unavailable", "items": []}
+  if path.endswith("/workflows"):
+    return {**base, "ok": True, "count": 0, "workflows": [], "items": []}
   return {**base, "items": [], "results": []}
 
 

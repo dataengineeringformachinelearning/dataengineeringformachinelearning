@@ -4,7 +4,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withInMemoryScrolling, withPreloading } from '@angular/router';
 
 // API client imports
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -12,6 +12,7 @@ import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 import { cacheInterceptor } from './interceptors/cache.interceptor';
 import { telemetryInterceptor } from './core/interceptors/telemetry.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { CriticalPathPreloadingStrategy } from './core/critical-path-preloading.strategy';
 
 import { routes } from './app.routes';
 import { GlobalErrorHandler } from './core/handlers/global-error.handler';
@@ -21,7 +22,11 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      withPreloading(CriticalPathPreloadingStrategy),
+    ),
     provideHttpClient(
       withFetch(),
       withInterceptors([

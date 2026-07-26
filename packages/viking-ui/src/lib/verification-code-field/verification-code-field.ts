@@ -1,12 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   model,
   output,
 } from "@angular/core";
-import { VikingControl, provideVikingCva } from "../core/cva";
+import { fieldDescribedBy } from "../../core/field-a11y";
 import { vikingUid } from "../../core/uid";
+import { VikingControl, provideVikingCva } from "../core/cva";
 import { VikingOtpInput } from "../otp-input/otp-input";
 
 /**
@@ -42,19 +44,28 @@ import { VikingOtpInput } from "../otp-input/otp-input";
           [label]="label()"
           [name]="name()"
           [inputId]="inputId"
+          [describedBy]="otpDescribedBy() || ''"
+          [invalid]="!!error()"
+          [required]="required()"
           [centered]="true"
           (completed)="completed.emit($event)"
         />
       </div>
     </fieldset>
-    @if (description() && !error()) {
+    @if (description()) {
       <p class="viking-verification-code-description" [id]="descriptionId">
         {{ description() }}
       </p>
     }
     @if (error()) {
-      <p class="viking-verification-code-error" [id]="errorId" role="alert">
-        {{ error() }}
+      <p
+        class="viking-verification-code-error"
+        [id]="errorId"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <span class="suite-sr-only viking-sr-only">Error: </span>{{ error() }}
       </p>
     }
   `,
@@ -119,6 +130,12 @@ import { VikingOtpInput } from "../otp-input/otp-input";
         color: var(--viking-danger-text, var(--viking-danger));
         font-weight: var(--viking-font-weight-semibold);
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        :host(.viking-verification-code-field-invalid) {
+          animation: none;
+        }
+      }
     `,
   ],
 })
@@ -141,6 +158,14 @@ export class VikingVerificationCodeField extends VikingControl<string> {
     "viking-verification-code-description",
   );
   protected readonly errorId = vikingUid("viking-verification-code-error");
+  protected readonly otpDescribedBy = computed(() =>
+    fieldDescribedBy({
+      descriptionId: this.descriptionId,
+      errorId: this.errorId,
+      hasDescription: !!this.description(),
+      hasError: !!this.error(),
+    }),
+  );
 
   writeValue(value: string): void {
     this.value.set(value ?? "");

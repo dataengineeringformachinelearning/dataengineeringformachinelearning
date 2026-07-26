@@ -34,8 +34,12 @@ import { vikingUid } from "../../core/uid";
         [disabled]="disabled() || formDisabled()"
         [attr.aria-expanded]="open()"
         [attr.aria-controls]="panelId"
-        [attr.aria-label]="label() || placeholder() || 'Autocomplete'"
+        [attr.aria-activedescendant]="
+          open() && filtered().length > 0 ? optionId(activeIndex()) : null
+        "
+        [attr.aria-label]="label() || null"
         aria-autocomplete="list"
+        aria-haspopup="listbox"
         (input)="onInput($event)"
         (focus)="open.set(true)"
         (keydown)="onKeydown($event)"
@@ -49,6 +53,7 @@ import { vikingUid } from "../../core/uid";
             type="button"
             role="option"
             class="viking-autocomplete-option"
+            [id]="optionId(index)"
             [class.viking-active]="index === activeIndex()"
             [attr.aria-selected]="index === activeIndex()"
             (mousedown)="$event.preventDefault()"
@@ -153,6 +158,8 @@ export class VikingAutocomplete extends VikingControl<string> {
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(0);
   protected readonly panelId = vikingUid("viking-autocomplete-panel");
+  protected optionId = (index: number): string =>
+    `${this.panelId}-option-${index}`;
 
   protected readonly filtered = computed(() => {
     const query = this.value().toLowerCase().trim();

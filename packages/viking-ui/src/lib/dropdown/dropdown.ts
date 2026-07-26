@@ -2,13 +2,23 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  effect,
   inject,
   input,
   model,
   output,
 } from "@angular/core";
+import {
+  captureReturnFocus,
+  focusFirst,
+  getFocusableElements,
+  nextRovingIndex,
+  restoreFocus,
+} from "../../core/focus";
 import { VikingIcon } from "../icon/icon";
 import { VikingIconName } from "../../core/icons";
+
+let dropdownSeq = 0;
 
 /**
  * viking-dropdown — expandable menu.
@@ -20,7 +30,7 @@ import { VikingIconName } from "../../core/icons";
   host: {
     "(click)": "onHostClick($event)",
     "(document:click)": "onDocumentClick($event)",
-    "(keydown.escape)": "open.set(false)",
+    "(keydown)": "onHostKeydown($event)",
   },
   template: `
     <span class="viking-dropdown-trigger">
@@ -29,8 +39,10 @@ import { VikingIconName } from "../../core/icons";
     @if (open()) {
       <div
         class="viking-dropdown-menu"
+        [id]="menuId"
         [class.viking-dropdown-end]="align() === 'end'"
         role="menu"
+        (keydown)="onMenuKeydown($event)"
       >
         <ng-content />
       </div>
@@ -69,9 +81,37 @@ import { VikingIconName } from "../../core/icons";
 })
 export class VikingDropdown {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  protected readonly menuId = `viking-dropdown-menu-${++dropdownSeq}`;
+  private returnFocus: HTMLElement | null = null;
 
   readonly open = model<boolean>(false);
   readonly align = input<"start" | "end">("start");
+
+  constructor() {
+    let wasOpen = false;
+    effect(() => {
+      const isOpen = this.open();
+      queueMicrotask(() => {
+        this.syncTriggerAria(isOpen);
+        if (isOpen && !wasOpen) {
+          this.returnFocus = captureReturnFocus(
+            resolveDisclosureControl(
+              this.host.nativeElement,
+              ".viking-dropdown-trigger",
+            ),
+          );
+          const menu = this.host.nativeElement.querySelector<HTMLElement>(
+            `#${this.menuId}`,
+          );
+          if (menu) focusFirst(menu);
+        } else if (!isOpen && wasOpen) {
+          restoreFocus(this.returnFocus);
+          this.returnFocus = null;
+        }
+        wasOpen = isOpen;
+      });
+    });
+  }
 
   /** Closes the menu; called by viking-menu-item on selection. */
   readonly close = (): void => {
@@ -96,6 +136,78 @@ export class VikingDropdown {
       this.open.set(false);
     }
   };
+
+  protected onHostKeydown = (event: KeyboardEvent): void => {
+    if (event.key === "Escape" && this.open()) {
+      event.preventDefault();
+      this.open.set(false);
+      return;
+    }
+    const trigger = this.host.nativeElement.querySelector(
+      ".viking-dropdown-trigger",
+    );
+    if (!trigger?.contains(event.target as Node)) return;
+    if (
+      !this.open() &&
+      (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ")
+    ) {
+      event.preventDefault();
+      this.open.set(true);
+    }
+  };
+
+  protected onMenuKeydown = (event: KeyboardEvent): void => {
+    const menu = event.currentTarget as HTMLElement;
+    const items = getFocusableElements(menu).filter(
+      (el) => el.getAttribute("role") === "menuitem",
+    );
+    if (items.length === 0) return;
+    const active = document.activeElement;
+    const currentIndex = Math.max(
+      0,
+      items.findIndex((el) => el === active),
+    );
+    if (event.key === "Escape") {
+      event.preventDefault();
+      this.open.set(false);
+      return;
+    }
+    if (event.key === "Tab") {
+      this.open.set(false);
+      return;
+    }
+    const next = nextRovingIndex(event.key, currentIndex, items.length, {
+      vertical: true,
+    });
+    if (next === null) return;
+    event.preventDefault();
+    items[next]?.focus({ preventScroll: true });
+  };
+
+  private syncTriggerAria = (isOpen: boolean): void => {
+    const control = resolveDisclosureControl(
+      this.host.nativeElement,
+      ".viking-dropdown-trigger",
+    );
+    if (!control) return;
+    control.setAttribute("aria-expanded", String(isOpen));
+    control.setAttribute("aria-haspopup", "menu");
+    control.setAttribute("aria-controls", this.menuId);
+  };
+}
+
+/** Prefer the native/focusable control inside a projected trigger slot. */
+function resolveDisclosureControl(
+  host: HTMLElement,
+  triggerSelector: string,
+): HTMLElement | null {
+  const root = host.querySelector(triggerSelector);
+  if (!root) return null;
+  return (
+    root.querySelector<HTMLElement>(
+      "button, a[href], [role='button'], summary, .viking-btn, .suite-btn, .fj-btn",
+    ) ?? (root.firstElementChild as HTMLElement | null)
+  );
 }
 
 /**

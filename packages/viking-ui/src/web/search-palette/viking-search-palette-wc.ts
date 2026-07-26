@@ -1,3 +1,4 @@
+import { readDemlWidgets } from "../../core/deml-widgets";
 import {
   attachShadowStyles,
   readBoolAttr,
@@ -15,8 +16,20 @@ import {
 import { renderInlineIcon } from "../core/icons-inline";
 import { VIKING_SEARCH_PALETTE_STYLES } from "../core/styles";
 import type { VikingSearchPaletteItem } from "../core/types";
+import { getDefaultCommandHistory } from "../../core/command-history";
+import { rankSearchItems } from "./rank-search";
+import {
+  DEFAULT_RECENT_STORAGE_KEY,
+  clearRecentSearches,
+  pushRecentSearch,
+  readRecentSearches,
+  recentSearchesAsItems,
+  restoreRecentSearches,
+} from "./recent-searches";
 
 export type { VikingSearchPaletteItem };
+
+const RECENT_HREF_PREFIX = "#viking-recent:";
 
 const parseItems = (el: HTMLElement): VikingSearchPaletteItem[] => {
   const raw = el.getAttribute("items");
@@ -31,31 +44,32 @@ const parseItems = (el: HTMLElement): VikingSearchPaletteItem[] => {
   }
 };
 
-const matchesQuery = (
-  item: VikingSearchPaletteItem,
-  query: string,
-): boolean => {
-  const haystack = [
-    item.title,
-    item.snippet ?? "",
-    item.group ?? "",
-    item.href,
-    ...(item.keywords ?? []),
-  ]
-    .join(" ")
-    .toLowerCase();
-  return haystack.includes(query);
-};
+const recentStorageKey = (el: HTMLElement): string =>
+  el.getAttribute("recent-storage-key")?.trim() || DEFAULT_RECENT_STORAGE_KEY;
 
-const filterItems = (
-  items: VikingSearchPaletteItem[],
+const resolveVisibleItems = (
+  el: HTMLElement,
   query: string,
 ): VikingSearchPaletteItem[] => {
-  const q = query.trim().toLowerCase();
-  if (!q) {
-    return items;
+  const curated = parseItems(el);
+  const q = query.trim();
+  if (q) {
+    return rankSearchItems(curated, q);
   }
-  return items.filter((item) => matchesQuery(item, q));
+  const recent = recentSearchesAsItems(
+    readRecentSearches(recentStorageKey(el)),
+  );
+  // Recents first, then curated platform links (dedupe by href+title).
+  const seen = new Set(recent.map((item) => `${item.title}:${item.href}`));
+  const rest = curated.filter((item) => {
+    const key = `${item.title}:${item.href}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+  return [...recent, ...rest];
 };
 
 const groupItems = (
@@ -80,9 +94,10 @@ const groupItems = (
  * Aliases: `viking-search-palette`, `viking-search-palette-wc`
  *
  * @attr open - When present, shows the palette
- * @attr global-shortcut - Bind ⌘K / Ctrl+K to open
+ * @attr global-shortcut - Bind ⌘K / Ctrl+K and `/` to open
  * @attr placeholder - Search input placeholder
  * @attr items - JSON array of `{ title, href, snippet?, group? }`
+ * @attr recent-storage-key - localStorage key for recent searches
  *
  * @method openPalette() - Programmatically open
  * @method closePalette() - Programmatically close
@@ -103,7 +118,13 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
   static readonly legacyTag = "viking-search-palette-wc";
 
   static get observedAttributes(): string[] {
-    return ["open", "placeholder", "items", "global-shortcut"];
+    return [
+      "open",
+      "placeholder",
+      "items",
+      "global-shortcut",
+      "recent-storage-key",
+    ];
   }
 
   private readonly shadow: ShadowRoot;
@@ -116,6 +137,7 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
   private query = "";
   private activeIndex = 0;
   private flatResults: VikingSearchPaletteItem[] = [];
+  private readonly history = getDefaultCommandHistory();
 
   constructor() {
     super();
@@ -228,11 +250,13 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
   };
 
   private readonly onInputKeydown = (event: KeyboardEvent): void => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      this.closePalette();
+      return;
+    }
+
     if (this.flatResults.length === 0) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        this.closePalette();
-      }
       return;
     }
 
@@ -269,14 +293,24 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
       return;
     }
     this.globalKeyHandler = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        if (this.hasAttribute("open")) {
-          this.closePalette();
-        } else {
-          this.openPalette();
-        }
+      const modK =
+        (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
+      const slashOpen =
+        event.key === "/" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !this.hasAttribute("open") &&
+        !isEditableTarget(event.target);
+      if (!modK && !slashOpen) {
+        return;
       }
+      event.preventDefault();
+      if (modK && this.hasAttribute("open")) {
+        this.closePalette();
+        return;
+      }
+      this.openPalette();
     };
     document.addEventListener("keydown", this.globalKeyHandler);
   }
@@ -315,6 +349,29 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
   }
 
   private activateItem(item: VikingSearchPaletteItem): void {
+    // Recent query chips re-run the search instead of navigating.
+    if (item.href.startsWith(RECENT_HREF_PREFIX)) {
+      const encoded = item.href.slice(RECENT_HREF_PREFIX.length);
+      let query = item.title;
+      try {
+        query = decodeURIComponent(encoded) || item.title;
+      } catch {
+        query = item.title;
+      }
+      this.search(query);
+      return;
+    }
+
+    const rememberQuery = this.query.trim() || item.title;
+    pushRecentSearch(
+      {
+        query: rememberQuery,
+        title: item.title,
+        href: item.href !== "#" ? item.href : undefined,
+      },
+      { storageKey: recentStorageKey(this) },
+    );
+
     this.dispatchEvent(
       new CustomEvent("viking-select", {
         bubbles: true,
@@ -325,19 +382,14 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
     this.closePalette();
 
     if (item.action === "cookie-settings") {
-      const widgets = (
-        globalThis as { DemlWidgets?: { openCookieSettings?: () => void } }
-      ).DemlWidgets;
-      widgets?.openCookieSettings?.();
+      readDemlWidgets().openCookieSettings?.();
       return;
     }
 
     if (item.action === "bug-report") {
-      const widgets = (
-        globalThis as { DemlWidgets?: { openBugReport?: () => void } }
-      ).DemlWidgets;
-      if (widgets?.openBugReport) {
-        widgets.openBugReport();
+      const openBugReport = readDemlWidgets().openBugReport;
+      if (openBugReport) {
+        openBugReport();
         return;
       }
     }
@@ -364,10 +416,10 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
       return;
     }
 
-    const items = parseItems(this);
-    const q = this.query.trim().toLowerCase();
-    const filtered = filterItems(items, q);
+    const filtered = resolveVisibleItems(this, this.query);
     this.flatResults = filtered;
+    const hasRecent =
+      !this.query.trim() && filtered.some((item) => item.group === "Recent");
 
     if (filtered.length === 0) {
       const q = this.query.trim();
@@ -382,11 +434,14 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
 
     let resultIndex = 0;
     const grouped = groupItems(filtered);
+    const clearRecent = hasRecent
+      ? `<button type="button" class="viking-search-clear-recent" data-clear-recent>Clear recent</button>`
+      : "";
 
     const markup = grouped
       .map(({ group, items: groupItemsList }) => {
         const groupLabel = group
-          ? `<p class="viking-search-group-label" role="presentation">${escapeHtml(group)}</p>`
+          ? `<div class="viking-search-group-header" role="presentation"><p class="viking-search-group-label">${escapeHtml(group)}</p>${group === "Recent" ? clearRecent : ""}</div>`
           : "";
         const rows = groupItemsList
           .map((item) => {
@@ -415,6 +470,29 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
       .join("");
 
     this.resultsEl.innerHTML = `<div class="viking-search-results" id="${this.resultsId}" role="listbox" aria-label="Search results">${markup}</div>`;
+
+    this.resultsEl
+      .querySelector("[data-clear-recent]")
+      ?.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const key = recentStorageKey(this);
+        const snapshot = readRecentSearches(key);
+        if (!snapshot.length) {
+          return;
+        }
+        void this.history.run({
+          label: "Cleared recent searches",
+          do: () => {
+            clearRecentSearches(key);
+            this.renderResults();
+          },
+          undo: () => {
+            restoreRecentSearches(snapshot, key);
+            this.renderResults();
+          },
+        });
+      });
 
     const activeId = `${this.resultsId}-result-${this.activeIndex}`;
     this.inputEl?.setAttribute("aria-activedescendant", activeId);
@@ -490,10 +568,12 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
             <div class="viking-search-results-host"></div>
           </div>
           <footer class="viking-search-palette-footer" part="footer">
-            <span class="viking-kbd">${mod}</span><span class="viking-kbd">K</span> toggle ·
+            <span class="viking-kbd">${mod}</span><span class="viking-kbd">K</span> /
+            <span class="viking-kbd">/</span> open ·
             <span class="viking-kbd">↑</span><span class="viking-kbd">↓</span> navigate ·
             <span class="viking-kbd">Enter</span> open ·
-            <span class="viking-kbd">Esc</span> close
+            <span class="viking-kbd">Esc</span> close ·
+            <span class="viking-kbd">?</span> all shortcuts
           </footer>
         </div>
       </dialog>
@@ -514,6 +594,20 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
       }
     });
   }
+}
+
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
+    return true;
+  }
+  if (target.isContentEditable) {
+    return true;
+  }
+  return Boolean(target.closest("[contenteditable='true']"));
 }
 
 export const registerVikingSearchPaletteWc = (): void => {

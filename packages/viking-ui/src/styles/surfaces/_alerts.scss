@@ -4,9 +4,9 @@
 // ============================================================================
 
 .alert {
-  padding: var(--viking-space-2, 16px);
+  padding: var(--viking-space-2, var(--viking-space-2));
   border-radius: var(--viking-radius, 8px);
-  margin-top: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-2, var(--viking-space-2));
   border: 1px solid var(--viking-border);
   font-size: var(--viking-font-size);
   font-weight: 500;
@@ -47,5 +47,5 @@
   margin-bottom: var(--viking-space-3);
   display: flex;
   align-items: center;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-1, var(--viking-space-1));
 }

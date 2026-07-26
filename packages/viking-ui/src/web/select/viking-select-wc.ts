@@ -166,7 +166,7 @@ export class VikingSelectWc extends HTMLElementBase {
           ${describedBy ? `aria-describedby="${describedBy}"` : ""}
         ></select>
         ${description ? `<p id="${this.controlId}-desc" class="viking-field-description" part="description">${escapeHtml(description)}</p>` : ""}
-        ${error ? `<p id="${this.controlId}-error" class="viking-field-error" part="error" role="alert">${escapeHtml(error)}</p>` : ""}
+        ${error ? `<p id="${this.controlId}-error" class="viking-field-error" part="error" role="alert" aria-live="assertive" aria-atomic="true"><span class="viking-sr-only">Error: </span>${escapeHtml(error)}</p>` : ""}
       </div>
     `;
 

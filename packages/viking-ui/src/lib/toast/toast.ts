@@ -4,11 +4,18 @@ import {
   Injectable,
   inject,
   input,
-  signal,
 } from "@angular/core";
 import { VikingIcon } from "../icon/icon";
 import { VikingIconName } from "../../core/icons";
-import { VikingToastInstance, VikingToastOptions } from "../../core/types";
+import {
+  createToastStore,
+  toastPriorityFromTone,
+} from "../../core/toast-store";
+import {
+  VikingToastAction,
+  VikingToastInstance,
+  VikingToastOptions,
+} from "../../core/types";
 
 const TONE_ICONS: Record<string, VikingIconName> = {
   accent: "info",
@@ -19,31 +26,60 @@ const TONE_ICONS: Record<string, VikingIconName> = {
 };
 
 /**
- * VikingToastService — imperative toast API.
+ * VikingToastService — priority-aware imperative toast API (ADR-0020).
  * Render a single <viking-toaster> outlet near the app root.
  */
 @Injectable({ providedIn: "root" })
 export class VikingToastService {
-  private nextId = 1;
-  readonly toasts = signal<VikingToastInstance[]>([]);
+  private readonly store = createToastStore<VikingToastInstance>({
+    maxVisible: 3,
+  });
+  readonly toasts = this.store.messages;
 
   readonly show = (options: VikingToastOptions): number => {
+    const tone = options.tone ?? "accent";
+    const priority = options.priority ?? toastPriorityFromTone(tone);
     const toast: VikingToastInstance = {
-      id: this.nextId++,
+      id: this.store.nextId(),
       heading: options.heading ?? "",
       text: options.text,
-      tone: options.tone ?? "accent",
-      duration: options.duration ?? 4500,
+      tone,
+      priority,
+      duration: options.duration ?? 0,
+      dedupeKey: options.dedupeKey,
+      action: options.action,
     };
-    this.toasts.update((list) => [...list, toast]);
-    if (toast.duration > 0) {
-      setTimeout(() => this.dismiss(toast.id), toast.duration);
-    }
-    return toast.id;
+    // Prefer explicit duration; otherwise store uses priority defaults.
+    const durationMs =
+      options.duration === undefined ? undefined : options.duration;
+    return this.store.add(toast, durationMs);
   };
 
+  readonly success = (
+    text: string,
+    opts?: Omit<VikingToastOptions, "text" | "tone" | "priority">,
+  ): number => this.show({ ...opts, text, tone: "success", priority: "low" });
+
+  readonly critical = (
+    text: string,
+    opts?: Omit<VikingToastOptions, "text" | "tone" | "priority">,
+  ): number =>
+    this.show({ ...opts, text, tone: "danger", priority: "critical" });
+
   readonly dismiss = (id: number): void => {
-    this.toasts.update((list) => list.filter((toast) => toast.id !== id));
+    this.store.dismiss(id);
+  };
+
+  readonly clear = (): void => {
+    this.store.clear();
+  };
+
+  readonly pause = (id?: number): void => {
+    this.store.pause(id);
+  };
+
+  readonly resume = (id?: number): void => {
+    this.store.resume(id);
   };
 }
 
@@ -54,13 +90,27 @@ export class VikingToastService {
   selector: "viking-toaster",
   imports: [VikingIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { "[class.viking-toaster-top]": "position() === 'top-end'" },
+  host: {
+    "[class.viking-toaster-top]": "position() === 'top-end'",
+    role: "region",
+    "aria-label": "Notifications",
+    "aria-live": "polite",
+    "aria-relevant": "additions text",
+    "aria-atomic": "false",
+  },
   template: `
     @for (toast of service.toasts(); track toast.id) {
       <div
         class="viking-toast"
         [class]="'viking-toast-' + toast.tone"
-        role="status"
+        [attr.data-tone]="toast.tone"
+        [attr.data-priority]="toast.priority"
+        [attr.role]="toast.priority === 'critical' ? 'alert' : 'status'"
+        [attr.aria-live]="
+          toast.priority === 'critical' ? 'assertive' : 'polite'
+        "
+        (pointerenter)="service.pause(toast.id)"
+        (pointerleave)="service.resume(toast.id)"
       >
         <viking-icon
           class="viking-toast-icon"
@@ -73,6 +123,15 @@ export class VikingToastService {
           }
           <p class="viking-toast-text">{{ toast.text }}</p>
         </div>
+        @if (toast.action; as action) {
+          <button
+            type="button"
+            class="viking-toast-action"
+            (click)="onAction(toast.id, action)"
+          >
+            {{ action.label }}
+          </button>
+        }
         <button
           type="button"
           class="viking-toast-close"
@@ -96,6 +155,7 @@ export class VikingToastService {
         gap: var(--viking-space-1);
         z-index: var(--viking-z-toast);
         max-width: none;
+        pointer-events: none;
       }
       @media (min-width: 768px) {
         :host {
@@ -110,6 +170,7 @@ export class VikingToastService {
         top: var(--viking-space-3);
       }
       .viking-toast {
+        pointer-events: auto;
         display: flex;
         align-items: flex-start;
         gap: var(--viking-space-1);
@@ -120,6 +181,13 @@ export class VikingToastService {
         box-shadow: var(--viking-shadow-md);
         font-family: var(--viking-font-family);
         animation: viking-toast-in var(--viking-duration) var(--viking-ease-out);
+      }
+      .viking-toast[data-priority="low"] {
+        box-shadow: var(--viking-shadow-sm);
+        opacity: 0.96;
+      }
+      .viking-toast[data-priority="critical"] {
+        box-shadow: var(--viking-shadow-lg);
       }
       @keyframes viking-toast-in {
         from {
@@ -167,6 +235,28 @@ export class VikingToastService {
         color: var(--viking-text-muted);
         line-height: 1.45;
       }
+      .viking-toast-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--viking-touch-target-min);
+        border: none;
+        background: transparent;
+        color: var(--viking-accent);
+        cursor: pointer;
+        padding: var(--viking-space-0-5) var(--viking-space-1);
+        border-radius: var(--viking-radius);
+        font: inherit;
+        font-weight: var(--viking-font-weight-semibold, 600);
+        transition: var(--viking-transition-interactive);
+      }
+      .viking-toast-action:hover {
+        background: var(--viking-accent-soft);
+      }
+      .viking-toast-action:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: 1px;
+      }
       .viking-toast-close {
         display: inline-flex;
         align-items: center;
@@ -199,4 +289,9 @@ export class VikingToaster {
 
   protected toneIcon = (tone: string): VikingIconName =>
     TONE_ICONS[tone] ?? "info";
+
+  protected onAction(id: number, action: VikingToastAction): void {
+    action.onClick();
+    this.service.dismiss(id);
+  }
 }

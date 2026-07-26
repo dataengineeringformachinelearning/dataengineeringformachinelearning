@@ -104,6 +104,7 @@ export class OnboardingWizard {
   goNext() {
     const idx = this.stepIndex();
     if (idx < STEPS.length - 1) {
+      this.onboardingService.completeStep(this.currentStep());
       this.currentStep.set(STEPS[idx + 1]);
       this.errorMessage.set(null);
     }

@@ -12,12 +12,12 @@
   align-items: stretch;
   grid-auto-rows: 1fr;
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--viking-space-4);
   }
 }
 
@@ -410,7 +410,7 @@
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
   &.compact {
-    min-height: 160px;
+    min-height: var(--viking-space-14);
     padding: var(--viking-space-3);
   }
 
@@ -528,7 +528,7 @@
   gap: var(--viking-space-2);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     padding: var(--viking-space-7) var(--viking-space-4);
   }
 
@@ -540,10 +540,12 @@
     width: var(--viking-space-7);
     height: var(--viking-space-7);
     border-radius: var(--viking-radius-lg);
-    background: var(--viking-accent-soft);
-    color: var(--viking-text-muted);
+    background: color-mix(in srgb, var(--viking-danger) 14%, transparent);
+    color: var(--viking-danger);
+    border: 1px solid color-mix(in srgb, var(--viking-danger) 28%, transparent);
     font-size: var(--viking-font-size-4xl);
     margin-bottom: var(--viking-space-1);
+    box-shadow: var(--viking-shadow-sm);
   }
 
   .error-title {
@@ -740,7 +742,7 @@
 }
 
 .health-value {
-  font-size: clamp(var(--viking-font-size-2xl), 7vw, 4rem);
+  font-size: var(--viking-font-size-display);
   font-weight: var(--viking-font-weight-bold);
   line-height: var(--viking-line-height-tight);
 }
@@ -816,7 +818,7 @@
   white-space: nowrap;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .setup-banner {
     flex-direction: row;
     align-items: center;
@@ -846,7 +848,7 @@
 
 /* overview-grid template areas + breakpoints live in surfaces/app-pages.scss
    (restored dashboard command-center layout). Keep page-shell free of competing tracks. */
-@media (min-width: 1280px) {
+@media (min-width: 1440px) {
   .detail-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -868,7 +870,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2);
-  margin-bottom: var(--viking-space-4);
+  margin-bottom: var(--viking-page-stack-gap, var(--viking-space-5));
 }
 
 .metrics-overview-header > .section-title-premium,
@@ -888,7 +890,7 @@
   font-weight: var(--viking-font-weight-bold, 700);
   letter-spacing: var(--viking-letter-spacing-tight, -0.01em);
   color: var(--viking-text, var(--text-color));
-  margin: 0 0 var(--viking-space-3) 0;
+  margin: 0 0 var(--viking-space-2) 0;
 
   viking-app-icon,
   viking-icon {
@@ -927,12 +929,12 @@
   gap: var(--viking-dashboard-grid-gap, var(--viking-space-4));
   margin-bottom: var(--viking-page-stack-gap, var(--viking-space-5));
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--viking-space-4);
   }
 }
 
@@ -1153,7 +1155,7 @@ app-status-card.status-directory-card:hover {
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1440px) {
   .status-directory-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1322,7 +1324,7 @@ viking-card.monitored-services-card {
   width: 100%;
   min-width: 0;
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1330,7 +1332,7 @@ viking-card.monitored-services-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1440px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

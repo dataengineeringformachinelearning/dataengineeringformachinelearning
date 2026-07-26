@@ -1,7 +1,5 @@
 import { Injectable, signal } from "@angular/core";
 
-export type VikingDialogKind = "confirm" | "search" | "onboarding";
-
 export interface VikingConfirmDialogData {
   title?: string;
   message: string;
@@ -13,10 +11,19 @@ export interface VikingConfirmDialogData {
   confirmBtnColor?: "primary" | "warn" | "accent";
 }
 
-export interface VikingDialogState {
-  kind: VikingDialogKind;
-  data?: VikingConfirmDialogData & { force?: boolean };
-}
+export type VikingOnboardingDialogData = {
+  message: string;
+  force?: boolean;
+};
+
+/** Discriminated active overlay — narrow with `kind` (no casts). */
+export type VikingDialogState =
+  | { kind: "confirm"; data: VikingConfirmDialogData }
+  | { kind: "search" }
+  | { kind: "onboarding"; data: VikingOnboardingDialogData };
+
+/** @deprecated Prefer narrowing `VikingDialogState.kind`. */
+export type VikingDialogKind = VikingDialogState["kind"];
 
 /** Programmatic confirm / prompt / overlay orchestration for Viking-UI modals. */
 @Injectable({ providedIn: "root" })
@@ -48,8 +55,8 @@ export class VikingDialogService {
       return;
     }
     this.active.set({
-      ...active,
-      data: { ...(active.data as VikingConfirmDialogData), ...data },
+      kind: "confirm",
+      data: { ...active.data, ...data },
     });
   }
 

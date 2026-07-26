@@ -360,7 +360,7 @@ viking-chart-panel {
   padding: var(--viking-space-content-gap);
 }
 
-@container viking-chart-panel (min-width: 40rem) {
+@container viking-chart-panel (min-width: 37.5rem) {
   .viking-chart-panel-body,
   .card-body-clean.viking-chart-panel-body {
     padding: var(--viking-space-content-gap) var(--viking-space-container-gap)

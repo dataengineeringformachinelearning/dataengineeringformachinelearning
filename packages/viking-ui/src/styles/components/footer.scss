@@ -52,7 +52,7 @@
     );
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .viking-footer-directory,
   .footer-directory {
     grid-template-columns: repeat(2, 1fr);
@@ -198,6 +198,6 @@
 
 .viking-usa-badge-icon,
 .usa-badge-icon {
-  font-size: 1.1em;
+  font-size: var(--viking-font-size-md);
   line-height: 1;
 }

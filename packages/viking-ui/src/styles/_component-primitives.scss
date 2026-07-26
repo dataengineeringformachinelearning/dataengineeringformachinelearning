@@ -12,7 +12,7 @@
   /* Interactive state */
   --viking-state-disabled-opacity: 0.48;
   --viking-state-hover-lift: -1px;
-  --viking-state-active-scale: 0.985;
+  --viking-state-active-scale: var(--suite-active-scale, 0.985);
   --viking-state-press-inset: inset 0 1px 2px rgba(0, 0, 0, 0.28);
 
   --viking-shadow-hover: var(

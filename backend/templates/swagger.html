@@ -11,12 +11,12 @@
     />
     <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml" />
     <meta name="theme-color" content="#0a0a0a" />
-    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity — Swagger UI CDN; major version pinned -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
+      href="{% static 'vendor/swagger-ui-dist/swagger-ui.css' %}"
     />
     <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
+    <link rel="stylesheet" href="{% static 'suite-apidocs.css' %}" />
   </head>
   <body class="suite-backend-docs backend-swagger">
     <header class="suite-backend-topbar backend-docs-topbar fj-topbar">
@@ -30,24 +30,11 @@
       </nav>
     </header>
     <div id="swagger-ui"></div>
-    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity — Swagger UI CDN; major version pinned -->
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
-    <script>
-      window.ui = SwaggerUIBundle({
-        url: "{{ openapi_url|escapejs }}",
-        dom_id: "#swagger-ui",
-        presets: [SwaggerUIBundle.presets.apis],
-        layout: "BaseLayout",
-        deepLinking: true,
-        displayRequestDuration: true,
-        defaultModelsExpandDepth: 0,
-        tryItOutEnabled: true,
-        persistAuthorization: false,
-        requestInterceptor: (req) => {
-          req.headers["X-CSRFToken"] = "{{ csrf_token|escapejs }}";
-          return req;
-        },
-      });
-    </script>
+    <script src="{% static 'vendor/swagger-ui-dist/swagger-ui-bundle.js' %}"></script>
+    <script
+      src="{% static 'docs-swagger-init.js' %}"
+      data-openapi-url="{{ openapi_url|escapejs }}"
+      data-csrf-token="{{ csrf_token|escapejs }}"
+    ></script>
   </body>
 </html>

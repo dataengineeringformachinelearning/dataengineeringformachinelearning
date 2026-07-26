@@ -39,6 +39,19 @@ npm run test:viking-ui:package
 npm run pack:viking-ui
 ```
 
+## Naming & imports
+
+| Kind              | Convention                     | Example                                    |
+| ----------------- | ------------------------------ | ------------------------------------------ |
+| Selector          | `viking-*`                     | `viking-button`, `viking-modal`            |
+| Class / type      | `Viking*`                      | `VikingButton`, `VikingVirtualWindow`      |
+| Pure core helpers | camelCase / shared suite names | `vikingUid`, `NativeDialogSession`         |
+| Angular folder    | `src/lib/<name>/<name>.ts`     | `confirm-dialog/confirm-dialog.service.ts` |
+| Framework-neutral | `src/core/`                    | `field-a11y.ts`, `dialog-session.ts`       |
+| Web Components    | `src/web/`                     | `web/core/dom.ts`                          |
+
+Import order in a file: `@angular/*` → third-party → `../../core` / relatives → local `./`, with `import type` for type-only symbols.
+
 ## Adding a component (summary)
 
 1. Token-only SCSS in `packages/viking-ui/src/styles/`

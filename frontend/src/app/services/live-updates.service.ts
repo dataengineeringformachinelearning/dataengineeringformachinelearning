@@ -53,9 +53,14 @@ export class LiveUpdatesService implements OnDestroy {
   readonly updates$: Observable<LiveUpdateEvent> = this.updatesSubject.asObservable();
   /** Most recent SSE event — preferred for Signal/effect consumers. */
   readonly latestEvent = signal<LiveUpdateEvent | null>(null);
+  /** True after SSE ``ready`` while the stream socket is open. */
   readonly connected = signal(false);
   /** True after a typed SSE ``degraded`` frame (FORJD cursor poll outage). */
   readonly degraded = signal(false);
+  /** True while ``start()`` has been called (chip should render). */
+  readonly streamActive = signal(false);
+  /** True when the tab is hidden — stream is intentionally paused. */
+  readonly paused = signal(false);
 
   private streamSub: Subscription | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -66,8 +71,12 @@ export class LiveUpdatesService implements OnDestroy {
 
   private readonly onVisibility = () => {
     if (document.hidden) {
+      // Accurate: hidden tabs are paused, not connected — never pulse while away.
+      this.paused.set(true);
+      this.connected.set(false);
       this.disconnect();
     } else if (this.active) {
+      this.paused.set(false);
       this.connect();
     }
   };
@@ -76,12 +85,21 @@ export class LiveUpdatesService implements OnDestroy {
   start(): void {
     if (this.active) return;
     this.active = true;
+    this.streamActive.set(true);
     document.addEventListener('visibilitychange', this.onVisibility);
-    if (!document.hidden) this.connect();
+    if (document.hidden) {
+      this.paused.set(true);
+      this.connected.set(false);
+      return;
+    }
+    this.paused.set(false);
+    this.connect();
   }
 
   stop(): void {
     this.active = false;
+    this.streamActive.set(false);
+    this.paused.set(false);
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.disconnect();
     this.connected.set(false);

@@ -60,7 +60,7 @@
   width: 100%;
   min-width: 0;
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     min-width: min(100%, 28rem);
   }
@@ -126,7 +126,7 @@
   flex-direction: column;
   gap: var(--viking-space-2);
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     flex-direction: row;
     flex-wrap: wrap;
   }
@@ -201,7 +201,7 @@
 }
 
 /* Tablet and wider: restore the full matrix cell size. */
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .matrix-cell {
     width: var(--viking-space-8);
     height: var(--viking-space-8);
@@ -225,7 +225,9 @@
 }
 
 .queue-item:focus-visible,
-.soc-card:focus-visible {
+.soc-card:focus-visible,
+.playbook-select-area:focus-visible,
+.incident-select-area:focus-visible {
   outline: var(--viking-ring-width) solid var(--viking-ring);
   outline-offset: var(--viking-ring-offset);
 }

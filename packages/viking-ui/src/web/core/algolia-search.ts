@@ -18,6 +18,47 @@ export type AlgoliaHitItem = {
   keywords?: string[];
 };
 
+/** DocSearch / crawler hierarchy levels commonly present on page indexes. */
+export type AlgoliaHierarchy = {
+  lvl0?: string;
+  lvl1?: string;
+  lvl2?: string;
+  lvl3?: string;
+  lvl4?: string;
+  lvl5?: string;
+  lvl6?: string;
+};
+
+/** Raw hit shape retrieved from suite page indexes. */
+export type AlgoliaPageHit = {
+  objectID?: string;
+  url?: string;
+  url_without_anchor?: string;
+  permalink?: string;
+  link?: string;
+  title?: string;
+  description?: string;
+  content?: string;
+  path?: string;
+  hostname?: string;
+  keywords?: string;
+  hierarchy?: AlgoliaHierarchy;
+  type?: string;
+};
+
+type AlgoliaMultiQueryResult = {
+  hits?: AlgoliaPageHit[];
+  index?: string;
+};
+
+type AlgoliaMultiQueryResponse = {
+  results?: AlgoliaMultiQueryResult[];
+};
+
+type AlgoliaGlobal = typeof globalThis & {
+  ALGOLIA_CONFIG?: AlgoliaConfig;
+};
+
 const DEFAULT_INDEXES: readonly string[] = [
   "dataengineeringformachinelearning_com_zjafyosh2v_pages",
   "deml_app_pages",
@@ -36,9 +77,7 @@ const readConfig = (): AlgoliaConfig => {
   if (typeof globalThis === "undefined") {
     return {};
   }
-  return (
-    (globalThis as { ALGOLIA_CONFIG?: AlgoliaConfig }).ALGOLIA_CONFIG ?? {}
-  );
+  return (globalThis as AlgoliaGlobal).ALGOLIA_CONFIG ?? {};
 };
 
 const asString = (value: unknown): string | null =>
@@ -56,26 +95,26 @@ const asHttpUrl = (value: unknown): string | null => {
 };
 
 const resolveHitUrl = (
-  hit: Record<string, unknown>,
+  hit: AlgoliaPageHit,
   indexName: string,
 ): string | null => {
-  const objectId = asString(hit["objectID"]);
+  const objectId = asString(hit.objectID);
   const direct =
-    asHttpUrl(hit["url"]) ||
-    asHttpUrl(hit["url_without_anchor"]) ||
-    asHttpUrl(hit["permalink"]) ||
-    asHttpUrl(hit["link"]) ||
+    asHttpUrl(hit.url) ||
+    asHttpUrl(hit.url_without_anchor) ||
+    asHttpUrl(hit.permalink) ||
+    asHttpUrl(hit.link) ||
     asHttpUrl(objectId);
   if (direct) {
     return direct;
   }
 
-  const path = asString(hit["path"]);
+  const path = asString(hit.path);
   if (!path) {
     return null;
   }
 
-  const hostname = asString(hit["hostname"]);
+  const hostname = asString(hit.hostname);
   const origin =
     INDEX_ORIGIN[indexName] ||
     (hostname ? `https://${hostname.replace(/^https?:\/\//i, "")}` : null);
@@ -90,7 +129,7 @@ const resolveHitUrl = (
 };
 
 const hitToItem = (
-  hit: Record<string, unknown>,
+  hit: AlgoliaPageHit,
   indexName: string,
 ): AlgoliaHitItem | null => {
   const url = resolveHitUrl(hit, indexName);
@@ -98,21 +137,21 @@ const hitToItem = (
     return null;
   }
 
-  const hierarchy = hit["hierarchy"] as Record<string, unknown> | undefined;
+  const hierarchy = hit.hierarchy;
   const title =
-    asString(hit["title"]) ||
-    asString(hierarchy?.["lvl1"]) ||
-    asString(hierarchy?.["lvl0"]) ||
-    asString(hit["path"]) ||
+    asString(hit.title) ||
+    asString(hierarchy?.lvl1) ||
+    asString(hierarchy?.lvl0) ||
+    asString(hit.path) ||
     url;
 
   const description =
-    asString(hit["description"]) ||
-    (asString(hit["content"]) ?? "").slice(0, 160) ||
-    asString(hierarchy?.["lvl2"]) ||
+    asString(hit.description) ||
+    (asString(hit.content) ?? "").slice(0, 160) ||
+    asString(hierarchy?.lvl2) ||
     "";
 
-  let hostname = asString(hit["hostname"]);
+  let hostname = asString(hit.hostname);
   if (!hostname) {
     try {
       hostname = new URL(url).hostname;
@@ -121,8 +160,8 @@ const hitToItem = (
     }
   }
 
-  const keywordField = asString(hit["keywords"]);
-  const path = asString(hit["path"]) ?? "";
+  const keywordField = asString(hit.keywords);
+  const path = asString(hit.path) ?? "";
 
   return {
     title: title.slice(0, 120),
@@ -136,7 +175,7 @@ const hitToItem = (
       indexName,
       path,
       ...(keywordField ? keywordField.split(/[,\s]+/).filter(Boolean) : []),
-    ].filter(Boolean) as string[],
+    ].filter((value): value is string => Boolean(value)),
   };
 };
 
@@ -207,9 +246,7 @@ export const searchAlgoliaPages = async (
       return [];
     }
 
-    const payload = (await response.json()) as {
-      results?: { hits?: Record<string, unknown>[]; index?: string }[];
-    };
+    const payload = (await response.json()) as AlgoliaMultiQueryResponse;
 
     const seen = new Set<string>();
     const items: AlgoliaHitItem[] = [];

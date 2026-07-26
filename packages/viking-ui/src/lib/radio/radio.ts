@@ -5,7 +5,10 @@ import {
   model,
 } from "@angular/core";
 import { VikingControl, provideVikingCva } from "../core/cva";
-import { VikingSelectOption } from "../../core/types";
+import {
+  type VikingOptionValue,
+  type VikingSelectOption,
+} from "../../core/types";
 import { vikingUid } from "../../core/uid";
 
 /**
@@ -112,16 +115,16 @@ import { vikingUid } from "../../core/uid";
     `,
   ],
 })
-export class VikingRadioGroup extends VikingControl<unknown> {
-  readonly options = input.required<VikingSelectOption[]>();
-  readonly value = model<unknown>(null);
+export class VikingRadioGroup extends VikingControl<VikingOptionValue | null> {
+  readonly options = input.required<readonly VikingSelectOption[]>();
+  readonly value = model<VikingOptionValue | null>(null);
   readonly label = input<string>("");
   readonly disabled = input<boolean>(false);
   readonly orientation = input<"vertical" | "horizontal">("vertical");
 
   protected readonly groupName = vikingUid("viking-radio");
 
-  writeValue(value: unknown): void {
+  writeValue(value: VikingOptionValue | null): void {
     this.value.set(value);
   }
 

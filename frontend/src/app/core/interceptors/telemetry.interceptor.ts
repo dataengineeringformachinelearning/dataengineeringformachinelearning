@@ -2,7 +2,6 @@ import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
-import { sealAndIngest } from '../crypto/sealed-telemetry';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -56,6 +55,8 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
             if (!token) return;
             const path = req.url.replace(environment.backendUrl, '').split('?')[0] || '/';
             const statusFamily = `${Math.floor((event.status || 200) / 100)}xx`;
+            // Dynamic import keeps sealed-crypto out of the critical main chunk.
+            const { sealAndIngest } = await import('../crypto/sealed-telemetry');
             await sealAndIngest(
               token,
               {

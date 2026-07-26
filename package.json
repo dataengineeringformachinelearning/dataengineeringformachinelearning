@@ -31,6 +31,7 @@
     "suite:backend": "node packages/viking-ui/scripts/check-suite-backend.mjs",
     "suite:docs": "node packages/viking-ui/scripts/check-suite-docs.mjs",
     "suite:purity": "node scripts/check-suite-purity.mjs",
+    "suite:hardcoded": "node scripts/check-hardcoded-styles.mjs",
     "quality": "python scripts/deml_tooling.py quality --fast",
     "quality:fix": "python scripts/deml_tooling.py quality --fast --fix",
     "quality:full": "python scripts/deml_tooling.py quality --ci",

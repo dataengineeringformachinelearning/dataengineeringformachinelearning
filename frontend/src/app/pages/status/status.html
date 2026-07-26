@@ -18,13 +18,9 @@
     <viking-callout tone="warning" heading="Control plane continuity">
       <p>{{ forjdFallbackBody }}</p>
     </viking-callout>
-    }
-
-    @if (isLoading() && !loadFailed()) {
-    <div class="viking-stack" role="status" aria-live="polite" aria-busy="true">
-      <viking-spinner [size]="28" label="Loading system status" />
-    </div>
-    } @for (page of displayPages(); track page.id) {
+    } @if (isLoading() && !loadFailed()) {
+    <viking-page-skeleton layout="cards" label="Loading system status" />
+    } @else { @for (page of statusPages(); track page.id) {
     <viking-status-dashboard
       [title]="page.title"
       [description]="statusDescription(page.id)"
@@ -35,7 +31,7 @@
       [services]="dashboardServices(page)"
       [announcements]="dashboardAnnouncements(page)"
     />
-    } @if (connectivity.offline() || loadFailed()) {
+    } } @if (connectivity.offline() || loadFailed()) {
     <viking-callout
       tone="danger"
       [heading]="connectivity.offline() ? offlineHeading : connectHeading"

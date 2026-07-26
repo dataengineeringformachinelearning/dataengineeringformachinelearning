@@ -13,7 +13,7 @@ pre[class*="language-"] {
 }
 
 code[class*="language-"] {
-  font-size: 1rem;
+  font-size: var(--viking-font-size-base);
   line-height: 1.65;
   color: var(--viking-white) !important;
 }
@@ -92,13 +92,13 @@ h6 {
 }
 
 h1 {
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-size: var(--viking-font-size-title-lg);
 }
 h2 {
-  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-size: var(--viking-font-size-title);
 }
 h3 {
-  font-size: 1.5rem;
+  font-size: var(--viking-font-size-xl);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -151,7 +151,7 @@ a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(
   background: var(--viking-charcoal-950);
   padding: 0.12em 0.42em;
   border-radius: var(--viking-radius-sm, 6px);
-  font-size: 0.875em;
+  font-size: var(--viking-font-size-sm);
   line-height: inherit;
   color: var(--viking-white-pure);
   border: 1px solid
@@ -174,7 +174,7 @@ main.main {
   padding: var(--viking-space-2);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   main.main {
     padding: var(--viking-space-8) var(--viking-space-3);
   }
@@ -194,7 +194,7 @@ main.main {
   z-index: 10;
   width: 100%;
   max-width: none;
-  padding: var(--viking-space-3, 24px);
+  padding: var(--viking-space-3, var(--viking-space-3));
   margin: 0;
   box-sizing: border-box;
   background-color: var(--viking-surface, var(--card-bg));
@@ -250,12 +250,12 @@ main.main {
   box-shadow: var(--viking-shadow-sm);
   margin-top: var(--viking-space-4);
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     padding: var(--viking-space-8-5) var(--viking-space-4);
   }
 
   .error-state-icon {
-    font-size: 72px;
+    font-size: var(--viking-font-size-6xl);
     width: 72px;
     height: 72px;
     color: var(--viking-text-muted);
@@ -265,7 +265,7 @@ main.main {
 
   .error-title {
     margin: 0 0 var(--viking-space-1);
-    font-size: 1.5rem;
+    font-size: var(--viking-font-size-xl);
     font-weight: 700;
     color: var(--viking-text);
     letter-spacing: -0.01em;
@@ -273,7 +273,7 @@ main.main {
 
   .error-subtitle {
     margin: 0 0 var(--viking-space-4);
-    font-size: 1rem;
+    font-size: var(--viking-font-size-base);
     line-height: 1.6;
     color: var(--viking-text-muted);
     max-width: 416px;
@@ -349,7 +349,7 @@ main.main {
 
 .hud-title {
   font-family: var(--viking-font-family-mono);
-  font-size: 1.25rem;
+  font-size: var(--viking-font-size-lead);
   font-weight: 800;
   letter-spacing: 0.1em;
   margin: 0;
@@ -358,7 +358,7 @@ main.main {
 }
 
 .hud-subtitle {
-  font-size: 1rem;
+  font-size: var(--viking-font-size-base);
   color: var(--viking-text-muted);
   margin: var(--viking-space-1) 0 0 0;
   font-family: var(--viking-font-family-mono);
@@ -374,7 +374,7 @@ main.main {
 
 .section-tag {
   font-family: var(--viking-font-family-mono);
-  font-size: 1rem;
+  font-size: var(--viking-font-size-base);
   font-weight: 800;
   color: var(--viking-accent);
   letter-spacing: 0.15em;
@@ -434,7 +434,7 @@ main.main {
   select {
     width: 100%;
     min-height: 44px;
-    padding: 10px 12px;
+    padding: var(--viking-space-1) var(--viking-space-compact-gap);
     border-radius: var(--viking-radius-md);
     border: 1px solid var(--viking-border);
     background: var(--viking-surface);
@@ -472,7 +472,7 @@ main.main {
   width: 100%;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .grid-layout {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -561,7 +561,7 @@ select {
   border: 1px solid var(--viking-text-muted); /* WCAG 3:1 contrast for input borders */
   border-radius: var(--viking-radius-md, 8px);
   padding: var(--viking-space-2) var(--viking-space-2);
-  font-size: 1rem;
+  font-size: var(--viking-font-size-base);
   cursor: pointer;
   transition:
     border-color 0.2s ease,
@@ -594,7 +594,7 @@ select::picker(select) {
 select::picker-icon {
   color: var(--viking-text); /* WCAG compliance for icon */
   margin-left: var(--viking-space-2); /* Spacing around the caret */
-  margin-right: 0px;
+  margin-right: var(--viking-space-0);
 }
 
 select option::checkmark {
@@ -739,7 +739,7 @@ select option:checked {
   width: 100%;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .mfa-phone-row,
   .mfa-verify-stack {
     flex-direction: row;
@@ -794,7 +794,7 @@ select option:checked {
   border-radius: var(--viking-radius-md);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .mfa-status-enrolled,
   .mfa-feedback-stack {
     flex-direction: row;

@@ -3,8 +3,10 @@ import {
   Component,
   contentChildren,
   InjectionToken,
+  input,
   model,
 } from "@angular/core";
+import { nextRovingIndexBothAxes } from "../../core/focus";
 import { VikingTab } from "./tab";
 
 export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
@@ -21,6 +23,7 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
     <div
       class="viking-tabs-list"
       role="tablist"
+      [attr.aria-label]="label()"
       (keydown)="onTabKeydown($event)"
     >
       <ng-content select="viking-tab" />
@@ -103,6 +106,7 @@ export class VikingTabs {
   private readonly tabComponents = contentChildren(VikingTab);
 
   readonly value = model<string>("");
+  readonly label = input<string>("Tabs");
 
   protected onTabKeydown = (event: KeyboardEvent): void => {
     const tabs = this.tabComponents().filter((tab) => !tab.disabled());
@@ -110,32 +114,20 @@ export class VikingTabs {
       return;
     }
 
-    const currentIndex = tabs.findIndex((tab) => tab.value() === this.value());
-    let nextIndex = currentIndex;
-
-    switch (event.key) {
-      case "ArrowRight":
-      case "ArrowDown":
-        event.preventDefault();
-        nextIndex = (currentIndex + 1) % tabs.length;
-        break;
-      case "ArrowLeft":
-      case "ArrowUp":
-        event.preventDefault();
-        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-        break;
-      case "Home":
-        event.preventDefault();
-        nextIndex = 0;
-        break;
-      case "End":
-        event.preventDefault();
-        nextIndex = tabs.length - 1;
-        break;
-      default:
-        return;
+    const currentIndex = Math.max(
+      0,
+      tabs.findIndex((tab) => tab.value() === this.value()),
+    );
+    const nextIndex = nextRovingIndexBothAxes(
+      event.key,
+      currentIndex,
+      tabs.length,
+    );
+    if (nextIndex === null) {
+      return;
     }
 
+    event.preventDefault();
     const next = tabs[nextIndex];
     this.value.set(next.value());
     const button = document.getElementById(`viking-tab-${next.value()}`);

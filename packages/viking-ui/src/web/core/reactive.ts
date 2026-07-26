@@ -15,8 +15,14 @@ export type VikingAttrOptions<T> = {
  * Opt-in for multi-attribute hosts (footer, suite chrome). Simple badges/buttons
  * may keep extending {@link HTMLElementBase} directly.
  */
+/**
+ * Prop bag for reactive web components — specialize per host.
+ * Values may be nested objects (e.g. SiteUrls); keep index value as unknown.
+ */
+export type VikingWcProps = Record<string, unknown>;
+
 export abstract class VikingReactiveElement<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
+  TProps extends VikingWcProps = VikingWcProps,
 > extends HTMLElementBase {
   private _props: Partial<TProps> = {};
   private _updateScheduled = false;

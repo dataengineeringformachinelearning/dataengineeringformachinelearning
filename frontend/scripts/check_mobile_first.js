@@ -20,7 +20,9 @@ const RESPONSIVE_QUERY = /@(media|container)\b[^{]*/gi;
 const WIDTH_CLAUSE = /\(\s*(min|max)-width\s*:\s*((?:[^()]|\([^()]*\))+)\)/gi;
 const RANGE_WIDTH_CLAUSE = /\([^)]*(?:\bwidth\s*(?:<=|>=|<|>)|(?:<=|>=|<|>)\s*width\b)[^)]*\)/gi;
 const MATCH_MEDIA_CALL = /\bmatchMedia\s*\(\s*(["'`])([\s\S]*?)\1\s*\)/gi;
-const ALLOWED_BREAKPOINTS = new Set([640, 768, 1024, 1280]);
+// Must match --viking-bp-* in packages/viking-ui/src/styles/_variables.scss / THEME.md
+// Values are px; rem queries convert via toPixels (16px root), so 37.5rem ≡ 600.
+const ALLOWED_BREAKPOINTS = new Set([600, 768, 901, 1024, 1440, 1920]);
 const DYNAMIC_SASS_BREAKPOINT = /^(?:\$[\w-]+|#\{\$[\w-]+\})$/;
 
 function shouldScanFile(filePath) {
@@ -234,7 +236,7 @@ function run(scanDirs = SCAN_DIRS) {
   if (violationsCount > 0) {
     console.error(`\x1b[31mTotal violations found: ${violationsCount}\x1b[0m`);
     console.error(
-      'Use mobile base styles and min-width breakpoints at 640px, 768px, 1024px, or 1280px.',
+      'Use mobile base styles and min-width breakpoints at 600px, 768px, 901px, 1024px, 1440px, or 1920px (--viking-bp-*).',
     );
     return 1;
   }
