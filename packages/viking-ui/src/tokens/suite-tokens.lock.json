@@ -89,6 +89,6 @@
   "roles": {
     "A": "Product chrome — this lock",
     "B": "Chart series — --suite-series-* in CSS (series-1/3/4/5/6 alias Role A)",
-    "C": "PDF report tokens — forjd backend/static/fjord-report-tokens.json (out of product UI)"
+    "C": "PDF report tokens — forjd backend/static/fjord-report-tokens.json (suite-aligned chrome; not product UI CSS)"
   }
 }

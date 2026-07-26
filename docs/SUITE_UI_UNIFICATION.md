@@ -79,7 +79,7 @@ Elevate existing strengths — no new primary brand hues:
 
 Prefix: **`--suite-*`** (canonical). `--viking-*` and `--fj-*` are compatibility aliases in the same file.
 Theme: **dark-first** void; light via `data-theme="light"` only.
-Roles: **A** chrome (locked) · **B** chart series · **C** PDF reports (out of product UI).
+Roles: **A** chrome (locked) · **B** chart series · **C** PDF reports (suite-aligned print chrome; not product UI CSS).
 Sync to FORJD (no npm style install): `cd frontend && npm run sync:suite`.
 Everything downstream consumes only these tokens — no hard-coded product colors/spacing outside the system.
 
