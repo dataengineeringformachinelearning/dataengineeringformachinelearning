@@ -12,6 +12,7 @@ const privacyJsonLd = webPageJsonLd(
   pageDescription,
   canonicalHref('/privacy', MARKETING_URL),
 );
+const supportEmail = 'support@dataengineeringformachinelearning.com';
 ---
 
 <Layout
@@ -103,18 +104,20 @@ const privacyJsonLd = webPageJsonLd(
               <h3>GDPR Data Request Center</h3>
               <p class="form-instruction">
                 Use this form to request an export or permanent deletion of any personal data
-                collected during your sessions.
+                collected during your sessions. The form opens a pre-addressed message in your email
+                app; sending that message completes the request. You can also email
+                <a href={`mailto:${supportEmail}`}>{supportEmail}</a> directly.
               </p>
 
               <form class="compliance-form" id="gdpr-form">
                 <div class="form-group">
                   <label for="gdpr-email">Your Email Address</label>
-                  <input type="email" id="gdpr-email" placeholder="name@example.com" required class="form-input" />
+                  <input type="email" id="gdpr-email" name="email" autocomplete="email" placeholder="name@example.com" required class="form-input" />
                 </div>
 
                 <div class="form-group">
                   <label for="gdpr-type">Request Type</label>
-                  <select id="gdpr-type" class="form-input" required>
+                  <select id="gdpr-type" name="request_type" class="form-input" required>
                     <option value="" disabled selected>Select Request Type</option>
                     <option value="export">Data Export Request</option>
                     <option value="delete">Data Deletion Request</option>
@@ -124,14 +127,14 @@ const privacyJsonLd = webPageJsonLd(
 
                 <div class="form-group">
                   <label for="gdpr-details">Additional Details (Optional)</label>
-                  <textarea id="gdpr-details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
+                  <textarea id="gdpr-details" name="details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
                 </div>
 
                 <button type="submit" class="viking-btn viking-btn-secondary" id="privacy-submit-gdpr-request">
                   Submit Compliance Request
                 </button>
                 <p class="gdpr-success-callout" id="gdpr-success-callout" role="status" hidden>
-                  Compliance request submitted successfully. You will receive an email confirmation shortly.
+                  Your email app is opening. Send the drafted message to complete your request.
                 </p>
               </form>
             </div>
@@ -175,7 +178,7 @@ const privacyJsonLd = webPageJsonLd(
               appeal a compliance request, please contact our Data Protection Officer:
             </p>
             <div class="viking-card contact-card">
-              <p><strong>Email:</strong>&nbsp;<a href="mailto:support@dataengineeringformachinelearning.com">flow&#64;dataengineeringformachinelearning.com</a></p>
+              <p><strong>Email:</strong>&nbsp;<a href={`mailto:${supportEmail}`}>{supportEmail}</a></p>
               <p><strong>Address:</strong>&nbsp;No Address</p>
               <p><strong>Data protection officer contact:</strong>&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a></p>
             </div>
@@ -186,17 +189,33 @@ const privacyJsonLd = webPageJsonLd(
   </div>
 </Layout>
 
-<script>
+<script is:inline define:vars={{ supportEmail }}>
   document.addEventListener('DOMContentLoaded', () => {
     const gdprForm = document.getElementById('gdpr-form');
     const successCallout = document.getElementById('gdpr-success-callout');
-    if (gdprForm) {
+    if (gdprForm instanceof HTMLFormElement) {
       gdprForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        if (!gdprForm.reportValidity()) return;
+
+        const formData = new FormData(gdprForm);
+        const email = String(formData.get('email') || '').trim();
+        const requestType = String(formData.get('request_type') || '').trim();
+        const details = String(formData.get('details') || '').trim();
+        const subject = `Privacy request: ${requestType}`;
+        const body = [
+          `Request type: ${requestType}`,
+          `Reply-to email: ${email}`,
+          '',
+          'Additional details:',
+          details || 'None provided.',
+        ].join('\n');
+
         if (successCallout) {
           successCallout.hidden = false;
         }
-        gdprForm.reset();
+        window.location.href =
+          `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       });
     }
   });

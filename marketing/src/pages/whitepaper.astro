@@ -2,7 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
 import fs from 'node:fs';
-import { marked } from 'marked';
+import { loadBookHeadingTargets } from '../lib/book-chapters';
+import {
+  normalizePublicationAnchor,
+  renderPublicationMarkdown,
+} from '../lib/publication-markdown';
 import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
 
@@ -22,6 +26,8 @@ const rawMarkdown = fs.existsSync(whitepaperPath)
   : '# Whitepaper\n\nContent syncing from WHITEPAPER.md…';
 
 const rawSections = rawMarkdown.split(/(?=^## )/m).filter(Boolean);
+const bookHeadingTargets = loadBookHeadingTargets();
+const whitepaperHeadingCounts = new Map<string, number>();
 
 interface WhitepaperSection {
   title: string;
@@ -41,8 +47,18 @@ const sections: WhitepaperSection[] = rawSections.map(chunk => {
   const numMatch = title.match(/^(\d+)\.\s*/);
   const num = numMatch?.[1] ?? '';
   const label = title.replace(/^\d+\.\s*/, '');
-  const anchor = `section-${title.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}`;
-  return { title, html: marked.parse(trimmed) as string, num, label, anchor };
+  const anchor = `section-${normalizePublicationAnchor(title)}`;
+  return {
+    title,
+    html: renderPublicationMarkdown(trimmed, {
+      headingCounts: whitepaperHeadingCounts,
+      headingTargets: bookHeadingTargets,
+      stripLeadingH1: !titleLine.startsWith('## '),
+    }),
+    num,
+    label,
+    anchor,
+  };
 });
 
 const integrationPlatforms = [

@@ -16,4 +16,4 @@ and processing stay on FORJD.
 
 ## Operations guides
 
-See [docs/FLY.md](../../../docs/FLY.md) and [docs/VERCEL.md](../../../docs/VERCEL.md).
+See [docs/FLY.md](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/FLY.md) and [docs/VERCEL.md](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/VERCEL.md).

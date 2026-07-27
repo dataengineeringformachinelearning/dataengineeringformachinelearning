@@ -12,3 +12,23 @@ const currentYear = new Date().getFullYear();
   marketing-url={MARKETING_URL}
   year={currentYear}
 />
+
+<style>
+  /*
+   * A later, over-specific global link selector in the published bundle wins
+   * over `.footer-list a` and maps footer links to an accent that misses WCAG
+   * AA. Keep this token-only override scoped to the rendered footer DOM until
+   * the next Viking UI package release carries the corrected selector.
+   */
+  viking-site-footer :global(.footer-list a),
+  viking-site-footer :global(.copyright-text a) {
+    color: var(--viking-text) !important;
+  }
+
+  viking-site-footer :global(.footer-list a:hover),
+  viking-site-footer :global(.footer-list a:focus-visible),
+  viking-site-footer :global(.copyright-text a:hover),
+  viking-site-footer :global(.copyright-text a:focus-visible) {
+    color: var(--viking-text-link) !important;
+  }
+</style>

@@ -23,7 +23,17 @@
     deml_backend_pages: "https://backend.deml.app",
   };
 
+  const suiteOwnsSearch = () =>
+    window.__DEML_COMMAND_PALETTE_READY__ === true ||
+    Boolean(document.getElementById("deml-suite-command-palette"));
+
   const loadAlgoliaExperiences = () => {
+    // The suite palette already performs direct multi-index Algolia queries.
+    // Loading the legacy Experiences runtime as well creates a second search
+    // surface and currently emits a failed canary/runtime.js request.
+    if (suiteOwnsSearch()) {
+      return;
+    }
     if (document.querySelector("script[data-deml-algolia-experiences]")) {
       return;
     }
@@ -355,10 +365,6 @@
   window.DemlWidgets = window.DemlWidgets || {};
   // Prefer the suite command palette (curated + Algolia hits with real hrefs).
   // Experiences templates often omit <a href>; only own openSearch when suite is absent.
-  const suiteOwnsSearch = () =>
-    window.__DEML_COMMAND_PALETTE_READY__ === true ||
-    Boolean(document.getElementById("deml-suite-command-palette"));
-
   if (!suiteOwnsSearch()) {
     window.DemlWidgets.openSearch = focusAlgoliaSearch;
     window.DemlWidgets.closeSearch = closeSearch;

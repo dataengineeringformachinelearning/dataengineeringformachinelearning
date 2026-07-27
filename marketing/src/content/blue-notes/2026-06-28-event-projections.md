@@ -17,4 +17,4 @@ end-user auth and forwards with `fjsvc_`.
 
 ## Production checklist
 
-See [docs/PRODUCTION_CHECKLIST.md](../../../docs/PRODUCTION_CHECKLIST.md).
+See [docs/PRODUCTION_CHECKLIST.md](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/PRODUCTION_CHECKLIST.md).

@@ -17,4 +17,4 @@ FORJD with a tenant-bound `fjsvc_` token. FORJD materializes durable
 
 ## Integration guide
 
-See [docs/FORJD_INTEGRATION.md](../../../docs/FORJD_INTEGRATION.md).
+See [docs/FORJD_INTEGRATION.md](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/FORJD_INTEGRATION.md).
