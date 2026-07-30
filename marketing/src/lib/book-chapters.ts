@@ -1,5 +1,8 @@
 import fs from "node:fs";
-import { marked } from "marked";
+import {
+  collectPublicationHeadings,
+  renderPublicationMarkdown,
+} from "./publication-markdown.ts";
 
 export type ChapterGroup =
   | "Front Matter"
@@ -28,6 +31,10 @@ export const SIDEBAR_GROUPS: ChapterGroup[] = [
 
 const CHAPTER_SPLIT =
   /(?=^## (?:Chapter \d+:|Appendix|My Notes on Deployment & Release|Acknowledgements|Introduction|Concept of Operations))/m;
+
+interface BookChapterDraft extends Omit<BookChapter, "html"> {
+  markdown: string;
+}
 
 export function slugifyChapterTitle(title: string): string {
   const normalized = title
@@ -84,7 +91,7 @@ export const getChapterMeta = (
   };
 };
 
-export function loadBookChapters(markdownPath?: string): BookChapter[] {
+const loadBookDrafts = (markdownPath?: string): BookChapterDraft[] => {
   const pageMarkdownPath =
     markdownPath ?? `${process.cwd()}/src/assets/content/page.md`;
   const rawMarkdown = fs.readFileSync(pageMarkdownPath, "utf-8");
@@ -92,11 +99,11 @@ export function loadBookChapters(markdownPath?: string): BookChapter[] {
     .split(CHAPTER_SPLIT)
     .filter((chunk) => chunk.trim());
 
-  const chapters: BookChapter[] = [
+  const chapters: BookChapterDraft[] = [
     {
       slug: "cover",
       title: "Cover",
-      html: "",
+      markdown: "",
       index: 0,
       group: "Front Matter",
       num: "",
@@ -120,7 +127,7 @@ export function loadBookChapters(markdownPath?: string): BookChapter[] {
     chapters.push({
       slug: occurrence === 1 ? baseSlug : `${baseSlug}-${occurrence}`,
       title,
-      html: String(marked.parse(trimmed)),
+      markdown: trimmed,
       index: chapters.length,
       ...meta,
     });
@@ -130,7 +137,7 @@ export function loadBookChapters(markdownPath?: string): BookChapter[] {
     chapters.push({
       slug: "book-content",
       title: "Book Content",
-      html: String(marked.parse(rawMarkdown)),
+      markdown: rawMarkdown,
       index: 1,
       group: "Reference",
       num: "01",
@@ -139,4 +146,36 @@ export function loadBookChapters(markdownPath?: string): BookChapter[] {
   }
 
   return chapters;
+};
+
+export function loadBookHeadingTargets(
+  markdownPath?: string,
+): Map<string, string> {
+  const targets = new Map<string, string>();
+
+  for (const chapter of loadBookDrafts(markdownPath)) {
+    if (!chapter.markdown) continue;
+    for (const heading of collectPublicationHeadings(chapter.markdown)) {
+      if (!targets.has(heading.key)) {
+        targets.set(
+          heading.key,
+          `/book/${chapter.slug}/#${heading.id}`,
+        );
+      }
+    }
+  }
+
+  return targets;
+}
+
+export function loadBookChapters(markdownPath?: string): BookChapter[] {
+  const drafts = loadBookDrafts(markdownPath);
+  const headingTargets = loadBookHeadingTargets(markdownPath);
+
+  return drafts.map(({ markdown, ...chapter }) => ({
+    ...chapter,
+    html: markdown
+      ? renderPublicationMarkdown(markdown, { headingTargets })
+      : "",
+  }));
 }

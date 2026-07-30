@@ -8,8 +8,10 @@ import {
   webSiteJsonLd,
 } from '../lib/seo';
 
-const { FRONTEND_URL, MARKETING_URL } = siteEnv();
+const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
 const FORJD_URL = 'https://forjd.co';
+const platformStatusHref = `${FRONTEND_URL.replace(/\/$/, '')}/status/platform-status`;
+const platformStatusApi = `${BACKEND_URL.replace(/\/$/, '')}/api/v1/system-status/status_pages/slug/platform-status`;
 const pageTitle = 'Data Engineering for Machine Learning — Community';
 const pageDescription =
   'Community for learning data engineering for machine learning — with FORJD as the secure streaming data plane and DEML as the learning control-plane companion.';
@@ -141,5 +143,107 @@ const resources = [
         ))}
       </ul>
     </section>
+
+    <aside
+      class="suite-landing-meta landing__meta"
+      aria-label="Live DEML platform signals"
+      id="platform-status-summary"
+      data-state="loading"
+      data-status-api={platformStatusApi}
+    >
+      <div>
+        <span>Platform status</span>
+        <a href={platformStatusHref}>
+          <strong id="platform-status-value" aria-live="polite">Checking live status…</strong>
+        </a>
+      </div>
+      <div>
+        <span>30-day uptime</span>
+        <strong id="platform-uptime-value">—</strong>
+      </div>
+      <div>
+        <span>P99 latency</span>
+        <strong id="platform-latency-value">—</strong>
+      </div>
+      <div>
+        <span>Last checked</span>
+        <time id="platform-status-checked">Waiting for telemetry</time>
+      </div>
+    </aside>
   </div>
 </Layout>
+
+<script>
+  import { formatLatency, formatUptime } from '../lib/public-status';
+
+  (() => {
+    const summary = document.getElementById('platform-status-summary');
+    const statusValue = document.getElementById('platform-status-value');
+    const uptimeValue = document.getElementById('platform-uptime-value');
+    const latencyValue = document.getElementById('platform-latency-value');
+    const checkedValue = document.getElementById('platform-status-checked');
+    const platformStatusApi = summary?.dataset.statusApi;
+    let refreshing = false;
+
+    if (!summary || !statusValue || !uptimeValue || !latencyValue || !checkedValue || !platformStatusApi) {
+      return;
+    }
+
+    const formatStatus = (value: unknown) => {
+      const normalized = typeof value === 'string' ? value.replace(/[_-]+/g, ' ').trim() : '';
+      return normalized
+        ? normalized.replace(/\b\w/g, (letter) => letter.toUpperCase())
+        : 'Not reported';
+    };
+
+    const refreshStatus = async () => {
+      if (refreshing) return;
+      refreshing = true;
+      summary.dataset.state = 'loading';
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), 8000);
+
+      try {
+        const response = await fetch(platformStatusApi, {
+          cache: 'no-store',
+          headers: { Accept: 'application/json' },
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`Status request failed with ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const checkedAt = new Date();
+
+        statusValue.textContent = formatStatus(payload.overall_status);
+        uptimeValue.textContent = formatUptime(payload.overall_uptime);
+        latencyValue.textContent = formatLatency(payload.p99_latency);
+        checkedValue.textContent = checkedAt.toLocaleTimeString([], {
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+        checkedValue.setAttribute('datetime', checkedAt.toISOString());
+        summary.dataset.state = 'ready';
+      } catch {
+        statusValue.textContent = 'View platform status';
+        uptimeValue.textContent = 'Unavailable';
+        latencyValue.textContent = 'Unavailable';
+        checkedValue.textContent = 'Live telemetry unavailable';
+        checkedValue.removeAttribute('datetime');
+        summary.dataset.state = 'unavailable';
+      } finally {
+        window.clearTimeout(timeoutId);
+        refreshing = false;
+      }
+    };
+
+    void refreshStatus();
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void refreshStatus();
+      }
+    }, 60000);
+    window.addEventListener('pagehide', () => window.clearInterval(intervalId), { once: true });
+  })();
+</script>

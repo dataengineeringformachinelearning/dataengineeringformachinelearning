@@ -20,4 +20,4 @@ universal secure streaming engine: sealed ingest, projections, analytics, ML,
 and replay/DLQ via tenant-bound `fjsvc_` tokens.
 
 Production hosts: Angular on Vercel, Django on Fly, FORJD on Fly + Supabase.
-Integration contract: [docs/FORJD_INTEGRATION.md](../../../docs/FORJD_INTEGRATION.md).
+Integration contract: [docs/FORJD_INTEGRATION.md](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/FORJD_INTEGRATION.md).

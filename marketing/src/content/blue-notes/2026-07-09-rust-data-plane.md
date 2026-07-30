@@ -16,4 +16,4 @@ APIs. High-frequency sealed processing runs in FORJD’s Rust engine
 
 ## Integration guide
 
-See [docs/FORJD_INTEGRATION.md](../../../docs/FORJD_INTEGRATION.md).
+See [docs/FORJD_INTEGRATION.md](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/FORJD_INTEGRATION.md).

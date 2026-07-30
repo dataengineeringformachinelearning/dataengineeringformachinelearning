@@ -1,20 +1,191 @@
 (function () {
   const PREFS_KEY = 'deml_cookie_preferences';
+  const GA_MEASUREMENT_ID = 'G-MH3M99CQ80';
+  const CLARITY_PROJECT_ID = 'xddv4klojn';
+  const GA_SCRIPT_ID = 'deml-google-analytics';
+  const CLARITY_SCRIPT_ID = 'deml-microsoft-clarity';
+  let analyticsBooted = false;
+  let memoryPreferences = null;
+  let autoShowTimer = null;
 
   function getPreferences() {
     try {
       const stored = localStorage.getItem(PREFS_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        memoryPreferences = JSON.parse(stored);
+        return memoryPreferences;
       }
     } catch (e) {
       console.error('Failed to read cookie preferences', e);
     }
-    return null;
+    return memoryPreferences;
   }
 
   function setPreferences(prefs) {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    memoryPreferences = prefs;
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+      return true;
+    } catch (e) {
+      console.error('Failed to save cookie preferences', e);
+      return false;
+    }
+  }
+
+  function isAnalyticsCookie(name) {
+    return (
+      name === '_ga' ||
+      name.startsWith('_ga_') ||
+      name === '_gid' ||
+      name.startsWith('_gat') ||
+      name.startsWith('_gcl_') ||
+      name === '_clck' ||
+      name === '_clsk'
+    );
+  }
+
+  function cookieDomains() {
+    const hostname = window.location.hostname;
+    if (!hostname || hostname === 'localhost') {
+      return [''];
+    }
+
+    const domains = new Set(['', hostname, `.${hostname}`]);
+    const labels = hostname.split('.');
+    for (let index = 1; index < labels.length - 1; index += 1) {
+      const parent = labels.slice(index).join('.');
+      domains.add(parent);
+      domains.add(`.${parent}`);
+    }
+    return [...domains];
+  }
+
+  function clearAnalyticsCookies() {
+    const names = document.cookie
+      .split(';')
+      .map((cookie) => cookie.split('=', 1)[0].trim())
+      .filter(isAnalyticsCookie);
+
+    for (const name of new Set(names)) {
+      for (const domain of cookieDomains()) {
+        const domainAttribute = domain ? `; Domain=${domain}` : '';
+        const expired = `${name}=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/${domainAttribute}`;
+        document.cookie = `${expired}; SameSite=Lax`;
+        document.cookie = `${expired}; Secure; SameSite=None; Partitioned`;
+      }
+    }
+  }
+
+  function trackersArePresent() {
+    if (analyticsBooted) {
+      return true;
+    }
+    if (document.getElementById(GA_SCRIPT_ID) || document.getElementById(CLARITY_SCRIPT_ID)) {
+      return true;
+    }
+    return [...document.querySelectorAll('script[src]')].some((script) => {
+      const source = script.getAttribute('src') || '';
+      return source.includes('googletagmanager.com/gtag/js') || source.includes('clarity.ms/tag/');
+    });
+  }
+
+  function loadGoogleAnalytics() {
+    if (document.getElementById(GA_SCRIPT_ID)) {
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = GA_SCRIPT_ID;
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag =
+      window.gtag ||
+      function () {
+        window.dataLayer.push(arguments);
+      };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_MEASUREMENT_ID, {
+      cookie_flags: 'SameSite=None;Secure;Partitioned',
+    });
+  }
+
+  function loadMicrosoftClarity() {
+    if (document.getElementById(CLARITY_SCRIPT_ID)) {
+      return;
+    }
+
+    window.clarity =
+      window.clarity ||
+      function () {
+        (window.clarity.q = window.clarity.q || []).push(arguments);
+      };
+
+    const script = document.createElement('script');
+    script.id = CLARITY_SCRIPT_ID;
+    script.async = true;
+    script.src = `https://www.clarity.ms/tag/${CLARITY_PROJECT_ID}`;
+    document.head.appendChild(script);
+  }
+
+  function updateClarityConsent(prefs) {
+    if (typeof window.clarity !== 'function') {
+      return;
+    }
+    window.clarity('consentv2', {
+      analytics_Storage: prefs.analytical === true ? 'granted' : 'denied',
+      ad_Storage: prefs.marketing === true ? 'granted' : 'denied',
+    });
+  }
+
+  function applyPreferences(prefs, reloadOnRevoke = false) {
+    if (prefs && prefs.analytical === true) {
+      loadGoogleAnalytics();
+      loadMicrosoftClarity();
+      window.gtag('consent', 'update', {
+        analytics_storage: 'granted',
+        ad_storage: prefs.marketing === true ? 'granted' : 'denied',
+      });
+      updateClarityConsent(prefs);
+      analyticsBooted = true;
+    } else {
+      const shouldReload = reloadOnRevoke && trackersArePresent();
+      if (typeof window.gtag === 'function') {
+        window.gtag('consent', 'update', {
+          analytics_storage: 'denied',
+          ad_storage: 'denied',
+        });
+      }
+      if (typeof window.clarity === 'function') {
+        updateClarityConsent({ analytical: false, marketing: false });
+        // Consent V1 remains the documented erasure call until Microsoft
+        // provides an equivalent cookie-clearing command in Consent V2.
+        window.clarity('consent', false);
+      }
+      clearAnalyticsCookies();
+      if (shouldReload) {
+        window.location.reload();
+        return true;
+      }
+    }
+
+    window.dispatchEvent(
+      new CustomEvent('deml:cookie-preferences', {
+        detail: prefs || { analytical: false, marketing: false },
+      }),
+    );
+    return false;
+  }
+
+  function savePreferences(prefs) {
+    setPreferences(prefs);
+    cancelAutoShow();
+    const isReloading = applyPreferences(prefs, true);
+    if (!isReloading) {
+      closeBanner();
+    }
   }
 
   const css = `
@@ -111,15 +282,15 @@
     }
 
     .deml-cookie-description a {
-      color: var(--link-color, var(--viking-teal-400));
+      color: var(--viking-text-link, var(--viking-electric-300)) !important;
       text-decoration: none;
-      border-bottom: 1px solid var(--link-color, var(--viking-teal-400));
+      border-bottom: 1px solid currentColor;
       font-weight: 500;
     }
 
     .deml-cookie-description a:hover {
-      color: var(--link-hover-color, var(--viking-teal-500));
-      border-bottom-color: var(--link-hover-color, var(--viking-teal-500));
+      color: var(--viking-text-link-hover, var(--viking-electric-200)) !important;
+      border-bottom-color: currentColor;
     }
 
     .deml-cookie-form {
@@ -293,13 +464,13 @@
     }
 
     .deml-accept-btn {
-      background-color: var(--color-primary, var(--viking-teal-600));
+      background-color: var(--viking-electric-700);
       color: var(--viking-white-pure);
       border: none;
     }
 
     .deml-accept-btn:hover {
-      background-color: var(--viking-teal-400);
+      background-color: var(--viking-electric-600);
       color: var(--viking-white-pure);
     }
 
@@ -344,6 +515,13 @@
   let marketingConsent = currentPrefs ? currentPrefs.marketing : false;
 
   let overlayEl = null;
+
+  function cancelAutoShow() {
+    if (autoShowTimer !== null) {
+      clearTimeout(autoShowTimer);
+      autoShowTimer = null;
+    }
+  }
 
   function renderDialog() {
     if (overlayEl) {
@@ -490,22 +668,20 @@
     });
 
     rejectBtn.addEventListener('click', () => {
-      setPreferences({ analytical: false, marketing: false });
-      closeBanner();
+      savePreferences({ analytical: false, marketing: false });
     });
 
     saveBtn.addEventListener('click', () => {
-      setPreferences({ analytical: analyticalConsent, marketing: marketingConsent });
-      closeBanner();
+      savePreferences({ analytical: analyticalConsent, marketing: marketingConsent });
     });
 
     acceptBtn.addEventListener('click', () => {
-      setPreferences({ analytical: true, marketing: true });
-      closeBanner();
+      savePreferences({ analytical: true, marketing: true });
     });
   }
 
   function closeBanner() {
+    cancelAutoShow();
     if (overlayEl) {
       overlayEl.remove();
       overlayEl = null;
@@ -516,6 +692,7 @@
 
   window.DemlWidgets = window.DemlWidgets || {};
   window.DemlWidgets.openCookieSettings = function () {
+    cancelAutoShow();
     currentPrefs = getPreferences();
     if (currentPrefs) {
       analyticalConsent = currentPrefs.analytical;
@@ -524,7 +701,7 @@
       analyticalConsent = false;
       marketingConsent = false;
     }
-    showCustomize = true;
+    showCustomize = false;
     renderDialog();
     // Force open customize view
     const customizeBtn = overlayEl.querySelector('#deml-customize-btn');
@@ -548,10 +725,19 @@
     }
   };
 
+  // Apply saved consent before rendering any preference UI. With no consent,
+  // trackers stay unloaded and stale first-party analytics cookies are removed.
+  applyPreferences(currentPrefs);
+
   // Auto-show logic
-  if (getPreferences() === null) {
+  if (currentPrefs === null) {
     // Slight delay to allow layout to settle
-    setTimeout(renderDialog, 1000);
+    autoShowTimer = setTimeout(() => {
+      autoShowTimer = null;
+      if (getPreferences() === null && overlayEl === null) {
+        renderDialog();
+      }
+    }, 1000);
   }
 
   openCookieSettingsFromQuery();
