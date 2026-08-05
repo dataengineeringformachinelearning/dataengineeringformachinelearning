@@ -82,17 +82,18 @@ const resources = [
         <p class="type-intro">Two living systems for learning data engineering for ML.</p>
       </header>
       <div class="page-section__body">
-        <div class="card-grid">
+        <div class="card-grid" data-density="compact" data-columns="2">
           {platforms.map((item) => (
             <a
               class="card"
+              data-layout="teaser"
               href={item.href}
               {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             >
-              <header class="card__header">
-                <h3 class="card__title">{item.title}</h3>
-                <p class="card__description">{item.summary}</p>
-              </header>
+              <div class="card-copy">
+                <h3 class="card-heading">{item.title}</h3>
+                <p class="card-subtext">{item.summary}</p>
+              </div>
             </a>
           ))}
         </div>
@@ -105,13 +106,13 @@ const resources = [
         <p class="type-intro">Start here — notes, book, and whitepaper.</p>
       </header>
       <div class="page-section__body">
-        <div class="card-grid">
+        <div class="card-grid" data-density="compact" data-columns="3">
           {resources.map((item) => (
-            <a class="card" href={item.href}>
-              <header class="card__header">
-                <h3 class="card__title">{item.title}</h3>
-                <p class="card__description">{item.description}</p>
-              </header>
+            <a class="card" data-layout="teaser" href={item.href}>
+              <div class="card-copy">
+                <h3 class="card-heading">{item.title}</h3>
+                <p class="card-subtext">{item.description}</p>
+              </div>
             </a>
           ))}
         </div>
