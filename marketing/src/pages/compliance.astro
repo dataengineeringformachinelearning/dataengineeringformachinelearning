@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import VikingIcon from '../components/VikingIcon.astro';
 import PageMockup from '../components/PageMockup.astro';
 import { siteEnv } from '../lib/site-env';
 import { webPageJsonLd, canonicalHref } from '../lib/seo';
@@ -42,10 +41,9 @@ const complianceJsonLd = webPageJsonLd(
         </header>
 
         <div class="compliance-grid">
-          <section class="viking-card compliance-card" aria-labelledby="e2e-section-title">
+          <section class="card compliance-card" aria-labelledby="e2e-section-title">
             <div class="card-header">
-              <VikingIcon name="lock" size={20} class="icon-primary" />
-              <h2 id="e2e-section-title">End-to-End Encryption Controls</h2>
+                            <h2 id="e2e-section-title">End-to-End Encryption Controls</h2>
             </div>
             <p class="card-description">
               Reference controls for cryptographic assets and secure communications across
@@ -54,29 +52,25 @@ const complianceJsonLd = webPageJsonLd(
 
             <ul class="telemetry-list">
               <li>
-                <VikingIcon name="verified" size={20} class="icon-success" />
-                <div class="item-details">
+                                <div class="item-details">
                   <strong>Transport Security</strong>
                   <p>TLS 1.3 Active (RSA 2048-bit)</p>
                 </div>
               </li>
               <li>
-                <VikingIcon name="verified" size={20} class="icon-success" />
-                <div class="item-details">
+                                <div class="item-details">
                   <strong>Data at Rest</strong>
                   <p>AES-256 (Google Cloud KMS)</p>
                 </div>
               </li>
               <li>
-                <VikingIcon name="verified" size={20} class="icon-success" />
-                <div class="item-details">
+                                <div class="item-details">
                   <strong>Ingestion Integrity</strong>
                   <p>SHA-256 Checksums Verified</p>
                 </div>
               </li>
               <li>
-                <VikingIcon name="verified" size={20} class="icon-success" />
-                <div class="item-details">
+                                <div class="item-details">
                   <strong>Client Encryption Key Rotation</strong>
                   <p>
                     Automated 30-day cryptographic key rotation active (next rotation in 14 days).
@@ -86,10 +80,9 @@ const complianceJsonLd = webPageJsonLd(
             </ul>
           </section>
 
-          <section class="viking-card compliance-card" aria-labelledby="soc-section-title">
+          <section class="card compliance-card" aria-labelledby="soc-section-title">
             <div class="card-header">
-              <VikingIcon name="verified_user" size={20} class="icon-primary" />
-              <h2 id="soc-section-title">SOC 2 Readiness Model</h2>
+                            <h2 id="soc-section-title">SOC 2 Readiness Model</h2>
             </div>
             <div class="score-display">
               <div class="score-bar-bg" aria-hidden="true">
@@ -146,8 +139,7 @@ const complianceJsonLd = webPageJsonLd(
           </div>
 
           <div class="safety-warning-box" role="note" id="safety-warning">
-            <VikingIcon name="warning" size={20} class="warning-icon" />
-            <div class="warning-content">
+                        <div class="warning-content">
               <strong>Important Safety & Integrity Rail:</strong>
               <p>
                 This public walkthrough runs entirely in
@@ -157,8 +149,7 @@ const complianceJsonLd = webPageJsonLd(
               </p>
             </div>
             <button type="button" class="icon-button" id="dismiss-warning-btn" aria-label="Dismiss safety warning">
-              <VikingIcon name="close" size={20} />
-            </button>
+                          </button>
           </div>
 
           <div class="sharing-grid">
@@ -168,32 +159,27 @@ const complianceJsonLd = webPageJsonLd(
 
               <div class="target-selector" role="radiogroup" aria-label="Ingestion ISAC Target">
                 <button type="button" class="selector-btn active" data-isac="CISA" role="radio" aria-checked="true" tabindex="0">
-                  <VikingIcon name="account_balance" size={20} />
-                  <span>CISA AIS (TAXII)</span>
+                                    <span>CISA AIS (TAXII)</span>
                 </button>
                 <button type="button" class="selector-btn" data-isac="MS-ISAC" role="radio" aria-checked="false" tabindex="-1">
-                  <VikingIcon name="security" size={20} />
-                  <span>MS-ISAC</span>
+                                    <span>MS-ISAC</span>
                 </button>
                 <button type="button" class="selector-btn" data-isac="IT-ISAC" role="radio" aria-checked="false" tabindex="-1">
-                  <VikingIcon name="lan" size={20} />
-                  <span>IT-ISAC</span>
+                                    <span>IT-ISAC</span>
                 </button>
               </div>
 
               <div class="submit-action-box">
                 <button class="submit-report-btn" id="submit-threat-btn" type="button" aria-describedby="sandbox-mode-note">
-                  <VikingIcon name="send" size={20} />
-                  <span id="submit-btn-text">Run Sandbox Simulation</span>
+                                    <span id="submit-btn-text">Run Sandbox Simulation</span>
                 </button>
-                <a class="viking-btn viking-btn-outline" href={platformStatusHref}>View Live Status</a>
+                <a class="button button--secondary" href={platformStatusHref}>View Live Status</a>
                 <span class="mode-tag" id="sandbox-mode-note">Local demo · no network transmission</span>
               </div>
 
               <div class="submission-response is-hidden" role="status" id="submission-result">
                 <div class="response-header success">
-                  <VikingIcon name="check_circle" size={20} />
-                  <span>Sandbox walkthrough completed locally. No data was transmitted.</span>
+                                    <span>Sandbox walkthrough completed locally. No data was transmitted.</span>
                 </div>
                 <div class="transmission-logs">
                   <span class="logs-title">Pipeline Handshake Logs:</span>
@@ -317,12 +303,12 @@ const complianceJsonLd = webPageJsonLd(
   html[data-theme='light'] .compliance-hero-mockup .mockup-stat > span,
   html[data-theme='light'] .compliance-hero-mockup .mockup-stat > strong,
   html[data-theme='light'] #stix-payload-view {
-    color: var(--viking-white) !important;
+    color: var(--color-text) !important;
   }
 
   html[data-theme='light'] .status-indicator,
   html[data-theme='light'] .criteria-badge.success,
   html[data-theme='light'] #sandbox-mode-note {
-    color: color-mix(in srgb, var(--viking-green-500) 55%, var(--viking-black)) !important;
+    color: color-mix(in srgb, var(--color-success) 55%, var(--color-ground)) !important;
   }
 </style>

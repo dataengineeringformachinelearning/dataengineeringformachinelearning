@@ -1,7 +1,8 @@
 ---
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import '@dataengineeringformachinelearning/viking-ui/viking-ui.css';
+import 'deml-ui/styles.css';
+import '@fontsource-variable/geist/wght.css';
 import { algoliaEnv } from '../lib/site-env';
 import {
 	SITE_NAME,
@@ -51,17 +52,6 @@ const jsonLdPayload = jsonLd
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!-- Critical Inter roman before CSS -->
-		<link
-			rel="preload"
-			href="/fonts/inter/InterVariable.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
-		<!-- suite-fonts first: absolute /fonts/inter/ (forjd.co parity) -->
-		<link rel="stylesheet" href="/assets/suite-fonts.css" />
-
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
@@ -109,8 +99,8 @@ const jsonLdPayload = jsonLd
 			<script type="application/ld+json" set:html={JSON.stringify(jsonLdPayload.length === 1 ? jsonLdPayload[0] : jsonLdPayload)} />
 		)}
 
-		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#D4CEC5" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#35312D" media="(prefers-color-scheme: dark)" />
 		<meta name="color-scheme" content="light dark" />
 
 		<script is:inline>
@@ -132,16 +122,12 @@ const jsonLdPayload = jsonLd
 			})();
 		</script>
 
-		<script>
-			import '@dataengineeringformachinelearning/viking-ui/web-components.js';
-		</script>
 		<script is:inline define:vars={{ algolia }}>
 			window.ALGOLIA_CONFIG = {
 				appId: algolia.APP_ID,
 				apiKey: algolia.API_KEY,
 				experienceId: algolia.EXPERIENCE_ID,
 				env: algolia.ENV,
-				// Live multi-index search for suite command palette
 				indexNames: [
 					'dataengineeringformachinelearning_com_zjafyosh2v_pages',
 					'deml_app_pages',
@@ -152,17 +138,14 @@ const jsonLdPayload = jsonLd
 					'https://deml.app',
 					'https://dataengineeringformachinelearning.com',
 					'https://backend.deml.app',
-					'https://deml.app',
 				],
 				sitemaps: [
 					'https://deml.app/sitemap.xml',
 					'https://dataengineeringformachinelearning.com/sitemap-index.xml',
 					'https://backend.deml.app/sitemap.xml',
-					'https://deml.app/sitemap.xml',
 				],
 			};
 			window.__DEML = window.__DEML || {};
-			// Suite command palette owns search (curated routes + live Algolia hits).
 			window.__DEML.USE_ALGOLIA_SEARCH = false;
 			window.__DEML.MARKETING_URL = 'https://dataengineeringformachinelearning.com';
 			window.__DEML.FRONTEND_URL = 'https://deml.app';
@@ -173,40 +156,12 @@ const jsonLdPayload = jsonLd
 			import '../scripts/monitoring-init';
 		</script>
 	</head>
-	<body class="viking-ui-body">
+	<body>
 		<a href="#main-content" class="skip-link">Skip to main content</a>
 		<Navbar />
 		<main id="main-content" tabindex="-1">
 			<slot />
 		</main>
 		<Footer />
-
 	</body>
 </html>
-
-<style is:global>
-	/*
-	 * Viking UI 10 currently appends an over-specific generic anchor selector
-	 * that replaces the dedicated, contrast-safe link token with the darker
-	 * accent token. Scope the compatibility fix to ordinary content links;
-	 * navigation and button-shaped links retain their component recipes.
-	 */
-	main a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
-		color: var(--viking-text-link) !important;
-	}
-
-	main a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):hover,
-	main a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):focus-visible {
-		color: var(--viking-text-link-hover) !important;
-	}
-
-	/* Accent-colored small text needs the contrast-safe text role as well. */
-	.blog-archive-index,
-	.blue-note-outline-label,
-	.publication-toc .toc-num,
-	.publication-progress .progress-percentage,
-	.score-labels .percentage,
-	.selector-btn.active {
-		color: var(--viking-text-link) !important;
-	}
-</style>

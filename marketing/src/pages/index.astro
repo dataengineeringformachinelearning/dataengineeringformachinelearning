@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import VikingIcon from '../components/VikingIcon.astro';
 import { siteEnv } from '../lib/site-env';
 import {
   DEFAULT_KEYWORDS,
@@ -8,56 +7,44 @@ import {
   webSiteJsonLd,
 } from '../lib/seo';
 
-const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
-const FORJD_URL = 'https://forjd.co';
+const { FRONTEND_URL, MARKETING_URL } = siteEnv();
+const FORJD_URL = 'https://backend.forjd.co';
 const platformStatusHref = `${FRONTEND_URL.replace(/\/$/, '')}/status/platform-status`;
-const platformStatusApi = `${BACKEND_URL.replace(/\/$/, '')}/api/v1/system-status/status_pages/slug/platform-status`;
 const pageTitle = 'Data Engineering for Machine Learning — Community';
 const pageDescription =
-  'Community for learning data engineering for machine learning — with FORJD as the secure streaming data plane and DEML as the learning control-plane companion.';
+  'Learn data engineering for machine learning with living platforms — FORJD for secure streaming, DEML for the learning control plane.';
 const homeJsonLd = [organizationJsonLd(MARKETING_URL), webSiteJsonLd(MARKETING_URL)];
 
-const showcases = [
+const platforms = [
   {
-    id: 'forjd',
-    tag: 'PRIMARY · DATA PLANE',
     title: 'FORJD',
-    summary:
-      'Universal secure streaming engine — sealed ingest, YAML workflows, durable projections, analytics, and a Rust hot path for production pipelines.',
+    summary: 'Secure streaming engine for sealed ingest, workflows, and production pipelines.',
     href: FORJD_URL,
-    cta: 'Open FORJD',
-    icon: 'hub',
+    external: true,
   },
   {
-    id: 'deml',
-    tag: 'LEARNING · CONTROL PLANE',
     title: 'DEML',
-    summary:
-      'Learning library and Firebase-authenticated control plane — identity, billing, consent, dashboards, and status surfaces that call FORJD.',
+    summary: 'Learning control plane — identity, dashboards, and status that call FORJD.',
     href: FRONTEND_URL,
-    cta: 'Open DEML',
-    icon: 'analytics',
+    external: false,
   },
 ] as const;
 
 const resources = [
   {
     title: 'Blue Notes',
-    description: 'Field logs and community changelog from the practice of data engineering for ML.',
+    description: 'Field notes from building data platforms for ML.',
     href: '/blog/',
-    icon: 'insights',
   },
   {
     title: 'Book',
-    description: 'Architecture narrative and operational chapters for the community.',
+    description: 'Architecture narrative and operational chapters.',
     href: '/book',
-    icon: 'description',
   },
   {
     title: 'Whitepaper',
-    description: 'Concise value proposition and diagrams for defendable data platforms.',
+    description: 'A short brief on defendable data platforms.',
     href: '/whitepaper',
-    icon: 'policy',
   },
 ] as const;
 ---
@@ -68,182 +55,71 @@ const resources = [
   keywords={`${DEFAULT_KEYWORDS}, community, learning, open examples`}
   jsonLd={homeJsonLd}
 >
-  <div class="page-inner-wrapper landing-container showcase-layout community-home suite-landing fj-landing">
-    <section class="suite-landing-hero viking-unified-hero landing__hero" aria-labelledby="main-title">
-      <p class="suite-landing-badge hero-badge viking-unified-hero-badge community-eyebrow">
-        <span class="badge-dot pulse-dot"></span>
-        <span class="badge-text">Community · Practice · Platforms</span>
+  <div class="page-inner-wrapper">
+    <section class="banner banner--hero" aria-labelledby="main-title">
+      <p class="preheader">Community</p>
+      <h1 class="banner-heading" id="main-title">Data Engineering for Machine Learning</h1>
+      <p class="lede">
+        Learn the practice with living platforms — field notes, a book, and systems you can actually run.
       </p>
-      <p class="suite-landing-mark-label">Community</p>
-      <h1 class="title viking-unified-hero-title suite-landing-headline landing__hero-line" id="main-title">
-        Data Engineering for Machine Learning
-      </h1>
-      <p class="subtitle viking-unified-hero-lead suite-landing-lede landing__lede">
-        Learn and build the practice of data engineering for machine learning — share field notes,
-        study living reference platforms, and grow skills that hold up under production pressure.
-      </p>
-      <div class="cta-group viking-unified-hero-actions suite-landing-actions landing__actions">
-        <a class="suite-btn viking-btn fj-btn viking-btn-primary" data-variant="primary" href={FORJD_URL}
-          >Open FORJD</a
-        >
-        <a class="suite-btn viking-btn fj-btn viking-btn-outline" data-variant="outline" href={FRONTEND_URL}
-          >Open DEML</a
-        >
-        <a class="suite-btn viking-btn fj-btn viking-btn-ghost" data-variant="ghost" href="/blog/"
-          >Blue Notes</a
-        >
+      <div class="banner-actions">
+        <div class="button-group">
+          <a class="button button--primary" href={FRONTEND_URL}>Open DEML</a>
+          <a
+            class="button button--secondary"
+            href={FORJD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >FORJD API</a>
+          <a class="button button--secondary" href="/blog/">Blue Notes</a>
+        </div>
       </div>
     </section>
 
-    <section class="community-showcases" aria-labelledby="showcases-title">
-      <header class="viking-unified-section-header suite-landing-section-header">
-        <span class="section-tag suite-landing-tag">OPEN EXAMPLES</span>
-        <h2 id="showcases-title" class="suite-landing-section-title">Reference platforms</h2>
-        <p class="suite-landing-section-lede">
-          Two production systems the community uses as living examples — a control plane and a
-          streaming data plane.
-        </p>
+    <section class="page-section" aria-labelledby="platforms-title">
+      <header class="section-header">
+        <h2 class="type-display" id="platforms-title">Platforms</h2>
+        <p class="type-intro">Two living systems for learning data engineering for ML.</p>
       </header>
-      <div class="community-showcase-grid suite-landing-grid viking-panel-grid" data-columns="2">
-        {showcases.map((item) => (
-          <a class="community-showcase-card viking-card suite-card fj-card" href={item.href}>
-            <span class="section-tag suite-landing-tag">{item.tag}</span>
-            <div class="community-showcase-card-title">
-              <VikingIcon name={item.icon} size={24} />
-              <h3>{item.title}</h3>
-            </div>
-            <p>{item.summary}</p>
-            <span class="community-showcase-cta suite-link">
-              {item.cta}
-              <VikingIcon name="chevron_right" size={18} />
-            </span>
-          </a>
-        ))}
-      </div>
-    </section>
-
-    <section class="community-resources" aria-labelledby="resources-title">
-      <header class="viking-unified-section-header suite-landing-section-header">
-        <span class="section-tag suite-landing-tag">RESOURCES</span>
-        <h2 id="resources-title" class="suite-landing-section-title">Learn with the community</h2>
-        <p class="suite-landing-section-lede">Field notes, the book, and the whitepaper — community content without product chrome.</p>
-      </header>
-      <ul class="community-resource-list viking-stack suite-stack">
-        {resources.map((item) => (
-          <li>
-            <a class="community-resource-link viking-card suite-card fj-card" href={item.href}>
-              <VikingIcon name={item.icon} size={20} />
-              <div>
-                <strong>{item.title}</strong>
-                <span>{item.description}</span>
-              </div>
-              <VikingIcon name="chevron_right" size={18} class="community-resource-arrow" />
+      <div class="page-section__body">
+        <div class="card-grid">
+          {platforms.map((item) => (
+            <a
+              class="card"
+              href={item.href}
+              {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
+              <header class="card__header">
+                <h3 class="card__title">{item.title}</h3>
+                <p class="card__description">{item.summary}</p>
+              </header>
             </a>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </div>
     </section>
 
-    <aside
-      class="suite-landing-meta landing__meta"
-      aria-label="Live DEML platform signals"
-      id="platform-status-summary"
-      data-state="loading"
-      data-status-api={platformStatusApi}
-    >
-      <div>
-        <span>Platform status</span>
-        <a href={platformStatusHref}>
-          <strong id="platform-status-value" aria-live="polite">Checking live status…</strong>
-        </a>
+    <section class="page-section" aria-labelledby="resources-title">
+      <header class="section-header">
+        <h2 class="type-display" id="resources-title">Resources</h2>
+        <p class="type-intro">Start here — notes, book, and whitepaper.</p>
+      </header>
+      <div class="page-section__body">
+        <div class="card-grid">
+          {resources.map((item) => (
+            <a class="card" href={item.href}>
+              <header class="card__header">
+                <h3 class="card__title">{item.title}</h3>
+                <p class="card__description">{item.description}</p>
+              </header>
+            </a>
+          ))}
+        </div>
       </div>
-      <div>
-        <span>30-day uptime</span>
-        <strong id="platform-uptime-value">—</strong>
-      </div>
-      <div>
-        <span>P99 latency</span>
-        <strong id="platform-latency-value">—</strong>
-      </div>
-      <div>
-        <span>Last checked</span>
-        <time id="platform-status-checked">Waiting for telemetry</time>
-      </div>
-    </aside>
+    </section>
+
+    <p>
+      <a href={platformStatusHref}>DEML platform status</a>
+    </p>
   </div>
 </Layout>
-
-<script>
-  import { formatLatency, formatUptime } from '../lib/public-status';
-
-  (() => {
-    const summary = document.getElementById('platform-status-summary');
-    const statusValue = document.getElementById('platform-status-value');
-    const uptimeValue = document.getElementById('platform-uptime-value');
-    const latencyValue = document.getElementById('platform-latency-value');
-    const checkedValue = document.getElementById('platform-status-checked');
-    const platformStatusApi = summary?.dataset.statusApi;
-    let refreshing = false;
-
-    if (!summary || !statusValue || !uptimeValue || !latencyValue || !checkedValue || !platformStatusApi) {
-      return;
-    }
-
-    const formatStatus = (value: unknown) => {
-      const normalized = typeof value === 'string' ? value.replace(/[_-]+/g, ' ').trim() : '';
-      return normalized
-        ? normalized.replace(/\b\w/g, (letter) => letter.toUpperCase())
-        : 'Not reported';
-    };
-
-    const refreshStatus = async () => {
-      if (refreshing) return;
-      refreshing = true;
-      summary.dataset.state = 'loading';
-      const controller = new AbortController();
-      const timeoutId = window.setTimeout(() => controller.abort(), 8000);
-
-      try {
-        const response = await fetch(platformStatusApi, {
-          cache: 'no-store',
-          headers: { Accept: 'application/json' },
-          signal: controller.signal,
-        });
-        if (!response.ok) {
-          throw new Error(`Status request failed with ${response.status}`);
-        }
-
-        const payload = await response.json();
-        const checkedAt = new Date();
-
-        statusValue.textContent = formatStatus(payload.overall_status);
-        uptimeValue.textContent = formatUptime(payload.overall_uptime);
-        latencyValue.textContent = formatLatency(payload.p99_latency);
-        checkedValue.textContent = checkedAt.toLocaleTimeString([], {
-          hour: 'numeric',
-          minute: '2-digit',
-        });
-        checkedValue.setAttribute('datetime', checkedAt.toISOString());
-        summary.dataset.state = 'ready';
-      } catch {
-        statusValue.textContent = 'View platform status';
-        uptimeValue.textContent = 'Unavailable';
-        latencyValue.textContent = 'Unavailable';
-        checkedValue.textContent = 'Live telemetry unavailable';
-        checkedValue.removeAttribute('datetime');
-        summary.dataset.state = 'unavailable';
-      } finally {
-        window.clearTimeout(timeoutId);
-        refreshing = false;
-      }
-    };
-
-    void refreshStatus();
-    const intervalId = window.setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        void refreshStatus();
-      }
-    }, 60000);
-    window.addEventListener('pagehide', () => window.clearInterval(intervalId), { once: true });
-  })();
-</script>

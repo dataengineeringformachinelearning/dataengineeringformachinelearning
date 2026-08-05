@@ -134,19 +134,7 @@ for (const file of htmlFiles.sort()) {
       controls.push({ tag, attrs });
     }
 
-    if (
-      ["viking-button-wc", "viking-theme-toggle-wc"].includes(tag) &&
-      attrs.role === "button"
-    ) {
-      errors.push(
-        describe(
-          file,
-          `<${tag}> must not declare role="button" because it renders a native control`,
-        ),
-      );
-    }
-
-    if (tag === "button" || tag === "viking-button-wc" || tag === "viking-theme-toggle-wc") {
+    if (tag === "button") {
       const hasName =
         Boolean(attrs["aria-label"]?.trim()) || Boolean(textContent(node).trim());
       if (!hasName) {

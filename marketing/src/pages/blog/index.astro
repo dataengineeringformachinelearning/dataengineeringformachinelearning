@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import VikingIcon from '../../components/VikingIcon.astro';
 import { blueNoteHref, formatBlueNoteDate, getBlueNotes } from '../../lib/blue-notes';
 import { canonicalHref, webPageJsonLd } from '../../lib/seo';
 import { siteEnv } from '../../lib/site-env';
@@ -49,8 +48,7 @@ const pageJsonLd = [
     <header class="blog-command-hero">
       <div class="blog-command-copy">
         <div class="blue-notes-kicker">
-          <VikingIcon name="insights" size={20} color="accent" />
-          <span>DEML Field Log · Built in public</span>
+                    <span>DEML Field Log · Built in public</span>
         </div>
         <h1><span>Blue Notes</span>Engineering, in the open.</h1>
         <p>
@@ -58,9 +56,8 @@ const pageJsonLd = [
           and the details that turn a platform into durable infrastructure.
         </p>
         <div class="blog-command-actions">
-          <a class="viking-btn viking-btn-primary" href="#latest-dispatch">Read the latest</a>
-          <a class="viking-btn viking-btn-outline" href="/blog/rss.xml">
-            <VikingIcon name="send" size={18} /> Follow via RSS
+          <a class="button button--primary" href="#latest-dispatch">Read the latest</a>
+          <a class="button button--secondary" href="/blog/rss.xml"> Follow via RSS
           </a>
         </div>
       </div>
@@ -95,11 +92,11 @@ const pageJsonLd = [
           </div>
           <span class="blog-section-rule" aria-hidden="true"></span>
         </header>
-        <article class="viking-card blog-lead-card">
+        <article class="card blog-lead-card">
           <span class="blog-lead-index" aria-hidden="true">01</span>
           <div class="blog-lead-copy">
             <div class="blog-note-meta">
-              <span class="viking-badge viking-badge-accent">{leadNote.data.note}</span>
+              <span class="badge">{leadNote.data.note}</span>
               <time datetime={leadNote.data.publishedAt.toISOString()}>
                 {formatBlueNoteDate(leadNote.data.publishedAt)}
               </time>
@@ -111,8 +108,7 @@ const pageJsonLd = [
                 {leadNote.data.categories.map(category => <li>{category}</li>)}
               </ul>
               <a class="blog-read-cue" href={blueNoteHref(leadNote)} aria-label={`Read ${leadNote.data.title}`}>
-                Open dispatch <VikingIcon name="chevron_right" size={18} />
-              </a>
+                Open dispatch</a>
             </footer>
           </div>
         </article>
@@ -130,7 +126,7 @@ const pageJsonLd = [
         </header>
         <div class="blog-spotlight-grid">
           {spotlightNotes.map((note, index) => (
-            <article class="viking-card blog-spotlight-card">
+            <article class="card blog-spotlight-card">
               <div class="blog-note-meta">
                 <span>{String(index + 2).padStart(2, '0')} / {note.data.note}</span>
                 <time datetime={note.data.publishedAt.toISOString()}>
@@ -140,8 +136,7 @@ const pageJsonLd = [
               <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
               <p>{note.data.summary}</p>
               <a class="blog-read-cue" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
-                Read the note <VikingIcon name="chevron_right" size={18} />
-              </a>
+                Read the note</a>
             </article>
           ))}
         </div>
@@ -173,9 +168,7 @@ const pageJsonLd = [
                 <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
                 <p>{note.data.summary}</p>
               </div>
-              <a class="blog-archive-arrow" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
-                <VikingIcon name="arrow_forward" size={20} />
-              </a>
+              <a class="blog-archive-arrow" href={blueNoteHref(note)}>Read</a>
             </article>
           </li>
         ))}
@@ -184,18 +177,16 @@ const pageJsonLd = [
 
     <!-- Actions -->
     <div class="blog-actions">
-      <a class="viking-btn viking-btn-outline" href="/blog/rss.xml">
-        <VikingIcon name="send" size={18} />
-        Follow the RSS feed
+      <a class="button button--secondary" href="/blog/rss.xml">
+                Follow the RSS feed
       </a>
       <a
-        class="viking-btn viking-btn-ghost"
+        class="button button--secondary"
         href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <VikingIcon name="terminal" size={18} />
-        View the engineering record
+                View the engineering record
       </a>
     </div>
 

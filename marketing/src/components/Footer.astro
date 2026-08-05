@@ -1,34 +1,54 @@
 ---
 import { siteEnv } from '../lib/site-env';
 
-const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
+const { FRONTEND_URL } = siteEnv();
 const currentYear = new Date().getFullYear();
+const FORJD_API_URL = 'https://backend.forjd.co';
+const platformStatusHref = `${FRONTEND_URL.replace(/\/$/, '')}/status/platform-status`;
 ---
 
-<viking-site-footer
-  context="marketing"
-  app-url={FRONTEND_URL}
-  backend-url={BACKEND_URL}
-  marketing-url={MARKETING_URL}
-  year={currentYear}
-/>
-
-<style>
-  /*
-   * A later, over-specific global link selector in the published bundle wins
-   * over `.footer-list a` and maps footer links to an accent that misses WCAG
-   * AA. Keep this token-only override scoped to the rendered footer DOM until
-   * the next Viking UI package release carries the corrected selector.
-   */
-  viking-site-footer :global(.footer-list a),
-  viking-site-footer :global(.copyright-text a) {
-    color: var(--viking-text) !important;
-  }
-
-  viking-site-footer :global(.footer-list a:hover),
-  viking-site-footer :global(.footer-list a:focus-visible),
-  viking-site-footer :global(.copyright-text a:hover),
-  viking-site-footer :global(.copyright-text a:focus-visible) {
-    color: var(--viking-text-link) !important;
-  }
-</style>
+<footer class="site-footer">
+	<div class="site-footer__inner">
+		<nav class="site-footer__directory" aria-label="Footer">
+			<div class="site-footer__column">
+				<h2 class="site-footer__heading">Platforms</h2>
+				<ul class="site-footer__list">
+					<li><a href={FRONTEND_URL}>DEML</a></li>
+					<li>
+						<a href={FORJD_API_URL} target="_blank" rel="noopener noreferrer">FORJD API</a>
+					</li>
+				</ul>
+			</div>
+			<div class="site-footer__column">
+				<h2 class="site-footer__heading">Resources</h2>
+				<ul class="site-footer__list">
+					<li><a href="/blog/">Blue Notes</a></li>
+					<li><a href="/book">Book</a></li>
+					<li><a href="/whitepaper">Whitepaper</a></li>
+				</ul>
+			</div>
+			<div class="site-footer__column">
+				<h2 class="site-footer__heading">Support</h2>
+				<ul class="site-footer__list">
+					<li><a href={platformStatusHref}>Platform Status</a></li>
+				</ul>
+			</div>
+			<div class="site-footer__column">
+				<h2 class="site-footer__heading">Legal &amp; Compliance</h2>
+				<ul class="site-footer__list">
+					<li><a href="/privacy">Privacy Policy</a></li>
+					<li><a href="/terms">Terms of Service</a></li>
+					<li><a href="/compliance">Compliance</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div class="site-footer__bottom">
+			<p class="site-footer__badge">Made in the U.S.A.</p>
+			<p class="site-footer__copy">
+				Copyright © {currentYear} Data Engineering for Machine Learning by
+				<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>.
+				All rights reserved.
+			</p>
+		</div>
+	</div>
+</footer>

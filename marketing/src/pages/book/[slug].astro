@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import VikingIcon from '../../components/VikingIcon.astro';
 import { loadBookChapters, SIDEBAR_GROUPS } from '../../lib/book-chapters';
 import { bookJsonLd, canonicalHref } from '../../lib/seo';
 import { siteEnv } from '../../lib/site-env';
@@ -36,8 +35,7 @@ const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
     <aside class="dashboard-sidebar no-print">
       <a href="/book/" class="sidebar-search sidebar-extracted-1 book-toc-link">
         <div class="search-wrapper">
-          <VikingIcon name="menu_book" size={20} />
-          <span class="sidebar-search-placeholder">All chapters</span>
+                    <span class="sidebar-search-placeholder">All chapters</span>
         </div>
       </a>
 
@@ -97,13 +95,12 @@ const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
           <div class="publication-body">
             {chapter.slug === 'cover' ? (
               <div class="book-cover-page">
-                <div class="viking-card book-cover-card">
+                <div class="card book-cover-card">
                   <div class="book-cover-spine"></div>
                   <div class="book-cover-binding"></div>
                   <div class="book-cover-inner">
                     <div class="book-cover-label">Interactive Guide</div>
-                    <VikingIcon name="drakkar" size={72} color="accent" class="book-cover-logo" />
-                    <h1 class="book-cover-title">
+                                        <h1 class="book-cover-title">
                       Data Engineering<br />for Machine Learning
                     </h1>
                     <p class="book-cover-subtitle">Building High-Throughput Event Platforms</p>
@@ -126,11 +123,11 @@ const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
           <nav class="publication-pagination no-print" aria-label="Chapter navigation">
             {chapter.index > 0 ? (
               <a class="pagination-btn" href={`/book/${chapters[chapter.index - 1].slug}/`}>
-                <VikingIcon name="chevron_left" size={20} /> Previous
+                 Previous
               </a>
             ) : (
               <span class="pagination-btn" aria-disabled="true">
-                <VikingIcon name="chevron_left" size={20} /> Previous
+                 Previous
               </span>
             )}
             <span class="page-counter">
@@ -138,12 +135,10 @@ const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
             </span>
             {chapter.index < chapters.length - 1 ? (
               <a class="pagination-btn" href={`/book/${chapters[chapter.index + 1].slug}/`}>
-                Next <VikingIcon name="chevron_right" size={20} />
-              </a>
+                Next               </a>
             ) : (
               <span class="pagination-btn" aria-disabled="true">
-                Next <VikingIcon name="chevron_right" size={20} />
-              </span>
+                Next               </span>
             )}
           </nav>
         </article>

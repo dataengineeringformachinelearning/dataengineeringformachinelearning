@@ -1,14 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import VikingIcon from '../components/VikingIcon.astro';
 
 // Auto-redirect to homepage after 3 seconds for cleaner UX
-// User still sees 404 content but is automatically redirected
 const redirectUrl = '/';
 ---
 
 <script define:vars={{ redirectUrl }}>
-  // Auto-redirect to homepage after brief delay for cleaner UX
   setTimeout(() => {
     window.location.href = redirectUrl;
   }, 3000);
@@ -19,19 +16,19 @@ const redirectUrl = '/';
   description="The requested DEML marketing page could not be found. Redirecting to homepage."
   robots="noindex, nofollow"
 >
-  <div class="dashboard-page-container">
-    <div class="page-inner-wrapper marketing-not-found">
-    <VikingIcon name="error_outline" size={20} class="marketing-not-found-icon" />
-    <h1 class="marketing-not-found-code">404</h1>
-    <h2 class="marketing-not-found-title">Page Not Found</h2>
-    <p class="marketing-not-found-message">
-      The page you are looking for does not exist, has been moved, or you might have mistyped the URL.
-    </p>
-    <p class="marketing-not-found-redirect" aria-live="polite">Redirecting to <a href="/">homepage</a> in 3 seconds...</p>
-    <a href="/" class="viking-btn viking-btn-primary">
-      <VikingIcon name="home" size={20} />
-      Return Home Now
-    </a>
-    </div>
+  <div class="page-inner-wrapper">
+    <section class="banner" aria-labelledby="not-found-title">
+      <p class="preheader">404</p>
+      <h1 class="banner-heading" id="not-found-title">Page not found</h1>
+      <p class="lede">
+        The page you are looking for does not exist, has been moved, or the URL might be mistyped.
+      </p>
+      <p aria-live="polite">Redirecting to <a href="/">homepage</a> in 3 seconds…</p>
+      <div class="banner-actions">
+        <div class="button-group">
+          <a href="/" class="button button--primary">Return home</a>
+        </div>
+      </div>
+    </section>
   </div>
 </Layout>

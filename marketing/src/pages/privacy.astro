@@ -54,21 +54,21 @@ const supportEmail = 'support@dataengineeringformachinelearning.com';
               files stored on your device.
             </p>
             <div class="cookie-types-grid">
-              <div class="viking-card cookie-card">
+              <div class="card cookie-card">
                 <h3>Strictly Necessary</h3>
                 <p>
                   Essential for basic security, user sessions, and core navigation. These cannot be
                   disabled.
                 </p>
               </div>
-              <div class="viking-card cookie-card">
+              <div class="card cookie-card">
                 <h3>Performance & Analytics</h3>
                 <p>
                   Track load times, network response, and system telemetry to help us diagnose issues
                   and optimize API queries.
                 </p>
               </div>
-              <div class="viking-card cookie-card">
+              <div class="card cookie-card">
                 <h3>Marketing & Preferences</h3>
                 <p>
                   Customize system status indicators, layout preferences, and remember theme
@@ -79,7 +79,7 @@ const supportEmail = 'support@dataengineeringformachinelearning.com';
 
             <div class="cookie-action-box">
               <p>You can adjust, enable, or revoke your cookie choices at any time.</p>
-              <button type="button" class="viking-btn viking-btn-primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
+              <button type="button" class="button button--primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
                 Manage Cookie Preferences
               </button>
             </div>
@@ -100,7 +100,7 @@ const supportEmail = 'support@dataengineeringformachinelearning.com';
               <li><strong>Right to Data Portability:</strong> Request transmission of your data to another organization in a structured format.</li>
             </ul>
 
-            <div class="viking-card compliance-form-card" id="gdpr-request-form-card">
+            <div class="card compliance-form-card" id="gdpr-request-form-card">
               <h3>GDPR Data Request Center</h3>
               <p class="form-instruction">
                 Use this form to request an export or permanent deletion of any personal data
@@ -130,7 +130,7 @@ const supportEmail = 'support@dataengineeringformachinelearning.com';
                   <textarea id="gdpr-details" name="details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
                 </div>
 
-                <button type="submit" class="viking-btn viking-btn-secondary" id="privacy-submit-gdpr-request">
+                <button type="submit" class="button button--secondary" id="privacy-submit-gdpr-request">
                   Submit Compliance Request
                 </button>
                 <p class="gdpr-success-callout" id="gdpr-success-callout" role="status" hidden>
@@ -177,7 +177,7 @@ const supportEmail = 'support@dataengineeringformachinelearning.com';
               If you have any questions regarding this Privacy Policy, your cookie choices, or wish to
               appeal a compliance request, please contact our Data Protection Officer:
             </p>
-            <div class="viking-card contact-card">
+            <div class="card contact-card">
               <p><strong>Email:</strong>&nbsp;<a href={`mailto:${supportEmail}`}>{supportEmail}</a></p>
               <p><strong>Address:</strong>&nbsp;No Address</p>
               <p><strong>Data protection officer contact:</strong>&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a></p>

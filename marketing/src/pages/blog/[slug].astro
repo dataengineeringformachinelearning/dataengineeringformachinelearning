@@ -1,7 +1,6 @@
 ---
 import { render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import VikingIcon from '../../components/VikingIcon.astro';
 import {
   blueNoteHref,
   formatBlueNoteDate,
@@ -55,14 +54,14 @@ const jsonLd = blogPostingJsonLd(
     <div class="page-inner-wrapper blue-note-detail-wrapper">
       <nav class="blue-note-breadcrumbs" aria-label="Breadcrumb">
         <a href="/blog/">Blue Notes</a>
-        <VikingIcon name="chevron_right" size={16} />
+        <span aria-hidden="true">/</span>
         <span aria-current="page">{note.data.note}</span>
       </nav>
 
       <article class="publication-shell blue-note-publication">
         <header class="publication-hero blue-note-article-hero">
           <div class="blue-note-card-meta">
-            <span class="viking-badge viking-badge-accent">{note.data.note}</span>
+            <span class="badge">{note.data.note}</span>
             <time datetime={note.data.publishedAt.toISOString()}>
               {formatBlueNoteDate(note.data.publishedAt)}
             </time>
@@ -104,12 +103,12 @@ const jsonLd = blogPostingJsonLd(
             </p>
           </div>
           <a
-            class="viking-btn viking-btn-outline"
+            class="button button--secondary"
             href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
             target="_blank"
             rel="noopener noreferrer"
           >
-            View source <VikingIcon name="arrow-up-right" size={18} />
+            View source
           </a>
         </footer>
       </article>
