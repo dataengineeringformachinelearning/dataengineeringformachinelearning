@@ -8,43 +8,85 @@ import {
 } from '../lib/seo';
 
 const { FRONTEND_URL, MARKETING_URL } = siteEnv();
-const FORJD_URL = 'https://backend.forjd.co';
-const platformStatusHref = `${FRONTEND_URL.replace(/\/$/, '')}/status/platform-status`;
+const demlUrl = FRONTEND_URL.replace(/\/$/, '');
 const pageTitle = 'Data Engineering for Machine Learning — Community';
 const pageDescription =
-  'Learn data engineering for machine learning with living platforms — FORJD for secure streaming, DEML for the learning control plane.';
+  'Learn data engineering for machine learning with DEML — identity, dashboards, status, field notes, and a whitepaper you can put to work.';
 const homeJsonLd = [organizationJsonLd(MARKETING_URL), webSiteJsonLd(MARKETING_URL)];
 
-const platforms = [
+/** Capability pillars — same form-panel rhythm as deml.app home. */
+const pillars = [
   {
-    title: 'FORJD',
-    summary: 'Secure streaming engine for sealed ingest, workflows, and production pipelines.',
-    href: FORJD_URL,
-    external: true,
+    id: 'identity',
+    eyebrow: 'You',
+    title: 'Identity & accounts',
+    description: 'Sign in, roles, consent, and account lifecycle — kept local and clear in DEML.',
   },
   {
-    title: 'DEML',
-    summary: 'Learning control plane — identity, dashboards, and status that call FORJD.',
-    href: FRONTEND_URL,
-    external: false,
+    id: 'status',
+    eyebrow: 'Public',
+    title: 'Status & continuity',
+    description: 'Publish status pages and browse the directory without mixing in account settings.',
+  },
+  {
+    id: 'insights',
+    eyebrow: 'Signals',
+    title: 'Analytics & dashboards',
+    description: 'Workspace pulse, traffic, and continuity charts that stay the same size everywhere.',
+  },
+  {
+    id: 'learn',
+    eyebrow: 'Practice',
+    title: 'Learn the stack',
+    description: 'Catalog, packages, and notes for building data platforms for machine learning.',
   },
 ] as const;
 
-const resources = [
+/** Destination cards — deml-ui feature cards with media wash. */
+const destinations = [
   {
-    title: 'Blue Notes',
-    description: 'Field notes from building data platforms for ML.',
-    href: '/blog/',
+    id: 'deml',
+    heading: 'DEML',
+    subtext: 'The learning control plane — dashboards, status, analytics, and account surfaces.',
+    visual: 'olive' as const,
+    visualToken: 'var(--color-primary)',
+    actions: [
+      { label: 'Open DEML', href: demlUrl, variant: 'primary' as const },
+      { label: 'Sign in', href: `${demlUrl}/login`, variant: 'secondary' as const },
+    ],
   },
   {
-    title: 'Book',
-    description: 'Architecture narrative and operational chapters.',
-    href: '/book',
+    id: 'notes',
+    heading: 'Blue Notes',
+    subtext: 'Field notes from building data platforms for ML — short, practical, and current.',
+    visual: 'gold' as const,
+    visualToken: 'var(--color-accent-gold)',
+    actions: [
+      { label: 'Read the blog', href: '/blog/', variant: 'primary' as const },
+      { label: 'RSS', href: '/blog/rss.xml', variant: 'secondary' as const },
+    ],
   },
   {
-    title: 'Whitepaper',
-    description: 'A short brief on defendable data platforms.',
-    href: '/whitepaper',
+    id: 'whitepaper',
+    heading: 'Whitepaper',
+    subtext: 'A short brief on defendable data platforms — architecture without the noise.',
+    visual: 'red' as const,
+    visualToken: 'var(--color-accent-red)',
+    actions: [
+      { label: 'Read whitepaper', href: '/whitepaper', variant: 'primary' as const },
+      { label: 'Open the book', href: '/book', variant: 'secondary' as const },
+    ],
+  },
+  {
+    id: 'book',
+    heading: 'Book',
+    subtext: 'Architecture narrative and operational chapters for the DEML practice.',
+    visual: 'olive' as const,
+    visualToken: 'var(--color-primary)',
+    actions: [
+      { label: 'Open the book', href: '/book', variant: 'primary' as const },
+      { label: 'Blue Notes', href: '/blog/', variant: 'secondary' as const },
+    ],
   },
 ] as const;
 ---
@@ -52,75 +94,118 @@ const resources = [
 <Layout
   title={pageTitle}
   description={pageDescription}
-  keywords={`${DEFAULT_KEYWORDS}, community, learning, open examples`}
+  keywords={`${DEFAULT_KEYWORDS}, community, learning, DEML, whitepaper, blue notes`}
   jsonLd={homeJsonLd}
 >
-  <div class="page-inner-wrapper">
-    <section class="banner banner--hero" aria-labelledby="main-title">
-      <p class="preheader">Community</p>
-      <h1 class="banner-heading" id="main-title">Data Engineering for Machine Learning</h1>
+  <div class="page page--catalog">
+    <section class="banner banner--hero" data-variant="hero" aria-labelledby="main-title">
+      <p class="preheader">DEML</p>
+      <h1 class="banner-heading" id="main-title">Control plane for ML data.</h1>
       <p class="lede">
-        Learn the practice with living platforms — field notes, a book, and systems you can actually run.
+        Identity, status, analytics, and learning — plus field notes and a whitepaper for the practice.
       </p>
       <div class="banner-actions">
-        <div class="button-group">
-          <a class="button button--primary" href={FRONTEND_URL}>Open DEML</a>
-          <a
-            class="button button--secondary"
-            href={FORJD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >FORJD API</a>
-          <a class="button button--secondary" href="/blog/">Blue Notes</a>
+        <div class="button-group row wrap items-center gap-2" data-layout="row" role="group" aria-label="Primary actions">
+          <a class="button button--primary button--pill" href={demlUrl}>Open DEML</a>
+          <a class="button button--secondary button--pill" href="/blog/">Blue Notes</a>
+          <a class="button button--secondary button--pill" href="/whitepaper">Whitepaper</a>
         </div>
       </div>
     </section>
 
-    <section class="page-section" aria-labelledby="platforms-title">
-      <header class="section-header">
-        <h2 class="type-display" id="platforms-title">Platforms</h2>
-        <p class="type-intro">Two living systems for learning data engineering for ML.</p>
-      </header>
-      <div class="page-section__body">
-        <div class="card-grid" data-density="compact" data-columns="2">
-          {platforms.map((item) => (
-            <a
+    <section class="page-body page-body--catalog" aria-labelledby="capabilities-heading">
+      <div class="catalog-group">
+        <header class="section-header">
+          <p class="type-eyebrow">Platform</p>
+          <h2 class="type-display" id="capabilities-heading">What DEML is for</h2>
+          <p class="type-intro">
+            A warm-ash control plane for learning data engineering for machine learning — product
+            surfaces you can sign into, and writing you can learn from.
+          </p>
+        </header>
+
+        <div class="card-grid" data-columns="2">
+          {pillars.map((pillar) => (
+            <section class="form-panel" aria-labelledby={`home-pillar-${pillar.id}`}>
+              <header class="form-panel__header">
+                <p class="form-panel__eyebrow">{pillar.eyebrow}</p>
+                <h3 class="form-panel__title" id={`home-pillar-${pillar.id}`}>{pillar.title}</h3>
+                <p class="form-panel__description">{pillar.description}</p>
+              </header>
+              <div class="form-panel__body"></div>
+              <footer class="form-panel__footer"></footer>
+            </section>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-body page-body--catalog" aria-labelledby="start-heading">
+      <div class="catalog-group">
+        <header class="section-header">
+          <p class="type-eyebrow">Start here</p>
+          <h2 class="type-display" id="start-heading">Jump in</h2>
+          <p class="type-intro">
+            Open the product, read the notes, or take the whitepaper — same look as deml.app.
+          </p>
+        </header>
+
+        <div class="card-grid" data-columns="2">
+          {destinations.map((card) => (
+            <article
               class="card"
-              data-layout="teaser"
-              href={item.href}
-              {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              data-visual={card.visual}
+              style={`--card-visual: ${card.visualToken}`}
             >
               <div class="card-copy">
-                <h3 class="card-heading">{item.title}</h3>
-                <p class="card-subtext">{item.summary}</p>
+                <h3 class="card-heading">{card.heading}</h3>
+                <p class="card-subtext">{card.subtext}</p>
+                <div class="card-actions">
+                  <div
+                    class="button-group row wrap items-center justify-center gap-2 place-center"
+                    data-layout="row"
+                    role="group"
+                  >
+                    {card.actions.map((action) => (
+                      <a
+                        class:list={[
+                          'button',
+                          'button--pill',
+                          action.variant === 'primary' ? 'button--primary' : 'button--secondary',
+                        ]}
+                        href={action.href}
+                      >
+                        {action.label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </a>
+              <div class="card-media has-visual" aria-hidden="true"></div>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="page-section" aria-labelledby="resources-title">
-      <header class="section-header">
-        <h2 class="type-display" id="resources-title">Resources</h2>
-        <p class="type-intro">Start here — notes, book, and whitepaper.</p>
-      </header>
-      <div class="page-section__body">
-        <div class="card-grid" data-density="compact" data-columns="3">
-          {resources.map((item) => (
-            <a class="card" data-layout="teaser" href={item.href}>
-              <div class="card-copy">
-                <h3 class="card-heading">{item.title}</h3>
-                <p class="card-subtext">{item.description}</p>
-              </div>
-            </a>
-          ))}
+    <section class="page-body page-body--catalog" aria-labelledby="home-cta-heading">
+      <section class="form-panel" aria-labelledby="home-cta-heading">
+        <header class="form-panel__header">
+          <p class="form-panel__eyebrow">Next step</p>
+          <h2 class="form-panel__title" id="home-cta-heading">Try DEML, then read on</h2>
+          <p class="form-panel__description">
+            Sign up for the control plane, or stay with the writing — Blue Notes and the whitepaper.
+          </p>
+        </header>
+        <div class="form-panel__body">
+          <div class="button-group row wrap items-center gap-2" data-layout="row" role="group" aria-label="Next steps">
+            <a class="button button--primary button--pill" href={`${demlUrl}/signup`}>Sign up</a>
+            <a class="button button--secondary button--pill" href="/whitepaper">Whitepaper</a>
+            <a class="button button--secondary button--pill" href="/blog/">Blue Notes</a>
+          </div>
         </div>
-      </div>
+        <footer class="form-panel__footer"></footer>
+      </section>
     </section>
-
-    <p>
-      <a href={platformStatusHref}>DEML platform status</a>
-    </p>
   </div>
 </Layout>

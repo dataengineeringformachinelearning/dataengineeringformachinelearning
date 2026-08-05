@@ -2,35 +2,33 @@
 import { siteEnv } from '../lib/site-env';
 
 const { FRONTEND_URL } = siteEnv();
+const demlUrl = FRONTEND_URL.replace(/\/$/, '');
 const currentYear = new Date().getFullYear();
-const FORJD_API_URL = 'https://backend.forjd.co';
-const platformStatusHref = `${FRONTEND_URL.replace(/\/$/, '')}/status/platform-status`;
 ---
 
 <footer class="site-footer">
 	<div class="site-footer__inner">
 		<nav class="site-footer__directory" aria-label="Footer">
 			<div class="site-footer__column">
-				<h2 class="site-footer__heading">Platforms</h2>
+				<h2 class="site-footer__heading">Product</h2>
 				<ul class="site-footer__list">
-					<li><a href={FRONTEND_URL}>DEML</a></li>
-					<li>
-						<a href={FORJD_API_URL} target="_blank" rel="noopener noreferrer">FORJD API</a>
-					</li>
+					<li><a href={demlUrl}>DEML</a></li>
+					<li><a href={`${demlUrl}/explore`}>Explore</a></li>
+					<li><a href={`${demlUrl}/signup`}>Sign up</a></li>
 				</ul>
 			</div>
 			<div class="site-footer__column">
 				<h2 class="site-footer__heading">Resources</h2>
 				<ul class="site-footer__list">
 					<li><a href="/blog/">Blue Notes</a></li>
-					<li><a href="/book">Book</a></li>
 					<li><a href="/whitepaper">Whitepaper</a></li>
+					<li><a href="/book">Book</a></li>
 				</ul>
 			</div>
 			<div class="site-footer__column">
 				<h2 class="site-footer__heading">Support</h2>
 				<ul class="site-footer__list">
-					<li><a href={platformStatusHref}>Platform Status</a></li>
+					<li><a href={`${demlUrl}/status/platform-status`}>Platform Status</a></li>
 				</ul>
 			</div>
 			<div class="site-footer__column">
