@@ -62,8 +62,8 @@ const destinations = [
     visual: 'gold' as const,
     visualToken: 'var(--color-accent-gold)',
     actions: [
-      { label: 'Read the blog', href: '/blog/', variant: 'primary' as const },
-      { label: 'RSS', href: '/blog/rss.xml', variant: 'secondary' as const },
+      { label: 'Read notes', href: `${demlUrl}/blog`, variant: 'primary' as const },
+      { label: 'RSS', href: `${demlUrl}/blog/rss.xml`, variant: 'secondary' as const },
     ],
   },
   {
@@ -85,7 +85,7 @@ const destinations = [
     visualToken: 'var(--color-primary)',
     actions: [
       { label: 'Open the book', href: '/book', variant: 'primary' as const },
-      { label: 'Blue Notes', href: '/blog/', variant: 'secondary' as const },
+      { label: 'Blue Notes', href: `${demlUrl}/blog`, variant: 'secondary' as const },
     ],
   },
 ] as const;
@@ -107,7 +107,7 @@ const destinations = [
       <div class="banner-actions">
         <div class="button-group row wrap items-center gap-2" data-layout="row" role="group" aria-label="Primary actions">
           <a class="button button--primary button--pill" href={demlUrl}>Open DEML</a>
-          <a class="button button--secondary button--pill" href="/blog/">Blue Notes</a>
+          <a class="button button--secondary button--pill" href={`${demlUrl}/blog`}>Blue Notes</a>
           <a class="button button--secondary button--pill" href="/whitepaper">Whitepaper</a>
         </div>
       </div>
@@ -201,7 +201,7 @@ const destinations = [
           <div class="button-group row wrap items-center gap-2" data-layout="row" role="group" aria-label="Next steps">
             <a class="button button--primary button--pill" href={`${demlUrl}/signup`}>Sign up</a>
             <a class="button button--secondary button--pill" href="/whitepaper">Whitepaper</a>
-            <a class="button button--secondary button--pill" href="/blog/">Blue Notes</a>
+            <a class="button button--secondary button--pill" href={`${demlUrl}/blog`}>Blue Notes</a>
           </div>
         </div>
         <footer class="form-panel__footer"></footer>

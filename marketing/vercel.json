@@ -6,6 +6,31 @@
   "installCommand": "npm install --legacy-peer-deps --no-workspaces",
   "redirects": [
     {
+      "source": "/blog",
+      "destination": "https://deml.app/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog/",
+      "destination": "https://deml.app/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog/rss.xml",
+      "destination": "https://deml.app/blog/rss.xml",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "https://deml.app/blog/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:slug/",
+      "destination": "https://deml.app/blog/:slug",
+      "permanent": true
+    },
+    {
       "source": "/status/:slug",
       "destination": "https://deml.app/status/:slug",
       "permanent": false
