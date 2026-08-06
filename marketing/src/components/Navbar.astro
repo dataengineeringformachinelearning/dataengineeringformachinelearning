@@ -3,6 +3,7 @@ import { siteEnv } from '../lib/site-env';
 
 const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
 const returnUrl = MARKETING_URL;
+const pathname = Astro.url.pathname;
 
 const navLinks = [
 	{ id: 'home', label: 'Home', href: '/' },
@@ -11,6 +12,12 @@ const navLinks = [
 	{ id: 'whitepaper', label: 'Whitepaper', href: '/whitepaper' },
 	{ id: 'deml', label: 'DEML', href: FRONTEND_URL },
 ] as const;
+
+function isActive(href: string): boolean {
+	if (href === '/') return pathname === '/' || pathname === '';
+	if (href.startsWith('http')) return false;
+	return pathname === href || pathname.startsWith(`${href.replace(/\/$/, '')}/`);
+}
 ---
 
 <script define:vars={{ FRONTEND_URL, BACKEND_URL, MARKETING_URL, returnUrl }}>
@@ -23,10 +30,32 @@ const navLinks = [
 	};
 </script>
 
-<header class="site-navbar" id="navbar">
-	<div class="site-navbar-branding">
+<header class="site-navbar items-center" id="navbar">
+	<div id="site-navbar-branding" class="site-navbar-branding row items-center">
 		<a class="site-navbar-icon" href="/" aria-label="Go to homepage" id="navbar-brand-link">
-			DEML
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<path d="M12 10.189V14"></path>
+				<path d="M12 2v3"></path>
+				<path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6"></path>
+				<path
+					d="M19.38 20A11.6 11.6 0 0 0 21 14l-8.188-3.639a2 2 0 0 0-1.624 0L3 14a11.6 11.6 0 0 0 2.81 7.76"
+				></path>
+				<path
+					d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"
+				></path>
+			</svg>
 		</a>
 	</div>
 
@@ -37,22 +66,69 @@ const navLinks = [
 		aria-label="Open menu"
 		aria-controls="site-navbar-panel"
 		aria-expanded="false"
+		aria-haspopup="true"
 	>
-		Menu
+		<svg
+			class="site-navbar-menu-icon"
+			data-icon="menu"
+			xmlns="http://www.w3.org/2000/svg"
+			width="32"
+			height="32"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path d="M4 5h16"></path>
+			<path d="M4 12h16"></path>
+			<path d="M4 19h16"></path>
+		</svg>
+		<svg
+			class="site-navbar-menu-icon"
+			data-icon="close"
+			hidden
+			xmlns="http://www.w3.org/2000/svg"
+			width="32"
+			height="32"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path d="M18 6 6 18"></path>
+			<path d="m6 6 12 12"></path>
+		</svg>
 	</button>
 
 	<div class="site-navbar-panel" id="site-navbar-panel">
-		<nav class="main-navigation" aria-label="Main navigation">
+		<nav id="site-navigation" class="main-navigation place-center" aria-label="Primary">
 			<ul class="row wrap items-center justify-center gap-4" role="list" id="site-navbar-menu">
-				{navLinks.map((link) => (
-					<li>
-						<a href={link.href} data-nav-id={link.id}>{link.label}</a>
-					</li>
-				))}
+				{
+					navLinks.map((link) => (
+						<li class="item-fixed">
+							<a
+								href={link.href}
+								data-nav-id={link.id}
+								class:list={{ 'is-active': isActive(link.href) }}
+								aria-current={isActive(link.href) ? 'page' : undefined}
+							>
+								{link.label}
+							</a>
+						</li>
+					))
+				}
 			</ul>
 		</nav>
 
-		<div class="button-group" role="group" aria-label="Account actions">
+		<div class="button-group" data-layout="row" role="group" aria-label="Account actions" id="site-button-group">
 			<button
 				type="button"
 				class="theme-toggle"
@@ -60,30 +136,137 @@ const navLinks = [
 				aria-label="Toggle light and dark theme"
 				aria-pressed="false"
 			>
-				Theme
+				<svg
+					class="theme-toggle-icon"
+					data-icon="sun"
+					hidden
+					xmlns="http://www.w3.org/2000/svg"
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<circle cx="12" cy="12" r="4"></circle>
+					<path d="M12 2v2"></path>
+					<path d="M12 20v2"></path>
+					<path d="m4.93 4.93 1.41 1.41"></path>
+					<path d="m17.66 17.66 1.41 1.41"></path>
+					<path d="M2 12h2"></path>
+					<path d="M20 12h2"></path>
+					<path d="m6.34 17.66-1.41 1.41"></path>
+					<path d="m19.07 4.93-1.41 1.41"></path>
+				</svg>
+				<svg
+					class="theme-toggle-icon"
+					data-icon="moon"
+					xmlns="http://www.w3.org/2000/svg"
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path
+						d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+					></path>
+				</svg>
 			</button>
 			<a
-				class="button button--primary"
+				class="button button--secondary button--pill"
 				href={`${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(returnUrl)}`}
-				id="auth-btn-desktop"
+				id="auth-btn-login"
 			>
-				Sign in
+				Log in
+			</a>
+			<a class="button button--primary button--pill" href={`${FRONTEND_URL}/signup`} id="auth-btn-signup">
+				Sign up
 			</a>
 		</div>
 	</div>
 </header>
+
+{/*
+  Bridge until deml-ui@1.2.3 is published: static .button-group gets
+  grid-area: actions, plus [hidden] icons under author display:block.
+*/}
+<style is:global>
+	@media screen and (min-width: 800px) {
+		.site-navbar .button-group {
+			grid-area: actions;
+			justify-self: end;
+			width: max-content;
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+		}
+	}
+
+	.site-navbar.is-menu-open .button-group .button--pill,
+	.site-navbar.is-menu-open .button-group .theme-toggle {
+		width: 100%;
+		min-height: var(--navbar-hit);
+	}
+
+	@media screen and (min-width: 800px) {
+		.site-navbar.is-menu-open .button-group .button--pill,
+		.site-navbar.is-menu-open .button-group .theme-toggle {
+			width: auto;
+		}
+
+		.site-navbar.is-menu-open .button-group .theme-toggle {
+			width: var(--navbar-hit);
+			min-height: var(--navbar-hit);
+			padding: 0;
+		}
+	}
+
+	.theme-toggle svg[hidden],
+	.site-navbar-menu-toggle svg[hidden] {
+		display: none !important;
+	}
+</style>
 
 <script is:inline>
 	(() => {
 		const navbar = document.getElementById('navbar');
 		const menuBtn = document.getElementById('mobile-menu-btn');
 		const themeBtn = document.getElementById('theme-toggle-btn');
+		const panel = document.getElementById('site-navbar-panel');
 		if (!navbar || !menuBtn) return;
+
+		const menuIcon = menuBtn.querySelector('[data-icon="menu"]');
+		const closeIcon = menuBtn.querySelector('[data-icon="close"]');
+		const sunIcon = themeBtn?.querySelector('[data-icon="sun"]');
+		const moonIcon = themeBtn?.querySelector('[data-icon="moon"]');
 
 		const setMenuOpen = (open) => {
 			navbar.classList.toggle('is-menu-open', open);
 			menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
 			menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+			if (menuIcon) menuIcon.hidden = open;
+			if (closeIcon) closeIcon.hidden = !open;
+			if (panel) {
+				if (open) {
+					panel.setAttribute('role', 'dialog');
+					panel.setAttribute('aria-modal', 'true');
+					panel.setAttribute('aria-label', 'Site menu');
+				} else {
+					panel.removeAttribute('role');
+					panel.removeAttribute('aria-modal');
+					panel.removeAttribute('aria-label');
+				}
+			}
 		};
 
 		menuBtn.addEventListener('click', () => {
@@ -100,11 +283,17 @@ const navLinks = [
 				document.documentElement.classList.toggle('dark', theme === 'dark');
 				localStorage.setItem('theme', theme);
 				themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+				themeBtn.setAttribute(
+					'aria-label',
+					theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
+				);
+				if (sunIcon) sunIcon.hidden = theme !== 'dark';
+				if (moonIcon) moonIcon.hidden = theme === 'dark';
 			};
 
 			const current =
 				document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-			themeBtn.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
+			applyTheme(current);
 
 			themeBtn.addEventListener('click', () => {
 				const next =
