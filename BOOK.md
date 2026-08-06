@@ -136,12 +136,12 @@ flowchart TB
 
 | Layer                    | Provider                                                                          | Responsibility                                                                                                                               |
 | ------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product UI**           | [Vercel](https://vercel.com/) (`deml.app`)                                        | Angular 22+ SPA (standalone + Signals, Viking-UI); product showcase at `/`, app routes under auth; calls Django only; live ticks via BFF SSE |
+| **Product UI**           | [Vercel](https://vercel.com/) (`deml.app`)                                        | Angular 22+ SPA (standalone + Signals, deml-ui); product showcase at `/`, app routes under auth; calls Django only; live ticks via BFF SSE |
 | **Control plane API**    | [Fly.io](https://fly.io/) `deml-backend`                                          | Django BFF: auth, billing, consent, learning, FORJD adapters, SSE live bridge                                                                |
 | **Data plane**           | FORJD on Fly (`backend.forjd.co`) + [Supabase](https://supabase.com/) + Dragonfly | FastAPI + Prefect 3 + Rust engine + Polars; sealed ingest, projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ               |
 | **Identity**             | [Firebase Authentication](https://firebase.google.com/products/auth)              | Email/OAuth/MFA; JWT verified by Django middleware; MFA claims gate site mutations                                                           |
 | **Community hosting**    | [Vercel](https://vercel.com/) (`marketing`)                                       | Astro community entry at `dataengineeringformachinelearning.com` (DEML/FORJD as open examples)                                               |
-| **Viking-UI Storybook**  | [Vercel](https://vercel.com/) (`deml-ui`)                                         | `ui.deml.app` — Storybook-only (mirrors `ui.forjd.co`)                                                                                       |
+| **deml-ui Storybook**  | [Vercel](https://vercel.com/) (`deml-ui`)                                         | `ui.deml.app` — Storybook-only (Storybook for deml-ui)                                                                                       |
 | **Cryptography & audit** | Application AES-256-GCM + KMS / platform audit sinks                              | Field encryption for secrets; sealed envelopes on the wire to FORJD                                                                          |
 | **Secrets**              | [Infisical](https://infisical.com/) / Fly secrets (recommended)                   | Runtime secret injection; `FORJD_SERVICE_TOKEN` as secret ref                                                                                |
 | **Billing**              | [Stripe](https://stripe.com/)                                                     | Standard → Pro checkout, webhooks, reconciliation ([Appendix M](#appendix-m-billing--subscriptions-operator-reference))                      |
@@ -229,7 +229,7 @@ Browser (Firebase JWT) → GET /api/v1/analytics/live (SSE)
                          (tenant-bound fjsvc_ on the BFF only)
 ```
 
-SSE frames are change ticks only (`projections` with `{count, cursor}`) — never projection payloads, ciphertext, or credentials. Angular binds `LiveUpdatesService.latestEvent` (and `degraded` for Viking callouts), then refreshes authenticated REST adapters. Auth / policy failures return `401`/`403` with `code=forjd_forbidden`; upstream outages return `503` with `code=forjd_degraded` (and typed SSE `degraded` events). Identity, billing, consent, and learning progress remain DEML Postgres.
+SSE frames are change ticks only (`projections` with `{count, cursor}`) — never projection payloads, ciphertext, or credentials. Angular binds `LiveUpdatesService.latestEvent` (and `degraded` for deml-ui callouts), then refreshes authenticated REST adapters. Auth / policy failures return `401`/`403` with `code=forjd_forbidden`; upstream outages return `503` with `code=forjd_degraded` (and typed SSE `degraded` events). Identity, billing, consent, and learning progress remain DEML Postgres.
 
 ### 8. Deployment Topology & Service Matrix
 
@@ -237,7 +237,7 @@ Production topology is fixed for the product:
 
 | Service / host           | Operational role                                                                                                       |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `deml` (Vercel)          | Angular 22+ Signals app, Viking-UI, widgets, public status UI                                                          |
+| `deml` (Vercel)          | Angular 22+ Signals app, deml-ui, widgets, public status UI                                                          |
 | `deml-backend` (Fly)     | Django REST BFF, auth middleware, billing, consent, learning, FORJD adapters, SSE live bridge                          |
 | DEML Postgres            | System of record for identity, tenancy mapping, credentials, consent, billing                                          |
 | FORJD API + engine (Fly) | FastAPI + Prefect + Rust sealed hot path + Polars; projections, **status pages**, analytics, ML, SIEM/SOAR, replay/DLQ |
@@ -712,27 +712,14 @@ Transitioning back to the Angular client, I face a critical UI engineering chall
 # No additional visualization dependencies required! We use native SVG.
 ```
 
-Within the dashboard, I bind FORJD-backed metrics through Django adapters into Angular Signals and render them with Viking-UI's native SVG `viking-chart` / `viking-chart-panel` primitives—never a third-party chart runtime. Live change ticks arrive over the Django SSE bridge (`LiveUpdatesService.latestEvent` → `GET /api/v1/analytics/live`); frames carry `{count, cursor}` only—never projection payloads. Viking callouts bind `LiveUpdatesService.degraded` when the bridge emits a typed outage. The browser never holds `fjsvc_` tokens and never subscribes to Firestore or Supabase Realtime.
+Within the dashboard, I bind FORJD-backed metrics through Django adapters into Angular Signals and render them with deml-ui's native SVG `app-area-chart` / `app-bar-chart` / `app-chart-card` primitives—never a third-party chart runtime. Live change ticks arrive over the Django SSE bridge (`LiveUpdatesService.latestEvent` → `GET /api/v1/analytics/live`); frames carry `{count, cursor}` only—never projection payloads. deml-ui callouts bind `LiveUpdatesService.degraded` when the bridge emits a typed outage. The browser never holds `fjsvc_` tokens and never subscribes to Firestore or Supabase Realtime.
 
 ```typescript
 // frontend/src/app/pages/dashboard/dashboard.ts (illustrative Signals pattern)
 import { Component, effect, inject, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { LiveUpdatesService } from "../../services/live-updates.service";
-import { VikingChartPanel } from "@dataengineeringformachinelearning/viking-ui";
-
-@Component({
-  selector: "app-dashboard",
-  standalone: true,
-  imports: [VikingChartPanel],
-  template: `
-    <viking-chart-panel [loading]="loading()">
-      @if (series().length) {
-        <viking-chart kind="line" [series]="series()" />
-      } @else {
-        <viking-chart-empty-state />
-      }
-    </viking-chart-panel>
+import { ChartCard } from "deml-ui/angular"; // or app-chart-card / app-area-chart wrappers
   `,
 })
 export class Dashboard {
@@ -753,7 +740,7 @@ export class Dashboard {
       if (tick?.type === "projections") this.refresh();
     });
     effect(() => {
-      // Typed SSE degraded / forjd_degraded — Viking callout, not empty-healthy metrics.
+      // Typed SSE degraded / forjd_degraded — deml-ui callout, not empty-healthy metrics.
       void this.live.degraded();
     });
   }
@@ -905,7 +892,7 @@ flowchart LR
 - **Commands**: Angular → Django (Firebase JWT terminates) → FORJD (`fjsvc_` + sealed envelope).
 - **Projections**: FORJD durable projections with replay/DLQ; DEML does not host a parallel projection worker.
 - **Queries**: Angular → Django BFF → FORJD API. Clients never call FORJD storage directly.
-- **Live ticks**: Angular → Django SSE → FORJD cursor poll (`fjsvc_` on BFF) → `{count, cursor}` ticks → Angular refreshes REST adapters via `latestEvent` effects; Viking callouts bind `degraded`.
+- **Live ticks**: Angular → Django SSE → FORJD cursor poll (`fjsvc_` on BFF) → `{count, cursor}` ticks → Angular refreshes REST adapters via `latestEvent` effects; deml-ui callouts bind `degraded`.
 - Events are versioned; FORJD supports replay for recovery after poison or failed work.
 
 Identity, billing, consent, and learning progress remain in DEML Postgres. Sentry captures full-stack failures on the control plane; FORJD readiness (`/ready`) and Django `/api/v1/ready` validate the data-plane dependency. Semgrep enforces continuous vulnerability scanning across the application code.
@@ -956,7 +943,7 @@ The architecture for the status page requires orchestrating four distinct techni
 
 3. **Incident Operations:** While telemetry is automated, managing public perception during an outage requires human nuance and explicit communication. Operational incident records on the status page are FORJD-owned; narrative communications can additionally use Sanity.io as a headless CMS. When a severe outage occurs, operators publish updates; Angular listens where configured (Sanity real-time and/or FORJD status APIs via the BFF) so users are informed immediately without coupling content to DEML Postgres.
 
-4. **Historical Visualizations:** Transparency builds trust. It is not enough to simply state the current status; I must visually demonstrate historical reliability. FORJD uptime/projection data is queried through the BFF and rendered with Native SVG `viking-chart` visualizations (for example a 90-day health graph). Users can scrub historical data, analyze past incident resolutions, and verify long-term stability.
+4. **Historical Visualizations:** Transparency builds trust. It is not enough to simply state the current status; I must visually demonstrate historical reliability. FORJD uptime/projection data is queried through the BFF and rendered with Native SVG `app-area-chart` / `app-bar-chart` visualizations (for example a 90-day health graph). Users can scrub historical data, analyze past incident resolutions, and verify long-term stability.
 
 By combining FORJD sealed streaming, BFF-adapted status APIs, and edge-cached communications, the status surface remains resilient even if DEML control-plane Postgres is degraded—public published pages and Sanity-backed announcements can still reach users while sealed processing recovers on FORJD.
 
@@ -1174,7 +1161,7 @@ To achieve this, I architected an integrated Kanban board workflow directly into
 
 However, a platform’s quality is not solely defined by the rigors of its backend security protocols. The human experience—the interface through which operators interact with the system—must reflect the same level of uncompromising excellence. An application that is secure but visually abrasive or confusing will ultimately erode user trust. Therefore, I heavily refined the User Interface (UI) to align with my philosophy of precision engineering.
 
-I completely overhauled the data fetching states, replacing generic spinning indicators with `viking-skeleton` structural placeholders from the Viking-UI design system. This provides users with a machined preview of incoming data, minimizing perceived latency during high-volume telemetry queries. The visual language is codified in [THEME.md](THEME.md) — precision engineering and high-end industrial tech: deep charcoal surfaces (`--viking-charcoal-900` through `--viking-charcoal-600`), machined metallic borders, deep teal primary accents (`--viking-teal-600`), and rich crimson secondary emphasis (`--viking-crimson-600`). Charts bind exclusively to the tokenized series palette (teal, crimson, green, gold, blue) through native SVG `viking-chart` components — no neon gradients, glow orbs, or arbitrary hex. Inter carries body copy at 16px; `.viking-font-display` (Inter bold caps at `0.08em` letter-spacing) appears only on CES instrumentation and marketing hero labels. This disciplined, token-driven aesthetic signals to the operator that they are interfacing with a mission-critical, enterprise-grade machine intelligence platform.
+I completely overhauled the data fetching states, replacing generic spinning indicators with `app-skeleton` / deml-ui skeleton structural placeholders from the deml-ui design system. This provides users with a machined preview of incoming data, minimizing perceived latency during high-volume telemetry queries. The visual language is codified in [THEME.md](THEME.md) — precision engineering and high-end industrial tech: warm ash grounds (`--color-bg` `#35312D`), cream elevated modules (`--color-card` `#F3F0EA`), primary (`--color-primary` `#2F5F8F`), success green (`--color-accent-gold` `#3F6B54`), and danger (`--color-accent-red` `#9E3D47`). Charts bind exclusively to the tokenized series palette through native SVG `app-area-chart` / `app-bar-chart` components — no neon gradients, glow orbs, or arbitrary hex. **Geist** carries all type; display and mark roles use weight and tracking tokens only. This disciplined, token-driven aesthetic signals to the operator that they are interfacing with a mission-critical, enterprise-grade machine intelligence platform.
 
 ---
 
@@ -1188,7 +1175,7 @@ The ultimate crucible for any software architecture is its transition from a con
 | ------------------------------ | ------------------------------------------- | ----------------------------------------------- |
 | Angular product UI             | [Vercel](https://vercel.com/) (`deml`)      | `https://deml.app`                              |
 | Community site (Astro)         | [Vercel](https://vercel.com/) (`marketing`) | `https://dataengineeringformachinelearning.com` |
-| Viking-UI Storybook            | [Vercel](https://vercel.com/) (`deml-ui`)   | `https://ui.deml.app`                           |
+| deml-ui Storybook            | [Vercel](https://vercel.com/) (`deml-ui`)   | `https://ui.deml.app`                           |
 | Django BFF / control plane     | [Fly.io](https://fly.io/) `deml-backend`    | `https://backend.deml.app`                      |
 | FORJD API + engine + Dragonfly | FORJD on Fly + Supabase                     | `https://backend.forjd.co`                      |
 
@@ -1325,7 +1312,7 @@ In the complex landscape of modern distributed systems, relying on disparate and
 
 The technical foundation of the Countermeasure Effectiveness Standard relies on FORJD-owned projections and analytics. Sealed product telemetry enters FORJD through Django's BFF; FORJD materializes durable `stream_results` and analytics that Angular reads through stable DEML adapters. From those projections the CES engine extracts request volume, latency spikes, and incident signals, then applies a weighted formula to three sub-scores: Threat Level, SLA Level, and Stableness. Threat Level penalizes active incidents and severe latency anomalies; SLA Level tracks performance bounds and uptime; Stableness penalizes erratic steady-state fluctuation. The three vectors fuse into the master CES score without overwhelming DEML's transactional Postgres. Analytical and ML workloads remain exclusively on the FORJD data plane.
 
-To visually represent the Countermeasure Effectiveness Standard on the analytics dashboard, I deliberately abandoned generic, off-the-shelf charting libraries in favor of native SVG gauge clusters styled through Viking-UI and [THEME.md](THEME.md). The CES meter follows precision instrumentation: machined charcoal wells (`--viking-surface-alt`), restrained top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`), and negative letter-spacing on instrument labels. Display typography uses `.viking-font-display` (Inter bold caps) exclusively for gauge badges and CES caps — never on body copy — with `0.08em` caps spacing per the design system. Animated SVG needles sweep across Threat, SLA, and Stableness sub-dials colored by semantic tokens: `--viking-crimson-500` for threat, `--viking-teal-600` for SLA adherence, and `--viking-green-500` for stableness. High-contrast token discipline ensures operators assess defensive posture at a single glance without decorative neon glow or gradient clutter — aligning the visual language with unyielding performance and reliability.
+To visually represent the Countermeasure Effectiveness Standard on the analytics dashboard, I deliberately abandoned generic, off-the-shelf charting libraries in favor of native SVG gauge clusters styled through deml-ui and [THEME.md](THEME.md). The CES meter follows precision instrumentation: deep plot wells (`--color-plot` `#1C1916`), restrained borders, and tokenized instrument labels. Display typography uses Geist bold with mark tracking for gauge badges and CES caps — never a second font family. Animated SVG needles sweep across Threat, SLA, and Stableness sub-dials colored by semantic tokens: `--color-danger` for threat, `--color-primary` for SLA adherence, and `--color-success` for stableness. High-contrast token discipline ensures operators assess defensive posture at a single glance without decorative neon glow or gradient clutter — aligning the visual language with unyielding performance and reliability.
 
 ---
 
@@ -1435,11 +1422,11 @@ By combining per-account RBAC with publication- and tenant-aware ABAC on the FOR
 
 The DEML platform stands on open-source foundations, enterprise design references, and the tooling that authored this architecture. Gratitude is extended to each project, standard, and inspiration cited below.
 
-- **Frontend**: [Angular](https://angular.dev/) 22+ (standalone + Signals; Viking-UI—not FORJD `forjd-ui`), [ng-packagr](https://github.com/ng-packagr/ng-packagr), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/) Auth-only, [Vitest](https://vitest.dev/), [AnalogJS](https://analogjs.org/), [Astro](https://astro.build/), [axe-core](https://github.com/dequelabs/axe-core); live dashboard ticks via Django SSE (`LiveUpdatesService`)
-- **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium command palette); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display); directional references [Material Design 3](https://m3.material.io/), [Flux UI](https://fluxui.dev/), [Spartan](https://spartan.ng/), [shadcn/ui](https://ui.shadcn.com/), and the AWS-built [Cloudscape Design System](https://cloudscape.design/) for adaptive foundations, composable primitives, clear component anatomy, accessible responsive patterns, and operational application density
-- **Design-system delivery & governance**: [Storybook](https://storybook.js.org/) component documentation, [Chromatic](https://www.chromatic.com/) visual regression publication, and [Trust Controls](https://www.trustcontrols.ai/) as a directional security/control-governance reference. Viking-UI remains an original zero-runtime implementation; reference component libraries are not production dependencies.
-- **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
-- **Viking-UI design language**: `@dataengineeringformachinelearning/viking-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; premium restrained luxury (charcoal / teal / crimson) with WCAG 2.1 AA by construction
+- **Frontend**: [Angular](https://angular.dev/) 22+ (standalone + Signals; deml-ui—not FORJD `forjd-ui`), [ng-packagr](https://github.com/ng-packagr/ng-packagr), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/) Auth-only, [Vitest](https://vitest.dev/), [AnalogJS](https://analogjs.org/), [Astro](https://astro.build/), [axe-core](https://github.com/dequelabs/axe-core); live dashboard ticks via Django SSE (`LiveUpdatesService`)
+- **Design system & typography**: [THEME.md](THEME.md) (warm ash NFTS); [Geist](https://vercel.com/font) only for all type; directional references [Material Design 3](https://m3.material.io/), [Flux UI](https://fluxui.dev/), [Spartan](https://spartan.ng/), [shadcn/ui](https://ui.shadcn.com/), and the AWS-built [Cloudscape Design System](https://cloudscape.design/) for adaptive foundations, composable primitives, clear component anatomy, accessible responsive patterns, and operational application density
+- **Design-system delivery & governance**: [Storybook](https://storybook.js.org/) component documentation, [Chromatic](https://www.chromatic.com/) visual regression publication, and [Trust Controls](https://www.trustcontrols.ai/) as a directional security/control-governance reference. deml-ui remains an original zero-runtime implementation; reference component libraries are not production dependencies.
+- **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into inline SVG / lucide icons; no Lucide runtime package in production bundles
+- **deml-ui design language**: `deml-ui` composable primitives and [THEME.md](THEME.md) token matrix — zero third-party UI runtimes; warm ash NFTS with WCAG 2.0 AA by construction
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Daphne](https://github.com/django/daphne) (ASGI), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data plane (FORJD)**: [FORJD](https://github.com/dataengineeringformachinelearning/forjd) — [FastAPI](https://github.com/fastapi/fastapi) edge, [Prefect 3](https://github.com/PrefectHQ/prefect) orchestration, Rust `forjd-engine` sealed hot path, [Polars](https://pola.rs/) batch LazyFrames; [PostgreSQL](https://www.postgresql.org/) / [Supabase](https://supabase.com/) + [Dragonfly](https://dragonflydb.io/). DEML Postgres remains identity/billing/consent only; DEML does not run stream workers or Airflow.
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [Appendix Z](#appendix-z-integration-guides)
@@ -2350,7 +2337,7 @@ This architecture successfully decoupled the human-facing application from the m
 
 As the platform scaled, the necessity for uncompromising infrastructure security and UI/UX standardization became paramount. I initiated a comprehensive DevSecOps audit, focusing first on the frontend containerization. By transitioning the Angular UI deployment pipeline to leverage strict multi-stage Distroless builds (`gcr.io/distroless/nodejs22-debian12`), I successfully eliminated all runtime shells and package managers. This drastically reduced the attack surface, ensuring the production image runs only the compiled SSR server.
 
-Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first `.page-inner-wrapper` container, enforcing an identical `1260px` maximum width aligned to Viking-UI's **8px primary grid**. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
+Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first `.page-inner-wrapper` container, enforcing an identical `1260px` maximum width aligned to deml-ui's **8px primary grid**. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
 
 Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 30-day telemetry retention and daily optimization policies without any risk of cross-tenant data bleed.
 
@@ -2372,161 +2359,26 @@ To ensure long-term maintainability, the platform is strictly governed by automa
 
 Furthermore, critical business logic—such as billing, telemetry, and background workers—is protected by a comprehensive test suite using `pytest`. Database interactions are mocked or verified via test databases (`@pytest.mark.django_db`) to guarantee functional parity with production. By codifying these invariants and test cases, the platform ensures SaaS-level reliability while moving at the velocity of a startup.
 
-## Chapter 32: Viking-UI — The Zero-Dependency UI Kit
+## Chapter 32: deml-ui — The Design System (new-from-the-start)
 
-The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `packages/viking-ui/` as the single source of truth for every design-system layer: token SCSS, static CSS bundles (`suite-tokens.css` / `suite-components.css` / `suite-landing.css` / `suite-backend.css`), framework-neutral Web Components, shared utility exports, and Angular wrapper components. **Suite law** ([docs/SUITE_UI_UNIFICATION.md](docs/SUITE_UI_UNIFICATION.md)): FORJD is the primary product surface; deml.app, backend.deml.app, ui.deml.app, dataengineeringformachinelearning.com, forjd.co, backend.forjd.co, and ui.forjd.co share one visual language — void-black austerity, electric command `#2176ff`, institutional gold. FORJD `forjd-ui` is a thin `--fj-*` adapter that vendors suite CSS (no npm style package); it is not a second design system. DEML product pages consume **Viking-UI** directly. Product pages are Angular 22+ standalone + Signals; dashboard and analytics live ticks arrive through Django SSE (`LiveUpdatesService`) rather than Firestore. The historical split that placed library ownership under frontend-specific paths has been unused; apps now consume the package the way they would consume an external-style library, even inside the monorepo. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies, plus browser-ready bundles for Astro, Django, Swagger, and unmanaged HTML. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 8px primary spacing grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. Intrinsic `viking-grid columns="auto"` and `viking-switcher` contracts form tracks from available content space rather than device names, preserving readable minimums, equal-height cards, aligned action rows, and natural row-to-column flow from 320px and 400% zoom through wide operational canvases. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
+The frontend design language of the platform is delivered by **deml-ui**
+([ui.deml.app](https://ui.deml.app)), the sibling design-system repo. Tokens,
+component HTML/CSS, Angular markup wrappers, and Storybook live there. The
+product Angular app under `src/` composes behavioral `app-*` wrappers that
+consume deml-ui class contracts (ViewEncapsulation.None, no parallel local DS
+stylesheets). Django templates load synced `backend/static/deml-ui.css`.
 
-Information-dense metric groups follow a wide-card density contract: one column when space is constrained and no more than two equal columns on larger canvases, equivalent to 6/12 per card. Status metrics, KPI tiles, CES gauges, and explore-card metrics stretch to the tallest peer in their row so repeated surfaces retain a stable silhouette. Labels, supporting captions, and values remain on one line when presented inside these compact operational tiles; when a narrow viewport cannot preserve that line, the component clips with an ellipsis while retaining the complete accessible name instead of making one card taller than its neighbors. Four-across 3/12 metric layouts are prohibited for dense components because they compress content, force unpredictable wrapping, and slow scanning. Simple navigation and non-content collections are not metric grids and may still use their documented column counts.
+**Look:** new-from-the-start / atelier — 8px grid, dual `data-theme`, bold
+display + letterspaced marks, equal tile distribution, locked chart aspect.
+Canonical docs: [THEME.md](THEME.md), [docs/DEML_UI.md](docs/DEML_UI.md),
+[.cursorrules](.cursorrules), [AGENTS.md](AGENTS.md).
 
-### Design philosophy (THEME.md)
+**Retired:** Viking-UI (`packages/viking-ui`, `--viking-*`, void-black /
+electric `#2176ff` suite chrome). Do not restore it. Historical suite-unification
+notes remain under `docs/SUITE_*` and are superseded.
 
-Viking-UI expresses **precision engineering** and **high-end industrial tech** — see the canonical token matrix in [THEME.md](THEME.md):
-
-- **Dark-first engineering aesthetic** — deep charcoals, machined metallic edges, no decorative noise.
-- **Luxurious minimalism** — every pixel earns its place; data and metrics dominate ornament.
-- **Tactile surfaces** — subtle top-edge highlights, restrained elevation, crisp borders.
-- **Refined accent discipline** — deep teal for primary action, rich crimson for secondary emphasis and danger.
-- **WCAG 2.1 AA** — contrast, focus rings, 44px mobile touch targets, keyboard navigation.
-
-Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.deml.app](https://ui.deml.app), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle built from `packages/viking-ui/src/styles/` and synced via `scripts/sync_design_system.py`; external sites can load the same style bundle from jsDelivr. The package also publishes `web-components.js`, `viking-ui-elements.js`, `widget.js`, `tokens.json`, `manifest`, `icons`, and `site-drakkar` subpaths so static-site consumers can use framework-neutral pieces without importing Angular.
-
-### Unified design governance
-
-DEML unifies UI through a layered rule stack so agents, contributors, and surfaces never drift:
-
-| Layer        | Document                     | Purpose                                                                      |
-| ------------ | ---------------------------- | ---------------------------------------------------------------------------- |
-| Cursor / IDE | [.cursorrules](.cursorrules) | Mandatory `viking-*` imports, composable field stacks, zero hardcoded styles |
-| Tokens       | [THEME.md](THEME.md)         | Canonical `--viking-*` palette, component standards, maintenance             |
-| Platform     | [AGENTS.md](AGENTS.md)       | Viking-UI Uniformity Law, architecture and security invariants               |
-| Narrative    | This chapter                 | Consumption patterns, build, publish, accessibility contracts                |
-
-**Composable structure, Viking palette:** Viking-UI adopts composable primitive ergonomics — `viking-field` wrapping controls, variant-driven `viking-button`, dark-first `viking-card` surfaces — with **deep charcoals, machined metallic borders, and restrained teal/crimson**. The result is **premium restrained luxury**: every pixel earns its place, metrics dominate ornament, and tactile surfaces use subtle top-edge highlights instead of glass blur or neon glow.
-
-**Brand artwork contract:** the DEML mark has two immutable portable-asset colors: brand navy `#070C20` (`--viking-brand-navy`) and brand blue `#0078FF` (`--viking-brand-blue`). Logos, favicons, application icons, and social-preview images may embed those exact values so they render correctly without a stylesheet; application components must still use semantic Viking-UI variables rather than copying the literals.
-
-**Component law for all Angular work:** import components from `@dataengineeringformachinelearning/viking-ui` or the compatibility `@dataengineeringformachinelearning/viking-ui/angular` entrypoint only. Do not add Material, Bootstrap, or parallel button/input/chart implementations. When a primitive is missing, extend `packages/viking-ui/` first, export it from `src/public-api.ts`, then consume it from deml.app. Non-Angular pages use the single synced `viking-ui.css` bundle with semantic `var(--viking-*)` aliases, Web Components from `web-components.js`, and framework-neutral utility subpaths such as `@dataengineeringformachinelearning/viking-ui/icons` — never inline hex palettes or reach into package source paths.
-
-Changes to design governance must update `.cursorrules`, `THEME.md`, `AGENTS.md`, and `README.md` together, then propagate via `scripts/sync_content.py` and `scripts/sync_design_system.py`.
-
-deml.app ships a marketing-parity landing page at `/home` (hero, capability bands, pricing, Polars-style whitepaper CTA) so the authenticated app feels cohesive with [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/). Unauthenticated visitors hitting `/` are routed to `/home`; signed-in users go to `/dashboard`.
-
-Consumption follows the published path first: Angular app shells install and load from npm (`npm install @dataengineeringformachinelearning/viking-ui`) and consume components + CSS from that package. The package root `packages/viking-ui/` is both the framework-neutral source of truth and the Angular wrapper layer: `src/styles/` owns tokens and static CSS, `src/web/` owns Web Components, `src/core/` owns shared registries and utilities, `src/lib/` owns Angular standalone wrappers, and `src/public-api.ts` is the public Angular barrel. Production pages consume components directly — buttons, fields, charts, modals, toasts, and selects — rather than embedding a library-specific gallery inside deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). The project is registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, and tests validate manifest parity during release. Component documentation and visual regression live in the standalone docs site (`viking-ui-docs/`, deployed to [ui.deml.app](https://ui.deml.app)) — build with `npm run build:viking-ui-docs` from the repo root. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, constructor parameter injection (never field-level `inject()` in library code — avoids NG0203 in cross-package bundles), and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box.
-
-Non-Angular surfaces (marketing Astro pages, Django templates) load the single static CSS bundle synced from the design system:
-
-```html
-<link rel="stylesheet" href="/assets/viking-ui.css" />
-```
-
-External HTML hosts can also use the jsDelivr CDN:
-
-```html
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@10.0.0/dist/viking-ui.css"
-/>
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@10.0.0/dist/web-components.js"
-></script>
-```
-
-Framework-neutral utility imports stay Angular-free for Astro, static-site generation, and build scripts:
-
-```ts
-import { resolveVikingIcon } from "@dataengineeringformachinelearning/viking-ui/icons";
-import { SITE_NAV_LINKS } from "@dataengineeringformachinelearning/viking-ui/site-drakkar";
-import tokens from "@dataengineeringformachinelearning/viking-ui/tokens.json";
-```
-
-```ts
-import {
-  VikingButton,
-  VikingCard,
-  VikingToastService,
-} from "@dataengineeringformachinelearning/viking-ui";
-
-@Component({
-  imports: [VikingButton, VikingCard],
-  template: `
-    <viking-card>
-      <viking-button variant="primary" icon="check" (pressed)="save()"
-        >Save</viking-button
-      >
-    </viking-card>
-  `,
-})
-export class Example {
-  private readonly toasts = inject(VikingToastService);
-  save = (): void => void this.toasts.show({ text: "Saved.", tone: "success" });
-}
-```
-
-### Build
-
-**Canonical SCSS** lives in `packages/viking-ui/src/styles/` (tokens, components, navbar, page shell, and surface-specific static styles). **Static CSS** for marketing, backend, docs, Swagger, and widgets is compiled by `packages/viking-ui/scripts/build-css.mjs`. **Framework-neutral JavaScript bundles** (`web-components.js`, `viking-ui-elements.js`, `icons.js`, `site-drakkar.js`, and `widget.js`) are emitted by `packages/viking-ui/scripts/build-elements.mjs`.
-
-From repo root:
-
-```bash
-npm run test:viking-ui --prefix frontend          # Vitest component tests
-npm run build:viking-ui --prefix frontend         # ng-packagr → dist/viking-ui
-npm run build:viking-ui:package                   # viking-ui.css, token JSON, Web Components
-python3 scripts/sync_design_system.py             # fan-out to marketing, backend, frontend /assets/
-npm run build:viking-ui-docs                      # docs site + prebuild static CSS
-```
-
-The frontend `build:viking-ui-css` script delegates to `packages/viking-ui` for backward compatibility. Railway/Docker frontend builds consume the built package CSS rather than owning a separate style tree, and no new documentation or code should reference unused frontend-local library paths.
-
-The main Angular app rebuilds the library automatically via `prebuild` / `prestart` / `pretest` hooks.
-
-### Version bump
-
-The published version lives in `packages/viking-ui/package.json`. Bump **before** every npm publish — npm rejects re-publishing an existing version.
-
-Follow [Semantic Versioning](https://semver.org/):
-
-| Bump  | When                                                    |
-| ----- | ------------------------------------------------------- |
-| patch | Bug fixes, token/CSS tweaks, a11y fixes                 |
-| minor | New `viking-*` components, additive APIs                |
-| major | Breaking changes to inputs, outputs, or removed exports |
-
-```bash
-cd packages/viking-ui
-
-# Choose one:
-npm version patch --no-git-tag-version # 1.0.0 → 1.0.1
-npm version minor --no-git-tag-version # 1.0.0 → 1.1.0
-npm version major --no-git-tag-version # 1.0.0 → 2.0.0
-```
-
-`--no-git-tag-version` updates only `package.json` (and `package-lock.json` if present in that folder); commit the bump with your release changes. After bumping, rebuild so `dist/viking-ui` carries the new version.
-
-### Publish to npm
-
-Published scope: `@dataengineeringformachinelearning` (npm org `dataengineeringformachinelearning`). You must be a member of that org and use a 2FA one-time password when publishing.
-
-```bash
-cd packages/viking-ui
-npm run test
-npm run build
-npm pack
-npm publish --access public --otp=YOUR_CODE
-```
-
-Install in downstream Angular apps:
-
-```bash
-npm install @dataengineeringformachinelearning/viking-ui
-```
-
-Peer dependencies: `@angular/core`, `@angular/common`, and `@angular/forms` ^22.
-
-### Quality & accessibility
-
-The library carries a machine-readable manifest (`viking.manifest.json`) that maps each component to its Angular exports and the date of the last audit. The `npm run check:viking-upstream` script diffs manifest coverage and exits non-zero when the catalog drifts — surfacing gaps in CI the same way a failing contract test would. Accessibility is treated as a WCAG 2.1 AA / Section 508 contract: visible `:focus-visible` rings on every interactive element, full keyboard navigation for listboxes, menus and the command palette, `role`/`aria-*` semantics throughout, and `prefers-reduced-motion` handling on animated pieces such as skeletons and progress bars. The suite is verified by dedicated [Vitest](https://vitest.dev/) component tests (`npm run test:viking-ui`) that compile real templates through the [AnalogJS](https://analogjs.org/) Angular plugin, plus `ng lint` accessibility rules over the library's inline templates.
+Product pages are Angular 22+ standalone + Signals; dashboard and analytics live
+ticks arrive through Django SSE (`LiveUpdatesService`) rather than Firestore.
 
 ## Chapter 33: Daily Platform Operations Audit
 
@@ -2534,15 +2386,15 @@ Operating a high-throughput event platform is not a one-time architecture exerci
 
 ### Responsiveness, layout harmony, and viewport height
 
-Mobile-first is non-negotiable. Every stylesheet defaults to single-column layouts and scales up with `@media (min-width: …)` — never the reverse. The enforcement script `node scripts/check_mobile_first.js` scans Angular, Viking-UI, marketing, and Django static surfaces for forbidden desktop-first `max-width` breakpoints and fails CI when violations appear. Dashboard pages share one shell: `.dashboard-page-container` → `.dashboard-content-area` → `.page-inner-wrapper` at `--viking-container-max-width` (1260px). The public `/status` route uses the same container classes so navigation between Command Center, Analytics, Settings, and System Status produces zero horizontal layout shift. Full viewport height is managed intentionally: `.dashboard-wrapper` and `.dashboard-page-container` chain `min-height: calc(100vh - var(--navbar-height))` with flex children that grow (`flex: 1`) so sidebars and main content initialize to full height without cropping scroll regions.
+Mobile-first is non-negotiable. Every stylesheet defaults to single-column layouts and scales up with `@media (min-width: …)` — never the reverse. The enforcement script `node scripts/check_mobile_first.js` scans Angular, deml-ui, marketing, and Django static surfaces for forbidden desktop-first `max-width` breakpoints and fails CI when violations appear. Dashboard pages share one shell: `.dashboard-page-container` → `.dashboard-content-area` → `.page-inner-wrapper` at `--page-max` (1260px). The public `/status` route uses the same container classes so navigation between Command Center, Analytics, Settings, and System Status produces zero horizontal layout shift. Full viewport height is managed intentionally: `.dashboard-wrapper` and `.dashboard-page-container` chain `min-height: calc(100vh - var(--navbar-height))` with flex children that grow (`flex: 1`) so sidebars and main content initialize to full height without cropping scroll regions.
 
 ### Framework cohesion and light/dark modes
 
-Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the same compiled `viking-ui.css` bundle synced from `packages/viking-ui/src/styles/` via `scripts/sync_design_system.py`; external consumers can use the equivalent CDN assets from jsDelivr. Static CSS is built by `packages/viking-ui/scripts/build-css.mjs`, and Angular keeps `includePaths` pointed at the canonical package token directory for library component SCSS. Light mode shifts lightness only; semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`) preserve WCAG 2.1 AA contrast in both themes. `node scripts/enforce-theme.js` blocks hardcoded hex drift before merge.
+Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the same compiled `deml-ui.css` bundle synced from `deml-ui/styles/` via `scripts/sync_deml_ui_static.sh`; external consumers can use the equivalent CDN assets from jsDelivr. Static CSS is built by `deml-ui build scripts`, and Angular keeps `includePaths` pointed at the canonical package token directory for library component SCSS. Light mode shifts lightness only; semantic aliases (`--color-bg`, `--color-surface`, `--color-accent`) preserve WCAG 2.1 AA contrast in both themes. `node scripts/enforce-theme.js` blocks hardcoded hex drift before merge.
 
 ### Accessibility and Section 508
 
-Keyboard navigation, visible `:focus-visible` rings (`--viking-ring`), semantic headings, explicit image alts, and `aria-*` on dynamic widgets are enforced mechanically. `node scripts/run_axe.js` targets marketing HTML and Astro output for WCAG 2.1 AA violations. Viking-UI form stacks compose through `viking-field` so labels, errors, and required states remain screen-reader coherent. Status alone is insufficient — automated gates run on every pre-commit pass.
+Keyboard navigation, visible `:focus-visible` rings (`--focus-ring`), semantic headings, explicit image alts, and `aria-*` on dynamic widgets are enforced mechanically. `node scripts/run_axe.js` targets marketing HTML and Astro output for WCAG 2.1 AA violations. deml-ui form stacks compose through deml-ui field stacks so labels, errors, and required states remain screen-reader coherent. Status alone is insufficient — automated gates run on every pre-commit pass.
 
 ### Production deployment and distroless runtimes
 
@@ -2558,7 +2410,7 @@ Every ORM query that touches tenant-owned rows filters by authenticated tenant U
 
 ### Code quality and test synchronization
 
-Before any merge, I run `uvx pre-commit run --all-files`, `npm run test:viking-ui`, backend pytest on touched modules, and rebuild static CSS when tokens change. Dead dependencies are pruned from `package.json` and `requirements.txt` when enforcement proves them unused. Tests mirror security boundaries: mocked tenant contexts in API tests, idempotency keys in event contract tests, and Vitest coverage on chart math, auth signals, and icon resolution in Viking-UI.
+Before any merge, I run `uvx pre-commit run --all-files`, `npm run test (deml-ui Storybook / deml unit tests)`, backend pytest on touched modules, and rebuild static CSS when tokens change. Dead dependencies are pruned from `package.json` and `requirements.txt` when enforcement proves them unused. Tests mirror security boundaries: mocked tenant contexts in API tests, idempotency keys in event contract tests, and Vitest coverage on chart math, auth signals, and icon resolution in deml-ui.
 
 ### Documentation as operational truth
 
@@ -2672,7 +2524,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/forms`: 22.0.5
 - `@angular/platform-browser`: 22.0.5
 - `@angular/router`: 22.0.5
-- `@dataengineeringformachinelearning/viking-ui`: ^9.7.2
+- `deml-ui`: ^9.7.2
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `@vercel/analytics`: ^2.0.1
@@ -2749,10 +2601,10 @@ Canonical record of end-of-day workspace sync, hardening, and polish passes. Eac
 | Date       | Tooling                           | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ---------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 2026-06-28 | **Grok Build Beta**               | PASS 0–5: cache purge (`deml-cleanup.sh`); 85 pytest + 28 vitest green; unified `1260px` container (`THEME.md` / `--container-max-width`); Distroless Docker audit (backend, frontend, scanner); Firebase v2 `functions/.env` FORJD config in CI; Swagger public `/api/v1/ingest` + `/api/v1/predict` with demo key `deml_swagger_api_key`; copyright/footer hardening (no Railway, no stray `\|`); DB Browser for SQLite in Ch.1 setup; doc sync via `scripts/sync_content.py`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| 2026-06-30 | **Cursor - Grok 4.3**             | PASS 0–5: cache purge (`deml-cleanup.sh`); **88 pytest + 33 vitest** green; hero CTA spacing fix (Viking-inspired `viking-btn` classes, tighter icon–label gap, flex parity); Viking UI visual patterns synced via `@deml/design-system` (`viking-inspired.scss` in `deml-components.css`); Viking attribution in unified footers; CSP verified (`test_csp_and_demo_auth.py`, `firebase.json` unchanged); fixed `SyntheticMonitor.checked_at` stale-degradation (`auto_now` → explicit worker timestamp, migration `0038`); telemetry normalization test aligned to `get_normalized_service_info`; THEME token fixes (`--color-error`, `--color-warning`, `--white`); vitest preflight via `set-env.js`; npm `typescript` override fix (`$typescript` → `~6.0.3`); dead footer CSS pruned; Distroless Docker audit confirmed (backend `python3-debian12`, frontend `nodejs22-debian12`); `scripts/build_search_index.py` + Appendix K in search-index; Angular routes for `/documentation`, `/book`, `/whitepaper`, `/compliance`, `/terms`, `/privacy`; unified in-app footer/nav links; GitHub Actions `ci-tests.yml` (pytest + vitest). |
+| 2026-06-30 | **Cursor - Grok 4.3**             | PASS 0–5: cache purge (`deml-cleanup.sh`); **88 pytest + 33 vitest** green; hero CTA spacing fix (deml-ui-inspired `.button` classes, tighter icon–label gap, flex parity); deml-ui visual patterns synced via `@deml/design-system` (`deml-ui styles` in `deml-components.css`); deml-ui attribution in unified footers; CSP verified (`test_csp_and_demo_auth.py`, `firebase.json` unchanged); fixed `SyntheticMonitor.checked_at` stale-degradation (`auto_now` → explicit worker timestamp, migration `0038`); telemetry normalization test aligned to `get_normalized_service_info`; THEME token fixes (`--color-error`, `--color-warning`, `--white`); vitest preflight via `set-env.js`; npm `typescript` override fix (`$typescript` → `~6.0.3`); dead footer CSS pruned; Distroless Docker audit confirmed (backend `python3-debian12`, frontend `nodejs22-debian12`); `scripts/build_search_index.py` + Appendix K in search-index; Angular routes for `/documentation`, `/book`, `/whitepaper`, `/compliance`, `/terms`, `/privacy`; unified in-app footer/nav links; GitHub Actions `ci-tests.yml` (pytest + vitest). |
 | 2026-06-30 | **Cursor - Grok 4.3 (Session 3)** | Multi-pass hardening: removed dead `up.railway.app` hostname detection from `environment.ts` + `environment.development.ts` (app fully migrated to `deml.app`); sanitized `main.ts` Sentry DSN comment (removed "Railway" deployment-provider branding); replaced hardcoded `/tmp/sla_model.pt` in `ml/ml_services.py` with `tempfile.NamedTemporaryFile` + `os.unlink` teardown (S108 fix, prevents temp file leakage); replaced hardcoded `/tmp/gcp-service-account.json` in `config/settings.py` with `tempfile.mkstemp` (S108 fix, OS-secure path allocation); added `# noqa: S104` on intentional container `0.0.0.0` bind in `start.py` (Daphne Cloud Run entrypoint false positive suppression); `scripts/sync_content.py` re-ran → search-index 72 sections synced; **94 pytest** green across all modules post-fix; TypeScript `npx tsc --noEmit` clean; Ruff S-rules audit documented (false positives annotated).                                                                                                                                                                                                               |
 | 2026-07-02 | **Cursor Agent (818d)**           | PASS 0–5: cache purge (`deml-cleanup.sh`); **95 pytest + 27 vitest** green; deml.app `/home` landing (marketing parity: hero, capability bands, pricing); Polars-style compact `app-whitepaper-cta` (animated bar grid + sparkline); legacy Angular Material SCSS removed (`material-overrides`, `material-tokens`, dead `mat-*` rules); root guard routes unauthenticated users to `/home`; explore page whitepaper CTA; Distroless Docker audit confirmed (backend, frontend, scanner).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 2026-07-02 | **Cursor Agent (c5bc)**           | PASS 0–5: **95 pytest + 27 vitest** green; `pretest` + vitest alias for `@deml/viking-ui`; CI `build:viking-ui` step; removed stale `up.railway.app` from `set-env.js`, `firebase.json`, `nginx.conf`; domain-pure marketing `sitemap.xml` (no cross-domain app routes); wired `/telemetry/` landing; `llms.txt` AGENTS/MCP settings; auth-status `hidden` attr (no inline styles); Appendix D `ci-tests.yml` entry.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 2026-07-02 | **Cursor Agent (c5bc)**           | PASS 0–5: **95 pytest + 27 vitest** green; `pretest` + vitest alias for `deml-ui`; CI `build (deml-ui)` step; removed stale `up.railway.app` from `set-env.js`, `firebase.json`, `nginx.conf`; domain-pure marketing `sitemap.xml` (no cross-domain app routes); wired `/telemetry/` landing; `llms.txt` AGENTS/MCP settings; auth-status `hidden` attr (no inline styles); Appendix D `ci-tests.yml` entry.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 2026-07-04 | **Cursor Agent (ce2d)**           | Daily platform audit (Tracks 1–8): unified `/status` page shell with `.dashboard-page-container` + full-height flex chain; root `scripts/check_mobile_first.js` wrapper; Developer Portal `/documentation` Platform Ops section (Railway, distroless, retention, schedulers, CES); BOOK Ch.33 + WHITEPAPER §15.1; theme/mobile-first enforcement green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## Appendix L: Foundational Security Frameworks
@@ -2870,7 +2722,7 @@ Firebase Auth-only is shared across compute hosts (no Firebase Hosting for produ
 | -------------------------------------------------------------------------------- | --------------------------------------- | --------------------- |
 | Angular app (`deml.app`)                                                         | `deml` on Vercel                        | Push to `main`        |
 | Community site                                                                   | `marketing` on Vercel                   | Push to `main`        |
-| Viking-UI Storybook                                                              | `ui` on Vercel                          | Push to `main`        |
+| deml-ui Storybook                                                              | `ui` on Vercel                          | Push to `main`        |
 | Django API                                                                       | `deml-backend` on Fly                   | Push to `main`        |
 | Data plane (ingest, workflows, projections, analytics, ML, scanners, replay/DLQ) | FORJD `forjd-engine` (FORJD repository) | FORJD deploy pipeline |
 | Postgres                                                                         | managed DB (DEML control plane)         | Infrastructure change |
@@ -3233,7 +3085,7 @@ Operational doctrine—how the platform runs in production, who performs which w
     - Live Standard → Pro checkout, webhooks, success-page sync, and scheduled subscription reconciliation. Operator detail: [Appendix M](#appendix-m-billing--subscriptions-operator-reference).
 
 17. **Embeddable widgets**
-    - Public status embeds via `widget.js` (Viking-UI package / synced marketing assets) for customer sites without pulling the full Angular app.
+    - Public status embeds via `widget.js` (deml-ui package / synced marketing assets) for customer sites without pulling the full Angular app.
 
 ---
 
@@ -3269,7 +3121,7 @@ Short definitions for architectural patterns, domain concepts, and production co
 | **FORJD engine**             | FORJD binary / roles for sealed pipeline and data-plane work (`FORJD_ROLE`)                         | FORJD repository                                                                         |
 | **Django → FORJD forward**   | BFF sealed ingest with tenant-bound `fjsvc_`                                                        | [docs/FORJD_INTEGRATION.md](../docs/FORJD_INTEGRATION.md), [docs/FLY.md](../docs/FLY.md) |
 | **DEML control-plane tasks** | Billing sync, key rotation, identity-adjacent retention—never sealed stream processing              | `backend/` management commands                                                           |
-| **Viking-UI**                | Design system SSoT: tokens, CSS, Angular + Web Components                                           | `packages/viking-ui/`, [THEME.md](../THEME.md)                                           |
+| **deml-ui**                   | Design system SSoT: tokens, CSS, Angular + Web Components                                           | sibling `deml-ui`, [THEME.md](THEME.md)                                                  |
 | **Kyber / liboqs**           | Post-quantum KEM primitives available on hybrid key-exchange paths                                  | BOOK App. A / Ch. 28                                                                     |
 
 ## Data stores & mesh
@@ -3516,10 +3368,10 @@ The former Railway data-plane services (relay, scheduler, probe, normalizer, ing
 
 | Surface        | Technology  | Notes                                                                    |
 | -------------- | ----------- | ------------------------------------------------------------------------ |
-| Application UI | Angular 22+ | Standalone components, Signals, Viking-UI (not Material / forjd-ui)      |
+| Application UI | Angular 22+ | Standalone components, Signals, deml-ui (not Material / forjd-ui)      |
 | Live updates   | Django SSE  | `latestEvent` / `degraded`; ticks `{count, cursor}` only (not Firestore) |
 | Marketing Site | Astro       | Static-rendered landing pages                                            |
-| Design System  | Viking-UI   | Zero-dependency, WCAG 2.1 AA by construction ([THEME.md](THEME.md))      |
+| Design System  | deml-ui   | Zero-dependency, WCAG 2.1 AA by construction ([THEME.md](THEME.md))      |
 
 ## Security & Compliance
 
@@ -3546,7 +3398,7 @@ The former Railway data-plane services (relay, scheduler, probe, normalizer, ing
 | Layer        | Command                                                                                            |
 | ------------ | -------------------------------------------------------------------------------------------------- |
 | Theme / a11y | `node scripts/enforce-theme.js` · `node scripts/run_axe.js` · `node scripts/check_mobile_first.js` |
-| Frontend     | `cd frontend && npm run lint && npm test && npm run test:viking-ui`                                |
+| Frontend     | `cd frontend && npm run lint && npm test && npm run test (deml-ui Storybook / deml unit tests)`                                |
 | Backend      | `cd backend && pytest` (touched modules) · Ruff via pre-commit                                     |
 | Full         | `uvx pre-commit run --all-files` · root `npm run quality`                                          |
 
@@ -3563,503 +3415,31 @@ For the complete technology list including all open-source foundations, see [BOO
 
 ---
 
-## Appendix V: Viking-UI Grid-First Layout
+## Appendix V: deml-ui Grid-First Layout
 
-Viking-UI provides three package-owned layout levels:
+> **Superseded.** Layout and migration guidance now lives in [THEME.md](THEME.md), [docs/DEML_UI.md](docs/DEML_UI.md), and deml-ui Storybook ([ui.deml.app](https://ui.deml.app)). Compose product pages with `app-banner` → `app-page-section` → `app-section-header` → `app-tile-board` / grids / cards. Viking-UI recipes (`viking-*`) are retired.
 
-1. `viking-app-layout` owns application navigation, main content, optional
-   tools, drawers, and split panels.
-2. `viking-page-template` owns centered page width, page header/actions, and
-   vertical route rhythm.
-3. `viking-grid`, `viking-grid-item`, and `viking-column-layout` own content
-   columns. `viking-container`, `viking-card`, and `viking-chart-panel` provide
-   the uniform content inlay.
+## Appendix W: deml-ui Template-Driven Layout
 
-## Equal and intrinsic columns
+> **Superseded.** Layout and migration guidance now lives in [THEME.md](THEME.md), [docs/DEML_UI.md](docs/DEML_UI.md), and deml-ui Storybook ([ui.deml.app](https://ui.deml.app)). Compose product pages with `app-banner` → `app-page-section` → `app-section-header` → `app-tile-board` / grids / cards. Viking-UI recipes (`viking-*`) are retired.
 
-Use `viking-column-layout` when sibling cards have equal visual weight. It
-starts as one column and reaches the requested count as space becomes
-available. Use `columns="auto"` when the number of tracks should follow the
-container width rather than a device breakpoint.
+## Appendix X: deml-ui Modern SaaS Migration
 
-```html
-<viking-column-layout columns="3">
-  <viking-card>Availability</viking-card>
-  <viking-card>Latency</viking-card>
-  <viking-card>Threat exposure</viking-card>
-</viking-column-layout>
+> **Superseded.** Layout and migration guidance now lives in [THEME.md](THEME.md), [docs/DEML_UI.md](docs/DEML_UI.md), and deml-ui Storybook ([ui.deml.app](https://ui.deml.app)). Compose product pages with `app-banner` → `app-page-section` → `app-section-header` → `app-tile-board` / grids / cards. Viking-UI recipes (`viking-*`) are retired.
 
-<viking-column-layout columns="auto" itemSize="wide">
-  <viking-chart-panel>...</viking-chart-panel>
-  <viking-chart-panel>...</viking-chart-panel>
-</viking-column-layout>
-```
+## Appendix Y: deml-ui Style Guide (new-from-the-start)
 
-Static consumers use the same contract:
+Canonical visual rules: [THEME.md](THEME.md) · [docs/DEML_UI.md](docs/DEML_UI.md) ·
+[ui.deml.app](https://ui.deml.app).
 
-```html
-<div
-  class="viking-column-layout viking-column-layout--auto viking-column-layout--item-compact"
->
-  <article class="viking-card">...</article>
-  <article class="viking-card">...</article>
-</div>
-```
+- **8px grid** — spacing via `--space-*` / `--tile-gap` / `--tile-row-unit`
+- **Dual theme** — `data-theme="light"|"dark"`; persist `localStorage['deml-theme']`
+- **Type** — Syne display, Fraunces ledes, Geist UI
+- **Charts** — fixed `--chart-aspect`; never squash plots
+- **A11y** — WCAG 2.0 AA focus, contrast, hit targets, reduced motion
+- **Compose** — `app-banner` → sections → tile boards / grids / cards
 
-## Twelve-column composition
-
-Use the 12-track grid when regions have intentionally unequal weight. Mobile
-span is declared first; tablet and desktop spans progressively enhance it.
-
-```html
-<viking-grid [columns]="12">
-  <viking-grid-item [span]="12" [tabletSpan]="8" [desktopSpan]="9">
-    <viking-chart-panel>Primary telemetry</viking-chart-panel>
-  </viking-grid-item>
-  <viking-grid-item [span]="12" [tabletSpan]="4" [desktopSpan]="3">
-    <viking-container heading="Current posture">...</viking-container>
-  </viking-grid-item>
-</viking-grid>
-```
-
-## Centered containers
-
-`viking-container` accepts `readable`, `default`, `wide`, and `full` width
-contracts. It remains centered by default and owns its padding, border, radius,
-and shadow.
-
-```html
-<viking-container
-  width="readable"
-  heading="Retention policy"
-  description="Changes apply to every workspace projection."
->
-  <viking-form-section>...</viking-form-section>
-</viking-container>
-```
-
-## Before and after
-
-Before, route-specific classes owned grid behavior and cards were visual
-`div` elements:
-
-```html
-<div class="dashboard-grid dashboard-grid-responsive">
-  <div class="analytics-panel">...</div>
-  <div class="analytics-panel">...</div>
-</div>
-```
-
-After, the package components own both layout and inlay:
-
-```html
-<viking-column-layout columns="auto" itemSize="wide">
-  <viking-chart-panel>...</viking-chart-panel>
-  <viking-chart-panel>...</viking-chart-panel>
-</viking-column-layout>
-```
-
-Before, unequal dashboard regions required local span classes:
-
-```html
-<section class="dashboard-grid">
-  <div class="span-8">...</div>
-  <div class="span-4">...</div>
-</section>
-```
-
-After, spans are explicit inputs with mobile-first fallbacks:
-
-```html
-<viking-grid [columns]="12">
-  <viking-grid-item [span]="12" [desktopSpan]="8">...</viking-grid-item>
-  <viking-grid-item [span]="12" [desktopSpan]="4">...</viking-grid-item>
-</viking-grid>
-```
-
-Do not add page-specific `display`, `grid-template-columns`, gutter, card
-padding, or max-width rules. Add missing layout behavior to these Viking-UI
-contracts and consume it everywhere.
-
----
-
-## Appendix W: Viking-UI Template-Driven Layout Migration
-
-## Outcome
-
-DEML uses one Cloudscape-inspired layout grammar implemented entirely by Viking-UI. Cloudscape is a structural quality reference, not a dependency or source-code donor. Viking-UI remains the sole owner of layout CSS, design tokens, Angular wrappers, and static cross-framework contracts.
-
-## Canonical templates
-
-| Contract                                                            | Responsibility                                                  | Consumer rule                                                  |
-| ------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------- |
-| `viking-app-layout`                                                 | Sidebar, content, tools, drawers, split panel, notifications    | One per application workspace shell                            |
-| `viking-content-layout`                                             | Route breadcrumbs, notifications, header, actions, body, footer | Default for dashboard, resource, collection, and form routes   |
-| `viking-page-template`                                              | Compatibility page width, gutters, section rhythm               | Migrate operational routes to `viking-content-layout`          |
-| `viking-section`                                                    | Lightweight projected section host                              | Use for complex sections whose internal anatomy already exists |
-| `viking-section-template`                                           | Heading, description, actions, divider, body                    | Default for new feature sections                               |
-| `viking-card`, `viking-container`, `viking-box`, `viking-hud-panel` | Standardized surfaces and content grouping                      | Do not create app-local card/container recipes                 |
-| `viking-grid`, `viking-column-layout`, `viking-switcher`            | Responsive symmetric composition                                | Choose intrinsic layout before adding breakpoints              |
-
-## Completed migration
-
-- The Angular root shell now uses `viking-app-layout` regions.
-- All eleven Angular route templates use `viking-page-template` with named width and density.
-- Major Angular sections use `viking-section-template`; operational panels use `viking-container`; repeated columns use `viking-column-layout`.
-- Marketing and Viking-UI docs expose the shared app-layout classes at their layout boundary.
-- Viking-UI docs register App Layout, Page Template, and Section Template as public showcase entries.
-- All new visual rules live in `packages/viking-ui/src/styles/_templates.scss` and all geometry values resolve through `--viking-*` tokens.
-- Dashboard and settings now use `viking-content-layout`; App Layout exposes controlled drawer and split-panel regions.
-
-## Remaining file-by-file migration
-
-### `marketing/src/pages/**/*.astro`
-
-Retain `marketing/src/layouts/Layout.astro` as the only site chrome owner. As each page is touched, add `viking-section` to content sections and replace repeated card/header markup with existing Viking-UI static classes or Web Components. Do not add page-local styles; missing visual contracts belong in `packages/viking-ui/src/styles/surfaces/` or the canonical template stylesheet.
-
-### `viking-ui-docs/src/pages/**/*.astro`
-
-Retain `viking-ui-docs/src/layouts/DocLayout.astro` as the only documentation shell. The registry generates one continuous `/components` reference with anchored Section Template categories and Container-based component specimens; dedicated component detail routes are unused.
-
-### `frontend/src/app/pages/**/*.html`
-
-New top-level feature groups use `viking-section-template` with projected `vikingSectionActions`. Content panels use `viking-container`; lightweight nested groups use `viking-box`; equal or emphasized columns use `viking-column-layout`; route headers project through `vikingContentHeader`. Legacy selectors may remain only where they express specialized data visualization behavior, never page geometry or general spacing.
-
-### `packages/viking-ui/src/styles/`
-
-Keep widths, gutters, density, breakpoints, and surfaces tokenized. Consolidate legacy aliases only after repository-wide usage reaches zero. Responsive rules remain mobile-first, dense metric groups stay at a maximum of two columns, focus remains visible, and light/dark mode must change semantic token values rather than component structure.
-
-## Verification gates
-
-Run these after each migration slice:
-
-```bash
-npm run build:viking-ui:package
-npm run build --prefix frontend
-npm run build --prefix marketing
-npm run build --prefix viking-ui-docs
-node scripts/enforce-theme.js
-node scripts/run_axe.js
-```
-
-The full pre-commit suite remains the release gate: `uvx pre-commit run --all-files`.
-
-## Before and after
-
-### Dashboard route interior
-
-Before, dashboard geometry used the compatibility page template and a boolean header switch:
-
-```html
-<viking-page-template density="compact" width="wide" [headerContent]="true">
-  <viking-page-header vikingPageTemplateHeader title="Command Center" />
-  ...
-</viking-page-template>
-```
-
-After, the route declares its operational content type and uses a stable named header region:
-
-```html
-<viking-content-layout type="dashboard" density="compact" width="wide">
-  <viking-page-header vikingContentHeader title="Command Center" />
-  <viking-section-template heading="Operational Overview"
-    >...</viking-section-template
-  >
-</viking-content-layout>
-```
-
-### Settings route interior
-
-Before, settings shared the generic page canvas with no resource-page semantics. After, it declares a compact resource layout; the same contract can add breadcrumbs or persistent save/error notifications without changing its section markup:
-
-```html
-<viking-content-layout type="resource" density="compact">
-  <viking-page-header vikingContentHeader title="Sites" />
-  <viking-callout vikingContentNotifications tone="warning">...</viking-callout>
-  <viking-column-layout [columns]="2">...</viking-column-layout>
-</viking-content-layout>
-```
-
-### Route shell: Analytics
-
-Before, the page header and every section were loose siblings with local header classes:
-
-```html
-<div class="page-inner-wrapper">
-  <viking-page-header title="System Analytics" />
-  <div class="metrics-overview-header metrics-section-spacing">
-    <h2 class="section-title-premium">Traffic Analytics</h2>
-  </div>
-  <div class="dashboard-grid dashboard-grid-responsive">...</div>
-</div>
-```
-
-After, the route declares named page geometry and sections own their complete anatomy:
-
-```html
-<viking-page-template density="compact" width="wide" [headerContent]="true">
-  <viking-page-header vikingPageTemplateHeader title="System Analytics" />
-  <viking-section-template
-    heading="Traffic Analytics"
-    description="Geographic origins, frequency trends, and endpoint usage patterns."
-    icon="traffic"
-  >
-    <viking-column-layout [columns]="2" [equalRows]="true"
-      >...</viking-column-layout
-    >
-  </viking-section-template>
-</viking-page-template>
-```
-
-### Dashboard panels
-
-Before, panels repeated a card class, header wrapper, title, and action alignment:
-
-```html
-<section class="viking-card panel-card">
-  <div class="panel-header">
-    <h2>Recent Threats</h2>
-    <viking-button>View all</viking-button>
-  </div>
-  <div class="panel-body">...</div>
-</section>
-```
-
-After, Container owns the border, padding, heading hierarchy, and action slot:
-
-```html
-<viking-container heading="Recent Threats" icon="shield">
-  <viking-button vikingContainerActions variant="ghost">View all</viking-button>
-  <div class="panel-body">...</div>
-</viking-container>
-```
-
-### Application shell
-
-Before, the app manually coupled sidebar and content wrappers:
-
-```html
-<div class="dashboard-wrapper">
-  <app-sidebar />
-  <div class="dashboard-content"><router-outlet /></div>
-</div>
-```
-
-After, the responsive shell owns collapse state, navigation, content, tools, and footer regions:
-
-```html
-<viking-app-layout [hasSidebar]="true" [hasTools]="true">
-  <app-sidebar vikingAppLayoutSidebar />
-  <router-outlet vikingAppLayoutContent />
-  <app-context-tools vikingAppLayoutTools />
-  <app-footer vikingAppLayoutFooter />
-</viking-app-layout>
-```
-
-## Migration checklist
-
-- [ ] Wrap operational routes in one `viking-content-layout` with named type, width, and density.
-- [ ] Project route headers through `vikingContentHeader`; do not leave loose header siblings.
-- [ ] Use `viking-section-template` for every major feature group.
-- [ ] Use `viking-container` for titled panels and project actions through `vikingContainerActions`.
-- [ ] Replace styled card `<div>` elements with `viking-card`.
-- [ ] Replace page-owned grid classes with `viking-grid` or `viking-column-layout`.
-- [ ] Keep dense metrics at one column when constrained and no more than two columns when wide.
-- [ ] Use `viking-stack`, `viking-cluster`, or form primitives instead of margin/padding utilities.
-- [ ] Add missing layout behavior to Viking-UI SCSS and semantic tokens, never app-local styles.
-- [ ] Verify keyboard toggles, focus rings, landmarks, heading order, and 400% zoom.
-- [ ] Run package tests, frontend build/lint, theme enforcement, mobile-first checks, and axe.
-
----
-
-## Appendix X: Viking-UI Modern SaaS Migration
-
-This migration moves DEML surfaces onto the grid-first Viking-UI foundation
-without changing the Cyber-Noir or Ocean Blue Serenity color primitives. New
-work must compose the package templates and semantic tokens; application-local
-layout and component styling should be unused as each route is migrated.
-
-## Target page anatomy
-
-Use the same hierarchy on every authenticated surface:
-
-```html
-<viking-app-layout>
-  <viking-page-template width="wide" [headerContent]="true">
-    <div vikingPageTemplateHeader>Page title and supporting copy</div>
-    <viking-cluster vikingPageTemplateActions justify="end">
-      <viking-button variant="outline">Secondary action</viking-button>
-      <viking-button variant="primary">Primary action</viking-button>
-    </viking-cluster>
-
-    <viking-stack vikingPageTemplateContent>
-      <viking-section-template
-        heading="Overview"
-        description="Operational summary"
-        layout="grid"
-      >
-        <viking-card>...</viking-card>
-        <viking-chart-panel>...</viking-chart-panel>
-      </viking-section-template>
-    </viking-stack>
-  </viking-page-template>
-</viking-app-layout>
-```
-
-`viking-app-layout` owns application regions, sidebars, tools, and drawers.
-`viking-page-template` owns page width, header/actions, and page rhythm.
-`viking-section-template` owns section headings and local grid composition.
-Cards, chart panels, form sections, and other content primitives own their
-interior padding and borders. Pages should not add compensating wrappers.
-
-## Migration sequence
-
-1. Inventory each route for app-local page shells, card classes, button styles,
-   raw grid/flex wrappers, and hardcoded spacing or radius values. Record the
-   matching Viking primitive before changing markup.
-2. Replace the outer shell first: `viking-app-layout`, then
-   `viking-page-template`, then its named header, action, content, and footer
-   regions. Remove page width and gutter rules now owned by the template.
-3. Convert major content blocks to `viking-section-template`. Use `layout="grid"`
-   for balanced two-column regions and nested `viking-grid columns="auto"` for
-   content-led card collections. Use `viking-stack` for vertical flow and
-   `viking-cluster` for action/filter rows.
-4. Replace visual containers and controls with `viking-card`,
-   `viking-chart-panel`, `viking-form-section`, `viking-field`, and
-   `viking-button`. Delete the replaced local border, radius, shadow,
-   padding, and hover rules instead of overriding the component.
-5. Migrate one route family at a time: application shell and overview pages,
-   operational dashboards, settings/forms, collection/detail pages, then
-   marketing and documentation surfaces. Keep each change independently
-   releasable.
-
-## Acceptance checks per route
-
-- Content aligns to the template gutter and shared column gaps at phone,
-  tablet, desktop, and 200% zoom.
-- Page title, section title, card title, body copy, and metadata have a clear
-  five-level hierarchy without page-local font sizes.
-- Interactive targets remain at least 44px on touch layouts and preserve the
-  shared focus ring.
-- Loading, empty, error, and populated states retain the same dimensions and
-  do not introduce layout shift.
-- No new app-local visual styles, hardcoded colors, one-off card/button
-  classes, or third-party UI runtime dependencies remain.
-- Viking-UI package build, tests, theme enforcement, mobile checks, and axe
-  checks pass before a migrated route is considered complete.
-
-## Compatibility policy
-
-The numbered spacing aliases remain stable for existing consumers. New and
-migrated components should use semantic roles such as
-`--viking-space-control-gap`, `--viking-space-content-gap`,
-`--viking-space-compact-gap`, `--viking-space-container-gap`,
-`--viking-layout-column-gap`,
-`--viking-card-padding`, and `--viking-page-section-gap`. This separates visual
-decisions from scale mechanics and allows later density tuning without
-rewriting page CSS.
-
----
-
-## Appendix Y: Viking-UI Modern SaaS Style Guide
-
-Viking-UI is a dark-first enterprise SaaS system. Cyber-Noir surfaces establish
-depth; Ocean Blue is reserved for primary actions, selected states, links, and
-focus. Components are quiet by default and communicate hierarchy through
-spacing, one-pixel borders, stepped surfaces, and restrained elevation.
-
-## Shared anatomy
-
-- Controls are 40px high on desktop and retain a 44px touch target where touch
-  interaction is expected.
-- Buttons and inputs use an 8px radius. Cards, chart panels, tables, menus, and
-  content containers use a 12px radius. Pills use the full-radius token only
-  for badges and status chips.
-- Component gaps use 8px; content stacks use 16px; card/container padding uses
-  24px. Compact card inlay uses 16px.
-- Default surfaces use a one-pixel semantic border. Static cards use the
-  smallest neutral shadow; raised overlays use the small shadow.
-- Hover changes background or border and may lift an interactive card or
-  primary control by at most one pixel. No glow, rotation, bounce, gradient
-  sweep, or perpetual status animation is part of the base system.
-- Keyboard focus uses the Ocean Blue ring with a two-pixel offset and a soft
-  three-pixel accent halo. Focus is never represented by color alone.
-
-## Buttons
-
-Buttons share one 40px control frame, 8px radius, 14px semibold label, and 8px
-icon gap. Primary buttons use solid Ocean Blue. Outline buttons use the normal
-surface and border. Ghost and subtle buttons acquire only the shared hover
-surface; they do not gain decorative shadows.
-
-## Inputs and forms
-
-Inputs use a recessed Cyber-Noir surface, one-pixel border, and no resting
-shadow. Hover raises contrast one step. Focus changes the border to Ocean Blue
-and applies the shared focus ring. Labels, descriptions, and errors remain in
-the `viking-field` stack so spacing and accessible associations stay uniform.
-
-## Badges and status
-
-Badges are 24px high with a compact full-radius shell. Tone backgrounds are
-soft semantic tints with restrained borders. Accent badges use an Ocean Blue
-tint and blue text rather than appearing as miniature primary buttons. Status
-must always include readable text or an accessible label.
-
-## Tables
-
-Tables sit inside the same 12px content inlay as cards. Headers use 12px
-semibold text without forced uppercase. Cells use 12px vertical and 16px
-horizontal padding. Large tables maintain a readable minimum width and scroll
-horizontally inside their container on constrained screens. Row hover uses a
-six-percent Ocean Blue tint.
-
-## Charts
-
-Charts always live in `viking-chart-panel` for product dashboards. The panel
-uses 16px padding when constrained and 16px/24px/24px inlay at 640px or wider.
-Charts scale at a 16:7 ratio, use a responsive SVG view box, and remove internal
-height caps that would crop plots. Grid, axes, legends, tooltips, empty states,
-and loading states all use the shared surface and typography tokens.
-
-## Headers and sidebars
-
-Application headers use a 56px frame, centered wide container, subtle bottom
-border, and 40px navigation targets. Navigation labels use normal casing. Hover
-uses the shared hover surface; the active route uses the selected Ocean Blue
-tint and accent border without glow.
-
-Sidebars use the same surface, border, 40px item height, and 8px radius as other
-navigation. Active items use the same selected-state contract as the header.
-Health indicators are static semantic dots; movement is reserved for actual
-progress or loading states.
-
-## Layout composition
-
-Routes compose `viking-app-layout` → `viking-page-template` →
-the semantic layout recipe that matches the content. `viking-panel-grid` owns
-equal-height peer cards, HUD panels, and charts; `viking-form-grid` owns
-top-aligned responsive field groups; `viking-stack` owns vertical rhythm;
-`viking-section-template` owns repeated heading, description, action, and body
-anatomy. Use the lower-level `viking-grid` only for content-led layouts where
-equal rows are not a requirement, and use its 12-track mode with
-`viking-grid-item` for deliberately unequal regions.
-
-| Layout intent                                                      | Canonical Viking-UI recipe         | Invariant supplied by the recipe                                   |
-| ------------------------------------------------------------------ | ---------------------------------- | ------------------------------------------------------------------ |
-| Peer cards, charts, HUD panels, or status surfaces                 | `viking-panel-grid`                | Mobile-first columns, shared gaps, and equal-height rows           |
-| Related form fields with different label, helper, or error lengths | `viking-form-grid`                 | Top-aligned controls and responsive field columns                  |
-| Consecutive blocks that need vertical separation                   | `viking-stack`                     | Tokenized cross-block rhythm without sibling margins               |
-| Titled content region with optional actions                        | `viking-section-template`          | Consistent heading, description, action, divider, and body anatomy |
-| Deliberately unequal 12-track regions                              | `viking-grid` + `viking-grid-item` | Explicit tablet and desktop spans                                  |
-
-Content is inlaid through `viking-container`, `viking-card`, `viking-table`, or
-`viking-chart-panel`. Application templates must not recreate these invariants
-with one-off classes, sibling margins, `align-items` overrides, minimum heights,
-or repeated header markup. When a recurring layout defect appears on more than
-one route, the missing behavior is added to the Viking-UI recipe first and the
-routes are migrated to consume it. Application-local card, grid, form, control,
-and navigation visual systems are not part of the contract.
+Viking-UI component recipes and `--viking-*` tokens are retired.
 
 ---
 

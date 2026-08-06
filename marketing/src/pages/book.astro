@@ -22,31 +22,29 @@ const chapterCount = Math.max(chapters.length - 1, 0);
 	jsonLd={bookJsonLdPayload}
 >
 	<div class="page page--prose">
-		<header class="page-header">
-			<div class="page-header__text">
-				<p class="page-header__eyebrow">Interactive reference · {chapterCount} chapters</p>
-				<h1 class="page-header__title">Data Engineering for Machine Learning</h1>
-				<p class="page-header__lede">
-					Operational intelligence for the digital battlefield — authoritative specification,
-					interactive chapters, and reference material for security engineers.
-				</p>
-				<p class="page-header__meta">
-					<a href="/documentation">Integration Guides</a>
-					<span class="page-header__meta-sep" aria-hidden="true">·</span>
-					<a href="/whitepaper">The Whitepaper</a>
-					<span class="page-header__meta-sep" aria-hidden="true">·</span>
-					<a
-						href="https://github.com/dataengineeringformachinelearning/deml/blob/main/THEME.md"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						THEME.md
-					</a>
-				</p>
-			</div>
+		<section class="banner" data-variant="hero" aria-labelledby="book-title">
+			<p class="preheader">Interactive reference · {chapterCount} chapters</p>
+			<h1 class="banner-heading" id="book-title">Data Engineering for Machine Learning</h1>
+			<p class="lede">
+				Operational intelligence for the digital battlefield — authoritative specification,
+				interactive chapters, and reference material for security engineers.
+			</p>
+			<p class="page-header__meta">
+				<a href="/documentation">Integration Guides</a>
+				<span class="page-header__meta-sep" aria-hidden="true">·</span>
+				<a href="/whitepaper">The Whitepaper</a>
+				<span class="page-header__meta-sep" aria-hidden="true">·</span>
+				<a
+					href="https://github.com/dataengineeringformachinelearning/deml/blob/main/THEME.md"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					THEME.md
+				</a>
+			</p>
 			{
 				firstChapter && (
-					<div class="page-header__actions">
+					<div class="banner-actions">
 						<div class="button-group" data-layout="row" role="group" aria-label="Book actions">
 							<a class="button button--primary button--pill" href={`/book/${firstChapter.slug}/`}>
 								Start reading
@@ -58,7 +56,7 @@ const chapterCount = Math.max(chapters.length - 1, 0);
 					</div>
 				)
 			}
-		</header>
+		</section>
 
 		<section class="page-body page-body--prose" aria-labelledby="book-contents-heading">
 			<nav class="toc" aria-labelledby="book-contents-heading">

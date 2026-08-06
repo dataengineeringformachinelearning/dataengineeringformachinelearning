@@ -37,14 +37,14 @@ This section specifies how the DEML platform is **operated** in production: vend
 
 Deliver account-isolated observability, predictive SLA forecasting, and threat analytics through two clear planes:
 
-- **Control plane (DEML)** — Firebase Auth, Django BFF, Postgres identity/billing/consent/learning, Angular 22+ Signals + Viking-UI
+- **Control plane (DEML)** — Firebase Auth, Django BFF, Postgres identity/billing/consent/learning, Angular 22+ Signals + deml-ui
 - **Data plane (FORJD)** — FastAPI + Prefect 3 + Rust `forjd-engine` sealed hot path (+ dependency-free Python fallback) + Polars batch; sealed ingest, durable projections, analytics, ML, replay/DLQ via tenant-bound `fjsvc_` tokens held only by Django
 
 ### 2.2 Operational environment
 
 | Plane             | Technology                          | Role                                                                   |
 | ----------------- | ----------------------------------- | ---------------------------------------------------------------------- |
-| Product UI        | Vercel (`deml.app`)                 | Angular 22+ Signals SPA + Viking-UI; calls Django only; SSE live ticks |
+| Product UI        | Vercel (`deml.app`)                 | Angular 22+ Signals SPA + deml-ui; calls Django only; SSE live ticks |
 | Control plane API | Fly.io `deml-backend`               | Django BFF: auth, billing, consent, learning, FORJD adapters, SSE      |
 | Data plane        | FORJD on Fly + Supabase + Dragonfly | FastAPI/Prefect/Rust/Polars; projections, analytics, ML, erase         |
 | Identity          | Firebase Auth                       | JWT perimeter at Django; Auth-only (no Firestore product path)         |
@@ -151,7 +151,7 @@ flowchart TB
  B -.->|projections analytics ML| FJ
 ```
 
-This design provides non-blocking client feedback on the control plane while FORJD guarantees durable processing semantics. Sealed metadata is a routing-tag allowlist only; plaintext belongs inside ciphertext. The browser never holds `fjsvc_` tokens and never uses Firestore as a data plane. Live dashboard ticks use Django SSE (`GET /api/v1/analytics/live`) over a bounded FORJD projection cursor—`{count, cursor}` only—then REST adapters hydrate payloads; Viking callouts bind typed `degraded` / `forjd_degraded` states rather than inventing empty-healthy metrics. See [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
+This design provides non-blocking client feedback on the control plane while FORJD guarantees durable processing semantics. Sealed metadata is a routing-tag allowlist only; plaintext belongs inside ciphertext. The browser never holds `fjsvc_` tokens and never uses Firestore as a data plane. Live dashboard ticks use Django SSE (`GET /api/v1/analytics/live`) over a bounded FORJD projection cursor—`{count, cursor}` only—then REST adapters hydrate payloads; deml-ui callouts bind typed `degraded` / `forjd_degraded` states rather than inventing empty-healthy metrics. See [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md).
 
 FORJD’s sealed pipeline and engine roles achieve high-throughput dispatch without a DEML-local broker or Airflow orchestrator on the control plane. Observability and OLAP-style analytics retention live in FORJD so the DEML Postgres transactional database remains focused on identity, billing, consent, and learning.
 
@@ -287,7 +287,7 @@ This separation keeps maintenance and stream workloads off the Django request pa
 
 Collaborative security workflows require structured issue tracking native to the platform. An integrated vulnerability management component provides an interactive Kanban board to prioritize, assign, and track remediation efforts—allowing security teams to update vulnerability states based on customized impact and likelihood metrics.
 
-Strict compliance is enforced by integrating automated accessibility scanners (Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. Every surface unifies under the **Viking-UI** design system documented in [THEME.md](THEME.md): precision-engineered industrial surfaces with deep charcoal foundations, machined metallic borders, deep teal primary accents, and crimson secondary emphasis. `viking-skeleton` loaders provide structural loading states; native SVG `viking-chart` components bind to tokenized series colors—no third-party chart runtimes or decorative gradient effects.
+Strict compliance is enforced by integrating automated accessibility scanners (Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. Every surface unifies under the **deml-ui** design system documented in [THEME.md](THEME.md): warm ash grounds (`#35312D`), cream elevated modules (`#F3F0EA`), primary `#2F5F8F`, and Geist-only type. Skeleton loaders provide structural loading states; native SVG `app-area-chart` / `app-bar-chart` components bind to tokenized series colors—no third-party chart runtimes or decorative gradient effects.
 
 ## 13. Official Integrations
 
@@ -314,7 +314,7 @@ This architecture rests on open-source foundations, enterprise design references
 
 **Research & inspiration:** [Google DeepMind](https://deepmind.google/) and the documentary _AlphaGo — The Movie_ provided foundational inspiration for predictive systems and adversarial decision-making under uncertainty.
 
-**Design system & icons:** `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (the Viking-UI premium command palette — charcoal / teal / crimson); typography via self-hosted [Inter](https://rsms.me/inter/) with `.viking-font-display` caps for CES instrumentation and marketing display only. [Lucide](https://lucide.dev/) icon paths are inlined at build time into `viking-icon` with zero runtime dependency. Composable primitives and accessibility patterns are implemented natively in Viking-UI without third-party UI runtimes.
+**Design system & icons:** `@dataengineeringformachinelearning/deml-ui` and [THEME.md](THEME.md) (warm ash NFTS); typography via [Geist](https://vercel.com/font) only. [Lucide](https://lucide.dev/) icon paths are inlined at build time into inline SVG icons with zero runtime dependency. Composable primitives and accessibility patterns are implemented natively in deml-ui without third-party UI runtimes.
 
 **Authoring environments:**
 
@@ -353,16 +353,16 @@ This architecture rests on open-source foundations, enterprise design references
 
 ## 17. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 8px primary grid for zero layout shift. `packages/viking-ui/` is now the single source of truth for the design system: token SCSS, static CSS bundles, framework-neutral Web Components, utility exports, package metadata, and Angular standalone wrappers all live there. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.deml.app](https://ui.deml.app), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@10.0.0/dist/viking-ui.css` with matching component scripts available as `web-components.js`, plus `widget.js` for status embeds and Angular-free package subpaths such as `icons`, `site-drakkar`, `tokens.json`, and `manifest`.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the deml-ui 8px primary grid for zero layout shift. **[deml-ui](https://github.com/dataengineeringformachinelearning/deml-ui)** is the single source of truth for the design system: tokens, static CSS, Web Components, and Angular wrappers. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.deml.app](https://ui.deml.app), Django templates, and Swagger UI—shares the same compiled `deml-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `deml-ui` package styles (`dist/styles/deml-ui.css`) with matching Web Components and Angular builds from the same release.
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@10.0.0/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/deml-ui/dist/styles/deml-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@10.0.0/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/deml-ui/dist/web-components/deml-ui.js"
 ></script>
 ```
 
@@ -380,7 +380,7 @@ The July 2026 daily platform audit codified several evolutionary steps critical 
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | Unified dashboard shell         | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status`                                                                                                                         | Consistent operator UX; reduced misconfiguration during incidents   |
 | Root mobile-first gate          | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first`                                                                                                  | Process integrity — layout regressions fail before deploy           |
-| Viking-UI package consolidation | `packages/viking-ui/` is the single source of truth for tokens, CSS, Web Components, utility bundles, and Angular wrappers; the Vercel Angular build and Fly Django static assets consume package-synced artifacts only | Supply-chain minimization; smaller attack surface in CI             |
+| deml-ui design system | Sibling package `deml-ui` is the single source of truth; deml.app, marketing, and backend static consume package-synced artifacts only | Supply-chain minimization; smaller attack surface in CI             |
 | Retention & erasure boundary    | Sealed telemetry retention is enforced in FORJD; tenant data erasure flows through FORJD `POST /api/v1/tenants/{id}/erase` and the DEML account lifecycle                                                               | SOC 2 confidentiality; CMMC data minimization                       |
 | CES anonymization contract      | FORJD analytics aggregates only; no PII in CES engine                                                                                                                                                                   | Safe cross-tenant statistical contribution without identity leakage |
 | Live Developer Portal           | `/documentation` section documents Vercel/Fly/FORJD hosts, sealed ingest, distroless strategy                                                                                                                           | Auditor-readable operational truth synchronized with BOOK           |

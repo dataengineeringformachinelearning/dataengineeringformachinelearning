@@ -88,8 +88,10 @@ const isCover = chapter.slug === 'cover';
 												<span>{progressPct}%</span>
 											</div>
 											<progress
+												class="progress__control"
 												value={progressPct}
 												max="100"
+												data-tone="info"
 												aria-label={`Reading progress: ${progressPct}%`}
 											/>
 										</div>

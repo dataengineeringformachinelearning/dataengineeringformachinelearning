@@ -39,4 +39,4 @@ npx vercel deploy --prod --yes
 - `/status/:slug` → `https://deml.app/status/:slug`
 - `/documentation` → `https://backend.deml.app/documentation`
 
-Viking-UI is consumed from the published npm package — no sibling `packages/viking-ui` build is required on Vercel.
+Design system is **deml-ui** (warm ash NFTS), consumed via the `deml-ui` dependency pin — no sibling monorepo package build on Vercel.

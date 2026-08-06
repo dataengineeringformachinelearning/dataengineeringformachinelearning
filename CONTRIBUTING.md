@@ -9,7 +9,8 @@ This repository is the **community / marketing** surface for Data Engineering fo
 
 | Repo | What to change there |
 |------|----------------------|
-| [`deml`](https://github.com/dataengineeringformachinelearning/deml) | Control plane (Angular, Django BFF, Viking-UI) |
+| [`deml`](https://github.com/dataengineeringformachinelearning/deml) | Control plane (Angular, Django BFF) |
+| [`deml-ui`](https://github.com/dataengineeringformachinelearning/deml-ui) | Design system (warm ash NFTS — Storybook `ui.deml.app`) |
 | [`forjd`](https://github.com/dataengineeringformachinelearning/forjd) | Data plane (FastAPI, Rust engine, sealed pipelines) |
 
 ## Marketing site

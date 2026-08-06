@@ -48,82 +48,83 @@
   };
 
   const DEFAULT_STATUS_APP = 'https://deml.app';
-  const VIKING_UI_CSS_CDN =
-    'https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@9.7.3/dist/viking-ui.css';
-  /* Pass 6 — shadow-root fallback tokens mirror suite-tokens Role A (void + electric + gold).
-     Prefer host page suite CSS when present; these values keep embeds on-brand offline. */
+  /* Self-contained shadow tokens for third-party embeds.
+     Do not link page-relative /static/*.css — that resolves against the host origin
+     (e.g. joealongi.dev/static/...) and breaks external sites. */
+  /* NFTS warm ash — matches deml-ui / THEME.md (no void/electric suite chrome). */
   const PLATFORM_WIDGET_STYLES = `
     :host {
       color-scheme: dark;
-      --viking-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      --viking-font-size: 16px;
-      --viking-font-size-sm: 14px;
-      --viking-font-size-md: 18px;
-      --viking-font-size-xl: 24px;
-      --viking-font-weight-medium: 500;
-      --viking-font-weight-semibold: 600;
-      --viking-line-height-normal: 1.5;
-      --viking-letter-spacing-caps: 0.1em;
-      --viking-letter-spacing-wide: 0.08em;
-      --viking-space-half: 4px;
-      --viking-space-1: 8px;
-      --viking-space-1-5: 12px;
-      --viking-space-2: 16px;
-      --viking-space-2-5: 20px;
-      --viking-space-3: 24px;
-      --viking-space-4: 32px;
-      --viking-radius: 8px;
-      --viking-radius-md: 8px;
-      --viking-radius-lg: 12px;
-      --viking-radius-pill: 999px;
-      --viking-radius-full: var(--viking-radius-pill);
-      --viking-control-height: 40px;
-      --viking-touch-target-min: 44px;
-      --viking-ring-width: 2px;
-      --viking-ring-offset: 2px;
-      --viking-text: rgb(245 245 245);
-      --viking-text-muted: rgb(170 170 170);
-      --viking-white-pure: rgb(255 255 255);
-      --viking-bg: rgb(10 10 10);
-      --viking-surface: rgb(17 17 17);
-      --viking-surface-alt: rgb(26 26 26);
-      --viking-surface-recipe: rgb(17 17 17);
-      --viking-surface-recipe-muted: rgb(26 26 26);
-      --viking-metallic-200: rgb(170 170 170);
-      --viking-metallic-300: rgb(153 153 153);
-      --viking-border: rgb(34 34 34);
-      --viking-border-strong: rgb(51 51 51);
-      --viking-accent: rgb(33 118 255);
-      --viking-accent-hover: rgb(77 148 255);
-      --viking-accent-content: rgb(255 255 255);
-      --viking-accent-strong: rgb(122 176 255);
-      --viking-success: rgb(42 157 143);
-      --viking-warning: rgb(214 158 46);
-      --viking-danger: rgb(168 51 68);
-      --viking-green-500: rgb(42 157 143);
-      --viking-gold-500: rgb(212 175 55);
-      --viking-crimson-500: rgb(168 51 68);
-      --viking-ring: rgb(77 148 255);
-      --viking-overlay-backdrop: color-mix(in srgb, rgb(10 10 10) 72%, transparent);
-      --viking-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-      --viking-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.12);
-      --viking-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.18), 0 10px 24px rgba(0, 0, 0, 0.16);
-      --viking-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2);
-      --viking-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.2), 0 12px 28px rgba(0, 0, 0, 0.2);
-      --viking-duration-fast: 150ms;
-      --viking-duration: 250ms;
-      --viking-ease-default: cubic-bezier(0.2, 0, 0, 1);
-      --viking-transition-colors: color var(--viking-duration) var(--viking-ease-default), background-color var(--viking-duration) var(--viking-ease-default), border-color var(--viking-duration) var(--viking-ease-default), box-shadow var(--viking-duration) var(--viking-ease-default);
-      --viking-transition-interactive: var(--viking-transition-colors), transform var(--viking-duration) var(--viking-ease-default), opacity var(--viking-duration) var(--viking-ease-default);
-      --viking-state-disabled-opacity: 0.5;
-      --viking-state-hover-lift: -1px;
+      --deml-widget-font-family: "Geist Variable", Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --deml-widget-font-size: 16px;
+      --deml-widget-font-size-sm: 14px;
+      --deml-widget-font-size-md: 18px;
+      --deml-widget-font-size-xl: 24px;
+      --deml-widget-font-weight-medium: 500;
+      --deml-widget-font-weight-semibold: 600;
+      --deml-widget-line-height-normal: 1.5;
+      --deml-widget-letter-spacing-caps: 0.22em;
+      --deml-widget-letter-spacing-wide: 0.08em;
+      --deml-widget-space-half: 4px;
+      --deml-widget-space-1: 8px;
+      --deml-widget-space-1-5: 12px;
+      --deml-widget-space-2: 16px;
+      --deml-widget-space-2-5: 20px;
+      --deml-widget-space-3: 24px;
+      --deml-widget-space-4: 32px;
+      --deml-widget-radius: 0;
+      --deml-widget-radius-md: 0;
+      --deml-widget-radius-lg: 0;
+      --deml-widget-radius-pill: 999px;
+      --deml-widget-radius-full: var(--deml-widget-radius-pill);
+      --deml-widget-control-height: 40px;
+      --deml-widget-touch-target-min: 44px;
+      --deml-widget-ring-width: 2px;
+      --deml-widget-ring-offset: 2px;
+      /* Cream module ink (widget pill is elevated cream on host pages) */
+      --deml-widget-text: rgb(28 25 22);
+      --deml-widget-text-muted: rgb(74 69 63);
+      --deml-widget-white-pure: rgb(255 255 255);
+      --deml-widget-bg: rgb(53 49 45);
+      --deml-widget-surface: rgb(28 25 22);
+      --deml-widget-surface-alt: rgb(28 25 22);
+      --deml-widget-surface-recipe: rgb(243 240 234);
+      --deml-widget-surface-recipe-muted: rgb(212 206 197);
+      --deml-widget-metallic-200: rgb(74 69 63);
+      --deml-widget-metallic-300: rgb(74 69 63);
+      --deml-widget-border: color-mix(in srgb, rgb(198 192 183) 30%, rgb(53 49 45));
+      --deml-widget-border-strong: color-mix(in srgb, rgb(198 192 183) 42%, rgb(53 49 45));
+      --deml-widget-accent: rgb(47 95 143);
+      --deml-widget-accent-hover: color-mix(in srgb, rgb(47 95 143) 78%, rgb(255 255 255));
+      --deml-widget-accent-content: rgb(255 255 255);
+      --deml-widget-accent-strong: rgb(155 184 212);
+      --deml-widget-success: rgb(63 107 84);
+      --deml-widget-warning: rgb(198 192 183);
+      --deml-widget-danger: rgb(158 61 71);
+      --deml-widget-green-500: rgb(63 107 84);
+      --deml-widget-gold-500: rgb(63 107 84);
+      --deml-widget-crimson-500: rgb(158 61 71);
+      --deml-widget-ring: rgb(243 240 234);
+      --deml-widget-overlay-backdrop: color-mix(in srgb, rgb(53 49 45) 72%, transparent);
+      --deml-widget-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+      --deml-widget-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.12);
+      --deml-widget-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.18), 0 10px 24px rgba(0, 0, 0, 0.16);
+      --deml-widget-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.2);
+      --deml-widget-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.2), 0 12px 28px rgba(0, 0, 0, 0.2);
+      --deml-widget-duration-fast: 150ms;
+      --deml-widget-duration: 250ms;
+      --deml-widget-ease-default: cubic-bezier(0.2, 0, 0, 1);
+      --deml-widget-transition-colors: color var(--deml-widget-duration) var(--deml-widget-ease-default), background-color var(--deml-widget-duration) var(--deml-widget-ease-default), border-color var(--deml-widget-duration) var(--deml-widget-ease-default), box-shadow var(--deml-widget-duration) var(--deml-widget-ease-default);
+      --deml-widget-transition-interactive: var(--deml-widget-transition-colors), transform var(--deml-widget-duration) var(--deml-widget-ease-default), opacity var(--deml-widget-duration) var(--deml-widget-ease-default);
+      --deml-widget-state-disabled-opacity: 0.5;
+      --deml-widget-state-hover-lift: -1px;
       display: flex;
       justify-content: center;
       width: 100%;
-      margin: var(--viking-space-2) auto;
-      min-height: var(--viking-control-height);
+      margin: var(--deml-widget-space-2) auto;
+      min-height: var(--deml-widget-control-height);
       opacity: 0;
-      transition: opacity var(--viking-duration-fast) var(--viking-ease-default);
+      transition: opacity var(--deml-widget-duration-fast) var(--deml-widget-ease-default);
     }
 
     :host(.deml-ready) {
@@ -140,17 +141,17 @@
       display: inline-flex;
       align-items: center;
       width: fit-content;
-      gap: var(--viking-space-1);
-      padding: var(--viking-space-1-5) var(--viking-space-2);
-      border: 1px solid color-mix(in srgb, var(--viking-border-strong) 52%, transparent);
-      border-radius: var(--viking-radius-pill);
-      background: var(--viking-surface-recipe, var(--viking-surface));
-      color: var(--viking-text);
-      font-family: var(--viking-font-family);
-      font-size: var(--viking-font-size-sm);
-      font-weight: var(--viking-font-weight-medium);
-      box-shadow: var(--viking-shadow-md);
-      transition: var(--viking-transition-interactive);
+      gap: var(--deml-widget-space-1);
+      padding: var(--deml-widget-space-1-5) var(--deml-widget-space-2);
+      border: 1px solid color-mix(in srgb, var(--deml-widget-border-strong) 52%, transparent);
+      border-radius: var(--deml-widget-radius-pill);
+      background: var(--deml-widget-surface-recipe, var(--deml-widget-surface));
+      color: var(--deml-widget-text);
+      font-family: var(--deml-widget-font-family);
+      font-size: var(--deml-widget-font-size-sm);
+      font-weight: var(--deml-widget-font-weight-medium);
+      box-shadow: var(--deml-widget-shadow-md);
+      transition: var(--deml-widget-transition-interactive);
       position: relative;
       overflow: hidden;
     }
@@ -163,38 +164,38 @@
       background: linear-gradient(
         90deg,
         transparent,
-        color-mix(in srgb, var(--viking-metallic-200) 42%, transparent),
+        color-mix(in srgb, var(--deml-widget-metallic-200) 42%, transparent),
         transparent
       );
       pointer-events: none;
     }
 
     .widget-container:hover {
-      border-color: var(--viking-accent-strong);
-      box-shadow: var(--viking-shadow-hover);
-      transform: translateY(calc(var(--viking-state-hover-lift) * -1));
+      border-color: var(--deml-widget-accent-strong);
+      box-shadow: var(--deml-widget-shadow-hover);
+      transform: translateY(calc(var(--deml-widget-state-hover-lift) * -1));
     }
 
     .widget-link {
       display: inline-flex;
       align-items: center;
-      gap: var(--viking-space-half);
+      gap: var(--deml-widget-space-half);
       text-decoration: none;
-      color: var(--viking-text);
+      color: var(--deml-widget-text);
     }
 
     .status-dot {
-      width: var(--viking-space-1);
-      height: var(--viking-space-1);
-      border-radius: var(--viking-radius-full);
-      background-color: var(--viking-text-muted);
-      margin-right: var(--viking-space-1);
+      width: var(--deml-widget-space-1);
+      height: var(--deml-widget-space-1);
+      border-radius: var(--deml-widget-radius-full);
+      background-color: var(--deml-widget-text-muted);
+      margin-right: var(--deml-widget-space-1);
       display: inline-block;
       flex: 0 0 auto;
     }
 
     .divider {
-      color: var(--viking-border);
+      color: var(--deml-widget-border);
       user-select: none;
     }
 
@@ -207,26 +208,26 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: var(--viking-transition-colors);
+      transition: var(--deml-widget-transition-colors);
       font: inherit;
     }
 
     .report-trigger {
-      color: var(--viking-danger);
-      padding: var(--viking-space-half);
-      border-radius: var(--viking-radius-pill);
+      color: var(--deml-widget-danger);
+      padding: var(--deml-widget-space-half);
+      border-radius: var(--deml-widget-radius-pill);
     }
 
     .report-trigger:hover,
     .report-trigger:focus-visible {
-      background-color: color-mix(in srgb, var(--viking-danger) 15%, transparent);
-      outline: var(--viking-ring-width) solid var(--viking-ring);
-      outline-offset: var(--viking-ring-offset);
+      background-color: color-mix(in srgb, var(--deml-widget-danger) 15%, transparent);
+      outline: var(--deml-widget-ring-width) solid var(--deml-widget-ring);
+      outline-offset: var(--deml-widget-ring-offset);
     }
 
     .report-icon {
-      width: var(--viking-space-2);
-      height: var(--viking-space-2);
+      width: var(--deml-widget-space-2);
+      height: var(--deml-widget-space-2);
     }
 
     .modal-overlay {
@@ -234,27 +235,27 @@
       inset: 0;
       width: 100vw;
       height: 100vh;
-      background: var(--viking-overlay-backdrop, rgba(3, 8, 24, 0.78));
+      background: var(--deml-widget-overlay-backdrop, rgba(3, 8, 24, 0.78));
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 99999;
-      padding: var(--viking-space-2);
+      padding: var(--deml-widget-space-2);
     }
 
     .modal-content {
-      background: var(--viking-surface-recipe, var(--viking-surface));
-      border: 1px solid color-mix(in srgb, var(--viking-border-strong) 62%, transparent);
-      border-radius: var(--viking-radius-lg);
+      background: var(--deml-widget-surface-recipe, var(--deml-widget-surface));
+      border: 1px solid color-mix(in srgb, var(--deml-widget-border-strong) 62%, transparent);
+      border-radius: var(--deml-widget-radius-lg);
       width: min(100%, 480px);
-      max-height: calc(100vh - var(--viking-space-4));
+      max-height: calc(100vh - var(--deml-widget-space-4));
       display: flex;
       flex-direction: column;
-      box-shadow: var(--viking-shadow-lg);
-      color: var(--viking-text);
-      font-family: var(--viking-font-family);
+      box-shadow: var(--deml-widget-shadow-lg);
+      color: var(--deml-widget-text);
+      font-family: var(--deml-widget-font-family);
       text-align: left;
       position: relative;
       overflow: hidden;
@@ -268,7 +269,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        color-mix(in srgb, var(--viking-metallic-200) 48%, transparent),
+        color-mix(in srgb, var(--deml-widget-metallic-200) 48%, transparent),
         transparent
       );
       pointer-events: none;
@@ -278,211 +279,211 @@
     .modal-footer {
       display: flex;
       align-items: center;
-      padding: var(--viking-space-2-5) var(--viking-space-3);
-      border-color: var(--viking-border);
+      padding: var(--deml-widget-space-2-5) var(--deml-widget-space-3);
+      border-color: var(--deml-widget-border);
       flex: 0 0 auto;
     }
 
     .modal-header {
       justify-content: space-between;
-      gap: var(--viking-space-2);
-      border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
+      gap: var(--deml-widget-space-2);
+      border-bottom: 1px solid color-mix(in srgb, var(--deml-widget-border) 32%, transparent);
     }
 
     .modal-header h3 {
       margin: 0;
-      font-size: var(--viking-font-size-md);
-      font-weight: var(--viking-font-weight-semibold);
-      letter-spacing: var(--viking-letter-spacing-wide);
+      font-size: var(--deml-widget-font-size-md);
+      font-weight: var(--deml-widget-font-weight-semibold);
+      letter-spacing: var(--deml-widget-letter-spacing-wide);
       display: flex;
       align-items: center;
-      gap: var(--viking-space-1);
-      color: var(--viking-text);
+      gap: var(--deml-widget-space-1);
+      color: var(--deml-widget-text);
     }
 
     .modal-title-icon {
-      color: var(--viking-danger);
+      color: var(--deml-widget-danger);
       flex: 0 0 auto;
     }
 
     .close-btn {
-      min-width: var(--viking-touch-target-min);
-      min-height: var(--viking-touch-target-min);
-      color: var(--viking-text-muted);
-      font-size: var(--viking-font-size-xl);
+      min-width: var(--deml-widget-touch-target-min);
+      min-height: var(--deml-widget-touch-target-min);
+      color: var(--deml-widget-text-muted);
+      font-size: var(--deml-widget-font-size-xl);
       line-height: 1;
-      border-radius: var(--viking-radius-pill);
+      border-radius: var(--deml-widget-radius-pill);
     }
 
     .close-btn:hover,
     .close-btn:focus-visible {
-      color: var(--viking-text);
-      background: color-mix(in srgb, var(--viking-surface-alt) 70%, transparent);
-      outline: var(--viking-ring-width) solid var(--viking-ring);
-      outline-offset: var(--viking-ring-offset);
+      color: var(--deml-widget-text);
+      background: color-mix(in srgb, var(--deml-widget-surface-alt) 70%, transparent);
+      outline: var(--deml-widget-ring-width) solid var(--deml-widget-ring);
+      outline-offset: var(--deml-widget-ring-offset);
     }
 
     .modal-body {
-      padding: var(--viking-space-3);
+      padding: var(--deml-widget-space-3);
       display: flex;
       flex-direction: column;
-      gap: var(--viking-space-2);
+      gap: var(--deml-widget-space-2);
       overflow: auto;
       min-height: 0;
     }
 
     .helper-text {
-      font-size: var(--viking-font-size-sm);
-      color: var(--viking-text-muted);
+      font-size: var(--deml-widget-font-size-sm);
+      color: var(--deml-widget-text-muted);
       margin: 0;
-      line-height: var(--viking-line-height-normal);
+      line-height: var(--deml-widget-line-height-normal);
     }
 
     .form-field {
       display: flex;
       flex-direction: column;
-      gap: var(--viking-space-1);
+      gap: var(--deml-widget-space-1);
     }
 
     .form-field label {
-      font-size: var(--viking-font-size-sm);
-      font-weight: var(--viking-font-weight-semibold);
-      letter-spacing: var(--viking-letter-spacing-caps);
+      font-size: var(--deml-widget-font-size-sm);
+      font-weight: var(--deml-widget-font-weight-semibold);
+      letter-spacing: var(--deml-widget-letter-spacing-caps);
       text-transform: uppercase;
-      color: var(--viking-text);
+      color: var(--deml-widget-text);
     }
 
     .form-field input,
     .form-field textarea,
     .form-field select {
       width: 100%;
-      min-height: var(--viking-control-height);
-      padding: var(--viking-space-1-5) var(--viking-space-2);
-      border: 1px solid color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
-      border-radius: var(--viking-radius-md);
-      font-size: var(--viking-font-size);
+      min-height: var(--deml-widget-control-height);
+      padding: var(--deml-widget-space-1-5) var(--deml-widget-space-2);
+      border: 1px solid color-mix(in srgb, var(--deml-widget-border-strong) 48%, transparent);
+      border-radius: var(--deml-widget-radius-md);
+      font-size: var(--deml-widget-font-size);
       outline: none;
-      background-color: color-mix(in srgb, var(--viking-surface-alt) 82%, var(--viking-surface));
-      color: var(--viking-text);
+      background-color: color-mix(in srgb, var(--deml-widget-surface-alt) 82%, var(--deml-widget-surface));
+      color: var(--deml-widget-text);
       font-family: inherit;
-      transition: var(--viking-transition-interactive);
+      transition: var(--deml-widget-transition-interactive);
     }
 
     .form-field textarea {
       resize: vertical;
-      min-height: calc(var(--viking-control-height) * 2);
+      min-height: calc(var(--deml-widget-control-height) * 2);
     }
 
     .form-field input:focus,
     .form-field textarea:focus,
     .form-field select:focus {
-      border-color: var(--viking-accent);
-      box-shadow: 0 0 0 var(--viking-ring-width) color-mix(in srgb, var(--viking-accent) 25%, transparent);
+      border-color: var(--deml-widget-accent);
+      box-shadow: 0 0 0 var(--deml-widget-ring-width) color-mix(in srgb, var(--deml-widget-accent) 25%, transparent);
     }
 
     .form-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--viking-space-2);
+      gap: var(--deml-widget-space-2);
     }
 
     .modal-footer {
       align-items: stretch;
       flex-direction: column-reverse;
       justify-content: flex-end;
-      gap: var(--viking-space-2);
-      border-top: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
-      background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
+      gap: var(--deml-widget-space-2);
+      border-top: 1px solid color-mix(in srgb, var(--deml-widget-border) 32%, transparent);
+      background: var(--deml-widget-surface-recipe-muted, var(--deml-widget-surface-alt));
     }
 
     .btn {
-      min-height: var(--viking-control-height);
-      padding: var(--viking-space-1-5) var(--viking-space-2-5);
-      font-size: var(--viking-font-size-sm);
-      font-weight: var(--viking-font-weight-semibold);
-      border-radius: var(--viking-radius-pill);
+      min-height: var(--deml-widget-control-height);
+      padding: var(--deml-widget-space-1-5) var(--deml-widget-space-2-5);
+      font-size: var(--deml-widget-font-size-sm);
+      font-weight: var(--deml-widget-font-weight-semibold);
+      border-radius: var(--deml-widget-radius-pill);
       cursor: pointer;
       border: 1px solid transparent;
       font-family: inherit;
-      transition: var(--viking-transition-interactive);
+      transition: var(--deml-widget-transition-interactive);
       min-width: 100px;
       width: 100%;
     }
 
     .btn:focus-visible {
-      outline: var(--viking-ring-width) solid var(--viking-ring);
-      outline-offset: var(--viking-ring-offset);
+      outline: var(--deml-widget-ring-width) solid var(--deml-widget-ring);
+      outline-offset: var(--deml-widget-ring-offset);
     }
 
     .btn-cancel {
       background-color: transparent;
-      border-color: color-mix(in srgb, var(--viking-border) 48%, transparent);
-      color: var(--viking-text-muted);
+      border-color: color-mix(in srgb, var(--deml-widget-border) 48%, transparent);
+      color: var(--deml-widget-text-muted);
     }
 
     .btn-cancel:hover {
-      background: color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
-      color: var(--viking-text);
-      border-color: var(--viking-border);
+      background: color-mix(in srgb, var(--deml-widget-white-pure) 6%, transparent);
+      color: var(--deml-widget-text);
+      border-color: var(--deml-widget-border);
     }
 
     .btn-submit {
-      background: var(--viking-accent);
-      color: var(--viking-accent-content);
-      box-shadow: var(--viking-shadow-xs);
+      background: var(--deml-widget-accent);
+      color: var(--deml-widget-accent-content);
+      box-shadow: var(--deml-widget-shadow-xs);
     }
 
     .btn-submit:hover:not(:disabled) {
-      background: var(--viking-accent-hover);
-      box-shadow: var(--viking-shadow-sm);
+      background: var(--deml-widget-accent-hover);
+      box-shadow: var(--deml-widget-shadow-sm);
     }
 
     .btn-submit:disabled {
-      opacity: var(--viking-state-disabled-opacity);
+      opacity: var(--deml-widget-state-disabled-opacity);
       cursor: not-allowed;
     }
 
     .status-msg,
     .security-banner {
-      padding: var(--viking-space-2);
-      border-radius: var(--viking-radius);
-      font-size: var(--viking-font-size-sm);
+      padding: var(--deml-widget-space-2);
+      border-radius: var(--deml-widget-radius);
+      font-size: var(--deml-widget-font-size-sm);
     }
 
     .status-msg {
-      font-weight: var(--viking-font-weight-medium);
-      margin-top: var(--viking-space-2);
+      font-weight: var(--deml-widget-font-weight-medium);
+      margin-top: var(--deml-widget-space-2);
     }
 
     .status-msg.success {
-      background-color: color-mix(in srgb, var(--viking-success) 15%, transparent);
-      border: 1px solid color-mix(in srgb, var(--viking-success) 30%, transparent);
-      color: var(--viking-success);
+      background-color: color-mix(in srgb, var(--deml-widget-success) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--deml-widget-success) 30%, transparent);
+      color: var(--deml-widget-success);
     }
 
     .status-msg.error {
-      background-color: color-mix(in srgb, var(--viking-danger) 15%, transparent);
-      border: 1px solid color-mix(in srgb, var(--viking-danger) 30%, transparent);
-      color: var(--viking-danger);
+      background-color: color-mix(in srgb, var(--deml-widget-danger) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--deml-widget-danger) 30%, transparent);
+      color: var(--deml-widget-danger);
     }
 
     .status-msg.warning,
     .security-banner {
-      background-color: color-mix(in srgb, var(--viking-warning) 12%, transparent);
-      border: 1px solid color-mix(in srgb, var(--viking-warning) 35%, transparent);
-      color: var(--viking-warning);
+      background-color: color-mix(in srgb, var(--deml-widget-warning) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--deml-widget-warning) 35%, transparent);
+      color: var(--deml-widget-warning);
     }
 
     .security-banner {
       display: flex;
-      gap: var(--viking-space-1);
-      line-height: var(--viking-line-height-normal);
-      margin-bottom: var(--viking-space-1);
+      gap: var(--deml-widget-space-1);
+      line-height: var(--deml-widget-line-height-normal);
+      margin-bottom: var(--deml-widget-space-1);
     }
 
     .security-banner svg {
       flex-shrink: 0;
-      color: var(--viking-warning);
+      color: var(--deml-widget-warning);
     }
 
     .is-hidden {
@@ -874,7 +875,6 @@
 
         // Set up Shadow DOM structure including status indicators and vulnerability modal triggers
         this.shadowRoot.innerHTML = `
-        <link rel="stylesheet" href="${VIKING_UI_CSS_CDN}" />
         <style>${PLATFORM_WIDGET_STYLES}</style>
         <div class="widget-container">
           <a class="widget-link" href="${statusPageUrl(frontendHost, pageId)}" target="_blank">
@@ -1334,7 +1334,7 @@
               const href = statusPageUrl(frontendHost, page.slug || pageId);
               widgetLink.href = href;
 
-              let color = 'var(--color-success, var(--viking-green-500))';
+              let color = 'var(--color-success, var(--deml-widget-green-500))';
               let textContent = 'All Systems Operational';
 
               try {
@@ -1371,13 +1371,13 @@
                 );
 
                 if (activeIncidents.length > 0) {
-                  color = 'var(--color-error, var(--viking-crimson-500))';
+                  color = 'var(--color-error, var(--deml-widget-crimson-500))';
                   textContent = `Incident: ${incidentStatusLabel(activeIncidents[0].status)}`;
                 } else if (outages.length > 0) {
-                  color = 'var(--color-error, var(--viking-crimson-500))';
+                  color = 'var(--color-error, var(--deml-widget-crimson-500))';
                   textContent = 'Service Outage';
                 } else if (degraded.length > 0) {
-                  color = 'var(--color-warning, var(--viking-gold-500))';
+                  color = 'var(--color-warning, var(--deml-widget-gold-500))';
                   textContent = 'Degraded Performance';
                 }
               } catch (err) {
@@ -1398,11 +1398,11 @@
               } catch {}
             } else {
               // Published directory reachable but no page matches this embed.
-              dot.style.backgroundColor = 'var(--color-error, var(--viking-crimson-500))';
+              dot.style.backgroundColor = 'var(--color-error, var(--deml-widget-crimson-500))';
               text.innerText = 'Status Page Not Found';
             }
           } catch (globalErr) {
-            dot.style.backgroundColor = 'var(--text-muted, var(--viking-metallic-300))';
+            dot.style.backgroundColor = 'var(--text-muted, var(--deml-widget-metallic-300))';
             text.innerText = 'Status Unknown';
           }
         };

@@ -20,7 +20,7 @@ Community site, BOOK, and public documentation for the DEML ecosystem.
 | [docs/](docs/) | Suite UI notes + [VERCEL.md](docs/VERCEL.md) deploy for this site |
 | [scripts/sync_content.py](scripts/sync_content.py) | Propagate BOOK/README into marketing assets |
 
-Product UI, Django BFF, Viking-UI package source, and native apps live in **`deml`**. Sealed streaming lives in **`forjd`**.
+Product UI, Django BFF, and native apps live in **`deml`**. Design system is **[`deml-ui`](https://github.com/dataengineeringformachinelearning/deml-ui)** (warm ash NFTS). Sealed streaming lives in **`forjd`**.
 
 ## Deploy
 
@@ -31,7 +31,7 @@ Product UI, Django BFF, Viking-UI package source, and native apps live in **`dem
 | Root directory | `marketing` |
 | Domain | `dataengineeringformachinelearning.com` |
 | Install | `npm install --legacy-peer-deps --no-workspaces` |
-| Viking-UI | Published npm package (no monorepo package build) |
+| Design system | `deml-ui` (github pin / npm — no monorepo package build) |
 
 ```bash
 cd marketing

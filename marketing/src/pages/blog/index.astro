@@ -5,192 +5,186 @@ import { canonicalHref, webPageJsonLd } from '../../lib/seo';
 import { siteEnv } from '../../lib/site-env';
 
 const notes = await getBlueNotes();
-const featuredNotes = notes.filter(note => note.data.featured);
+const featuredNotes = notes.filter((note) => note.data.featured);
 const leadNote = notes[0];
-const spotlightNotes = featuredNotes.filter(note => note.id !== leadNote?.id).slice(0, 3);
-const spotlightIds = new Set(spotlightNotes.map(note => note.id));
-const archiveNotes = notes.filter(note => note.id !== leadNote?.id && !spotlightIds.has(note.id));
-const categoryCount = new Set(notes.flatMap(note => note.data.categories)).size;
+const spotlightNotes = featuredNotes.filter((note) => note.id !== leadNote?.id).slice(0, 3);
+const spotlightIds = new Set(spotlightNotes.map((note) => note.id));
+const archiveNotes = notes.filter((note) => note.id !== leadNote?.id && !spotlightIds.has(note.id));
+const categoryCount = new Set(notes.flatMap((note) => note.data.categories)).size;
 const pageTitle = 'Blue Notes — DEML Platform Changes';
 const pageDescription =
-  'A chronological field log of DEML platform releases, architectural changes, reliability work, and new operator capabilities.';
+	'A chronological field log of DEML platform releases, architectural changes, reliability work, and new operator capabilities.';
 const { MARKETING_URL } = siteEnv();
 const pageUrl = canonicalHref('/blog/', MARKETING_URL);
 const pageJsonLd = [
-  webPageJsonLd(pageTitle, pageDescription, pageUrl),
-  {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: 'DEML Blue Notes',
-    itemListOrder: 'https://schema.org/ItemListOrderDescending',
-    numberOfItems: notes.length,
-    itemListElement: notes.map((note, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: note.data.title,
-      url: canonicalHref(blueNoteHref(note), MARKETING_URL),
-    })),
-  },
+	webPageJsonLd(pageTitle, pageDescription, pageUrl),
+	{
+		'@context': 'https://schema.org',
+		'@type': 'ItemList',
+		name: 'DEML Blue Notes',
+		itemListOrder: 'https://schema.org/ItemListOrderDescending',
+		numberOfItems: notes.length,
+		itemListElement: notes.map((note, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: note.data.title,
+			url: canonicalHref(blueNoteHref(note), MARKETING_URL),
+		})),
+	},
 ];
 ---
 
 <Layout
-  title={pageTitle}
-  description={pageDescription}
-  keywords="DEML changelog, release notes, platform updates, product blog, data engineering, AI engineering, cybersecurity"
-  ogType="website"
-  jsonLd={pageJsonLd}
+	title={pageTitle}
+	description={pageDescription}
+	keywords="DEML changelog, release notes, platform updates, product blog, data engineering, AI engineering, cybersecurity"
+	ogType="website"
+	jsonLd={pageJsonLd}
 >
-  <div class="dashboard-page-container">
-  <div class="dashboard-content-area">
-  <div class="page-inner-wrapper blue-notes-wrapper">
+	<div class="page page--prose">
+		<section class="banner" data-variant="hero" aria-labelledby="blue-notes-title">
+			<p class="preheader">DEML Field Log · Built in public</p>
+			<h1 class="banner-heading" id="blue-notes-title">Blue Notes</h1>
+			<p class="lede">
+				The operating record behind DEML: releases, architecture decisions, reliability work, and
+				the details that turn a platform into durable infrastructure.
+			</p>
+			<div class="banner-actions">
+				<a class="button button--primary button--pill" href="#latest-dispatch">Read the latest</a>
+				<a class="button button--secondary button--pill" href="/blog/rss.xml">Follow via RSS</a>
+			</div>
+			<dl class="cluster blog-ledger" aria-label="Blue Notes archive summary">
+				<div class="stat-card">
+					<dt class="stat-card-label">Shipped</dt>
+					<dd class="stat-card-value">{String(notes.length).padStart(2, '0')}</dd>
+				</div>
+				<div class="stat-card">
+					<dt class="stat-card-label">Disciplines</dt>
+					<dd class="stat-card-value">{String(categoryCount).padStart(2, '0')}</dd>
+				</div>
+				<div class="stat-card">
+					<dt class="stat-card-label">Latest</dt>
+					<dd class="stat-card-value">
+						{
+							leadNote ? (
+								<time datetime={leadNote.data.publishedAt.toISOString()}>
+									{formatBlueNoteDate(leadNote.data.publishedAt)}
+								</time>
+							) : (
+								'Pending'
+							)
+						}
+					</dd>
+				</div>
+			</dl>
+		</section>
 
-    <header class="blog-command-hero">
-      <div class="blog-command-copy">
-        <div class="blue-notes-kicker">
-                    <span>DEML Field Log · Built in public</span>
-        </div>
-        <h1><span>Blue Notes</span>Engineering, in the open.</h1>
-        <p>
-          The operating record behind DEML: releases, architecture decisions, reliability work,
-          and the details that turn a platform into durable infrastructure.
-        </p>
-        <div class="blog-command-actions">
-          <a class="button button--primary" href="#latest-dispatch">Read the latest</a>
-          <a class="button button--secondary" href="/blog/rss.xml"> Follow via RSS
-          </a>
-        </div>
-      </div>
-      <dl class="blog-command-ledger" aria-label="Blue Notes archive summary">
-        <div>
-          <dt>Shipped dispatches</dt>
-          <dd>{String(notes.length).padStart(2, '0')}</dd>
-        </div>
-        <div>
-          <dt>Engineering disciplines</dt>
-          <dd>{String(categoryCount).padStart(2, '0')}</dd>
-        </div>
-        <div>
-          <dt>Latest transmission</dt>
-          <dd>
-            {leadNote ? (
-              <time datetime={leadNote.data.publishedAt.toISOString()}>
-                {formatBlueNoteDate(leadNote.data.publishedAt)}
-              </time>
-            ) : 'Archive pending'}
-          </dd>
-        </div>
-      </dl>
-    </header>
+		<section class="page-body page-body--prose stack">
+			{
+				leadNote && (
+					<section id="latest-dispatch" aria-labelledby="latest-dispatch-title">
+						<header class="section-header">
+							<p class="type-eyebrow">Latest dispatch</p>
+							<h2 class="type-display" id="latest-dispatch-title">From the engineering floor</h2>
+						</header>
+						<article class="card" data-visual="olive">
+							<div class="card-copy">
+								<p class="card-meta">
+									<span class="badge" data-tone="info">{leadNote.data.note}</span>
+									{' '}
+									<time datetime={leadNote.data.publishedAt.toISOString()}>
+										{formatBlueNoteDate(leadNote.data.publishedAt)}
+									</time>
+								</p>
+								<h3 class="card-heading">
+									<a href={blueNoteHref(leadNote)}>{leadNote.data.title}</a>
+								</h3>
+								<p class="card-subtext">{leadNote.data.summary}</p>
+								<div class="card-actions">
+									<div class="button-group" data-layout="row" role="group">
+										<a class="button button--primary button--pill" href={blueNoteHref(leadNote)}>
+											Open dispatch
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="card-media has-visual" aria-hidden="true"></div>
+						</article>
+					</section>
+				)
+			}
 
-    {leadNote && (
-      <section class="blog-lead-section" id="latest-dispatch" aria-labelledby="latest-dispatch-title">
-        <header class="blog-section-heading">
-          <div>
-            <span class="section-tag">Latest dispatch</span>
-            <h2 id="latest-dispatch-title">From the engineering floor</h2>
-          </div>
-          <span class="blog-section-rule" aria-hidden="true"></span>
-        </header>
-        <article class="card blog-lead-card">
-          <span class="blog-lead-index" aria-hidden="true">01</span>
-          <div class="blog-lead-copy">
-            <div class="blog-note-meta">
-              <span class="badge">{leadNote.data.note}</span>
-              <time datetime={leadNote.data.publishedAt.toISOString()}>
-                {formatBlueNoteDate(leadNote.data.publishedAt)}
-              </time>
-            </div>
-            <h2><a href={blueNoteHref(leadNote)}>{leadNote.data.title}</a></h2>
-            <p>{leadNote.data.summary}</p>
-            <footer class="blog-card-footer">
-              <ul class="blue-note-categories" aria-label="Categories">
-                {leadNote.data.categories.map(category => <li>{category}</li>)}
-              </ul>
-              <a class="blog-read-cue" href={blueNoteHref(leadNote)} aria-label={`Read ${leadNote.data.title}`}>
-                Open dispatch</a>
-            </footer>
-          </div>
-        </article>
-      </section>
-    )}
+			{
+				spotlightNotes.length > 0 && (
+					<section aria-labelledby="spotlight-title">
+						<header class="section-header">
+							<p class="type-eyebrow">Selected signals</p>
+							<h2 class="type-display" id="spotlight-title">Worth a closer read</h2>
+						</header>
+						<div class="card-grid" data-columns="2">
+							{spotlightNotes.map((note, index) => (
+								<article class="card" data-visual={index === 0 ? 'gold' : 'olive'}>
+									<div class="card-copy">
+										<p class="card-meta">
+											{String(index + 2).padStart(2, '0')} / {note.data.note}
+										</p>
+										<h3 class="card-heading">
+											<a href={blueNoteHref(note)}>{note.data.title}</a>
+										</h3>
+										<p class="card-subtext">{note.data.summary}</p>
+										<div class="card-actions">
+											<div class="button-group" data-layout="row" role="group">
+												<a class="button button--secondary button--pill" href={blueNoteHref(note)}>
+													Read the note
+												</a>
+											</div>
+										</div>
+									</div>
+									<div class="card-media has-visual" aria-hidden="true"></div>
+								</article>
+							))}
+						</div>
+					</section>
+				)
+			}
 
-    {spotlightNotes.length > 0 && (
-      <section class="blog-spotlight-section" aria-labelledby="spotlight-title">
-        <header class="blog-section-heading">
-          <div>
-            <span class="section-tag">Selected signals</span>
-            <h2 id="spotlight-title">Worth a closer read</h2>
-          </div>
-          <span class="blog-section-rule" aria-hidden="true"></span>
-        </header>
-        <div class="blog-spotlight-grid">
-          {spotlightNotes.map((note, index) => (
-            <article class="card blog-spotlight-card">
-              <div class="blog-note-meta">
-                <span>{String(index + 2).padStart(2, '0')} / {note.data.note}</span>
-                <time datetime={note.data.publishedAt.toISOString()}>
-                  {formatBlueNoteDate(note.data.publishedAt)}
-                </time>
-              </div>
-              <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
-              <p>{note.data.summary}</p>
-              <a class="blog-read-cue" href={blueNoteHref(note)} aria-label={`Read ${note.data.title}`}>
-                Read the note</a>
-            </article>
-          ))}
-        </div>
-      </section>
-    )}
+			<section aria-labelledby="notes-archive-title">
+				<header class="section-header">
+					<p class="type-eyebrow">Chronological archive</p>
+					<h2 class="type-display" id="notes-archive-title">Every shipped change</h2>
+					<p class="type-intro">Newest first. No launch theater—just the implementation record.</p>
+				</header>
+				<ul class="activity-list list" aria-label="Blue Notes archive">
+					{
+						archiveNotes.map((note) => (
+							<li class="activity-list__item list__item">
+								<time datetime={note.data.publishedAt.toISOString()}>
+									{formatBlueNoteDate(note.data.publishedAt)}
+								</time>
+								<p class="activity-list__title list__title">
+									<a href={blueNoteHref(note)}>{note.data.title}</a>
+								</p>
+								<p class="activity-list__meta list__meta">
+									{note.data.note}
+									{note.data.categories.length ? ` · ${note.data.categories.join(', ')}` : ''}
+								</p>
+							</li>
+						))
+					}
+				</ul>
+			</section>
 
-    <section class="blog-archive-section" aria-labelledby="notes-archive-title">
-      <header class="blog-section-heading">
-        <div>
-          <span class="section-tag">Chronological archive</span>
-          <h2 id="notes-archive-title">Every shipped change</h2>
-        </div>
-        <p>Newest first. No launch theater—just the implementation record.</p>
-      </header>
-      <ol class="blog-archive-list">
-        {archiveNotes.map(note => (
-          <li>
-            <article class="blog-archive-row">
-              <span class="blog-archive-index" aria-hidden="true">
-                {String(notes.findIndex(candidate => candidate.id === note.id) + 1).padStart(2, '0')}
-              </span>
-              <div class="blog-note-meta">
-                <span>{note.data.note}</span>
-                <time datetime={note.data.publishedAt.toISOString()}>
-                  {formatBlueNoteDate(note.data.publishedAt)}
-                </time>
-              </div>
-              <div class="blog-archive-copy">
-                <h3><a href={blueNoteHref(note)}>{note.data.title}</a></h3>
-                <p>{note.data.summary}</p>
-              </div>
-              <a class="blog-archive-arrow" href={blueNoteHref(note)}>Read</a>
-            </article>
-          </li>
-        ))}
-      </ol>
-    </section>
-
-    <!-- Actions -->
-    <div class="blog-actions">
-      <a class="button button--secondary" href="/blog/rss.xml">
-                Follow the RSS feed
-      </a>
-      <a
-        class="button button--secondary"
-        href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-                View the engineering record
-      </a>
-    </div>
-
-  </div>
-  </div>
-  </div>
+			<div class="button-group" data-layout="row" role="group" aria-label="Blue Notes actions">
+				<a class="button button--secondary button--pill" href="/blog/rss.xml">Follow the RSS feed</a>
+				<a
+					class="button button--ghost button--pill"
+					href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					View the engineering record
+				</a>
+			</div>
+		</section>
+	</div>
 </Layout>

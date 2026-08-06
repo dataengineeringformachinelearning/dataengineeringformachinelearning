@@ -51,30 +51,32 @@ const jsonLd = blogPostingJsonLd(
 	jsonLd={jsonLd}
 >
 	<div class="page page--prose">
-		<header class="page-header">
-			<div class="page-header__text">
-				<p class="page-header__meta">
-					<a href="/blog/">Blue Notes</a>
-					<span class="page-header__meta-sep" aria-hidden="true">/</span>
-					<span aria-current="page">{note.data.note}</span>
-				</p>
-				<p class="page-header__eyebrow">
-					<span class="badge">{note.data.note}</span>
-					{' '}
-					<time datetime={note.data.publishedAt.toISOString()}>
-						{formatBlueNoteDate(note.data.publishedAt)}
-					</time>
-				</p>
-				<h1 class="page-header__title">{note.data.title}</h1>
-				<p class="page-header__lede">{note.data.summary}</p>
-				<aside class="cluster" aria-label="Categories">
-					{note.data.categories.map((category) => <span class="badge">{category}</span>)}
-				</aside>
-			</div>
-			<div class="page-header__actions no-print">
+		<section class="banner" aria-labelledby="note-title">
+			<p class="page-header__meta">
+				<a href="/blog/">Blue Notes</a>
+				<span class="page-header__meta-sep" aria-hidden="true">/</span>
+				<span aria-current="page">{note.data.note}</span>
+			</p>
+			<p class="preheader">
+				<span class="badge" data-tone="info">{note.data.note}</span>
+				{' '}
+				<time datetime={note.data.publishedAt.toISOString()}>
+					{formatBlueNoteDate(note.data.publishedAt)}
+				</time>
+			</p>
+			<h1 class="banner-heading" id="note-title">{note.data.title}</h1>
+			<p class="lede">{note.data.summary}</p>
+			<aside class="cluster" aria-label="Categories">
+				{note.data.categories.map((category) => (
+					<span class="badge" data-tone="neutral">
+						{category}
+					</span>
+				))}
+			</aside>
+			<div class="banner-actions no-print">
 				<a class="page-back-link" href="/blog/">← All Blue Notes</a>
 			</div>
-		</header>
+		</section>
 
 		<section class="page-body page-body--prose stack">
 			{
