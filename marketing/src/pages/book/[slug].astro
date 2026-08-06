@@ -5,11 +5,11 @@ import { bookJsonLd, canonicalHref } from '../../lib/seo';
 import { siteEnv } from '../../lib/site-env';
 
 export function getStaticPaths() {
-  const chapters = loadBookChapters();
-  return chapters.map(chapter => ({
-    params: { slug: chapter.slug },
-    props: { chapter, chapters },
-  }));
+	const chapters = loadBookChapters();
+	return chapters.map((chapter) => ({
+		params: { slug: chapter.slug },
+		props: { chapter, chapters },
+	}));
 }
 
 const { chapter, chapters } = Astro.props;
@@ -17,132 +17,156 @@ const { MARKETING_URL } = siteEnv();
 const pageTitle = `${chapter.title} - The Book - DEML Platform`;
 const pageDescription = `Chapter from Data Engineering for Machine Learning: ${chapter.title}`;
 const bookJsonLdPayload = bookJsonLd(
-  pageTitle,
-  pageDescription,
-  canonicalHref(`/book/${chapter.slug}`, MARKETING_URL),
+	pageTitle,
+	pageDescription,
+	canonicalHref(`/book/${chapter.slug}`, MARKETING_URL),
 );
 const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
+const prevChapter = chapter.index > 0 ? chapters[chapter.index - 1] : null;
+const nextChapter = chapter.index < chapters.length - 1 ? chapters[chapter.index + 1] : null;
+const isCover = chapter.slug === 'cover';
 ---
 
 <Layout
-  title={pageTitle}
-  description={pageDescription}
-  keywords="data engineering book, ai engineering guide, cybersecurity, MLOps deployment, DEML chapters"
-  ogType="article"
-  jsonLd={bookJsonLdPayload}
+	title={pageTitle}
+	description={pageDescription}
+	keywords="data engineering book, ai engineering guide, cybersecurity, MLOps deployment, DEML chapters"
+	ogType="article"
+	jsonLd={bookJsonLdPayload}
 >
-  <div class="dashboard-page-container dashboard-layout" id="book-app">
-    <aside class="dashboard-sidebar no-print">
-      <a href="/book/" class="sidebar-search sidebar-extracted-1 book-toc-link">
-        <div class="search-wrapper">
-                    <span class="sidebar-search-placeholder">All chapters</span>
-        </div>
-      </a>
+	<div class="app-layout app-layout--embedded" id="book-app">
+		<div class="app-layout__body">
+			<aside class="app-layout__nav no-print">
+				<a class="page-back-link" href="/book/">← All chapters</a>
+				<nav class="sidebar-nav" aria-label="Book chapters">
+					<div class="sidebar-nav__header">
+						<p class="sidebar-nav__title">Table of contents</p>
+					</div>
+					{
+						SIDEBAR_GROUPS.map((group) => {
+							const groupChapters = chapters.filter((item) => item.group === group);
+							if (groupChapters.length === 0) return null;
+							return (
+								<div class="sidebar-nav__group">
+									<h3 class="sidebar-nav__group-title">{group}</h3>
+									<ul class="sidebar-nav__list">
+										{groupChapters.map((item) => (
+											<li>
+												<a
+													class="sidebar-nav__link sidebar-nav__link--numbered"
+													href={`/book/${item.slug}/`}
+													aria-current={item.slug === chapter.slug ? 'page' : undefined}
+												>
+													<span class="sidebar-nav__num">{item.num || '—'}</span>
+													<span class="sidebar-nav__label">{item.shortTitle}</span>
+												</a>
+											</li>
+										))}
+									</ul>
+								</div>
+							);
+						})
+					}
+				</nav>
+			</aside>
 
-      <div class="sidebar-section">
-        <h3 class="section-title">Table of Contents</h3>
-        <nav aria-label="Book chapters">
-          {SIDEBAR_GROUPS.map(group => {
-            const groupChapters = chapters.filter(item => item.group === group);
-            if (groupChapters.length === 0) return null;
-            return (
-              <div class="pub-sidebar-group">
-                <div class="pub-sidebar-group-title">{group}</div>
-                {groupChapters.map(item => (
-                  <a
-                    href={`/book/${item.slug}/`}
-                    class:list={['pub-chapter-item', { active: item.slug === chapter.slug }]}
-                  >
-                    <span class="pub-chapter-num">{item.num || '—'}</span>
-                    <span class="pub-chapter-title">{item.shortTitle}</span>
-                  </a>
-                ))}
-              </div>
-            );
-          })}
-        </nav>
-      </div>
-    </aside>
+			<div class="app-layout__main">
+				<div class="app-layout__content">
+					<article class="article page page--prose">
+						{
+							!isCover && (
+								<header class="page-header">
+									<div class="page-header__text">
+										<p class="page-header__eyebrow">
+											{chapter.group}
+											{chapter.num ? ` · #${chapter.num}` : ''}
+										</p>
+										<h1 class="page-header__title">{chapter.shortTitle}</h1>
+										<div class="page-header__progress no-print">
+											<div class="page-header__progress-label">
+												<span>Reading progress</span>
+												<span>{progressPct}%</span>
+											</div>
+											<progress
+												value={progressPct}
+												max="100"
+												aria-label={`Reading progress: ${progressPct}%`}
+											/>
+										</div>
+									</div>
+								</header>
+							)
+						}
 
-    <div class="dashboard-main dashboard-content-area">
-      <div class="content-wrapper page-inner-wrapper">
-        <article class="publication-shell">
-          {chapter.slug !== 'cover' && (
-            <header class="publication-hero book-chapter-hero">
-              <div class="section-tag-row">
-                <span class="section-tag">
-                  {chapter.group} · {chapter.num ? `#${chapter.num}` : chapter.shortTitle}
-                </span>
-              </div>
-              <h1 class="hero-title">{chapter.shortTitle}</h1>
-              <div class="publication-progress no-print">
-                <div class="progress-bar-header">
-                  <span>Reading Progress</span>
-                  <span class="progress-percentage">{progressPct}%</span>
-                </div>
-                <div class="progress-bar-container">
-                  <progress
-                    class="progress-bar-fill"
-                    value={progressPct}
-                    max="100"
-                    aria-label={`Reading progress: ${progressPct}%`}
-                  ></progress>
-                </div>
-              </div>
-            </header>
-          )}
+						<div class="page-body page-body--prose article-body">
+							{
+								isCover ? (
+									<div class="card" data-visual="olive" style="--card-visual: var(--color-primary)">
+										<div class="card-copy">
+											<p class="page-header__eyebrow">Interactive guide</p>
+											<h1 class="card-heading">
+												Data Engineering
+												<br />
+												for Machine Learning
+											</h1>
+											<p class="card-subtext">Building high-throughput event platforms</p>
+											<div class="card-actions">
+												<div
+													class="button-group"
+													data-layout="row"
+													role="group"
+													aria-label="Cover links"
+												>
+													<a
+														class="button button--secondary button--pill"
+														href="https://joealongi.dev/"
+														target="_blank"
+														rel="noopener noreferrer"
+													>
+														Joe Alongi
+													</a>
+													<span class="badge">Vol. I</span>
+												</div>
+											</div>
+										</div>
+										<div class="card-media has-visual" aria-hidden="true" />
+									</div>
+								) : (
+									<div set:html={chapter.html} />
+								)
+							}
+						</div>
 
-          <div class="publication-body">
-            {chapter.slug === 'cover' ? (
-              <div class="book-cover-page">
-                <div class="card book-cover-card">
-                  <div class="book-cover-spine"></div>
-                  <div class="book-cover-binding"></div>
-                  <div class="book-cover-inner">
-                    <div class="book-cover-label">Interactive Guide</div>
-                                        <h1 class="book-cover-title">
-                      Data Engineering<br />for Machine Learning
-                    </h1>
-                    <p class="book-cover-subtitle">Building High-Throughput Event Platforms</p>
-                    <div class="book-cover-footer">
-                      <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">
-                        Joe Alongi
-                      </a>
-                      <span class="book-cover-vol">VOL. I</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <section class="publication-section">
-                <div set:html={chapter.html}></div>
-              </section>
-            )}
-          </div>
-
-          <nav class="publication-pagination no-print" aria-label="Chapter navigation">
-            {chapter.index > 0 ? (
-              <a class="pagination-btn" href={`/book/${chapters[chapter.index - 1].slug}/`}>
-                 Previous
-              </a>
-            ) : (
-              <span class="pagination-btn" aria-disabled="true">
-                 Previous
-              </span>
-            )}
-            <span class="page-counter">
-              Chapter {chapter.index + 1} of {chapters.length}
-            </span>
-            {chapter.index < chapters.length - 1 ? (
-              <a class="pagination-btn" href={`/book/${chapters[chapter.index + 1].slug}/`}>
-                Next               </a>
-            ) : (
-              <span class="pagination-btn" aria-disabled="true">
-                Next               </span>
-            )}
-          </nav>
-        </article>
-      </div>
-    </div>
-  </div>
+						<nav class="pagination no-print" aria-label="Chapter navigation">
+							{
+								prevChapter ? (
+									<a class="pagination__prev" href={`/book/${prevChapter.slug}/`}>
+										Previous
+									</a>
+								) : (
+									<span class="pagination__prev" aria-disabled="true">
+										Previous
+									</span>
+								)
+							}
+							<span class="badge">
+								Chapter {chapter.index + 1} of {chapters.length}
+							</span>
+							{
+								nextChapter ? (
+									<a class="pagination__next" href={`/book/${nextChapter.slug}/`}>
+										Next
+									</a>
+								) : (
+									<span class="pagination__next" aria-disabled="true">
+										Next
+									</span>
+								)
+							}
+						</nav>
+					</article>
+				</div>
+			</div>
+		</div>
+	</div>
 </Layout>

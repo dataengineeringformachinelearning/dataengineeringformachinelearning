@@ -2,131 +2,147 @@
 import { render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import {
-  blueNoteHref,
-  formatBlueNoteDate,
-  getBlueNotes,
-  type BlueNote,
+	blueNoteHref,
+	formatBlueNoteDate,
+	getBlueNotes,
+	type BlueNote,
 } from '../../lib/blue-notes';
 import { blogPostingJsonLd, canonicalHref } from '../../lib/seo';
 import { siteEnv } from '../../lib/site-env';
 
 export const getStaticPaths = async () => {
-  const notes = await getBlueNotes();
+	const notes = await getBlueNotes();
 
-  return notes.map(note => ({
-    params: { slug: note.id },
-    props: { note },
-  }));
+	return notes.map((note) => ({
+		params: { slug: note.id },
+		props: { note },
+	}));
 };
 
 interface Props {
-  note: BlueNote;
+	note: BlueNote;
 }
 
 const { note } = Astro.props;
 const notes = await getBlueNotes();
-const noteIndex = notes.findIndex(candidate => candidate.id === note.id);
+const noteIndex = notes.findIndex((candidate) => candidate.id === note.id);
 const newerNote = noteIndex > 0 ? notes[noteIndex - 1] : undefined;
 const olderNote = noteIndex >= 0 ? notes[noteIndex + 1] : undefined;
 const { Content, headings } = await render(note);
-const outlineHeadings = headings.filter(heading => heading.depth === 2);
+const outlineHeadings = headings.filter((heading) => heading.depth === 2);
 const hasOutline = outlineHeadings.length > 0;
 const { MARKETING_URL } = siteEnv();
 const noteUrl = canonicalHref(blueNoteHref(note), MARKETING_URL);
 const pageTitle = `${note.data.title} — DEML Blue Notes`;
 const jsonLd = blogPostingJsonLd(
-  note.data.title,
-  note.data.summary,
-  noteUrl,
-  note.data.publishedAt,
-  note.data.updatedAt,
+	note.data.title,
+	note.data.summary,
+	noteUrl,
+	note.data.publishedAt,
+	note.data.updatedAt,
 );
 ---
 
 <Layout
-  title={pageTitle}
-  description={note.data.summary}
-  keywords={[...note.data.categories, 'DEML Blue Notes', 'platform changelog'].join(', ')}
-  ogType="article"
-  jsonLd={jsonLd}
+	title={pageTitle}
+	description={note.data.summary}
+	keywords={[...note.data.categories, 'DEML Blue Notes', 'platform changelog'].join(', ')}
+	ogType="article"
+	jsonLd={jsonLd}
 >
-  <div class="dashboard-page-container blue-note-detail-page">
-    <div class="page-inner-wrapper blue-note-detail-wrapper">
-      <nav class="blue-note-breadcrumbs" aria-label="Breadcrumb">
-        <a href="/blog/">Blue Notes</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">{note.data.note}</span>
-      </nav>
+	<div class="page page--prose">
+		<header class="page-header">
+			<div class="page-header__text">
+				<p class="page-header__meta">
+					<a href="/blog/">Blue Notes</a>
+					<span class="page-header__meta-sep" aria-hidden="true">/</span>
+					<span aria-current="page">{note.data.note}</span>
+				</p>
+				<p class="page-header__eyebrow">
+					<span class="badge">{note.data.note}</span>
+					{' '}
+					<time datetime={note.data.publishedAt.toISOString()}>
+						{formatBlueNoteDate(note.data.publishedAt)}
+					</time>
+				</p>
+				<h1 class="page-header__title">{note.data.title}</h1>
+				<p class="page-header__lede">{note.data.summary}</p>
+				<aside class="cluster" aria-label="Categories">
+					{note.data.categories.map((category) => <span class="badge">{category}</span>)}
+				</aside>
+			</div>
+			<div class="page-header__actions no-print">
+				<a class="page-back-link" href="/blog/">← All Blue Notes</a>
+			</div>
+		</header>
 
-      <article class="publication-shell blue-note-publication">
-        <header class="publication-hero blue-note-article-hero">
-          <div class="blue-note-card-meta">
-            <span class="badge">{note.data.note}</span>
-            <time datetime={note.data.publishedAt.toISOString()}>
-              {formatBlueNoteDate(note.data.publishedAt)}
-            </time>
-          </div>
-          <h1 class="hero-title">{note.data.title}</h1>
-          <p class="hero-subtitle">{note.data.summary}</p>
-          <ul class="blue-note-categories" aria-label="Categories">
-            {note.data.categories.map(category => <li>{category}</li>)}
-          </ul>
-        </header>
+		<section class="page-body page-body--prose stack">
+			{
+				hasOutline && (
+					<nav class="toc no-print" aria-label="On this page">
+						<h2 class="toc__heading">In this note</h2>
+						<ol class="toc__list">
+							{outlineHeadings.map((heading) => (
+								<li>
+									<a class="toc__item" href={`#${heading.slug}`}>
+										<span class="toc__num">§</span>
+										<span class="toc__label">{heading.text}</span>
+									</a>
+								</li>
+							))}
+						</ol>
+					</nav>
+				)
+			}
 
-        <div
-          class:list={[
-            'blue-note-article-layout',
-            { 'blue-note-article-layout--with-outline': hasOutline },
-          ]}
-        >
-          {hasOutline && (
-            <aside class="blue-note-outline no-print">
-              <span class="blue-note-outline-label">In this note</span>
-              <nav aria-label="On this page">
-                {outlineHeadings.map(heading => (
-                  <a href={`#${heading.slug}`}>{heading.text}</a>
-                ))}
-              </nav>
-            </aside>
-          )}
+			<article class="article">
+				<div class="article-body">
+					<Content />
+				</div>
+			</article>
 
-          <div class="publication-body blue-note-prose">
-            <Content />
-          </div>
-        </div>
+			<aside class="callout" data-tone="info" role="note">
+				<div class="callout__body">
+					<p class="callout__heading">Living release record</p>
+					<p class="callout__text">
+						Blue Notes summarize shipped outcomes. The public repository remains the detailed
+						engineering record.
+					</p>
+				</div>
+				<a
+					class="button button--secondary button--pill"
+					href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					View source
+				</a>
+			</aside>
 
-        <footer class="blue-note-article-footer">
-          <div>
-            <span class="blue-note-outline-label">Living release record</span>
-            <p>
-              Blue Notes summarize shipped outcomes. The public repository remains the detailed engineering record.
-            </p>
-          </div>
-          <a
-            class="button button--secondary"
-            href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View source
-          </a>
-        </footer>
-      </article>
-
-      <nav class="blue-note-pagination" aria-label="Blue Note navigation">
-        {olderNote ? (
-          <a href={blueNoteHref(olderNote)} rel="prev">
-            <span>Earlier note</span>
-            <strong>{olderNote.data.title}</strong>
-          </a>
-        ) : <span></span>}
-        {newerNote && (
-          <a href={blueNoteHref(newerNote)} rel="next">
-            <span>Newer note</span>
-            <strong>{newerNote.data.title}</strong>
-          </a>
-        )}
-      </nav>
-    </div>
-  </div>
+			<nav class="pagination no-print" aria-label="Blue Note navigation">
+				{
+					olderNote ? (
+						<a class="pagination__prev" href={blueNoteHref(olderNote)} rel="prev">
+							Earlier: {olderNote.data.title}
+						</a>
+					) : (
+						<span class="pagination__prev" aria-disabled="true">
+							Earlier note
+						</span>
+					)
+				}
+				{
+					newerNote ? (
+						<a class="pagination__next" href={blueNoteHref(newerNote)} rel="next">
+							Newer: {newerNote.data.title}
+						</a>
+					) : (
+						<span class="pagination__next" aria-disabled="true">
+							Newer note
+						</span>
+					)
+				}
+			</nav>
+		</section>
+	</div>
 </Layout>

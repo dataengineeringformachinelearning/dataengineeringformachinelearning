@@ -3,8 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import fs from 'node:fs';
 import { loadBookHeadingTargets } from '../lib/book-chapters';
 import {
-  normalizePublicationAnchor,
-  renderPublicationMarkdown,
+	normalizePublicationAnchor,
+	renderPublicationMarkdown,
 } from '../lib/publication-markdown';
 import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
@@ -12,167 +12,170 @@ import { techArticleJsonLd, canonicalHref } from '../lib/seo';
 const { MARKETING_URL } = siteEnv();
 const pageTitle = 'The Whitepaper — DEML Platform';
 const pageDescription =
-  'Defendable architecture for the digital battlefield: event projections, ML-forecasted SLAs, automated STIX 2.1 threat federation, and integrated vulnerability management.';
+	'Defendable architecture for the digital battlefield: event projections, ML-forecasted SLAs, automated STIX 2.1 threat federation, and integrated vulnerability management.';
 const whitepaperJsonLd = techArticleJsonLd(
-  pageTitle,
-  pageDescription,
-  canonicalHref('/whitepaper', MARKETING_URL),
+	pageTitle,
+	pageDescription,
+	canonicalHref('/whitepaper', MARKETING_URL),
 );
 
 const whitepaperPath = process.cwd() + '/src/assets/content/whitepaper.md';
 const rawMarkdown = fs.existsSync(whitepaperPath)
-  ? fs.readFileSync(whitepaperPath, 'utf-8')
-  : '# Whitepaper\n\nContent syncing from WHITEPAPER.md…';
+	? fs.readFileSync(whitepaperPath, 'utf-8')
+	: '# Whitepaper\n\nContent syncing from WHITEPAPER.md…';
 
 const rawSections = rawMarkdown.split(/(?=^## )/m).filter(Boolean);
 const bookHeadingTargets = loadBookHeadingTargets();
 const whitepaperHeadingCounts = new Map<string, number>();
 
 interface WhitepaperSection {
-  title: string;
-  html: string;
-  num: string;
-  label: string;
-  anchor: string;
+	title: string;
+	html: string;
+	num: string;
+	label: string;
+	anchor: string;
 }
 
-const sections: WhitepaperSection[] = rawSections.map(chunk => {
-  const trimmed = chunk.trim();
-  const lines = trimmed.split('\n');
-  const titleLine = lines[0] ?? '';
-  const title = titleLine.startsWith('## ')
-    ? titleLine.replace(/^##\s+/, '').trim()
-    : 'Overview';
-  const numMatch = title.match(/^(\d+)\.\s*/);
-  const num = numMatch?.[1] ?? '';
-  const label = title.replace(/^\d+\.\s*/, '');
-  const anchor = `section-${normalizePublicationAnchor(title)}`;
-  return {
-    title,
-    html: renderPublicationMarkdown(trimmed, {
-      headingCounts: whitepaperHeadingCounts,
-      headingTargets: bookHeadingTargets,
-      stripLeadingH1: !titleLine.startsWith('## '),
-    }),
-    num,
-    label,
-    anchor,
-  };
+const sections: WhitepaperSection[] = rawSections.map((chunk) => {
+	const trimmed = chunk.trim();
+	const lines = trimmed.split('\n');
+	const titleLine = lines[0] ?? '';
+	const title = titleLine.startsWith('## ')
+		? titleLine.replace(/^##\s+/, '').trim()
+		: 'Overview';
+	const numMatch = title.match(/^(\d+)\.\s*/);
+	const num = numMatch?.[1] ?? '';
+	const label = title.replace(/^\d+\.\s*/, '');
+	const anchor = `section-${normalizePublicationAnchor(title)}`;
+	return {
+		title,
+		html: renderPublicationMarkdown(trimmed, {
+			headingCounts: whitepaperHeadingCounts,
+			headingTargets: bookHeadingTargets,
+			stripLeadingH1: !titleLine.startsWith('## '),
+		}),
+		num,
+		label,
+		anchor,
+	};
 });
 
 const integrationPlatforms = [
-  'Kubernetes',
-  'TensorFlow',
-  'PyTorch',
-  'Apache Spark',
-  'Databricks',
-  'AWS Redshift',
+	'Kubernetes',
+	'TensorFlow',
+	'PyTorch',
+	'Apache Spark',
+	'Databricks',
+	'AWS Redshift',
 ];
 ---
 
 <Layout
-  title={pageTitle}
-  description={pageDescription}
-  keywords="DEML whitepaper, event projections, threat mitigation, multi-tenant architecture, Kubernetes, PyTorch, AWS Redshift"
-  ogType="article"
-  jsonLd={whitepaperJsonLd}
+	title={pageTitle}
+	description={pageDescription}
+	keywords="DEML whitepaper, event projections, threat mitigation, multi-tenant architecture, Kubernetes, PyTorch, AWS Redshift"
+	ogType="article"
+	jsonLd={whitepaperJsonLd}
 >
-  <div class="dashboard-page-container whitepaper-page">
-    <div class="dashboard-content-area">
-      <div class="page-inner-wrapper whitepaper-wrapper">
-        <article class="publication-shell">
-          <header class="publication-hero">
-            <div class="section-tag-row">
-              <span class="section-tag">Research · Architecture</span>
-            </div>
-            <h1 class="hero-title">Operational Intelligence for the Digital Battlefield</h1>
-            <p class="hero-subtitle">
-              Architecting DEML: high-throughput event projections, ML-forecasted service levels,
-              automated STIX 2.1 indicator federation, and integrated vulnerability management.
-            </p>
+	<div class="page page--prose">
+		<header class="page-header">
+			<div class="page-header__text">
+				<p class="page-header__eyebrow">Research · Architecture</p>
+				<h1 class="page-header__title">Operational Intelligence for the Digital Battlefield</h1>
+				<p class="page-header__lede">
+					Architecting DEML: high-throughput event projections, ML-forecasted service levels,
+					automated STIX 2.1 indicator federation, and integrated vulnerability management.
+				</p>
+				<p class="page-header__meta">
+					<span>Published: July 2026</span>
+					<span class="page-header__meta-sep" aria-hidden="true">·</span>
+					<span>
+						Author:&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer"
+							>Joe Alongi</a
+						>
+					</span>
+					<span class="page-header__meta-sep" aria-hidden="true">·</span>
+					<a
+						href="https://orcid.org/0009-0007-2401-2603"
+						target="_blank"
+						rel="me noopener noreferrer"
+					>
+						ORCID 0009-0007-2401-2603
+					</a>
+					<span class="page-header__meta-sep" aria-hidden="true">·</span>
+					<a
+						href="https://doi.org/10.5281/zenodo.20778532"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						DOI 10.5281/zenodo.20778532
+					</a>
+				</p>
+			</div>
 
-            <div class="hero-meta">
-              <span>Published: July 2026</span>
-              <span class="meta-dot">•</span>
-              <span>
-                Author:&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>
-              </span>
-              <span class="meta-dot">•</span>
-              <a
-                href="https://orcid.org/0009-0007-2401-2603"
-                target="_blank"
-                rel="me noopener noreferrer"
-              >
-                ORCID 0009-0007-2401-2603
-              </a>
-              <span class="meta-dot">•</span>
-              <a
-                href="https://doi.org/10.5281/zenodo.20778532"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                DOI 10.5281/zenodo.20778532
-              </a>
-            </div>
+			<div class="page-header__actions no-print">
+				<div class="button-group" data-layout="row" role="group" aria-label="Whitepaper actions">
+					<button class="button button--primary button--pill" id="download-pdf-btn" type="button">
+						Download PDF
+					</button>
+					<a class="button button--secondary button--pill" href="/documentation">
+						Integration Guides
+					</a>
+					<a class="button button--secondary button--pill" href="/book">Open the book</a>
+				</div>
+			</div>
+		</header>
 
-            <div class="hero-actions no-print">
-              <button class="button button--primary" id="download-pdf-btn" type="button">
-                                Download PDF
-              </button>
-              <a href="/documentation" class="button button--secondary">
-                                Integration Guides
-              </a>
-            </div>
+		<section class="page-body page-body--prose stack">
+			<aside class="cluster no-print" aria-label="Supported integrations">
+				{integrationPlatforms.map((name) => <span class="badge">{name}</span>)}
+			</aside>
 
-            <aside class="integration-strip" aria-label="Supported integrations">
-              {integrationPlatforms.map(name => (
-                <span class="integration-pill">{name}</span>
-              ))}
-            </aside>
+			<aside class="callout no-print" role="status" data-tone="info">
+				<div class="callout__body">
+					<p class="callout__heading">arXiv endorsement request</p>
+					<p class="callout__text">
+						We are seeking an arXiv endorsement to publish this whitepaper to <code>cs.CR</code>.
+						Qualified authors may endorse using code <strong>ZISEYL</strong>{' '}
+						<a href="https://arxiv.org/auth/endorse?x=ZISEYL" target="_blank" rel="noopener noreferrer">
+							here
+						</a>.
+					</p>
+				</div>
+			</aside>
 
-            <aside class="arxiv-banner no-print">
-                            <div>
-                <strong>arXiv Endorsement Request:</strong> We are seeking an arXiv endorsement to
-                publish this whitepaper to <code>cs.CR</code>. Qualified authors may endorse using code{' '}
-                <strong>ZISEYL</strong>{' '}
-                <a href="https://arxiv.org/auth/endorse?x=ZISEYL" target="_blank" rel="noopener noreferrer">
-                  here
-                </a>.
-              </div>
-            </aside>
-          </header>
+			<nav class="toc no-print" aria-labelledby="whitepaper-contents-heading">
+				<h2 class="toc__heading" id="whitepaper-contents-heading">Contents</h2>
+				<ol class="toc__list">
+					{
+						sections.map((section) => (
+							<li>
+								<a class="toc__item" href={`#${section.anchor}`}>
+									<span class="toc__num">{section.num || '—'}</span>
+									<span class="toc__label">{section.label}</span>
+								</a>
+							</li>
+						))
+					}
+				</ol>
+			</nav>
 
-          <nav class="publication-toc no-print" aria-label="Whitepaper sections">
-            <h2 class="toc-heading">Contents</h2>
-            <ol class="toc-list">
-              {sections.map(section => (
-                <li>
-                  <a href={`#${section.anchor}`} class="toc-item">
-                    <span class="toc-num">{section.num || '—'}</span>
-                    <span class="toc-label">{section.label}</span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
-
-          <div class="publication-body">
-            {sections.map(section => (
-              <section class="publication-section" id={section.anchor}>
-                <div set:html={section.html}></div>
-              </section>
-            ))}
-          </div>
-        </article>
-      </div>
-    </div>
-  </div>
+			<article class="article">
+				<div class="article-body">
+					{
+						sections.map((section) => (
+							<section id={section.anchor} set:html={section.html} />
+						))
+					}
+				</div>
+			</article>
+		</section>
+	</div>
 </Layout>
 
-
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('download-pdf-btn');
-    btn?.addEventListener('click', () => window.print());
-  });
+	document.addEventListener('DOMContentLoaded', () => {
+		const btn = document.getElementById('download-pdf-btn');
+		btn?.addEventListener('click', () => window.print());
+	});
 </script>

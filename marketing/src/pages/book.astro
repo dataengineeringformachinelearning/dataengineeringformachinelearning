@@ -8,78 +8,83 @@ const chapters = loadBookChapters();
 const { MARKETING_URL } = siteEnv();
 const pageTitle = 'The Book — DEML Platform';
 const pageDescription =
-  'Authoritative build specification for operational intelligence on the digital battlefield — interactive chapters, deployment notes, and annotated architectural walkthroughs.';
-const firstChapter = chapters.find(chapter => chapter.slug !== 'cover') ?? chapters[1] ?? chapters[0];
+	'Authoritative build specification for operational intelligence on the digital battlefield — interactive chapters, deployment notes, and annotated architectural walkthroughs.';
+const firstChapter = chapters.find((chapter) => chapter.slug !== 'cover') ?? chapters[1] ?? chapters[0];
 const bookJsonLdPayload = bookJsonLd(pageTitle, pageDescription, canonicalHref('/book', MARKETING_URL));
+const chapterCount = Math.max(chapters.length - 1, 0);
 ---
 
 <Layout
-  title={pageTitle}
-  description={pageDescription}
-  keywords="data engineering book, ai engineering guide, cybersecurity, MLOps deployment, DEML chapters, cloud run deployment"
-  ogType="book"
-  jsonLd={bookJsonLdPayload}
+	title={pageTitle}
+	description={pageDescription}
+	keywords="data engineering book, ai engineering guide, cybersecurity, MLOps deployment, DEML chapters, cloud run deployment"
+	ogType="book"
+	jsonLd={bookJsonLdPayload}
 >
-  <div class="dashboard-page-container book-toc-page">
-    <div class="page-inner-wrapper book-toc-wrapper">
-      <article class="publication-shell">
-        <header class="publication-hero">
-          <div class="section-tag-row">
-            <span class="section-tag">Interactive Reference · {chapters.length - 1} Chapters</span>
-          </div>
-          <h1 class="hero-title">Data Engineering for Machine Learning</h1>
-          <p class="hero-subtitle">
-            Operational Intelligence for the New Digital Battlefield
-          </p>
-          <p class="hero-meta">
-            Authoritative Specification · Interactive Chapters · Reference Material for Security Engineers
-          </p>
+	<div class="page page--prose">
+		<header class="page-header">
+			<div class="page-header__text">
+				<p class="page-header__eyebrow">Interactive reference · {chapterCount} chapters</p>
+				<h1 class="page-header__title">Data Engineering for Machine Learning</h1>
+				<p class="page-header__lede">
+					Operational intelligence for the digital battlefield — authoritative specification,
+					interactive chapters, and reference material for security engineers.
+				</p>
+				<p class="page-header__meta">
+					<a href="/documentation">Integration Guides</a>
+					<span class="page-header__meta-sep" aria-hidden="true">·</span>
+					<a href="/whitepaper">The Whitepaper</a>
+					<span class="page-header__meta-sep" aria-hidden="true">·</span>
+					<a
+						href="https://github.com/dataengineeringformachinelearning/deml/blob/main/THEME.md"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						THEME.md
+					</a>
+				</p>
+			</div>
+			{
+				firstChapter && (
+					<div class="page-header__actions">
+						<div class="button-group" data-layout="row" role="group" aria-label="Book actions">
+							<a class="button button--primary button--pill" href={`/book/${firstChapter.slug}/`}>
+								Start reading
+							</a>
+							<a class="button button--secondary button--pill" href="/whitepaper">
+								Whitepaper
+							</a>
+						</div>
+					</div>
+				)
+			}
+		</header>
 
-          <div class="hero-meta-row">
-            <a href="/documentation">Integration Guides</a>
-            <span class="meta-dot">•</span>
-            <a href="/whitepaper">The Whitepaper</a>
-            <span class="meta-dot">•</span>
-            <a
-              href="https://github.com/dataengineeringformachinelearning/deml/blob/main/THEME.md"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              THEME.md
-            </a>
-          </div>
-        </header>
-
-        <nav class="publication-toc" aria-label="Book chapters">
-          <h2 class="toc-heading">Contents</h2>
-          {SIDEBAR_GROUPS.map(group => {
-            const groupChapters = chapters.filter(chapter => chapter.group === group);
-            if (groupChapters.length === 0) return null;
-            return (
-              <div class="book-toc-group">
-                <div class="book-toc-group-title">{group}</div>
-                <ol class="toc-list">
-                  {groupChapters.map(chapter => (
-                    <li>
-                      <a href={`/book/${chapter.slug}/`} class="toc-item">
-                        <span class="toc-num">{chapter.num || '—'}</span>
-                        <span class="toc-label">{chapter.shortTitle}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            );
-          })}
-        </nav>
-
-        {firstChapter && (
-          <div class="book-toc-cta">
-            <a href={`/book/${firstChapter.slug}/`} class="book-start-btn">
-              Start reading</a>
-          </div>
-        )}
-      </article>
-    </div>
-  </div>
+		<section class="page-body page-body--prose" aria-labelledby="book-contents-heading">
+			<nav class="toc" aria-labelledby="book-contents-heading">
+				<h2 class="toc__heading" id="book-contents-heading">Contents</h2>
+				{
+					SIDEBAR_GROUPS.map((group) => {
+						const groupChapters = chapters.filter((chapter) => chapter.group === group);
+						if (groupChapters.length === 0) return null;
+						return (
+							<div class="toc__group">
+								<h3 class="toc__group-title">{group}</h3>
+								<ol class="toc__list">
+									{groupChapters.map((chapter) => (
+										<li>
+											<a class="toc__item" href={`/book/${chapter.slug}/`}>
+												<span class="toc__num">{chapter.num || '—'}</span>
+												<span class="toc__label">{chapter.shortTitle}</span>
+											</a>
+										</li>
+									))}
+								</ol>
+							</div>
+						);
+					})
+				}
+			</nav>
+		</section>
+	</div>
 </Layout>
