@@ -33,7 +33,7 @@ const outlineHeadings = headings.filter((heading) => heading.depth === 2);
 const hasOutline = outlineHeadings.length > 0;
 const { MARKETING_URL } = siteEnv();
 const noteUrl = canonicalHref(blueNoteHref(note), MARKETING_URL);
-const pageTitle = `${note.data.title} — DEML Blue Notes`;
+const pageTitle = `${note.data.title} — DEML Blog`;
 const jsonLd = blogPostingJsonLd(
 	note.data.title,
 	note.data.summary,
@@ -46,14 +46,14 @@ const jsonLd = blogPostingJsonLd(
 <Layout
 	title={pageTitle}
 	description={note.data.summary}
-	keywords={[...note.data.categories, 'DEML Blue Notes', 'platform changelog'].join(', ')}
+	keywords={[...note.data.categories, 'DEML Blog', 'platform changelog'].join(', ')}
 	ogType="article"
 	jsonLd={jsonLd}
 >
 	<div class="page page--prose">
 		<section class="banner" aria-labelledby="note-title">
 			<p class="page-header__meta">
-				<a href="/blog/">Blue Notes</a>
+				<a href="/blog/">Blog</a>
 				<span class="page-header__meta-sep" aria-hidden="true">/</span>
 				<span aria-current="page">{note.data.note}</span>
 			</p>
@@ -74,7 +74,7 @@ const jsonLd = blogPostingJsonLd(
 				))}
 			</aside>
 			<div class="banner-actions no-print">
-				<a class="page-back-link" href="/blog/">← All Blue Notes</a>
+				<a class="page-back-link" href="/blog/">← All posts</a>
 			</div>
 		</section>
 
@@ -107,7 +107,7 @@ const jsonLd = blogPostingJsonLd(
 				<div class="callout__body">
 					<p class="callout__heading">Living release record</p>
 					<p class="callout__text">
-						Blue Notes summarize shipped outcomes. The public repository remains the detailed
+						Blog posts summarize shipped outcomes. The public repository remains the detailed
 						engineering record.
 					</p>
 				</div>

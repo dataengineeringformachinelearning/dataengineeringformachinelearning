@@ -22,7 +22,7 @@ export const GET = async ({ site }: { site: URL }): Promise<Response> => {
   const body = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
   <channel>
-    <title>DEML Blue Notes</title>
+    <title>DEML Blog</title>
     <link>${escapeXml(blogUrl)}</link>
     <description>Platform changes, feature releases, and architectural field notes from DEML.</description>
     <language>en-us</language>
