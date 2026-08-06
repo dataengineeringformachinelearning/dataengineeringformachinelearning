@@ -196,36 +196,58 @@ function isActive(href: string): boolean {
 	</div>
 </header>
 
-{/*
-  Bridge until deml-ui@1.2.3 is published: static .button-group gets
-  grid-area: actions, plus [hidden] icons under author display:block.
-*/}
+{/* Bridge: action-row alignment until deml-ui navbar fix is pinned */}
 <style is:global>
 	@media screen and (min-width: 800px) {
 		.site-navbar .button-group {
+			display: flex;
 			grid-area: actions;
 			justify-self: end;
 			width: max-content;
 			flex-direction: row;
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
 			align-items: center;
+			align-content: center;
+			gap: var(--space-2);
 		}
+	}
+
+	.site-navbar .theme-toggle {
+		align-self: center;
+		width: var(--navbar-hit);
+		height: var(--navbar-hit);
+		min-width: var(--navbar-hit);
+		min-height: var(--navbar-hit);
+		flex: 0 0 auto;
+		margin: 0;
+		line-height: 0;
+	}
+
+	.site-navbar .button.button--pill {
+		align-self: center;
+		box-sizing: border-box;
+		height: var(--navbar-hit);
+		min-height: var(--navbar-hit);
+		padding-block: 0;
+		line-height: 1;
 	}
 
 	.site-navbar.is-menu-open .button-group .button--pill,
 	.site-navbar.is-menu-open .button-group .theme-toggle {
 		width: 100%;
+		height: auto;
 		min-height: var(--navbar-hit);
 	}
 
 	@media screen and (min-width: 800px) {
-		.site-navbar.is-menu-open .button-group .button--pill,
-		.site-navbar.is-menu-open .button-group .theme-toggle {
+		.site-navbar.is-menu-open .button-group .button--pill {
 			width: auto;
+			height: var(--navbar-hit);
 		}
 
 		.site-navbar.is-menu-open .button-group .theme-toggle {
 			width: var(--navbar-hit);
+			height: var(--navbar-hit);
 			min-height: var(--navbar-hit);
 			padding: 0;
 		}
