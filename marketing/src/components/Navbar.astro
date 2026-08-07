@@ -30,8 +30,8 @@ function isActive(href: string): boolean {
 	};
 </script>
 
-<header class="site-navbar items-center" id="navbar">
-	<div id="site-navbar-branding" class="site-navbar-branding row items-center">
+<header class="site-navbar" id="navbar">
+	<div id="site-navbar-branding" class="site-navbar-branding">
 		<a class="site-navbar-icon" href="/" aria-label="Go to homepage" id="navbar-brand-link">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -109,89 +109,93 @@ function isActive(href: string): boolean {
 	</button>
 
 	<div class="site-navbar-panel" id="site-navbar-panel">
-		<nav id="site-navigation" class="main-navigation place-center" aria-label="Primary">
-			<ul class="row wrap items-center justify-center gap-4" role="list" id="site-navbar-menu">
-				{
-					navLinks.map((link) => (
-						<li class="item-fixed">
-							<a
-								href={link.href}
-								data-nav-id={link.id}
-								class:list={{ 'is-active': isActive(link.href) }}
-								aria-current={isActive(link.href) ? 'page' : undefined}
-							>
-								{link.label}
-							</a>
-						</li>
-					))
-				}
-			</ul>
-		</nav>
+		<div class="site-navbar-panel__inner">
+			<nav id="site-navigation" class="main-navigation" aria-label="Primary">
+				<ul role="list" id="site-navbar-menu">
+					{
+						navLinks.map((link) => (
+							<li>
+								<a
+									href={link.href}
+									data-nav-id={link.id}
+									class:list={{ 'is-active': isActive(link.href) }}
+									aria-current={isActive(link.href) ? 'page' : undefined}
+								>
+									{link.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
 
-		<div class="button-group" data-layout="row" role="group" aria-label="Account actions" id="site-button-group">
-			<button
-				type="button"
-				class="theme-toggle"
-				id="theme-toggle-btn"
-				aria-label="Toggle light and dark theme"
-				aria-pressed="false"
-			>
-				<svg
-					class="theme-toggle-icon"
-					data-icon="sun"
-					hidden
-					xmlns="http://www.w3.org/2000/svg"
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-					focusable="false"
-				>
-					<circle cx="12" cy="12" r="4"></circle>
-					<path d="M12 2v2"></path>
-					<path d="M12 20v2"></path>
-					<path d="m4.93 4.93 1.41 1.41"></path>
-					<path d="m17.66 17.66 1.41 1.41"></path>
-					<path d="M2 12h2"></path>
-					<path d="M20 12h2"></path>
-					<path d="m6.34 17.66-1.41 1.41"></path>
-					<path d="m19.07 4.93-1.41 1.41"></path>
-				</svg>
-				<svg
-					class="theme-toggle-icon"
-					data-icon="moon"
-					xmlns="http://www.w3.org/2000/svg"
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-					focusable="false"
-				>
-					<path
-						d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
-					></path>
-				</svg>
-			</button>
-			<a
-				class="button button--secondary button--pill"
-				href={`${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(returnUrl)}`}
-				id="auth-btn-login"
-			>
-				Log in
-			</a>
-			<a class="button button--primary button--pill" href={`${FRONTEND_URL}/signup`} id="auth-btn-signup">
-				Sign up
-			</a>
+			<div class="site-navbar-actions">
+				<div class="button-group" data-layout="row" role="group" aria-label="Account actions" id="site-button-group">
+					<button
+						type="button"
+						class="theme-toggle"
+						id="theme-toggle-btn"
+						aria-label="Toggle light and dark theme"
+						aria-pressed="false"
+					>
+						<svg
+							class="theme-toggle-icon"
+							data-icon="sun"
+							hidden
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+							focusable="false"
+						>
+							<circle cx="12" cy="12" r="4"></circle>
+							<path d="M12 2v2"></path>
+							<path d="M12 20v2"></path>
+							<path d="m4.93 4.93 1.41 1.41"></path>
+							<path d="m17.66 17.66 1.41 1.41"></path>
+							<path d="M2 12h2"></path>
+							<path d="M20 12h2"></path>
+							<path d="m6.34 17.66-1.41 1.41"></path>
+							<path d="m19.07 4.93-1.41 1.41"></path>
+						</svg>
+						<svg
+							class="theme-toggle-icon"
+							data-icon="moon"
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+							focusable="false"
+						>
+							<path
+								d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+							></path>
+						</svg>
+					</button>
+					<a
+						class="button button--secondary button--pill"
+						href={`${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(returnUrl)}`}
+						id="auth-btn-login"
+					>
+						Log in
+					</a>
+					<a class="button button--primary button--pill" href={`${FRONTEND_URL}/signup`} id="auth-btn-signup">
+						Sign up
+					</a>
+				</div>
+			</div>
 		</div>
 	</div>
 </header>
