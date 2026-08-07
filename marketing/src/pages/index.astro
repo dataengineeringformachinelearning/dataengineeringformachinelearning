@@ -11,201 +11,29 @@ const { FRONTEND_URL, MARKETING_URL } = siteEnv();
 const demlUrl = FRONTEND_URL.replace(/\/$/, '');
 const pageTitle = 'Data Engineering for Machine Learning — Community';
 const pageDescription =
-  'Learn data engineering for machine learning with DEML — identity, dashboards, status, field notes, and a whitepaper you can put to work.';
+  'Learn data engineering for machine learning — open book, whitepaper, blog, and docs. Build and publish status with DEML.';
 const homeJsonLd = [organizationJsonLd(MARKETING_URL), webSiteJsonLd(MARKETING_URL)];
-
-/** Capability pillars — same form-panel rhythm as deml.app home. */
-const pillars = [
-  {
-    id: 'identity',
-    eyebrow: 'You',
-    title: 'Identity & accounts',
-    description: 'Sign in, roles, consent, and account lifecycle — kept local and clear in DEML.',
-  },
-  {
-    id: 'status',
-    eyebrow: 'Public',
-    title: 'Status & continuity',
-    description: 'Publish status pages and browse the directory without mixing in account settings.',
-  },
-  {
-    id: 'insights',
-    eyebrow: 'Signals',
-    title: 'Analytics & dashboards',
-    description: 'Workspace pulse, traffic, and continuity charts that stay the same size everywhere.',
-  },
-  {
-    id: 'learn',
-    eyebrow: 'Practice',
-    title: 'Learn the stack',
-    description: 'Catalog, packages, and notes for building data platforms for machine learning.',
-  },
-] as const;
-
-/** Destination cards — deml-ui feature cards with media wash. */
-const destinations = [
-  {
-    id: 'deml',
-    heading: 'DEML',
-    subtext: 'The learning control plane — dashboards, status, analytics, and account surfaces.',
-    visual: 'olive' as const,
-    visualToken: 'var(--color-primary)',
-    actions: [
-      { label: 'Open DEML', href: demlUrl, variant: 'primary' as const },
-      { label: 'Sign in', href: `${demlUrl}/login`, variant: 'secondary' as const },
-    ],
-  },
-  {
-    id: 'blog',
-    heading: 'Blog',
-    subtext: 'Field notes from building data platforms for ML — short, practical, and current.',
-    visual: 'gold' as const,
-    visualToken: 'var(--color-accent-gold)',
-    actions: [
-      { label: 'Read blog', href: `${demlUrl}/blog`, variant: 'primary' as const },
-      { label: 'RSS', href: `${demlUrl}/blog/rss.xml`, variant: 'secondary' as const },
-    ],
-  },
-  {
-    id: 'whitepaper',
-    heading: 'Whitepaper',
-    subtext: 'A short brief on defendable data platforms — architecture without the noise.',
-    visual: 'red' as const,
-    visualToken: 'var(--color-accent-red)',
-    actions: [
-      { label: 'Read whitepaper', href: '/whitepaper', variant: 'primary' as const },
-      { label: 'Open the book', href: '/book', variant: 'secondary' as const },
-    ],
-  },
-  {
-    id: 'book',
-    heading: 'Book',
-    subtext: 'Architecture narrative and operational chapters for the DEML practice.',
-    visual: 'olive' as const,
-    visualToken: 'var(--color-primary)',
-    actions: [
-      { label: 'Open the book', href: '/book', variant: 'primary' as const },
-      { label: 'Blog', href: `${demlUrl}/blog`, variant: 'secondary' as const },
-    ],
-  },
-] as const;
 ---
 
 <Layout
   title={pageTitle}
   description={pageDescription}
-  keywords={`${DEFAULT_KEYWORDS}, community, learning, DEML, whitepaper, blog`}
+  keywords={DEFAULT_KEYWORDS}
   jsonLd={homeJsonLd}
 >
-  <div class="page page--catalog">
+  <div class="page">
     <section class="banner banner--hero" data-variant="hero" aria-labelledby="main-title">
       <p class="preheader">DEML</p>
-      <h1 class="banner-heading" id="main-title">Control plane for ML data.</h1>
+      <h1 class="banner-heading" id="main-title">Data engineering for machine learning.</h1>
       <p class="lede">
-        Identity, status, analytics, and learning — plus field notes and a whitepaper for the practice.
+        Open book, whitepaper, and blog for builders. Use DEML when you’re ready to publish status.
       </p>
       <div class="banner-actions">
-        <div class="button-group row wrap items-center gap-2" data-layout="row" role="group" aria-label="Primary actions">
-          <a class="button button--primary button--pill" href={demlUrl}>Open DEML</a>
-          <a class="button button--secondary button--pill" href={`${demlUrl}/blog`}>Blog</a>
-          <a class="button button--secondary button--pill" href="/whitepaper">Whitepaper</a>
+        <div class="button-group" data-layout="row" role="group" aria-label="Primary actions">
+          <a class="button button--primary button--pill" href="/book">Book</a>
+          <a class="button button--secondary button--pill" href={demlUrl}>Open DEML</a>
         </div>
       </div>
-    </section>
-
-    <section class="page-body page-body--catalog" aria-labelledby="capabilities-heading">
-      <div class="catalog-group">
-        <header class="section-header">
-          <p class="type-eyebrow">Platform</p>
-          <h2 class="type-display" id="capabilities-heading">What DEML is for</h2>
-          <p class="type-intro">
-            A warm-ash control plane for learning data engineering for machine learning — product
-            surfaces you can sign into, and writing you can learn from.
-          </p>
-        </header>
-
-        <div class="card-grid" data-columns="2">
-          {pillars.map((pillar) => (
-            <section class="form-panel" aria-labelledby={`home-pillar-${pillar.id}`}>
-              <header class="form-panel__header">
-                <p class="form-panel__eyebrow">{pillar.eyebrow}</p>
-                <h3 class="form-panel__title" id={`home-pillar-${pillar.id}`}>{pillar.title}</h3>
-                <p class="form-panel__description">{pillar.description}</p>
-              </header>
-              <div class="form-panel__body"></div>
-              <footer class="form-panel__footer"></footer>
-            </section>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="page-body page-body--catalog" aria-labelledby="start-heading">
-      <div class="catalog-group">
-        <header class="section-header">
-          <p class="type-eyebrow">Start here</p>
-          <h2 class="type-display" id="start-heading">Jump in</h2>
-          <p class="type-intro">
-            Open the product, read the notes, or take the whitepaper — same look as deml.app.
-          </p>
-        </header>
-
-        <div class="card-grid" data-columns="2">
-          {destinations.map((card) => (
-            <article
-              class="card"
-              data-visual={card.visual}
-              style={`--card-visual: ${card.visualToken}`}
-            >
-              <div class="card-copy">
-                <h3 class="card-heading">{card.heading}</h3>
-                <p class="card-subtext">{card.subtext}</p>
-                <div class="card-actions">
-                  <div
-                    class="button-group place-center"
-                    data-layout="row"
-                    role="group"
-                  >
-                    {card.actions.map((action) => (
-                      <a
-                        class:list={[
-                          'button',
-                          'button--pill',
-                          action.variant === 'primary' ? 'button--primary' : 'button--secondary',
-                        ]}
-                        href={action.href}
-                      >
-                        {action.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div class="card-media has-visual" aria-hidden="true"></div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="page-body page-body--catalog" aria-labelledby="home-cta-heading">
-      <section class="form-panel" aria-labelledby="home-cta-heading">
-        <header class="form-panel__header">
-          <p class="form-panel__eyebrow">Next step</p>
-          <h2 class="form-panel__title" id="home-cta-heading">Try DEML, then read on</h2>
-          <p class="form-panel__description">
-            Sign up for the control plane, or stay with the writing — the blog and the whitepaper.
-          </p>
-        </header>
-        <div class="form-panel__body">
-          <div class="button-group row wrap items-center gap-2" data-layout="row" role="group" aria-label="Next steps">
-            <a class="button button--primary button--pill" href={`${demlUrl}/signup`}>Sign up</a>
-            <a class="button button--secondary button--pill" href="/whitepaper">Whitepaper</a>
-            <a class="button button--secondary button--pill" href={`${demlUrl}/blog`}>Blog</a>
-          </div>
-        </div>
-        <footer class="form-panel__footer"></footer>
-      </section>
     </section>
   </div>
 </Layout>

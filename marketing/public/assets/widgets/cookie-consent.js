@@ -191,52 +191,53 @@
   const css = `
     .deml-cookie-overlay {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 8px;
+      inset: 0;
       z-index: 9999;
       display: flex;
-      justify-content: center;
+      align-items: flex-end;
+      justify-content: stretch;
+      padding: max(var(--space-1, 8px), env(safe-area-inset-top, 0px)) max(var(--space-1, 8px), env(safe-area-inset-right, 0px)) max(var(--space-1, 8px), env(safe-area-inset-bottom, 0px)) max(var(--space-1, 8px), env(safe-area-inset-left, 0px));
+      box-sizing: border-box;
       pointer-events: none;
-      animation: deml-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       font-family: inherit;
+      animation: deml-slide-up var(--duration-slow, 320ms) var(--ease-out, cubic-bezier(0.2, 0.8, 0.2, 1));
     }
 
     .deml-cookie-card {
       pointer-events: auto;
       width: 100%;
       max-width: 100%;
-      background-color: var(--card-bg, var(--viking-charcoal-900));
-      border: 1px solid var(--border, var(--viking-charcoal-700));
-      border-radius: 16px;
-      box-shadow: var(--viking-shadow-lg, 0 4px 24px color-mix(in srgb, var(--viking-black) 40%, transparent));
-      padding: 24px;
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-none, 0);
+      box-shadow: none;
+      padding: var(--module-pad-lg, 24px);
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: all 0.3s ease;
-      color: var(--text-color, var(--viking-white-pure));
+      gap: var(--space-2, 16px);
+      color: var(--color-text);
+      transform: translateZ(0);
     }
 
     .deml-cookie-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: var(--space-1, 8px);
     }
 
     .deml-cookie-title-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--space-1, 8px);
+      min-width: 0;
     }
 
     .deml-cookie-icon {
-      color: var(--color-success, var(--viking-green-500));
+      color: var(--color-success);
       display: inline-flex;
       align-items: center;
+      flex: 0 0 auto;
     }
     .deml-cookie-icon svg {
       width: 24px;
@@ -244,64 +245,74 @@
     }
 
     .deml-cookie-heading {
-      font-size: 1.25rem;
-      font-weight: 600;
+      font-size: var(--font-size-md, 1.125rem);
+      font-weight: 700;
       margin: 0;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
     }
 
     .deml-cookie-close-btn {
       background: transparent;
       border: none;
-      color: var(--text-muted, var(--viking-metallic-300));
+      color: var(--color-text-secondary);
       cursor: pointer;
-      padding: 8px;
-      display: flex;
+      min-width: var(--hit-target, 48px);
+      min-height: var(--hit-target, 48px);
+      padding: 0;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      transition: background-color 0.2s, color 0.2s;
+      border-radius: var(--radius-none, 0);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .deml-cookie-close-btn:hover {
-      background-color: rgba(255, 255, 255, 0.08);
-      color: var(--text-color, var(--viking-white-pure));
+      color: var(--color-text);
+    }
+
+    .deml-cookie-close-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
     }
 
     .deml-cookie-body {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: var(--space-2, 16px);
     }
 
     .deml-cookie-description {
-      font-size: 1rem;
+      font-size: var(--font-size-body, 1rem);
       line-height: 1.5;
       margin: 0;
-      opacity: 0.9;
     }
 
     .deml-cookie-description a {
-      color: var(--viking-text-link, var(--viking-electric-300)) !important;
+      color: var(--color-primary) !important;
       text-decoration: none;
       border-bottom: 1px solid currentColor;
       font-weight: 500;
     }
 
     .deml-cookie-description a:hover {
-      color: var(--viking-text-link-hover, var(--viking-electric-200)) !important;
-      border-bottom-color: currentColor;
+      color: var(--color-primary-hover) !important;
+    }
+
+    .deml-cookie-description a:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
     }
 
     .deml-cookie-form {
       display: none;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--space-1, 8px);
       padding: 16px;
-      background: rgba(128, 128, 128, 0.05);
-      border-radius: 16px;
-      border: 1px solid var(--border, var(--viking-charcoal-700));
-      animation: deml-fade-in 0.3s ease-out;
+      background: color-mix(in srgb, var(--color-text-secondary) 8%, transparent);
+      border-radius: var(--radius-none, 0);
+      border: 1px solid var(--color-border);
     }
 
     .deml-cookie-form.open {
@@ -312,9 +323,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      gap: var(--space-2, 16px);
       padding-bottom: 8px;
-      border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-text-secondary) 16%, transparent);
     }
 
     .deml-pref-item:last-child {
@@ -325,62 +336,78 @@
     .deml-pref-info {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--space-1, 8px);
+      min-width: 0;
     }
 
     .deml-pref-name {
-      font-size: 1rem;
+      font-size: var(--font-size-body, 1rem);
       font-weight: 600;
     }
 
     .deml-pref-desc {
-      font-size: 1rem;
-      line-height: 1.35;
-      color: var(--text-muted, var(--viking-metallic-300));
+      font-size: var(--font-size-body, 1rem);
+      line-height: 1.4;
+      color: var(--color-text-secondary);
       margin: 0;
     }
 
     .deml-always-active {
-      font-size: 1rem;
+      font-size: 0.9375rem;
       font-weight: 600;
       text-transform: uppercase;
-      color: var(--color-success, var(--viking-green-500));
-      background: color-mix(in srgb, var(--color-success, var(--viking-green-500)) 10%, transparent);
-      padding: 8px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.04em;
+      color: var(--color-success);
+      min-height: var(--hit-target, 48px);
+      display: inline-flex;
+      align-items: center;
     }
 
     .deml-toggle-switch {
       position: relative;
       width: 48px;
-      height: 24px;
-      background-color: rgba(128, 128, 128, 0.3);
-      border-radius: 16px;
+      height: 48px;
+      background: transparent;
       border: none;
       cursor: pointer;
-      transition: background-color 0.3s ease;
       padding: 0;
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .deml-toggle-switch.active {
-      background-color: var(--color-success, var(--viking-green-500));
+    .deml-toggle-switch::before {
+      content: '';
+      width: 48px;
+      height: 28px;
+      border-radius: 9999px;
+      background-color: color-mix(in srgb, var(--color-text-secondary) 35%, transparent);
+      transition: background-color 0.2s var(--ease-out, cubic-bezier(0.2, 0.8, 0.2, 1));
+    }
+
+    .deml-toggle-switch.active::before {
+      background-color: var(--color-success);
+    }
+
+    .deml-toggle-slider {
+      position: absolute;
+      left: 4px;
+      width: 20px;
+      height: 20px;
+      background-color: var(--color-text);
+      border-radius: 50%;
+      transition: transform 0.2s var(--ease-out, cubic-bezier(0.2, 0.8, 0.2, 1));
     }
 
     .deml-toggle-switch.active .deml-toggle-slider {
       transform: translateX(20px);
     }
 
-    .deml-toggle-slider {
-      position: absolute;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      background-color: var(--viking-white-pure);
-      border-radius: 50%;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease;
+    .deml-toggle-switch:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
     }
 
     .deml-cookie-footer {
@@ -391,62 +418,70 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: 16px;
+      gap: var(--space-2, 16px);
     }
 
     .deml-settings-btn {
-      padding: 0;
+      min-height: var(--hit-target, 48px);
+      padding: 0 8px;
       background: transparent;
-      min-width: auto;
-      height: auto;
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--link-color, var(--viking-teal-400));
-      border: none;
-      border-bottom: 1px solid var(--link-color, var(--viking-teal-400));
+      width: auto;
       align-self: flex-start;
+      font-size: var(--font-size-body, 1rem);
+      font-weight: 600;
+      color: var(--color-primary);
+      border: none;
+      border-bottom: 1px solid var(--color-primary);
       cursor: pointer;
+      touch-action: manipulation;
     }
 
     .deml-settings-btn:hover {
-      color: var(--link-hover-color, var(--viking-teal-500));
-      border-bottom-color: var(--link-hover-color, var(--viking-teal-500));
+      color: var(--color-primary-hover);
+      border-bottom-color: var(--color-primary-hover);
+    }
+
+    .deml-settings-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
     }
 
     .deml-primary-actions {
       display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      flex-direction: column;
+      gap: var(--space-1, 8px);
       width: 100%;
     }
 
     .deml-primary-actions button {
-      height: 40px;
+      min-height: var(--hit-target, 48px);
+      height: auto;
       padding: 0 16px;
-      font-size: 1rem;
-      border-radius: 8px;
-      flex: 1;
+      font-size: var(--font-size-body, 1rem);
+      border-radius: var(--radius-none, 0);
+      width: 100%;
       cursor: pointer;
       font-weight: 600;
-      transition: background-color 0.2s, color 0.2s;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s var(--ease-out, cubic-bezier(0.2, 0.8, 0.2, 1)), color 0.2s var(--ease-out, cubic-bezier(0.2, 0.8, 0.2, 1));
+    }
+
+    .deml-primary-actions button:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
     }
 
     .deml-reject-btn {
       background-color: transparent;
-      color: var(--text-color, var(--viking-white-pure));
-      border: 1px solid var(--border, var(--viking-charcoal-700));
-    }
-
-    .deml-reject-btn:hover {
-      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
     }
 
     .deml-save-btn {
-      background-color: var(--color-primary-container, var(--viking-teal-700));
-      color: var(--color-on-primary-container, var(--viking-white-pure));
-      border: 1px solid var(--border, var(--viking-charcoal-700));
+      background-color: var(--color-primary);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
       display: none;
     }
 
@@ -458,36 +493,27 @@
       display: none;
     }
 
-    .deml-save-btn:hover {
-      background-color: var(--color-on-primary-container, var(--viking-teal-400));
-      color: var(--color-primary-container, var(--viking-charcoal-900));
-    }
-
     .deml-accept-btn {
-      background-color: var(--viking-electric-700);
-      color: var(--viking-white-pure);
+      background-color: var(--color-primary);
+      color: var(--color-text);
       border: none;
+      min-height: var(--hit-target-lg, 56px);
     }
 
     .deml-accept-btn:hover {
-      background-color: var(--viking-electric-600);
-      color: var(--viking-white-pure);
+      background-color: var(--color-primary-hover);
     }
 
     @keyframes deml-slide-up {
-      from { transform: translateY(100px); opacity: 0; }
+      from { transform: translateY(24px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes deml-fade-in {
-      from { opacity: 0; transform: scale(0.98); }
-      to { opacity: 1; transform: scale(1); }
     }
 
     @media (min-width: 600px) {
       .deml-cookie-overlay {
-        padding: 24px;
+        align-items: flex-end;
         justify-content: flex-end;
+        padding: max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
       }
       .deml-cookie-card {
         max-width: 520px;
@@ -496,15 +522,23 @@
         flex-direction: row;
         align-items: center;
       }
-      .deml-settings-btn {
-        align-self: auto;
-      }
       .deml-primary-actions {
-        justify-content: flex-start;
+        flex-direction: row;
         width: auto;
       }
       .deml-primary-actions button {
-        flex: none;
+        width: auto;
+        flex: 1 1 auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .deml-cookie-overlay,
+      .deml-toggle-switch::before,
+      .deml-toggle-slider,
+      .deml-primary-actions button {
+        animation: none !important;
+        transition: none !important;
       }
     }
   `;
@@ -540,7 +574,7 @@
     }
 
     const html = `
-      <div class="deml-cookie-card" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+      <div class="deml-cookie-card" role="dialog" aria-modal="true" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
         <div class="deml-cookie-header">
           <div class="deml-cookie-title-group">
             <span class="deml-cookie-icon" aria-hidden="true">
@@ -625,6 +659,51 @@
 
     overlayEl.innerHTML = html;
     document.body.appendChild(overlayEl);
+    if (document.body && document.body.style) {
+      document.body.style.overflow = 'hidden';
+    }
+
+    const card = overlayEl.querySelector('.deml-cookie-card');
+    const previouslyFocused = document.activeElement;
+    const focusables = () => {
+      if (!card || typeof card.querySelectorAll !== 'function') return [];
+      return Array.from(
+        card.querySelectorAll(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((node) => {
+        if (typeof window.getComputedStyle !== 'function') return true;
+        const style = window.getComputedStyle(node);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      });
+    };
+
+    const onKeydown = (event) => {
+      if (!overlayEl) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeBanner();
+        return;
+      }
+      if (event.key !== 'Tab' || !card) return;
+      const nodes = focusables();
+      if (nodes.length === 0) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeydown);
+    overlayEl._demlKeydown = onKeydown;
+    overlayEl._demlPrevFocus = previouslyFocused;
+    const firstFocus = focusables()[0];
+    firstFocus?.focus?.();
 
     // Bind events
     const closeBtn = overlayEl.querySelector('#deml-close-btn');
@@ -683,10 +762,19 @@
   function closeBanner() {
     cancelAutoShow();
     if (overlayEl) {
+      if (overlayEl._demlKeydown) {
+        document.removeEventListener('keydown', overlayEl._demlKeydown);
+      }
+      const prev = overlayEl._demlPrevFocus;
       overlayEl.remove();
       overlayEl = null;
+      if (document.body && document.body.style) {
+        document.body.style.overflow = '';
+      }
+      if (prev && typeof prev.focus === 'function') {
+        prev.focus();
+      }
     }
-    // Update currentPrefs to reflect the recent save, so we can render the close button
     currentPrefs = getPreferences();
   }
 

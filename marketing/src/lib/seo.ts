@@ -8,12 +8,20 @@ export const TWITTER_SITE = "@joealongi";
 export const AUTHOR_NAME = "Joe Alongi";
 
 export const DEFAULT_KEYWORDS =
-  "FORJD, DEML, data engineering, machine learning, MLOps, community, learning, secure streaming, sealed ingest, telemetry, threat intelligence, STIX, multi-tenant SaaS, defendable architecture";
+  "DEML, data engineering, machine learning, MLOps, community, book, whitepaper, blog, documentation, status pages, secure streaming";
 
 export function canonicalHref(pathname: string, site: URL | string): string {
   const base = typeof site === "string" ? site : site.href;
   const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`;
   return new URL(normalized, base).href;
+}
+
+export function absoluteAssetUrl(
+  assetPath: string,
+  siteUrl: string,
+): string {
+  return new URL(assetPath, siteUrl.endsWith("/") ? siteUrl : `${siteUrl}/`)
+    .href;
 }
 
 export function organizationJsonLd(siteUrl: string) {
@@ -22,7 +30,7 @@ export function organizationJsonLd(siteUrl: string) {
     "@type": "Organization",
     name: SITE_NAME,
     url: siteUrl,
-    logo: new URL(ORGANIZATION_LOGO, siteUrl).href,
+    logo: absoluteAssetUrl(ORGANIZATION_LOGO, siteUrl),
     sameAs: ["https://twitter.com/joealongi"],
   };
 }
@@ -34,23 +42,9 @@ export function webSiteJsonLd(siteUrl: string) {
     name: SITE_NAME,
     url: siteUrl,
     description:
-      "Community for learning data engineering for machine learning — FORJD sealed streaming, DEML control-plane companion, field notes, and open reference platforms.",
+      "Learn data engineering for machine learning — open book, whitepaper, blog, docs, and community guides from DEML.",
     author: { "@type": "Person", name: AUTHOR_NAME },
     publisher: { "@type": "Organization", name: SITE_NAME },
-  };
-}
-
-export function softwareApplicationJsonLd(appUrl: string) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: SITE_SHORT_NAME,
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    url: appUrl,
-    description:
-      "DEML learning and control-plane companion for FORJD — identity, billing, consent, dashboards, and status surfaces backed by FORJD sealed streaming.",
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
 }
 
@@ -66,6 +60,19 @@ export function webPageJsonLd(title: string, description: string, url: string) {
       name: SITE_NAME,
       url: new URL("/", url).href,
     },
+  };
+}
+
+export function blogJsonLd(siteUrl: string, blogUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "DEML Blog",
+    description:
+      "Platform releases, architecture decisions, and reliability field notes from DEML.",
+    url: blogUrl,
+    inLanguage: "en",
+    publisher: { "@type": "Organization", name: SITE_NAME, url: siteUrl },
   };
 }
 
@@ -103,17 +110,31 @@ export function blogPostingJsonLd(
   url: string,
   publishedAt: Date,
   updatedAt?: Date,
+  imageUrl?: string,
 ) {
+  const image =
+    imageUrl ?? absoluteAssetUrl(DEFAULT_OG_IMAGE, new URL("/", url).href);
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: title,
     description,
     url,
-    mainEntityOfPage: url,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    image: [image],
     datePublished: publishedAt.toISOString(),
     dateModified: (updatedAt ?? publishedAt).toISOString(),
     author: { "@type": "Person", name: AUTHOR_NAME },
-    publisher: { "@type": "Organization", name: SITE_NAME },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: absoluteAssetUrl(ORGANIZATION_LOGO, new URL("/", url).href),
+      },
+    },
   };
 }

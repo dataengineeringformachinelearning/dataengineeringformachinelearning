@@ -34,6 +34,8 @@ const hasOutline = outlineHeadings.length > 0;
 const { MARKETING_URL } = siteEnv();
 const noteUrl = canonicalHref(blueNoteHref(note), MARKETING_URL);
 const pageTitle = `${note.data.title} — DEML Blog`;
+const publishedIso = note.data.publishedAt.toISOString();
+const modifiedIso = (note.data.updatedAt ?? note.data.publishedAt).toISOString();
 const jsonLd = blogPostingJsonLd(
 	note.data.title,
 	note.data.summary,
@@ -48,6 +50,9 @@ const jsonLd = blogPostingJsonLd(
 	description={note.data.summary}
 	keywords={[...note.data.categories, 'DEML Blog', 'platform changelog'].join(', ')}
 	ogType="article"
+	articlePublished={publishedIso}
+	articleModified={modifiedIso}
+	rssHref="/blog/rss.xml"
 	jsonLd={jsonLd}
 >
 	<div class="page page--prose">

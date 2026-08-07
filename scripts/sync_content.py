@@ -1,4 +1,3 @@
-import glob
 import os
 
 
@@ -30,7 +29,6 @@ def sync_readme():
   readme_path = os.path.join(root_dir, "README.md")
 
   llms_path = os.path.join(root_dir, "frontend", "public", "llms.txt")
-  llms_full_path = os.path.join(root_dir, "frontend", "public", "llms-full.txt")
 
   marketing_page_md_path = os.path.join(
     root_dir, "marketing", "src", "assets", "content", "page.md"
@@ -79,41 +77,7 @@ def sync_readme():
       with open(marketing_whitepaper_md_path, "w", encoding="utf-8") as f:
         f.write(whitepaper_content)
 
-    # --- 3. Process LLMS-full.txt ---
-    llms_full_content = readme_content + "\n\n"
-
-    # Concatenate operational and integration docs
-    for rel_path in ["docs/conops.md"]:
-      extra_path = os.path.join(root_dir, rel_path)
-      if os.path.exists(extra_path):
-        with open(extra_path, encoding="utf-8") as f:
-          llms_full_content += f.read() + "\n\n"
-
-    integrations_dir = os.path.join(root_dir, "docs", "integrations")
-    if os.path.exists(integrations_dir):
-      for md_file in glob.glob(os.path.join(integrations_dir, "*.md")):
-        with open(md_file, encoding="utf-8") as f:
-          llms_full_content += f.read() + "\n\n"
-
-    # Add BOOK.md
-    llms_full_content += "".join(book_lines)
-
-    if whitepaper_content:
-      llms_full_content += "\n\n" + whitepaper_content
-
-    # Community repo: marketing only (control-plane frontend lives in deml)
-    marketing_llms_full_path = os.path.join(root_dir, "marketing", "public", "llms-full.txt")
-    os.makedirs(os.path.dirname(marketing_llms_full_path), exist_ok=True)
-    llms_full_targets = [marketing_llms_full_path]
-    if os.path.isdir(os.path.dirname(llms_full_path)):
-      llms_full_targets.append(llms_full_path)
-    for path in llms_full_targets:
-      with open(path, "w", encoding="utf-8") as f:
-        f.write(llms_full_content)
-
     print("Successfully synced markdown content to:")
-    for path in llms_full_targets:
-      print(f" - {path}")
     print(f" - {marketing_page_md_path}")
     print(f" - {marketing_readme_md_path}")
     if whitepaper_content:
@@ -123,22 +87,43 @@ def sync_readme():
     marketing_llms_path = os.path.join(root_dir, "marketing", "public", "llms.txt")
     marketing_llms = """# Data Engineering for Machine Learning
 
-Community site, BOOK, and public documentation for the DEML ecosystem.
+Community site for the open book, whitepaper, blog, docs, and legal pages around DEML.
 
 ## Homepage
 /
+
+## Book
+/book
+
+## Whitepaper
+/whitepaper
+
+## Documentation
+/documentation
+
+## Blog
+/blog
+
+## Compliance
+/compliance
+
+## Privacy
+/privacy/
+
+## Terms
+/terms/
 
 ## Repository
 https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning
 
 ## Related
-- Control plane (deml.app): https://github.com/dataengineeringformachinelearning/deml
-- Data plane (forjd.co): https://github.com/dataengineeringformachinelearning/forjd
-- Full book for LLMs: /llms-full.txt
+- Product (deml.app): https://github.com/dataengineeringformachinelearning/deml
+- Streaming API (FORJD): https://github.com/dataengineeringformachinelearning/forjd
 
 ## Notes
-- Marketing site (this domain); Angular app at https://deml.app; backend at https://backend.deml.app
-- Prefer the repository README for the most complete community documentation.
+- Community, learning, blog, and developer docs live here; product UI at https://deml.app
+- Prefer the Book and `/documentation` for operator-facing guidance.
+- Blog moved from deml.app — use `/blog` (deml.app/blog redirects here).
 """
     os.makedirs(os.path.dirname(marketing_llms_path), exist_ok=True)
     with open(marketing_llms_path, "w", encoding="utf-8") as f:
@@ -148,16 +133,6 @@ https://github.com/dataengineeringformachinelearning/dataengineeringformachinele
       with open(llms_path, "w", encoding="utf-8") as f:
         f.write(marketing_llms)
       print(f" - {llms_path}")
-
-    # Sync AGENTS.md when present (control-plane AGENTS lives in deml)
-    agents_src = os.path.join(root_dir, "AGENTS.md")
-    agents_dest = os.path.join(root_dir, "marketing", "public", "AGENTS.md")
-    if os.path.exists(agents_src):
-      with open(agents_src, encoding="utf-8") as f:
-        agents_content = f.read()
-      with open(agents_dest, "w", encoding="utf-8") as f:
-        f.write(agents_content)
-      print(f" - {agents_dest}")
 
   except Exception as e:
     print(f"Error syncing markdown content: {e}")
@@ -197,29 +172,8 @@ def sync_version():
 
 
 def sync_search_index():
-  script_dir = os.path.dirname(os.path.abspath(__file__))
-  root_dir = os.path.dirname(script_dir)
-  page_md = os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md")
-  dest_dir = os.path.join(root_dir, "marketing", "public", "assets", "content")
-  dest = os.path.join(dest_dir, "search-index.json")
-  builder = os.path.join(script_dir, "build_search_index.py")
-
-  if not os.path.exists(page_md):
-    print(f"search-index source missing: {page_md}")
-    return
-  if not os.path.exists(builder):
-    print("sync_content: build_search_index.py absent — skip search index (lives in deml)")
-    return
-
-  import sys
-
-  if script_dir not in sys.path:
-    sys.path.insert(0, script_dir)
-  from build_search_index import write_search_index
-
-  os.makedirs(dest_dir, exist_ok=True)
-  count = write_search_index(page_md, dest)
-  print(f"Rebuilt search-index.json ({count} sections) at {dest}")
+  """No-op: marketing search-index / Algolia assets were removed."""
+  print("sync_content: search index sync disabled — skip")
 
 
 if __name__ == "__main__":
@@ -229,21 +183,18 @@ if __name__ == "__main__":
   book_path = os.path.join(root_dir, "BOOK.md")
   readme_path = os.path.join(root_dir, "README.md")
   version_path = os.path.join(root_dir, "version.txt")
-  agents_path = os.path.join(root_dir, "AGENTS.md")
   whitepaper_path = os.path.join(root_dir, "WHITEPAPER.md")
 
   content_dests = [
     os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md"),
     os.path.join(root_dir, "marketing", "src", "assets", "content", "readme.md"),
     os.path.join(root_dir, "marketing", "src", "assets", "content", "whitepaper.md"),
-    os.path.join(root_dir, "marketing", "public", "llms-full.txt"),
     os.path.join(root_dir, "marketing", "public", "llms.txt"),
   ]
 
-  if _needs_sync([book_path, readme_path, agents_path, whitepaper_path], content_dests):
+  if _needs_sync([book_path, readme_path, whitepaper_path], content_dests):
     sync_readme()
-    sync_search_index()
   else:
-    print("sync_content: sources unchanged — skipping BOOK/README/AGENTS propagation")
+    print("sync_content: sources unchanged — skipping BOOK/README/WHITEPAPER propagation")
 
   sync_version()

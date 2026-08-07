@@ -167,11 +167,11 @@ export function rewritePublicationHref(
     lowerPath === "docs/integrations" ||
     lowerPath.startsWith("docs/integrations/")
   ) {
-    return "/documentation";
+    return "https://github.com/dataengineeringformachinelearning/deml/tree/main/docs";
   }
 
   if (baseName === "readme.md" && fragmentKey === "official-integrations") {
-    return "/documentation";
+    return "https://github.com/dataengineeringformachinelearning/deml/tree/main/docs";
   }
 
   const isRepositoryReference =

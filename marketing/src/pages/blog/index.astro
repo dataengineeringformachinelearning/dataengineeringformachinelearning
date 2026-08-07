@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { blueNoteHref, formatBlueNoteDate, getBlueNotes } from '../../lib/blue-notes';
-import { canonicalHref, webPageJsonLd } from '../../lib/seo';
+import { blogJsonLd, canonicalHref, webPageJsonLd } from '../../lib/seo';
 import { siteEnv } from '../../lib/site-env';
 
 const notes = await getBlueNotes();
@@ -11,6 +11,7 @@ const pageDescription =
 const { MARKETING_URL } = siteEnv();
 const pageUrl = canonicalHref('/blog/', MARKETING_URL);
 const pageJsonLd = [
+	blogJsonLd(MARKETING_URL, pageUrl),
 	webPageJsonLd(pageTitle, pageDescription, pageUrl),
 	{
 		'@context': 'https://schema.org',
@@ -33,6 +34,7 @@ const pageJsonLd = [
 	description={pageDescription}
 	keywords="DEML changelog, release notes, platform updates, product blog, data engineering, AI engineering, cybersecurity"
 	ogType="website"
+	rssHref="/blog/rss.xml"
 	jsonLd={pageJsonLd}
 >
 	<div class="page page--prose">

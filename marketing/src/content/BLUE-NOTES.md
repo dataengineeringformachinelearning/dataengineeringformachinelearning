@@ -1,11 +1,9 @@
-# Blue Notes (moved)
+# Blue Notes (Blog)
 
-Blue Notes now live on the DEML control plane:
+Field notes for the DEML platform live on the community site:
 
-- **Canonical site:** [https://deml.app/blog](https://deml.app/blog)
-- **Source of truth:** [`deml` repo](https://github.com/dataengineeringformachinelearning/deml) → `src/content/blue-notes/`
-- **RSS:** [https://deml.app/blog/rss.xml](https://deml.app/blog/rss.xml)
+- **Canonical site:** [https://dataengineeringformachinelearning.com/blog](https://dataengineeringformachinelearning.com/blog)
+- **Source of truth:** `marketing/src/content/blue-notes/`
+- **RSS:** [https://dataengineeringformachinelearning.com/blog/rss.xml](https://dataengineeringformachinelearning.com/blog/rss.xml)
 
-This marketing site permanently redirects `/blog` and `/blog/:slug` to deml.app.
-Markdown under `marketing/src/content/blue-notes/` is retained only as a historical mirror;
-edit and publish new notes in the deml repository.
+`deml.app/blog` and `deml.app/learn` permanently redirect here. Edit and publish notes in this repository.

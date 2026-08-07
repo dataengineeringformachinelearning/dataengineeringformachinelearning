@@ -8,7 +8,7 @@ const chapters = loadBookChapters();
 const { MARKETING_URL } = siteEnv();
 const pageTitle = 'The Book — DEML Platform';
 const pageDescription =
-	'Authoritative build specification for operational intelligence on the digital battlefield — interactive chapters, deployment notes, and annotated architectural walkthroughs.';
+	'The open DEML book — practical chapters on data engineering, machine learning operations, and building reliable systems.';
 const firstChapter = chapters.find((chapter) => chapter.slug !== 'cover') ?? chapters[1] ?? chapters[0];
 const bookJsonLdPayload = bookJsonLd(pageTitle, pageDescription, canonicalHref('/book', MARKETING_URL));
 const chapterCount = Math.max(chapters.length - 1, 0);
@@ -23,24 +23,14 @@ const chapterCount = Math.max(chapters.length - 1, 0);
 >
 	<div class="page page--prose">
 		<section class="banner" data-variant="hero" aria-labelledby="book-title">
-			<p class="preheader">Interactive reference · {chapterCount} chapters</p>
+			<p class="preheader">{chapterCount} chapters</p>
 			<h1 class="banner-heading" id="book-title">Data Engineering for Machine Learning</h1>
 			<p class="lede">
-				Operational intelligence for the digital battlefield — authoritative specification,
-				interactive chapters, and reference material for security engineers.
+				A practical guide to data engineering for machine learning — architecture, operations, and
+				how the platform fits together.
 			</p>
 			<p class="page-header__meta">
-				<a href="/documentation">Integration Guides</a>
-				<span class="page-header__meta-sep" aria-hidden="true">·</span>
-				<a href="/whitepaper">The Whitepaper</a>
-				<span class="page-header__meta-sep" aria-hidden="true">·</span>
-				<a
-					href="https://github.com/dataengineeringformachinelearning/deml/blob/main/THEME.md"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					THEME.md
-				</a>
+				<a href="/whitepaper">Whitepaper</a>
 			</p>
 			{
 				firstChapter && (

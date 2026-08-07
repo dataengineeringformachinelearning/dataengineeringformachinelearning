@@ -1,29 +1,153 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { siteEnv } from '../lib/site-env';
+import { webPageJsonLd, canonicalHref } from '../lib/seo';
 
-const { BACKEND_URL } = siteEnv();
-const destination = `${BACKEND_URL.replace(/\/$/, '')}/documentation`;
-const pageTitle = 'Developer Portal — DEML API docs';
+const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
+const demlUrl = FRONTEND_URL.replace(/\/$/, '');
+const demlApi = BACKEND_URL.replace(/\/$/, '');
+const forjdApi = 'https://backend.forjd.co';
+const pageTitle = 'Documentation — DEML & FORJD';
 const pageDescription =
-  'DEML developer documentation, integrations, and API references on the control-plane backend.';
+  'Developer documentation for DEML accounts and status, plus FORJD streaming integrations.';
+const docsJsonLd = webPageJsonLd(
+  pageTitle,
+  pageDescription,
+  canonicalHref('/documentation', MARKETING_URL),
+);
 ---
 
-<Layout title={pageTitle} description={pageDescription} robots="noindex, follow">
-  <div class="page-inner-wrapper community-home">
-    <section class="community-hero" aria-labelledby="docs-redirect-title">
-      <h1 id="docs-redirect-title">Documentation has moved</h1>
-      <p>
-        Product docs and integration guides now live on the
-        <a href={destination}>DEML developer portal</a>.
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  keywords="DEML API, FORJD API, documentation, status pages, secure streaming, integrations"
+  jsonLd={docsJsonLd}
+>
+  <div class="page page--prose">
+    <section class="banner" data-variant="hero" aria-labelledby="docs-title">
+      <p class="preheader">Developers</p>
+      <h1 class="banner-heading" id="docs-title">Documentation</h1>
+      <p class="lede">
+        How to authenticate with DEML, publish status, and connect streaming integrations through
+        FORJD.
       </p>
-      <p>
-        <a class="button button--primary" href={destination}>Continue to documentation</a>
-      </p>
+      <div class="banner-actions">
+        <div class="button-group" data-layout="row" role="group" aria-label="Primary actions">
+          <a class="button button--primary button--pill" href={demlUrl}>Open DEML</a>
+          <a class="button button--secondary button--pill" href="/book">Book</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-body page-body--prose stack" aria-labelledby="deml-api-heading">
+      <header class="section-header">
+        <p class="type-eyebrow">DEML</p>
+        <h2 class="type-display" id="deml-api-heading">Accounts and status API</h2>
+      </header>
+
+      <article class="article">
+        <div class="article-body">
+          <p>
+            DEML is the product API for accounts, authentication, billing preferences, and public
+            status pages. The product UI lives at
+            <a href={demlUrl}>{demlUrl.replace(/^https?:\/\//, '')}</a>; the API host is
+            <a href={demlApi}>{demlApi.replace(/^https?:\/\//, '')}</a>.
+          </p>
+
+          <h3>Authentication</h3>
+          <ul>
+            <li>Browser sessions use Firebase Auth through the DEML backend.</li>
+            <li>
+              Headless integrations use a <code>deml_…</code> API key as
+              <code>Authorization: Bearer</code> or <code>X-API-Key</code>.
+            </li>
+            <li>Keys are shown once at creation and stored hashed.</li>
+          </ul>
+          <pre><code>Authorization: Bearer deml_YOUR_API_KEY</code></pre>
+
+          <h3>Status pages</h3>
+          <ul>
+            <li>Create and publish status pages from Settings in the product.</li>
+            <li>Public visitors read published pages under <code>/status/:slug</code>.</li>
+            <li>Owned-site management stays on authenticated DEML API routes.</li>
+          </ul>
+
+          <h3>Secure event handoff</h3>
+          <p>
+            Encrypted event batches can be sent through DEML for processing. DEML forwards them for
+            your account without exposing end-user credentials upstream.
+          </p>
+          <ul>
+            <li><code>POST {demlApi}/api/v1/forjd/ingest</code></li>
+            <li><code>GET {demlApi}/api/v1/forjd/capabilities</code></li>
+          </ul>
+
+          <p>
+            Machine-readable OpenAPI schema:
+            <a href={`${demlApi}/api/v1/openapi.json`}>{demlApi}/api/v1/openapi.json</a>
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section class="page-body page-body--prose stack" aria-labelledby="forjd-api-heading">
+      <header class="section-header">
+        <p class="type-eyebrow">FORJD</p>
+        <h2 class="type-display" id="forjd-api-heading">Streaming and analytics API</h2>
+      </header>
+
+      <article class="article">
+        <div class="article-body">
+          <p>
+            FORJD is the secure streaming API for product integrations — ingest, workflows,
+            projections, and analytics. The public host is
+            <a href={forjdApi}>{forjdApi.replace(/^https?:\/\//, '')}</a>.
+          </p>
+
+          <h3>Partner access</h3>
+          <ul>
+            <li>Call FORJD with a tenant-bound service token (<code>fjsvc_…</code>).</li>
+            <li>Never send end-user tokens to FORJD.</li>
+            <li>Partners keep their own identity stack; DEML maps accounts to FORJD tenants.</li>
+          </ul>
+
+          <h3>What to use FORJD for</h3>
+          <ul>
+            <li>Sealed event ingest and batch processing</li>
+            <li>Workflow-driven projections and replay</li>
+            <li>Analytics and ML surfaces owned by the streaming platform</li>
+          </ul>
+
+          <p>
+            Operational probes:
+            <a href={`${forjdApi}/health`}>{forjdApi}/health</a>
+            ·
+            <a href={`${forjdApi}/ready`}>{forjdApi}/ready</a>
+          </p>
+          <p>
+            Machine-readable OpenAPI schema (when enabled for your environment):
+            <a href={`${forjdApi}/openapi.json`}>{forjdApi}/openapi.json</a>
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section class="page-body page-body--prose stack" aria-labelledby="learn-heading">
+      <header class="section-header">
+        <p class="type-eyebrow">Learn more</p>
+        <h2 class="type-display" id="learn-heading">Book, whitepaper, and product</h2>
+      </header>
+
+      <article class="article">
+        <div class="article-body">
+          <ul>
+            <li><a href="/book">Book</a> — architecture and operations narrative</li>
+            <li><a href="/whitepaper">Whitepaper</a> — concise platform overview</li>
+            <li><a href="/compliance">Compliance</a> — security and assurance notes</li>
+            <li><a href={demlUrl}>DEML product</a> — publish status and manage your account</li>
+          </ul>
+        </div>
+      </article>
     </section>
   </div>
 </Layout>
-
-<script define:vars={{ destination }}>
-  window.location.replace(destination);
-</script>

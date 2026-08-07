@@ -60,14 +60,6 @@ const sections: WhitepaperSection[] = rawSections.map((chunk) => {
 	};
 });
 
-const integrationPlatforms = [
-	'Kubernetes',
-	'TensorFlow',
-	'PyTorch',
-	'Apache Spark',
-	'Databricks',
-	'AWS Redshift',
-];
 ---
 
 <Layout
@@ -117,19 +109,12 @@ const integrationPlatforms = [
 					<button class="button button--primary button--pill" id="download-pdf-btn" type="button">
 						Download PDF
 					</button>
-					<a class="button button--secondary button--pill" href="/documentation">
-						Integration Guides
-					</a>
-					<a class="button button--secondary button--pill" href="/book">Open the book</a>
+					<a class="button button--secondary button--pill" href="/book">Book</a>
 				</div>
 			</div>
 		</section>
 
 		<section class="page-body page-body--prose stack">
-			<aside class="cluster no-print" aria-label="Supported integrations">
-				{integrationPlatforms.map((name) => <span class="badge">{name}</span>)}
-			</aside>
-
 			<aside class="callout no-print" role="status" data-tone="info">
 				<div class="callout__body">
 					<p class="callout__heading">arXiv endorsement request</p>

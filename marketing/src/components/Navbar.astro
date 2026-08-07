@@ -6,10 +6,11 @@ const returnUrl = MARKETING_URL;
 const pathname = Astro.url.pathname;
 
 const navLinks = [
-	{ id: 'home', label: 'Home', href: '/' },
-	{ id: 'blog', label: 'Blog', href: `${FRONTEND_URL}/blog` },
 	{ id: 'book', label: 'Book', href: '/book' },
 	{ id: 'whitepaper', label: 'Whitepaper', href: '/whitepaper' },
+	{ id: 'documentation', label: 'Docs', href: '/documentation' },
+	{ id: 'blog', label: 'Blog', href: '/blog' },
+	{ id: 'compliance', label: 'Compliance', href: '/compliance' },
 	{ id: 'deml', label: 'DEML', href: FRONTEND_URL },
 ] as const;
 
@@ -26,7 +27,6 @@ function isActive(href: string): boolean {
 		FRONTEND_URL,
 		BACKEND_URL,
 		MARKETING_URL,
-		USE_ALGOLIA_SEARCH: false,
 	};
 </script>
 
@@ -196,63 +196,7 @@ function isActive(href: string): boolean {
 	</div>
 </header>
 
-{/* Bridge: action-row alignment until deml-ui navbar fix is pinned */}
 <style is:global>
-	@media screen and (min-width: 800px) {
-		.site-navbar .button-group {
-			display: flex;
-			grid-area: actions;
-			justify-self: end;
-			width: max-content;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			align-items: center;
-			align-content: center;
-			gap: var(--space-2);
-		}
-	}
-
-	.site-navbar .theme-toggle {
-		align-self: center;
-		width: var(--navbar-hit);
-		height: var(--navbar-hit);
-		min-width: var(--navbar-hit);
-		min-height: var(--navbar-hit);
-		flex: 0 0 auto;
-		margin: 0;
-		line-height: 0;
-	}
-
-	.site-navbar .button.button--pill {
-		align-self: center;
-		box-sizing: border-box;
-		height: var(--navbar-hit);
-		min-height: var(--navbar-hit);
-		padding-block: 0;
-		line-height: 1;
-	}
-
-	.site-navbar.is-menu-open .button-group .button--pill,
-	.site-navbar.is-menu-open .button-group .theme-toggle {
-		width: 100%;
-		height: auto;
-		min-height: var(--navbar-hit);
-	}
-
-	@media screen and (min-width: 800px) {
-		.site-navbar.is-menu-open .button-group .button--pill {
-			width: auto;
-			height: var(--navbar-hit);
-		}
-
-		.site-navbar.is-menu-open .button-group .theme-toggle {
-			width: var(--navbar-hit);
-			height: var(--navbar-hit);
-			min-height: var(--navbar-hit);
-			padding: 0;
-		}
-	}
-
 	.theme-toggle svg[hidden],
 	.site-navbar-menu-toggle svg[hidden] {
 		display: none !important;
@@ -265,17 +209,37 @@ function isActive(href: string): boolean {
 		const menuBtn = document.getElementById('mobile-menu-btn');
 		const themeBtn = document.getElementById('theme-toggle-btn');
 		const panel = document.getElementById('site-navbar-panel');
+		const main = document.getElementById('main-content');
 		if (!navbar || !menuBtn) return;
 
 		const menuIcon = menuBtn.querySelector('[data-icon="menu"]');
 		const closeIcon = menuBtn.querySelector('[data-icon="close"]');
 		const sunIcon = themeBtn?.querySelector('[data-icon="sun"]');
 		const moonIcon = themeBtn?.querySelector('[data-icon="moon"]');
+		const mq = window.matchMedia('(min-width: 800px)');
 
-		const setMenuOpen = (open) => {
+		const focusables = () =>
+			Array.from(
+				navbar.querySelectorAll(
+					'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+				),
+			).filter((node) => {
+				const style = window.getComputedStyle(node);
+				return style.display !== 'none' && style.visibility !== 'hidden';
+			});
+
+		const setMainInert = (inert) => {
+			if (!main) return;
+			if (inert) main.setAttribute('inert', '');
+			else main.removeAttribute('inert');
+		};
+
+		const setMenuOpen = (open, { returnFocus = false } = {}) => {
 			navbar.classList.toggle('is-menu-open', open);
 			menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
 			menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+			document.body.style.overflow = open ? 'hidden' : '';
+			setMainInert(open);
 			if (menuIcon) menuIcon.hidden = open;
 			if (closeIcon) closeIcon.hidden = !open;
 			if (panel) {
@@ -283,27 +247,60 @@ function isActive(href: string): boolean {
 					panel.setAttribute('role', 'dialog');
 					panel.setAttribute('aria-modal', 'true');
 					panel.setAttribute('aria-label', 'Site menu');
+					const first = panel.querySelector(
+						'a[href], button:not([disabled])',
+					);
+					first?.focus?.();
 				} else {
 					panel.removeAttribute('role');
 					panel.removeAttribute('aria-modal');
 					panel.removeAttribute('aria-label');
+					if (returnFocus) menuBtn.focus();
 				}
 			}
 		};
 
 		menuBtn.addEventListener('click', () => {
-			setMenuOpen(!navbar.classList.contains('is-menu-open'));
+			const open = !navbar.classList.contains('is-menu-open');
+			setMenuOpen(open, { returnFocus: !open });
 		});
 
 		navbar.querySelectorAll('#site-navbar-menu a').forEach((link) => {
 			link.addEventListener('click', () => setMenuOpen(false));
 		});
 
+		document.addEventListener('keydown', (event) => {
+			if (!navbar.classList.contains('is-menu-open')) return;
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				setMenuOpen(false, { returnFocus: true });
+				return;
+			}
+			if (event.key !== 'Tab') return;
+			const nodes = focusables();
+			if (nodes.length === 0) return;
+			const first = nodes[0];
+			const last = nodes[nodes.length - 1];
+			const active = document.activeElement;
+			if (event.shiftKey && active === first) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && active === last) {
+				event.preventDefault();
+				first.focus();
+			}
+		});
+
+		const onBreakpoint = () => {
+			if (mq.matches) setMenuOpen(false);
+		};
+		mq.addEventListener('change', onBreakpoint);
+
 		if (themeBtn) {
 			const applyTheme = (theme) => {
 				document.documentElement.setAttribute('data-theme', theme);
 				document.documentElement.classList.toggle('dark', theme === 'dark');
-				localStorage.setItem('theme', theme);
+				localStorage.setItem('deml-theme', theme);
 				themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
 				themeBtn.setAttribute(
 					'aria-label',
@@ -313,8 +310,22 @@ function isActive(href: string): boolean {
 				if (moonIcon) moonIcon.hidden = theme === 'dark';
 			};
 
+			// Prefer deml-theme; migrate legacy `theme` once if needed.
+			let stored = localStorage.getItem('deml-theme');
+			const legacy = localStorage.getItem('theme');
+			if (
+				(stored !== 'light' && stored !== 'dark') &&
+				(legacy === 'light' || legacy === 'dark')
+			) {
+				stored = legacy;
+				localStorage.setItem('deml-theme', legacy);
+			}
 			const current =
-				document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+				stored === 'light' || stored === 'dark'
+					? stored
+					: document.documentElement.getAttribute('data-theme') === 'light'
+						? 'light'
+						: 'dark';
 			applyTheme(current);
 
 			themeBtn.addEventListener('click', () => {

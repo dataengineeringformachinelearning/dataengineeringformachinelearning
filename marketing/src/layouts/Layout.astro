@@ -3,7 +3,6 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import 'deml-ui/styles.css';
 import '@fontsource-variable/geist/wght.css';
-import { algoliaEnv } from '../lib/site-env';
 import {
 	SITE_NAME,
 	DEFAULT_OG_IMAGE,
@@ -12,8 +11,9 @@ import {
 	AUTHOR_NAME,
 	canonicalHref,
 } from '../lib/seo';
+import { siteEnv } from '../lib/site-env';
 
-const algolia = algoliaEnv();
+const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
 
 export interface Props {
 	title: string;
@@ -23,17 +23,23 @@ export interface Props {
 	ogImage?: string;
 	ogImageAlt?: string;
 	ogType?: string;
+	articlePublished?: string;
+	articleModified?: string;
+	rssHref?: string;
 	jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
 	title,
-	description = 'Community home for Data Engineering for Machine Learning — DEML for the learning control plane, the engineering blog, and a whitepaper on defendable data platforms.',
+	description = 'Learn data engineering for machine learning — open book, whitepaper, blog, docs, and community guides from DEML.',
 	keywords,
 	robots = 'index, follow',
 	ogImage = DEFAULT_OG_IMAGE,
 	ogImageAlt = DEFAULT_OG_IMAGE_ALT,
 	ogType = 'website',
+	articlePublished,
+	articleModified,
+	rssHref,
 	jsonLd,
 } = Astro.props;
 
@@ -50,7 +56,7 @@ const jsonLdPayload = jsonLd
 <html lang="en" data-deml-context="marketing">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
@@ -67,12 +73,20 @@ const jsonLdPayload = jsonLd
 		<meta name="author" content={AUTHOR_NAME} />
 		<meta name="robots" content={`${robots}, max-image-preview:large`} />
 		<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
-		<meta name="algolia-site-verification" content="687B59B29612DE68" /> <!-- pragma: allowlist secret -->
+		{
+			rssHref && (
+				<link
+					rel="alternate"
+					type="application/rss+xml"
+					title="DEML Blog"
+					href={rssHref}
+				/>
+			)
+		}
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 
 		<link rel="canonical" href={canonical} />
-		<link rel="alternate" type="application/rss+xml" title="DEML Blog" href="https://deml.app/blog/rss.xml" />
 
 		<meta property="og:type" content={ogType} />
 		<meta property="og:url" content={canonical} />
@@ -85,6 +99,17 @@ const jsonLdPayload = jsonLd
 		<meta property="og:image:alt" content={ogImageAlt} />
 		<meta property="og:site_name" content={SITE_NAME} />
 		<meta property="og:locale" content="en_US" />
+		{
+			ogType === 'article' && articlePublished && (
+				<meta property="article:published_time" content={articlePublished} />
+			)
+		}
+		{
+			ogType === 'article' && articleModified && (
+				<meta property="article:modified_time" content={articleModified} />
+			)
+		}
+		{ogType === 'article' && <meta property="article:author" content={AUTHOR_NAME} />}
 
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:url" content={canonical} />
@@ -105,7 +130,15 @@ const jsonLdPayload = jsonLd
 
 		<script is:inline>
 			(function () {
-				const savedTheme = localStorage.getItem('theme');
+				let savedTheme = localStorage.getItem('deml-theme');
+				const legacyTheme = localStorage.getItem('theme');
+				if (
+					(savedTheme !== 'light' && savedTheme !== 'dark') &&
+					(legacyTheme === 'light' || legacyTheme === 'dark')
+				) {
+					savedTheme = legacyTheme;
+					localStorage.setItem('deml-theme', legacyTheme);
+				}
 				let theme = 'dark';
 				if (savedTheme === 'light' || savedTheme === 'dark') {
 					theme = savedTheme;
@@ -122,34 +155,13 @@ const jsonLdPayload = jsonLd
 			})();
 		</script>
 
-		<script is:inline define:vars={{ algolia }}>
-			window.ALGOLIA_CONFIG = {
-				appId: algolia.APP_ID,
-				apiKey: algolia.API_KEY,
-				experienceId: algolia.EXPERIENCE_ID,
-				env: algolia.ENV,
-				indexNames: [
-					'dataengineeringformachinelearning_com_zjafyosh2v_pages',
-					'deml_app_pages',
-					'deml_backend_pages',
-					'DEML UI',
-				],
-				domains: [
-					'https://deml.app',
-					'https://dataengineeringformachinelearning.com',
-					'https://backend.deml.app',
-				],
-				sitemaps: [
-					'https://deml.app/sitemap.xml',
-					'https://dataengineeringformachinelearning.com/sitemap-index.xml',
-					'https://backend.deml.app/sitemap.xml',
-				],
+		<script is:inline define:vars={{ FRONTEND_URL, BACKEND_URL, MARKETING_URL }}>
+			window.__DEML = {
+				...(window.__DEML || {}),
+				FRONTEND_URL,
+				BACKEND_URL,
+				MARKETING_URL,
 			};
-			window.__DEML = window.__DEML || {};
-			window.__DEML.USE_ALGOLIA_SEARCH = false;
-			window.__DEML.MARKETING_URL = 'https://dataengineeringformachinelearning.com';
-			window.__DEML.FRONTEND_URL = 'https://deml.app';
-			window.__DEML.BACKEND_URL = 'https://backend.deml.app';
 		</script>
 		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>
 		<script>

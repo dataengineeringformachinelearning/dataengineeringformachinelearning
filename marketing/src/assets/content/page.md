@@ -10,7 +10,7 @@ For the platform hypothesis, value proposition, architecture diagrams, and algor
 
 **Architectural posture:** DEML is a user-focused learning platform and Firebase-authenticated control plane. Django owns identity, profiles, roles, subscriptions, consent, credentials, account lifecycle, and user-originated interactions. [FORJD](https://github.com/dataengineeringformachinelearning/forjd) is the exclusive universal secure streaming engine: sealed intake, processing, workflows, projections, analytics, machine learning, replay, and DLQ. Integration contract: [docs/FORJD_INTEGRATION.md](docs/FORJD_INTEGRATION.md). Production operations: [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md) and [docs/PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md).
 
-The Angular product surface remains DEML-owned. Dashboards, analytics, monitoring, status pages, vulnerability views, onboarding, and generated clients call Django. Django adapts established product paths to FORJD-native routes that exist for the tenant-bound service principal. Capabilities FORJD does not expose fail closed as FORJD dependencies—DEML does not implement a parallel processing plane.
+The Angular product surface remains DEML-owned and is intentionally thin: home, auth, explore/status, and settings (account + sites). Long-form learning lives on this community site (book/whitepaper). Partners integrate with FORJD via tenant-bound `fjsvc_` tokens; retired dashboard/analytics/SIEM BFF facades return **501**. Django adapts the remaining product paths to FORJD-native routes for the tenant-bound service principal. Capabilities FORJD does not expose fail closed as FORJD dependencies—DEML does not implement a parallel processing plane. Current surface contract: deml [`docs/SIMPLIFIED_SURFACE.md`](https://github.com/dataengineeringformachinelearning/deml/blob/main/docs/SIMPLIFIED_SURFACE.md).
 
 DEML is a trusted FORJD subprocessor authenticated with a tenant-bound opaque `fjsvc_` service token. Firebase remains the DEML end-user identity provider; its tokens terminate at Django and are never forwarded to FORJD. DEML maps each account to a FORJD tenant and secret reference, forwards sealed telemetry through native `/api/v1/ingest`, and never uses OAuth client credentials, Supabase `service_role`, or direct FORJD storage access. Account deletion calls FORJD `POST /api/v1/tenants/{id}/erase` before local teardown. Learning progress stored by DEML remains local until an agreed `deml_learning_v1` contract exists. FORJD is the exclusive data plane; agents must not introduce a parallel DEML stream plane. See [Appendix: Do Not Reintroduce a Local Stream Plane](#chapter-34-do-not-reintroduce-a-local-stream-plane--anti-regression-reference) for the anti-regression checklist.
 
@@ -52,7 +52,7 @@ This section constitutes the **single operational narrative** for the DEML platf
 
 ### 1. Purpose & Scope
 
-DEML is a multi-tenant observability, AI intelligence, cybersecurity, and learning SaaS. Operators, security engineers, AI/ML practitioners, learners, and integrators employ it to publish status pages, manage accounts and billing, consume dashboards, and forward sealed telemetry into FORJD for processing. This CONOPS specifies:
+DEML is a multi-tenant learning and status control plane with a sealed FORJD data plane. Operators and learners use it to publish status pages, manage accounts and billing, and (via partners/integrators) forward sealed telemetry into FORJD for processing. Product UI does **not** include a dashboard or live analytics board—those paths are retired. This CONOPS specifies:
 
 - Normal steady-state operations across DEML control-plane and FORJD data-plane services
 - User-facing workflows (anonymous visitors, account owners, API integrators, learners)
@@ -2363,8 +2363,8 @@ Canonical docs: [THEME.md](THEME.md), [docs/DEML_UI.md](docs/DEML_UI.md),
 [.cursorrules](.cursorrules), [AGENTS.md](AGENTS.md).
 
 **Retired:** Viking-UI (`packages/viking-ui`, `--viking-*`, void-black /
-electric `#2176ff` suite chrome). Do not restore it. Historical suite-unification
-notes remain under `docs/SUITE_*` and are superseded.
+electric `#2176ff` suite chrome). Do not restore it. Suite UI law lives in
+deml-ui + deml `THEME.md` / `docs/DEML_UI.md`.
 
 Product pages are Angular 22+ standalone + Signals; dashboard and analytics live
 ticks arrive through Django SSE (`LiveUpdatesService`) rather than Firestore.

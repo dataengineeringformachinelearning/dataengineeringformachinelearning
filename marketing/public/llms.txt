@@ -1,18 +1,39 @@
 # Data Engineering for Machine Learning
 
-Community site, BOOK, and public documentation for the DEML ecosystem.
+Community site for the open book, whitepaper, blog, docs, and legal pages around DEML.
 
 ## Homepage
 /
+
+## Book
+/book
+
+## Whitepaper
+/whitepaper
+
+## Documentation
+/documentation
+
+## Blog
+/blog
+
+## Compliance
+/compliance
+
+## Privacy
+/privacy/
+
+## Terms
+/terms/
 
 ## Repository
 https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning
 
 ## Related
-- Control plane (deml.app): https://github.com/dataengineeringformachinelearning/deml
-- Data plane (forjd.co): https://github.com/dataengineeringformachinelearning/forjd
-- Full book for LLMs: /llms-full.txt
+- Product (deml.app): https://github.com/dataengineeringformachinelearning/deml
+- Streaming API (FORJD): https://github.com/dataengineeringformachinelearning/forjd
 
 ## Notes
-- Marketing site (this domain); Angular app at https://deml.app; backend at https://backend.deml.app
-- Prefer the repository README for the most complete community documentation.
+- Community, learning, blog, and developer docs live here; product UI at https://deml.app
+- Prefer the Book and `/documentation` for operator-facing guidance.
+- Blog moved from deml.app — use `/blog` (deml.app/blog redirects here).

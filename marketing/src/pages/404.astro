@@ -1,32 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-// Auto-redirect to homepage after 3 seconds for cleaner UX
-const redirectUrl = '/';
 ---
 
-<script define:vars={{ redirectUrl }}>
-  setTimeout(() => {
-    window.location.href = redirectUrl;
-  }, 3000);
-</script>
-
 <Layout
-  title="404: Page Not Found - DEML Platform"
-  description="The requested DEML marketing page could not be found. Redirecting to homepage."
+  title="Not found — DEML"
+  description="This page does not exist."
   robots="noindex, nofollow"
 >
-  <div class="page-inner-wrapper">
-    <section class="banner" aria-labelledby="not-found-title">
+  <div class="page">
+    <section class="banner banner--hero" data-variant="hero" aria-labelledby="not-found-title">
       <p class="preheader">404</p>
       <h1 class="banner-heading" id="not-found-title">Page not found</h1>
-      <p class="lede">
-        The page you are looking for does not exist, has been moved, or the URL might be mistyped.
-      </p>
-      <p aria-live="polite">Redirecting to <a href="/">homepage</a> in 3 seconds…</p>
+      <p class="lede">That URL is not on this site.</p>
       <div class="banner-actions">
-        <div class="button-group">
-          <a href="/" class="button button--primary">Return home</a>
+        <div class="button-group" data-layout="row" role="group" aria-label="Recovery">
+          <a href="/" class="button button--primary button--pill">Home</a>
+          <a href="/book" class="button button--secondary button--pill">Book</a>
         </div>
       </div>
     </section>

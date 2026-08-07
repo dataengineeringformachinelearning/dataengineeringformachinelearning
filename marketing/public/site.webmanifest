@@ -1,7 +1,7 @@
 {
   "name": "Data Engineering for Machine Learning",
   "short_name": "DEML",
-  "description": "Data engineering, machine learning, and cybersecurity operational intelligence.",
+  "description": "Community home for DEML — book, whitepaper, blog, docs, and legal pages.",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -16,8 +16,8 @@
       "purpose": "maskable any"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#D4CEC5",
+  "background_color": "#D4CEC5",
   "display": "standalone",
   "scope": "/",
   "start_url": "/"

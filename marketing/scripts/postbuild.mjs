@@ -1,4 +1,4 @@
-// Post-build: Algolia Crawler expects /sitemap.xml (urlset), not only sitemap-index.xml.
+// Post-build: expose /sitemap.xml (urlset) for crawlers; Astro emits sitemap-0.xml + index.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

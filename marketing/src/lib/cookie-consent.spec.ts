@@ -213,7 +213,10 @@ function runInteractiveWidget(options: {
   const document = {
     title: 'Cookie test',
     cookie: '',
+    activeElement: null as InteractiveElement | null,
     createElement,
+    addEventListener() {},
+    removeEventListener() {},
     getElementById(id: string) {
       return headElements.get(id) || null;
     },
@@ -227,6 +230,7 @@ function runInteractiveWidget(options: {
       },
     },
     body: {
+      style: { overflow: '' },
       appendChild(element: InteractiveElement) {
         overlay = element;
       },

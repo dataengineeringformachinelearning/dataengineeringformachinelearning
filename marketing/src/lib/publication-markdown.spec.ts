@@ -33,7 +33,7 @@ describe("publication Markdown", (): void => {
     );
     assert.equal(
       rewritePublicationHref("apache-spark.md"),
-      "/documentation",
+      "https://github.com/dataengineeringformachinelearning/deml/tree/main/docs",
     );
     assert.equal(
       rewritePublicationHref("WHITEPAPER.md#2-concept-of-operations-conops"),

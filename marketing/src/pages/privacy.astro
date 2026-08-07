@@ -4,7 +4,7 @@ import { siteEnv } from '../lib/site-env';
 import { webPageJsonLd, canonicalHref } from '../lib/seo';
 
 const { MARKETING_URL } = siteEnv();
-const pageTitle = 'Privacy Policy - DEML Platform';
+const pageTitle = 'Privacy Policy — DEML';
 const pageDescription =
   'How DEML collects, processes, retains, and protects personal data — including GDPR rights and cookie practices.';
 const privacyJsonLd = webPageJsonLd(
@@ -21,171 +21,112 @@ const supportEmail = 'support@dataengineeringformachinelearning.com';
   keywords="DEML privacy policy, GDPR, data protection, cookies, personal data retention"
   jsonLd={privacyJsonLd}
 >
-  <div class="dashboard-page-container">
-    <div class="dashboard-content-area">
-      <div class="page-inner-wrapper">
-        <article class="page-content" id="privacy-policy-document">
-          <header class="privacy-header">
-            <h1 id="privacy-main-heading">Privacy Policy & Data Compliance</h1>
-            <p class="last-updated">Last Updated: June 7, 2026</p>
-          </header>
+  <div class="page page--prose">
+    <section class="banner" data-variant="hero" aria-labelledby="privacy-main-heading">
+      <p class="preheader">Legal</p>
+      <h1 class="banner-heading" id="privacy-main-heading">Privacy</h1>
+      <p class="lede">Last updated June 7, 2026.</p>
+    </section>
 
-          <section class="privacy-section" id="sec-introduction">
-            <h2>1. Introduction</h2>
-            <p>
-              DEML APP ("we", "our", or "us") is committed to protecting your privacy. This
-              Privacy Policy explains how we collect, use, and safeguard your personal information
-              when you visit our website, read our platform documentation, or interact with our system
-              status services.
+    <section class="page-body page-body--prose stack" aria-labelledby="privacy-body">
+      <article class="article" id="privacy-policy-document">
+        <div class="article-body" id="privacy-body">
+          <h2 id="sec-introduction">1. Introduction</h2>
+          <p>
+            DEML ("we", "our", or "us") protects your privacy. This policy explains how we collect,
+            use, and safeguard personal information when you use our sites, documentation, or
+            status services.
+          </p>
+          <p>
+            We practice privacy by design: collect the minimum, process only as needed, and follow
+            GDPR and CCPA/CPRA where they apply.
+          </p>
+
+          <h2 id="sec-cookies">2. Cookies</h2>
+          <p>
+            We use cookies for security and sessions, theme preference, and optional analytics when
+            you consent.
+          </p>
+          <ul>
+            <li><strong>Necessary</strong> — security, sessions, core navigation.</li>
+            <li><strong>Analytics</strong> — load and usage signals after consent.</li>
+            <li><strong>Preferences</strong> — theme and similar choices.</li>
+          </ul>
+          <p>
+            <button
+              type="button"
+              class="button button--secondary button--pill"
+              id="privacy-open-cookie-settings"
+              onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()"
+            >
+              Cookie preferences
+            </button>
+          </p>
+
+          <h2 id="gdpr">3. GDPR</h2>
+          <p>
+            If you are in the EU or EEA, you may request access, rectification, erasure, restriction,
+            or portability of personal data we hold.
+          </p>
+          <form class="stack" id="gdpr-form">
+            <label class="text-field" for="gdpr-email">
+              <span class="text-field__label">Email</span>
+              <input
+                type="email"
+                id="gdpr-email"
+                name="email"
+                autocomplete="email"
+                required
+                class="text-field__control"
+              />
+            </label>
+            <label class="text-field" for="gdpr-type">
+              <span class="text-field__label">Request type</span>
+              <select id="gdpr-type" name="request_type" class="text-field__control" required>
+                <option value="" disabled selected>Select</option>
+                <option value="export">Export</option>
+                <option value="delete">Delete</option>
+                <option value="rectify">Rectify</option>
+              </select>
+            </label>
+            <label class="text-field" for="gdpr-details">
+              <span class="text-field__label">Details (optional)</span>
+              <textarea id="gdpr-details" name="details" rows="3" class="text-field__control"></textarea>
+            </label>
+            <button type="submit" class="button button--primary button--pill" id="privacy-submit-gdpr-request">
+              Email request
+            </button>
+            <p class="callout" id="gdpr-success-callout" role="status" hidden>
+              Your email app is opening. Send the drafted message to complete the request.
             </p>
-            <p>
-              We build and maintain our platform with privacy-by-design principles. We ensure that
-              data collection is kept to a minimum and only processed in accordance with global
-              regulations, including the General Data Protection Regulation (GDPR) and the California
-              Consumer Privacy Act (CCPA).
-            </p>
-          </section>
+          </form>
+          <p>
+            Or email <a href={`mailto:${supportEmail}`}>{supportEmail}</a> directly.
+          </p>
 
-          <section class="privacy-section" id="sec-cookies">
-            <h2>2. Cookie Policy & Preferences</h2>
-            <p>
-              We use cookies and similar tracking technologies to analyze site traffic, remember your
-              interface theme preferences, and monitor platform performance. Cookies are small data
-              files stored on your device.
-            </p>
-            <div class="cookie-types-grid">
-              <div class="card cookie-card">
-                <h3>Strictly Necessary</h3>
-                <p>
-                  Essential for basic security, user sessions, and core navigation. These cannot be
-                  disabled.
-                </p>
-              </div>
-              <div class="card cookie-card">
-                <h3>Performance & Analytics</h3>
-                <p>
-                  Track load times, network response, and system telemetry to help us diagnose issues
-                  and optimize API queries.
-                </p>
-              </div>
-              <div class="card cookie-card">
-                <h3>Marketing & Preferences</h3>
-                <p>
-                  Customize system status indicators, layout preferences, and remember theme
-                  selections.
-                </p>
-              </div>
-            </div>
+          <h2 id="sec-ccpa">4. CCPA / CPRA</h2>
+          <p>
+            California residents may know what we collect, opt out of sale or sharing (we do not sell
+            personal information), limit sensitive use, and receive equal service when exercising
+            rights.
+          </p>
 
-            <div class="cookie-action-box">
-              <p>You can adjust, enable, or revoke your cookie choices at any time.</p>
-              <button type="button" class="button button--primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
-                Manage Cookie Preferences
-              </button>
-            </div>
-          </section>
+          <h2 id="sec-security">5. Security and retention</h2>
+          <p>
+            Traffic uses TLS 1.3. Secrets are encrypted at rest. Status pages and telemetry stay
+            private until you publish a status page. Aged telemetry is purged on a retention schedule.
+          </p>
 
-          <section class="privacy-section" id="gdpr">
-            <h2>3. GDPR Compliance (EU User Rights)</h2>
-            <p>
-              If you are located in the European Union (EU) or European Economic Area (EEA), you are
-              granted specific rights under the General Data Protection Regulation (GDPR). These
-              include:
-            </p>
-            <ul class="gdpr-rights-list">
-              <li><strong>Right of Access:</strong> Request a copy of all personal data we hold about you.</li>
-              <li><strong>Right to Rectification:</strong> Request correction of any inaccurate or incomplete personal data.</li>
-              <li><strong>Right to Erasure ("Right to be Forgotten"):</strong> Request deletion of your personal data when no longer needed.</li>
-              <li><strong>Right to Restriction of Processing:</strong> Request that we limit how we process your information.</li>
-              <li><strong>Right to Data Portability:</strong> Request transmission of your data to another organization in a structured format.</li>
-            </ul>
-
-            <div class="card compliance-form-card" id="gdpr-request-form-card">
-              <h3>GDPR Data Request Center</h3>
-              <p class="form-instruction">
-                Use this form to request an export or permanent deletion of any personal data
-                collected during your sessions. The form opens a pre-addressed message in your email
-                app; sending that message completes the request. You can also email
-                <a href={`mailto:${supportEmail}`}>{supportEmail}</a> directly.
-              </p>
-
-              <form class="compliance-form" id="gdpr-form">
-                <div class="form-group">
-                  <label for="gdpr-email">Your Email Address</label>
-                  <input type="email" id="gdpr-email" name="email" autocomplete="email" placeholder="name@example.com" required class="form-input" />
-                </div>
-
-                <div class="form-group">
-                  <label for="gdpr-type">Request Type</label>
-                  <select id="gdpr-type" name="request_type" class="form-input" required>
-                    <option value="" disabled selected>Select Request Type</option>
-                    <option value="export">Data Export Request</option>
-                    <option value="delete">Data Deletion Request</option>
-                    <option value="rectify">Data Rectification Request</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="gdpr-details">Additional Details (Optional)</label>
-                  <textarea id="gdpr-details" name="details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
-                </div>
-
-                <button type="submit" class="button button--secondary" id="privacy-submit-gdpr-request">
-                  Submit Compliance Request
-                </button>
-                <p class="gdpr-success-callout" id="gdpr-success-callout" role="status" hidden>
-                  Your email app is opening. Send the drafted message to complete your request.
-                </p>
-              </form>
-            </div>
-          </section>
-
-          <section class="privacy-section" id="sec-ccpa">
-            <h2>4. CCPA/CPRA Compliance (California Rights)</h2>
-            <p>
-              Under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act
-              (CPRA), California residents have specific rights regarding their personal information:
-            </p>
-            <ul>
-              <li><strong>Right to Know:</strong> Discover what personal information we collect, source, and share.</li>
-              <li><strong>Right to Opt-Out:</strong> Direct us to stop selling or sharing your personal information (Note: We do not sell or share any user personal information with third parties).</li>
-              <li><strong>Right to Limit:</strong> Restrict the use of sensitive personal information.</li>
-              <li><strong>Right to Non-Discrimination:</strong> Enjoy equal service and pricing even if you exercise your privacy rights.</li>
-            </ul>
-          </section>
-
-          <section class="privacy-section" id="sec-security">
-            <h2>5. Security, E2E Encryption & Data Retention</h2>
-            <p>
-              The platform enforces end-to-end encryption. All telemetry payloads, microservice status
-              metrics, and client communications are encrypted using TLS 1.3 / SSL. Furthermore,
-              integrated third-party credentials (such as Google Analytics 4 tokens and Microsoft
-              Clarity API keys) are secured at-rest in our database using transparent AES-256
-              Fernet-level encryption derived from application secret keys.
-            </p>
-            <p>
-              Your status pages, services, incidents, and telemetry data are private-by-default and
-              are not shared publicly unless you explicitly approve by toggling the "Publish Status
-              Page" setting. Telemetry logs and historical ML reports are automatically purged from
-              databases 30 days after creation.
-            </p>
-          </section>
-
-          <section class="privacy-section" id="sec-contact">
-            <h2>6. Contact & Data Protection Officer</h2>
-            <p>
-              If you have any questions regarding this Privacy Policy, your cookie choices, or wish to
-              appeal a compliance request, please contact our Data Protection Officer:
-            </p>
-            <div class="card contact-card">
-              <p><strong>Email:</strong>&nbsp;<a href={`mailto:${supportEmail}`}>{supportEmail}</a></p>
-              <p><strong>Address:</strong>&nbsp;No Address</p>
-              <p><strong>Data protection officer contact:</strong>&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a></p>
-            </div>
-          </section>
-        </article>
-      </div>
-    </div>
+          <h2 id="sec-contact">6. Contact</h2>
+          <p>
+            Questions or appeals:
+            <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+            ·
+            <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>
+          </p>
+        </div>
+      </article>
+    </section>
   </div>
 </Layout>
 

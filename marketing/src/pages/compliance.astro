@@ -1,14 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import PageMockup from '../components/PageMockup.astro';
 import { siteEnv } from '../lib/site-env';
 import { webPageJsonLd, canonicalHref } from '../lib/seo';
 
 const { FRONTEND_URL, MARKETING_URL } = siteEnv();
 const platformStatusHref = `${FRONTEND_URL.replace(/\/$/, '')}/status/platform-status`;
-const pageTitle = 'SOC 2 Compliance — DEML Platform';
+const pageTitle = 'Compliance — DEML Platform';
 const pageDescription =
-  'SOC 2 controls, data retention policies, encryption practices, and audit-ready compliance documentation for operational intelligence infrastructure.';
+  'Security controls, encryption practices, and audit-ready compliance notes for the DEML platform.';
 const complianceJsonLd = webPageJsonLd(
   pageTitle,
   pageDescription,
@@ -19,296 +18,52 @@ const complianceJsonLd = webPageJsonLd(
 <Layout
   title={pageTitle}
   description={pageDescription}
-  keywords="SOC2 compliance, DEML security, data retention, encryption, audit controls, CMMC"
+  keywords="SOC2 compliance, DEML security, data retention, encryption, audit controls"
   jsonLd={complianceJsonLd}
 >
-  <div class="dashboard-page-container">
-    <div class="dashboard-content-area">
-      <div class="compliance-container-inner page-inner-wrapper">
-        <header class="hud-header compliance-hero page-mockup-stage">
-          <div class="title-group">
-            <div class="section-tag-row">
-              <span class="badge-dot badge-dot--success" aria-hidden="true"></span>
-              <span class="section-tag">Security & Threat Sharing Reference</span>
-            </div>
-            <h1 class="hud-title" id="compliance-title">Compliance, Threat Federation & Encryption</h1>
-            <p class="hud-subtitle">
-              A reference implementation for cybersecurity auditing, STIX indicator exports, and
-              encryption controls. Live service health stays on the DEML status surface.
-            </p>
-          </div>
-          <PageMockup variant="security-ops" class="compliance-hero-mockup" />
-        </header>
-
-        <div class="compliance-grid">
-          <section class="card compliance-card" aria-labelledby="e2e-section-title">
-            <div class="card-header">
-                            <h2 id="e2e-section-title">End-to-End Encryption Controls</h2>
-            </div>
-            <p class="card-description">
-              Reference controls for cryptographic assets and secure communications across
-              ingestion networks.
-            </p>
-
-            <ul class="telemetry-list">
-              <li>
-                                <div class="item-details">
-                  <strong>Transport Security</strong>
-                  <p>TLS 1.3 Active (RSA 2048-bit)</p>
-                </div>
-              </li>
-              <li>
-                                <div class="item-details">
-                  <strong>Data at Rest</strong>
-                  <p>AES-256 (Google Cloud KMS)</p>
-                </div>
-              </li>
-              <li>
-                                <div class="item-details">
-                  <strong>Ingestion Integrity</strong>
-                  <p>SHA-256 Checksums Verified</p>
-                </div>
-              </li>
-              <li>
-                                <div class="item-details">
-                  <strong>Client Encryption Key Rotation</strong>
-                  <p>
-                    Automated 30-day cryptographic key rotation active (next rotation in 14 days).
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </section>
-
-          <section class="card compliance-card" aria-labelledby="soc-section-title">
-            <div class="card-header">
-                            <h2 id="soc-section-title">SOC 2 Readiness Model</h2>
-            </div>
-            <div class="score-display">
-              <div class="score-bar-bg" aria-hidden="true">
-                <div class="score-bar-fill score-bar-fill--complete"></div>
-              </div>
-              <div class="score-labels">
-                <span class="percentage">Reference Control Map</span>
-                <span class="status-indicator">Evidence requires independent verification</span>
-              </div>
-            </div>
-
-            <div class="criteria-list" role="list">
-              <div class="criteria-item" role="listitem">
-                <div class="criteria-top">
-                  <span class="criteria-name">Security (CC1-CC9)</span>
-                  <span class="criteria-badge success">Compliant</span>
-                </div>
-                <p class="criteria-desc">Systems and data are protected against unauthorized access.</p>
-                <p class="criteria-details"><strong>Current status:</strong> All controls validated via automated scanning.</p>
-              </div>
-
-              <div class="criteria-item" role="listitem">
-                <div class="criteria-top">
-                  <span class="criteria-name">Availability (A1)</span>
-                  <span class="criteria-badge success">Compliant</span>
-                </div>
-                <p class="criteria-desc">The system is available for operation and use as committed or agreed.</p>
-                <p class="criteria-details"><strong>Current status:</strong> 99.99% uptime maintained over 30 days.</p>
-              </div>
-
-              <div class="criteria-item" role="listitem">
-                <div class="criteria-top">
-                  <span class="criteria-name">Confidentiality (C1)</span>
-                  <span class="criteria-badge success">Compliant</span>
-                </div>
-                <p class="criteria-desc">Information designated as confidential is protected.</p>
-                <p class="criteria-details"><strong>Current status:</strong> Strict RBAC and zero-trust policies enforced.</p>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <section class="sharing-section" aria-labelledby="sharing-section-title">
-          <div class="section-intro">
-            <div class="section-tag-row compliance-extracted-1">
-              <span class="section-tag">AUTOMATED REPORTING BENEFIT</span>
-            </div>
-            <h2 id="sharing-section-title">Automated Threat Sharing Pipeline</h2>
-            <p>
-              Automatically format and transmit PyTorch neural network anomaly predictions to
-              Information Sharing and Analysis Centers (ISACs) and CISA using standard STIX 2.1
-              schemas.
-            </p>
-          </div>
-
-          <div class="safety-warning-box" role="note" id="safety-warning">
-                        <div class="warning-content">
-              <strong>Important Safety & Integrity Rail:</strong>
-              <p>
-                This public walkthrough runs entirely in
-                <strong>Sandbox / Simulation Mode</strong> and does not transmit data. Submitting
-                unverified indicators to production feeds can create false positives, so live routing
-                must remain an authenticated, reviewed operation.
-              </p>
-            </div>
-            <button type="button" class="icon-button" id="dismiss-warning-btn" aria-label="Dismiss safety warning">
-                          </button>
-          </div>
-
-          <div class="sharing-grid">
-            <div class="sharing-controls">
-              <h3>1. Select Submission Target</h3>
-              <p class="desc-text">Choose the federal agency or industry ISAC to route this report to.</p>
-
-              <div class="target-selector" role="radiogroup" aria-label="Ingestion ISAC Target">
-                <button type="button" class="selector-btn active" data-isac="CISA" role="radio" aria-checked="true" tabindex="0">
-                                    <span>CISA AIS (TAXII)</span>
-                </button>
-                <button type="button" class="selector-btn" data-isac="MS-ISAC" role="radio" aria-checked="false" tabindex="-1">
-                                    <span>MS-ISAC</span>
-                </button>
-                <button type="button" class="selector-btn" data-isac="IT-ISAC" role="radio" aria-checked="false" tabindex="-1">
-                                    <span>IT-ISAC</span>
-                </button>
-              </div>
-
-              <div class="submit-action-box">
-                <button class="submit-report-btn" id="submit-threat-btn" type="button" aria-describedby="sandbox-mode-note">
-                                    <span id="submit-btn-text">Run Sandbox Simulation</span>
-                </button>
-                <a class="button button--secondary" href={platformStatusHref}>View Live Status</a>
-                <span class="mode-tag" id="sandbox-mode-note">Local demo · no network transmission</span>
-              </div>
-
-              <div class="submission-response is-hidden" role="status" id="submission-result">
-                <div class="response-header success">
-                                    <span>Sandbox walkthrough completed locally. No data was transmitted.</span>
-                </div>
-                <div class="transmission-logs">
-                  <span class="logs-title">Pipeline Handshake Logs:</span>
-                  <div class="transmission-logs-list" role="list">
-                    <div class="transmission-log-item" role="listitem">
-                      <span class="log-dot"></span>
-                      <span class="log-text">Preparing simulated TAXII request...</span>
-                    </div>
-                    <div class="transmission-log-item" role="listitem">
-                      <span class="log-dot"></span>
-                      <span class="log-text">Validating STIX 2.1 JSON Schema...</span>
-                    </div>
-                    <div class="transmission-log-item" role="listitem">
-                      <span class="log-dot"></span>
-                      <span class="log-text">Simulation complete (no network request sent).</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="sharing-payload">
-              <div class="code-header">
-                <span class="dot red" aria-hidden="true"></span>
-                <span class="dot yellow" aria-hidden="true"></span>
-                <span class="dot green" aria-hidden="true"></span>
-                <span class="file-name">cisa_threat_indicator.stix.json</span>
-              </div>
-              <pre><code id="stix-payload-view">&#123;
-  "type": "indicator",
-  "spec_version": "2.1",
-  "id": "indicator--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
-  "created": "2026-06-25T14:32:00.000Z",
-  "modified": "2026-06-25T14:32:00.000Z",
-  "name": "Malicious IP Anomaly",
-  "description": "High frequency requests detected from suspicious subnet. ThreatModel Confidence: 94%",
-  "pattern": "[ipv4-addr:value = '198.51.100.14']",
-  "pattern_type": "stix",
-  "valid_from": "2026-06-25T14:32:00.000Z"
-&#125;</code></pre>
-            </div>
-          </div>
-        </section>
+  <div class="page page--prose">
+    <section class="banner" data-variant="hero" aria-labelledby="compliance-title">
+      <p class="preheader">Security</p>
+      <h1 class="banner-heading" id="compliance-title">Compliance</h1>
+      <p class="lede">
+        How DEML protects data, controls access, and supports audit readiness. Check live platform
+        health on the status page.
+      </p>
+      <div class="banner-actions">
+        <a class="button button--secondary button--pill" href={platformStatusHref}>Platform status</a>
       </div>
-    </div>
+    </section>
+
+    <section class="page-body page-body--prose stack" aria-labelledby="controls-heading">
+      <header class="section-header">
+        <p class="type-eyebrow">Controls</p>
+        <h2 class="type-display" id="controls-heading">What we hold ourselves to</h2>
+      </header>
+
+      <article class="article">
+        <div class="article-body">
+          <h3>Encryption</h3>
+          <ul>
+            <li>TLS 1.3 in transit</li>
+            <li>AES-256 at rest with cloud KMS</li>
+            <li>Integrity checks on encrypted event ingest paths</li>
+          </ul>
+
+          <h3>Access</h3>
+          <ul>
+            <li>Strong authentication at the DEML product edge</li>
+            <li>Service credentials for integrations — end-user tokens are never forwarded</li>
+            <li>Roles and consent managed in your DEML account</li>
+          </ul>
+
+          <h3>Assurance</h3>
+          <ul>
+            <li>SOC 2 control map maintained as a living reference</li>
+            <li>Independent verification required for audit evidence</li>
+            <li>Privacy and terms published on this site</li>
+          </ul>
+        </div>
+      </article>
+    </section>
   </div>
 </Layout>
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Dismiss Safety Warning
-    const dismissBtn = document.getElementById('dismiss-warning-btn');
-    const warningBox = document.getElementById('safety-warning');
-    if (dismissBtn && warningBox) {
-      dismissBtn.addEventListener('click', () => {
-        warningBox.classList.add('is-hidden');
-      });
-    }
-
-    // Handle ISAC selection
-    const isacButtons = document.querySelectorAll<HTMLButtonElement>('.selector-btn');
-    const selectIsac = (btn: HTMLButtonElement, focus = false) => {
-        isacButtons.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-checked', 'false');
-          b.setAttribute('tabindex', '-1');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-checked', 'true');
-        btn.setAttribute('tabindex', '0');
-        if (focus) btn.focus();
-    };
-
-    isacButtons.forEach((btn, index) => {
-      btn.addEventListener('click', () => selectIsac(btn));
-      btn.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key)) {
-          return;
-        }
-        event.preventDefault();
-        let nextIndex = index;
-        if (event.key === 'Home') nextIndex = 0;
-        if (event.key === 'End') nextIndex = isacButtons.length - 1;
-        if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-          nextIndex = (index + 1) % isacButtons.length;
-        }
-        if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-          nextIndex = (index - 1 + isacButtons.length) % isacButtons.length;
-        }
-        selectIsac(isacButtons[nextIndex], true);
-      });
-    });
-
-    // Handle Submit simulation
-    const submitBtn = document.getElementById('submit-threat-btn');
-    const submitBtnText = document.getElementById('submit-btn-text');
-    const resultBox = document.getElementById('submission-result');
-
-    if (submitBtn && resultBox && submitBtnText) {
-      submitBtn.addEventListener('click', () => {
-        submitBtn.setAttribute('disabled', 'true');
-        submitBtnText.textContent = 'Running Simulation...';
-        resultBox.setAttribute('aria-busy', 'true');
-        resultBox.classList.add('is-hidden');
-        resultBox.classList.remove('is-visible-block');
-
-        setTimeout(() => {
-          submitBtn.removeAttribute('disabled');
-          submitBtnText.textContent = 'Run Sandbox Simulation';
-          resultBox.setAttribute('aria-busy', 'false');
-          resultBox.classList.remove('is-hidden');
-          resultBox.classList.add('is-visible-block');
-        }, 1200);
-      });
-    }
-  });
-</script>
-
-<style is:global>
-  html[data-theme='light'] .compliance-hero-mockup .mockup-stat > span,
-  html[data-theme='light'] .compliance-hero-mockup .mockup-stat > strong,
-  html[data-theme='light'] #stix-payload-view {
-    color: var(--color-text) !important;
-  }
-
-  html[data-theme='light'] .status-indicator,
-  html[data-theme='light'] .criteria-badge.success,
-  html[data-theme='light'] #sandbox-mode-note {
-    color: color-mix(in srgb, var(--color-success) 55%, var(--color-ground)) !important;
-  }
-</style>

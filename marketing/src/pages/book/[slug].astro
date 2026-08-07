@@ -37,37 +37,37 @@ const isCover = chapter.slug === 'cover';
 	<div class="app-layout app-layout--embedded" id="book-app">
 		<div class="app-layout__body">
 			<aside class="app-layout__nav no-print">
-				<a class="page-back-link" href="/book/">← All chapters</a>
-				<nav class="sidebar-nav" aria-label="Book chapters">
-					<div class="sidebar-nav__header">
-						<p class="sidebar-nav__title">Table of contents</p>
-					</div>
-					{
-						SIDEBAR_GROUPS.map((group) => {
-							const groupChapters = chapters.filter((item) => item.group === group);
-							if (groupChapters.length === 0) return null;
-							return (
-								<div class="sidebar-nav__group">
-									<h3 class="sidebar-nav__group-title">{group}</h3>
-									<ul class="sidebar-nav__list">
-										{groupChapters.map((item) => (
-											<li>
-												<a
-													class="sidebar-nav__link sidebar-nav__link--numbered"
-													href={`/book/${item.slug}/`}
-													aria-current={item.slug === chapter.slug ? 'page' : undefined}
-												>
-													<span class="sidebar-nav__num">{item.num || '—'}</span>
-													<span class="sidebar-nav__label">{item.shortTitle}</span>
-												</a>
-											</li>
-										))}
-									</ul>
-								</div>
-							);
-						})
-					}
-				</nav>
+				<a class="page-back-link" href="/book/">All chapters</a>
+				<details class="book-toc" open>
+					<summary>Contents</summary>
+					<nav class="toc" aria-label="Book chapters">
+						{
+							SIDEBAR_GROUPS.map((group) => {
+								const groupChapters = chapters.filter((item) => item.group === group);
+								if (groupChapters.length === 0) return null;
+								return (
+									<div class="toc__group">
+										<h3 class="toc__group-title">{group}</h3>
+										<ol class="toc__list">
+											{groupChapters.map((item) => (
+												<li>
+													<a
+														class="toc__item"
+														href={`/book/${item.slug}/`}
+														aria-current={item.slug === chapter.slug ? 'page' : undefined}
+													>
+														<span class="toc__num">{item.num || '—'}</span>
+														<span class="toc__label">{item.shortTitle}</span>
+													</a>
+												</li>
+											))}
+										</ol>
+									</div>
+								);
+							})
+						}
+					</nav>
+				</details>
 			</aside>
 
 			<div class="app-layout__main">
@@ -103,7 +103,7 @@ const isCover = chapter.slug === 'cover';
 						<div class="page-body page-body--prose article-body">
 							{
 								isCover ? (
-									<div class="card" data-visual="olive" style="--card-visual: var(--color-primary)">
+									<div class="card" data-visual="olive">
 										<div class="card-copy">
 											<p class="page-header__eyebrow">Interactive guide</p>
 											<h1 class="card-heading">
@@ -172,3 +172,16 @@ const isCover = chapter.slug === 'cover';
 		</div>
 	</div>
 </Layout>
+
+<script is:inline>
+	(() => {
+		const toc = document.querySelector('#book-app .book-toc');
+		if (!(toc instanceof HTMLDetailsElement)) return;
+		const mq = window.matchMedia('(min-width: 800px)');
+		const sync = () => {
+			if (mq.matches) toc.open = true;
+		};
+		sync();
+		mq.addEventListener('change', sync);
+	})();
+</script>

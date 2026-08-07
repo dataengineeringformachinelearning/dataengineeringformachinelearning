@@ -13,7 +13,7 @@ This repository deploys **only** the Astro community site.
 | Domain | `https://dataengineeringformachinelearning.com` |
 | Node.js | 24.x |
 
-Control-plane Angular (`deml.app`) and Django (`backend.deml.app`) deploy from [`deml`](https://github.com/dataengineeringformachinelearning/deml). FORJD landing/API deploy from [`forjd`](https://github.com/dataengineeringformachinelearning/forjd).
+Control-plane Angular (`deml.app`) and Django (`backend.deml.app`) deploy from [`deml`](https://github.com/dataengineeringformachinelearning/deml). FORJD API/engine deploy from [`forjd`](https://github.com/dataengineeringformachinelearning/forjd) on Fly (`backend.forjd.co`).
 
 ## Environment variables (Production)
 
@@ -37,6 +37,7 @@ npx vercel deploy --prod --yes
 `vercel.json` redirects:
 
 - `/status/:slug` → `https://deml.app/status/:slug`
-- `/documentation` → `https://backend.deml.app/documentation`
 
-Design system is **deml-ui** (warm ash NFTS), consumed via the `deml-ui` dependency pin — no sibling monorepo package build on Vercel.
+First-party routes (served by Astro, not redirected): `/`, `/book`, `/whitepaper`, `/documentation`, `/blog`, `/compliance`, `/privacy`, `/terms`.
+
+Design system is **deml-ui** (warm ash NFTS), consumed via the `deml-ui` dependency pin.
