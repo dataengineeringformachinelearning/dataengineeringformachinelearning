@@ -5,6 +5,7 @@ import { blogJsonLd, canonicalHref, webPageJsonLd } from '../../lib/seo';
 import { siteEnv } from '../../lib/site-env';
 
 const notes = await getBlueNotes();
+const [latestNote, ...archiveNotes] = notes;
 const pageTitle = 'Blog — DEML Platform Changes';
 const pageDescription =
 	'A chronological field log of DEML platform releases, architectural changes, reliability work, and new operator capabilities.';
@@ -39,55 +40,115 @@ const pageJsonLd = [
 >
 	<div class="page page--prose">
 		<section class="banner" data-variant="hero" aria-labelledby="blog-title">
-			<p class="preheader">DEML · Built in public</p>
+			<p class="preheader">Field log</p>
 			<h1 class="banner-heading" id="blog-title">Blog</h1>
 			<p class="lede">
-				Releases, architecture decisions, reliability work, and the details that turn a platform
-				into durable infrastructure.
+				Releases, architecture decisions, and reliability notes from building DEML in public.
 			</p>
 			<div class="banner-actions">
-				<a class="button button--secondary button--pill" href="/blog/rss.xml">Follow via RSS</a>
+				<div class="button-group" data-layout="row" role="group" aria-label="Blog actions">
+					<a class="button button--secondary button--pill" href="/blog/rss.xml">RSS</a>
+					<a class="button button--ghost button--pill" href="/documentation">Docs</a>
+				</div>
 			</div>
 		</section>
 
-		<section class="page-body page-body--prose stack">
-			<section aria-labelledby="blog-archive-title">
-				<header class="section-header">
-					<p class="type-eyebrow">Archive</p>
-					<h2 class="type-display" id="blog-archive-title">All posts</h2>
-					<p class="type-intro">Newest first.</p>
-				</header>
-				<ul class="activity-list list" aria-label="Blog archive">
-					{
-						notes.map((note) => (
-							<li class="activity-list__item list__item">
-								<time datetime={note.data.publishedAt.toISOString()}>
-									{formatBlueNoteDate(note.data.publishedAt)}
-								</time>
-								<p class="activity-list__title list__title">
-									<a href={blueNoteHref(note)}>{note.data.title}</a>
+		<section class="page-body page-body--prose stack" aria-labelledby="blog-archive-title">
+			{
+				latestNote && (
+					<section aria-labelledby="latest-post-title">
+						<header class="section-header">
+							<p class="type-eyebrow">Latest</p>
+							<h2 class="type-display" id="latest-post-title">
+								Newest note
+							</h2>
+						</header>
+						<a
+							class="card"
+							data-layout="teaser"
+							data-visual="olive"
+							href={blueNoteHref(latestNote)}
+						>
+							<div class="card-copy">
+								<p class="card-meta">
+									{latestNote.data.note}
+									{' · '}
+									<time datetime={latestNote.data.publishedAt.toISOString()}>
+										{formatBlueNoteDate(latestNote.data.publishedAt)}
+									</time>
 								</p>
-								<p class="activity-list__meta list__meta">
-									{note.data.note}
-									{note.data.categories.length ? ` · ${note.data.categories.join(', ')}` : ''}
-								</p>
-							</li>
-						))
-					}
-				</ul>
-			</section>
+								<h3 class="card-heading">{latestNote.data.title}</h3>
+								<p class="card-subtext">{latestNote.data.summary}</p>
+								{
+									latestNote.data.categories.length > 0 && (
+										<div class="cluster" aria-label="Categories">
+											{latestNote.data.categories.map((category) => (
+												<span class="badge" data-tone="neutral">
+													{category}
+												</span>
+											))}
+										</div>
+									)
+								}
+							</div>
+						</a>
+					</section>
+				)
+			}
 
-			<div class="button-group" data-layout="row" role="group" aria-label="Blog actions">
-				<a class="button button--secondary button--pill" href="/blog/rss.xml">Follow the RSS feed</a>
+			{
+				archiveNotes.length > 0 && (
+					<section aria-labelledby="blog-archive-title">
+						<header class="section-header">
+							<p class="type-eyebrow">Archive</p>
+							<h2 class="type-display" id="blog-archive-title">
+								Earlier posts
+							</h2>
+							<p class="type-intro">{archiveNotes.length} notes · newest first</p>
+						</header>
+						<div class="card-grid" data-density="compact" role="list" aria-label="Blog archive">
+							{archiveNotes.map((note) => (
+								<a
+									class="card"
+									data-layout="teaser"
+									href={blueNoteHref(note)}
+									role="listitem"
+								>
+									<div class="card-copy">
+										<p class="card-meta">
+											{note.data.note}
+											{' · '}
+											<time datetime={note.data.publishedAt.toISOString()}>
+												{formatBlueNoteDate(note.data.publishedAt)}
+											</time>
+										</p>
+										<h3 class="card-heading">{note.data.title}</h3>
+										<p class="card-subtext">{note.data.summary}</p>
+									</div>
+								</a>
+							))}
+						</div>
+					</section>
+				)
+			}
+
+			<aside class="callout" data-tone="info" role="note">
+				<div class="callout__body">
+					<p class="callout__heading">Living release record</p>
+					<p class="callout__text">
+						Posts summarize shipped outcomes. The public repository remains the detailed
+						engineering record.
+					</p>
+				</div>
 				<a
-					class="button button--ghost button--pill"
+					class="button button--secondary button--pill"
 					href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning"
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					View the engineering record
+					View source
 				</a>
-			</div>
+			</aside>
 		</section>
 	</div>
 </Layout>

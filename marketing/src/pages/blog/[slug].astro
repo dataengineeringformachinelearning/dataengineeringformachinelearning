@@ -56,31 +56,28 @@ const jsonLd = blogPostingJsonLd(
 	jsonLd={jsonLd}
 >
 	<div class="page page--prose">
-		<section class="banner" aria-labelledby="note-title">
-			<p class="page-header__meta">
-				<a href="/blog/">Blog</a>
-				<span class="page-header__meta-sep" aria-hidden="true">/</span>
-				<span aria-current="page">{note.data.note}</span>
-			</p>
+		<section class="banner" data-variant="hero" aria-labelledby="note-title">
+			<a class="page-back-link no-print" href="/blog/">All posts</a>
 			<p class="preheader">
-				<span class="badge" data-tone="info">{note.data.note}</span>
-				{' '}
+				{note.data.note}
+				{' · '}
 				<time datetime={note.data.publishedAt.toISOString()}>
 					{formatBlueNoteDate(note.data.publishedAt)}
 				</time>
 			</p>
 			<h1 class="banner-heading" id="note-title">{note.data.title}</h1>
 			<p class="lede">{note.data.summary}</p>
-			<aside class="cluster" aria-label="Categories">
-				{note.data.categories.map((category) => (
-					<span class="badge" data-tone="neutral">
-						{category}
-					</span>
-				))}
-			</aside>
-			<div class="banner-actions no-print">
-				<a class="page-back-link" href="/blog/">← All posts</a>
-			</div>
+			{
+				note.data.categories.length > 0 && (
+					<aside class="cluster" aria-label="Categories">
+						{note.data.categories.map((category) => (
+							<span class="badge" data-tone="neutral">
+								{category}
+							</span>
+						))}
+					</aside>
+				)
+			}
 		</section>
 
 		<section class="page-body page-body--prose stack">
@@ -89,10 +86,10 @@ const jsonLd = blogPostingJsonLd(
 					<nav class="toc no-print" aria-label="On this page">
 						<h2 class="toc__heading">In this note</h2>
 						<ol class="toc__list">
-							{outlineHeadings.map((heading) => (
+							{outlineHeadings.map((heading, index) => (
 								<li>
 									<a class="toc__item" href={`#${heading.slug}`}>
-										<span class="toc__num">§</span>
+										<span class="toc__num">{String(index + 1).padStart(2, '0')}</span>
 										<span class="toc__label">{heading.text}</span>
 									</a>
 								</li>
@@ -102,7 +99,7 @@ const jsonLd = blogPostingJsonLd(
 				)
 			}
 
-			<article class="article">
+			<article class="article module">
 				<div class="article-body">
 					<Content />
 				</div>
@@ -126,11 +123,11 @@ const jsonLd = blogPostingJsonLd(
 				</a>
 			</aside>
 
-			<nav class="pagination no-print" aria-label="Blue Note navigation">
+			<nav class="pagination no-print" aria-label="Blog navigation">
 				{
 					olderNote ? (
 						<a class="pagination__prev" href={blueNoteHref(olderNote)} rel="prev">
-							Earlier: {olderNote.data.title}
+							Earlier · {olderNote.data.title}
 						</a>
 					) : (
 						<span class="pagination__prev" aria-disabled="true">
@@ -141,7 +138,7 @@ const jsonLd = blogPostingJsonLd(
 				{
 					newerNote ? (
 						<a class="pagination__next" href={blueNoteHref(newerNote)} rel="next">
-							Newer: {newerNote.data.title}
+							Newer · {newerNote.data.title}
 						</a>
 					) : (
 						<span class="pagination__next" aria-disabled="true">
