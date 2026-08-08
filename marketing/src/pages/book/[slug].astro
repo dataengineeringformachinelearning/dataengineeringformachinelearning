@@ -40,28 +40,31 @@ const isCover = chapter.slug === 'cover';
 				<a class="page-back-link" href="/book/">All chapters</a>
 				<details class="book-toc" open>
 					<summary>Contents</summary>
-					<nav class="toc" aria-label="Book chapters">
+					<nav class="sidebar-nav" aria-label="Book chapters">
+						<div class="sidebar-nav__header">
+							<p class="sidebar-nav__title">All chapters</p>
+						</div>
 						{
 							SIDEBAR_GROUPS.map((group) => {
 								const groupChapters = chapters.filter((item) => item.group === group);
 								if (groupChapters.length === 0) return null;
 								return (
-									<div class="toc__group">
-										<h3 class="toc__group-title">{group}</h3>
-										<ol class="toc__list">
+									<div class="sidebar-nav__group">
+										<h3 class="sidebar-nav__group-title">{group}</h3>
+										<ul class="sidebar-nav__list">
 											{groupChapters.map((item) => (
 												<li>
 													<a
-														class="toc__item"
+														class="sidebar-nav__link sidebar-nav__link--numbered"
 														href={`/book/${item.slug}/`}
 														aria-current={item.slug === chapter.slug ? 'page' : undefined}
 													>
-														<span class="toc__num">{item.num || '—'}</span>
-														<span class="toc__label">{item.shortTitle}</span>
+														<span class="sidebar-nav__num">{item.num || '—'}</span>
+														<span class="sidebar-nav__label">{item.shortTitle}</span>
 													</a>
 												</li>
 											))}
-										</ol>
+										</ul>
 									</div>
 								);
 							})
@@ -71,7 +74,7 @@ const isCover = chapter.slug === 'cover';
 			</aside>
 
 			<main class="app-layout__main">
-				<div class="app-layout__content stack">
+				<div class="app-layout__content">
 					{
 						!isCover && (
 							<header class="page-header">
@@ -99,46 +102,46 @@ const isCover = chapter.slug === 'cover';
 						)
 					}
 
-					<article class="article module">
-						<div class="article-body">
-							{
-								isCover ? (
-									<div class="card" data-visual="olive">
-										<div class="card-copy">
-											<p class="page-header__eyebrow">Interactive guide</p>
-											<h1 class="card-heading">
-												Data Engineering
-												<br />
-												for Machine Learning
-											</h1>
-											<p class="card-subtext">Building high-throughput event platforms</p>
-											<div class="card-actions">
-												<div
-													class="button-group"
-													data-layout="row"
-													role="group"
-													aria-label="Cover links"
-												>
-													<a
-														class="button button--secondary button--pill"
-														href="https://joealongi.dev/"
-														target="_blank"
-														rel="noopener noreferrer"
-													>
-														Joe Alongi
-													</a>
-													<span class="badge">Vol. I</span>
-												</div>
-											</div>
+					{
+						isCover ? (
+							<div class="card" data-visual="olive">
+								<div class="card-copy">
+									<p class="card-meta">Interactive guide</p>
+									<h1 class="card-heading">
+										Data Engineering
+										<br />
+										for Machine Learning
+									</h1>
+									<p class="card-subtext">Building high-throughput event platforms</p>
+									<div class="card-actions">
+										<div
+											class="button-group"
+											data-layout="row"
+											role="group"
+											aria-label="Cover links"
+										>
+											<a
+												class="button button--secondary button--pill"
+												href="https://joealongi.dev/"
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												Joe Alongi
+											</a>
+											<span class="badge">Vol. I</span>
 										</div>
-										<div class="card-media has-visual" aria-hidden="true" />
 									</div>
-								) : (
+								</div>
+								<div class="card-media has-visual" aria-hidden="true" />
+							</div>
+						) : (
+							<article class="article module">
+								<div class="article-body">
 									<div set:html={chapter.html} />
-								)
-							}
-						</div>
-					</article>
+								</div>
+							</article>
+						)
+					}
 
 					<nav class="pagination no-print" aria-label="Chapter navigation">
 						{
