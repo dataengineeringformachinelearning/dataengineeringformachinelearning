@@ -34,9 +34,9 @@ const isCover = chapter.slug === 'cover';
 	ogType="article"
 	jsonLd={bookJsonLdPayload}
 >
-	<div class="app-layout app-layout--embedded" id="book-app">
+	<div class="app-layout app-layout--embedded app-layout--book" id="book-app">
 		<div class="app-layout__body">
-			<aside class="app-layout__nav no-print">
+			<aside class="app-layout__nav no-print" aria-label="Chapter list">
 				<a class="page-back-link" href="/book/">All chapters</a>
 				<details class="book-toc" open>
 					<summary>Contents</summary>
@@ -70,37 +70,37 @@ const isCover = chapter.slug === 'cover';
 				</details>
 			</aside>
 
-			<div class="app-layout__main">
-				<div class="app-layout__content">
-					<article class="article page page--prose">
-						{
-							!isCover && (
-								<header class="page-header">
-									<div class="page-header__text">
-										<p class="page-header__eyebrow">
-											{chapter.group}
-											{chapter.num ? ` · #${chapter.num}` : ''}
-										</p>
-										<h1 class="page-header__title">{chapter.shortTitle}</h1>
-										<div class="page-header__progress no-print">
-											<div class="page-header__progress-label">
-												<span>Reading progress</span>
-												<span>{progressPct}%</span>
-											</div>
-											<progress
-												class="progress__control"
-												value={progressPct}
-												max="100"
-												data-tone="info"
-												aria-label={`Reading progress: ${progressPct}%`}
-											/>
+			<main class="app-layout__main">
+				<div class="app-layout__content stack">
+					{
+						!isCover && (
+							<header class="page-header">
+								<div class="page-header__text">
+									<p class="page-header__eyebrow">
+										{chapter.group}
+										{chapter.num ? ` · #${chapter.num}` : ''}
+									</p>
+									<h1 class="page-header__title">{chapter.shortTitle}</h1>
+									<div class="page-header__progress no-print">
+										<div class="page-header__progress-label">
+											<span>Reading progress</span>
+											<span>{progressPct}%</span>
 										</div>
+										<progress
+											class="progress__control"
+											value={progressPct}
+											max="100"
+											data-tone="info"
+											aria-label={`Reading progress: ${progressPct}%`}
+										/>
 									</div>
-								</header>
-							)
-						}
+								</div>
+							</header>
+						)
+					}
 
-						<div class="page-body page-body--prose article-body">
+					<article class="article module">
+						<div class="article-body">
 							{
 								isCover ? (
 									<div class="card" data-visual="olive">
@@ -138,37 +138,37 @@ const isCover = chapter.slug === 'cover';
 								)
 							}
 						</div>
-
-						<nav class="pagination no-print" aria-label="Chapter navigation">
-							{
-								prevChapter ? (
-									<a class="pagination__prev" href={`/book/${prevChapter.slug}/`}>
-										Previous
-									</a>
-								) : (
-									<span class="pagination__prev" aria-disabled="true">
-										Previous
-									</span>
-								)
-							}
-							<span class="badge">
-								Chapter {chapter.index + 1} of {chapters.length}
-							</span>
-							{
-								nextChapter ? (
-									<a class="pagination__next" href={`/book/${nextChapter.slug}/`}>
-										Next
-									</a>
-								) : (
-									<span class="pagination__next" aria-disabled="true">
-										Next
-									</span>
-								)
-							}
-						</nav>
 					</article>
+
+					<nav class="pagination no-print" aria-label="Chapter navigation">
+						{
+							prevChapter ? (
+								<a class="pagination__prev" href={`/book/${prevChapter.slug}/`}>
+									Previous
+								</a>
+							) : (
+								<span class="pagination__prev" aria-disabled="true">
+									Previous
+								</span>
+							)
+						}
+						<span class="badge">
+							Chapter {chapter.index + 1} of {chapters.length}
+						</span>
+						{
+							nextChapter ? (
+								<a class="pagination__next" href={`/book/${nextChapter.slug}/`}>
+									Next
+								</a>
+							) : (
+								<span class="pagination__next" aria-disabled="true">
+									Next
+								</span>
+							)
+						}
+					</nav>
 				</div>
-			</div>
+			</main>
 		</div>
 	</div>
 </Layout>
