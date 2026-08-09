@@ -73,35 +73,8 @@ const isCover = chapter.slug === 'cover';
 				</details>
 			</aside>
 
-			<main class="app-layout__main">
+			<div class="app-layout__main">
 				<div class="app-layout__content">
-					{
-						!isCover && (
-							<header class="page-header">
-								<div class="page-header__text">
-									<p class="page-header__eyebrow">
-										{chapter.group}
-										{chapter.num ? ` · #${chapter.num}` : ''}
-									</p>
-									<h1 class="page-header__title">{chapter.shortTitle}</h1>
-									<div class="page-header__progress no-print">
-										<div class="page-header__progress-label">
-											<span>Reading progress</span>
-											<span>{progressPct}%</span>
-										</div>
-										<progress
-											class="progress__control"
-											value={progressPct}
-											max="100"
-											data-tone="info"
-											aria-label={`Reading progress: ${progressPct}%`}
-										/>
-									</div>
-								</div>
-							</header>
-						)
-					}
-
 					{
 						isCover ? (
 							<div class="card" data-visual="olive">
@@ -136,6 +109,28 @@ const isCover = chapter.slug === 'cover';
 							</div>
 						) : (
 							<article class="article module">
+								<header class="page-header">
+									<div class="page-header__text">
+										<p class="page-header__eyebrow">
+											{chapter.group}
+											{chapter.num ? ` · #${chapter.num}` : ''}
+										</p>
+										<h1 class="page-header__title">{chapter.shortTitle}</h1>
+										<div class="page-header__progress no-print">
+											<div class="page-header__progress-label">
+												<span>Reading progress</span>
+												<span>{progressPct}%</span>
+											</div>
+											<progress
+												class="progress__control"
+												value={progressPct}
+												max="100"
+												data-tone="info"
+												aria-label={`Reading progress: ${progressPct}%`}
+											/>
+										</div>
+									</div>
+								</header>
 								<div class="article-body">
 									<div set:html={chapter.html} />
 								</div>
@@ -171,7 +166,7 @@ const isCover = chapter.slug === 'cover';
 						}
 					</nav>
 				</div>
-			</main>
+			</div>
 		</div>
 	</div>
 </Layout>
