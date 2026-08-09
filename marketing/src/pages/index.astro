@@ -18,13 +18,39 @@ const homeJsonLd = [organizationJsonLd(MARKETING_URL), webSiteJsonLd(MARKETING_U
 /** Keep in sync with deml `SUITE_CONTINUE_LINKS` / `SUITE_CONTINUE` in src/app/data/home.ts */
 const suiteContinue = {
   headingId: 'suite-continue-heading',
+  eyebrow: 'Suite',
   heading: 'Continue across the suite',
   links: [
-    { num: '01', label: 'Book', href: `${marketingUrl}/book` },
-    { num: '02', label: 'Whitepaper', href: `${marketingUrl}/whitepaper` },
-    { num: '03', label: 'Blog', href: `${marketingUrl}/blog` },
-    { num: '04', label: 'Docs', href: `${marketingUrl}/documentation` },
-    { num: '05', label: 'Explore', href: `${demlUrl}/explore` },
+    {
+      num: '01',
+      label: 'Book',
+      description: 'Chapters on building production data and ML systems.',
+      href: `${marketingUrl}/book`,
+    },
+    {
+      num: '02',
+      label: 'Whitepaper',
+      description: 'Architecture and operations narrative for the suite.',
+      href: `${marketingUrl}/whitepaper`,
+    },
+    {
+      num: '03',
+      label: 'Blog',
+      description: 'Notes and updates from the DEML community.',
+      href: `${marketingUrl}/blog`,
+    },
+    {
+      num: '04',
+      label: 'Docs',
+      description: 'How to run, extend, and integrate the platforms.',
+      href: `${marketingUrl}/documentation`,
+    },
+    {
+      num: '05',
+      label: 'Explore',
+      description: 'Public status pages you can open and share.',
+      href: `${demlUrl}/explore`,
+    },
   ],
 } as const;
 ---
@@ -50,22 +76,29 @@ const suiteContinue = {
       </div>
     </section>
 
-    <section class="page-body page-body--prose" aria-labelledby={suiteContinue.headingId}>
-      <nav class="toc" aria-labelledby={suiteContinue.headingId}>
-        <h2 class="toc__heading" id={suiteContinue.headingId}>{suiteContinue.heading}</h2>
-        <ol class="toc__list">
+    <section class="page-body" aria-labelledby={suiteContinue.headingId}>
+      <div class="stack">
+        <header class="section-header">
+          <p class="section-header-eyebrow type-eyebrow">{suiteContinue.eyebrow}</p>
+          <h2 class="section-header-heading type-display" id={suiteContinue.headingId}>
+            {suiteContinue.heading}
+          </h2>
+        </header>
+
+        <div class="card-grid" data-density="compact" data-columns="3">
           {
             suiteContinue.links.map((item) => (
-              <li>
-                <a class="toc__item" href={item.href}>
-                  <span class="toc__num">{item.num}</span>
-                  <span class="toc__label">{item.label}</span>
-                </a>
-              </li>
+              <a class="card" data-layout="teaser" data-visual="olive" href={item.href}>
+                <div class="card-copy">
+                  <p class="card-meta">{item.num}</p>
+                  <h3 class="card-heading">{item.label}</h3>
+                  <p class="card-subtext">{item.description}</p>
+                </div>
+              </a>
             ))
           }
-        </ol>
-      </nav>
+        </div>
+      </div>
     </section>
   </div>
 </Layout>
