@@ -9,10 +9,24 @@ import {
 
 const { FRONTEND_URL, MARKETING_URL } = siteEnv();
 const demlUrl = FRONTEND_URL.replace(/\/$/, '');
+const marketingUrl = MARKETING_URL.replace(/\/$/, '');
 const pageTitle = 'Data Engineering for Machine Learning — Community';
 const pageDescription =
   'Learn data engineering for machine learning — open book, whitepaper, blog, and docs. Build and publish status with DEML.';
 const homeJsonLd = [organizationJsonLd(MARKETING_URL), webSiteJsonLd(MARKETING_URL)];
+
+/** Keep in sync with deml `SUITE_CONTINUE_LINKS` / `SUITE_CONTINUE` in src/app/data/home.ts */
+const suiteContinue = {
+  headingId: 'suite-continue-heading',
+  heading: 'Continue across the suite',
+  links: [
+    { num: '01', label: 'Book', href: `${marketingUrl}/book` },
+    { num: '02', label: 'Whitepaper', href: `${marketingUrl}/whitepaper` },
+    { num: '03', label: 'Blog', href: `${marketingUrl}/blog` },
+    { num: '04', label: 'Docs', href: `${marketingUrl}/documentation` },
+    { num: '05', label: 'Explore', href: `${demlUrl}/explore` },
+  ],
+} as const;
 ---
 
 <Layout
@@ -34,6 +48,24 @@ const homeJsonLd = [organizationJsonLd(MARKETING_URL), webSiteJsonLd(MARKETING_U
           <a class="button button--secondary button--pill" href={demlUrl}>Open DEML</a>
         </div>
       </div>
+    </section>
+
+    <section class="page-body page-body--prose" aria-labelledby={suiteContinue.headingId}>
+      <nav class="toc" aria-labelledby={suiteContinue.headingId}>
+        <h2 class="toc__heading" id={suiteContinue.headingId}>{suiteContinue.heading}</h2>
+        <ol class="toc__list">
+          {
+            suiteContinue.links.map((item) => (
+              <li>
+                <a class="toc__item" href={item.href}>
+                  <span class="toc__num">{item.num}</span>
+                  <span class="toc__label">{item.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
     </section>
   </div>
 </Layout>
