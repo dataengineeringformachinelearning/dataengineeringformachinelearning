@@ -188,12 +188,37 @@ function isActive(href: string): boolean {
 						class="button button--secondary button--pill"
 						href={`${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(returnUrl)}`}
 						id="auth-btn-login"
+						data-anonymous-only
 					>
 						Log in
 					</a>
-					<a class="button button--primary button--pill" href={`${FRONTEND_URL}/signup`} id="auth-btn-signup">
+					<a
+						class="button button--primary button--pill"
+						href={`${FRONTEND_URL}/signup`}
+						id="auth-btn-signup"
+						data-anonymous-only
+					>
 						Sign up
 					</a>
+					<a
+						class="button button--secondary button--pill"
+						href={`${FRONTEND_URL}/settings`}
+						id="auth-btn-settings"
+						data-authenticated-only
+						hidden
+					>
+						Settings
+					</a>
+					<button
+						type="button"
+						class="button button--primary button--pill"
+						id="auth-btn-signout"
+						data-authenticated-only
+						data-auth-signout
+						hidden
+					>
+						Sign out
+					</button>
 				</div>
 			</div>
 		</div>
